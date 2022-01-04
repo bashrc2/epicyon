@@ -9,197 +9,200 @@ __module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime
-from utils import hasObjectString
-from utils import removeDomainPort
-from utils import hasUsersPath
-from utils import getFullDomain
-from utils import removeIdEnding
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
-from utils import locatePost
-from utils import deletePost
-from utils import removeModerationPostFromIndex
-from utils import localActorUrl
-from session import postJson
-from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
-from posts import getPersonBox
+from utils import has_object_string
+from utils import remove_domain_port
+from utils import has_users_path
+from utils import get_full_domain
+from utils import remove_id_ending
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import locate_post
+from utils import delete_post
+from utils import remove_moderation_post_from_index
+from utils import local_actor_url
+from session import post_json
+from webfinger import webfinger_handle
+from auth import create_basic_auth_header
+from posts import get_person_box
 
 
-def sendDeleteViaServer(baseDir: str, session,
-                        fromNickname: str, password: str,
-                        fromDomain: str, fromPort: int,
-                        httpPrefix: str, deleteObjectUrl: str,
-                        cachedWebfingers: {}, personCache: {},
-                        debug: bool, projectVersion: str,
-                        signingPrivateKeyPem: str) -> {}:
+def send_delete_via_server(base_dir: str, session,
+                           from_nickname: str, password: str,
+                           from_domain: str, fromPort: int,
+                           http_prefix: str, delete_object_url: str,
+                           cached_webfingers: {}, person_cache: {},
+                           debug: bool, project_version: str,
+                           signing_priv_key_pem: str) -> {}:
     """Creates a delete request message via c2s
     """
     if not session:
-        print('WARN: No session for sendDeleteViaServer')
+        print('WARN: No session for send_delete_via_server')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, fromPort)
 
-    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = actor + '/followers'
+    actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    cc_url = actor + '/followers'
 
-    newDeleteJson = {
+    new_delete_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': actor,
-        'cc': [ccUrl],
-        'object': deleteObjectUrl,
-        'to': [toUrl],
+        'cc': [cc_url],
+        'object': delete_object_url,
+        'to': [to_url],
         'type': 'Delete'
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
-                        signingPrivateKeyPem)
-    if not wfRequest:
+    wf_request = \
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         from_domain, project_version, debug, False,
+                         signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: delete webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: delete webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                    baseDir, session, wfRequest, personCache,
-                                    projectVersion, httpPrefix, fromNickname,
-                                    fromDomain, postToBox, 53036)
+    origin_domain = from_domain
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem, origin_domain,
+                            base_dir, session,
+                            wf_request, person_cache,
+                            project_version, http_prefix,
+                            from_nickname,
+                            from_domain, post_to_box, 53036)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: delete no ' + postToBox +
+            print('DEBUG: delete no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: delete no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = \
-        postJson(httpPrefix, fromDomainFull,
-                 session, newDeleteJson, [], inboxUrl, headers, 3, True)
-    if not postResult:
+    post_result = \
+        post_json(http_prefix, from_domain_full,
+                  session, new_delete_json, [], inbox_url, headers, 3, True)
+    if not post_result:
         if debug:
-            print('DEBUG: POST delete failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST delete failed for c2s to ' + inbox_url)
         return 5
 
     if debug:
         print('DEBUG: c2s POST delete request success')
 
-    return newDeleteJson
+    return new_delete_json
 
 
-def outboxDelete(baseDir: str, httpPrefix: str,
-                 nickname: str, domain: str,
-                 messageJson: {}, debug: bool,
-                 allowDeletion: bool,
-                 recentPostsCache: {}) -> None:
+def outbox_delete(base_dir: str, http_prefix: str,
+                  nickname: str, domain: str,
+                  message_json: {}, debug: bool,
+                  allow_deletion: bool,
+                  recent_posts_cache: {}) -> None:
     """ When a delete request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: delete - no type')
         return
-    if not messageJson['type'] == 'Delete':
+    if not message_json['type'] == 'Delete':
         if debug:
             print('DEBUG: not a delete')
         return
-    if not hasObjectString(messageJson, debug):
+    if not has_object_string(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')
-    deletePrefix = httpPrefix + '://' + domain
-    if (not allowDeletion and
-        (not messageJson['object'].startswith(deletePrefix) or
-         not messageJson['actor'].startswith(deletePrefix))):
+    delete_prefix = http_prefix + '://' + domain
+    if (not allow_deletion and
+        (not message_json['object'].startswith(delete_prefix) or
+         not message_json['actor'].startswith(delete_prefix))):
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return
-    messageId = removeIdEnding(messageJson['object'])
-    if '/statuses/' not in messageId:
+    message_id = remove_id_ending(message_json['object'])
+    if '/statuses/' not in message_id:
         if debug:
             print('DEBUG: c2s delete object is not a status')
         return
-    if not hasUsersPath(messageId):
+    if not has_users_path(message_id):
         if debug:
             print('DEBUG: c2s delete object has no nickname')
         return
-    deleteNickname = getNicknameFromActor(messageId)
-    if deleteNickname != nickname:
+    delete_nickname = get_nickname_from_actor(message_id)
+    if delete_nickname != nickname:
         if debug:
             print("DEBUG: you can't delete a post which " +
                   "wasn't created by you (nickname does not match)")
         return
-    deleteDomain, deletePort = getDomainFromActor(messageId)
-    domain = removeDomainPort(domain)
-    if deleteDomain != domain:
+    delete_domain, _ = get_domain_from_actor(message_id)
+    domain = remove_domain_port(domain)
+    if delete_domain != domain:
         if debug:
             print("DEBUG: you can't delete a post which " +
                   "wasn't created by you (domain does not match)")
         return
-    removeModerationPostFromIndex(baseDir, messageId, debug)
-    postFilename = locatePost(baseDir, deleteNickname, deleteDomain,
-                              messageId)
-    if not postFilename:
+    remove_moderation_post_from_index(base_dir, message_id, debug)
+    post_filename = locate_post(base_dir, delete_nickname, delete_domain,
+                                message_id)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s delete post not found in inbox or outbox')
-            print(messageId)
+            print(message_id)
         return True
-    deletePost(baseDir, httpPrefix, deleteNickname, deleteDomain,
-               postFilename, debug, recentPostsCache)
+    delete_post(base_dir, http_prefix, delete_nickname, delete_domain,
+                post_filename, debug, recent_posts_cache)
     if debug:
-        print('DEBUG: post deleted via c2s - ' + postFilename)
+        print('DEBUG: post deleted via c2s - ' + post_filename)
 
 
-def removeOldHashtags(baseDir: str, maxMonths: int) -> str:
+def remove_old_hashtags(base_dir: str, max_months: int) -> str:
     """Remove old hashtags
     """
-    if maxMonths > 11:
-        maxMonths = 11
-    maxDaysSinceEpoch = \
-        (datetime.utcnow() - datetime(1970, 1 + maxMonths, 1)).days
-    removeHashtags = []
+    if max_months > 11:
+        max_months = 11
+    max_days_since_epoch = \
+        (datetime.utcnow() - datetime(1970, 1 + max_months, 1)).days
+    remove_hashtags = []
 
-    for subdir, dirs, files in os.walk(baseDir + '/tags'):
-        for f in files:
-            tagsFilename = os.path.join(baseDir + '/tags', f)
-            if not os.path.isfile(tagsFilename):
+    for _, _, files in os.walk(base_dir + '/tags'):
+        for fname in files:
+            tags_filename = os.path.join(base_dir + '/tags', fname)
+            if not os.path.isfile(tags_filename):
                 continue
             # get last modified datetime
-            modTimesinceEpoc = os.path.getmtime(tagsFilename)
-            lastModifiedDate = datetime.fromtimestamp(modTimesinceEpoc)
-            fileDaysSinceEpoch = (lastModifiedDate - datetime(1970, 1, 1)).days
+            mod_time_since_epoc = os.path.getmtime(tags_filename)
+            last_modified_date = datetime.fromtimestamp(mod_time_since_epoc)
+            file_days_since_epoch = \
+                (last_modified_date - datetime(1970, 1, 1)).days
 
             # check of the file is too old
-            if fileDaysSinceEpoch < maxDaysSinceEpoch:
-                removeHashtags.append(tagsFilename)
+            if file_days_since_epoch < max_days_since_epoch:
+                remove_hashtags.append(tags_filename)
         break
 
-    for removeFilename in removeHashtags:
+    for remove_filename in remove_hashtags:
         try:
-            os.remove(removeFilename)
+            os.remove(remove_filename)
         except OSError:
-            print('EX: removeOldHashtags unable to delete ' + removeFilename)
+            print('EX: remove_old_hashtags unable to delete ' +
+                  remove_filename)

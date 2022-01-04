@@ -9,187 +9,191 @@ __module_group__ = "Timeline"
 
 import os
 from pprint import pprint
-from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
-from utils import removeDomainPort
-from utils import hasUsersPath
-from utils import getFullDomain
-from utils import removeIdEnding
-from utils import removePostFromCache
-from utils import urlPermitted
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
-from utils import locatePost
-from utils import getCachedPostFilename
-from utils import loadJson
-from utils import saveJson
-from utils import hasObjectDict
-from utils import acctDir
-from utils import localActorUrl
-from utils import hasActor
-from utils import hasObjectStringType
-from posts import getPersonBox
-from session import postJson
+from webfinger import webfinger_handle
+from auth import create_basic_auth_header
+from utils import remove_domain_port
+from utils import has_users_path
+from utils import get_full_domain
+from utils import remove_id_ending
+from utils import remove_post_from_cache
+from utils import url_permitted
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import locate_post
+from utils import get_cached_post_filename
+from utils import load_json
+from utils import save_json
+from utils import has_object_dict
+from utils import acct_dir
+from utils import local_actor_url
+from utils import has_actor
+from utils import has_object_stringType
+from posts import get_person_box
+from session import post_json
 
 
-def undoBookmarksCollectionEntry(recentPostsCache: {},
-                                 baseDir: str, postFilename: str,
-                                 objectUrl: str,
-                                 actor: str, domain: str, debug: bool) -> None:
+def undo_bookmarks_collection_entry(recent_posts_cache: {},
+                                    base_dir: str, post_filename: str,
+                                    object_url: str,
+                                    actor: str, domain: str,
+                                    debug: bool) -> None:
     """Undoes a bookmark for a particular actor
     """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
         return
 
     # remove any cached version of this post so that the
     # bookmark icon is changed
-    nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                               domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    nickname = get_nickname_from_actor(actor)
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 if debug:
-                    print('EX: undoBookmarksCollectionEntry ' +
+                    print('EX: undo_bookmarks_collection_entry ' +
                           'unable to delete cached post file ' +
-                          str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+                          str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
     # remove from the index
-    bookmarksIndexFilename = \
-        acctDir(baseDir, nickname, domain) + '/bookmarks.index'
-    if not os.path.isfile(bookmarksIndexFilename):
+    bookmarks_index_filename = \
+        acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
+    if not os.path.isfile(bookmarks_index_filename):
         return
-    if '/' in postFilename:
-        bookmarkIndex = postFilename.split('/')[-1].strip()
+    if '/' in post_filename:
+        bookmark_index = post_filename.split('/')[-1].strip()
     else:
-        bookmarkIndex = postFilename.strip()
-    bookmarkIndex = bookmarkIndex.replace('\n', '').replace('\r', '')
-    if bookmarkIndex not in open(bookmarksIndexFilename).read():
+        bookmark_index = post_filename.strip()
+    bookmark_index = bookmark_index.replace('\n', '').replace('\r', '')
+    if bookmark_index not in open(bookmarks_index_filename).read():
         return
-    indexStr = ''
+    index_str = ''
     try:
-        with open(bookmarksIndexFilename, 'r') as indexFile:
-            indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
+        with open(bookmarks_index_filename, 'r') as index_file:
+            index_str = index_file.read().replace(bookmark_index + '\n', '')
     except OSError:
-        print('EX: unable to read ' + bookmarksIndexFilename)
-    if indexStr:
+        print('EX: unable to read ' + bookmarks_index_filename)
+    if index_str:
         try:
-            with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
-                bookmarksIndexFile.write(indexStr)
+            with open(bookmarks_index_filename, 'w+') as bmi_file:
+                bmi_file.write(index_str)
         except OSError:
             print('EX: unable to write bookmarks index ' +
-                  bookmarksIndexFilename)
-    if not postJsonObject.get('type'):
+                  bookmarks_index_filename)
+    if not post_json_object.get('type'):
         return
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         if debug:
             print('DEBUG: bookmarked post has no object ' +
-                  str(postJsonObject))
+                  str(post_json_object))
         return
-    if not postJsonObject['object'].get('bookmarks'):
+    if not post_json_object['object'].get('bookmarks'):
         return
-    if not isinstance(postJsonObject['object']['bookmarks'], dict):
+    if not isinstance(post_json_object['object']['bookmarks'], dict):
         return
-    if not postJsonObject['object']['bookmarks'].get('items'):
+    if not post_json_object['object']['bookmarks'].get('items'):
         return
-    totalItems = 0
-    if postJsonObject['object']['bookmarks'].get('totalItems'):
-        totalItems = postJsonObject['object']['bookmarks']['totalItems']
-        itemFound = False
-    for bookmarkItem in postJsonObject['object']['bookmarks']['items']:
-        if bookmarkItem.get('actor'):
-            if bookmarkItem['actor'] == actor:
+    total_items = 0
+    if post_json_object['object']['bookmarks'].get('totalItems'):
+        total_items = post_json_object['object']['bookmarks']['totalItems']
+    item_found = False
+    for bookmark_item in post_json_object['object']['bookmarks']['items']:
+        if bookmark_item.get('actor'):
+            if bookmark_item['actor'] == actor:
                 if debug:
                     print('DEBUG: bookmark was removed for ' + actor)
-                bmIt = bookmarkItem
-                postJsonObject['object']['bookmarks']['items'].remove(bmIt)
-                itemFound = True
+                bm_it = bookmark_item
+                post_json_object['object']['bookmarks']['items'].remove(bm_it)
+                item_found = True
                 break
 
-    if not itemFound:
+    if not item_found:
         return
 
-    if totalItems == 1:
+    if total_items == 1:
         if debug:
             print('DEBUG: bookmarks was removed from post')
-        del postJsonObject['object']['bookmarks']
+        del post_json_object['object']['bookmarks']
     else:
-        bmItLen = len(postJsonObject['object']['bookmarks']['items'])
-        postJsonObject['object']['bookmarks']['totalItems'] = bmItLen
-    saveJson(postJsonObject, postFilename)
+        bm_it_len = len(post_json_object['object']['bookmarks']['items'])
+        post_json_object['object']['bookmarks']['totalItems'] = bm_it_len
+    save_json(post_json_object, post_filename)
 
 
-def bookmarkedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
+def bookmarked_by_person(post_json_object: {},
+                         nickname: str, domain: str) -> bool:
     """Returns True if the given post is bookmarked by the given person
     """
-    if _noOfBookmarks(postJsonObject) == 0:
+    if _no_of_bookmarks(post_json_object) == 0:
         return False
-    actorMatch = domain + '/users/' + nickname
-    for item in postJsonObject['object']['bookmarks']['items']:
-        if item['actor'].endswith(actorMatch):
+    actor_match = domain + '/users/' + nickname
+    for item in post_json_object['object']['bookmarks']['items']:
+        if item['actor'].endswith(actor_match):
             return True
     return False
 
 
-def _noOfBookmarks(postJsonObject: {}) -> int:
+def _no_of_bookmarks(post_json_object: {}) -> int:
     """Returns the number of bookmarks ona  given post
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return 0
-    if not postJsonObject['object'].get('bookmarks'):
+    if not post_json_object['object'].get('bookmarks'):
         return 0
-    if not isinstance(postJsonObject['object']['bookmarks'], dict):
+    if not isinstance(post_json_object['object']['bookmarks'], dict):
         return 0
-    if not postJsonObject['object']['bookmarks'].get('items'):
-        postJsonObject['object']['bookmarks']['items'] = []
-        postJsonObject['object']['bookmarks']['totalItems'] = 0
-    return len(postJsonObject['object']['bookmarks']['items'])
+    if not post_json_object['object']['bookmarks'].get('items'):
+        post_json_object['object']['bookmarks']['items'] = []
+        post_json_object['object']['bookmarks']['totalItems'] = 0
+    return len(post_json_object['object']['bookmarks']['items'])
 
 
-def updateBookmarksCollection(recentPostsCache: {},
-                              baseDir: str, postFilename: str,
-                              objectUrl: str,
-                              actor: str, domain: str, debug: bool) -> None:
+def update_bookmarks_collection(recent_posts_cache: {},
+                                base_dir: str, post_filename: str,
+                                object_url: str,
+                                actor: str, domain: str, debug: bool) -> None:
     """Updates the bookmarks collection within a post
     """
-    postJsonObject = loadJson(postFilename)
-    if postJsonObject:
+    post_json_object = load_json(post_filename)
+    if post_json_object:
         # remove any cached version of this post so that the
         # bookmark icon is changed
-        nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                                   domain, postJsonObject)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
+        nickname = get_nickname_from_actor(actor)
+        cached_post_filename = \
+            get_cached_post_filename(base_dir, nickname,
+                                     domain, post_json_object)
+        if cached_post_filename:
+            if os.path.isfile(cached_post_filename):
                 try:
-                    os.remove(cachedPostFilename)
+                    os.remove(cached_post_filename)
                 except OSError:
                     if debug:
-                        print('EX: updateBookmarksCollection ' +
+                        print('EX: update_bookmarks_collection ' +
                               'unable to delete cached post ' +
-                              str(cachedPostFilename))
-        removePostFromCache(postJsonObject, recentPostsCache)
+                              str(cached_post_filename))
+        remove_post_from_cache(post_json_object, recent_posts_cache)
 
-        if not postJsonObject.get('object'):
+        if not post_json_object.get('object'):
             if debug:
                 print('DEBUG: no object in bookmarked post ' +
-                      str(postJsonObject))
+                      str(post_json_object))
             return
-        if not objectUrl.endswith('/bookmarks'):
-            objectUrl = objectUrl + '/bookmarks'
+        if not object_url.endswith('/bookmarks'):
+            object_url = object_url + '/bookmarks'
         # does this post have bookmarks on it from differenent actors?
-        if not postJsonObject['object'].get('bookmarks'):
+        if not post_json_object['object'].get('bookmarks'):
             if debug:
-                print('DEBUG: Adding initial bookmarks to ' + objectUrl)
-            bookmarksJson = {
+                print('DEBUG: Adding initial bookmarks to ' + object_url)
+            bookmarks_json = {
                 "@context": "https://www.w3.org/ns/activitystreams",
-                'id': objectUrl,
+                'id': object_url,
                 'type': 'Collection',
                 "totalItems": 1,
                 'items': [{
@@ -197,464 +201,463 @@ def updateBookmarksCollection(recentPostsCache: {},
                     'actor': actor
                 }]
             }
-            postJsonObject['object']['bookmarks'] = bookmarksJson
+            post_json_object['object']['bookmarks'] = bookmarks_json
         else:
-            if not postJsonObject['object']['bookmarks'].get('items'):
-                postJsonObject['object']['bookmarks']['items'] = []
-            for bookmarkItem in postJsonObject['object']['bookmarks']['items']:
-                if bookmarkItem.get('actor'):
-                    if bookmarkItem['actor'] == actor:
+            if not post_json_object['object']['bookmarks'].get('items'):
+                post_json_object['object']['bookmarks']['items'] = []
+            bm_items = post_json_object['object']['bookmarks']['items']
+            for bookmark_item in bm_items:
+                if bookmark_item.get('actor'):
+                    if bookmark_item['actor'] == actor:
                         return
-            newBookmark = {
+            new_bookmark = {
                 'type': 'Bookmark',
                 'actor': actor
             }
-            nb = newBookmark
-            bmIt = len(postJsonObject['object']['bookmarks']['items'])
-            postJsonObject['object']['bookmarks']['items'].append(nb)
-            postJsonObject['object']['bookmarks']['totalItems'] = bmIt
+            nbook = new_bookmark
+            bm_it = len(post_json_object['object']['bookmarks']['items'])
+            post_json_object['object']['bookmarks']['items'].append(nbook)
+            post_json_object['object']['bookmarks']['totalItems'] = bm_it
 
         if debug:
             print('DEBUG: saving post with bookmarks added')
-            pprint(postJsonObject)
+            pprint(post_json_object)
 
-        saveJson(postJsonObject, postFilename)
+        save_json(post_json_object, post_filename)
 
         # prepend to the index
-        bookmarksIndexFilename = \
-            acctDir(baseDir, nickname, domain) + '/bookmarks.index'
-        bookmarkIndex = postFilename.split('/')[-1]
-        if os.path.isfile(bookmarksIndexFilename):
-            if bookmarkIndex not in open(bookmarksIndexFilename).read():
+        bookmarks_index_filename = \
+            acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
+        bookmark_index = post_filename.split('/')[-1]
+        if os.path.isfile(bookmarks_index_filename):
+            if bookmark_index not in open(bookmarks_index_filename).read():
                 try:
-                    with open(bookmarksIndexFilename, 'r+') as bmIndexFile:
-                        content = bmIndexFile.read()
-                        if bookmarkIndex + '\n' not in content:
-                            bmIndexFile.seek(0, 0)
-                            bmIndexFile.write(bookmarkIndex + '\n' + content)
+                    with open(bookmarks_index_filename, 'r+') as bmi_file:
+                        content = bmi_file.read()
+                        if bookmark_index + '\n' not in content:
+                            bmi_file.seek(0, 0)
+                            bmi_file.write(bookmark_index + '\n' + content)
                             if debug:
                                 print('DEBUG: bookmark added to index')
-                except Exception as e:
+                except OSError as ex:
                     print('WARN: Failed to write entry to bookmarks index ' +
-                          bookmarksIndexFilename + ' ' + str(e))
+                          bookmarks_index_filename + ' ' + str(ex))
         else:
             try:
-                with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
-                    bookmarksIndexFile.write(bookmarkIndex + '\n')
+                with open(bookmarks_index_filename, 'w+') as bm_file:
+                    bm_file.write(bookmark_index + '\n')
             except OSError:
                 print('EX: unable to write bookmarks index ' +
-                      bookmarksIndexFilename)
+                      bookmarks_index_filename)
 
 
-def bookmark(recentPostsCache: {},
-             session, baseDir: str, federationList: [],
-             nickname: str, domain: str, port: int,
-             ccList: [], httpPrefix: str,
-             objectUrl: str, actorBookmarked: str,
-             clientToServer: bool,
-             sendThreads: [], postLog: [],
-             personCache: {}, cachedWebfingers: {},
-             debug: bool, projectVersion: str) -> {}:
+def bookmark_post(recent_posts_cache: {},
+                  session, base_dir: str, federation_list: [],
+                  nickname: str, domain: str, port: int,
+                  ccList: [], http_prefix: str,
+                  object_url: str, actorBookmarked: str,
+                  client_to_server: bool,
+                  send_threads: [], post_log: [],
+                  person_cache: {}, cached_webfingers: {},
+                  debug: bool, project_version: str) -> {}:
     """Creates a bookmark
     actor is the person doing the bookmarking
     'to' might be a specific person (actor) whose post was bookmarked
     object is typically the url of the message which was bookmarked
     """
-    if not urlPermitted(objectUrl, federationList):
+    if not url_permitted(object_url, federation_list):
         return None
 
-    fullDomain = getFullDomain(domain, port)
+    full_domain = get_full_domain(domain, port)
 
-    newBookmarkJson = {
+    new_bookmark_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
-        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
-        'object': objectUrl
+        'actor': local_actor_url(http_prefix, nickname, full_domain),
+        'object': object_url
     }
     if ccList:
         if len(ccList) > 0:
-            newBookmarkJson['cc'] = ccList
+            new_bookmark_json['cc'] = ccList
 
     # Extract the domain and nickname from a statuses link
-    bookmarkedPostNickname = None
-    bookmarkedPostDomain = None
-    bookmarkedPostPort = None
+    bookmarked_post_nickname = None
     if actorBookmarked:
-        acBm = actorBookmarked
-        bookmarkedPostNickname = getNicknameFromActor(acBm)
-        bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
+        ac_bm = actorBookmarked
+        bookmarked_post_nickname = get_nickname_from_actor(ac_bm)
+        _, _ = get_domain_from_actor(ac_bm)
     else:
-        if hasUsersPath(objectUrl):
-            ou = objectUrl
-            bookmarkedPostNickname = getNicknameFromActor(ou)
-            bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
+        if has_users_path(object_url):
+            ourl = object_url
+            bookmarked_post_nickname = get_nickname_from_actor(ourl)
+            _, _ = get_domain_from_actor(ourl)
 
-    if bookmarkedPostNickname:
-        postFilename = locatePost(baseDir, nickname, domain, objectUrl)
-        if not postFilename:
-            print('DEBUG: bookmark baseDir: ' + baseDir)
+    if bookmarked_post_nickname:
+        post_filename = locate_post(base_dir, nickname, domain, object_url)
+        if not post_filename:
+            print('DEBUG: bookmark base_dir: ' + base_dir)
             print('DEBUG: bookmark nickname: ' + nickname)
             print('DEBUG: bookmark domain: ' + domain)
-            print('DEBUG: bookmark objectUrl: ' + objectUrl)
+            print('DEBUG: bookmark object_url: ' + object_url)
             return None
 
-        updateBookmarksCollection(recentPostsCache,
-                                  baseDir, postFilename, objectUrl,
-                                  newBookmarkJson['actor'], domain, debug)
+        update_bookmarks_collection(recent_posts_cache,
+                                    base_dir, post_filename, object_url,
+                                    new_bookmark_json['actor'], domain, debug)
 
-    return newBookmarkJson
+    return new_bookmark_json
 
 
-def undoBookmark(recentPostsCache: {},
-                 session, baseDir: str, federationList: [],
-                 nickname: str, domain: str, port: int,
-                 ccList: [], httpPrefix: str,
-                 objectUrl: str, actorBookmarked: str,
-                 clientToServer: bool,
-                 sendThreads: [], postLog: [],
-                 personCache: {}, cachedWebfingers: {},
-                 debug: bool, projectVersion: str) -> {}:
+def undo_bookmark_post(recent_posts_cache: {},
+                       session, base_dir: str, federation_list: [],
+                       nickname: str, domain: str, port: int,
+                       ccList: [], http_prefix: str,
+                       object_url: str, actorBookmarked: str,
+                       client_to_server: bool,
+                       send_threads: [], post_log: [],
+                       person_cache: {}, cached_webfingers: {},
+                       debug: bool, project_version: str) -> {}:
     """Removes a bookmark
     actor is the person doing the bookmarking
     'to' might be a specific person (actor) whose post was bookmarked
     object is typically the url of the message which was bookmarked
     """
-    if not urlPermitted(objectUrl, federationList):
+    if not url_permitted(object_url, federation_list):
         return None
 
-    fullDomain = getFullDomain(domain, port)
+    full_domain = get_full_domain(domain, port)
 
-    newUndoBookmarkJson = {
+    new_undo_bookmark_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
-        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
+        'actor': local_actor_url(http_prefix, nickname, full_domain),
         'object': {
             'type': 'Bookmark',
-            'actor': localActorUrl(httpPrefix, nickname, fullDomain),
-            'object': objectUrl
+            'actor': local_actor_url(http_prefix, nickname, full_domain),
+            'object': object_url
         }
     }
     if ccList:
         if len(ccList) > 0:
-            newUndoBookmarkJson['cc'] = ccList
-            newUndoBookmarkJson['object']['cc'] = ccList
+            new_undo_bookmark_json['cc'] = ccList
+            new_undo_bookmark_json['object']['cc'] = ccList
 
     # Extract the domain and nickname from a statuses link
-    bookmarkedPostNickname = None
-    bookmarkedPostDomain = None
-    bookmarkedPostPort = None
+    bookmarked_post_nickname = None
     if actorBookmarked:
-        acBm = actorBookmarked
-        bookmarkedPostNickname = getNicknameFromActor(acBm)
-        bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
+        ac_bm = actorBookmarked
+        bookmarked_post_nickname = get_nickname_from_actor(ac_bm)
+        _, _ = get_domain_from_actor(ac_bm)
     else:
-        if hasUsersPath(objectUrl):
-            ou = objectUrl
-            bookmarkedPostNickname = getNicknameFromActor(ou)
-            bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
+        if has_users_path(object_url):
+            ourl = object_url
+            bookmarked_post_nickname = get_nickname_from_actor(ourl)
+            _, _ = get_domain_from_actor(ourl)
 
-    if bookmarkedPostNickname:
-        postFilename = locatePost(baseDir, nickname, domain, objectUrl)
-        if not postFilename:
+    if bookmarked_post_nickname:
+        post_filename = locate_post(base_dir, nickname, domain, object_url)
+        if not post_filename:
             return None
 
-        undoBookmarksCollectionEntry(recentPostsCache,
-                                     baseDir, postFilename, objectUrl,
-                                     newUndoBookmarkJson['actor'],
-                                     domain, debug)
+        undo_bookmarks_collection_entry(recent_posts_cache,
+                                        base_dir, post_filename, object_url,
+                                        new_undo_bookmark_json['actor'],
+                                        domain, debug)
     else:
         return None
 
-    return newUndoBookmarkJson
+    return new_undo_bookmark_json
 
 
-def sendBookmarkViaServer(baseDir: str, session,
-                          nickname: str, password: str,
-                          domain: str, fromPort: int,
-                          httpPrefix: str, bookmarkUrl: str,
-                          cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
-                          signingPrivateKeyPem: str) -> {}:
+def send_bookmark_via_server(base_dir: str, session,
+                             nickname: str, password: str,
+                             domain: str, from_port: int,
+                             http_prefix: str, bookmark_url: str,
+                             cached_webfingers: {}, person_cache: {},
+                             debug: bool, project_version: str,
+                             signing_priv_key_pem: str) -> {}:
     """Creates a bookmark via c2s
     """
     if not session:
-        print('WARN: No session for sendBookmarkViaServer')
+        print('WARN: No session for send_bookmark_via_server')
         return 6
 
-    domainFull = getFullDomain(domain, fromPort)
+    domain_full = get_full_domain(domain, from_port)
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    newBookmarkJson = {
+    new_bookmark_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         "type": "Add",
         "actor": actor,
         "to": [actor],
         "object": {
             "type": "Document",
-            "url": bookmarkUrl,
+            "url": bookmark_url,
             "to": [actor]
         },
         "target": actor + "/tlbookmarks"
     }
 
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
-                                cachedWebfingers,
-                                domain, projectVersion, debug, False,
-                                signingPrivateKeyPem)
-    if not wfRequest:
+    wf_request = \
+        webfinger_handle(session, handle, http_prefix,
+                         cached_webfingers,
+                         domain, project_version, debug, False,
+                         signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: bookmark webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: bookmark webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
-                                    originDomain,
-                                    baseDir, session, wfRequest,
-                                    personCache,
-                                    projectVersion, httpPrefix,
-                                    nickname, domain,
-                                    postToBox, 58391)
+    origin_domain = domain
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem,
+                            origin_domain,
+                            base_dir, session, wf_request,
+                            person_cache,
+                            project_version, http_prefix,
+                            nickname, domain,
+                            post_to_box, 58391)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: bookmark no ' + postToBox +
+            print('DEBUG: bookmark no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: bookmark no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = postJson(httpPrefix, domainFull,
-                          session, newBookmarkJson, [], inboxUrl,
-                          headers, 3, True)
-    if not postResult:
+    post_result = post_json(http_prefix, domain_full,
+                            session, new_bookmark_json, [], inbox_url,
+                            headers, 3, True)
+    if not post_result:
         if debug:
-            print('WARN: POST bookmark failed for c2s to ' + inboxUrl)
+            print('WARN: POST bookmark failed for c2s to ' + inbox_url)
         return 5
 
     if debug:
         print('DEBUG: c2s POST bookmark success')
 
-    return newBookmarkJson
+    return new_bookmark_json
 
 
-def sendUndoBookmarkViaServer(baseDir: str, session,
-                              nickname: str, password: str,
-                              domain: str, fromPort: int,
-                              httpPrefix: str, bookmarkUrl: str,
-                              cachedWebfingers: {}, personCache: {},
-                              debug: bool, projectVersion: str,
-                              signingPrivateKeyPem: str) -> {}:
+def send_undo_bookmark_via_server(base_dir: str, session,
+                                  nickname: str, password: str,
+                                  domain: str, from_port: int,
+                                  http_prefix: str, bookmark_url: str,
+                                  cached_webfingers: {}, person_cache: {},
+                                  debug: bool, project_version: str,
+                                  signing_priv_key_pem: str) -> {}:
     """Removes a bookmark via c2s
     """
     if not session:
-        print('WARN: No session for sendUndoBookmarkViaServer')
+        print('WARN: No session for send_undo_bookmark_via_server')
         return 6
 
-    domainFull = getFullDomain(domain, fromPort)
+    domain_full = get_full_domain(domain, from_port)
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    newBookmarkJson = {
+    new_bookmark_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         "type": "Remove",
         "actor": actor,
         "to": [actor],
         "object": {
             "type": "Document",
-            "url": bookmarkUrl,
+            "url": bookmark_url,
             "to": [actor]
         },
         "target": actor + "/tlbookmarks"
     }
 
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
-                                cachedWebfingers,
-                                domain, projectVersion, debug, False,
-                                signingPrivateKeyPem)
-    if not wfRequest:
+    wf_request = \
+        webfinger_handle(session, handle, http_prefix,
+                         cached_webfingers,
+                         domain, project_version, debug, False,
+                         signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: unbookmark webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: unbookmark webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
-                                    originDomain,
-                                    baseDir, session, wfRequest,
-                                    personCache,
-                                    projectVersion, httpPrefix,
-                                    nickname, domain,
-                                    postToBox, 52594)
+    origin_domain = domain
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem,
+                            origin_domain,
+                            base_dir, session, wf_request,
+                            person_cache,
+                            project_version, http_prefix,
+                            nickname, domain,
+                            post_to_box, 52594)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: unbookmark no ' + postToBox +
+            print('DEBUG: unbookmark no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: unbookmark no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = postJson(httpPrefix, domainFull,
-                          session, newBookmarkJson, [], inboxUrl,
-                          headers, 3, True)
-    if not postResult:
+    post_result = post_json(http_prefix, domain_full,
+                            session, new_bookmark_json, [], inbox_url,
+                            headers, 3, True)
+    if not post_result:
         if debug:
-            print('WARN: POST unbookmark failed for c2s to ' + inboxUrl)
+            print('WARN: POST unbookmark failed for c2s to ' + inbox_url)
         return 5
 
     if debug:
         print('DEBUG: c2s POST unbookmark success')
 
-    return newBookmarkJson
+    return new_bookmark_json
 
 
-def outboxBookmark(recentPostsCache: {},
-                   baseDir: str, httpPrefix: str,
-                   nickname: str, domain: str, port: int,
-                   messageJson: {}, debug: bool) -> None:
+def outbox_bookmark(recent_posts_cache: {},
+                    base_dir: str, http_prefix: str,
+                    nickname: str, domain: str, port: int,
+                    message_json: {}, debug: bool) -> None:
     """ When a bookmark request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if messageJson['type'] != 'Add':
+    if message_json['type'] != 'Add':
         return
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return
-    if not messageJson.get('target'):
+    if not message_json.get('target'):
         if debug:
             print('DEBUG: no target in bookmark Add')
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return
-    if not isinstance(messageJson['target'], str):
+    if not isinstance(message_json['target'], str):
         if debug:
             print('DEBUG: bookmark Add target is not string')
         return
-    domainFull = getFullDomain(domain, port)
-    if not messageJson['target'].endswith('://' + domainFull +
-                                          '/users/' + nickname +
-                                          '/tlbookmarks'):
+    domain_full = get_full_domain(domain, port)
+    if not message_json['target'].endswith('://' + domain_full +
+                                           '/users/' + nickname +
+                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: bookmark Add target invalid ' +
-                  messageJson['target'])
+                  message_json['target'])
         return
-    if messageJson['object']['type'] != 'Document':
+    if message_json['object']['type'] != 'Document':
         if debug:
             print('DEBUG: bookmark Add type is not Document')
         return
-    if not messageJson['object'].get('url'):
+    if not message_json['object'].get('url'):
         if debug:
             print('DEBUG: bookmark Add missing url')
         return
     if debug:
         print('DEBUG: c2s bookmark Add request arrived in outbox')
 
-    messageUrl = removeIdEnding(messageJson['object']['url'])
-    domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageUrl)
-    if not postFilename:
+    message_url = remove_id_ending(message_json['object']['url'])
+    domain = remove_domain_port(domain)
+    post_filename = locate_post(base_dir, nickname, domain, message_url)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s like post not found in inbox or outbox')
-            print(messageUrl)
+            print(message_url)
         return True
-    updateBookmarksCollection(recentPostsCache,
-                              baseDir, postFilename, messageUrl,
-                              messageJson['actor'], domain, debug)
+    update_bookmarks_collection(recent_posts_cache,
+                                base_dir, post_filename, message_url,
+                                message_json['actor'], domain, debug)
     if debug:
-        print('DEBUG: post bookmarked via c2s - ' + postFilename)
+        print('DEBUG: post bookmarked via c2s - ' + post_filename)
 
 
-def outboxUndoBookmark(recentPostsCache: {},
-                       baseDir: str, httpPrefix: str,
-                       nickname: str, domain: str, port: int,
-                       messageJson: {}, debug: bool) -> None:
+def outbox_undo_bookmark(recent_posts_cache: {},
+                         base_dir: str, http_prefix: str,
+                         nickname: str, domain: str, port: int,
+                         message_json: {}, debug: bool) -> None:
     """ When an undo bookmark request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if messageJson['type'] != 'Remove':
+    if message_json['type'] != 'Remove':
         return
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return
-    if not messageJson.get('target'):
+    if not message_json.get('target'):
         if debug:
             print('DEBUG: no target in unbookmark Remove')
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return
-    if not isinstance(messageJson['target'], str):
+    if not isinstance(message_json['target'], str):
         if debug:
             print('DEBUG: unbookmark Remove target is not string')
         return
-    domainFull = getFullDomain(domain, port)
-    if not messageJson['target'].endswith('://' + domainFull +
-                                          '/users/' + nickname +
-                                          '/tlbookmarks'):
+    domain_full = get_full_domain(domain, port)
+    if not message_json['target'].endswith('://' + domain_full +
+                                           '/users/' + nickname +
+                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: unbookmark Remove target invalid ' +
-                  messageJson['target'])
+                  message_json['target'])
         return
-    if messageJson['object']['type'] != 'Document':
+    if message_json['object']['type'] != 'Document':
         if debug:
             print('DEBUG: unbookmark Remove type is not Document')
         return
-    if not messageJson['object'].get('url'):
+    if not message_json['object'].get('url'):
         if debug:
             print('DEBUG: unbookmark Remove missing url')
         return
     if debug:
         print('DEBUG: c2s unbookmark Remove request arrived in outbox')
 
-    messageUrl = removeIdEnding(messageJson['object']['url'])
-    domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageUrl)
-    if not postFilename:
+    message_url = remove_id_ending(message_json['object']['url'])
+    domain = remove_domain_port(domain)
+    post_filename = locate_post(base_dir, nickname, domain, message_url)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s unbookmark post not found in inbox or outbox')
-            print(messageUrl)
+            print(message_url)
         return True
-    updateBookmarksCollection(recentPostsCache,
-                              baseDir, postFilename, messageUrl,
-                              messageJson['actor'], domain, debug)
+    update_bookmarks_collection(recent_posts_cache,
+                                base_dir, post_filename, message_url,
+                                message_json['actor'], domain, debug)
     if debug:
-        print('DEBUG: post unbookmarked via c2s - ' + postFilename)
+        print('DEBUG: post unbookmarked via c2s - ' + post_filename)

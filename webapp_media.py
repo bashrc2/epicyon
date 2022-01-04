@@ -8,31 +8,31 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
-from utils import validUrlPrefix
+from utils import valid_url_prefix
 
 
-def loadPeertubeInstances(baseDir: str, peertubeInstances: []) -> None:
+def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
     """Loads peertube instances from file into the given list
     """
-    peertubeList = None
-    peertubeInstancesFilename = baseDir + '/accounts/peertube.txt'
-    if os.path.isfile(peertubeInstancesFilename):
-        with open(peertubeInstancesFilename, 'r') as fp:
-            peertubeStr = fp.read()
-            if peertubeStr:
-                peertubeStr = peertubeStr.replace('\r', '')
-                peertubeList = peertubeStr.split('\n')
-    if not peertubeList:
+    peertube_list = None
+    peertube_instances_filename = base_dir + '/accounts/peertube.txt'
+    if os.path.isfile(peertube_instances_filename):
+        with open(peertube_instances_filename, 'r') as fp_inst:
+            peertube_str = fp_inst.read()
+            if peertube_str:
+                peertube_str = peertube_str.replace('\r', '')
+                peertube_list = peertube_str.split('\n')
+    if not peertube_list:
         return
-    for url in peertubeList:
-        if url in peertubeInstances:
+    for url in peertube_list:
+        if url in peertube_instances:
             continue
-        peertubeInstances.append(url)
+        peertube_instances.append(url)
 
 
-def _addEmbeddedVideoFromSites(translate: {}, content: str,
-                               peertubeInstances: [],
-                               width: int, height: int) -> str:
+def _add_embedded_video_from_sites(translate: {}, content: str,
+                                   peertube_instances: [],
+                                   width: int, height: int) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:
@@ -48,9 +48,9 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
                 "fullscreen\" allowfullscreen></iframe>\n</center>\n"
             return content
 
-    videoSite = 'https://www.youtube.com'
-    if '"' + videoSite in content:
-        url = content.split('"' + videoSite)[1]
+    video_site = 'https://www.youtube.com'
+    if '"' + video_site in content:
+        url = content.split('"' + video_site)[1]
         if '"' in url:
             url = url.split('"')[0].replace('/watch?v=', '/embed/')
             if '&' in url:
@@ -59,27 +59,29 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
                 url = url.split('?utm_')[0]
             content = \
                 content + "<center>\n<iframe loading=\"lazy\" src=\"" + \
-                videoSite + url + "\" width=\"" + str(width) + \
+                video_site + url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
                 "allowfullscreen></iframe>\n</center>\n"
             return content
 
-    invidiousSites = ('https://invidious.snopyta.org',
-                      'https://yewtu.be',
-                      'https://tube.connect.cafe',
-                      'https://invidious.kavin.rocks',
-                      'https://invidiou.site',
-                      'https://invidious.tube',
-                      'https://invidious.xyz',
-                      'https://invidious.zapashcanon.fr',
-                      'http://c7hqkpkpemu6e7emz5b4vy' +
-                      'z7idjgdvgaaa3dyimmeojqbgpea3xqjoid.onion',
-                      'http://axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
-                      'bzzsg2ii4fv2iid.onion')
-    for videoSite in invidiousSites:
-        if '"' + videoSite in content:
-            url = content.split('"' + videoSite)[1]
+    invidious_sites = (
+        'https://invidious.snopyta.org',
+        'https://yewtu.be',
+        'https://tube.connect.cafe',
+        'https://invidious.kavin.rocks',
+        'https://invidiou.site',
+        'https://invidious.tube',
+        'https://invidious.xyz',
+        'https://invidious.zapashcanon.fr',
+        'http://c7hqkpkpemu6e7emz5b4vy' +
+        'z7idjgdvgaaa3dyimmeojqbgpea3xqjoid.onion',
+        'http://axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
+        'bzzsg2ii4fv2iid.onion'
+    )
+    for video_site in invidious_sites:
+        if '"' + video_site in content:
+            url = content.split('"' + video_site)[1]
             if '"' in url:
                 url = url.split('"')[0].replace('/watch?v=', '/embed/')
                 if '&' in url:
@@ -88,44 +90,46 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
                     url = url.split('?utm_')[0]
                 content = \
                     content + "<center>\n<iframe loading=\"lazy\" src=\"" + \
-                    videoSite + url + "\" width=\"" + \
+                    video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
                     "allowfullscreen></iframe>\n</center>\n"
                 return content
 
-    videoSite = 'https://media.ccc.de'
-    if '"' + videoSite in content:
-        url = content.split('"' + videoSite)[1]
+    video_site = 'https://media.ccc.de'
+    if '"' + video_site in content:
+        url = content.split('"' + video_site)[1]
         if '"' in url:
             url = url.split('"')[0]
             if not url.endswith('/oembed'):
                 url = url + '/oembed'
             content = \
                 content + "<center>\n<iframe loading=\"lazy\" src=\"" + \
-                videoSite + url + "\" width=\"" + \
+                video_site + url + "\" width=\"" + \
                 str(width) + "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"fullscreen\" " + \
                 "allowfullscreen></iframe>\n</center>\n"
             return content
 
     if '"https://' in content:
-        if peertubeInstances:
+        if peertube_instances:
             # only create an embedded video for a limited set of
             # peertube sites.
-            peerTubeSites = peertubeInstances
+            peertube_sites = peertube_instances
         else:
             # A default minimal set of peertube instances
             # Also see https://peertube_isolation.frama.io/list/ for
             # adversarial instances. Nothing in that list should be
             # in the defaults below.
-            peerTubeSites = ('share.tube',
-                             'visionon.tv',
-                             'peertube.fr',
-                             'kolektiva.media',
-                             'peertube.social',
-                             'videos.lescommuns.org')
-        for site in peerTubeSites:
+            peertube_sites = (
+                'share.tube',
+                'visionon.tv',
+                'peertube.fr',
+                'kolektiva.media',
+                'peertube.social',
+                'videos.lescommuns.org'
+            )
+        for site in peertube_sites:
             site = site.strip()
             if not site:
                 continue
@@ -133,19 +137,19 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
                 continue
             if '.' not in site:
                 continue
-            siteStr = site
+            site_str = site
             if site.startswith('http://'):
                 site = site.replace('http://', '')
             elif site.startswith('https://'):
                 site = site.replace('https://', '')
             if site.endswith('.onion') or site.endswith('.i2p'):
-                siteStr = 'http://' + site
+                site_str = 'http://' + site
             else:
-                siteStr = 'https://' + site
-            siteStr = '"' + siteStr
-            if siteStr not in content:
+                site_str = 'https://' + site
+            site_str = '"' + site_str
+            if site_str not in content:
                 continue
-            url = content.split(siteStr)[1]
+            url = content.split(site_str)[1]
             if '"' not in url:
                 continue
             url = url.split('"')[0].replace('/watch/', '/embed/')
@@ -161,7 +165,7 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
     return content
 
 
-def _addEmbeddedAudio(translate: {}, content: str) -> str:
+def _add_embedded_audio(translate: {}, content: str) -> str:
     """Adds embedded audio for mp3/ogg
     """
     if not ('.mp3' in content or '.ogg' in content):
@@ -175,33 +179,33 @@ def _addEmbeddedAudio(translate: {}, content: str) -> str:
         extension = '.ogg'
 
     words = content.strip('\n').split(' ')
-    for w in words:
-        if extension not in w:
+    for wrd in words:
+        if extension not in wrd:
             continue
-        w = w.replace('href="', '').replace('">', '')
-        if w.endswith('.'):
-            w = w[:-1]
-        if w.endswith('"'):
-            w = w[:-1]
-        if w.endswith(';'):
-            w = w[:-1]
-        if w.endswith(':'):
-            w = w[:-1]
-        if not w.endswith(extension):
+        wrd = wrd.replace('href="', '').replace('">', '')
+        if wrd.endswith('.'):
+            wrd = wrd[:-1]
+        if wrd.endswith('"'):
+            wrd = wrd[:-1]
+        if wrd.endswith(';'):
+            wrd = wrd[:-1]
+        if wrd.endswith(':'):
+            wrd = wrd[:-1]
+        if not wrd.endswith(extension):
             continue
 
-        if not validUrlPrefix(w):
+        if not valid_url_prefix(wrd):
             continue
         content += \
             '<center>\n<audio controls>\n' + \
-            '<source src="' + w + '" type="audio/' + \
+            '<source src="' + wrd + '" type="audio/' + \
             extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
             '</audio>\n</center>\n'
     return content
 
 
-def _addEmbeddedVideo(translate: {}, content: str) -> str:
+def _add_embedded_video(translate: {}, content: str) -> str:
     """Adds embedded video for mp4/webm/ogv
     """
     if not ('.mp4' in content or '.webm' in content or '.ogv' in content):
@@ -217,39 +221,39 @@ def _addEmbeddedVideo(translate: {}, content: str) -> str:
         extension = '.ogv'
 
     words = content.strip('\n').split(' ')
-    for w in words:
-        if extension not in w:
+    for wrd in words:
+        if extension not in wrd:
             continue
-        w = w.replace('href="', '').replace('">', '')
-        if w.endswith('.'):
-            w = w[:-1]
-        if w.endswith('"'):
-            w = w[:-1]
-        if w.endswith(';'):
-            w = w[:-1]
-        if w.endswith(':'):
-            w = w[:-1]
-        if not w.endswith(extension):
+        wrd = wrd.replace('href="', '').replace('">', '')
+        if wrd.endswith('.'):
+            wrd = wrd[:-1]
+        if wrd.endswith('"'):
+            wrd = wrd[:-1]
+        if wrd.endswith(';'):
+            wrd = wrd[:-1]
+        if wrd.endswith(':'):
+            wrd = wrd[:-1]
+        if not wrd.endswith(extension):
             continue
-        if not validUrlPrefix(w):
+        if not valid_url_prefix(wrd):
             continue
         content += \
             '<center><figure id="videoContainer" ' + \
             'data-fullscreen="false">\n' + \
             '    <video id="video" controls ' + \
             'preload="metadata">\n' + \
-            '<source src="' + w + '" type="video/' + \
+            '<source src="' + wrd + '" type="video/' + \
             extension.replace('.', '') + '">\n' + \
             translate['Your browser does not support the video element.'] + \
             '</video>\n</figure>\n</center>\n'
     return content
 
 
-def addEmbeddedElements(translate: {}, content: str,
-                        peertubeInstances: []) -> str:
+def add_embedded_elements(translate: {}, content: str,
+                          peertube_instances: []) -> str:
     """Adds embedded elements for various media types
     """
-    content = _addEmbeddedVideoFromSites(translate, content,
-                                         peertubeInstances, 400, 300)
-    content = _addEmbeddedAudio(translate, content)
-    return _addEmbeddedVideo(translate, content)
+    content = _add_embedded_video_from_sites(translate, content,
+                                             peertube_instances, 400, 300)
+    content = _add_embedded_audio(translate, content)
+    return _add_embedded_video(translate, content)

@@ -8,86 +8,86 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import os
-from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
-from posts import getPersonBox
-from session import postJson
-from utils import hasObjectString
-from utils import getFullDomain
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
-from utils import loadJson
-from utils import getOccupationSkills
-from utils import setOccupationSkillsList
-from utils import acctDir
-from utils import localActorUrl
-from utils import hasActor
+from webfinger import webfinger_handle
+from auth import create_basic_auth_header
+from posts import get_person_box
+from session import post_json
+from utils import has_object_string
+from utils import get_full_domain
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import load_json
+from utils import get_occupation_skills
+from utils import set_occupation_skills_list
+from utils import acct_dir
+from utils import local_actor_url
+from utils import has_actor
 
 
-def setSkillsFromDict(actorJson: {}, skillsDict: {}) -> []:
+def set_skills_from_dict(actor_json: {}, skills_dict: {}) -> []:
     """Converts a dict containing skills to a list
     Returns the string version of the dictionary
     """
-    skillsList = []
-    for name, value in skillsDict.items():
-        skillsList.append(name + ':' + str(value))
-    setOccupationSkillsList(actorJson, skillsList)
-    return skillsList
+    skills_list = []
+    for name, value in skills_dict.items():
+        skills_list.append(name + ':' + str(value))
+    set_occupation_skills_list(actor_json, skills_list)
+    return skills_list
 
 
-def getSkillsFromList(skillsList: []) -> {}:
+def get_skills_from_list(skills_list: []) -> {}:
     """Returns a dict of skills from a list
     """
-    if isinstance(skillsList, list):
-        skillsList2 = skillsList
+    if isinstance(skills_list, list):
+        skills_list2 = skills_list
     else:
-        skillsList2 = skillsList.split(',')
-    skillsDict = {}
-    for skill in skillsList2:
+        skills_list2 = skills_list.split(',')
+    skills_dict = {}
+    for skill in skills_list2:
         if ':' not in skill:
             continue
         name = skill.split(':')[0].strip().lower()
-        valueStr = skill.split(':')[1]
-        if not valueStr.isdigit():
+        value_str = skill.split(':')[1]
+        if not value_str.isdigit():
             continue
-        skillsDict[name] = int(valueStr)
-    return skillsDict
+        skills_dict[name] = int(value_str)
+    return skills_dict
 
 
-def actorSkillValue(actorJson: {}, skillName: str) -> int:
+def actor_skill_value(actor_json: {}, skill_name: str) -> int:
     """Returns The skill level from an actor
     """
-    ocSkillsList = getOccupationSkills(actorJson)
-    skillsDict = getSkillsFromList(ocSkillsList)
-    if not skillsDict:
+    oc_skills_list = get_occupation_skills(actor_json)
+    skills_dict = get_skills_from_list(oc_skills_list)
+    if not skills_dict:
         return 0
-    skillName = skillName.lower()
-    if skillsDict.get(skillName):
-        return skillsDict[skillName]
+    skill_name = skill_name.lower()
+    if skills_dict.get(skill_name):
+        return skills_dict[skill_name]
     return 0
 
 
-def noOfActorSkills(actorJson: {}) -> int:
+def no_of_actor_skills(actor_json: {}) -> int:
     """Returns the number of skills that an actor has
     """
-    if actorJson.get('hasOccupation'):
-        skillsList = getOccupationSkills(actorJson)
-        return len(skillsList)
+    if actor_json.get('hasOccupation'):
+        skills_list = get_occupation_skills(actor_json)
+        return len(skills_list)
     return 0
 
 
-def setActorSkillLevel(actorJson: {},
-                       skill: str, skillLevelPercent: int) -> bool:
+def set_actor_skill_level(actor_json: {},
+                          skill: str, skill_level_percent: int) -> bool:
     """Set a skill level for a person
     Setting skill level to zero removes it
     """
-    if skillLevelPercent < 0 or skillLevelPercent > 100:
+    if skill_level_percent < 0 or skill_level_percent > 100:
         return False
 
-    if not actorJson:
+    if not actor_json:
         return True
-    if not actorJson.get('hasOccupation'):
-        actorJson['hasOccupation'] = [{
+    if not actor_json.get('hasOccupation'):
+        actor_json['hasOccupation'] = [{
             '@type': 'Occupation',
             'name': '',
             "occupationLocation": {
@@ -96,180 +96,180 @@ def setActorSkillLevel(actorJson: {},
             },
             'skills': []
         }]
-    ocSkillsList = getOccupationSkills(actorJson)
-    skillsDict = getSkillsFromList(ocSkillsList)
-    if not skillsDict.get(skill):
-        if len(skillsDict.items()) >= 32:
+    oc_skills_list = get_occupation_skills(actor_json)
+    skills_dict = get_skills_from_list(oc_skills_list)
+    if not skills_dict.get(skill):
+        if len(skills_dict.items()) >= 32:
             print('WARN: Maximum number of skills reached for ' +
-                  actorJson['id'])
+                  actor_json['id'])
             return False
-    if skillLevelPercent > 0:
-        skillsDict[skill] = skillLevelPercent
+    if skill_level_percent > 0:
+        skills_dict[skill] = skill_level_percent
     else:
-        if skillsDict.get(skill):
-            del skillsDict[skill]
-    setSkillsFromDict(actorJson, skillsDict)
+        if skills_dict.get(skill):
+            del skills_dict[skill]
+    set_skills_from_dict(actor_json, skills_dict)
     return True
 
 
-def setSkillLevel(baseDir: str, nickname: str, domain: str,
-                  skill: str, skillLevelPercent: int) -> bool:
+def set_skill_level(base_dir: str, nickname: str, domain: str,
+                    skill: str, skill_level_percent: int) -> bool:
     """Set a skill level for a person
     Setting skill level to zero removes it
     """
-    if skillLevelPercent < 0 or skillLevelPercent > 100:
+    if skill_level_percent < 0 or skill_level_percent > 100:
         return False
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
-    if not os.path.isfile(actorFilename):
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
         return False
 
-    actorJson = loadJson(actorFilename)
-    return setActorSkillLevel(actorJson,
-                              skill, skillLevelPercent)
+    actor_json = load_json(actor_filename)
+    return set_actor_skill_level(actor_json,
+                                 skill, skill_level_percent)
 
 
-def getSkills(baseDir: str, nickname: str, domain: str) -> []:
+def get_skills(base_dir: str, nickname: str, domain: str) -> []:
     """Returns the skills for a given person
     """
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
-    if not os.path.isfile(actorFilename):
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
         return False
 
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        if not actorJson.get('hasOccupation'):
+    actor_json = load_json(actor_filename)
+    if actor_json:
+        if not actor_json.get('hasOccupation'):
             return None
-        ocSkillsList = getOccupationSkills(actorJson)
-        return getSkillsFromList(ocSkillsList)
+        oc_skills_list = get_occupation_skills(actor_json)
+        return get_skills_from_list(oc_skills_list)
     return None
 
 
-def outboxSkills(baseDir: str, nickname: str, messageJson: {},
-                 debug: bool) -> bool:
+def outbox_skills(base_dir: str, nickname: str, message_json: {},
+                  debug: bool) -> bool:
     """Handles receiving a skills update
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return False
-    if not messageJson['type'] == 'Skill':
+    if not message_json['type'] == 'Skill':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasObjectString(messageJson, debug):
+    if not has_object_string(message_json, debug):
         return False
 
-    actorNickname = getNicknameFromActor(messageJson['actor'])
-    if actorNickname != nickname:
+    actor_nickname = get_nickname_from_actor(message_json['actor'])
+    if actor_nickname != nickname:
         return False
-    domain, port = getDomainFromActor(messageJson['actor'])
-    skill = messageJson['object'].replace('"', '').split(';')[0].strip()
-    skillLevelPercentStr = \
-        messageJson['object'].replace('"', '').split(';')[1].strip()
-    skillLevelPercent = 50
-    if skillLevelPercentStr.isdigit():
-        skillLevelPercent = int(skillLevelPercentStr)
+    domain, _ = get_domain_from_actor(message_json['actor'])
+    skill = message_json['object'].replace('"', '').split(';')[0].strip()
+    skill_level_percent_str = \
+        message_json['object'].replace('"', '').split(';')[1].strip()
+    skill_level_percent = 50
+    if skill_level_percent_str.isdigit():
+        skill_level_percent = int(skill_level_percent_str)
 
-    return setSkillLevel(baseDir, nickname, domain,
-                         skill, skillLevelPercent)
+    return set_skill_level(base_dir, nickname, domain,
+                           skill, skill_level_percent)
 
 
-def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
-                       domain: str, port: int,
-                       httpPrefix: str,
-                       skill: str, skillLevelPercent: int,
-                       cachedWebfingers: {}, personCache: {},
-                       debug: bool, projectVersion: str,
-                       signingPrivateKeyPem: str) -> {}:
+def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
+                          domain: str, port: int,
+                          http_prefix: str,
+                          skill: str, skill_level_percent: int,
+                          cached_webfingers: {}, person_cache: {},
+                          debug: bool, project_version: str,
+                          signing_priv_key_pem: str) -> {}:
     """Sets a skill for a person via c2s
     """
     if not session:
-        print('WARN: No session for sendSkillViaServer')
+        print('WARN: No session for send_skill_via_server')
         return 6
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
-    toUrl = actor
-    ccUrl = actor + '/followers'
+    actor = local_actor_url(http_prefix, nickname, domain_full)
+    to_url = actor
+    cc_url = actor + '/followers'
 
-    if skillLevelPercent:
-        skillStr = skill + ';' + str(skillLevelPercent)
+    if skill_level_percent:
+        skill_str = skill + ';' + str(skill_level_percent)
     else:
-        skillStr = skill + ';0'
+        skill_str = skill + ';0'
 
-    newSkillJson = {
+    new_skill_json = {
         'type': 'Skill',
         'actor': actor,
-        'object': '"' + skillStr + '"',
-        'to': [toUrl],
-        'cc': [ccUrl]
+        'object': '"' + skill_str + '"',
+        'to': [to_url],
+        'cc': [cc_url]
     }
 
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix,
-                        cachedWebfingers,
-                        domain, projectVersion, debug, False,
-                        signingPrivateKeyPem)
-    if not wfRequest:
+    wf_request = \
+        webfinger_handle(session, handle, http_prefix,
+                         cached_webfingers,
+                         domain, project_version, debug, False,
+                         signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: skill webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: skill webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
-                                    originDomain,
-                                    baseDir, session, wfRequest,
-                                    personCache, projectVersion,
-                                    httpPrefix, nickname, domain,
-                                    postToBox, 76121)
+    origin_domain = domain
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem,
+                            origin_domain,
+                            base_dir, session, wf_request,
+                            person_cache, project_version,
+                            http_prefix, nickname, domain,
+                            post_to_box, 76121)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: skill no ' + postToBox +
+            print('DEBUG: skill no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: skill no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = \
-        postJson(httpPrefix, domainFull,
-                 session, newSkillJson, [], inboxUrl,
-                 headers, 30, True)
-    if not postResult:
+    post_result = \
+        post_json(http_prefix, domain_full,
+                  session, new_skill_json, [], inbox_url,
+                  headers, 30, True)
+    if not post_result:
         if debug:
-            print('DEBUG: POST skill failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST skill failed for c2s to ' + inbox_url)
 #        return 5
 
     if debug:
         print('DEBUG: c2s POST skill success')
 
-    return newSkillJson
+    return new_skill_json
 
 
-def actorHasSkill(actorJson: {}, skillName: str) -> bool:
+def actor_has_skill(actor_json: {}, skill_name: str) -> bool:
     """Returns true if the given actor has the given skill
     """
-    ocSkillsList = getOccupationSkills(actorJson)
-    for skillStr in ocSkillsList:
-        if skillName + ':' in skillStr:
+    oc_skills_list = get_occupation_skills(actor_json)
+    for skill_str in oc_skills_list:
+        if skill_name + ':' in skill_str:
             return True
     return False

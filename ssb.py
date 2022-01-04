@@ -8,88 +8,88 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getSSBAddress(actorJson: {}) -> str:
+def get_ssb_address(actor_json: {}) -> str:
     """Returns ssb address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('ssb'):
+        if not property_value['name'].lower().startswith('ssb'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = propertyValue['value'].strip()
-        if not propertyValue['value'].startswith('@'):
+        property_value['value'] = property_value['value'].strip()
+        if not property_value['value'].startswith('@'):
             continue
-        if '=.' not in propertyValue['value']:
+        if '=.' not in property_value['value']:
             continue
-        if '"' in propertyValue['value']:
+        if '"' in property_value['value']:
             continue
-        if ' ' in propertyValue['value']:
+        if ' ' in property_value['value']:
             continue
-        if ',' in propertyValue['value']:
+        if ',' in property_value['value']:
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
-def setSSBAddress(actorJson: {}, ssbAddress: str) -> None:
+def set_ssb_address(actor_json: {}, ssb_address: str) -> None:
     """Sets an ssb address for the given actor
     """
-    notSSBAddress = False
-    if not ssbAddress.startswith('@'):
-        notSSBAddress = True
-    if '=.' not in ssbAddress:
-        notSSBAddress = True
-    if '"' in ssbAddress:
-        notSSBAddress = True
-    if ' ' in ssbAddress:
-        notSSBAddress = True
-    if ',' in ssbAddress:
-        notSSBAddress = True
-    if '<' in ssbAddress:
-        notSSBAddress = True
+    not_ssb_address = False
+    if not ssb_address.startswith('@'):
+        not_ssb_address = True
+    if '=.' not in ssb_address:
+        not_ssb_address = True
+    if '"' in ssb_address:
+        not_ssb_address = True
+    if ' ' in ssb_address:
+        not_ssb_address = True
+    if ',' in ssb_address:
+        not_ssb_address = True
+    if '<' in ssb_address:
+        not_ssb_address = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('ssb'):
+        if not property_value['name'].lower().startswith('ssb'):
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
-    if notSSBAddress:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_ssb_address:
         return
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('ssb'):
+        if not property_value['name'].lower().startswith('ssb'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = ssbAddress
+        property_value['value'] = ssb_address
         return
 
-    newSSBAddress = {
+    new_ssb_address = {
         "name": "SSB",
         "type": "PropertyValue",
-        "value": ssbAddress
+        "value": ssb_address
     }
-    actorJson['attachment'].append(newSSBAddress)
+    actor_json['attachment'].append(new_ssb_address)

@@ -8,93 +8,93 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getToxAddress(actorJson: {}) -> str:
+def get_tox_address(actor_json: {}) -> str:
     """Returns tox address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('tox'):
+        if not property_value['name'].lower().startswith('tox'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = propertyValue['value'].strip()
-        if len(propertyValue['value']) != 76:
+        property_value['value'] = property_value['value'].strip()
+        if len(property_value['value']) != 76:
             continue
-        if propertyValue['value'].upper() != propertyValue['value']:
+        if property_value['value'].upper() != property_value['value']:
             continue
-        if '"' in propertyValue['value']:
+        if '"' in property_value['value']:
             continue
-        if ' ' in propertyValue['value']:
+        if ' ' in property_value['value']:
             continue
-        if ',' in propertyValue['value']:
+        if ',' in property_value['value']:
             continue
-        if '.' in propertyValue['value']:
+        if '.' in property_value['value']:
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
-def setToxAddress(actorJson: {}, toxAddress: str) -> None:
+def set_tox_address(actor_json: {}, tox_address: str) -> None:
     """Sets an tox address for the given actor
     """
-    notToxAddress = False
+    not_tox_address = False
 
-    if len(toxAddress) != 76:
-        notToxAddress = True
-    if toxAddress.upper() != toxAddress:
-        notToxAddress = True
-    if '"' in toxAddress:
-        notToxAddress = True
-    if ' ' in toxAddress:
-        notToxAddress = True
-    if '.' in toxAddress:
-        notToxAddress = True
-    if ',' in toxAddress:
-        notToxAddress = True
-    if '<' in toxAddress:
-        notToxAddress = True
+    if len(tox_address) != 76:
+        not_tox_address = True
+    if tox_address.upper() != tox_address:
+        not_tox_address = True
+    if '"' in tox_address:
+        not_tox_address = True
+    if ' ' in tox_address:
+        not_tox_address = True
+    if '.' in tox_address:
+        not_tox_address = True
+    if ',' in tox_address:
+        not_tox_address = True
+    if '<' in tox_address:
+        not_tox_address = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('tox'):
+        if not property_value['name'].lower().startswith('tox'):
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
-    if notToxAddress:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_tox_address:
         return
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('tox'):
+        if not property_value['name'].lower().startswith('tox'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = toxAddress
+        property_value['value'] = tox_address
         return
 
-    newToxAddress = {
+    new_tox_address = {
         "name": "Tox",
         "type": "PropertyValue",
-        "value": toxAddress
+        "value": tox_address
     }
-    actorJson['attachment'].append(newToxAddress)
+    actor_json['attachment'].append(new_tox_address)

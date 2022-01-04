@@ -7,39 +7,39 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Moderation"
 
-from session import createSession
-from webfinger import webfingerHandle
-from posts import getPersonBox
-from posts import getPostDomains
-from utils import getFullDomain
+from session import create_session
+from webfinger import webfinger_handle
+from posts import get_person_box
+from posts import get_post_domains
+from utils import get_full_domain
 
 
-def instancesGraph(baseDir: str, handles: str,
-                   proxyType: str,
-                   port: int, httpPrefix: str,
-                   debug: bool, projectVersion: str,
-                   systemLanguage: str, signingPrivateKeyPem: str) -> str:
+def instances_graph(base_dir: str, handles: str,
+                    proxy_type: str,
+                    port: int, http_prefix: str,
+                    debug: bool, project_version: str,
+                    system_language: str, signing_priv_key_pem: str) -> str:
     """ Returns a dot graph of federating instances
     based upon a few sample handles.
     The handles argument should contain a comma separated list
     of handles on different instances
     """
-    dotGraphStr = 'digraph instances {\n'
+    dot_graph_str = 'digraph instances {\n'
     if ',' not in handles:
-        return dotGraphStr + '}\n'
-    session = createSession(proxyType)
+        return dot_graph_str + '}\n'
+    session = create_session(proxy_type)
     if not session:
-        return dotGraphStr + '}\n'
+        return dot_graph_str + '}\n'
 
-    personCache = {}
-    cachedWebfingers = {}
-    federationList = []
-    maxMentions = 99
-    maxEmoji = 99
-    maxAttachments = 5
+    person_cache = {}
+    cached_webfingers = {}
+    federation_list = []
+    max_mentions = 99
+    max_emoji = 99
+    max_attachments = 5
 
-    personHandles = handles.split(',')
-    for handle in personHandles:
+    person_handles = handles.split(',')
+    for handle in person_handles:
         handle = handle.strip()
         if handle.startswith('@'):
             handle = handle[1:]
@@ -49,40 +49,40 @@ def instancesGraph(baseDir: str, handles: str,
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
 
-        domainFull = getFullDomain(domain, port)
-        handle = httpPrefix + "://" + domainFull + "/@" + nickname
-        wfRequest = \
-            webfingerHandle(session, handle, httpPrefix,
-                            cachedWebfingers,
-                            domain, projectVersion, debug, False,
-                            signingPrivateKeyPem)
-        if not wfRequest:
-            return dotGraphStr + '}\n'
-        if not isinstance(wfRequest, dict):
+        domain_full = get_full_domain(domain, port)
+        handle = http_prefix + "://" + domain_full + "/@" + nickname
+        wf_request = \
+            webfinger_handle(session, handle, http_prefix,
+                             cached_webfingers,
+                             domain, project_version, debug, False,
+                             signing_priv_key_pem)
+        if not wf_request:
+            return dot_graph_str + '}\n'
+        if not isinstance(wf_request, dict):
             print('Webfinger for ' + handle + ' did not return a dict. ' +
-                  str(wfRequest))
-            return dotGraphStr + '}\n'
+                  str(wf_request))
+            return dot_graph_str + '}\n'
 
-        originDomain = None
-        (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
-         displayName, _) = getPersonBox(signingPrivateKeyPem,
-                                        originDomain,
-                                        baseDir, session, wfRequest,
-                                        personCache,
-                                        projectVersion, httpPrefix,
-                                        nickname, domain, 'outbox',
-                                        27261)
-        wordFrequency = {}
-        postDomains = \
-            getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
-                           maxAttachments, federationList,
-                           personCache, debug,
-                           projectVersion, httpPrefix, domain,
-                           wordFrequency, [], systemLanguage,
-                           signingPrivateKeyPem)
-        postDomains.sort()
-        for fedDomain in postDomains:
-            dotLineStr = '    "' + domain + '" -> "' + fedDomain + '";\n'
-            if dotLineStr not in dotGraphStr:
-                dotGraphStr += dotLineStr
-    return dotGraphStr + '}\n'
+        origin_domain = None
+        (person_url, _, _, _, _, _,
+         _, _) = get_person_box(signing_priv_key_pem,
+                                origin_domain,
+                                base_dir, session, wf_request,
+                                person_cache,
+                                project_version, http_prefix,
+                                nickname, domain, 'outbox',
+                                27261)
+        word_frequency = {}
+        post_domains = \
+            get_post_domains(session, person_url, 64, max_mentions, max_emoji,
+                             max_attachments, federation_list,
+                             person_cache, debug,
+                             project_version, http_prefix, domain,
+                             word_frequency, [], system_language,
+                             signing_priv_key_pem)
+        post_domains.sort()
+        for fed_domain in post_domains:
+            dot_line_str = '    "' + domain + '" -> "' + fed_domain + '";\n'
+            if dot_line_str not in dot_graph_str:
+                dot_graph_str += dot_line_str
+    return dot_graph_str + '}\n'

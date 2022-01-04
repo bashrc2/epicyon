@@ -7,39 +7,39 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-from utils import getFullDomain
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
-from utils import removeIdEnding
-from blocking import isBlocked
-from filters import isFiltered
+from utils import get_full_domain
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import remove_id_ending
+from blocking import is_blocked
+from filters import is_filtered
 
 
-def convertVideoToNote(baseDir: str, nickname: str, domain: str,
-                       systemLanguage: str,
-                       postJsonObject: {}, blockedCache: {}) -> {}:
+def convert_video_to_note(base_dir: str, nickname: str, domain: str,
+                          system_language: str,
+                          post_json_object: {}, blocked_cache: {}) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into
     a Note, so that it can then be displayed in a timeline
     """
     # check that the required fields are present
-    requiredFields = (
+    required_fields = (
         'type', '@context', 'id', 'published', 'to', 'cc',
         'attributedTo', 'commentsEnabled', 'content', 'sensitive',
         'name', 'url'
     )
-    for fieldName in requiredFields:
-        if not postJsonObject.get(fieldName):
+    for field_name in required_fields:
+        if not post_json_object.get(field_name):
             return None
 
-    if postJsonObject['type'] != 'Video':
+    if post_json_object['type'] != 'Video':
         return None
 
     # who is this attributed to ?
-    attributedTo = None
-    if isinstance(postJsonObject['attributedTo'], str):
-        attributedTo = postJsonObject['attributedTo']
-    elif isinstance(postJsonObject['attributedTo'], list):
-        for entity in postJsonObject['attributedTo']:
+    attributed_to = None
+    if isinstance(post_json_object['attributedTo'], str):
+        attributed_to = post_json_object['attributedTo']
+    elif isinstance(post_json_object['attributedTo'], list):
+        for entity in post_json_object['attributedTo']:
             if not isinstance(entity, dict):
                 continue
             if not entity.get('type'):
@@ -48,131 +48,131 @@ def convertVideoToNote(baseDir: str, nickname: str, domain: str,
                 continue
             if not entity.get('id'):
                 continue
-            attributedTo = entity['id']
+            attributed_to = entity['id']
             break
-    if not attributedTo:
+    if not attributed_to:
         return None
 
     # get the language of the video
-    postLanguage = systemLanguage
-    if postJsonObject.get('language'):
-        if isinstance(postJsonObject['language'], dict):
-            if postJsonObject['language'].get('identifier'):
-                postLanguage = postJsonObject['language']['identifier']
+    post_language = system_language
+    if post_json_object.get('language'):
+        if isinstance(post_json_object['language'], dict):
+            if post_json_object['language'].get('identifier'):
+                post_language = post_json_object['language']['identifier']
 
     # check that the attributed actor is not blocked
-    postNickname = getNicknameFromActor(attributedTo)
-    if not postNickname:
+    post_nickname = get_nickname_from_actor(attributed_to)
+    if not post_nickname:
         return None
-    postDomain, postDomainPort = getDomainFromActor(attributedTo)
-    if not postDomain:
+    post_domain, post_domain_port = get_domain_from_actor(attributed_to)
+    if not post_domain:
         return None
-    postDomainFull = getFullDomain(postDomain, postDomainPort)
-    if isBlocked(baseDir, nickname, domain,
-                 postNickname, postDomainFull, blockedCache):
+    post_domain_full = get_full_domain(post_domain, post_domain_port)
+    if is_blocked(base_dir, nickname, domain,
+                  post_nickname, post_domain_full, blocked_cache):
         return None
 
     # check that the content is valid
-    if isFiltered(baseDir, nickname, domain, postJsonObject['name']):
+    if is_filtered(base_dir, nickname, domain, post_json_object['name']):
         return None
-    if isFiltered(baseDir, nickname, domain, postJsonObject['content']):
+    if is_filtered(base_dir, nickname, domain, post_json_object['content']):
         return None
 
     # get the content
-    content = '<p><b>' + postJsonObject['name'] + '</b></p>'
-    if postJsonObject.get('license'):
-        if isinstance(postJsonObject['license'], dict):
-            if postJsonObject['license'].get('name'):
-                if isFiltered(baseDir, nickname, domain,
-                              postJsonObject['license']['name']):
+    content = '<p><b>' + post_json_object['name'] + '</b></p>'
+    if post_json_object.get('license'):
+        if isinstance(post_json_object['license'], dict):
+            if post_json_object['license'].get('name'):
+                if is_filtered(base_dir, nickname, domain,
+                               post_json_object['license']['name']):
                     return None
-                content += '<p>' + postJsonObject['license']['name'] + '</p>'
-    content += postJsonObject['content']
+                content += '<p>' + post_json_object['license']['name'] + '</p>'
+    content += post_json_object['content']
 
-    conversationId = removeIdEnding(postJsonObject['id'])
+    conversation_id = remove_id_ending(post_json_object['id'])
 
-    mediaType = None
-    mediaUrl = None
-    mediaTorrent = None
-    mediaMagnet = None
-    for mediaLink in postJsonObject['url']:
-        if not isinstance(mediaLink, dict):
+    media_type = None
+    media_url = None
+    media_torrent = None
+    media_magnet = None
+    for media_link in post_json_object['url']:
+        if not isinstance(media_link, dict):
             continue
-        if not mediaLink.get('mediaType'):
+        if not media_link.get('mediaType'):
             continue
-        if not mediaLink.get('href'):
+        if not media_link.get('href'):
             continue
-        if mediaLink['mediaType'] == 'application/x-bittorrent':
-            mediaTorrent = mediaLink['href']
-        if mediaLink['href'].startswith('magnet:'):
-            mediaMagnet = mediaLink['href']
-        if mediaLink['mediaType'] != 'video/mp4' and \
-           mediaLink['mediaType'] != 'video/ogv':
+        if media_link['mediaType'] == 'application/x-bittorrent':
+            media_torrent = media_link['href']
+        if media_link['href'].startswith('magnet:'):
+            media_magnet = media_link['href']
+        if media_link['mediaType'] != 'video/mp4' and \
+           media_link['mediaType'] != 'video/ogv':
             continue
-        if not mediaUrl:
-            mediaType = mediaLink['mediaType']
-            mediaUrl = mediaLink['href']
+        if not media_url:
+            media_type = media_link['mediaType']
+            media_url = media_link['href']
 
-    if not mediaUrl:
+    if not media_url:
         return None
 
     attachment = [{
-            'mediaType': mediaType,
-            'name': postJsonObject['content'],
+            'mediaType': media_type,
+            'name': post_json_object['content'],
             'type': 'Document',
-            'url': mediaUrl
+            'url': media_url
     }]
 
-    if mediaTorrent or mediaMagnet:
+    if media_torrent or media_magnet:
         content += '<p>'
-        if mediaTorrent:
-            content += '<a href="' + mediaTorrent + '">⇓</a> '
-        if mediaMagnet:
-            content += '<a href="' + mediaMagnet + '">🧲</a>'
+        if media_torrent:
+            content += '<a href="' + media_torrent + '">⇓</a> '
+        if media_magnet:
+            content += '<a href="' + media_magnet + '">🧲</a>'
         content += '</p>'
 
-    newPostId = removeIdEnding(postJsonObject['id'])
-    newPost = {
-        '@context': postJsonObject['@context'],
-        'id': newPostId + '/activity',
+    new_post_id = remove_id_ending(post_json_object['id'])
+    new_post = {
+        '@context': post_json_object['@context'],
+        'id': new_post_id + '/activity',
         'type': 'Create',
-        'actor': attributedTo,
-        'published': postJsonObject['published'],
-        'to': postJsonObject['to'],
-        'cc': postJsonObject['cc'],
+        'actor': attributed_to,
+        'published': post_json_object['published'],
+        'to': post_json_object['to'],
+        'cc': post_json_object['cc'],
         'object': {
-            'id': newPostId,
-            'conversation': conversationId,
+            'id': new_post_id,
+            'conversation': conversation_id,
             'type': 'Note',
             'summary': None,
             'inReplyTo': None,
-            'published': postJsonObject['published'],
-            'url': newPostId,
-            'attributedTo': attributedTo,
-            'to': postJsonObject['to'],
-            'cc': postJsonObject['cc'],
-            'sensitive': postJsonObject['sensitive'],
-            'atomUri': newPostId,
+            'published': post_json_object['published'],
+            'url': new_post_id,
+            'attributedTo': attributed_to,
+            'to': post_json_object['to'],
+            'cc': post_json_object['cc'],
+            'sensitive': post_json_object['sensitive'],
+            'atomUri': new_post_id,
             'inReplyToAtomUri': None,
-            'commentsEnabled': postJsonObject['commentsEnabled'],
-            'rejectReplies': not postJsonObject['commentsEnabled'],
+            'commentsEnabled': post_json_object['commentsEnabled'],
+            'rejectReplies': not post_json_object['commentsEnabled'],
             'mediaType': 'text/html',
             'content': content,
             'contentMap': {
-                postLanguage: content
+                post_language: content
             },
             'attachment': attachment,
             'tag': [],
             'replies': {
-                'id': newPostId + '/replies',
+                'id': new_post_id + '/replies',
                 'type': 'Collection',
                 'first': {
                     'type': 'CollectionPage',
-                    'partOf': newPostId + '/replies',
+                    'partOf': new_post_id + '/replies',
                     'items': []
                 }
             }
         }
     }
 
-    return newPost
+    return new_post

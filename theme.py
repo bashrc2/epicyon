@@ -8,100 +8,100 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from utils import isAccountDir
-from utils import loadJson
-from utils import saveJson
-from utils import getImageExtensions
+from utils import is_account_dir
+from utils import load_json
+from utils import save_json
+from utils import get_image_extensions
 from utils import copytree
-from utils import acctDir
-from utils import dangerousSVG
-from utils import localActorUrl
+from utils import acct_dir
+from utils import dangerous_svg
+from utils import local_actor_url
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
 from shutil import rmtree
-from content import dangerousCSS
+from content import dangerous_css
 
 
-def importTheme(baseDir: str, filename: str) -> bool:
+def import_theme(base_dir: str, filename: str) -> bool:
     """Imports a theme
     """
     if not os.path.isfile(filename):
         return False
-    tempThemeDir = baseDir + '/imports/files'
-    if os.path.isdir(tempThemeDir):
-        rmtree(tempThemeDir, ignore_errors=False, onerror=None)
-    os.mkdir(tempThemeDir)
-    unpack_archive(filename, tempThemeDir, 'zip')
-    essentialThemeFiles = ('name.txt', 'theme.json')
-    for themeFile in essentialThemeFiles:
-        if not os.path.isfile(tempThemeDir + '/' + themeFile):
-            print('WARN: ' + themeFile +
+    temp_theme_dir = base_dir + '/imports/files'
+    if os.path.isdir(temp_theme_dir):
+        rmtree(temp_theme_dir, ignore_errors=False, onerror=None)
+    os.mkdir(temp_theme_dir)
+    unpack_archive(filename, temp_theme_dir, 'zip')
+    essential_theme_files = ('name.txt', 'theme.json')
+    for theme_file in essential_theme_files:
+        if not os.path.isfile(temp_theme_dir + '/' + theme_file):
+            print('WARN: ' + theme_file +
                   ' missing from imported theme')
             return False
-    newThemeName = None
-    with open(tempThemeDir + '/name.txt', 'r') as fp:
-        newThemeName = fp.read().replace('\n', '').replace('\r', '')
-        if len(newThemeName) > 20:
+    new_theme_name = None
+    with open(temp_theme_dir + '/name.txt', 'r') as fp_theme:
+        new_theme_name = fp_theme.read().replace('\n', '').replace('\r', '')
+        if len(new_theme_name) > 20:
             print('WARN: Imported theme name is too long')
             return False
-        if len(newThemeName) < 2:
+        if len(new_theme_name) < 2:
             print('WARN: Imported theme name is too short')
             return False
-        newThemeName = newThemeName.lower()
-        forbiddenChars = (
+        new_theme_name = new_theme_name.lower()
+        forbidden_chars = (
             ' ', ';', '/', '\\', '?', '!', '#', '@',
             ':', '%', '&', '"', '+', '<', '>', '$'
         )
-        for ch in forbiddenChars:
-            if ch in newThemeName:
+        for char in forbidden_chars:
+            if char in new_theme_name:
                 print('WARN: theme name contains forbidden character')
                 return False
-    if not newThemeName:
+    if not new_theme_name:
         return False
 
     # if the theme name in the default themes list?
-    defaultThemesFilename = baseDir + '/defaultthemes.txt'
-    if os.path.isfile(defaultThemesFilename):
-        if newThemeName.title() + '\n' in open(defaultThemesFilename).read():
-            newThemeName = newThemeName + '2'
+    default_themes_filename = base_dir + '/defaultthemes.txt'
+    if os.path.isfile(default_themes_filename):
+        if new_theme_name.title() + '\n' in \
+           open(default_themes_filename).read():
+            new_theme_name = new_theme_name + '2'
 
-    themeDir = baseDir + '/theme/' + newThemeName
-    if not os.path.isdir(themeDir):
-        os.mkdir(themeDir)
-    copytree(tempThemeDir, themeDir)
-    if os.path.isdir(tempThemeDir):
-        rmtree(tempThemeDir, ignore_errors=False, onerror=None)
-    if scanThemesForScripts(themeDir):
-        rmtree(themeDir, ignore_errors=False, onerror=None)
+    theme_dir = base_dir + '/theme/' + new_theme_name
+    if not os.path.isdir(theme_dir):
+        os.mkdir(theme_dir)
+    copytree(temp_theme_dir, theme_dir)
+    if os.path.isdir(temp_theme_dir):
+        rmtree(temp_theme_dir, ignore_errors=False, onerror=None)
+    if scan_themes_for_scripts(theme_dir):
+        rmtree(theme_dir, ignore_errors=False, onerror=None)
         return False
-    return os.path.isfile(themeDir + '/theme.json')
+    return os.path.isfile(theme_dir + '/theme.json')
 
 
-def exportTheme(baseDir: str, theme: str) -> bool:
+def export_theme(base_dir: str, theme: str) -> bool:
     """Exports a theme as a zip file
     """
-    themeDir = baseDir + '/theme/' + theme
-    if not os.path.isfile(themeDir + '/theme.json'):
+    theme_dir = base_dir + '/theme/' + theme
+    if not os.path.isfile(theme_dir + '/theme.json'):
         return False
-    if not os.path.isdir(baseDir + '/exports'):
-        os.mkdir(baseDir + '/exports')
-    exportFilename = baseDir + '/exports/' + theme + '.zip'
-    if os.path.isfile(exportFilename):
+    if not os.path.isdir(base_dir + '/exports'):
+        os.mkdir(base_dir + '/exports')
+    export_filename = base_dir + '/exports/' + theme + '.zip'
+    if os.path.isfile(export_filename):
         try:
-            os.remove(exportFilename)
+            os.remove(export_filename)
         except OSError:
-            print('EX: exportTheme unable to delete ' + str(exportFilename))
+            print('EX: export_theme unable to delete ' + str(export_filename))
     try:
-        make_archive(baseDir + '/exports/' + theme, 'zip', themeDir)
+        make_archive(base_dir + '/exports/' + theme, 'zip', theme_dir)
     except BaseException:
-        print('EX: exportTheme unable to archive ' +
-              baseDir + '/exports/' + str(theme))
-        pass
-    return os.path.isfile(exportFilename)
+        print('EX: export_theme unable to archive ' +
+              base_dir + '/exports/' + str(theme))
+    return os.path.isfile(export_filename)
 
 
-def _getThemeFiles() -> []:
+def _get_theme_files() -> []:
     """Gets the list of theme style sheets
     """
     return ('epicyon.css', 'login.css', 'follow.css',
@@ -110,165 +110,166 @@ def _getThemeFiles() -> []:
             'welcome.css', 'graph.css')
 
 
-def isNewsThemeName(baseDir: str, themeName: str) -> bool:
+def is_news_theme_name(base_dir: str, theme_name: str) -> bool:
     """Returns true if the given theme is a news instance
     """
-    themeDir = baseDir + '/theme/' + themeName
-    if os.path.isfile(themeDir + '/is_news_instance'):
+    theme_dir = base_dir + '/theme/' + theme_name
+    if os.path.isfile(theme_dir + '/is_news_instance'):
         return True
     return False
 
 
-def getThemesList(baseDir: str) -> []:
+def get_themes_list(base_dir: str) -> []:
     """Returns the list of available themes
     Note that these should be capitalized, since they're
     also used to create the web interface dropdown list
     and to lookup function names
     """
     themes = []
-    for subdir, dirs, files in os.walk(baseDir + '/theme'):
-        for themeName in dirs:
-            if '~' not in themeName and \
-               themeName != 'icons' and themeName != 'fonts':
-                themes.append(themeName.title())
+    for _, dirs, _ in os.walk(base_dir + '/theme'):
+        for theme_name in dirs:
+            if '~' not in theme_name and \
+               theme_name != 'icons' and theme_name != 'fonts':
+                themes.append(theme_name.title())
         break
     themes.sort()
     print('Themes available: ' + str(themes))
     return themes
 
 
-def _copyThemeHelpFiles(baseDir: str, themeName: str,
-                        systemLanguage: str) -> None:
+def _copy_theme_help_files(base_dir: str, theme_name: str,
+                           system_language: str) -> None:
     """Copies any theme specific help files from the welcome subdirectory
     """
-    if not systemLanguage:
-        systemLanguage = 'en'
-    themeDir = baseDir + '/theme/' + themeName + '/welcome'
-    if not os.path.isdir(themeDir):
-        themeDir = baseDir + '/defaultwelcome'
-    for subdir, dirs, files in os.walk(themeDir):
-        for helpMarkdownFile in files:
-            if not helpMarkdownFile.endswith('_' + systemLanguage + '.md'):
+    if not system_language:
+        system_language = 'en'
+    theme_dir = base_dir + '/theme/' + theme_name + '/welcome'
+    if not os.path.isdir(theme_dir):
+        theme_dir = base_dir + '/defaultwelcome'
+    for _, _, files in os.walk(theme_dir):
+        for help_markdown_file in files:
+            if not help_markdown_file.endswith('_' + system_language + '.md'):
                 continue
-            destHelpMarkdownFile = \
-                helpMarkdownFile.replace('_' + systemLanguage + '.md', '.md')
-            if destHelpMarkdownFile == 'profile.md' or \
-               destHelpMarkdownFile == 'final.md':
-                destHelpMarkdownFile = 'welcome_' + destHelpMarkdownFile
-            if os.path.isdir(baseDir + '/accounts'):
-                copyfile(themeDir + '/' + helpMarkdownFile,
-                         baseDir + '/accounts/' + destHelpMarkdownFile)
+            dest_help_markdown_file = \
+                help_markdown_file.replace('_' + system_language + '.md',
+                                           '.md')
+            if dest_help_markdown_file in ('profile.md', 'final.md'):
+                dest_help_markdown_file = 'welcome_' + dest_help_markdown_file
+            if os.path.isdir(base_dir + '/accounts'):
+                copyfile(theme_dir + '/' + help_markdown_file,
+                         base_dir + '/accounts/' + dest_help_markdown_file)
         break
 
 
-def _setThemeInConfig(baseDir: str, name: str) -> bool:
+def _set_theme_in_config(base_dir: str, name: str) -> bool:
     """Sets the theme with the given name within config.json
     """
-    configFilename = baseDir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['theme'] = name
-    return saveJson(configJson, configFilename)
+    config_json['theme'] = name
+    return save_json(config_json, config_filename)
 
 
-def _setNewswirePublishAsIcon(baseDir: str, useIcon: bool) -> bool:
+def _set_newswire_publish_as_icon(base_dir: str, use_icon: bool) -> bool:
     """Shows the newswire publish action as an icon or a button
     """
-    configFilename = baseDir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['showPublishAsIcon'] = useIcon
-    return saveJson(configJson, configFilename)
+    config_json['showPublishAsIcon'] = use_icon
+    return save_json(config_json, config_filename)
 
 
-def _setIconsAsButtons(baseDir: str, useButtons: bool) -> bool:
+def _set_icons_as_buttons(base_dir: str, use_buttons: bool) -> bool:
     """Whether to show icons in the header (inbox, outbox, etc)
     as buttons
     """
-    configFilename = baseDir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['iconsAsButtons'] = useButtons
-    return saveJson(configJson, configFilename)
+    config_json['iconsAsButtons'] = use_buttons
+    return save_json(config_json, config_filename)
 
 
-def _setRssIconAtTop(baseDir: str, atTop: bool) -> bool:
+def _set_rss_icon_at_top(base_dir: str, at_top: bool) -> bool:
     """Whether to show RSS icon at the top of the timeline
     """
-    configFilename = baseDir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['rssIconAtTop'] = atTop
-    return saveJson(configJson, configFilename)
+    config_json['rssIconAtTop'] = at_top
+    return save_json(config_json, config_filename)
 
 
-def _setPublishButtonAtTop(baseDir: str, atTop: bool) -> bool:
+def _set_publish_button_at_top(base_dir: str, at_top: bool) -> bool:
     """Whether to show the publish button above the title image
     in the newswire column
     """
-    configFilename = baseDir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['publishButtonAtTop'] = atTop
-    return saveJson(configJson, configFilename)
+    config_json['publishButtonAtTop'] = at_top
+    return save_json(config_json, config_filename)
 
 
-def _setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
+def _set_full_width_timeline_button_header(base_dir: str,
+                                           full_width: bool) -> bool:
     """Shows the timeline button header containing inbox, outbox,
     calendar, etc as full width
     """
-    configFilename = baseDir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['fullWidthTimelineButtonHeader'] = fullWidth
-    return saveJson(configJson, configFilename)
+    config_json['fullWidthTlButtonHeader'] = full_width
+    return save_json(config_json, config_filename)
 
 
-def getTheme(baseDir: str) -> str:
+def get_theme(base_dir: str) -> str:
     """Gets the current theme name from config.json
     """
-    configFilename = baseDir + '/config.json'
-    if os.path.isfile(configFilename):
-        configJson = loadJson(configFilename, 0)
-        if configJson:
-            if configJson.get('theme'):
-                return configJson['theme']
+    config_filename = base_dir + '/config.json'
+    if os.path.isfile(config_filename):
+        config_json = load_json(config_filename, 0)
+        if config_json:
+            if config_json.get('theme'):
+                return config_json['theme']
     return 'default'
 
 
-def _removeTheme(baseDir: str):
+def _remove_theme(base_dir: str):
     """Removes the current theme style sheets
     """
-    themeFiles = _getThemeFiles()
-    for filename in themeFiles:
-        if not os.path.isfile(baseDir + '/' + filename):
+    theme_files = _get_theme_files()
+    for filename in theme_files:
+        if not os.path.isfile(base_dir + '/' + filename):
             continue
         try:
-            os.remove(baseDir + '/' + filename)
+            os.remove(base_dir + '/' + filename)
         except OSError:
-            print('EX: _removeTheme unable to delete ' +
-                  baseDir + '/' + filename)
+            print('EX: _remove_theme unable to delete ' +
+                  base_dir + '/' + filename)
 
 
-def setCSSparam(css: str, param: str, value: str) -> str:
+def set_cs_sparam(css: str, param: str, value: str) -> str:
     """Sets a CSS parameter to a given value
     """
     # is this just a simple string replacement?
@@ -278,281 +279,283 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     if param.startswith('rgba('):
         return css.replace(param, value)
     # if the parameter begins with * then don't prepend --
-    onceOnly = False
+    once_only = False
     if param.startswith('*'):
         if param.startswith('**'):
-            onceOnly = True
-            searchStr = param.replace('**', '') + ':'
+            once_only = True
+            search_str = param.replace('**', '') + ':'
         else:
-            searchStr = param.replace('*', '') + ':'
+            search_str = param.replace('*', '') + ':'
     else:
-        searchStr = '--' + param + ':'
-    if searchStr not in css:
+        search_str = '--' + param + ':'
+    if search_str not in css:
         return css
-    if onceOnly:
-        s = css.split(searchStr, 1)
+    if once_only:
+        sstr = css.split(search_str, 1)
     else:
-        s = css.split(searchStr)
+        sstr = css.split(search_str)
     newcss = ''
-    for sectionStr in s:
+    for section_str in sstr:
         # handle font-family which is a variable
-        nextSection = sectionStr
-        if ';' in nextSection:
-            nextSection = nextSection.split(';')[0] + ';'
-        if searchStr == 'font-family:' and "var(--" in nextSection:
-            newcss += searchStr + ' ' + sectionStr
+        next_section = section_str
+        if ';' in next_section:
+            next_section = next_section.split(';')[0] + ';'
+        if search_str == 'font-family:' and "var(--" in next_section:
+            newcss += search_str + ' ' + section_str
             continue
 
         if not newcss:
-            if sectionStr:
-                newcss = sectionStr
+            if section_str:
+                newcss = section_str
             else:
                 newcss = ' '
         else:
-            if ';' in sectionStr:
+            if ';' in section_str:
                 newcss += \
-                    searchStr + ' ' + value + ';' + sectionStr.split(';', 1)[1]
+                    search_str + ' ' + value + ';' + \
+                    section_str.split(';', 1)[1]
             else:
-                newcss += searchStr + ' ' + sectionStr
+                newcss += search_str + ' ' + section_str
     return newcss.strip()
 
 
-def _setThemeFromDict(baseDir: str, name: str,
-                      themeParams: {}, bgParams: {},
-                      allowLocalNetworkAccess: bool) -> None:
+def _set_theme_from_dict(base_dir: str, name: str,
+                         theme_params: {}, bg_params: {},
+                         allow_local_network_access: bool) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
-        _setThemeInConfig(baseDir, name)
-    themeFiles = _getThemeFiles()
-    for filename in themeFiles:
+        _set_theme_in_config(base_dir, name)
+    theme_files = _get_theme_files()
+    for filename in theme_files:
         # check for custom css within the theme directory
-        templateFilename = baseDir + '/theme/' + name + '/epicyon-' + filename
+        template_filename = \
+            base_dir + '/theme/' + name + '/epicyon-' + filename
         if filename == 'epicyon.css':
-            templateFilename = \
-                baseDir + '/theme/' + name + '/epicyon-profile.css'
+            template_filename = \
+                base_dir + '/theme/' + name + '/epicyon-profile.css'
 
         # Ensure that any custom CSS is mostly harmless.
         # If not then just use the defaults
-        if dangerousCSS(templateFilename, allowLocalNetworkAccess) or \
-           not os.path.isfile(templateFilename):
+        if dangerous_css(template_filename, allow_local_network_access) or \
+           not os.path.isfile(template_filename):
             # use default css
-            templateFilename = baseDir + '/epicyon-' + filename
+            template_filename = base_dir + '/epicyon-' + filename
             if filename == 'epicyon.css':
-                templateFilename = baseDir + '/epicyon-profile.css'
+                template_filename = base_dir + '/epicyon-profile.css'
 
-        if not os.path.isfile(templateFilename):
+        if not os.path.isfile(template_filename):
             continue
 
-        with open(templateFilename, 'r') as cssfile:
+        with open(template_filename, 'r') as cssfile:
             css = cssfile.read()
-            for paramName, paramValue in themeParams.items():
-                if paramName == 'newswire-publish-icon':
-                    if paramValue.lower() == 'true':
-                        _setNewswirePublishAsIcon(baseDir, True)
+            for param_name, param_value in theme_params.items():
+                if param_name == 'newswire-publish-icon':
+                    if param_value.lower() == 'true':
+                        _set_newswire_publish_as_icon(base_dir, True)
                     else:
-                        _setNewswirePublishAsIcon(baseDir, False)
+                        _set_newswire_publish_as_icon(base_dir, False)
                     continue
-                elif paramName == 'full-width-timeline-buttons':
-                    if paramValue.lower() == 'true':
-                        _setFullWidthTimelineButtonHeader(baseDir, True)
+                if param_name == 'full-width-timeline-buttons':
+                    if param_value.lower() == 'true':
+                        _set_full_width_timeline_button_header(base_dir, True)
                     else:
-                        _setFullWidthTimelineButtonHeader(baseDir, False)
+                        _set_full_width_timeline_button_header(base_dir, False)
                     continue
-                elif paramName == 'icons-as-buttons':
-                    if paramValue.lower() == 'true':
-                        _setIconsAsButtons(baseDir, True)
+                if param_name == 'icons-as-buttons':
+                    if param_value.lower() == 'true':
+                        _set_icons_as_buttons(base_dir, True)
                     else:
-                        _setIconsAsButtons(baseDir, False)
+                        _set_icons_as_buttons(base_dir, False)
                     continue
-                elif paramName == 'rss-icon-at-top':
-                    if paramValue.lower() == 'true':
-                        _setRssIconAtTop(baseDir, True)
+                if param_name == 'rss-icon-at-top':
+                    if param_value.lower() == 'true':
+                        _set_rss_icon_at_top(base_dir, True)
                     else:
-                        _setRssIconAtTop(baseDir, False)
+                        _set_rss_icon_at_top(base_dir, False)
                     continue
-                elif paramName == 'publish-button-at-top':
-                    if paramValue.lower() == 'true':
-                        _setPublishButtonAtTop(baseDir, True)
+                if param_name == 'publish-button-at-top':
+                    if param_value.lower() == 'true':
+                        _set_publish_button_at_top(base_dir, True)
                     else:
-                        _setPublishButtonAtTop(baseDir, False)
+                        _set_publish_button_at_top(base_dir, False)
                     continue
-                css = setCSSparam(css, paramName, paramValue)
-            filename = baseDir + '/' + filename
+                css = set_cs_sparam(css, param_name, param_value)
+            filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
-    screenName = (
+    screen_name = (
         'login', 'follow', 'options', 'search', 'welcome'
     )
-    for s in screenName:
-        if bgParams.get(s):
-            _setBackgroundFormat(baseDir, name, s, bgParams[s])
+    for scr in screen_name:
+        if bg_params.get(scr):
+            _set_background_format(base_dir, name, scr, bg_params[scr])
 
 
-def _setBackgroundFormat(baseDir: str, name: str,
-                         backgroundType: str, extension: str) -> None:
+def _set_background_format(base_dir: str, name: str,
+                           background_type: str, extension: str) -> None:
     """Sets the background file extension
     """
     if extension == 'jpg':
         return
-    cssFilename = baseDir + '/' + backgroundType + '.css'
-    if not os.path.isfile(cssFilename):
+    css_filename = base_dir + '/' + background_type + '.css'
+    if not os.path.isfile(css_filename):
         return
-    with open(cssFilename, 'r') as cssfile:
+    with open(css_filename, 'r') as cssfile:
         css = cssfile.read()
         css = css.replace('background.jpg', 'background.' + extension)
-        with open(cssFilename, 'w+') as cssfile2:
+        with open(css_filename, 'w+') as cssfile2:
             cssfile2.write(css)
 
 
-def enableGrayscale(baseDir: str) -> None:
+def enable_grayscale(base_dir: str) -> None:
     """Enables grayscale for the current theme
     """
-    themeFiles = _getThemeFiles()
-    for filename in themeFiles:
-        templateFilename = baseDir + '/' + filename
-        if not os.path.isfile(templateFilename):
+    theme_files = _get_theme_files()
+    for filename in theme_files:
+        template_filename = base_dir + '/' + filename
+        if not os.path.isfile(template_filename):
             continue
-        with open(templateFilename, 'r') as cssfile:
+        with open(template_filename, 'r') as cssfile:
             css = cssfile.read()
             if 'grayscale' not in css:
                 css = \
                     css.replace('body, html {',
                                 'body, html {\n    filter: grayscale(100%);')
-                filename = baseDir + '/' + filename
+                filename = base_dir + '/' + filename
                 with open(filename, 'w+') as cssfile:
                     cssfile.write(css)
-    grayscaleFilename = baseDir + '/accounts/.grayscale'
-    if not os.path.isfile(grayscaleFilename):
-        with open(grayscaleFilename, 'w+') as grayfile:
+    grayscale_filename = base_dir + '/accounts/.grayscale'
+    if not os.path.isfile(grayscale_filename):
+        with open(grayscale_filename, 'w+') as grayfile:
             grayfile.write(' ')
 
 
-def disableGrayscale(baseDir: str) -> None:
+def disable_grayscale(base_dir: str) -> None:
     """Disables grayscale for the current theme
     """
-    themeFiles = _getThemeFiles()
-    for filename in themeFiles:
-        templateFilename = baseDir + '/' + filename
-        if not os.path.isfile(templateFilename):
+    theme_files = _get_theme_files()
+    for filename in theme_files:
+        template_filename = base_dir + '/' + filename
+        if not os.path.isfile(template_filename):
             continue
-        with open(templateFilename, 'r') as cssfile:
+        with open(template_filename, 'r') as cssfile:
             css = cssfile.read()
             if 'grayscale' in css:
                 css = \
                     css.replace('\n    filter: grayscale(100%);', '')
-                filename = baseDir + '/' + filename
+                filename = base_dir + '/' + filename
                 with open(filename, 'w+') as cssfile:
                     cssfile.write(css)
-    grayscaleFilename = baseDir + '/accounts/.grayscale'
-    if os.path.isfile(grayscaleFilename):
+    grayscale_filename = base_dir + '/accounts/.grayscale'
+    if os.path.isfile(grayscale_filename):
         try:
-            os.remove(grayscaleFilename)
+            os.remove(grayscale_filename)
         except OSError:
-            print('EX: disableGrayscale unable to delete ' +
-                  grayscaleFilename)
+            print('EX: disable_grayscale unable to delete ' +
+                  grayscale_filename)
 
 
-def _setCustomFont(baseDir: str):
+def _set_custom_font(base_dir: str):
     """Uses a dictionary to set a theme
     """
-    customFontExt = None
-    customFontType = None
-    fontExtension = {
+    custom_font_ext = None
+    custom_font_type = None
+    font_extension = {
         'woff': 'woff',
         'woff2': 'woff2',
         'otf': 'opentype',
         'ttf': 'truetype'
     }
-    for ext, extType in fontExtension.items():
-        filename = baseDir + '/fonts/custom.' + ext
+    for ext, ext_type in font_extension.items():
+        filename = base_dir + '/fonts/custom.' + ext
         if os.path.isfile(filename):
-            customFontExt = ext
-            customFontType = extType
-    if not customFontExt:
+            custom_font_ext = ext
+            custom_font_type = ext_type
+    if not custom_font_ext:
         return
 
-    themeFiles = _getThemeFiles()
-    for filename in themeFiles:
-        templateFilename = baseDir + '/' + filename
-        if not os.path.isfile(templateFilename):
+    theme_files = _get_theme_files()
+    for filename in theme_files:
+        template_filename = base_dir + '/' + filename
+        if not os.path.isfile(template_filename):
             continue
-        with open(templateFilename, 'r') as cssfile:
+        with open(template_filename, 'r') as cssfile:
             css = cssfile.read()
             css = \
-                setCSSparam(css, "*src",
-                            "url('./fonts/custom." +
-                            customFontExt +
-                            "') format('" +
-                            customFontType + "')")
-            css = setCSSparam(css, "*font-family", "'CustomFont'")
-            filename = baseDir + '/' + filename
+                set_cs_sparam(css, "*src",
+                              "url('./fonts/custom." +
+                              custom_font_ext +
+                              "') format('" +
+                              custom_font_type + "')")
+            css = set_cs_sparam(css, "*font-family", "'CustomFont'")
+            filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
 
-def setThemeFromDesigner(baseDir: str, themeName: str, domain: str,
-                         themeParams: {},
-                         allowLocalNetworkAccess: bool,
-                         systemLanguage: str):
-    customThemeFilename = baseDir + '/accounts/theme.json'
-    saveJson(themeParams, customThemeFilename)
-    setTheme(baseDir, themeName, domain,
-             allowLocalNetworkAccess, systemLanguage)
+def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
+                            theme_params: {},
+                            allow_local_network_access: bool,
+                            system_language: str):
+    custom_theme_filename = base_dir + '/accounts/theme.json'
+    save_json(theme_params, custom_theme_filename)
+    set_theme(base_dir, theme_name, domain,
+              allow_local_network_access, system_language)
 
 
-def resetThemeDesignerSettings(baseDir: str, themeName: str, domain: str,
-                               allowLocalNetworkAccess: bool,
-                               systemLanguage: str) -> None:
+def reset_theme_designer_settings(base_dir: str, theme_name: str, domain: str,
+                                  allow_local_network_access: bool,
+                                  system_language: str) -> None:
     """Resets the theme designer settings
     """
-    customVariablesFile = baseDir + '/accounts/theme.json'
-    if os.path.isfile(customVariablesFile):
+    custom_variables_file = base_dir + '/accounts/theme.json'
+    if os.path.isfile(custom_variables_file):
         try:
-            os.remove(customVariablesFile)
+            os.remove(custom_variables_file)
         except OSError:
             print('EX: unable to remove theme designer settings on reset')
 
 
-def _readVariablesFile(baseDir: str, themeName: str,
-                       variablesFile: str,
-                       allowLocalNetworkAccess: bool) -> None:
+def _read_variables_file(base_dir: str, theme_name: str,
+                         variables_file: str,
+                         allow_local_network_access: bool) -> None:
     """Reads variables from a file in the theme directory
     """
-    themeParams = loadJson(variablesFile, 0)
-    if not themeParams:
+    theme_params = load_json(variables_file, 0)
+    if not theme_params:
         return
 
     # set custom theme parameters
-    customVariablesFile = baseDir + '/accounts/theme.json'
-    if os.path.isfile(customVariablesFile):
-        customThemeParams = loadJson(customVariablesFile, 0)
-        if customThemeParams:
-            for variableName, value in customThemeParams.items():
-                themeParams[variableName] = value
+    custom_variables_file = base_dir + '/accounts/theme.json'
+    if os.path.isfile(custom_variables_file):
+        custom_theme_params = load_json(custom_variables_file, 0)
+        if custom_theme_params:
+            for variable_name, value in custom_theme_params.items():
+                theme_params[variable_name] = value
 
-    bgParams = {
+    bg_params = {
         "login": "jpg",
         "follow": "jpg",
         "options": "jpg",
         "search": "jpg"
     }
-    _setThemeFromDict(baseDir, themeName, themeParams, bgParams,
-                      allowLocalNetworkAccess)
+    _set_theme_from_dict(base_dir, theme_name, theme_params, bg_params,
+                         allow_local_network_access)
 
 
-def _setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
+def _set_theme_default(base_dir: str, allow_local_network_access: bool):
     name = 'default'
-    _removeTheme(baseDir)
-    _setThemeInConfig(baseDir, name)
-    bgParams = {
+    _remove_theme(base_dir)
+    _set_theme_in_config(base_dir, name)
+    bg_params = {
         "login": "jpg",
         "follow": "jpg",
         "options": "jpg",
         "search": "jpg"
     }
-    themeParams = {
+    theme_params = {
         "newswire-publish-icon": True,
         "full-width-timeline-buttons": False,
         "icons-as-buttons": False,
@@ -562,350 +565,350 @@ def _setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
         "banner-height-mobile": "10vh",
         "search-banner-height-mobile": "15vh"
     }
-    _setThemeFromDict(baseDir, name, themeParams, bgParams,
-                      allowLocalNetworkAccess)
+    _set_theme_from_dict(base_dir, name, theme_params, bg_params,
+                         allow_local_network_access)
 
 
-def _setThemeFonts(baseDir: str, themeName: str) -> None:
+def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
     """Adds custom theme fonts
     """
-    themeNameLower = themeName.lower()
-    fontsDir = baseDir + '/fonts'
-    themeFontsDir = \
-        baseDir + '/theme/' + themeNameLower + '/fonts'
-    if not os.path.isdir(themeFontsDir):
+    theme_name_lower = theme_name.lower()
+    fonts_dir = base_dir + '/fonts'
+    theme_fonts_dir = \
+        base_dir + '/theme/' + theme_name_lower + '/fonts'
+    if not os.path.isdir(theme_fonts_dir):
         return
-    for subdir, dirs, files in os.walk(themeFontsDir):
+    for _, _, files in os.walk(theme_fonts_dir):
         for filename in files:
             if filename.endswith('.woff2') or \
                filename.endswith('.woff') or \
                filename.endswith('.ttf') or \
                filename.endswith('.otf'):
-                destFilename = fontsDir + '/' + filename
-                if os.path.isfile(destFilename):
+                dest_filename = fonts_dir + '/' + filename
+                if os.path.isfile(dest_filename):
                     # font already exists in the destination location
                     continue
-                copyfile(themeFontsDir + '/' + filename,
-                         destFilename)
+                copyfile(theme_fonts_dir + '/' + filename,
+                         dest_filename)
         break
 
 
-def getTextModeBanner(baseDir: str) -> str:
+def get_text_mode_banner(base_dir: str) -> str:
     """Returns the banner used for shell browsers, like Lynx
     """
-    textModeBannerFilename = baseDir + '/accounts/banner.txt'
-    if os.path.isfile(textModeBannerFilename):
-        with open(textModeBannerFilename, 'r') as fp:
-            bannerStr = fp.read()
-            if bannerStr:
-                return bannerStr.replace('\n', '<br>')
+    text_mode_banner_filename = base_dir + '/accounts/banner.txt'
+    if os.path.isfile(text_mode_banner_filename):
+        with open(text_mode_banner_filename, 'r') as fp_text:
+            banner_str = fp_text.read()
+            if banner_str:
+                return banner_str.replace('\n', '<br>')
     return None
 
 
-def getTextModeLogo(baseDir: str) -> str:
+def get_text_mode_logo(base_dir: str) -> str:
     """Returns the login screen logo used for shell browsers, like Lynx
     """
-    textModeLogoFilename = baseDir + '/accounts/logo.txt'
-    if not os.path.isfile(textModeLogoFilename):
-        textModeLogoFilename = baseDir + '/img/logo.txt'
+    text_mode_logo_filename = base_dir + '/accounts/logo.txt'
+    if not os.path.isfile(text_mode_logo_filename):
+        text_mode_logo_filename = base_dir + '/img/logo.txt'
 
-    with open(textModeLogoFilename, 'r') as fp:
-        logoStr = fp.read()
-        if logoStr:
-            return logoStr.replace('\n', '<br>')
+    with open(text_mode_logo_filename, 'r') as fp_text:
+        logo_str = fp_text.read()
+        if logo_str:
+            return logo_str.replace('\n', '<br>')
     return None
 
 
-def _setTextModeTheme(baseDir: str, name: str) -> None:
+def _set_text_mode_theme(base_dir: str, name: str) -> None:
     # set the text mode logo which appears on the login screen
     # in browsers such as Lynx
-    textModeLogoFilename = \
-        baseDir + '/theme/' + name + '/logo.txt'
-    if os.path.isfile(textModeLogoFilename):
+    text_mode_logo_filename = \
+        base_dir + '/theme/' + name + '/logo.txt'
+    if os.path.isfile(text_mode_logo_filename):
         try:
-            copyfile(textModeLogoFilename,
-                     baseDir + '/accounts/logo.txt')
+            copyfile(text_mode_logo_filename,
+                     base_dir + '/accounts/logo.txt')
         except OSError:
-            print('EX: _setTextModeTheme unable to copy ' +
-                  textModeLogoFilename + ' ' +
-                  baseDir + '/accounts/logo.txt')
+            print('EX: _set_text_mode_theme unable to copy ' +
+                  text_mode_logo_filename + ' ' +
+                  base_dir + '/accounts/logo.txt')
     else:
         try:
-            copyfile(baseDir + '/img/logo.txt',
-                     baseDir + '/accounts/logo.txt')
+            copyfile(base_dir + '/img/logo.txt',
+                     base_dir + '/accounts/logo.txt')
         except OSError:
-            print('EX: _setTextModeTheme unable to copy ' +
-                  baseDir + '/img/logo.txt ' +
-                  baseDir + '/accounts/logo.txt')
+            print('EX: _set_text_mode_theme unable to copy ' +
+                  base_dir + '/img/logo.txt ' +
+                  base_dir + '/accounts/logo.txt')
 
     # set the text mode banner which appears in browsers such as Lynx
-    textModeBannerFilename = \
-        baseDir + '/theme/' + name + '/banner.txt'
-    if os.path.isfile(baseDir + '/accounts/banner.txt'):
+    text_mode_banner_filename = \
+        base_dir + '/theme/' + name + '/banner.txt'
+    if os.path.isfile(base_dir + '/accounts/banner.txt'):
         try:
-            os.remove(baseDir + '/accounts/banner.txt')
+            os.remove(base_dir + '/accounts/banner.txt')
         except OSError:
-            print('EX: _setTextModeTheme unable to delete ' +
-                  baseDir + '/accounts/banner.txt')
-    if os.path.isfile(textModeBannerFilename):
+            print('EX: _set_text_mode_theme unable to delete ' +
+                  base_dir + '/accounts/banner.txt')
+    if os.path.isfile(text_mode_banner_filename):
         try:
-            copyfile(textModeBannerFilename,
-                     baseDir + '/accounts/banner.txt')
+            copyfile(text_mode_banner_filename,
+                     base_dir + '/accounts/banner.txt')
         except OSError:
-            print('EX: _setTextModeTheme unable to copy ' +
-                  textModeBannerFilename + ' ' +
-                  baseDir + '/accounts/banner.txt')
+            print('EX: _set_text_mode_theme unable to copy ' +
+                  text_mode_banner_filename + ' ' +
+                  base_dir + '/accounts/banner.txt')
 
 
-def _setThemeImages(baseDir: str, name: str) -> None:
+def _set_theme_images(base_dir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
     """
-    themeNameLower = name.lower()
+    theme_name_lower = name.lower()
 
-    profileImageFilename = \
-        baseDir + '/theme/' + themeNameLower + '/image.png'
-    bannerFilename = \
-        baseDir + '/theme/' + themeNameLower + '/banner.png'
-    searchBannerFilename = \
-        baseDir + '/theme/' + themeNameLower + '/search_banner.png'
-    leftColImageFilename = \
-        baseDir + '/theme/' + themeNameLower + '/left_col_image.png'
-    rightColImageFilename = \
-        baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
+    profile_image_filename = \
+        base_dir + '/theme/' + theme_name_lower + '/image.png'
+    banner_filename = \
+        base_dir + '/theme/' + theme_name_lower + '/banner.png'
+    search_banner_filename = \
+        base_dir + '/theme/' + theme_name_lower + '/search_banner.png'
+    left_col_image_filename = \
+        base_dir + '/theme/' + theme_name_lower + '/left_col_image.png'
+    right_col_image_filename = \
+        base_dir + '/theme/' + theme_name_lower + '/right_col_image.png'
 
-    _setTextModeTheme(baseDir, themeNameLower)
+    _set_text_mode_theme(base_dir, theme_name_lower)
 
-    backgroundNames = ('login', 'shares', 'delete', 'follow',
-                       'options', 'block', 'search', 'calendar',
-                       'welcome')
-    extensions = getImageExtensions()
+    background_names = ('login', 'shares', 'delete', 'follow',
+                        'options', 'block', 'search', 'calendar',
+                        'welcome')
+    extensions = get_image_extensions()
 
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
+            account_dir = os.path.join(base_dir + '/accounts', acct)
 
-            for backgroundType in backgroundNames:
+            for background_type in background_names:
                 for ext in extensions:
-                    if themeNameLower == 'default':
-                        backgroundImageFilename = \
-                            baseDir + '/theme/default/' + \
-                            backgroundType + '_background.' + ext
+                    if theme_name_lower == 'default':
+                        background_image_filename = \
+                            base_dir + '/theme/default/' + \
+                            background_type + '_background.' + ext
                     else:
-                        backgroundImageFilename = \
-                            baseDir + '/theme/' + themeNameLower + '/' + \
-                            backgroundType + '_background' + '.' + ext
+                        background_image_filename = \
+                            base_dir + '/theme/' + theme_name_lower + '/' + \
+                            background_type + '_background' + '.' + ext
 
-                    if os.path.isfile(backgroundImageFilename):
+                    if os.path.isfile(background_image_filename):
                         try:
-                            copyfile(backgroundImageFilename,
-                                     baseDir + '/accounts/' +
-                                     backgroundType + '-background.' + ext)
+                            copyfile(background_image_filename,
+                                     base_dir + '/accounts/' +
+                                     background_type + '-background.' + ext)
                             continue
                         except OSError:
-                            print('EX: _setThemeImages unable to copy ' +
-                                  backgroundImageFilename)
+                            print('EX: _set_theme_images unable to copy ' +
+                                  background_image_filename)
                     # background image was not found
                     # so remove any existing file
-                    if os.path.isfile(baseDir + '/accounts/' +
-                                      backgroundType + '-background.' + ext):
+                    if os.path.isfile(base_dir + '/accounts/' +
+                                      background_type + '-background.' + ext):
                         try:
-                            os.remove(baseDir + '/accounts/' +
-                                      backgroundType + '-background.' + ext)
+                            os.remove(base_dir + '/accounts/' +
+                                      background_type + '-background.' + ext)
                         except OSError:
-                            print('EX: _setThemeImages unable to delete ' +
-                                  baseDir + '/accounts/' +
-                                  backgroundType + '-background.' + ext)
+                            print('EX: _set_theme_images unable to delete ' +
+                                  base_dir + '/accounts/' +
+                                  background_type + '-background.' + ext)
 
-            if os.path.isfile(profileImageFilename) and \
-               os.path.isfile(bannerFilename):
+            if os.path.isfile(profile_image_filename) and \
+               os.path.isfile(banner_filename):
                 try:
-                    copyfile(profileImageFilename,
-                             accountDir + '/image.png')
+                    copyfile(profile_image_filename,
+                             account_dir + '/image.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
-                          profileImageFilename)
+                    print('EX: _set_theme_images unable to copy ' +
+                          profile_image_filename)
 
                 try:
-                    copyfile(bannerFilename,
-                             accountDir + '/banner.png')
+                    copyfile(banner_filename,
+                             account_dir + '/banner.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
-                          bannerFilename)
+                    print('EX: _set_theme_images unable to copy ' +
+                          banner_filename)
 
                 try:
-                    if os.path.isfile(searchBannerFilename):
-                        copyfile(searchBannerFilename,
-                                 accountDir + '/search_banner.png')
+                    if os.path.isfile(search_banner_filename):
+                        copyfile(search_banner_filename,
+                                 account_dir + '/search_banner.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
-                          searchBannerFilename)
+                    print('EX: _set_theme_images unable to copy ' +
+                          search_banner_filename)
 
                 try:
-                    if os.path.isfile(leftColImageFilename):
-                        copyfile(leftColImageFilename,
-                                 accountDir + '/left_col_image.png')
-                    elif os.path.isfile(accountDir +
+                    if os.path.isfile(left_col_image_filename):
+                        copyfile(left_col_image_filename,
+                                 account_dir + '/left_col_image.png')
+                    elif os.path.isfile(account_dir +
                                         '/left_col_image.png'):
                         try:
-                            os.remove(accountDir + '/left_col_image.png')
+                            os.remove(account_dir + '/left_col_image.png')
                         except OSError:
-                            print('EX: _setThemeImages unable to delete ' +
-                                  accountDir + '/left_col_image.png')
+                            print('EX: _set_theme_images unable to delete ' +
+                                  account_dir + '/left_col_image.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
-                          leftColImageFilename)
+                    print('EX: _set_theme_images unable to copy ' +
+                          left_col_image_filename)
 
                 try:
-                    if os.path.isfile(rightColImageFilename):
-                        copyfile(rightColImageFilename,
-                                 accountDir + '/right_col_image.png')
+                    if os.path.isfile(right_col_image_filename):
+                        copyfile(right_col_image_filename,
+                                 account_dir + '/right_col_image.png')
                     else:
-                        if os.path.isfile(accountDir +
+                        if os.path.isfile(account_dir +
                                           '/right_col_image.png'):
                             try:
-                                os.remove(accountDir + '/right_col_image.png')
+                                os.remove(account_dir + '/right_col_image.png')
                             except OSError:
-                                print('EX: _setThemeImages unable to delete ' +
-                                      accountDir + '/right_col_image.png')
+                                print('EX: _set_theme_images ' +
+                                      'unable to delete ' +
+                                      account_dir + '/right_col_image.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
-                          rightColImageFilename)
+                    print('EX: _set_theme_images unable to copy ' +
+                          right_col_image_filename)
         break
 
 
-def setNewsAvatar(baseDir: str, name: str,
-                  httpPrefix: str,
-                  domain: str, domainFull: str) -> None:
+def set_news_avatar(base_dir: str, name: str,
+                    http_prefix: str,
+                    domain: str, domain_full: str) -> None:
     """Sets the avatar for the news account
     """
     nickname = 'news'
-    newFilename = baseDir + '/theme/' + name + '/icons/avatar_news.png'
-    if not os.path.isfile(newFilename):
-        newFilename = baseDir + '/theme/default/icons/avatar_news.png'
-    if not os.path.isfile(newFilename):
+    new_filename = base_dir + '/theme/' + name + '/icons/avatar_news.png'
+    if not os.path.isfile(new_filename):
+        new_filename = base_dir + '/theme/default/icons/avatar_news.png'
+    if not os.path.isfile(new_filename):
         return
-    avatarFilename = \
-        localActorUrl(httpPrefix, domainFull, nickname) + '.png'
-    avatarFilename = avatarFilename.replace('/', '-')
-    filename = baseDir + '/cache/avatars/' + avatarFilename
+    avatar_filename = \
+        local_actor_url(http_prefix, domain_full, nickname) + '.png'
+    avatar_filename = avatar_filename.replace('/', '-')
+    filename = base_dir + '/cache/avatars/' + avatar_filename
 
     if os.path.isfile(filename):
         try:
             os.remove(filename)
         except OSError:
-            print('EX: setNewsAvatar unable to delete ' + filename)
-    if os.path.isdir(baseDir + '/cache/avatars'):
-        copyfile(newFilename, filename)
-    accountDir = acctDir(baseDir, nickname, domain)
-    copyfile(newFilename, accountDir + '/avatar.png')
+            print('EX: set_news_avatar unable to delete ' + filename)
+    if os.path.isdir(base_dir + '/cache/avatars'):
+        copyfile(new_filename, filename)
+    account_dir = acct_dir(base_dir, nickname, domain)
+    copyfile(new_filename, account_dir + '/avatar.png')
 
 
-def _setClearCacheFlag(baseDir: str) -> None:
+def _set_clear_cache_flag(base_dir: str) -> None:
     """Sets a flag which can be used by an external system
     (eg. a script in a cron job) to clear the browser cache
     """
-    if not os.path.isdir(baseDir + '/accounts'):
+    if not os.path.isdir(base_dir + '/accounts'):
         return
-    flagFilename = baseDir + '/accounts/.clear_cache'
-    with open(flagFilename, 'w+') as flagFile:
-        flagFile.write('\n')
+    flag_filename = base_dir + '/accounts/.clear_cache'
+    with open(flag_filename, 'w+') as fp_flag:
+        fp_flag.write('\n')
 
 
-def setTheme(baseDir: str, name: str, domain: str,
-             allowLocalNetworkAccess: bool, systemLanguage: str) -> bool:
+def set_theme(base_dir: str, name: str, domain: str,
+              allow_local_network_access: bool, system_language: str) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
 
-    prevThemeName = getTheme(baseDir)
+    prev_theme_name = get_theme(base_dir)
 
     # if the theme has changed then remove any custom settings
-    if prevThemeName != name:
-        resetThemeDesignerSettings(baseDir, name, domain,
-                                   allowLocalNetworkAccess,
-                                   systemLanguage)
+    if prev_theme_name != name:
+        reset_theme_designer_settings(base_dir, name, domain,
+                                      allow_local_network_access,
+                                      system_language)
 
-    _removeTheme(baseDir)
+    _remove_theme(base_dir)
 
-    themes = getThemesList(baseDir)
-    for themeName in themes:
-        themeNameLower = themeName.lower()
-        if name == themeNameLower:
+    themes = get_themes_list(base_dir)
+    for theme_name in themes:
+        theme_name_lower = theme_name.lower()
+        if name == theme_name_lower:
+            allow_access = allow_local_network_access
             try:
-                globals()['setTheme' + themeName](baseDir,
-                                                  allowLocalNetworkAccess)
+                globals()['set_theme' + theme_name](base_dir, allow_access)
             except BaseException:
-                print('EX: setTheme unable to set theme ' + themeName)
-                pass
+                print('EX: set_theme unable to set theme ' + theme_name)
 
-            if prevThemeName:
-                if prevThemeName.lower() != themeNameLower:
+            if prev_theme_name:
+                if prev_theme_name.lower() != theme_name_lower:
                     # change the banner and profile image
                     # to the default for the theme
-                    _setThemeImages(baseDir, name)
-                    _setThemeFonts(baseDir, name)
+                    _set_theme_images(base_dir, name)
+                    _set_theme_fonts(base_dir, name)
             result = True
 
     if not result:
         # default
-        _setThemeDefault(baseDir, allowLocalNetworkAccess)
+        _set_theme_default(base_dir, allow_local_network_access)
         result = True
 
-    variablesFile = baseDir + '/theme/' + name + '/theme.json'
-    if os.path.isfile(variablesFile):
-        _readVariablesFile(baseDir, name, variablesFile,
-                           allowLocalNetworkAccess)
+    variables_file = base_dir + '/theme/' + name + '/theme.json'
+    if os.path.isfile(variables_file):
+        _read_variables_file(base_dir, name, variables_file,
+                             allow_local_network_access)
 
-    _setCustomFont(baseDir)
+    _set_custom_font(base_dir)
 
     # set the news avatar
-    newsAvatarThemeFilename = \
-        baseDir + '/theme/' + name + '/icons/avatar_news.png'
-    if os.path.isdir(baseDir + '/accounts/news@' + domain):
-        if os.path.isfile(newsAvatarThemeFilename):
-            newsAvatarFilename = \
-                baseDir + '/accounts/news@' + domain + '/avatar.png'
-            copyfile(newsAvatarThemeFilename, newsAvatarFilename)
+    news_avatar_theme_filename = \
+        base_dir + '/theme/' + name + '/icons/avatar_news.png'
+    if os.path.isdir(base_dir + '/accounts/news@' + domain):
+        if os.path.isfile(news_avatar_theme_filename):
+            news_avatar_filename = \
+                base_dir + '/accounts/news@' + domain + '/avatar.png'
+            copyfile(news_avatar_theme_filename, news_avatar_filename)
 
-    grayscaleFilename = baseDir + '/accounts/.grayscale'
-    if os.path.isfile(grayscaleFilename):
-        enableGrayscale(baseDir)
+    grayscale_filename = base_dir + '/accounts/.grayscale'
+    if os.path.isfile(grayscale_filename):
+        enable_grayscale(base_dir)
     else:
-        disableGrayscale(baseDir)
+        disable_grayscale(base_dir)
 
-    _copyThemeHelpFiles(baseDir, name, systemLanguage)
-    _setThemeInConfig(baseDir, name)
-    _setClearCacheFlag(baseDir)
+    _copy_theme_help_files(base_dir, name, system_language)
+    _set_theme_in_config(base_dir, name)
+    _set_clear_cache_flag(base_dir)
     return result
 
 
-def updateDefaultThemesList(baseDir: str) -> None:
+def update_default_themes_list(base_dir: str) -> None:
     """Recreates the list of default themes
     """
-    themeNames = getThemesList(baseDir)
-    defaultThemesFilename = baseDir + '/defaultthemes.txt'
-    with open(defaultThemesFilename, 'w+') as defaultThemesFile:
-        for name in themeNames:
-            defaultThemesFile.write(name + '\n')
+    theme_names = get_themes_list(base_dir)
+    default_themes_filename = base_dir + '/defaultthemes.txt'
+    with open(default_themes_filename, 'w+') as fp_def:
+        for name in theme_names:
+            fp_def.write(name + '\n')
 
 
-def scanThemesForScripts(baseDir: str) -> bool:
+def scan_themes_for_scripts(base_dir: str) -> bool:
     """Scans the theme directory for any svg files containing scripts
     """
-    for subdir, dirs, files in os.walk(baseDir + '/theme'):
-        for f in files:
-            if not f.endswith('.svg'):
+    for subdir, _, files in os.walk(base_dir + '/theme'):
+        for fname in files:
+            if not fname.endswith('.svg'):
                 continue
-            svgFilename = os.path.join(subdir, f)
+            svg_filename = os.path.join(subdir, fname)
             content = ''
-            with open(svgFilename, 'r') as fp:
-                content = fp.read()
-            svgDangerous = dangerousSVG(content, False)
-            if svgDangerous:
-                print('svg file contains script: ' + svgFilename)
+            with open(svg_filename, 'r') as fp_svg:
+                content = fp_svg.read()
+            svg_dangerous = dangerous_svg(content, False)
+            if svg_dangerous:
+                print('svg file contains script: ' + svg_filename)
                 return True
         # deliberately no break - should resursively scan
     return False

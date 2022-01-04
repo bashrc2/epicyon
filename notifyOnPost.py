@@ -8,97 +8,102 @@ __status__ = "Production"
 __module_group__ = "Calendar"
 
 import os
-from utils import removeDomainPort
-from utils import acctDir
+from utils import remove_domain_port
+from utils import acct_dir
 
 
-def _notifyOnPostArrival(baseDir: str, nickname: str, domain: str,
-                         followingNickname: str,
-                         followingDomain: str,
-                         add: bool) -> None:
+def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
+                            following_nickname: str,
+                            following_domain: str,
+                            add: bool) -> None:
     """Adds or removes a handle from the following.txt list into a list
     indicating whether to notify when a new post arrives from that account
     """
     # check that a following file exists
-    domain = removeDomainPort(domain)
-    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
-    if not os.path.isfile(followingFilename):
+    domain = remove_domain_port(domain)
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
+    if not os.path.isfile(following_filename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
         return
-    handle = followingNickname + '@' + followingDomain
+    handle = following_nickname + '@' + following_domain
 
     # check that you are following this handle
-    if handle + '\n' not in open(followingFilename).read():
-        print('WARN: ' + handle + ' is not in ' + followingFilename)
+    if handle + '\n' not in open(following_filename).read():
+        print('WARN: ' + handle + ' is not in ' + following_filename)
         return
 
-    notifyOnPostFilename = \
-        acctDir(baseDir, nickname, domain) + '/notifyOnPost.txt'
+    notify_on_post_filename = \
+        acct_dir(base_dir, nickname, domain) + '/notifyOnPost.txt'
 
     # get the contents of the notifyOnPost file, which is
     # a set of handles
-    followingHandles = ''
-    if os.path.isfile(notifyOnPostFilename):
+    following_handles = ''
+    if os.path.isfile(notify_on_post_filename):
         print('notify file exists')
-        with open(notifyOnPostFilename, 'r') as calendarFile:
-            followingHandles = calendarFile.read()
+        with open(notify_on_post_filename, 'r') as calendar_file:
+            following_handles = calendar_file.read()
     else:
         # create a new notifyOnPost file from the following file
-        print('Creating notifyOnPost file ' + notifyOnPostFilename)
-        followingHandles = ''
-        with open(followingFilename, 'r') as followingFile:
-            followingHandles = followingFile.read()
+        print('Creating notifyOnPost file ' + notify_on_post_filename)
+        following_handles = ''
+        with open(following_filename, 'r') as following_file:
+            following_handles = following_file.read()
         if add:
-            with open(notifyOnPostFilename, 'w+') as fp:
-                fp.write(followingHandles + handle + '\n')
+            with open(notify_on_post_filename, 'w+') as fp_notify:
+                fp_notify.write(following_handles + handle + '\n')
 
     # already in the notifyOnPost file?
-    if handle + '\n' in followingHandles:
+    if handle + '\n' in following_handles:
         print(handle + ' exists in notifyOnPost.txt')
         if add:
             # already added
             return
         # remove from calendar file
-        followingHandles = followingHandles.replace(handle + '\n', '')
-        with open(notifyOnPostFilename, 'w+') as fp:
-            fp.write(followingHandles)
+        following_handles = following_handles.replace(handle + '\n', '')
+        with open(notify_on_post_filename, 'w+') as fp_notify:
+            fp_notify.write(following_handles)
     else:
         print(handle + ' not in notifyOnPost.txt')
         # not already in the notifyOnPost file
         if add:
             # append to the list of handles
-            followingHandles += handle + '\n'
-            with open(notifyOnPostFilename, 'w+') as fp:
-                fp.write(followingHandles)
+            following_handles += handle + '\n'
+            with open(notify_on_post_filename, 'w+') as fp_notify:
+                fp_notify.write(following_handles)
 
 
-def addNotifyOnPost(baseDir: str, nickname: str, domain: str,
-                    followingNickname: str,
-                    followingDomain: str) -> None:
-    _notifyOnPostArrival(baseDir, nickname, domain,
-                         followingNickname, followingDomain, True)
+def add_notify_on_post(base_dir: str, nickname: str, domain: str,
+                       following_nickname: str,
+                       following_domain: str) -> None:
+    """Add a notification
+    """
+    _notify_on_post_arrival(base_dir, nickname, domain,
+                            following_nickname, following_domain, True)
 
 
-def removeNotifyOnPost(baseDir: str, nickname: str, domain: str,
-                       followingNickname: str,
-                       followingDomain: str) -> None:
-    _notifyOnPostArrival(baseDir, nickname, domain,
-                         followingNickname, followingDomain, False)
+def remove_notify_on_post(base_dir: str, nickname: str, domain: str,
+                          following_nickname: str,
+                          following_domain: str) -> None:
+    """Remove a notification
+    """
+    _notify_on_post_arrival(base_dir, nickname, domain,
+                            following_nickname, following_domain, False)
 
 
-def notifyWhenPersonPosts(baseDir: str, nickname: str, domain: str,
-                          followingNickname: str,
-                          followingDomain: str) -> bool:
+def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
+                             following_nickname: str,
+                             following_domain: str) -> bool:
     """Returns true if receiving notifications when the given publishes a post
     """
-    if followingNickname == nickname and followingDomain == domain:
+    if following_nickname == nickname and following_domain == domain:
         return False
-    notifyOnPostFilename = \
-        acctDir(baseDir, nickname, domain) + '/notifyOnPost.txt'
-    handle = followingNickname + '@' + followingDomain
-    if not os.path.isfile(notifyOnPostFilename):
+    notify_on_post_filename = \
+        acct_dir(base_dir, nickname, domain) + '/notifyOnPost.txt'
+    handle = following_nickname + '@' + following_domain
+    if not os.path.isfile(notify_on_post_filename):
         # create a new notifyOnPost file
-        with open(notifyOnPostFilename, 'w+') as fp:
-            fp.write('')
-    return handle + '\n' in open(notifyOnPostFilename).read()
+        with open(notify_on_post_filename, 'w+') as fp_notify:
+            fp_notify.write('')
+    return handle + '\n' in open(notify_on_post_filename).read()

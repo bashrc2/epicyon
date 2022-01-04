@@ -10,83 +10,83 @@ __module_group__ = "Profile Metadata"
 import re
 
 
-def getCwtchAddress(actorJson: {}) -> str:
+def get_cwtch_address(actor_json: {}) -> str:
     """Returns cwtch address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('cwtch'):
+        if not property_value['name'].lower().startswith('cwtch'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = propertyValue['value'].strip()
-        if len(propertyValue['value']) < 2:
+        property_value['value'] = property_value['value'].strip()
+        if len(property_value['value']) < 2:
             continue
-        if '"' in propertyValue['value']:
+        if '"' in property_value['value']:
             continue
-        if ' ' in propertyValue['value']:
+        if ' ' in property_value['value']:
             continue
-        if ',' in propertyValue['value']:
+        if ',' in property_value['value']:
             continue
-        if '.' in propertyValue['value']:
+        if '.' in property_value['value']:
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
-def setCwtchAddress(actorJson: {}, cwtchAddress: str) -> None:
+def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
     """Sets an cwtch address for the given actor
     """
-    notCwtchAddress = False
+    not_cwtch_address = False
 
-    if len(cwtchAddress) < 56:
-        notCwtchAddress = True
-    if cwtchAddress != cwtchAddress.lower():
-        notCwtchAddress = True
-    if not re.match("^[a-z0-9]*$", cwtchAddress):
-        notCwtchAddress = True
+    if len(cwtch_address) < 56:
+        not_cwtch_address = True
+    if cwtch_address != cwtch_address.lower():
+        not_cwtch_address = True
+    if not re.match("^[a-z0-9]*$", cwtch_address):
+        not_cwtch_address = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('cwtch'):
+        if not property_value['name'].lower().startswith('cwtch'):
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
-    if notCwtchAddress:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_cwtch_address:
         return
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('cwtch'):
+        if not property_value['name'].lower().startswith('cwtch'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = cwtchAddress
+        property_value['value'] = cwtch_address
         return
 
-    newCwtchAddress = {
+    new_cwtch_address = {
         "name": "Cwtch",
         "type": "PropertyValue",
-        "value": cwtchAddress
+        "value": cwtch_address
     }
-    actorJson['attachment'].append(newCwtchAddress)
+    actor_json['attachment'].append(new_cwtch_address)

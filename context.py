@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Security"
 
 
-validContexts = (
+VALID_CONTEXTS = (
     "https://www.w3.org/ns/activitystreams",
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
@@ -20,7 +20,7 @@ validContexts = (
 )
 
 
-def getIndividualPostContext() -> []:
+def get_individual_post_context() -> []:
     """Returns the context for an individual post
     """
     return [
@@ -38,37 +38,37 @@ def getIndividualPostContext() -> []:
     ]
 
 
-def hasValidContext(postJsonObject: {}) -> bool:
+def has_valid_context(post_json_object: {}) -> bool:
     """Are the links within the @context of a post recognised?
     """
-    if not postJsonObject.get('@context'):
+    if not post_json_object.get('@context'):
         return False
-    if isinstance(postJsonObject['@context'], list):
-        for url in postJsonObject['@context']:
+    if isinstance(post_json_object['@context'], list):
+        for url in post_json_object['@context']:
             if not isinstance(url, str):
                 continue
-            if url not in validContexts:
-                wildcardFound = False
-                for c in validContexts:
-                    if c.startswith('*'):
-                        c = c.replace('*', '')
-                        if url.endswith(c):
-                            wildcardFound = True
+            if url not in VALID_CONTEXTS:
+                wildcard_found = False
+                for cont in VALID_CONTEXTS:
+                    if cont.startswith('*'):
+                        cont = cont.replace('*', '')
+                        if url.endswith(cont):
+                            wildcard_found = True
                             break
-                if not wildcardFound:
+                if not wildcard_found:
                     print('Unrecognized @context: ' + url)
                     return False
-    elif isinstance(postJsonObject['@context'], str):
-        url = postJsonObject['@context']
-        if url not in validContexts:
-            wildcardFound = False
-            for c in validContexts:
-                if c.startswith('*'):
-                    c = c.replace('*', '')
-                    if url.endswith(c):
-                        wildcardFound = True
+    elif isinstance(post_json_object['@context'], str):
+        url = post_json_object['@context']
+        if url not in VALID_CONTEXTS:
+            wildcard_found = False
+            for cont in VALID_CONTEXTS:
+                if cont.startswith('*'):
+                    cont = cont.replace('*', '')
+                    if url.endswith(cont):
+                        wildcard_found = True
                         break
-            if not wildcardFound:
+            if not wildcard_found:
                 print('Unrecognized @context: ' + url)
                 return False
     else:
@@ -187,7 +187,7 @@ def getApschemaV1_21() -> {}:
     }
 
 
-def getLitepubSocial() -> {}:
+def get_litepub_social() -> {}:
     # https://litepub.social/litepub/context.jsonld
     return {
         '@context': [
@@ -259,7 +259,7 @@ def getLitepubV0_1() -> {}:
     }
 
 
-def getV1SecuritySchema() -> {}:
+def get_v1security_schema() -> {}:
     # https://w3id.org/security/v1
     return {
         "@context": {
@@ -312,7 +312,7 @@ def getV1SecuritySchema() -> {}:
     }
 
 
-def getV1Schema() -> {}:
+def get_v1schema() -> {}:
     # https://w3id.org/identity/v1
     return {
         "@context": {
@@ -400,7 +400,7 @@ def getV1Schema() -> {}:
     }
 
 
-def getActivitystreamsSchema() -> {}:
+def get_activitystreams_schema() -> {}:
     # https://www.w3.org/ns/activitystreams
     return {
         "@context": {

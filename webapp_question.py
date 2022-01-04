@@ -8,22 +8,22 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from question import isQuestion
-from utils import removeIdEnding
-from utils import acctDir
+from question import is_question
+from utils import remove_id_ending
+from utils import acct_dir
 
 
-def insertQuestion(baseDir: str, translate: {},
-                   nickname: str, domain: str, port: int,
-                   content: str,
-                   postJsonObject: {}, pageNumber: int) -> str:
+def insert_question(base_dir: str, translate: {},
+                    nickname: str, domain: str, port: int,
+                    content: str,
+                    post_json_object: {}, pageNumber: int) -> str:
     """ Inserts question selection into a post
     """
-    if not isQuestion(postJsonObject):
+    if not is_question(post_json_object):
         return content
-    if len(postJsonObject['object']['oneOf']) == 0:
+    if len(post_json_object['object']['oneOf']) == 0:
         return content
-    messageId = removeIdEnding(postJsonObject['id'])
+    messageId = remove_id_ending(post_json_object['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     pageNumberStr = ''
@@ -31,7 +31,7 @@ def insertQuestion(baseDir: str, translate: {},
         pageNumberStr = '?page=' + str(pageNumber)
 
     votesFilename = \
-        acctDir(baseDir, nickname, domain) + '/questions.txt'
+        acct_dir(base_dir, nickname, domain) + '/questions.txt'
 
     showQuestionResults = False
     if os.path.isfile(votesFilename):
@@ -47,7 +47,7 @@ def insertQuestion(baseDir: str, translate: {},
         content += \
             '<input type="hidden" name="messageId" value="' + \
             messageId + '">\n<br>\n'
-        for choice in postJsonObject['object']['oneOf']:
+        for choice in post_json_object['object']['oneOf']:
             if not choice.get('type'):
                 continue
             if not choice.get('name'):
@@ -65,7 +65,7 @@ def insertQuestion(baseDir: str, translate: {},
 
         # get the maximum number of votes
         maxVotes = 1
-        for questionOption in postJsonObject['object']['oneOf']:
+        for questionOption in post_json_object['object']['oneOf']:
             if not questionOption.get('name'):
                 continue
             if not questionOption.get('replies'):
@@ -74,13 +74,13 @@ def insertQuestion(baseDir: str, translate: {},
             try:
                 votes = int(questionOption['replies']['totalItems'])
             except BaseException:
-                print('EX: insertQuestion unable to convert to int')
+                print('EX: insert_question unable to convert to int')
             if votes > maxVotes:
                 maxVotes = int(votes+1)
 
         # show the votes as sliders
         questionCtr = 1
-        for questionOption in postJsonObject['object']['oneOf']:
+        for questionOption in post_json_object['object']['oneOf']:
             if not questionOption.get('name'):
                 continue
             if not questionOption.get('replies'):
@@ -89,7 +89,7 @@ def insertQuestion(baseDir: str, translate: {},
             try:
                 votes = int(questionOption['replies']['totalItems'])
             except BaseException:
-                print('EX: insertQuestion unable to convert to int 2')
+                print('EX: insert_question unable to convert to int 2')
             votesPercent = str(int(votes * 100 / maxVotes))
 
             content += \

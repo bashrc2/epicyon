@@ -8,25 +8,25 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
-from utils import acctDir
+from utils import acct_dir
 
 
-def addFilter(baseDir: str, nickname: str, domain: str, words: str) -> bool:
+def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     """Adds a filter for particular words within the content of a incoming posts
     """
-    filtersFilename = acctDir(baseDir, nickname, domain) + '/filters.txt'
-    if os.path.isfile(filtersFilename):
-        if words in open(filtersFilename).read():
+    filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
+    if os.path.isfile(filters_filename):
+        if words in open(filters_filename).read():
             return False
     try:
-        with open(filtersFilename, 'a+') as filtersFile:
-            filtersFile.write(words + '\n')
+        with open(filters_filename, 'a+') as filters_file:
+            filters_file.write(words + '\n')
     except OSError:
-        print('EX: unable to append filters ' + filtersFilename)
+        print('EX: unable to append filters ' + filters_filename)
     return True
 
 
-def addGlobalFilter(baseDir: str, words: str) -> bool:
+def add_global_filter(base_dir: str, words: str) -> bool:
     """Adds a global filter for particular words within
     the content of a incoming posts
     """
@@ -34,79 +34,80 @@ def addGlobalFilter(baseDir: str, words: str) -> bool:
         return False
     if len(words) < 2:
         return False
-    filtersFilename = baseDir + '/accounts/filters.txt'
-    if os.path.isfile(filtersFilename):
-        if words in open(filtersFilename).read():
+    filters_filename = base_dir + '/accounts/filters.txt'
+    if os.path.isfile(filters_filename):
+        if words in open(filters_filename).read():
             return False
     try:
-        with open(filtersFilename, 'a+') as filtersFile:
-            filtersFile.write(words + '\n')
+        with open(filters_filename, 'a+') as filters_file:
+            filters_file.write(words + '\n')
     except OSError:
-        print('EX: unable to append filters ' + filtersFilename)
+        print('EX: unable to append filters ' + filters_filename)
     return True
 
 
-def removeFilter(baseDir: str, nickname: str, domain: str,
-                 words: str) -> bool:
+def remove_filter(base_dir: str, nickname: str, domain: str,
+                  words: str) -> bool:
     """Removes a word filter
     """
-    filtersFilename = acctDir(baseDir, nickname, domain) + '/filters.txt'
-    if not os.path.isfile(filtersFilename):
+    filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
+    if not os.path.isfile(filters_filename):
         return False
-    if words not in open(filtersFilename).read():
+    if words not in open(filters_filename).read():
         return False
-    newFiltersFilename = filtersFilename + '.new'
+    new_filters_filename = filters_filename + '.new'
     try:
-        with open(filtersFilename, 'r') as fp:
-            with open(newFiltersFilename, 'w+') as fpnew:
-                for line in fp:
+        with open(filters_filename, 'r') as fp_filt:
+            with open(new_filters_filename, 'w+') as fpnew:
+                for line in fp_filt:
                     line = line.replace('\n', '')
                     if line != words:
                         fpnew.write(line + '\n')
-    except OSError as e:
-        print('EX: unable to remove filter ' + filtersFilename + ' ' + str(e))
-    if os.path.isfile(newFiltersFilename):
-        os.rename(newFiltersFilename, filtersFilename)
+    except OSError as ex:
+        print('EX: unable to remove filter ' +
+              filters_filename + ' ' + str(ex))
+    if os.path.isfile(new_filters_filename):
+        os.rename(new_filters_filename, filters_filename)
         return True
     return False
 
 
-def removeGlobalFilter(baseDir: str, words: str) -> bool:
+def remove_global_filter(base_dir: str, words: str) -> bool:
     """Removes a global word filter
     """
-    filtersFilename = baseDir + '/accounts/filters.txt'
-    if not os.path.isfile(filtersFilename):
+    filters_filename = base_dir + '/accounts/filters.txt'
+    if not os.path.isfile(filters_filename):
         return False
-    if words not in open(filtersFilename).read():
+    if words not in open(filters_filename).read():
         return False
-    newFiltersFilename = filtersFilename + '.new'
+    new_filters_filename = filters_filename + '.new'
     try:
-        with open(filtersFilename, 'r') as fp:
-            with open(newFiltersFilename, 'w+') as fpnew:
-                for line in fp:
+        with open(filters_filename, 'r') as fp_filt:
+            with open(new_filters_filename, 'w+') as fpnew:
+                for line in fp_filt:
                     line = line.replace('\n', '')
                     if line != words:
                         fpnew.write(line + '\n')
-    except OSError as e:
+    except OSError as ex:
         print('EX: unable to remove global filter ' +
-              filtersFilename + ' ' + str(e))
-    if os.path.isfile(newFiltersFilename):
-        os.rename(newFiltersFilename, filtersFilename)
+              filters_filename + ' ' + str(ex))
+    if os.path.isfile(new_filters_filename):
+        os.rename(new_filters_filename, filters_filename)
         return True
     return False
 
 
-def _isTwitterPost(content: str) -> bool:
+def _is_twitter_post(content: str) -> bool:
     """Returns true if the given post content is a retweet or twitter crosspost
     """
     if '/twitter.' in content or '@twitter.' in content:
         return True
-    elif '>RT <' in content:
+    if '>RT <' in content:
         return True
     return False
 
 
-def _isFilteredBase(filename: str, content: str) -> bool:
+def _is_filtered_base(filename: str, content: str) -> bool:
     """Uses the given file containing filtered words to check
     the given content
     """
@@ -114,68 +115,70 @@ def _isFilteredBase(filename: str, content: str) -> bool:
         return False
 
     try:
-        with open(filename, 'r') as fp:
-            for line in fp:
-                filterStr = line.replace('\n', '').replace('\r', '')
-                if not filterStr:
+        with open(filename, 'r') as fp_filt:
+            for line in fp_filt:
+                filter_str = line.replace('\n', '').replace('\r', '')
+                if not filter_str:
                     continue
-                if len(filterStr) < 2:
+                if len(filter_str) < 2:
                     continue
-                if '+' not in filterStr:
-                    if filterStr in content:
+                if '+' not in filter_str:
+                    if filter_str in content:
                         return True
                 else:
-                    filterWords = filterStr.replace('"', '').split('+')
-                    for word in filterWords:
+                    filter_words = filter_str.replace('"', '').split('+')
+                    for word in filter_words:
                         if word not in content:
                             return False
                     return True
-    except OSError as e:
-        print('EX: _isFilteredBase ' + filename + ' ' + str(e))
+    except OSError as ex:
+        print('EX: _is_filtered_base ' + filename + ' ' + str(ex))
     return False
 
 
-def isFilteredGlobally(baseDir: str, content: str) -> bool:
+def is_filtered_globally(base_dir: str, content: str) -> bool:
     """Is the given content globally filtered?
     """
-    globalFiltersFilename = baseDir + '/accounts/filters.txt'
-    if _isFilteredBase(globalFiltersFilename, content):
+    global_filters_filename = base_dir + '/accounts/filters.txt'
+    if _is_filtered_base(global_filters_filename, content):
         return True
     return False
 
 
-def isFilteredBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
+def is_filtered_bio(base_dir: str,
+                    nickname: str, domain: str, bio: str) -> bool:
     """Should the given actor bio be filtered out?
     """
-    if isFilteredGlobally(baseDir, bio):
+    if is_filtered_globally(base_dir, bio):
         return True
 
     if not nickname or not domain:
         return False
 
-    accountFiltersFilename = \
-        acctDir(baseDir, nickname, domain) + '/filters_bio.txt'
-    return _isFilteredBase(accountFiltersFilename, bio)
+    account_filters_filename = \
+        acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
+    return _is_filtered_base(account_filters_filename, bio)
 
 
-def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
+def is_filtered(base_dir: str, nickname: str, domain: str,
+                content: str) -> bool:
     """Should the given content be filtered out?
     This is a simple type of filter which just matches words, not a regex
     You can add individual words or use word1+word2 to indicate that two
     words must be present although not necessarily adjacent
     """
-    if isFilteredGlobally(baseDir, content):
+    if is_filtered_globally(base_dir, content):
         return True
 
     if not nickname or not domain:
         return False
 
     # optionally remove retweets
-    removeTwitter = acctDir(baseDir, nickname, domain) + '/.removeTwitter'
-    if os.path.isfile(removeTwitter):
-        if _isTwitterPost(content):
+    remove_twitter = acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
+    if os.path.isfile(remove_twitter):
+        if _is_twitter_post(content):
             return True
 
-    accountFiltersFilename = \
-        acctDir(baseDir, nickname, domain) + '/filters.txt'
-    return _isFilteredBase(accountFiltersFilename, content)
+    account_filters_filename = \
+        acct_dir(base_dir, nickname, domain) + '/filters.txt'
+    return _is_filtered_base(account_filters_filename, content)

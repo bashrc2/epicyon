@@ -8,88 +8,89 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
-from utils import hasObjectDict
-from utils import acctDir
-from utils import removeIdEnding
+from utils import has_object_dict
+from utils import acct_dir
+from utils import remove_id_ending
 
 
-def _getConversationFilename(baseDir: str, nickname: str, domain: str,
-                             postJsonObject: {}) -> str:
+def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
+                               post_json_object: {}) -> str:
     """Returns the conversation filename
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return None
-    if not postJsonObject['object'].get('conversation'):
+    if not post_json_object['object'].get('conversation'):
         return None
-    if not postJsonObject['object'].get('id'):
+    if not post_json_object['object'].get('id'):
         return None
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
-    if not os.path.isdir(conversationDir):
-        os.mkdir(conversationDir)
-    conversationId = postJsonObject['object']['conversation']
-    conversationId = conversationId.replace('/', '#')
-    return conversationDir + '/' + conversationId
+    conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
+    if not os.path.isdir(conversation_dir):
+        os.mkdir(conversation_dir)
+    conversation_id = post_json_object['object']['conversation']
+    conversation_id = conversation_id.replace('/', '#')
+    return conversation_dir + '/' + conversation_id
 
 
-def updateConversation(baseDir: str, nickname: str, domain: str,
-                       postJsonObject: {}) -> bool:
+def update_conversation(base_dir: str, nickname: str, domain: str,
+                        post_json_object: {}) -> bool:
     """Ads a post to a conversation index in the /conversation subdirectory
     """
-    conversationFilename = \
-        _getConversationFilename(baseDir, nickname, domain, postJsonObject)
-    if not conversationFilename:
+    conversation_filename = \
+        _get_conversation_filename(base_dir, nickname, domain,
+                                   post_json_object)
+    if not conversation_filename:
         return False
-    postId = removeIdEnding(postJsonObject['object']['id'])
-    if not os.path.isfile(conversationFilename):
+    post_id = remove_id_ending(post_json_object['object']['id'])
+    if not os.path.isfile(conversation_filename):
         try:
-            with open(conversationFilename, 'w+') as fp:
-                fp.write(postId + '\n')
+            with open(conversation_filename, 'w+') as conv_file:
+                conv_file.write(post_id + '\n')
                 return True
         except OSError:
-            print('EX: updateConversation ' +
-                  'unable to write to ' + conversationFilename)
-    elif postId + '\n' not in open(conversationFilename).read():
+            print('EX: update_conversation ' +
+                  'unable to write to ' + conversation_filename)
+    elif post_id + '\n' not in open(conversation_filename).read():
         try:
-            with open(conversationFilename, 'a+') as fp:
-                fp.write(postId + '\n')
+            with open(conversation_filename, 'a+') as conv_file:
+                conv_file.write(post_id + '\n')
                 return True
         except OSError:
-            print('EX: updateConversation 2 ' +
-                  'unable to write to ' + conversationFilename)
+            print('EX: update_conversation 2 ' +
+                  'unable to write to ' + conversation_filename)
     return False
 
 
-def muteConversation(baseDir: str, nickname: str, domain: str,
-                     conversationId: str) -> None:
+def mute_conversation(base_dir: str, nickname: str, domain: str,
+                      conversation_id: str) -> None:
     """Mutes the given conversation
     """
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
-    conversationFilename = \
-        conversationDir + '/' + conversationId.replace('/', '#')
-    if not os.path.isfile(conversationFilename):
+    conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
+    conversation_filename = \
+        conversation_dir + '/' + conversation_id.replace('/', '#')
+    if not os.path.isfile(conversation_filename):
         return
-    if os.path.isfile(conversationFilename + '.muted'):
+    if os.path.isfile(conversation_filename + '.muted'):
         return
     try:
-        with open(conversationFilename + '.muted', 'w+') as fp:
-            fp.write('\n')
+        with open(conversation_filename + '.muted', 'w+') as conv_file:
+            conv_file.write('\n')
     except OSError:
-        print('EX: unable to write mute ' + conversationFilename)
+        print('EX: unable to write mute ' + conversation_filename)
 
 
-def unmuteConversation(baseDir: str, nickname: str, domain: str,
-                       conversationId: str) -> None:
+def unmute_conversation(base_dir: str, nickname: str, domain: str,
+                        conversation_id: str) -> None:
     """Unmutes the given conversation
     """
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
-    conversationFilename = \
-        conversationDir + '/' + conversationId.replace('/', '#')
-    if not os.path.isfile(conversationFilename):
+    conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
+    conversation_filename = \
+        conversation_dir + '/' + conversation_id.replace('/', '#')
+    if not os.path.isfile(conversation_filename):
         return
-    if not os.path.isfile(conversationFilename + '.muted'):
+    if not os.path.isfile(conversation_filename + '.muted'):
         return
     try:
-        os.remove(conversationFilename + '.muted')
+        os.remove(conversation_filename + '.muted')
     except OSError:
-        print('EX: unmuteConversation unable to delete ' +
-              conversationFilename + '.muted')
+        print('EX: unmute_conversation unable to delete ' +
+              conversation_filename + '.muted')

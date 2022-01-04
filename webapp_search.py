@@ -11,454 +11,457 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
-from utils import getBaseContentFromPost
-from utils import isAccountDir
-from utils import getConfigParam
-from utils import getFullDomain
-from utils import isEditor
-from utils import loadJson
-from utils import getDomainFromActor
-from utils import getNicknameFromActor
-from utils import locatePost
-from utils import isPublicPost
-from utils import firstParagraphFromString
-from utils import searchBoxPosts
-from utils import getAltPath
-from utils import acctDir
-from utils import localActorUrl
-from skills import noOfActorSkills
-from skills import getSkillsFromList
-from categories import getHashtagCategory
-from feeds import rss2TagHeader
-from feeds import rss2TagFooter
-from webapp_utils import setCustomBackground
-from webapp_utils import htmlKeyboardNavigation
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getSearchBannerFile
-from webapp_utils import htmlPostSeparator
-from webapp_utils import htmlSearchResultShare
-from webapp_post import individualPostAsHtml
-from webapp_hashtagswarm import htmlHashTagSwarm
+from utils import get_base_content_from_post
+from utils import is_account_dir
+from utils import get_config_param
+from utils import get_full_domain
+from utils import is_editor
+from utils import load_json
+from utils import get_nickname_from_actor
+from utils import locate_post
+from utils import is_public_post
+from utils import first_paragraph_from_string
+from utils import search_box_posts
+from utils import get_alt_path
+from utils import acct_dir
+from utils import local_actor_url
+from skills import no_of_actor_skills
+from skills import get_skills_from_list
+from categories import get_hashtag_category
+from feeds import rss2tag_header
+from feeds import rss2tag_footer
+from webapp_utils import set_custom_background
+from webapp_utils import html_keyboard_navigation
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_search_banner_file
+from webapp_utils import html_post_separator
+from webapp_utils import html_search_result_share
+from webapp_post import individual_post_as_html
+from webapp_hashtagswarm import html_hash_tag_swarm
 
 
-def htmlSearchEmoji(cssCache: {}, translate: {},
-                    baseDir: str, httpPrefix: str,
-                    searchStr: str) -> str:
+def html_search_emoji(css_cache: {}, translate: {},
+                      base_dir: str, http_prefix: str,
+                      search_str: str) -> str:
     """Search results for emoji
     """
     # emoji.json is generated so that it can be customized and the changes
     # will be retained even if default_emoji.json is subsequently updated
-    if not os.path.isfile(baseDir + '/emoji/emoji.json'):
-        copyfile(baseDir + '/emoji/default_emoji.json',
-                 baseDir + '/emoji/emoji.json')
+    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+        copyfile(base_dir + '/emoji/default_emoji.json',
+                 base_dir + '/emoji/emoji.json')
 
-    searchStr = searchStr.lower().replace(':', '').strip('\n').strip('\r')
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    search_str = search_str.lower().replace(':', '').strip('\n').strip('\r')
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    emojiLookupFilename = baseDir + '/emoji/emoji.json'
-    customEmojiLookupFilename = baseDir + '/emojicustom/emoji.json'
+    emoji_lookup_filename = base_dir + '/emoji/emoji.json'
+    custom_emoji_lookup_filename = base_dir + '/emojicustom/emoji.json'
 
     # create header
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    emojiForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    emojiForm += '<center><h1>' + \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    emoji_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    emoji_form += '<center><h1>' + \
         translate['Emoji Search'] + \
         '</h1></center>'
 
     # does the lookup file exist?
-    if not os.path.isfile(emojiLookupFilename):
-        emojiForm += '<center><h5>' + \
+    if not os.path.isfile(emoji_lookup_filename):
+        emoji_form += '<center><h5>' + \
             translate['No results'] + '</h5></center>'
-        emojiForm += htmlFooter()
-        return emojiForm
+        emoji_form += html_footer()
+        return emoji_form
 
-    emojiJson = loadJson(emojiLookupFilename)
-    if emojiJson:
-        if os.path.isfile(customEmojiLookupFilename):
-            customEmojiJson = loadJson(customEmojiLookupFilename)
-            if customEmojiJson:
-                emojiJson = dict(emojiJson, **customEmojiJson)
+    emoji_json = load_json(emoji_lookup_filename)
+    if emoji_json:
+        if os.path.isfile(custom_emoji_lookup_filename):
+            custom_emoji_json = load_json(custom_emoji_lookup_filename)
+            if custom_emoji_json:
+                emoji_json = dict(emoji_json, **custom_emoji_json)
 
         results = {}
-        for emojiName, filename in emojiJson.items():
-            if searchStr in emojiName:
-                results[emojiName] = filename + '.png'
-        for emojiName, filename in emojiJson.items():
-            if emojiName in searchStr:
-                results[emojiName] = filename + '.png'
+        for emoji_name, filename in emoji_json.items():
+            if search_str in emoji_name:
+                results[emoji_name] = filename + '.png'
+        for emoji_name, filename in emoji_json.items():
+            if emoji_name in search_str:
+                results[emoji_name] = filename + '.png'
 
         if not results:
-            emojiForm += '<center><h5>' + \
+            emoji_form += '<center><h5>' + \
                 translate['No results'] + '</h5></center>'
 
-        headingShown = False
-        emojiForm += '<center>'
-        msgStr1 = translate['Copy the text then paste it into your post']
-        msgStr2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
-        for emojiName, filename in results.items():
-            if not os.path.isfile(baseDir + '/emoji/' + filename):
-                if not os.path.isfile(baseDir + '/emojicustom/' + filename):
+        heading_shown = False
+        emoji_form += '<center>'
+        msg_str1 = translate['Copy the text then paste it into your post']
+        msg_str2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
+        for emoji_name, filename in results.items():
+            if not os.path.isfile(base_dir + '/emoji/' + filename):
+                if not os.path.isfile(base_dir + '/emojicustom/' + filename):
                     continue
-            if not headingShown:
-                emojiForm += \
-                    '<center><h5>' + msgStr1 + '</h5></center>'
-                headingShown = True
-            emojiForm += \
-                '<h3>:' + emojiName + msgStr2 + filename + '"/></h3>'
-        emojiForm += '</center>'
+            if not heading_shown:
+                emoji_form += \
+                    '<center><h5>' + msg_str1 + '</h5></center>'
+                heading_shown = True
+            emoji_form += \
+                '<h3>:' + emoji_name + msg_str2 + filename + '"/></h3>'
+        emoji_form += '</center>'
 
-    emojiForm += htmlFooter()
-    return emojiForm
+    emoji_form += html_footer()
+    return emoji_form
 
 
-def _matchSharedItem(searchStrLowerList: [],
-                     sharedItem: {}) -> bool:
+def _match_shared_item(search_str_lower_list: [],
+                       shared_item: {}) -> bool:
     """Returns true if the shared item matches search criteria
     """
-    for searchSubstr in searchStrLowerList:
-        searchSubstr = searchSubstr.strip()
-        if sharedItem.get('location'):
-            if searchSubstr in sharedItem['location'].lower():
+    for search_substr in search_str_lower_list:
+        search_substr = search_substr.strip()
+        if shared_item.get('location'):
+            if search_substr in shared_item['location'].lower():
                 return True
-        if searchSubstr in sharedItem['summary'].lower():
+        if search_substr in shared_item['summary'].lower():
             return True
-        elif searchSubstr in sharedItem['displayName'].lower():
+        if search_substr in shared_item['displayName'].lower():
             return True
-        elif searchSubstr in sharedItem['category'].lower():
+        if search_substr in shared_item['category'].lower():
             return True
     return False
 
 
-def _htmlSearchResultSharePage(actor: str, domainFull: str,
-                               callingDomain: str, pageNumber: int,
-                               searchStrLower: str, translate: {},
-                               previous: bool) -> str:
+def _html_search_result_share_page(actor: str, domain_full: str,
+                                   calling_domain: str, page_number: int,
+                                   search_str_lower: str, translate: {},
+                                   previous: bool) -> str:
     """Returns the html for the previous button on shared items search results
     """
-    postActor = getAltPath(actor, domainFull, callingDomain)
+    post_actor = get_alt_path(actor, domain_full, calling_domain)
     # previous page link, needs to be a POST
     if previous:
-        pageNumber -= 1
-        titleStr = translate['Page up']
-        imageUrl = 'pageup.png'
+        page_number -= 1
+        title_str = translate['Page up']
+        image_url = 'pageup.png'
     else:
-        pageNumber += 1
-        titleStr = translate['Page down']
-        imageUrl = 'pagedown.png'
-    sharedItemsForm = \
-        '<form method="POST" action="' + postActor + '/searchhandle?page=' + \
-        str(pageNumber) + '">\n'
-    sharedItemsForm += \
+        page_number += 1
+        title_str = translate['Page down']
+        image_url = 'pagedown.png'
+    shared_items_form = \
+        '<form method="POST" action="' + post_actor + '/searchhandle?page=' + \
+        str(page_number) + '">\n'
+    shared_items_form += \
         '  <input type="hidden" ' + 'name="actor" value="' + actor + '">\n'
-    sharedItemsForm += \
+    shared_items_form += \
         '  <input type="hidden" ' + 'name="searchtext" value="' + \
-        searchStrLower + '"><br>\n'
-    sharedItemsForm += \
+        search_str_lower + '"><br>\n'
+    shared_items_form += \
         '  <center>\n' + '    <a href="' + actor + \
         '" type="submit" name="submitSearch">\n'
-    sharedItemsForm += \
+    shared_items_form += \
         '    <img loading="lazy" ' + 'class="pageicon" src="/icons' + \
-        '/' + imageUrl + '" title="' + titleStr + \
-        '" alt="' + titleStr + '"/></a>\n'
-    sharedItemsForm += '  </center>\n'
-    sharedItemsForm += '</form>\n'
-    return sharedItemsForm
+        '/' + image_url + '" title="' + title_str + \
+        '" alt="' + title_str + '"/></a>\n'
+    shared_items_form += '  </center>\n'
+    shared_items_form += '</form>\n'
+    return shared_items_form
 
 
-def _htmlSharesResult(baseDir: str,
-                      sharesJson: {}, pageNumber: int, resultsPerPage: int,
-                      searchStrLowerList: [], currPage: int, ctr: int,
-                      callingDomain: str, httpPrefix: str, domainFull: str,
-                      contactNickname: str, actor: str,
-                      resultsExist: bool, searchStrLower: str, translate: {},
-                      sharesFileType: str) -> (bool, int, int, str):
+def _html_shares_result(base_dir: str, shares_json: {}, page_number: int,
+                        results_per_page: int,
+                        search_str_lower_list: [], curr_page: int, ctr: int,
+                        calling_domain: str, http_prefix: str,
+                        domain_full: str, contact_nickname: str, actor: str,
+                        results_exist: bool, search_str_lower: str,
+                        translate: {},
+                        shares_file_type: str) -> (bool, int, int, str):
     """Result for shared items search
     """
-    sharedItemsForm = ''
-    if currPage > pageNumber:
-        return resultsExist, currPage, ctr, sharedItemsForm
+    shared_items_form = ''
+    if curr_page > page_number:
+        return results_exist, curr_page, ctr, shared_items_form
 
-    for name, sharedItem in sharesJson.items():
-        if _matchSharedItem(searchStrLowerList, sharedItem):
-            if currPage == pageNumber:
+    for name, shared_item in shares_json.items():
+        if _match_shared_item(search_str_lower_list, shared_item):
+            if curr_page == page_number:
                 # show individual search result
-                sharedItemsForm += \
-                    htmlSearchResultShare(baseDir, sharedItem, translate,
-                                          httpPrefix, domainFull,
-                                          contactNickname,
-                                          name, actor, sharesFileType,
-                                          sharedItem['category'])
-                if not resultsExist and currPage > 1:
+                shared_items_form += \
+                    html_search_result_share(base_dir, shared_item, translate,
+                                             http_prefix, domain_full,
+                                             contact_nickname,
+                                             name, actor, shares_file_type,
+                                             shared_item['category'])
+                if not results_exist and curr_page > 1:
                     # show the previous page button
-                    sharedItemsForm += \
-                        _htmlSearchResultSharePage(actor, domainFull,
-                                                   callingDomain,
-                                                   pageNumber,
-                                                   searchStrLower,
-                                                   translate, True)
-                resultsExist = True
+                    shared_items_form += \
+                        _html_search_result_share_page(actor, domain_full,
+                                                       calling_domain,
+                                                       page_number,
+                                                       search_str_lower,
+                                                       translate, True)
+                results_exist = True
             ctr += 1
-            if ctr >= resultsPerPage:
-                currPage += 1
-                if currPage > pageNumber:
+            if ctr >= results_per_page:
+                curr_page += 1
+                if curr_page > page_number:
                     # show the next page button
-                    sharedItemsForm += \
-                        _htmlSearchResultSharePage(actor, domainFull,
-                                                   callingDomain,
-                                                   pageNumber,
-                                                   searchStrLower,
-                                                   translate, False)
-                    return resultsExist, currPage, ctr, sharedItemsForm
+                    shared_items_form += \
+                        _html_search_result_share_page(actor, domain_full,
+                                                       calling_domain,
+                                                       page_number,
+                                                       search_str_lower,
+                                                       translate, False)
+                    return results_exist, curr_page, ctr, shared_items_form
                 ctr = 0
-    return resultsExist, currPage, ctr, sharedItemsForm
+    return results_exist, curr_page, ctr, shared_items_form
 
 
-def htmlSearchSharedItems(cssCache: {}, translate: {},
-                          baseDir: str, searchStr: str,
-                          pageNumber: int,
-                          resultsPerPage: int,
-                          httpPrefix: str,
-                          domainFull: str, actor: str,
-                          callingDomain: str,
-                          sharedItemsFederatedDomains: [],
-                          sharesFileType: str) -> str:
+def html_search_shared_items(css_cache: {}, translate: {},
+                             base_dir: str, search_str: str,
+                             page_number: int,
+                             results_per_page: int,
+                             http_prefix: str,
+                             domain_full: str, actor: str,
+                             calling_domain: str,
+                             shared_items_federated_domains: [],
+                             shares_file_type: str) -> str:
     """Search results for shared items
     """
-    currPage = 1
+    curr_page = 1
     ctr = 0
-    sharedItemsForm = ''
-    searchStrLower = urllib.parse.unquote(searchStr)
-    searchStrLower = searchStrLower.lower().strip('\n').strip('\r')
-    searchStrLowerList = searchStrLower.split('+')
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    shared_items_form = ''
+    search_str_lower = urllib.parse.unquote(search_str)
+    search_str_lower = search_str_lower.lower().strip('\n').strip('\r')
+    search_str_lower_list = search_str_lower.split('+')
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    sharedItemsForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    if sharesFileType == 'shares':
-        titleStr = translate['Shared Items Search']
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    shared_items_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    if shares_file_type == 'shares':
+        title_str = translate['Shared Items Search']
     else:
-        titleStr = translate['Wanted Items Search']
-    sharedItemsForm += \
+        title_str = translate['Wanted Items Search']
+    shared_items_form += \
         '<center><h1>' + \
-        '<a href="' + actor + '/search">' + titleStr + '</a></h1></center>'
-    resultsExist = False
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        '<a href="' + actor + '/search">' + title_str + '</a></h1></center>'
+    results_exist = False
+    for _, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
-            if not isAccountDir(handle):
+            if not is_account_dir(handle):
                 continue
-            contactNickname = handle.split('@')[0]
-            sharesFilename = baseDir + '/accounts/' + handle + \
-                '/' + sharesFileType + '.json'
-            if not os.path.isfile(sharesFilename):
-                continue
-
-            sharesJson = loadJson(sharesFilename)
-            if not sharesJson:
+            contact_nickname = handle.split('@')[0]
+            shares_filename = base_dir + '/accounts/' + handle + \
+                '/' + shares_file_type + '.json'
+            if not os.path.isfile(shares_filename):
                 continue
 
-            (resultsExist, currPage, ctr,
-             resultStr) = _htmlSharesResult(baseDir, sharesJson, pageNumber,
-                                            resultsPerPage,
-                                            searchStrLowerList,
-                                            currPage, ctr,
-                                            callingDomain, httpPrefix,
-                                            domainFull,
-                                            contactNickname,
-                                            actor, resultsExist,
-                                            searchStrLower, translate,
-                                            sharesFileType)
-            sharedItemsForm += resultStr
+            shares_json = load_json(shares_filename)
+            if not shares_json:
+                continue
 
-            if currPage > pageNumber:
+            (results_exist, curr_page, ctr,
+             result_str) = _html_shares_result(base_dir, shares_json,
+                                               page_number,
+                                               results_per_page,
+                                               search_str_lower_list,
+                                               curr_page, ctr,
+                                               calling_domain, http_prefix,
+                                               domain_full,
+                                               contact_nickname,
+                                               actor, results_exist,
+                                               search_str_lower, translate,
+                                               shares_file_type)
+            shared_items_form += result_str
+
+            if curr_page > page_number:
                 break
         break
 
     # search federated shared items
-    if sharesFileType == 'shares':
-        catalogsDir = baseDir + '/cache/catalogs'
+    if shares_file_type == 'shares':
+        catalogs_dir = base_dir + '/cache/catalogs'
     else:
-        catalogsDir = baseDir + '/cache/wantedItems'
-    if currPage <= pageNumber and os.path.isdir(catalogsDir):
-        for subdir, dirs, files in os.walk(catalogsDir):
-            for f in files:
-                if '#' in f:
+        catalogs_dir = base_dir + '/cache/wantedItems'
+    if curr_page <= page_number and os.path.isdir(catalogs_dir):
+        for _, dirs, files in os.walk(catalogs_dir):
+            for fname in files:
+                if '#' in fname:
                     continue
-                if not f.endswith('.' + sharesFileType + '.json'):
+                if not fname.endswith('.' + shares_file_type + '.json'):
                     continue
-                federatedDomain = f.split('.')[0]
-                if federatedDomain not in sharedItemsFederatedDomains:
+                federated_domain = fname.split('.')[0]
+                if federated_domain not in shared_items_federated_domains:
                     continue
-                sharesFilename = catalogsDir + '/' + f
-                sharesJson = loadJson(sharesFilename)
-                if not sharesJson:
+                shares_filename = catalogs_dir + '/' + fname
+                shares_json = load_json(shares_filename)
+                if not shares_json:
                     continue
 
-                (resultsExist, currPage, ctr,
-                 resultStr) = _htmlSharesResult(baseDir, sharesJson,
-                                                pageNumber,
-                                                resultsPerPage,
-                                                searchStrLowerList,
-                                                currPage, ctr,
-                                                callingDomain, httpPrefix,
-                                                domainFull,
-                                                contactNickname,
-                                                actor, resultsExist,
-                                                searchStrLower, translate,
-                                                sharesFileType)
-                sharedItemsForm += resultStr
+                (results_exist, curr_page, ctr,
+                 result_str) = _html_shares_result(base_dir, shares_json,
+                                                   page_number,
+                                                   results_per_page,
+                                                   search_str_lower_list,
+                                                   curr_page, ctr,
+                                                   calling_domain, http_prefix,
+                                                   domain_full,
+                                                   contact_nickname,
+                                                   actor, results_exist,
+                                                   search_str_lower, translate,
+                                                   shares_file_type)
+                shared_items_form += result_str
 
-                if currPage > pageNumber:
+                if curr_page > page_number:
                     break
             break
 
-    if not resultsExist:
-        sharedItemsForm += \
+    if not results_exist:
+        shared_items_form += \
             '<center><h5>' + translate['No results'] + '</h5></center>\n'
-    sharedItemsForm += htmlFooter()
-    return sharedItemsForm
+    shared_items_form += html_footer()
+    return shared_items_form
 
 
-def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
-                             baseDir: str, path: str) -> str:
+def html_search_emoji_text_entry(css_cache: {}, translate: {},
+                                 base_dir: str, path: str) -> str:
     """Search for an emoji by name
     """
     # emoji.json is generated so that it can be customized and the changes
     # will be retained even if default_emoji.json is subsequently updated
-    if not os.path.isfile(baseDir + '/emoji/emoji.json'):
-        copyfile(baseDir + '/emoji/default_emoji.json',
-                 baseDir + '/emoji/emoji.json')
+    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+        copyfile(base_dir + '/emoji/default_emoji.json',
+                 base_dir + '/emoji/emoji.json')
 
     actor = path.replace('/search', '')
-    domain, port = getDomainFromActor(actor)
 
-    setCustomBackground(baseDir, 'search-background', 'follow-background')
+    set_custom_background(base_dir, 'search-background', 'follow-background')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        css_filename = base_dir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    emojiStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    emojiStr += '<div class="follow">\n'
-    emojiStr += '  <div class="followAvatar">\n'
-    emojiStr += '  <center>\n'
-    emojiStr += \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    emoji_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    emoji_str += '<div class="follow">\n'
+    emoji_str += '  <div class="followAvatar">\n'
+    emoji_str += '  <center>\n'
+    emoji_str += \
         '  <p class="followText">' + \
         translate['Enter an emoji name to search for'] + '</p>\n'
-    emojiStr += '  <form role="search" method="POST" action="' + \
+    emoji_str += '  <form role="search" method="POST" action="' + \
         actor + '/searchhandleemoji">\n'
-    emojiStr += '    <input type="hidden" name="actor" value="' + \
+    emoji_str += '    <input type="hidden" name="actor" value="' + \
         actor + '">\n'
-    emojiStr += '    <input type="text" name="searchtext" autofocus><br>\n'
-    emojiStr += \
+    emoji_str += '    <input type="text" name="searchtext" autofocus><br>\n'
+    emoji_str += \
         '    <button type="submit" class="button" name="submitSearch">' + \
         translate['Submit'] + '</button>\n'
-    emojiStr += '  </form>\n'
-    emojiStr += '  </center>\n'
-    emojiStr += '  </div>\n'
-    emojiStr += '</div>\n'
-    emojiStr += htmlFooter()
-    return emojiStr
+    emoji_str += '  </form>\n'
+    emoji_str += '  </center>\n'
+    emoji_str += '  </div>\n'
+    emoji_str += '</div>\n'
+    emoji_str += html_footer()
+    return emoji_str
 
 
-def htmlSearch(cssCache: {}, translate: {},
-               baseDir: str, path: str, domain: str,
-               defaultTimeline: str, theme: str,
-               textModeBanner: str, accessKeys: {}) -> str:
+def html_search(css_cache: {}, translate: {},
+                base_dir: str, path: str, domain: str,
+                default_timeline: str, theme: str,
+                text_mode_banner: str, access_keys: {}) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
-    searchNickname = getNicknameFromActor(actor)
+    search_nickname = get_nickname_from_actor(actor)
 
-    setCustomBackground(baseDir, 'search-background', 'follow-background')
+    set_custom_background(base_dir, 'search-background', 'follow-background')
 
-    cssFilename = baseDir + '/epicyon-search.css'
-    if os.path.isfile(baseDir + '/search.css'):
-        cssFilename = baseDir + '/search.css'
+    css_filename = base_dir + '/epicyon-search.css'
+    if os.path.isfile(base_dir + '/search.css'):
+        css_filename = base_dir + '/search.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    follow_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # show a banner above the search box
-    searchBannerFile, searchBannerFilename = \
-        getSearchBannerFile(baseDir, searchNickname, domain, theme)
+    search_banner_file, search_banner_filename = \
+        get_search_banner_file(base_dir, search_nickname, domain, theme)
 
-    textModeBannerStr = htmlKeyboardNavigation(textModeBanner, {}, {})
-    if textModeBannerStr is None:
-        textModeBannerStr = ''
+    text_mode_banner_str = html_keyboard_navigation(text_mode_banner, {}, {})
+    if text_mode_banner_str is None:
+        text_mode_banner_str = ''
 
-    if os.path.isfile(searchBannerFilename):
-        timelineKey = accessKeys['menuTimeline']
-        usersPath = '/users/' + searchNickname
-        followStr += \
-            '<header>\n' + textModeBannerStr + \
-            '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
+    if os.path.isfile(search_banner_filename):
+        timeline_key = access_keys['menuTimeline']
+        users_path = '/users/' + search_nickname
+        follow_str += \
+            '<header>\n' + text_mode_banner_str + \
+            '<a href="' + users_path + '/' + default_timeline + '" title="' + \
             translate['Switch to timeline view'] + '" alt="' + \
             translate['Switch to timeline view'] + '" ' + \
-            'accesskey="' + timelineKey + '">\n'
-        followStr += '<img loading="lazy" class="timeline-banner" src="' + \
-            usersPath + '/' + searchBannerFile + '" alt="" /></a>\n' + \
+            'accesskey="' + timeline_key + '">\n'
+        follow_str += '<img loading="lazy" class="timeline-banner" src="' + \
+            users_path + '/' + search_banner_file + '" alt="" /></a>\n' + \
             '</header>\n'
 
     # show the search box
-    followStr += '<div class="follow">\n'
-    followStr += '  <div class="followAvatar">\n'
-    followStr += '  <center>\n'
-    followStr += \
+    follow_str += '<div class="follow">\n'
+    follow_str += '  <div class="followAvatar">\n'
+    follow_str += '  <center>\n'
+    follow_str += \
         '  <p class="followText">' + translate['Search screen text'] + '</p>\n'
-    followStr += '  <form role="search" method="POST" ' + \
+    follow_str += '  <form role="search" method="POST" ' + \
         'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
-    followStr += \
+    follow_str += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
-    followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
-    submitKey = accessKeys['submitButton']
-    followStr += '    <button type="submit" class="button" ' + \
-        'name="submitSearch" accesskey="' + submitKey + '">' + \
+    follow_str += '    <input type="text" name="searchtext" autofocus><br>\n'
+    submit_key = access_keys['submitButton']
+    follow_str += '    <button type="submit" class="button" ' + \
+        'name="submitSearch" accesskey="' + submit_key + '">' + \
         translate['Submit'] + '</button>\n'
-    followStr += '  </form>\n'
+    follow_str += '  </form>\n'
 
-    cachedHashtagSwarmFilename = \
-        acctDir(baseDir, searchNickname, domain) + '/.hashtagSwarm'
-    swarmStr = ''
-    if os.path.isfile(cachedHashtagSwarmFilename):
+    cached_hashtag_swarm_filename = \
+        acct_dir(base_dir, search_nickname, domain) + '/.hashtagSwarm'
+    swarm_str = ''
+    if os.path.isfile(cached_hashtag_swarm_filename):
         try:
-            with open(cachedHashtagSwarmFilename, 'r') as fp:
-                swarmStr = fp.read()
+            with open(cached_hashtag_swarm_filename, 'r') as fp_swarm:
+                swarm_str = fp_swarm.read()
         except OSError:
-            print('EX: htmlSearch unable to read cached hashtag swarm ' +
-                  cachedHashtagSwarmFilename)
-    if not swarmStr:
-        swarmStr = htmlHashTagSwarm(baseDir, actor, translate)
-        if swarmStr:
+            print('EX: html_search unable to read cached hashtag swarm ' +
+                  cached_hashtag_swarm_filename)
+    if not swarm_str:
+        swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
+        if swarm_str:
             try:
-                with open(cachedHashtagSwarmFilename, 'w+') as fp:
-                    fp.write(swarmStr)
+                with open(cached_hashtag_swarm_filename, 'w+') as fp_hash:
+                    fp_hash.write(swarm_str)
             except OSError:
-                print('EX: htmlSearch unable to save cached hashtag swarm ' +
-                      cachedHashtagSwarmFilename)
+                print('EX: html_search unable to save cached hashtag swarm ' +
+                      cached_hashtag_swarm_filename)
 
-    followStr += '  <p class="hashtagswarm">' + swarmStr + '</p>\n'
-    followStr += '  </center>\n'
-    followStr += '  </div>\n'
-    followStr += '</div>\n'
-    followStr += htmlFooter()
-    return followStr
+    follow_str += '  <p class="hashtagswarm">' + swarm_str + '</p>\n'
+    follow_str += '  </center>\n'
+    follow_str += '  </div>\n'
+    follow_str += '</div>\n'
+    follow_str += html_footer()
+    return follow_str
 
 
-def htmlSkillsSearch(actor: str,
-                     cssCache: {}, translate: {}, baseDir: str,
-                     httpPrefix: str,
-                     skillsearch: str, instanceOnly: bool,
-                     postsPerPage: int) -> str:
+def html_skills_search(actor: str,
+                       css_cache: {}, translate: {}, base_dir: str,
+                       http_prefix: str,
+                       skillsearch: str, instance_only: bool,
+                       posts_per_page: int) -> str:
     """Show a page containing search results for a skill
     """
     if skillsearch.startswith('*'):
@@ -468,146 +471,146 @@ def htmlSkillsSearch(actor: str,
 
     results = []
     # search instance accounts
-    for subdir, dirs, files in os.walk(baseDir + '/accounts/'):
-        for f in files:
-            if not f.endswith('.json'):
+    for subdir, _, files in os.walk(base_dir + '/accounts/'):
+        for fname in files:
+            if not fname.endswith('.json'):
                 continue
-            if not isAccountDir(f):
+            if not is_account_dir(fname):
                 continue
-            actorFilename = os.path.join(subdir, f)
-            actorJson = loadJson(actorFilename)
-            if actorJson:
-                if actorJson.get('id') and \
-                   noOfActorSkills(actorJson) > 0 and \
-                   actorJson.get('name') and \
-                   actorJson.get('icon'):
-                    actor = actorJson['id']
-                    actorSkillsList = actorJson['hasOccupation']['skills']
-                    skills = getSkillsFromList(actorSkillsList)
-                    for skillName, skillLevel in skills.items():
-                        skillName = skillName.lower()
-                        if not (skillName in skillsearch or
-                                skillsearch in skillName):
+            actor_filename = os.path.join(subdir, fname)
+            actor_json = load_json(actor_filename)
+            if actor_json:
+                if actor_json.get('id') and \
+                   no_of_actor_skills(actor_json) > 0 and \
+                   actor_json.get('name') and \
+                   actor_json.get('icon'):
+                    actor = actor_json['id']
+                    actor_skills_list = actor_json['hasOccupation']['skills']
+                    skills = get_skills_from_list(actor_skills_list)
+                    for skill_name, skill_level in skills.items():
+                        skill_name = skill_name.lower()
+                        if not (skill_name in skillsearch or
+                                skillsearch in skill_name):
                             continue
-                        skillLevelStr = str(skillLevel)
-                        if skillLevel < 100:
-                            skillLevelStr = '0' + skillLevelStr
-                        if skillLevel < 10:
-                            skillLevelStr = '0' + skillLevelStr
-                        indexStr = \
-                            skillLevelStr + ';' + actor + ';' + \
-                            actorJson['name'] + \
-                            ';' + actorJson['icon']['url']
-                        if indexStr not in results:
-                            results.append(indexStr)
+                        skill_level_str = str(skill_level)
+                        if skill_level < 100:
+                            skill_level_str = '0' + skill_level_str
+                        if skill_level < 10:
+                            skill_level_str = '0' + skill_level_str
+                        index_str = \
+                            skill_level_str + ';' + actor + ';' + \
+                            actor_json['name'] + \
+                            ';' + actor_json['icon']['url']
+                        if index_str not in results:
+                            results.append(index_str)
         break
-    if not instanceOnly:
+    if not instance_only:
         # search actor cache
-        for subdir, dirs, files in os.walk(baseDir + '/cache/actors/'):
-            for f in files:
-                if not f.endswith('.json'):
+        for subdir, _, files in os.walk(base_dir + '/cache/actors/'):
+            for fname in files:
+                if not fname.endswith('.json'):
                     continue
-                if not isAccountDir(f):
+                if not is_account_dir(fname):
                     continue
-                actorFilename = os.path.join(subdir, f)
-                cachedActorJson = loadJson(actorFilename)
-                if cachedActorJson:
-                    if cachedActorJson.get('actor'):
-                        actorJson = cachedActorJson['actor']
-                        if actorJson.get('id') and \
-                           noOfActorSkills(actorJson) > 0 and \
-                           actorJson.get('name') and \
-                           actorJson.get('icon'):
-                            actor = actorJson['id']
-                            actorSkillsList = \
-                                actorJson['hasOccupation']['skills']
-                            skills = getSkillsFromList(actorSkillsList)
-                            for skillName, skillLevel in skills.items():
-                                skillName = skillName.lower()
-                                if not (skillName in skillsearch or
-                                        skillsearch in skillName):
+                actor_filename = os.path.join(subdir, fname)
+                cached_actor_json = load_json(actor_filename)
+                if cached_actor_json:
+                    if cached_actor_json.get('actor'):
+                        actor_json = cached_actor_json['actor']
+                        if actor_json.get('id') and \
+                           no_of_actor_skills(actor_json) > 0 and \
+                           actor_json.get('name') and \
+                           actor_json.get('icon'):
+                            actor = actor_json['id']
+                            actor_skills_list = \
+                                actor_json['hasOccupation']['skills']
+                            skills = get_skills_from_list(actor_skills_list)
+                            for skill_name, skill_level in skills.items():
+                                skill_name = skill_name.lower()
+                                if not (skill_name in skillsearch or
+                                        skillsearch in skill_name):
                                     continue
-                                skillLevelStr = str(skillLevel)
-                                if skillLevel < 100:
-                                    skillLevelStr = '0' + skillLevelStr
-                                if skillLevel < 10:
-                                    skillLevelStr = '0' + skillLevelStr
-                                indexStr = \
-                                    skillLevelStr + ';' + actor + ';' + \
-                                    actorJson['name'] + \
-                                    ';' + actorJson['icon']['url']
-                                if indexStr not in results:
-                                    results.append(indexStr)
+                                skill_level_str = str(skill_level)
+                                if skill_level < 100:
+                                    skill_level_str = '0' + skill_level_str
+                                if skill_level < 10:
+                                    skill_level_str = '0' + skill_level_str
+                                index_str = \
+                                    skill_level_str + ';' + actor + ';' + \
+                                    actor_json['name'] + \
+                                    ';' + actor_json['icon']['url']
+                                if index_str not in results:
+                                    results.append(index_str)
             break
 
     results.sort(reverse=True)
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    skillSearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    skillSearchForm += \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    skill_search_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    skill_search_form += \
         '<center><h1><a href = "' + actor + '/search">' + \
         translate['Skills search'] + ': ' + \
         skillsearch + \
         '</a></h1></center>'
 
     if len(results) == 0:
-        skillSearchForm += \
+        skill_search_form += \
             '<center><h5>' + translate['No results'] + \
             '</h5></center>'
     else:
-        skillSearchForm += '<center>'
+        skill_search_form += '<center>'
         ctr = 0
-        for skillMatch in results:
-            skillMatchFields = skillMatch.split(';')
-            if len(skillMatchFields) != 4:
+        for skill_match in results:
+            skill_match_fields = skill_match.split(';')
+            if len(skill_match_fields) != 4:
                 continue
-            actor = skillMatchFields[1]
-            actorName = skillMatchFields[2]
-            avatarUrl = skillMatchFields[3]
-            skillSearchForm += \
+            actor = skill_match_fields[1]
+            actor_name = skill_match_fields[2]
+            avatar_url = skill_match_fields[3]
+            skill_search_form += \
                 '<div class="search-result""><a href="' + \
                 actor + '/skills">'
-            skillSearchForm += \
-                '<img loading="lazy" src="' + avatarUrl + \
-                '" alt="" /><span class="search-result-text">' + actorName + \
+            skill_search_form += \
+                '<img loading="lazy" src="' + avatar_url + \
+                '" alt="" /><span class="search-result-text">' + actor_name + \
                 '</span></a></div>'
             ctr += 1
-            if ctr >= postsPerPage:
+            if ctr >= posts_per_page:
                 break
-        skillSearchForm += '</center>'
-    skillSearchForm += htmlFooter()
-    return skillSearchForm
+        skill_search_form += '</center>'
+    skill_search_form += html_footer()
+    return skill_search_form
 
 
-def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
-                      httpPrefix: str,
-                      nickname: str, domain: str,
-                      historysearch: str,
-                      postsPerPage: int, pageNumber: int,
-                      projectVersion: str,
-                      recentPostsCache: {},
-                      maxRecentPosts: int,
-                      session,
-                      cachedWebfingers,
-                      personCache: {},
-                      port: int,
-                      YTReplacementDomain: str,
-                      twitterReplacementDomain: str,
-                      showPublishedDateOnly: bool,
-                      peertubeInstances: [],
-                      allowLocalNetworkAccess: bool,
-                      themeName: str, boxName: str,
-                      systemLanguage: str,
-                      maxLikeCount: int,
-                      signingPrivateKeyPem: str,
-                      CWlists: {},
-                      listsEnabled: str) -> str:
+def html_history_search(css_cache: {}, translate: {}, base_dir: str,
+                        http_prefix: str,
+                        nickname: str, domain: str,
+                        historysearch: str,
+                        posts_per_page: int, page_number: int,
+                        project_version: str,
+                        recent_posts_cache: {},
+                        max_recent_posts: int,
+                        session,
+                        cached_webfingers,
+                        person_cache: {},
+                        port: int,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        theme_name: str, boxName: str,
+                        system_language: str,
+                        max_like_count: int,
+                        signing_priv_key_pem: str,
+                        cw_lists: {},
+                        lists_enabled: str) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -615,393 +618,396 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
 
     historysearch = historysearch.lower().strip('\n').strip('\r')
 
-    boxFilenames = \
-        searchBoxPosts(baseDir, nickname, domain,
-                       historysearch, postsPerPage, boxName)
+    box_filenames = \
+        search_box_posts(base_dir, nickname, domain,
+                         historysearch, posts_per_page, boxName)
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    historySearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    history_search_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # add the page title
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
-    historySearchTitle = '🔍 ' + translate['Your Posts']
+    domain_full = get_full_domain(domain, port)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
+    history_search_title = '🔍 ' + translate['Your Posts']
     if boxName == 'bookmarks':
-        historySearchTitle = '🔍 ' + translate['Bookmarks']
+        history_search_title = '🔍 ' + translate['Bookmarks']
 
-    historySearchForm += \
+    history_search_form += \
         '<center><h1><a href="' + actor + '/search">' + \
-        historySearchTitle + '</a></h1></center>'
+        history_search_title + '</a></h1></center>'
 
-    if len(boxFilenames) == 0:
-        historySearchForm += \
+    if len(box_filenames) == 0:
+        history_search_form += \
             '<center><h5>' + translate['No results'] + \
             '</h5></center>'
-        return historySearchForm
+        return history_search_form
 
-    separatorStr = htmlPostSeparator(baseDir, None)
+    separator_str = html_post_separator(base_dir, None)
 
     # ensure that the page number is in bounds
-    if not pageNumber:
-        pageNumber = 1
-    elif pageNumber < 1:
-        pageNumber = 1
+    if not page_number:
+        page_number = 1
+    elif page_number < 1:
+        page_number = 1
 
     # get the start end end within the index file
-    startIndex = int((pageNumber - 1) * postsPerPage)
-    endIndex = startIndex + postsPerPage
-    noOfBoxFilenames = len(boxFilenames)
-    if endIndex >= noOfBoxFilenames and noOfBoxFilenames > 0:
-        endIndex = noOfBoxFilenames - 1
+    start_index = int((page_number - 1) * posts_per_page)
+    end_index = start_index + posts_per_page
+    no_of_box_filenames = len(box_filenames)
+    if end_index >= no_of_box_filenames and no_of_box_filenames > 0:
+        end_index = no_of_box_filenames - 1
 
-    index = startIndex
-    while index <= endIndex:
-        postFilename = boxFilenames[index]
-        if not postFilename:
+    index = start_index
+    while index <= end_index:
+        post_filename = box_filenames[index]
+        if not post_filename:
             index += 1
             continue
-        postJsonObject = loadJson(postFilename)
-        if not postJsonObject:
+        post_json_object = load_json(post_filename)
+        if not post_json_object:
             index += 1
             continue
-        showIndividualPostIcons = True
-        allowDeletion = False
-        postStr = \
-            individualPostAsHtml(signingPrivateKeyPem,
-                                 True, recentPostsCache,
-                                 maxRecentPosts,
-                                 translate, None,
-                                 baseDir, session, cachedWebfingers,
-                                 personCache,
-                                 nickname, domain, port,
-                                 postJsonObject,
-                                 None, True, allowDeletion,
-                                 httpPrefix, projectVersion,
-                                 'search',
-                                 YTReplacementDomain,
-                                 twitterReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances,
-                                 allowLocalNetworkAccess,
-                                 themeName, systemLanguage, maxLikeCount,
-                                 showIndividualPostIcons,
-                                 showIndividualPostIcons,
-                                 False, False, False, False,
-                                 CWlists, listsEnabled)
-        if postStr:
-            historySearchForm += separatorStr + postStr
+        show_individual_post_icons = True
+        allow_deletion = False
+        post_str = \
+            individual_post_as_html(signing_priv_key_pem,
+                                    True, recent_posts_cache,
+                                    max_recent_posts,
+                                    translate, None,
+                                    base_dir, session, cached_webfingers,
+                                    person_cache,
+                                    nickname, domain, port,
+                                    post_json_object,
+                                    None, True, allow_deletion,
+                                    http_prefix, project_version,
+                                    'search',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count,
+                                    show_individual_post_icons,
+                                    show_individual_post_icons,
+                                    False, False, False, False,
+                                    cw_lists, lists_enabled)
+        if post_str:
+            history_search_form += separator_str + post_str
         index += 1
 
-    historySearchForm += htmlFooter()
-    return historySearchForm
+    history_search_form += html_footer()
+    return history_search_form
 
 
-def htmlHashtagSearch(cssCache: {},
-                      nickname: str, domain: str, port: int,
-                      recentPostsCache: {}, maxRecentPosts: int,
-                      translate: {},
-                      baseDir: str, hashtag: str, pageNumber: int,
-                      postsPerPage: int,
-                      session, cachedWebfingers: {}, personCache: {},
-                      httpPrefix: str, projectVersion: str,
-                      YTReplacementDomain: str,
-                      twitterReplacementDomain: str,
-                      showPublishedDateOnly: bool,
-                      peertubeInstances: [],
-                      allowLocalNetworkAccess: bool,
-                      themeName: str, systemLanguage: str,
-                      maxLikeCount: int,
-                      signingPrivateKeyPem: str,
-                      CWlists: {}, listsEnabled: str) -> str:
+def html_hashtag_search(css_cache: {},
+                        nickname: str, domain: str, port: int,
+                        recent_posts_cache: {}, max_recent_posts: int,
+                        translate: {},
+                        base_dir: str, hashtag: str, page_number: int,
+                        posts_per_page: int,
+                        session, cached_webfingers: {}, person_cache: {},
+                        http_prefix: str, project_version: str,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        theme_name: str, system_language: str,
+                        max_like_count: int,
+                        signing_priv_key_pem: str,
+                        cw_lists: {}, lists_enabled: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
-    hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtagIndexFile):
+    hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtag_index_file):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
-            hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtagIndexFile):
-        print('WARN: hashtag file not found ' + hashtagIndexFile)
+            hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtag_index_file):
+        print('WARN: hashtag file not found ' + hashtag_index_file)
         return None
 
-    separatorStr = htmlPostSeparator(baseDir, None)
+    separator_str = html_post_separator(base_dir, None)
 
     # check that the directory for the nickname exists
     if nickname:
-        accountDir = acctDir(baseDir, nickname, domain)
-        if not os.path.isdir(accountDir):
+        account_dir = acct_dir(base_dir, nickname, domain)
+        if not os.path.isdir(account_dir):
             nickname = None
 
     # read the index
-    with open(hashtagIndexFile, 'r') as f:
-        lines = f.readlines()
+    with open(hashtag_index_file, 'r') as fp_hash:
+        lines = fp_hash.readlines()
 
     # read the css
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
     # ensure that the page number is in bounds
-    if not pageNumber:
-        pageNumber = 1
-    elif pageNumber < 1:
-        pageNumber = 1
+    if not page_number:
+        page_number = 1
+    elif page_number < 1:
+        page_number = 1
 
     # get the start end end within the index file
-    startIndex = int((pageNumber - 1) * postsPerPage)
-    endIndex = startIndex + postsPerPage
-    noOfLines = len(lines)
-    if endIndex >= noOfLines and noOfLines > 0:
-        endIndex = noOfLines - 1
+    start_index = int((page_number - 1) * posts_per_page)
+    end_index = start_index + posts_per_page
+    no_of_lines = len(lines)
+    if end_index >= no_of_lines and no_of_lines > 0:
+        end_index = no_of_lines - 1
 
     # add the page title
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    hashtagSearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    hashtag_search_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
     if nickname:
-        hashtagSearchForm += '<center>\n' + \
+        hashtag_search_form += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
             hashtag + '</a></h1>\n'
     else:
-        hashtagSearchForm += '<center>\n' + \
+        hashtag_search_form += '<center>\n' + \
             '<h1>#' + hashtag + '</h1>\n'
 
     # RSS link for hashtag feed
-    hashtagSearchForm += '<a href="/tags/rss2/' + hashtag + '">'
-    hashtagSearchForm += \
+    hashtag_search_form += '<a href="/tags/rss2/' + hashtag + '">'
+    hashtag_search_form += \
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a></center>\n'
 
     # edit the category for this hashtag
-    if isEditor(baseDir, nickname):
-        category = getHashtagCategory(baseDir, hashtag)
-        hashtagSearchForm += '<div class="hashtagCategoryContainer">\n'
-        hashtagSearchForm += '  <form enctype="multipart/form-data" ' + \
+    if is_editor(base_dir, nickname):
+        category = get_hashtag_category(base_dir, hashtag)
+        hashtag_search_form += '<div class="hashtagCategoryContainer">\n'
+        hashtag_search_form += '  <form enctype="multipart/form-data" ' + \
             'method="POST" accept-charset="UTF-8" action="' + \
             '/users/' + nickname + '/tags/' + hashtag + \
             '/sethashtagcategory">\n'
-        hashtagSearchForm += '    <center>\n'
-        hashtagSearchForm += translate['Category']
-        hashtagSearchForm += \
+        hashtag_search_form += '    <center>\n'
+        hashtag_search_form += translate['Category']
+        hashtag_search_form += \
             '      <input type="text" style="width: 20ch" ' + \
             'name="hashtagCategory" value="' + category + '">\n'
-        hashtagSearchForm += \
+        hashtag_search_form += \
             '      <button type="submit" class="button" name="submitYes">' + \
             translate['Submit'] + '</button>\n'
-        hashtagSearchForm += '    </center>\n'
-        hashtagSearchForm += '  </form>\n'
-        hashtagSearchForm += '</div>\n'
+        hashtag_search_form += '    </center>\n'
+        hashtag_search_form += '  </form>\n'
+        hashtag_search_form += '</div>\n'
 
-    if startIndex > 0:
+    if start_index > 0:
         # previous page link
-        hashtagSearchForm += \
+        hashtag_search_form += \
             '  <center>\n' + \
             '    <a href="/users/' + nickname + \
             '/tags/' + hashtag + '?page=' + \
-            str(pageNumber - 1) + \
+            str(page_number - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
-    index = startIndex
-    while index <= endIndex:
-        postId = lines[index].strip('\n').strip('\r')
-        if '  ' not in postId:
-            nickname = getNicknameFromActor(postId)
+    index = start_index
+    while index <= end_index:
+        post_id = lines[index].strip('\n').strip('\r')
+        if '  ' not in post_id:
+            nickname = get_nickname_from_actor(post_id)
             if not nickname:
                 index += 1
                 continue
         else:
-            postFields = postId.split('  ')
-            if len(postFields) != 3:
+            post_fields = post_id.split('  ')
+            if len(post_fields) != 3:
                 index += 1
                 continue
-            nickname = postFields[1]
-            postId = postFields[2]
-        postFilename = locatePost(baseDir, nickname, domain, postId)
-        if not postFilename:
+            nickname = post_fields[1]
+            post_id = post_fields[2]
+        post_filename = locate_post(base_dir, nickname, domain, post_id)
+        if not post_filename:
             index += 1
             continue
-        postJsonObject = loadJson(postFilename)
-        if not postJsonObject:
+        post_json_object = load_json(post_filename)
+        if not post_json_object:
             index += 1
             continue
-        if not isPublicPost(postJsonObject):
+        if not is_public_post(post_json_object):
             index += 1
             continue
-        showIndividualPostIcons = False
+        show_individual_post_icons = False
         if nickname:
-            showIndividualPostIcons = True
-        allowDeletion = False
-        showRepeats = showIndividualPostIcons
-        showIcons = showIndividualPostIcons
-        manuallyApprovesFollowers = False
-        showPublicOnly = False
-        storeToCache = False
-        allowDownloads = True
-        avatarUrl = None
-        showAvatarOptions = True
-        postStr = \
-            individualPostAsHtml(signingPrivateKeyPem,
-                                 allowDownloads, recentPostsCache,
-                                 maxRecentPosts,
-                                 translate, None,
-                                 baseDir, session, cachedWebfingers,
-                                 personCache,
-                                 nickname, domain, port,
-                                 postJsonObject,
-                                 avatarUrl, showAvatarOptions,
-                                 allowDeletion,
-                                 httpPrefix, projectVersion,
-                                 'search',
-                                 YTReplacementDomain,
-                                 twitterReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances,
-                                 allowLocalNetworkAccess,
-                                 themeName, systemLanguage, maxLikeCount,
-                                 showRepeats, showIcons,
-                                 manuallyApprovesFollowers,
-                                 showPublicOnly,
-                                 storeToCache, False, CWlists,
-                                 listsEnabled)
-        if postStr:
-            hashtagSearchForm += separatorStr + postStr
+            show_individual_post_icons = True
+        allow_deletion = False
+        show_repeats = show_individual_post_icons
+        show_icons = show_individual_post_icons
+        manually_approves_followers = False
+        show_public_only = False
+        store_to_sache = False
+        allow_downloads = True
+        avatar_url = None
+        show_avatar_options = True
+        post_str = \
+            individual_post_as_html(signing_priv_key_pem,
+                                    allow_downloads, recent_posts_cache,
+                                    max_recent_posts,
+                                    translate, None,
+                                    base_dir, session, cached_webfingers,
+                                    person_cache,
+                                    nickname, domain, port,
+                                    post_json_object,
+                                    avatar_url, show_avatar_options,
+                                    allow_deletion,
+                                    http_prefix, project_version,
+                                    'search',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count,
+                                    show_repeats, show_icons,
+                                    manually_approves_followers,
+                                    show_public_only,
+                                    store_to_sache, False, cw_lists,
+                                    lists_enabled)
+        if post_str:
+            hashtag_search_form += separator_str + post_str
         index += 1
 
-    if endIndex < noOfLines - 1:
+    if end_index < no_of_lines - 1:
         # next page link
-        hashtagSearchForm += \
+        hashtag_search_form += \
             '  <center>\n' + \
             '    <a href="/users/' + nickname + '/tags/' + hashtag + \
-            '?page=' + str(pageNumber + 1) + \
+            '?page=' + str(page_number + 1) + \
             '"><img loading="lazy" class="pageicon" src="/icons' + \
             '/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>' + \
             '  </center>'
-    hashtagSearchForm += htmlFooter()
-    return hashtagSearchForm
+    hashtag_search_form += html_footer()
+    return hashtag_search_form
 
 
-def rssHashtagSearch(nickname: str, domain: str, port: int,
-                     recentPostsCache: {}, maxRecentPosts: int,
-                     translate: {},
-                     baseDir: str, hashtag: str,
-                     postsPerPage: int,
-                     session, cachedWebfingers: {}, personCache: {},
-                     httpPrefix: str, projectVersion: str,
-                     YTReplacementDomain: str,
-                     twitterReplacementDomain: str,
-                     systemLanguage: str) -> str:
+def rss_hashtag_search(nickname: str, domain: str, port: int,
+                       recent_posts_cache: {}, max_recent_posts: int,
+                       translate: {},
+                       base_dir: str, hashtag: str,
+                       posts_per_page: int,
+                       session, cached_webfingers: {}, person_cache: {},
+                       http_prefix: str, project_version: str,
+                       yt_replace_domain: str,
+                       twitter_replacement_domain: str,
+                       system_language: str) -> str:
     """Show an rss feed for a hashtag
     """
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
-    hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtagIndexFile):
+    hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtag_index_file):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
-            hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtagIndexFile):
-        print('WARN: hashtag file not found ' + hashtagIndexFile)
+            hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtag_index_file):
+        print('WARN: hashtag file not found ' + hashtag_index_file)
         return None
 
     # check that the directory for the nickname exists
     if nickname:
-        accountDir = acctDir(baseDir, nickname, domain)
-        if not os.path.isdir(accountDir):
+        account_dir = acct_dir(base_dir, nickname, domain)
+        if not os.path.isdir(account_dir):
             nickname = None
 
     # read the index
     lines = []
-    with open(hashtagIndexFile, 'r') as f:
-        lines = f.readlines()
+    with open(hashtag_index_file, 'r') as fp_hash:
+        lines = fp_hash.readlines()
     if not lines:
         return None
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
-    maxFeedLength = 10
-    hashtagFeed = \
-        rss2TagHeader(hashtag, httpPrefix, domainFull)
+    max_feed_length = 10
+    hashtag_feed = \
+        rss2tag_header(hashtag, http_prefix, domain_full)
     for index in range(len(lines)):
-        postId = lines[index].strip('\n').strip('\r')
-        if '  ' not in postId:
-            nickname = getNicknameFromActor(postId)
+        post_id = lines[index].strip('\n').strip('\r')
+        if '  ' not in post_id:
+            nickname = get_nickname_from_actor(post_id)
             if not nickname:
                 index += 1
-                if index >= maxFeedLength:
+                if index >= max_feed_length:
                     break
                 continue
         else:
-            postFields = postId.split('  ')
-            if len(postFields) != 3:
+            post_fields = post_id.split('  ')
+            if len(post_fields) != 3:
                 index += 1
-                if index >= maxFeedLength:
+                if index >= max_feed_length:
                     break
                 continue
-            nickname = postFields[1]
-            postId = postFields[2]
-        postFilename = locatePost(baseDir, nickname, domain, postId)
-        if not postFilename:
+            nickname = post_fields[1]
+            post_id = post_fields[2]
+        post_filename = locate_post(base_dir, nickname, domain, post_id)
+        if not post_filename:
             index += 1
-            if index >= maxFeedLength:
+            if index >= max_feed_length:
                 break
             continue
-        postJsonObject = loadJson(postFilename)
-        if postJsonObject:
-            if not isPublicPost(postJsonObject):
+        post_json_object = load_json(post_filename)
+        if post_json_object:
+            if not is_public_post(post_json_object):
                 index += 1
-                if index >= maxFeedLength:
+                if index >= max_feed_length:
                     break
                 continue
             # add to feed
-            if postJsonObject['object'].get('content') and \
-               postJsonObject['object'].get('attributedTo') and \
-               postJsonObject['object'].get('published'):
-                published = postJsonObject['object']['published']
-                pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-                rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
-                hashtagFeed += '     <item>'
-                hashtagFeed += \
+            if post_json_object['object'].get('content') and \
+               post_json_object['object'].get('attributedTo') and \
+               post_json_object['object'].get('published'):
+                published = post_json_object['object']['published']
+                pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
+                hashtag_feed += '     <item>'
+                hashtag_feed += \
                     '         <author>' + \
-                    postJsonObject['object']['attributedTo'] + \
+                    post_json_object['object']['attributedTo'] + \
                     '</author>'
-                if postJsonObject['object'].get('summary'):
-                    hashtagFeed += \
+                if post_json_object['object'].get('summary'):
+                    hashtag_feed += \
                         '         <title>' + \
-                        postJsonObject['object']['summary'] + \
+                        post_json_object['object']['summary'] + \
                         '</title>'
                 description = \
-                    getBaseContentFromPost(postJsonObject, systemLanguage)
-                description = firstParagraphFromString(description)
-                hashtagFeed += \
+                    get_base_content_from_post(post_json_object,
+                                               system_language)
+                description = first_paragraph_from_string(description)
+                hashtag_feed += \
                     '         <description>' + description + '</description>'
-                hashtagFeed += \
-                    '         <pubDate>' + rssDateStr + '</pubDate>'
-                if postJsonObject['object'].get('attachment'):
-                    for attach in postJsonObject['object']['attachment']:
+                hashtag_feed += \
+                    '         <pubDate>' + rss_date_str + '</pubDate>'
+                if post_json_object['object'].get('attachment'):
+                    for attach in post_json_object['object']['attachment']:
                         if not attach.get('url'):
                             continue
-                        hashtagFeed += \
+                        hashtag_feed += \
                             '         <link>' + attach['url'] + '</link>'
-                hashtagFeed += '     </item>'
+                hashtag_feed += '     </item>'
         index += 1
-        if index >= maxFeedLength:
+        if index >= max_feed_length:
             break
 
-    return hashtagFeed + rss2TagFooter()
+    return hashtag_feed + rss2tag_footer()

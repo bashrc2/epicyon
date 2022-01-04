@@ -9,298 +9,308 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
-from utils import getFullDomain
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
-from utils import locatePost
-from utils import loadJson
-from utils import getConfigParam
-from utils import getAltPath
-from utils import acctDir
-from webapp_utils import setCustomBackground
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_post import individualPostAsHtml
+from utils import get_full_domain
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import locate_post
+from utils import load_json
+from utils import get_config_param
+from utils import get_alt_path
+from utils import acct_dir
+from webapp_utils import set_custom_background
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_post import individual_post_as_html
 
 
-def htmlConfirmDelete(cssCache: {},
-                      recentPostsCache: {}, maxRecentPosts: int,
-                      translate, pageNumber: int,
-                      session, baseDir: str, messageId: str,
-                      httpPrefix: str, projectVersion: str,
-                      cachedWebfingers: {}, personCache: {},
-                      callingDomain: str,
-                      YTReplacementDomain: str,
-                      twitterReplacementDomain: str,
-                      showPublishedDateOnly: bool,
-                      peertubeInstances: [],
-                      allowLocalNetworkAccess: bool,
-                      themeName: str, systemLanguage: str,
-                      maxLikeCount: int, signingPrivateKeyPem: str,
-                      CWlists: {}, listsEnabled: str) -> str:
+def html_confirm_delete(css_cache: {},
+                        recent_posts_cache: {}, max_recent_posts: int,
+                        translate, page_number: int,
+                        session, base_dir: str, message_id: str,
+                        http_prefix: str, project_version: str,
+                        cached_webfingers: {}, person_cache: {},
+                        calling_domain: str,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        theme_name: str, system_language: str,
+                        max_like_count: int, signing_priv_key_pem: str,
+                        cw_lists: {}, lists_enabled: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
-    if '/statuses/' not in messageId:
+    if '/statuses/' not in message_id:
         return None
-    actor = messageId.split('/statuses/')[0]
-    nickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
-    domainFull = getFullDomain(domain, port)
+    actor = message_id.split('/statuses/')[0]
+    nickname = get_nickname_from_actor(actor)
+    domain, port = get_domain_from_actor(actor)
+    domain_full = get_full_domain(domain, port)
 
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
-    if not postFilename:
-        return None
-
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
+    if not post_filename:
         return None
 
-    deletePostStr = None
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
+        return None
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    deletePostStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    deletePostStr += \
-        individualPostAsHtml(signingPrivateKeyPem,
-                             True, recentPostsCache, maxRecentPosts,
-                             translate, pageNumber,
-                             baseDir, session, cachedWebfingers, personCache,
-                             nickname, domain, port, postJsonObject,
-                             None, True, False,
-                             httpPrefix, projectVersion, 'outbox',
-                             YTReplacementDomain,
-                             twitterReplacementDomain,
-                             showPublishedDateOnly,
-                             peertubeInstances, allowLocalNetworkAccess,
-                             themeName, systemLanguage, maxLikeCount,
-                             False, False, False, False, False, False,
-                             CWlists, listsEnabled)
-    deletePostStr += '<center>'
-    deletePostStr += \
+    delete_post_str = None
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
+
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    delete_post_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    delete_post_str += \
+        individual_post_as_html(signing_priv_key_pem,
+                                True, recent_posts_cache, max_recent_posts,
+                                translate, page_number,
+                                base_dir, session,
+                                cached_webfingers, person_cache,
+                                nickname, domain, port, post_json_object,
+                                None, True, False,
+                                http_prefix, project_version, 'outbox',
+                                yt_replace_domain,
+                                twitter_replacement_domain,
+                                show_published_date_only,
+                                peertube_instances, allow_local_network_access,
+                                theme_name, system_language, max_like_count,
+                                False, False, False, False, False, False,
+                                cw_lists, lists_enabled)
+    delete_post_str += '<center>'
+    delete_post_str += \
         '  <p class="followText">' + \
         translate['Delete this post?'] + '</p>'
 
-    postActor = getAltPath(actor, domainFull, callingDomain)
-    deletePostStr += \
-        '  <form method="POST" action="' + postActor + '/rmpost">\n'
-    deletePostStr += \
+    post_actor = get_alt_path(actor, domain_full, calling_domain)
+    delete_post_str += \
+        '  <form method="POST" action="' + post_actor + '/rmpost">\n'
+    delete_post_str += \
         '    <input type="hidden" name="pageNumber" value="' + \
-        str(pageNumber) + '">\n'
-    deletePostStr += \
+        str(page_number) + '">\n'
+    delete_post_str += \
         '    <input type="hidden" name="messageId" value="' + \
-        messageId + '">\n'
-    deletePostStr += \
+        message_id + '">\n'
+    delete_post_str += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'
-    deletePostStr += \
+    delete_post_str += \
         '    <a href="' + actor + '/inbox"><button class="button">' + \
         translate['No'] + '</button></a>\n'
-    deletePostStr += '  </form>\n'
-    deletePostStr += '</center>\n'
-    deletePostStr += htmlFooter()
-    return deletePostStr
+    delete_post_str += '  </form>\n'
+    delete_post_str += '</center>\n'
+    delete_post_str += html_footer()
+    return delete_post_str
 
 
-def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
-                                actor: str, itemID: str,
-                                callingDomain: str,
-                                sharesFileType: str) -> str:
+def html_confirm_remove_shared_item(css_cache: {}, translate: {},
+                                    base_dir: str,
+                                    actor: str, item_id: str,
+                                    calling_domain: str,
+                                    shares_file_type: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
-    nickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
-    domainFull = getFullDomain(domain, port)
-    sharesFile = \
-        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
-    if not os.path.isfile(sharesFile):
-        print('ERROR: no ' + sharesFileType + ' file ' + sharesFile)
+    nickname = get_nickname_from_actor(actor)
+    domain, port = get_domain_from_actor(actor)
+    domain_full = get_full_domain(domain, port)
+    shares_file = \
+        acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
+    if not os.path.isfile(shares_file):
+        print('ERROR: no ' + shares_file_type + ' file ' + shares_file)
         return None
-    sharesJson = loadJson(sharesFile)
-    if not sharesJson:
-        print('ERROR: unable to load ' + sharesFileType + '.json')
+    shares_json = load_json(shares_file)
+    if not shares_json:
+        print('ERROR: unable to load ' + shares_file_type + '.json')
         return None
-    if not sharesJson.get(itemID):
-        print('ERROR: share named "' + itemID + '" is not in ' + sharesFile)
+    if not shares_json.get(item_id):
+        print('ERROR: share named "' + item_id + '" is not in ' + shares_file)
         return None
-    sharedItemDisplayName = sharesJson[itemID]['displayName']
-    sharedItemImageUrl = None
-    if sharesJson[itemID].get('imageUrl'):
-        sharedItemImageUrl = sharesJson[itemID]['imageUrl']
+    shared_item_display_name = shares_json[item_id]['displayName']
+    shared_item_image_url = None
+    if shares_json[item_id].get('imageUrl'):
+        shared_item_image_url = shares_json[item_id]['imageUrl']
 
-    setCustomBackground(baseDir, 'shares-background', 'follow-background')
+    set_custom_background(base_dir, 'shares-background', 'follow-background')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        css_filename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    sharesStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    sharesStr += '<div class="follow">\n'
-    sharesStr += '  <div class="followAvatar">\n'
-    sharesStr += '  <center>\n'
-    if sharedItemImageUrl:
-        sharesStr += '  <img loading="lazy" src="' + \
-            sharedItemImageUrl + '"/>\n'
-    sharesStr += \
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    shares_str = html_header_with_external_style(css_filename,
+                                                 instance_title, None)
+    shares_str += '<div class="follow">\n'
+    shares_str += '  <div class="followAvatar">\n'
+    shares_str += '  <center>\n'
+    if shared_item_image_url:
+        shares_str += '  <img loading="lazy" src="' + \
+            shared_item_image_url + '"/>\n'
+    shares_str += \
         '  <p class="followText">' + translate['Remove'] + \
-        ' ' + sharedItemDisplayName + ' ?</p>\n'
-    postActor = getAltPath(actor, domainFull, callingDomain)
-    if sharesFileType == 'shares':
+        ' ' + shared_item_display_name + ' ?</p>\n'
+    post_actor = get_alt_path(actor, domain_full, calling_domain)
+    if shares_file_type == 'shares':
         endpoint = 'rmshare'
     else:
         endpoint = 'rmwanted'
-    sharesStr += \
-        '  <form method="POST" action="' + postActor + '/' + endpoint + '">\n'
-    sharesStr += \
+    shares_str += \
+        '  <form method="POST" action="' + post_actor + '/' + endpoint + '">\n'
+    shares_str += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
-    sharesStr += '    <input type="hidden" name="itemID" value="' + \
-        itemID + '">\n'
-    sharesStr += \
+    shares_str += '    <input type="hidden" name="itemID" value="' + \
+        item_id + '">\n'
+    shares_str += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'
-    sharesStr += \
+    shares_str += \
         '    <a href="' + actor + '/inbox' + '"><button class="button">' + \
         translate['No'] + '</button></a>\n'
-    sharesStr += '  </form>\n'
-    sharesStr += '  </center>\n'
-    sharesStr += '  </div>\n'
-    sharesStr += '</div>\n'
-    sharesStr += htmlFooter()
-    return sharesStr
+    shares_str += '  </form>\n'
+    shares_str += '  </center>\n'
+    shares_str += '  </div>\n'
+    shares_str += '</div>\n'
+    shares_str += html_footer()
+    return shares_str
 
 
-def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
-                      originPathStr: str,
-                      followActor: str,
-                      followProfileUrl: str) -> str:
+def html_confirm_follow(css_cache: {}, translate: {}, base_dir: str,
+                        origin_path_str: str,
+                        follow_actor: str,
+                        follow_profile_url: str) -> str:
     """Asks to confirm a follow
     """
-    followDomain, port = getDomainFromActor(followActor)
+    follow_domain, _ = get_domain_from_actor(follow_actor)
 
-    if os.path.isfile(baseDir + '/accounts/follow-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/follow-background.jpg'):
-            copyfile(baseDir + '/accounts/follow-background-custom.jpg',
-                     baseDir + '/accounts/follow-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/follow-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/follow-background.jpg'):
+            copyfile(base_dir + '/accounts/follow-background-custom.jpg',
+                     base_dir + '/accounts/follow-background.jpg')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        css_filename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    followStr += '<div class="follow">\n'
-    followStr += '  <div class="followAvatar">\n'
-    followStr += '  <center>\n'
-    followStr += '  <a href="' + followActor + '">\n'
-    followStr += '  <img loading="lazy" src="' + followProfileUrl + '"/></a>\n'
-    followStr += \
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    follow_str = html_header_with_external_style(css_filename,
+                                                 instance_title, None)
+    follow_str += '<div class="follow">\n'
+    follow_str += '  <div class="followAvatar">\n'
+    follow_str += '  <center>\n'
+    follow_str += '  <a href="' + follow_actor + '">\n'
+    follow_str += \
+        '  <img loading="lazy" src="' + follow_profile_url + '"/></a>\n'
+    follow_str += \
         '  <p class="followText">' + translate['Follow'] + ' ' + \
-        getNicknameFromActor(followActor) + '@' + followDomain + ' ?</p>\n'
-    followStr += '  <form method="POST" action="' + \
-        originPathStr + '/followconfirm">\n'
-    followStr += '    <input type="hidden" name="actor" value="' + \
-        followActor + '">\n'
-    followStr += \
+        get_nickname_from_actor(follow_actor) + \
+        '@' + follow_domain + ' ?</p>\n'
+    follow_str += '  <form method="POST" action="' + \
+        origin_path_str + '/followconfirm">\n'
+    follow_str += '    <input type="hidden" name="actor" value="' + \
+        follow_actor + '">\n'
+    follow_str += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'
-    followStr += \
-        '    <a href="' + originPathStr + '"><button class="button">' + \
+    follow_str += \
+        '    <a href="' + origin_path_str + '"><button class="button">' + \
         translate['No'] + '</button></a>\n'
-    followStr += '  </form>\n'
-    followStr += '</center>\n'
-    followStr += '</div>\n'
-    followStr += '</div>\n'
-    followStr += htmlFooter()
-    return followStr
+    follow_str += '  </form>\n'
+    follow_str += '</center>\n'
+    follow_str += '</div>\n'
+    follow_str += '</div>\n'
+    follow_str += html_footer()
+    return follow_str
 
 
-def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
-                        originPathStr: str,
-                        followActor: str,
-                        followProfileUrl: str) -> str:
+def html_confirm_unfollow(css_cache: {}, translate: {}, base_dir: str,
+                          origin_path_str: str,
+                          follow_actor: str,
+                          follow_profile_url: str) -> str:
     """Asks to confirm unfollowing an actor
     """
-    followDomain, port = getDomainFromActor(followActor)
+    follow_domain, _ = get_domain_from_actor(follow_actor)
 
-    if os.path.isfile(baseDir + '/accounts/follow-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/follow-background.jpg'):
-            copyfile(baseDir + '/accounts/follow-background-custom.jpg',
-                     baseDir + '/accounts/follow-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/follow-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/follow-background.jpg'):
+            copyfile(base_dir + '/accounts/follow-background-custom.jpg',
+                     base_dir + '/accounts/follow-background.jpg')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        css_filename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    followStr += '<div class="follow">\n'
-    followStr += '  <div class="followAvatar">\n'
-    followStr += '  <center>\n'
-    followStr += '  <a href="' + followActor + '">\n'
-    followStr += '  <img loading="lazy" src="' + followProfileUrl + '"/></a>\n'
-    followStr += \
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    follow_str = html_header_with_external_style(css_filename,
+                                                 instance_title, None)
+    follow_str += '<div class="follow">\n'
+    follow_str += '  <div class="followAvatar">\n'
+    follow_str += '  <center>\n'
+    follow_str += '  <a href="' + follow_actor + '">\n'
+    follow_str += \
+        '  <img loading="lazy" src="' + follow_profile_url + '"/></a>\n'
+    follow_str += \
         '  <p class="followText">' + translate['Stop following'] + \
-        ' ' + getNicknameFromActor(followActor) + \
-        '@' + followDomain + ' ?</p>\n'
-    followStr += '  <form method="POST" action="' + \
-        originPathStr + '/unfollowconfirm">\n'
-    followStr += '    <input type="hidden" name="actor" value="' + \
-        followActor + '">\n'
-    followStr += \
+        ' ' + get_nickname_from_actor(follow_actor) + \
+        '@' + follow_domain + ' ?</p>\n'
+    follow_str += '  <form method="POST" action="' + \
+        origin_path_str + '/unfollowconfirm">\n'
+    follow_str += '    <input type="hidden" name="actor" value="' + \
+        follow_actor + '">\n'
+    follow_str += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'
-    followStr += \
-        '    <a href="' + originPathStr + '"><button class="button">' + \
+    follow_str += \
+        '    <a href="' + origin_path_str + '"><button class="button">' + \
         translate['No'] + '</button></a>\n'
-    followStr += '  </form>\n'
-    followStr += '</center>\n'
-    followStr += '</div>\n'
-    followStr += '</div>\n'
-    followStr += htmlFooter()
-    return followStr
+    follow_str += '  </form>\n'
+    follow_str += '</center>\n'
+    follow_str += '</div>\n'
+    follow_str += '</div>\n'
+    follow_str += html_footer()
+    return follow_str
 
 
-def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
-                       originPathStr: str,
-                       blockActor: str,
-                       blockProfileUrl: str) -> str:
+def html_confirm_unblock(css_cache: {}, translate: {}, base_dir: str,
+                         origin_path_str: str,
+                         block_actor: str,
+                         block_profile_url: str) -> str:
     """Asks to confirm unblocking an actor
     """
-    blockDomain, port = getDomainFromActor(blockActor)
+    block_domain, _ = get_domain_from_actor(block_actor)
 
-    setCustomBackground(baseDir, 'block-background', 'follow-background')
+    set_custom_background(base_dir, 'block-background', 'follow-background')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        css_filename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    blockStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    blockStr += '<div class="block">\n'
-    blockStr += '  <div class="blockAvatar">\n'
-    blockStr += '  <center>\n'
-    blockStr += '  <a href="' + blockActor + '">\n'
-    blockStr += '  <img loading="lazy" src="' + blockProfileUrl + '"/></a>\n'
-    blockStr += \
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    block_str = html_header_with_external_style(css_filename,
+                                                instance_title, None)
+    block_str += '<div class="block">\n'
+    block_str += '  <div class="blockAvatar">\n'
+    block_str += '  <center>\n'
+    block_str += '  <a href="' + block_actor + '">\n'
+    block_str += \
+        '  <img loading="lazy" src="' + block_profile_url + '"/></a>\n'
+    block_str += \
         '  <p class="blockText">' + translate['Stop blocking'] + ' ' + \
-        getNicknameFromActor(blockActor) + '@' + blockDomain + ' ?</p>\n'
-    blockStr += '  <form method="POST" action="' + \
-        originPathStr + '/unblockconfirm">\n'
-    blockStr += '    <input type="hidden" name="actor" value="' + \
-        blockActor + '">\n'
-    blockStr += \
+        get_nickname_from_actor(block_actor) + '@' + block_domain + ' ?</p>\n'
+    block_str += '  <form method="POST" action="' + \
+        origin_path_str + '/unblockconfirm">\n'
+    block_str += '    <input type="hidden" name="actor" value="' + \
+        block_actor + '">\n'
+    block_str += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'
-    blockStr += \
-        '    <a href="' + originPathStr + '"><button class="button">' + \
+    block_str += \
+        '    <a href="' + origin_path_str + '"><button class="button">' + \
         translate['No'] + '</button></a>\n'
-    blockStr += '  </form>\n'
-    blockStr += '</center>\n'
-    blockStr += '</div>\n'
-    blockStr += '</div>\n'
-    blockStr += htmlFooter()
-    return blockStr
+    block_str += '  </form>\n'
+    block_str += '</center>\n'
+    block_str += '</div>\n'
+    block_str += '</div>\n'
+    block_str += html_footer()
+    return block_str

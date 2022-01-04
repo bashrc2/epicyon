@@ -18,128 +18,130 @@ import locale
 from pprint import pprint
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from followingCalendar import addPersonToCalendar
+from followingCalendar import add_person_to_calendar
 
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
-invalidCharacters = (
+INVALID_CHARACTERS = (
     '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡'
 )
 
 
-def localActorUrl(httpPrefix: str, nickname: str, domainFull: str) -> str:
+def local_actor_url(http_prefix: str, nickname: str, domain_full: str) -> str:
     """Returns the url for an actor on this instance
     """
-    return httpPrefix + '://' + domainFull + '/users/' + nickname
+    return http_prefix + '://' + domain_full + '/users/' + nickname
 
 
-def getActorLanguagesList(actorJson: {}) -> []:
+def get_actor_languages_list(actor_json: {}) -> []:
     """Returns a list containing languages used by the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return []
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('languages'):
+        if not property_value['name'].lower().startswith('languages'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        if isinstance(propertyValue['value'], list):
-            langList = propertyValue['value']
-            langList.sort()
-            return langList
-        elif isinstance(propertyValue['value'], str):
-            langStr = propertyValue['value']
-            langListTemp = []
-            if ',' in langStr:
-                langListTemp = langStr.split(',')
-            elif ';' in langStr:
-                langListTemp = langStr.split(';')
-            elif '/' in langStr:
-                langListTemp = langStr.split('/')
-            elif '+' in langStr:
-                langListTemp = langStr.split('+')
-            elif ' ' in langStr:
-                langListTemp = langStr.split(' ')
-            langList = []
-            for lang in langListTemp:
+        if isinstance(property_value['value'], list):
+            lang_list = property_value['value']
+            lang_list.sort()
+            return lang_list
+        if isinstance(property_value['value'], str):
+            lang_str = property_value['value']
+            lang_list_temp = []
+            if ',' in lang_str:
+                lang_list_temp = lang_str.split(',')
+            elif ';' in lang_str:
+                lang_list_temp = lang_str.split(';')
+            elif '/' in lang_str:
+                lang_list_temp = lang_str.split('/')
+            elif '+' in lang_str:
+                lang_list_temp = lang_str.split('+')
+            elif ' ' in lang_str:
+                lang_list_temp = lang_str.split(' ')
+            lang_list = []
+            for lang in lang_list_temp:
                 lang = lang.strip()
-                if lang not in langList:
-                    langList.append(lang)
-            langList.sort()
-            return langList
+                if lang not in lang_list:
+                    lang_list.append(lang)
+            lang_list.sort()
+            return lang_list
     return []
 
 
-def getContentFromPost(postJsonObject: {}, systemLanguage: str,
-                       languagesUnderstood: []) -> str:
+def get_content_from_post(post_json_object: {}, system_language: str,
+                          languages_understood: []) -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """
-    thisPostJson = postJsonObject
-    if hasObjectDict(postJsonObject):
-        thisPostJson = postJsonObject['object']
-    if not thisPostJson.get('content'):
+    this_post_json = post_json_object
+    if has_object_dict(post_json_object):
+        this_post_json = post_json_object['object']
+    if not this_post_json.get('content'):
         return ''
     content = ''
-    if thisPostJson.get('contentMap'):
-        if isinstance(thisPostJson['contentMap'], dict):
-            if thisPostJson['contentMap'].get(systemLanguage):
-                if isinstance(thisPostJson['contentMap'][systemLanguage], str):
-                    return thisPostJson['contentMap'][systemLanguage]
+    if this_post_json.get('contentMap'):
+        if isinstance(this_post_json['contentMap'], dict):
+            if this_post_json['contentMap'].get(system_language):
+                sys_lang = this_post_json['contentMap'][system_language]
+                if isinstance(sys_lang, str):
+                    return this_post_json['contentMap'][system_language]
             else:
                 # is there a contentMap entry for one of
                 # the understood languages?
-                for lang in languagesUnderstood:
-                    if thisPostJson['contentMap'].get(lang):
-                        return thisPostJson['contentMap'][lang]
+                for lang in languages_understood:
+                    if this_post_json['contentMap'].get(lang):
+                        return this_post_json['contentMap'][lang]
     else:
-        if isinstance(thisPostJson['content'], str):
-            content = thisPostJson['content']
+        if isinstance(this_post_json['content'], str):
+            content = this_post_json['content']
     return content
 
 
-def getBaseContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
+def get_base_content_from_post(post_json_object: {},
+                               system_language: str) -> str:
     """Returns the content from the post in the given language
     """
-    thisPostJson = postJsonObject
-    if hasObjectDict(postJsonObject):
-        thisPostJson = postJsonObject['object']
-    if not thisPostJson.get('content'):
+    this_post_json = post_json_object
+    if has_object_dict(post_json_object):
+        this_post_json = post_json_object['object']
+    if not this_post_json.get('content'):
         return ''
-    return thisPostJson['content']
+    return this_post_json['content']
 
 
-def acctDir(baseDir: str, nickname: str, domain: str) -> str:
-    return baseDir + '/accounts/' + nickname + '@' + domain
+def acct_dir(base_dir: str, nickname: str, domain: str) -> str:
+    return base_dir + '/accounts/' + nickname + '@' + domain
 
 
-def isFeaturedWriter(baseDir: str, nickname: str, domain: str) -> bool:
+def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
     """Is the given account a featured writer, appearing in the features
     timeline on news instances?
     """
-    featuresBlockedFilename = \
-        acctDir(baseDir, nickname, domain) + '/.nofeatures'
-    return not os.path.isfile(featuresBlockedFilename)
+    features_blocked_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.nofeatures'
+    return not os.path.isfile(features_blocked_filename)
 
 
-def refreshNewswire(baseDir: str):
+def refresh_newswire(base_dir: str):
     """Causes the newswire to be updates after a change to user accounts
     """
-    refreshNewswireFilename = baseDir + '/accounts/.refresh_newswire'
-    if os.path.isfile(refreshNewswireFilename):
+    refresh_newswire_filename = base_dir + '/accounts/.refresh_newswire'
+    if os.path.isfile(refresh_newswire_filename):
         return
-    with open(refreshNewswireFilename, 'w+') as refreshFile:
-        refreshFile.write('\n')
+    with open(refresh_newswire_filename, 'w+') as refresh_file:
+        refresh_file.write('\n')
 
 
-def getSHA256(msg: str):
+def get_sha_256(msg: str):
     """Returns a SHA256 hash of the given string
     """
     digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
@@ -147,7 +149,7 @@ def getSHA256(msg: str):
     return digest.finalize()
 
 
-def getSHA512(msg: str):
+def get_sha_512(msg: str):
     """Returns a SHA512 hash of the given string
     """
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
@@ -155,7 +157,7 @@ def getSHA512(msg: str):
     return digest.finalize()
 
 
-def _localNetworkHost(host: str) -> bool:
+def _local_network_host(host: str) -> bool:
     """Returns true if the given host is on the local network
     """
     if host.startswith('localhost') or \
@@ -166,143 +168,143 @@ def _localNetworkHost(host: str) -> bool:
     return False
 
 
-def decodedHost(host: str) -> str:
+def decoded_host(host: str) -> str:
     """Convert hostname to internationalized domain
     https://en.wikipedia.org/wiki/Internationalized_domain_name
     """
     if ':' not in host:
         # eg. mydomain:8000
-        if not _localNetworkHost(host):
+        if not _local_network_host(host):
             if not host.endswith('.onion'):
                 if not host.endswith('.i2p'):
                     return idna.decode(host)
     return host
 
 
-def getLockedAccount(actorJson: {}) -> bool:
+def get_locked_account(actor_json: {}) -> bool:
     """Returns whether the given account requires follower approval
     """
-    if not actorJson.get('manuallyApprovesFollowers'):
+    if not actor_json.get('manuallyApprovesFollowers'):
         return False
-    if actorJson['manuallyApprovesFollowers'] is True:
+    if actor_json['manuallyApprovesFollowers'] is True:
         return True
     return False
 
 
-def hasUsersPath(pathStr: str) -> bool:
+def has_users_path(path_str: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
-    usersList = getUserPaths()
-    for usersStr in usersList:
-        if usersStr in pathStr:
+    users_list = get_user_paths()
+    for users_str in users_list:
+        if users_str in path_str:
             return True
-    if '://' in pathStr:
-        domain = pathStr.split('://')[1]
+    if '://' in path_str:
+        domain = path_str.split('://')[1]
         if '/' in domain:
             domain = domain.split('/')[0]
-        if '://' + domain + '/' not in pathStr:
+        if '://' + domain + '/' not in path_str:
             return False
-        nickname = pathStr.split('://' + domain + '/')[1]
+        nickname = path_str.split('://' + domain + '/')[1]
         if '/' in nickname or '.' in nickname:
             return False
         return True
     return False
 
 
-def validPostDate(published: str, maxAgeDays: int, debug: bool) -> bool:
+def valid_post_date(published: str, max_age_days: int, debug: bool) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
-    baselineTime = datetime.datetime(1970, 1, 1)
+    baseline_time = datetime.datetime(1970, 1, 1)
 
-    daysDiff = datetime.datetime.utcnow() - baselineTime
-    nowDaysSinceEpoch = daysDiff.days
+    days_diff = datetime.datetime.utcnow() - baseline_time
+    now_days_since_epoch = days_diff.days
 
     try:
-        postTimeObject = \
+        post_time_object = \
             datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
         if debug:
-            print('EX: validPostDate invalid published date ' + str(published))
+            print('EX: valid_post_date invalid published date ' +
+                  str(published))
         return False
 
-    daysDiff = postTimeObject - baselineTime
-    postDaysSinceEpoch = daysDiff.days
+    days_diff = post_time_object - baseline_time
+    post_days_since_epoch = days_diff.days
 
-    if postDaysSinceEpoch > nowDaysSinceEpoch:
+    if post_days_since_epoch > now_days_since_epoch:
         if debug:
             print("Inbox post has a published date in the future!")
         return False
 
-    if nowDaysSinceEpoch - postDaysSinceEpoch >= maxAgeDays:
+    if now_days_since_epoch - post_days_since_epoch >= max_age_days:
         if debug:
             print("Inbox post is not recent enough")
         return False
     return True
 
 
-def getFullDomain(domain: str, port: int) -> str:
+def get_full_domain(domain: str, port: int) -> str:
     """Returns the full domain name, including port number
     """
     if not port:
         return domain
     if ':' in domain:
         return domain
-    if port == 80 or port == 443:
+    if port in (80, 443):
         return domain
     return domain + ':' + str(port)
 
 
-def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
-              dormantMonths: int) -> bool:
+def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
+               dormant_months: int) -> bool:
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
-    lastSeenFilename = acctDir(baseDir, nickname, domain) + \
+    last_seen_filename = acct_dir(base_dir, nickname, domain) + \
         '/lastseen/' + actor.replace('/', '#') + '.txt'
 
-    if not os.path.isfile(lastSeenFilename):
+    if not os.path.isfile(last_seen_filename):
         return False
 
-    daysSinceEpochStr = None
+    days_since_epoch_str = None
     try:
-        with open(lastSeenFilename, 'r') as lastSeenFile:
-            daysSinceEpochStr = lastSeenFile.read()
+        with open(last_seen_filename, 'r') as last_seen_file:
+            days_since_epoch_str = last_seen_file.read()
     except OSError:
-        print('EX: failed to read last seen ' + lastSeenFilename)
+        print('EX: failed to read last seen ' + last_seen_filename)
         return False
 
-    if daysSinceEpochStr:
-        daysSinceEpoch = int(daysSinceEpochStr)
-        currTime = datetime.datetime.utcnow()
-        currDaysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
-        timeDiffMonths = \
-            int((currDaysSinceEpoch - daysSinceEpoch) / 30)
-        if timeDiffMonths >= dormantMonths:
+    if days_since_epoch_str:
+        days_since_epoch = int(days_since_epoch_str)
+        curr_time = datetime.datetime.utcnow()
+        curr_days_since_epoch = \
+            (curr_time - datetime.datetime(1970, 1, 1)).days
+        time_diff_months = \
+            int((curr_days_since_epoch - days_since_epoch) / 30)
+        if time_diff_months >= dormant_months:
             return True
     return False
 
 
-def isEditor(baseDir: str, nickname: str) -> bool:
+def is_editor(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an editor
     """
-    editorsFile = baseDir + '/accounts/editors.txt'
+    editors_file = base_dir + '/accounts/editors.txt'
 
-    if not os.path.isfile(editorsFile):
-        adminName = getConfigParam(baseDir, 'admin')
-        if not adminName:
-            return False
-        if adminName == nickname:
-            return True
+    if not os.path.isfile(editors_file):
+        admin_name = get_config_param(base_dir, 'admin')
+        if admin_name:
+            if admin_name == nickname:
+                return True
         return False
 
-    with open(editorsFile, 'r') as f:
-        lines = f.readlines()
+    with open(editors_file, 'r') as editors:
+        lines = editors.readlines()
         if len(lines) == 0:
-            adminName = getConfigParam(baseDir, 'admin')
-            if not adminName:
-                return False
-            if adminName == nickname:
-                return True
+            admin_name = get_config_param(base_dir, 'admin')
+            if admin_name:
+                if admin_name == nickname:
+                    return True
         for editor in lines:
             editor = editor.strip('\n').strip('\r')
             if editor == nickname:
@@ -310,27 +312,25 @@ def isEditor(baseDir: str, nickname: str) -> bool:
     return False
 
 
-def isArtist(baseDir: str, nickname: str) -> bool:
+def is_artist(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an artist
     """
-    artistsFile = baseDir + '/accounts/artists.txt'
+    artists_file = base_dir + '/accounts/artists.txt'
 
-    if not os.path.isfile(artistsFile):
-        adminName = getConfigParam(baseDir, 'admin')
-        if not adminName:
-            return False
-        if adminName == nickname:
-            return True
+    if not os.path.isfile(artists_file):
+        admin_name = get_config_param(base_dir, 'admin')
+        if admin_name:
+            if admin_name == nickname:
+                return True
         return False
 
-    with open(artistsFile, 'r') as f:
-        lines = f.readlines()
+    with open(artists_file, 'r') as artists:
+        lines = artists.readlines()
         if len(lines) == 0:
-            adminName = getConfigParam(baseDir, 'admin')
-            if not adminName:
-                return False
-            if adminName == nickname:
-                return True
+            admin_name = get_config_param(base_dir, 'admin')
+            if admin_name:
+                if admin_name == nickname:
+                    return True
         for artist in lines:
             artist = artist.strip('\n').strip('\r')
             if artist == nickname:
@@ -338,28 +338,28 @@ def isArtist(baseDir: str, nickname: str) -> bool:
     return False
 
 
-def getVideoExtensions() -> []:
+def get_video_extensions() -> []:
     """Returns a list of the possible video file extensions
     """
     return ('mp4', 'webm', 'ogv')
 
 
-def getAudioExtensions() -> []:
+def get_audio_extensions() -> []:
     """Returns a list of the possible audio file extensions
     """
     return ('mp3', 'ogg', 'flac')
 
 
-def getImageExtensions() -> []:
+def get_image_extensions() -> []:
     """Returns a list of the possible image file extensions
     """
     return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico')
 
 
-def getImageMimeType(imageFilename: str) -> str:
+def get_image_mime_type(image_filename: str) -> str:
     """Returns the mime type for the given image
     """
-    extensionsToMime = {
+    extensions_to_mime = {
         'png': 'png',
         'jpg': 'jpeg',
         'gif': 'gif',
@@ -368,16 +368,16 @@ def getImageMimeType(imageFilename: str) -> str:
         'webp': 'webp',
         'ico': 'x-icon'
     }
-    for ext, mimeExt in extensionsToMime.items():
-        if imageFilename.endswith('.' + ext):
-            return 'image/' + mimeExt
+    for ext, mime_ext in extensions_to_mime.items():
+        if image_filename.endswith('.' + ext):
+            return 'image/' + mime_ext
     return 'image/png'
 
 
-def getImageExtensionFromMimeType(contentType: str) -> str:
+def get_image_extension_from_mime_type(content_type: str) -> str:
     """Returns the image extension from a mime type, such as image/jpeg
     """
-    imageMedia = {
+    image_media = {
         'png': 'png',
         'jpeg': 'jpg',
         'gif': 'gif',
@@ -386,56 +386,57 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
         'avif': 'avif',
         'x-icon': 'ico'
     }
-    for mimeExt, ext in imageMedia.items():
-        if contentType.endswith(mimeExt):
+    for mime_ext, ext in image_media.items():
+        if content_type.endswith(mime_ext):
             return ext
     return 'png'
 
 
-def getMediaExtensions() -> []:
+def get_media_extensions() -> []:
     """Returns a list of the possible media file extensions
     """
-    return getImageExtensions() + getVideoExtensions() + getAudioExtensions()
+    return get_image_extensions() + \
+        get_video_extensions() + get_audio_extensions()
 
 
-def getImageFormats() -> str:
+def get_image_formats() -> str:
     """Returns a string of permissable image formats
     used when selecting an image for a new post
     """
-    imageExt = getImageExtensions()
+    image_ext = get_image_extensions()
 
-    imageFormats = ''
-    for ext in imageExt:
-        if imageFormats:
-            imageFormats += ', '
-        imageFormats += '.' + ext
-    return imageFormats
+    image_formats = ''
+    for ext in image_ext:
+        if image_formats:
+            image_formats += ', '
+        image_formats += '.' + ext
+    return image_formats
 
 
-def isImageFile(filename: str) -> bool:
+def is_image_file(filename: str) -> bool:
     """Is the given filename an image?
     """
-    for ext in getImageExtensions():
+    for ext in get_image_extensions():
         if filename.endswith('.' + ext):
             return True
     return False
 
 
-def getMediaFormats() -> str:
+def get_media_formats() -> str:
     """Returns a string of permissable media formats
     used when selecting an attachment for a new post
     """
-    mediaExt = getMediaExtensions()
+    media_ext = get_media_extensions()
 
-    mediaFormats = ''
-    for ext in mediaExt:
-        if mediaFormats:
-            mediaFormats += ', '
-        mediaFormats += '.' + ext
-    return mediaFormats
+    media_formats = ''
+    for ext in media_ext:
+        if media_formats:
+            media_formats += ', '
+        media_formats += '.' + ext
+    return media_formats
 
 
-def removeHtml(content: str) -> str:
+def remove_html(content: str) -> str:
     """Removes html links from the given content.
     Used to ensure that profile descriptions don't contain dubious content
     """
@@ -446,135 +447,138 @@ def removeHtml(content: str) -> str:
     content = content.replace('<q>', '"').replace('</q>', '"')
     content = content.replace('</p>', '\n\n').replace('<br>', '\n')
     result = ''
-    for ch in content:
-        if ch == '<':
+    for char in content:
+        if char == '<':
             removing = True
-        elif ch == '>':
+        elif char == '>':
             removing = False
         elif not removing:
-            result += ch
+            result += char
 
-    plainText = result.replace('  ', ' ')
+    plain_text = result.replace('  ', ' ')
 
     # insert spaces after full stops
-    strLen = len(plainText)
+    str_len = len(plain_text)
     result = ''
-    for i in range(strLen):
-        result += plainText[i]
-        if plainText[i] == '.' and i < strLen - 1:
-            if plainText[i + 1] >= 'A' and plainText[i + 1] <= 'Z':
+    for i in range(str_len):
+        result += plain_text[i]
+        if plain_text[i] == '.' and i < str_len - 1:
+            if plain_text[i + 1] >= 'A' and plain_text[i + 1] <= 'Z':
                 result += ' '
 
     result = result.replace('  ', ' ').strip()
     return result
 
 
-def firstParagraphFromString(content: str) -> str:
+def first_paragraph_from_string(content: str) -> str:
     """Get the first paragraph from a blog post
     to be used as a summary in the newswire feed
     """
     if '<p>' not in content or '</p>' not in content:
-        return removeHtml(content)
+        return remove_html(content)
     paragraph = content.split('<p>')[1]
     if '</p>' in paragraph:
         paragraph = paragraph.split('</p>')[0]
-    return removeHtml(paragraph)
+    return remove_html(paragraph)
 
 
-def isSystemAccount(nickname: str) -> bool:
+def is_system_account(nickname: str) -> bool:
     """Returns true if the given nickname is a system account
     """
-    if nickname == 'news' or nickname == 'inbox':
+    if nickname in ('news', 'inbox'):
         return True
     return False
 
 
-def _createConfig(baseDir: str) -> None:
+def _create_config(base_dir: str) -> None:
     """Creates a configuration file
     """
-    configFilename = baseDir + '/config.json'
-    if os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if os.path.isfile(config_filename):
         return
-    configJson = {
+    config_json = {
     }
-    saveJson(configJson, configFilename)
+    save_json(config_json, config_filename)
 
 
-def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
+def set_config_param(base_dir: str, variable_name: str,
+                     variable_value) -> None:
     """Sets a configuration value
     """
-    _createConfig(baseDir)
-    configFilename = baseDir + '/config.json'
-    configJson = {}
-    if os.path.isfile(configFilename):
-        configJson = loadJson(configFilename)
-    configJson[variableName] = variableValue
-    saveJson(configJson, configFilename)
+    _create_config(base_dir)
+    config_filename = base_dir + '/config.json'
+    config_json = {}
+    if os.path.isfile(config_filename):
+        config_json = load_json(config_filename)
+    variable_name = _convert_to_camel_case(variable_name)
+    config_json[variable_name] = variable_value
+    save_json(config_json, config_filename)
 
 
-def getConfigParam(baseDir: str, variableName: str):
+def get_config_param(base_dir: str, variable_name: str):
     """Gets a configuration value
     """
-    _createConfig(baseDir)
-    configFilename = baseDir + '/config.json'
-    configJson = loadJson(configFilename)
-    if configJson:
-        if variableName in configJson:
-            return configJson[variableName]
+    _create_config(base_dir)
+    config_filename = base_dir + '/config.json'
+    config_json = load_json(config_filename)
+    if config_json:
+        variable_name = _convert_to_camel_case(variable_name)
+        if variable_name in config_json:
+            return config_json[variable_name]
     return None
 
 
-def isSuspended(baseDir: str, nickname: str) -> bool:
+def is_suspended(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is suspended
     """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if not adminNickname:
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if not admin_nickname:
         return False
-    if nickname == adminNickname:
+    if nickname == admin_nickname:
         return False
 
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
-    if os.path.isfile(suspendedFilename):
-        with open(suspendedFilename, 'r') as f:
-            lines = f.readlines()
+    suspended_filename = base_dir + '/accounts/suspended.txt'
+    if os.path.isfile(suspended_filename):
+        with open(suspended_filename, 'r') as susp_file:
+            lines = susp_file.readlines()
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return True
     return False
 
 
-def getFollowersList(baseDir: str,
-                     nickname: str, domain: str,
-                     followFile='following.txt') -> []:
+def get_followers_list(base_dir: str,
+                       nickname: str, domain: str,
+                       follow_file='following.txt') -> []:
     """Returns a list of followers for the given account
     """
-    filename = acctDir(baseDir, nickname, domain) + '/' + followFile
+    filename = acct_dir(base_dir, nickname, domain) + '/' + follow_file
 
     if not os.path.isfile(filename):
         return []
 
-    with open(filename, 'r') as f:
-        lines = f.readlines()
+    with open(filename, 'r') as foll_file:
+        lines = foll_file.readlines()
         for i in range(len(lines)):
             lines[i] = lines[i].strip()
         return lines
     return []
 
 
-def getFollowersOfPerson(baseDir: str,
-                         nickname: str, domain: str,
-                         followFile='following.txt') -> []:
+def get_followers_of_person(base_dir: str,
+                            nickname: str, domain: str,
+                            follow_file='following.txt') -> []:
     """Returns a list containing the followers of the given person
     Used by the shared inbox to know who to send incoming mail to
     """
     followers = []
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         return followers
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            filename = os.path.join(subdir, account) + '/' + followFile
+            filename = os.path.join(subdir, account) + '/' + follow_file
             if account == handle or \
                account.startswith('inbox@') or \
                account.startswith('news@'):
@@ -582,10 +586,10 @@ def getFollowersOfPerson(baseDir: str,
             if not os.path.isfile(filename):
                 continue
             with open(filename, 'r') as followingfile:
-                for followingHandle in followingfile:
-                    followingHandle2 = followingHandle.replace('\n', '')
-                    followingHandle2 = followingHandle2.replace('\r', '')
-                    if followingHandle2 == handle:
+                for following_handle in followingfile:
+                    following_handle2 = following_handle.replace('\n', '')
+                    following_handle2 = following_handle2.replace('\r', '')
+                    if following_handle2 == handle:
                         if account not in followers:
                             followers.append(account)
                         break
@@ -593,31 +597,31 @@ def getFollowersOfPerson(baseDir: str,
     return followers
 
 
-def removeIdEnding(idStr: str) -> str:
+def remove_id_ending(id_str: str) -> str:
     """Removes endings such as /activity and /undo
     """
-    if idStr.endswith('/activity'):
-        idStr = idStr[:-len('/activity')]
-    elif idStr.endswith('/undo'):
-        idStr = idStr[:-len('/undo')]
-    elif idStr.endswith('/event'):
-        idStr = idStr[:-len('/event')]
-    elif idStr.endswith('/replies'):
-        idStr = idStr[:-len('/replies')]
-    if idStr.endswith('#Create'):
-        idStr = idStr.split('#Create')[0]
-    return idStr
+    if id_str.endswith('/activity'):
+        id_str = id_str[:-len('/activity')]
+    elif id_str.endswith('/undo'):
+        id_str = id_str[:-len('/undo')]
+    elif id_str.endswith('/event'):
+        id_str = id_str[:-len('/event')]
+    elif id_str.endswith('/replies'):
+        id_str = id_str[:-len('/replies')]
+    if id_str.endswith('#Create'):
+        id_str = id_str.split('#Create')[0]
+    return id_str
 
 
-def removeHashFromPostId(postId: str) -> str:
+def remove_hash_from_post_id(post_id: str) -> str:
     """Removes any has from a post id
     """
-    if '#' not in postId:
-        return postId
-    return postId.split('#')[0]
+    if '#' not in post_id:
+        return post_id
+    return post_id.split('#')[0]
 
 
-def getProtocolPrefixes() -> []:
+def get_protocol_prefixes() -> []:
     """Returns a list of valid prefixes
     """
     return ('https://', 'http://', 'ftp://',
@@ -625,7 +629,7 @@ def getProtocolPrefixes() -> []:
             'hyper://', 'gemini://', 'gopher://')
 
 
-def getLinkPrefixes() -> []:
+def get_link_prefixes() -> []:
     """Returns a list of valid web link prefixes
     """
     return ('https://', 'http://', 'ftp://',
@@ -633,306 +637,312 @@ def getLinkPrefixes() -> []:
             'hyper://', 'gemini://', 'gopher://', 'briar:')
 
 
-def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
+def remove_avatar_from_cache(base_dir: str, actor_str: str) -> None:
     """Removes any existing avatar entries from the cache
     This avoids duplicate entries with differing extensions
     """
-    avatarFilenameExtensions = getImageExtensions()
-    for extension in avatarFilenameExtensions:
-        avatarFilename = \
-            baseDir + '/cache/avatars/' + actorStr + '.' + extension
-        if os.path.isfile(avatarFilename):
+    avatar_filename_extensions = get_image_extensions()
+    for extension in avatar_filename_extensions:
+        avatar_filename = \
+            base_dir + '/cache/avatars/' + actor_str + '.' + extension
+        if os.path.isfile(avatar_filename):
             try:
-                os.remove(avatarFilename)
+                os.remove(avatar_filename)
             except OSError:
-                print('EX: removeAvatarFromCache ' +
-                      'unable to delete cached avatar ' + str(avatarFilename))
+                print('EX: remove_avatar_from_cache ' +
+                      'unable to delete cached avatar ' +
+                      str(avatar_filename))
 
 
-def saveJson(jsonObject: {}, filename: str) -> bool:
+def save_json(json_object: {}, filename: str) -> bool:
     """Saves json to a file
     """
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'w+') as fp:
-                fp.write(json.dumps(jsonObject))
+            with open(filename, 'w+') as json_file:
+                json_file.write(json.dumps(json_object))
                 return True
         except OSError:
-            print('EX: saveJson ' + str(tries))
+            print('EX: save_json ' + str(tries))
             time.sleep(1)
             tries += 1
     return False
 
 
-def loadJson(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
+def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
-    jsonObject = None
+    json_object = None
     tries = 0
-    while tries < maxTries:
+    while tries < max_tries:
         try:
-            with open(filename, 'r') as fp:
-                data = fp.read()
-                jsonObject = json.loads(data)
+            with open(filename, 'r') as json_file:
+                data = json_file.read()
+                json_object = json.loads(data)
                 break
         except BaseException:
-            print('EX: loadJson exception ' + str(filename))
-            if delaySec > 0:
-                time.sleep(delaySec)
+            print('EX: load_json exception ' + str(filename))
+            if delay_sec > 0:
+                time.sleep(delay_sec)
             tries += 1
-    return jsonObject
+    return json_object
 
 
-def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
-                     delaySec: int = 2) -> {}:
+def load_json_onionify(filename: str, domain: str, onion_domain: str,
+                       delay_sec: int = 2) -> {}:
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
     """
-    jsonObject = None
+    json_object = None
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'r') as fp:
-                data = fp.read()
+            with open(filename, 'r') as json_file:
+                data = json_file.read()
                 if data:
-                    data = data.replace(domain, onionDomain)
+                    data = data.replace(domain, onion_domain)
                     data = data.replace('https:', 'http:')
                     print('*****data: ' + data)
-                jsonObject = json.loads(data)
+                json_object = json.loads(data)
                 break
         except BaseException:
-            print('EX: loadJsonOnionify exception ' + str(filename))
-            if delaySec > 0:
-                time.sleep(delaySec)
+            print('EX: load_json_onionify exception ' + str(filename))
+            if delay_sec > 0:
+                time.sleep(delay_sec)
             tries += 1
-    return jsonObject
+    return json_object
 
 
-def getStatusNumber(publishedStr: str = None) -> (str, str):
+def get_status_number(published_str: str = None) -> (str, str):
     """Returns the status number and published date
     """
-    if not publishedStr:
-        currTime = datetime.datetime.utcnow()
+    if not published_str:
+        curr_time = datetime.datetime.utcnow()
     else:
-        currTime = \
-            datetime.datetime.strptime(publishedStr, '%Y-%m-%dT%H:%M:%SZ')
-    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+        curr_time = \
+            datetime.datetime.strptime(published_str, '%Y-%m-%dT%H:%M:%SZ')
+    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
     # status is the number of seconds since epoch
-    statusNumber = \
-        str(((daysSinceEpoch * 24 * 60 * 60) +
-             (currTime.hour * 60 * 60) +
-             (currTime.minute * 60) +
-             currTime.second) * 1000 +
-            int(currTime.microsecond / 1000))
+    status_number = \
+        str(((days_since_epoch * 24 * 60 * 60) +
+             (curr_time.hour * 60 * 60) +
+             (curr_time.minute * 60) +
+             curr_time.second) * 1000 +
+            int(curr_time.microsecond / 1000))
     # See https://github.com/tootsuite/mastodon/blob/
     # 995f8b389a66ab76ec92d9a240de376f1fc13a38/lib/mastodon/snowflake.rb
     # use the leftover microseconds as the sequence number
-    sequenceId = currTime.microsecond % 1000
+    sequence_id = curr_time.microsecond % 1000
     # shift by 16bits "sequence data"
-    statusNumber = str((int(statusNumber) << 16) + sequenceId)
-    published = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-    return statusNumber, published
+    status_number = str((int(status_number) << 16) + sequence_id)
+    published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    return status_number, published
 
 
-def evilIncarnate() -> []:
+def evil_incarnate() -> []:
+    """Hardcoded blocked domains
+    """
     return ('fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz',
             'kiwifarms.cc', 'djitter.com')
 
 
-def isEvil(domain: str) -> bool:
-    # https://www.youtube.com/watch?v=5qw1hcevmdU
+def is_evil(domain: str) -> bool:
+    """ https://www.youtube.com/watch?v=5qw1hcevmdU
+    """
     if not isinstance(domain, str):
         print('WARN: Malformed domain ' + str(domain))
         return True
     # if a domain contains any of these strings then it is
     # declaring itself to be hostile
-    evilEmporium = (
+    evil_emporium = (
         'nazi', 'extremis', 'extreemis', 'gendercritic',
         'kiwifarm', 'illegal', 'raplst', 'rapist',
         'antivax', 'plandemic'
     )
-    for hostileStr in evilEmporium:
-        if hostileStr in domain:
+    for hostile_str in evil_emporium:
+        if hostile_str in domain:
             return True
-    evilDomains = evilIncarnate()
-    for concentratedEvil in evilDomains:
-        if domain.endswith(concentratedEvil):
+    evil_domains = evil_incarnate()
+    for concentrated_evil in evil_domains:
+        if domain.endswith(concentrated_evil):
             return True
     return False
 
 
-def containsInvalidChars(jsonStr: str) -> bool:
+def contains_invalid_chars(json_str: str) -> bool:
     """Does the given json string contain invalid characters?
     """
-    for isInvalid in invalidCharacters:
-        if isInvalid in jsonStr:
+    for is_invalid in INVALID_CHARACTERS:
+        if is_invalid in json_str:
             return True
     return False
 
 
-def removeInvalidChars(text: str) -> str:
+def remove_invalid_chars(text: str) -> str:
     """Removes any invalid characters from a string
     """
-    for isInvalid in invalidCharacters:
-        if isInvalid not in text:
+    for is_invalid in INVALID_CHARACTERS:
+        if is_invalid not in text:
             continue
-        text = text.replace(isInvalid, '')
+        text = text.replace(is_invalid, '')
     return text
 
 
-def createPersonDir(nickname: str, domain: str, baseDir: str,
-                    dirname: str) -> str:
+def create_person_dir(nickname: str, domain: str, base_dir: str,
+                      dir_name: str) -> str:
     """Create a directory for a person
     """
     handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        os.mkdir(baseDir + '/accounts/' + handle)
-    boxDir = baseDir + '/accounts/' + handle + '/' + dirname
-    if not os.path.isdir(boxDir):
-        os.mkdir(boxDir)
-    return boxDir
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
+        os.mkdir(base_dir + '/accounts/' + handle)
+    box_dir = base_dir + '/accounts/' + handle + '/' + dir_name
+    if not os.path.isdir(box_dir):
+        os.mkdir(box_dir)
+    return box_dir
 
 
-def createOutboxDir(nickname: str, domain: str, baseDir: str) -> str:
+def create_outbox_dir(nickname: str, domain: str, base_dir: str) -> str:
     """Create an outbox for a person
     """
-    return createPersonDir(nickname, domain, baseDir, 'outbox')
+    return create_person_dir(nickname, domain, base_dir, 'outbox')
 
 
-def createInboxQueueDir(nickname: str, domain: str, baseDir: str) -> str:
+def create_inbox_queue_dir(nickname: str, domain: str, base_dir: str) -> str:
     """Create an inbox queue and returns the feed filename and directory
     """
-    return createPersonDir(nickname, domain, baseDir, 'queue')
+    return create_person_dir(nickname, domain, base_dir, 'queue')
 
 
-def domainPermitted(domain: str, federationList: []):
-    if len(federationList) == 0:
+def domain_permitted(domain: str, federation_list: []) -> bool:
+    """Is the given domain permitted according to the federation list?
+    """
+    if len(federation_list) == 0:
         return True
-    domain = removeDomainPort(domain)
-    if domain in federationList:
+    domain = remove_domain_port(domain)
+    if domain in federation_list:
         return True
     return False
 
 
-def urlPermitted(url: str, federationList: []):
-    if isEvil(url):
+def url_permitted(url: str, federation_list: []):
+    if is_evil(url):
         return False
-    if not federationList:
+    if not federation_list:
         return True
-    for domain in federationList:
+    for domain in federation_list:
         if domain in url:
             return True
     return False
 
 
-def getLocalNetworkAddresses() -> []:
+def get_local_network_addresses() -> []:
     """Returns patterns for local network address detection
     """
     return ('localhost', '127.0.', '192.168', '10.0.')
 
 
-def isLocalNetworkAddress(ipAddress: str) -> bool:
+def is_local_network_address(ip_address: str) -> bool:
+    """Is the given ip address local?
     """
-    """
-    localIPs = getLocalNetworkAddresses()
-    for ipAddr in localIPs:
-        if ipAddress.startswith(ipAddr):
+    local_ips = get_local_network_addresses()
+    for ip_addr in local_ips:
+        if ip_address.startswith(ip_addr):
             return True
     return False
 
 
-def _isDangerousString(content: str, allowLocalNetworkAccess: bool,
-                       separators: [], invalidStrings: []) -> bool:
+def _is_dangerous_string(content: str, allow_local_network_access: bool,
+                         separators: [], invalid_strings: []) -> bool:
     """Returns true if the given string is dangerous
     """
-    for separatorStyle in separators:
-        startChar = separatorStyle[0]
-        endChar = separatorStyle[1]
-        if startChar not in content:
+    for separator_style in separators:
+        start_char = separator_style[0]
+        end_char = separator_style[1]
+        if start_char not in content:
             continue
-        if endChar not in content:
+        if end_char not in content:
             continue
-        contentSections = content.split(startChar)
-        invalidPartials = ()
-        if not allowLocalNetworkAccess:
-            invalidPartials = getLocalNetworkAddresses()
-        for markup in contentSections:
-            if endChar not in markup:
+        content_sections = content.split(start_char)
+        invalid_partials = ()
+        if not allow_local_network_access:
+            invalid_partials = get_local_network_addresses()
+        for markup in content_sections:
+            if end_char not in markup:
                 continue
-            markup = markup.split(endChar)[0].strip()
-            for partialMatch in invalidPartials:
-                if partialMatch in markup:
+            markup = markup.split(end_char)[0].strip()
+            for partial_match in invalid_partials:
+                if partial_match in markup:
                     return True
             if ' ' not in markup:
-                for badStr in invalidStrings:
-                    if badStr in markup:
+                for bad_str in invalid_strings:
+                    if bad_str in markup:
                         return True
             else:
-                for badStr in invalidStrings:
-                    if badStr + ' ' in markup:
+                for bad_str in invalid_strings:
+                    if bad_str + ' ' in markup:
                         return True
     return False
 
 
-def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
+def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
-    invalidStrings = [
+    invalid_strings = [
         'script', 'noscript', 'code', 'pre',
         'canvas', 'style', 'abbr',
         'frame', 'iframe', 'html', 'body',
         'hr', 'allow-popups', 'allow-scripts'
     ]
-    return _isDangerousString(content, allowLocalNetworkAccess,
-                              separators, invalidStrings)
+    return _is_dangerous_string(content, allow_local_network_access,
+                                separators, invalid_strings)
 
 
-def dangerousSVG(content: str, allowLocalNetworkAccess: bool) -> bool:
+def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
     """Returns true if the given svg file content contains dangerous scripts
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
-    invalidStrings = [
+    invalid_strings = [
         'script'
     ]
-    return _isDangerousString(content, allowLocalNetworkAccess,
-                              separators, invalidStrings)
+    return _is_dangerous_string(content, allow_local_network_access,
+                                separators, invalid_strings)
 
 
-def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
+def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
     """Returns the display name for the given actor
     """
     if '/statuses/' in actor:
         actor = actor.split('/statuses/')[0]
-    if not personCache.get(actor):
+    if not person_cache.get(actor):
         return None
-    nameFound = None
-    if personCache[actor].get('actor'):
-        if personCache[actor]['actor'].get('name'):
-            nameFound = personCache[actor]['actor']['name']
+    name_found = None
+    if person_cache[actor].get('actor'):
+        if person_cache[actor]['actor'].get('name'):
+            name_found = person_cache[actor]['actor']['name']
     else:
         # Try to obtain from the cached actors
-        cachedActorFilename = \
-            baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-        if os.path.isfile(cachedActorFilename):
-            actorJson = loadJson(cachedActorFilename, 1)
-            if actorJson:
-                if actorJson.get('name'):
-                    nameFound = actorJson['name']
-    if nameFound:
-        if dangerousMarkup(nameFound, False):
-            nameFound = "*ADVERSARY*"
-    return nameFound
+        cached_actor_filename = \
+            base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+        if os.path.isfile(cached_actor_filename):
+            actor_json = load_json(cached_actor_filename, 1)
+            if actor_json:
+                if actor_json.get('name'):
+                    name_found = actor_json['name']
+    if name_found:
+        if dangerous_markup(name_found, False):
+            name_found = "*ADVERSARY*"
+    return name_found
 
 
-def _genderFromString(translate: {}, text: str) -> str:
+def _gender_from_string(translate: {}, text: str) -> str:
     """Given some text, does it contain a gender description?
     """
     gender = None
     if not text:
         return None
-    textOrig = text
+    text_orig = text
     text = text.lower()
     if translate['He/Him'].lower() in text or \
        translate['boy'].lower() in text:
@@ -945,112 +955,111 @@ def _genderFromString(translate: {}, text: str) -> str:
     elif 'her' in text or 'she' in text or \
          'fem' in text or 'woman' in text:
         gender = 'She/Her'
-    elif 'man' in text or 'He' in textOrig:
+    elif 'man' in text or 'He' in text_orig:
         gender = 'He/Him'
     return gender
 
 
-def getGenderFromBio(baseDir: str, actor: str, personCache: {},
-                     translate: {}) -> str:
+def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
+                        translate: {}) -> str:
     """Tries to ascertain gender from bio description
     This is for use by text-to-speech for pitch setting
     """
-    defaultGender = 'They/Them'
+    default_gender = 'They/Them'
     if '/statuses/' in actor:
         actor = actor.split('/statuses/')[0]
-    if not personCache.get(actor):
-        return defaultGender
-    bioFound = None
+    if not person_cache.get(actor):
+        return default_gender
+    bio_found = None
     if translate:
-        pronounStr = translate['pronoun'].lower()
+        pronoun_str = translate['pronoun'].lower()
     else:
-        pronounStr = 'pronoun'
-    actorJson = None
-    if personCache[actor].get('actor'):
-        actorJson = personCache[actor]['actor']
+        pronoun_str = 'pronoun'
+    actor_json = None
+    if person_cache[actor].get('actor'):
+        actor_json = person_cache[actor]['actor']
     else:
         # Try to obtain from the cached actors
-        cachedActorFilename = \
-            baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-        if os.path.isfile(cachedActorFilename):
-            actorJson = loadJson(cachedActorFilename, 1)
-    if not actorJson:
-        return defaultGender
+        cached_actor_filename = \
+            base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+        if os.path.isfile(cached_actor_filename):
+            actor_json = load_json(cached_actor_filename, 1)
+    if not actor_json:
+        return default_gender
     # is gender defined as a profile tag?
-    if actorJson.get('attachment'):
-        tagsList = actorJson['attachment']
-        if isinstance(tagsList, list):
+    if actor_json.get('attachment'):
+        tags_list = actor_json['attachment']
+        if isinstance(tags_list, list):
             # look for a gender field name
-            for tag in tagsList:
+            for tag in tags_list:
                 if not isinstance(tag, dict):
                     continue
                 if not tag.get('name') or not tag.get('value'):
                     continue
                 if tag['name'].lower() == \
                    translate['gender'].lower():
-                    bioFound = tag['value']
+                    bio_found = tag['value']
                     break
-                elif tag['name'].lower().startswith(pronounStr):
-                    bioFound = tag['value']
+                if tag['name'].lower().startswith(pronoun_str):
+                    bio_found = tag['value']
                     break
             # the field name could be anything,
             # just look at the value
-            if not bioFound:
-                for tag in tagsList:
+            if not bio_found:
+                for tag in tags_list:
                     if not isinstance(tag, dict):
                         continue
                     if not tag.get('name') or not tag.get('value'):
                         continue
-                    gender = _genderFromString(translate, tag['value'])
+                    gender = _gender_from_string(translate, tag['value'])
                     if gender:
                         return gender
     # if not then use the bio
-    if not bioFound and actorJson.get('summary'):
-        bioFound = actorJson['summary']
-    if not bioFound:
-        return defaultGender
-    gender = _genderFromString(translate, bioFound)
+    if not bio_found and actor_json.get('summary'):
+        bio_found = actor_json['summary']
+    if not bio_found:
+        return default_gender
+    gender = _gender_from_string(translate, bio_found)
     if not gender:
-        gender = defaultGender
+        gender = default_gender
     return gender
 
 
-def getNicknameFromActor(actor: str) -> str:
+def get_nickname_from_actor(actor: str) -> str:
     """Returns the nickname from an actor url
     """
     if actor.startswith('@'):
         actor = actor[1:]
-    usersPaths = getUserPaths()
-    for possiblePath in usersPaths:
-        if possiblePath in actor:
-            nickStr = actor.split(possiblePath)[1].replace('@', '')
-            if '/' not in nickStr:
-                return nickStr
-            else:
-                return nickStr.split('/')[0]
+    users_paths = get_user_paths()
+    for possible_path in users_paths:
+        if possible_path in actor:
+            nick_str = actor.split(possible_path)[1].replace('@', '')
+            if '/' not in nick_str:
+                return nick_str
+            return nick_str.split('/')[0]
     if '/@' in actor:
         # https://domain/@nick
-        nickStr = actor.split('/@')[1]
-        if '/' in nickStr:
-            nickStr = nickStr.split('/')[0]
-        return nickStr
-    elif '@' in actor:
-        nickStr = actor.split('@')[0]
-        return nickStr
-    elif '://' in actor:
+        nick_str = actor.split('/@')[1]
+        if '/' in nick_str:
+            nick_str = nick_str.split('/')[0]
+        return nick_str
+    if '@' in actor:
+        nick_str = actor.split('@')[0]
+        return nick_str
+    if '://' in actor:
         domain = actor.split('://')[1]
         if '/' in domain:
             domain = domain.split('/')[0]
         if '://' + domain + '/' not in actor:
             return None
-        nickStr = actor.split('://' + domain + '/')[1]
-        if '/' in nickStr or '.' in nickStr:
+        nick_str = actor.split('://' + domain + '/')[1]
+        if '/' in nick_str or '.' in nick_str:
             return None
-        return nickStr
+        return nick_str
     return None
 
 
-def getUserPaths() -> []:
+def get_user_paths() -> []:
     """Returns possible user paths
     e.g. /users/nickname, /channel/nickname
     """
@@ -1058,24 +1067,24 @@ def getUserPaths() -> []:
             '/c/', '/video-channels/')
 
 
-def getGroupPaths() -> []:
+def get_group_paths() -> []:
     """Returns possible group paths
     e.g. https://lemmy/c/groupname
     """
     return ['/c/', '/video-channels/']
 
 
-def getDomainFromActor(actor: str) -> (str, int):
+def get_domain_from_actor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """
     if actor.startswith('@'):
         actor = actor[1:]
     port = None
-    prefixes = getProtocolPrefixes()
-    usersPaths = getUserPaths()
-    for possiblePath in usersPaths:
-        if possiblePath in actor:
-            domain = actor.split(possiblePath)[0]
+    prefixes = get_protocol_prefixes()
+    users_paths = get_user_paths()
+    for possible_path in users_paths:
+        if possible_path in actor:
+            domain = actor.split(possible_path)[0]
             for prefix in prefixes:
                 domain = domain.replace(prefix, '')
             break
@@ -1092,237 +1101,238 @@ def getDomainFromActor(actor: str) -> (str, int):
         if '/' in actor:
             domain = domain.split('/')[0]
     if ':' in domain:
-        port = getPortFromDomain(domain)
-        domain = removeDomainPort(domain)
+        port = get_port_from_domain(domain)
+        domain = remove_domain_port(domain)
     return domain, port
 
 
-def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
-                       followNickname: str, followDomain: str) -> None:
+def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
+                          follow_nickname: str, follow_domain: str) -> None:
     """Sets a default petname
     This helps especially when using onion or i2p address
     """
-    domain = removeDomainPort(domain)
-    userPath = acctDir(baseDir, nickname, domain)
-    petnamesFilename = userPath + '/petnames.txt'
+    domain = remove_domain_port(domain)
+    user_path = acct_dir(base_dir, nickname, domain)
+    petnames_filename = user_path + '/petnames.txt'
 
-    petnameLookupEntry = followNickname + ' ' + \
-        followNickname + '@' + followDomain + '\n'
-    if not os.path.isfile(petnamesFilename):
+    petname_lookup_entry = follow_nickname + ' ' + \
+        follow_nickname + '@' + follow_domain + '\n'
+    if not os.path.isfile(petnames_filename):
         # if there is no existing petnames lookup file
-        with open(petnamesFilename, 'w+') as petnamesFile:
-            petnamesFile.write(petnameLookupEntry)
+        with open(petnames_filename, 'w+') as petnames_file:
+            petnames_file.write(petname_lookup_entry)
         return
 
-    with open(petnamesFilename, 'r') as petnamesFile:
-        petnamesStr = petnamesFile.read()
-        if petnamesStr:
-            petnamesList = petnamesStr.split('\n')
-            for pet in petnamesList:
-                if pet.startswith(followNickname + ' '):
+    with open(petnames_filename, 'r') as petnames_file:
+        petnames_str = petnames_file.read()
+        if petnames_str:
+            petnames_list = petnames_str.split('\n')
+            for pet in petnames_list:
+                if pet.startswith(follow_nickname + ' '):
                     # petname already exists
                     return
     # petname doesn't already exist
-    with open(petnamesFilename, 'a+') as petnamesFile:
-        petnamesFile.write(petnameLookupEntry)
+    with open(petnames_filename, 'a+') as petnames_file:
+        petnames_file.write(petname_lookup_entry)
 
 
-def followPerson(baseDir: str, nickname: str, domain: str,
-                 followNickname: str, followDomain: str,
-                 federationList: [], debug: bool,
-                 groupAccount: bool,
-                 followFile: str = 'following.txt') -> bool:
+def follow_person(base_dir: str, nickname: str, domain: str,
+                  follow_nickname: str, follow_domain: str,
+                  federation_list: [], debug: bool,
+                  group_account: bool,
+                  follow_file: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
-    followDomainStrLower = followDomain.lower().replace('\n', '')
-    if not domainPermitted(followDomainStrLower,
-                           federationList):
+    follow_domain_str_lower = follow_domain.lower().replace('\n', '')
+    if not domain_permitted(follow_domain_str_lower,
+                            federation_list):
         if debug:
             print('DEBUG: follow of domain ' +
-                  followDomain + ' not permitted')
+                  follow_domain + ' not permitted')
         return False
     if debug:
-        print('DEBUG: follow of domain ' + followDomain)
+        print('DEBUG: follow of domain ' + follow_domain)
 
     if ':' in domain:
-        domainOnly = removeDomainPort(domain)
-        handle = nickname + '@' + domainOnly
+        domain_only = remove_domain_port(domain)
+        handle = nickname + '@' + domain_only
     else:
         handle = nickname + '@' + domain
 
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('WARN: account for ' + handle + ' does not exist')
         return False
 
-    if ':' in followDomain:
-        followDomainOnly = removeDomainPort(followDomain)
-        handleToFollow = followNickname + '@' + followDomainOnly
+    if ':' in follow_domain:
+        follow_domain_only = remove_domain_port(follow_domain)
+        handle_to_follow = follow_nickname + '@' + follow_domain_only
     else:
-        handleToFollow = followNickname + '@' + followDomain
+        handle_to_follow = follow_nickname + '@' + follow_domain
 
-    if groupAccount:
-        handleToFollow = '!' + handleToFollow
+    if group_account:
+        handle_to_follow = '!' + handle_to_follow
 
     # was this person previously unfollowed?
-    unfollowedFilename = baseDir + '/accounts/' + handle + '/unfollowed.txt'
-    if os.path.isfile(unfollowedFilename):
-        if handleToFollow in open(unfollowedFilename).read():
+    unfollowed_filename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
+    if os.path.isfile(unfollowed_filename):
+        if handle_to_follow in open(unfollowed_filename).read():
             # remove them from the unfollowed file
-            newLines = ''
-            with open(unfollowedFilename, 'r') as f:
-                lines = f.readlines()
+            new_lines = ''
+            with open(unfollowed_filename, 'r') as unfoll_file:
+                lines = unfoll_file.readlines()
                 for line in lines:
-                    if handleToFollow not in line:
-                        newLines += line
-            with open(unfollowedFilename, 'w+') as f:
-                f.write(newLines)
+                    if handle_to_follow not in line:
+                        new_lines += line
+            with open(unfollowed_filename, 'w+') as unfoll_file:
+                unfoll_file.write(new_lines)
 
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
-    handleToFollow = followNickname + '@' + followDomain
-    if groupAccount:
-        handleToFollow = '!' + handleToFollow
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
+    handle_to_follow = follow_nickname + '@' + follow_domain
+    if group_account:
+        handle_to_follow = '!' + handle_to_follow
+    filename = base_dir + '/accounts/' + handle + '/' + follow_file
     if os.path.isfile(filename):
-        if handleToFollow in open(filename).read():
+        if handle_to_follow in open(filename).read():
             if debug:
                 print('DEBUG: follow already exists')
             return True
         # prepend to follow file
         try:
-            with open(filename, 'r+') as f:
-                content = f.read()
-                if handleToFollow + '\n' not in content:
-                    f.seek(0, 0)
-                    f.write(handleToFollow + '\n' + content)
+            with open(filename, 'r+') as foll_file:
+                content = foll_file.read()
+                if handle_to_follow + '\n' not in content:
+                    foll_file.seek(0, 0)
+                    foll_file.write(handle_to_follow + '\n' + content)
                     print('DEBUG: follow added')
-        except Exception as e:
+        except OSError as ex:
             print('WARN: Failed to write entry to follow file ' +
-                  filename + ' ' + str(e))
+                  filename + ' ' + str(ex))
     else:
         # first follow
         if debug:
             print('DEBUG: ' + handle +
-                  ' creating new following file to follow ' + handleToFollow +
+                  ' creating new following file to follow ' +
+                  handle_to_follow +
                   ', filename is ' + filename)
-        with open(filename, 'w+') as f:
-            f.write(handleToFollow + '\n')
+        with open(filename, 'w+') as foll_file:
+            foll_file.write(handle_to_follow + '\n')
 
-    if followFile.endswith('following.txt'):
+    if follow_file.endswith('following.txt'):
         # Default to adding new follows to the calendar.
         # Possibly this could be made optional
         # if following a person add them to the list of
         # calendar follows
         print('DEBUG: adding ' +
-              followNickname + '@' + followDomain + ' to calendar of ' +
+              follow_nickname + '@' + follow_domain + ' to calendar of ' +
               nickname + '@' + domain)
-        addPersonToCalendar(baseDir, nickname, domain,
-                            followNickname, followDomain)
+        add_person_to_calendar(base_dir, nickname, domain,
+                               follow_nickname, follow_domain)
         # add a default petname
-        _setDefaultPetName(baseDir, nickname, domain,
-                           followNickname, followDomain)
+        _set_default_pet_name(base_dir, nickname, domain,
+                              follow_nickname, follow_domain)
     return True
 
 
-def votesOnNewswireItem(status: []) -> int:
+def votes_on_newswire_item(status: []) -> int:
     """Returns the number of votes on a newswire item
     """
-    totalVotes = 0
+    total_votes = 0
     for line in status:
         if 'vote:' in line:
-            totalVotes += 1
-    return totalVotes
+            total_votes += 1
+    return total_votes
 
 
-def locateNewsVotes(baseDir: str, domain: str,
-                    postUrl: str) -> str:
+def locate_news_votes(base_dir: str, domain: str,
+                      post_url: str) -> str:
     """Returns the votes filename for a news post
     within the news user account
     """
-    postUrl = \
-        postUrl.strip().replace('\n', '').replace('\r', '')
+    post_url = \
+        post_url.strip().replace('\n', '').replace('\r', '')
 
     # if this post in the shared inbox?
-    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+    post_url = remove_id_ending(post_url.strip()).replace('/', '#')
 
-    if postUrl.endswith('.json'):
-        postUrl = postUrl + '.votes'
+    if post_url.endswith('.json'):
+        post_url = post_url + '.votes'
     else:
-        postUrl = postUrl + '.json.votes'
+        post_url = post_url + '.json.votes'
 
-    accountDir = baseDir + '/accounts/news@' + domain + '/'
-    postFilename = accountDir + 'outbox/' + postUrl
-    if os.path.isfile(postFilename):
-        return postFilename
+    account_dir = base_dir + '/accounts/news@' + domain + '/'
+    post_filename = account_dir + 'outbox/' + post_url
+    if os.path.isfile(post_filename):
+        return post_filename
 
     return None
 
 
-def locateNewsArrival(baseDir: str, domain: str,
-                      postUrl: str) -> str:
+def locate_news_arrival(base_dir: str, domain: str,
+                        post_url: str) -> str:
     """Returns the arrival time for a news post
     within the news user account
     """
-    postUrl = \
-        postUrl.strip().replace('\n', '').replace('\r', '')
+    post_url = \
+        post_url.strip().replace('\n', '').replace('\r', '')
 
     # if this post in the shared inbox?
-    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+    post_url = remove_id_ending(post_url.strip()).replace('/', '#')
 
-    if postUrl.endswith('.json'):
-        postUrl = postUrl + '.arrived'
+    if post_url.endswith('.json'):
+        post_url = post_url + '.arrived'
     else:
-        postUrl = postUrl + '.json.arrived'
+        post_url = post_url + '.json.arrived'
 
-    accountDir = baseDir + '/accounts/news@' + domain + '/'
-    postFilename = accountDir + 'outbox/' + postUrl
-    if os.path.isfile(postFilename):
-        with open(postFilename, 'r') as arrivalFile:
-            arrival = arrivalFile.read()
+    account_dir = base_dir + '/accounts/news@' + domain + '/'
+    post_filename = account_dir + 'outbox/' + post_url
+    if os.path.isfile(post_filename):
+        with open(post_filename, 'r') as arrival_file:
+            arrival = arrival_file.read()
             if arrival:
-                arrivalDate = \
+                arrival_date = \
                     datetime.datetime.strptime(arrival,
                                                "%Y-%m-%dT%H:%M:%SZ")
-                return arrivalDate
+                return arrival_date
 
     return None
 
 
-def clearFromPostCaches(baseDir: str, recentPostsCache: {},
-                        postId: str) -> None:
+def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
+                           post_id: str) -> None:
     """Clears cached html for the given post, so that edits
     to news will appear
     """
-    filename = '/postcache/' + postId + '.html'
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    filename = '/postcache/' + post_id + '.html'
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if acct.startswith('inbox@'):
                 continue
-            cacheDir = os.path.join(baseDir + '/accounts', acct)
-            postFilename = cacheDir + filename
-            if os.path.isfile(postFilename):
+            cache_dir = os.path.join(base_dir + '/accounts', acct)
+            post_filename = cache_dir + filename
+            if os.path.isfile(post_filename):
                 try:
-                    os.remove(postFilename)
+                    os.remove(post_filename)
                 except OSError:
-                    print('EX: clearFromPostCaches file not removed ' +
-                          str(postFilename))
+                    print('EX: clear_from_post_caches file not removed ' +
+                          str(post_filename))
             # if the post is in the recent posts cache then remove it
-            if recentPostsCache.get('index'):
-                if postId in recentPostsCache['index']:
-                    recentPostsCache['index'].remove(postId)
-            if recentPostsCache.get('json'):
-                if recentPostsCache['json'].get(postId):
-                    del recentPostsCache['json'][postId]
-            if recentPostsCache.get('html'):
-                if recentPostsCache['html'].get(postId):
-                    del recentPostsCache['html'][postId]
+            if recent_posts_cache.get('index'):
+                if post_id in recent_posts_cache['index']:
+                    recent_posts_cache['index'].remove(post_id)
+            if recent_posts_cache.get('json'):
+                if recent_posts_cache['json'].get(post_id):
+                    del recent_posts_cache['json'][post_id]
+            if recent_posts_cache.get('html'):
+                if recent_posts_cache['html'].get(post_id):
+                    del recent_posts_cache['html'][post_id]
         break
 
 
-def locatePost(baseDir: str, nickname: str, domain: str,
-               postUrl: str, replies: bool = False) -> str:
+def locate_post(base_dir: str, nickname: str, domain: str,
+                post_url: str, replies: bool = False) -> str:
     """Returns the filename for the given status post url
     """
     if not replies:
@@ -1331,43 +1341,43 @@ def locatePost(baseDir: str, nickname: str, domain: str,
         extension = 'replies'
 
     # if this post in the shared inbox?
-    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+    post_url = remove_id_ending(post_url.strip()).replace('/', '#')
 
     # add the extension
-    postUrl = postUrl + '.' + extension
+    post_url = post_url + '.' + extension
 
     # search boxes
     boxes = ('inbox', 'outbox', 'tlblogs')
-    accountDir = acctDir(baseDir, nickname, domain) + '/'
-    for boxName in boxes:
-        postFilename = accountDir + boxName + '/' + postUrl
-        if os.path.isfile(postFilename):
-            return postFilename
+    account_dir = acct_dir(base_dir, nickname, domain) + '/'
+    for box_name in boxes:
+        post_filename = account_dir + box_name + '/' + post_url
+        if os.path.isfile(post_filename):
+            return post_filename
 
     # check news posts
-    accountDir = baseDir + '/accounts/news' + '@' + domain + '/'
-    postFilename = accountDir + 'outbox/' + postUrl
-    if os.path.isfile(postFilename):
-        return postFilename
+    account_dir = base_dir + '/accounts/news' + '@' + domain + '/'
+    post_filename = account_dir + 'outbox/' + post_url
+    if os.path.isfile(post_filename):
+        return post_filename
 
     # is it in the announce cache?
-    postFilename = baseDir + '/cache/announce/' + nickname + '/' + postUrl
-    if os.path.isfile(postFilename):
-        return postFilename
+    post_filename = base_dir + '/cache/announce/' + nickname + '/' + post_url
+    if os.path.isfile(post_filename):
+        return post_filename
 
-    # print('WARN: unable to locate ' + nickname + ' ' + postUrl)
+    # print('WARN: unable to locate ' + nickname + ' ' + post_url)
     return None
 
 
-def _getPublishedDate(postJsonObject: {}) -> str:
+def _get_published_date(post_json_object: {}) -> str:
     """Returns the published date on the given post
     """
     published = None
-    if postJsonObject.get('published'):
-        published = postJsonObject['published']
-    elif hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('published'):
-            published = postJsonObject['object']['published']
+    if post_json_object.get('published'):
+        published = post_json_object['published']
+    elif has_object_dict(post_json_object):
+        if post_json_object['object'].get('published'):
+            published = post_json_object['object']['published']
     if not published:
         return None
     if not isinstance(published, str):
@@ -1375,259 +1385,261 @@ def _getPublishedDate(postJsonObject: {}) -> str:
     return published
 
 
-def getReplyIntervalHours(baseDir: str, nickname: str, domain: str,
-                          defaultReplyIntervalHours: int) -> int:
+def get_reply_interval_hours(base_dir: str, nickname: str, domain: str,
+                             default_reply_interval_hrs: int) -> int:
     """Returns the reply interval for the given account.
     The reply interval is the number of hours after a post being made
     during which replies are allowed
     """
-    replyIntervalFilename = \
-        acctDir(baseDir, nickname, domain) + '/.replyIntervalHours'
-    if os.path.isfile(replyIntervalFilename):
-        with open(replyIntervalFilename, 'r') as fp:
-            hoursStr = fp.read()
-            if hoursStr.isdigit():
-                return int(hoursStr)
-    return defaultReplyIntervalHours
+    reply_interval_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
+    if os.path.isfile(reply_interval_filename):
+        with open(reply_interval_filename, 'r') as interval_file:
+            hours_str = interval_file.read()
+            if hours_str.isdigit():
+                return int(hours_str)
+    return default_reply_interval_hrs
 
 
-def setReplyIntervalHours(baseDir: str, nickname: str, domain: str,
-                          replyIntervalHours: int) -> bool:
+def set_reply_interval_hours(base_dir: str, nickname: str, domain: str,
+                             reply_interval_hours: int) -> bool:
     """Sets the reply interval for the given account.
     The reply interval is the number of hours after a post being made
     during which replies are allowed
     """
-    replyIntervalFilename = \
-        acctDir(baseDir, nickname, domain) + '/.replyIntervalHours'
-    with open(replyIntervalFilename, 'w+') as fp:
-        try:
-            fp.write(str(replyIntervalHours))
+    reply_interval_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
+    try:
+        with open(reply_interval_filename, 'w+') as interval_file:
+            interval_file.write(str(reply_interval_hours))
             return True
-        except BaseException:
-            print('EX: setReplyIntervalHours unable to save reply interval ' +
-                  str(replyIntervalFilename) + ' ' +
-                  str(replyIntervalHours))
-            pass
+    except OSError:
+        print('EX: set_reply_interval_hours unable to save reply interval ' +
+              str(reply_interval_filename) + ' ' +
+              str(reply_interval_hours))
     return False
 
 
-def canReplyTo(baseDir: str, nickname: str, domain: str,
-               postUrl: str, replyIntervalHours: int,
-               currDateStr: str = None,
-               postJsonObject: {} = None) -> bool:
+def can_reply_to(base_dir: str, nickname: str, domain: str,
+                 post_url: str, reply_interval_hours: int,
+                 curr_date_str: str = None,
+                 post_json_object: {} = None) -> bool:
     """Is replying to the given post permitted?
     This is a spam mitigation feature, so that spammers can't
     add a lot of replies to old post which you don't notice.
     """
-    if '/statuses/' not in postUrl:
+    if '/statuses/' not in post_url:
         return True
-    if not postJsonObject:
-        postFilename = locatePost(baseDir, nickname, domain, postUrl)
-        if not postFilename:
+    if not post_json_object:
+        post_filename = locate_post(base_dir, nickname, domain, post_url)
+        if not post_filename:
             return False
-        postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+        post_json_object = load_json(post_filename)
+    if not post_json_object:
         return False
-    published = _getPublishedDate(postJsonObject)
+    published = _get_published_date(post_json_object)
     if not published:
         return False
     try:
-        pubDate = datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ')
+        pub_date = datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
-        print('EX: canReplyTo unrecognized published date ' + str(published))
+        print('EX: can_reply_to unrecognized published date ' + str(published))
         return False
-    if not currDateStr:
-        currDate = datetime.datetime.utcnow()
+    if not curr_date_str:
+        curr_date = datetime.datetime.utcnow()
     else:
         try:
-            currDate = datetime.datetime.strptime(currDateStr,
-                                                  '%Y-%m-%dT%H:%M:%SZ')
+            curr_date = \
+                datetime.datetime.strptime(curr_date_str, '%Y-%m-%dT%H:%M:%SZ')
         except BaseException:
-            print('EX: canReplyTo unrecognized current date ' +
-                  str(currDateStr))
+            print('EX: can_reply_to unrecognized current date ' +
+                  str(curr_date_str))
             return False
-    hoursSincePublication = int((currDate - pubDate).total_seconds() / 3600)
-    if hoursSincePublication < 0 or \
-       hoursSincePublication >= replyIntervalHours:
+    hours_since_publication = \
+        int((curr_date - pub_date).total_seconds() / 3600)
+    if hours_since_publication < 0 or \
+       hours_since_publication >= reply_interval_hours:
         return False
     return True
 
 
-def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
-                      postJson: {}):
-    if not postJson.get('attachment'):
+def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
+                       post_json: {}):
+    if not post_json.get('attachment'):
         return
-    if not postJson['attachment'][0].get('url'):
+    if not post_json['attachment'][0].get('url'):
         return
-    attachmentUrl = postJson['attachment'][0]['url']
-    if not attachmentUrl:
+    attachment_url = post_json['attachment'][0]['url']
+    if not attachment_url:
         return
-    mediaFilename = baseDir + '/' + \
-        attachmentUrl.replace(httpPrefix + '://' + domain + '/', '')
-    if os.path.isfile(mediaFilename):
+    media_filename = base_dir + '/' + \
+        attachment_url.replace(http_prefix + '://' + domain + '/', '')
+    if os.path.isfile(media_filename):
         try:
-            os.remove(mediaFilename)
+            os.remove(media_filename)
         except OSError:
-            print('EX: _removeAttachment unable to delete media file ' +
-                  str(mediaFilename))
-    etagFilename = mediaFilename + '.etag'
-    if os.path.isfile(etagFilename):
+            print('EX: _remove_attachment unable to delete media file ' +
+                  str(media_filename))
+    etag_filename = media_filename + '.etag'
+    if os.path.isfile(etag_filename):
         try:
-            os.remove(etagFilename)
+            os.remove(etag_filename)
         except OSError:
-            print('EX: _removeAttachment unable to delete etag file ' +
-                  str(etagFilename))
-    postJson['attachment'] = []
+            print('EX: _remove_attachment unable to delete etag file ' +
+                  str(etag_filename))
+    post_json['attachment'] = []
 
 
-def removeModerationPostFromIndex(baseDir: str, postUrl: str,
-                                  debug: bool) -> None:
+def remove_moderation_post_from_index(base_dir: str, post_url: str,
+                                      debug: bool) -> None:
     """Removes a url from the moderation index
     """
-    moderationIndexFile = baseDir + '/accounts/moderation.txt'
-    if not os.path.isfile(moderationIndexFile):
+    moderation_index_file = base_dir + '/accounts/moderation.txt'
+    if not os.path.isfile(moderation_index_file):
         return
-    postId = removeIdEnding(postUrl)
-    if postId in open(moderationIndexFile).read():
-        with open(moderationIndexFile, 'r') as f:
-            lines = f.readlines()
-            with open(moderationIndexFile, 'w+') as f:
+    post_id = remove_id_ending(post_url)
+    if post_id in open(moderation_index_file).read():
+        with open(moderation_index_file, 'r') as file1:
+            lines = file1.readlines()
+            with open(moderation_index_file, 'w+') as file2:
                 for line in lines:
-                    if line.strip("\n").strip("\r") != postId:
-                        f.write(line)
-                    else:
-                        if debug:
-                            print('DEBUG: removed ' + postId +
-                                  ' from moderation index')
+                    if line.strip("\n").strip("\r") != post_id:
+                        file2.write(line)
+                        continue
+                    if debug:
+                        print('DEBUG: removed ' + post_id +
+                              ' from moderation index')
 
 
-def _isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
-                       postJsonObject: str):
+def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
+                           post_json_object: str):
     """Is the given post a reply to a blog post?
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if not postJsonObject['object'].get('inReplyTo'):
+    if not post_json_object['object'].get('inReplyTo'):
         return False
-    if not isinstance(postJsonObject['object']['inReplyTo'], str):
+    if not isinstance(post_json_object['object']['inReplyTo'], str):
         return False
-    blogsIndexFilename = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogsIndexFilename):
+    blogs_index_filename = \
+        acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
+    if not os.path.isfile(blogs_index_filename):
         return False
-    postId = removeIdEnding(postJsonObject['object']['inReplyTo'])
-    postId = postId.replace('/', '#')
-    if postId in open(blogsIndexFilename).read():
+    post_id = remove_id_ending(post_json_object['object']['inReplyTo'])
+    post_id = post_id.replace('/', '#')
+    if post_id in open(blogs_index_filename).read():
         return True
     return False
 
 
-def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
-                             httpPrefix: str, postFilename: str,
-                             recentPostsCache: {}, debug: bool) -> None:
+def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
+                                http_prefix: str, post_filename: str,
+                                recent_posts_cache: {}, debug: bool) -> None:
     """Removes replies when deleting a post
     """
-    repliesFilename = postFilename.replace('.json', '.replies')
-    if not os.path.isfile(repliesFilename):
+    replies_filename = post_filename.replace('.json', '.replies')
+    if not os.path.isfile(replies_filename):
         return
     if debug:
-        print('DEBUG: removing replies to ' + postFilename)
-    with open(repliesFilename, 'r') as f:
-        for replyId in f:
-            replyFile = locatePost(baseDir, nickname, domain, replyId)
-            if not replyFile:
+        print('DEBUG: removing replies to ' + post_filename)
+    with open(replies_filename, 'r') as replies_file:
+        for reply_id in replies_file:
+            reply_file = locate_post(base_dir, nickname, domain, reply_id)
+            if not reply_file:
                 continue
-            if os.path.isfile(replyFile):
-                deletePost(baseDir, httpPrefix,
-                           nickname, domain, replyFile, debug,
-                           recentPostsCache)
+            if os.path.isfile(reply_file):
+                delete_post(base_dir, http_prefix,
+                            nickname, domain, reply_file, debug,
+                            recent_posts_cache)
     # remove the replies file
     try:
-        os.remove(repliesFilename)
+        os.remove(replies_filename)
     except OSError:
-        print('EX: _deletePostRemoveReplies unable to delete replies file ' +
-              str(repliesFilename))
+        print('EX: _delete_post_remove_replies ' +
+              'unable to delete replies file ' + str(replies_filename))
 
 
-def _isBookmarked(baseDir: str, nickname: str, domain: str,
-                  postFilename: str) -> bool:
+def _is_bookmarked(base_dir: str, nickname: str, domain: str,
+                   post_filename: str) -> bool:
     """Returns True if the given post is bookmarked
     """
-    bookmarksIndexFilename = \
-        acctDir(baseDir, nickname, domain) + '/bookmarks.index'
-    if os.path.isfile(bookmarksIndexFilename):
-        bookmarkIndex = postFilename.split('/')[-1] + '\n'
-        if bookmarkIndex in open(bookmarksIndexFilename).read():
+    bookmarks_index_filename = \
+        acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
+    if os.path.isfile(bookmarks_index_filename):
+        bookmark_index = post_filename.split('/')[-1] + '\n'
+        if bookmark_index in open(bookmarks_index_filename).read():
             return True
     return False
 
 
-def removePostFromCache(postJsonObject: {}, recentPostsCache: {}) -> None:
+def remove_post_from_cache(post_json_object: {},
+                           recent_posts_cache: {}) -> None:
     """ if the post exists in the recent posts cache then remove it
     """
-    if not recentPostsCache:
+    if not recent_posts_cache:
         return
 
-    if not postJsonObject.get('id'):
+    if not post_json_object.get('id'):
         return
 
-    if not recentPostsCache.get('index'):
+    if not recent_posts_cache.get('index'):
         return
 
-    postId = postJsonObject['id']
-    if '#' in postId:
-        postId = postId.split('#', 1)[0]
-    postId = removeIdEnding(postId).replace('/', '#')
-    if postId not in recentPostsCache['index']:
+    post_id = post_json_object['id']
+    if '#' in post_id:
+        post_id = post_id.split('#', 1)[0]
+    post_id = remove_id_ending(post_id).replace('/', '#')
+    if post_id not in recent_posts_cache['index']:
         return
 
-    if recentPostsCache.get('index'):
-        if postId in recentPostsCache['index']:
-            recentPostsCache['index'].remove(postId)
+    if recent_posts_cache.get('index'):
+        if post_id in recent_posts_cache['index']:
+            recent_posts_cache['index'].remove(post_id)
 
-    if recentPostsCache.get('json'):
-        if recentPostsCache['json'].get(postId):
-            del recentPostsCache['json'][postId]
+    if recent_posts_cache.get('json'):
+        if recent_posts_cache['json'].get(post_id):
+            del recent_posts_cache['json'][post_id]
 
-    if recentPostsCache.get('html'):
-        if recentPostsCache['html'].get(postId):
-            del recentPostsCache['html'][postId]
+    if recent_posts_cache.get('html'):
+        if recent_posts_cache['html'].get(post_id):
+            del recent_posts_cache['html'][post_id]
 
 
-def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
-                      postJsonObject: {}):
+def _delete_cached_html(base_dir: str, nickname: str, domain: str,
+                        post_json_object: {}):
     """Removes cached html file for the given post
     """
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain, post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
-                print('EX: _deleteCachedHtml ' +
+                print('EX: _delete_cached_html ' +
                       'unable to delete cached post file ' +
-                      str(cachedPostFilename))
+                      str(cached_post_filename))
 
 
-def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
+def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
     """Removes hashtags when a post is deleted
     """
-    removeHashtagIndex = False
-    if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('content'):
-            if '#' in postJsonObject['object']['content']:
-                removeHashtagIndex = True
+    remove_hashtag_index = False
+    if has_object_dict(post_json_object):
+        if post_json_object['object'].get('content'):
+            if '#' in post_json_object['object']['content']:
+                remove_hashtag_index = True
 
-    if not removeHashtagIndex:
+    if not remove_hashtag_index:
         return
 
-    if not postJsonObject['object'].get('id') or \
-       not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('id') or \
+       not post_json_object['object'].get('tag'):
         return
 
     # get the id of the post
-    postId = removeIdEnding(postJsonObject['object']['id'])
-    for tag in postJsonObject['object']['tag']:
+    post_id = remove_id_ending(post_json_object['object']['id'])
+    for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
             continue
         if tag['type'] != 'Hashtag':
@@ -1635,160 +1647,162 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
         if not tag.get('name'):
             continue
         # find the index file for this tag
-        tagIndexFilename = baseDir + '/tags/' + tag['name'][1:] + '.txt'
-        if not os.path.isfile(tagIndexFilename):
+        tag_index_filename = base_dir + '/tags/' + tag['name'][1:] + '.txt'
+        if not os.path.isfile(tag_index_filename):
             continue
-        # remove postId from the tag index file
+        # remove post_id from the tag index file
         lines = None
-        with open(tagIndexFilename, 'r') as f:
-            lines = f.readlines()
+        with open(tag_index_filename, 'r') as index_file:
+            lines = index_file.readlines()
         if not lines:
             continue
         newlines = ''
-        for fileLine in lines:
-            if postId in fileLine:
+        for file_line in lines:
+            if post_id in file_line:
                 # skip over the deleted post
                 continue
-            newlines += fileLine
+            newlines += file_line
         if not newlines.strip():
             # if there are no lines then remove the hashtag file
             try:
-                os.remove(tagIndexFilename)
+                os.remove(tag_index_filename)
             except OSError:
-                print('EX: _deleteHashtagsOnPost unable to delete tag index ' +
-                      str(tagIndexFilename))
+                print('EX: _delete_hashtags_on_post ' +
+                      'unable to delete tag index ' + str(tag_index_filename))
         else:
             # write the new hashtag index without the given post in it
-            with open(tagIndexFilename, 'w+') as f:
-                f.write(newlines)
+            with open(tag_index_filename, 'w+') as index_file:
+                index_file.write(newlines)
 
 
-def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
-                            postJsonObject: {}) -> None:
+def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
+                              post_json_object: {}) -> None:
     """Deletes a post from a conversation
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if not postJsonObject['object'].get('conversation'):
+    if not post_json_object['object'].get('conversation'):
         return False
-    if not postJsonObject['object'].get('id'):
+    if not post_json_object['object'].get('id'):
         return False
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
-    conversationId = postJsonObject['object']['conversation']
-    conversationId = conversationId.replace('/', '#')
-    postId = postJsonObject['object']['id']
-    conversationFilename = conversationDir + '/' + conversationId
-    if not os.path.isfile(conversationFilename):
+    conversation_dir = \
+        acct_dir(base_dir, nickname, domain) + '/conversation'
+    conversation_id = post_json_object['object']['conversation']
+    conversation_id = conversation_id.replace('/', '#')
+    post_id = post_json_object['object']['id']
+    conversation_filename = conversation_dir + '/' + conversation_id
+    if not os.path.isfile(conversation_filename):
         return False
-    conversationStr = ''
-    with open(conversationFilename, 'r') as fp:
-        conversationStr = fp.read()
-    if postId + '\n' not in conversationStr:
+    conversation_str = ''
+    with open(conversation_filename, 'r') as conv_file:
+        conversation_str = conv_file.read()
+    if post_id + '\n' not in conversation_str:
         return False
-    conversationStr = conversationStr.replace(postId + '\n', '')
-    if conversationStr:
-        with open(conversationFilename, 'w+') as fp:
-            fp.write(conversationStr)
+    conversation_str = conversation_str.replace(post_id + '\n', '')
+    if conversation_str:
+        with open(conversation_filename, 'w+') as conv_file:
+            conv_file.write(conversation_str)
     else:
-        if os.path.isfile(conversationFilename + '.muted'):
+        if os.path.isfile(conversation_filename + '.muted'):
             try:
-                os.remove(conversationFilename + '.muted')
+                os.remove(conversation_filename + '.muted')
             except OSError:
-                print('EX: _deleteConversationPost ' +
+                print('EX: _delete_conversation_post ' +
                       'unable to remove conversation ' +
-                      str(conversationFilename) + '.muted')
+                      str(conversation_filename) + '.muted')
         try:
-            os.remove(conversationFilename)
+            os.remove(conversation_filename)
         except OSError:
-            print('EX: _deleteConversationPost ' +
+            print('EX: _delete_conversation_post ' +
                   'unable to remove conversation ' +
-                  str(conversationFilename))
+                  str(conversation_filename))
 
 
-def deletePost(baseDir: str, httpPrefix: str,
-               nickname: str, domain: str, postFilename: str,
-               debug: bool, recentPostsCache: {}) -> None:
+def delete_post(base_dir: str, http_prefix: str,
+                nickname: str, domain: str, post_filename: str,
+                debug: bool, recent_posts_cache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
     """
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename, 1)
+    if not post_json_object:
         # remove any replies
-        _deletePostRemoveReplies(baseDir, nickname, domain,
-                                 httpPrefix, postFilename,
-                                 recentPostsCache, debug)
+        _delete_post_remove_replies(base_dir, nickname, domain,
+                                    http_prefix, post_filename,
+                                    recent_posts_cache, debug)
         # finally, remove the post itself
         try:
-            os.remove(postFilename)
+            os.remove(post_filename)
         except OSError:
             if debug:
-                print('EX: deletePost unable to delete post ' +
-                      str(postFilename))
+                print('EX: delete_post unable to delete post ' +
+                      str(post_filename))
         return
 
     # don't allow deletion of bookmarked posts
-    if _isBookmarked(baseDir, nickname, domain, postFilename):
+    if _is_bookmarked(base_dir, nickname, domain, post_filename):
         return
 
     # don't remove replies to blog posts
-    if _isReplyToBlogPost(baseDir, nickname, domain,
-                          postJsonObject):
+    if _is_reply_to_blog_post(base_dir, nickname, domain,
+                              post_json_object):
         return
 
     # remove from recent posts cache in memory
-    removePostFromCache(postJsonObject, recentPostsCache)
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
     # remove from conversation index
-    _deleteConversationPost(baseDir, nickname, domain, postJsonObject)
+    _delete_conversation_post(base_dir, nickname, domain, post_json_object)
 
     # remove any attachment
-    _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
+    _remove_attachment(base_dir, http_prefix, domain, post_json_object)
 
     extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
     for ext in extensions:
-        extFilename = postFilename + '.' + ext
-        if os.path.isfile(extFilename):
+        ext_filename = post_filename + '.' + ext
+        if os.path.isfile(ext_filename):
             try:
-                os.remove(extFilename)
+                os.remove(ext_filename)
             except OSError:
-                print('EX: deletePost unable to remove ext ' +
-                      str(extFilename))
+                print('EX: delete_post unable to remove ext ' +
+                      str(ext_filename))
 
     # remove cached html version of the post
-    _deleteCachedHtml(baseDir, nickname, domain, postJsonObject)
+    _delete_cached_html(base_dir, nickname, domain, post_json_object)
 
-    hasObject = False
-    if postJsonObject.get('object'):
-        hasObject = True
+    has_object = False
+    if post_json_object.get('object'):
+        has_object = True
 
     # remove from moderation index file
-    if hasObject:
-        if hasObjectDict(postJsonObject):
-            if postJsonObject['object'].get('moderationStatus'):
-                if postJsonObject.get('id'):
-                    postId = removeIdEnding(postJsonObject['id'])
-                    removeModerationPostFromIndex(baseDir, postId, debug)
+    if has_object:
+        if has_object_dict(post_json_object):
+            if post_json_object['object'].get('moderationStatus'):
+                if post_json_object.get('id'):
+                    post_id = remove_id_ending(post_json_object['id'])
+                    remove_moderation_post_from_index(base_dir, post_id, debug)
 
     # remove any hashtags index entries
-    if hasObject:
-        _deleteHashtagsOnPost(baseDir, postJsonObject)
+    if has_object:
+        _delete_hashtags_on_post(base_dir, post_json_object)
 
     # remove any replies
-    _deletePostRemoveReplies(baseDir, nickname, domain,
-                             httpPrefix, postFilename,
-                             recentPostsCache, debug)
+    _delete_post_remove_replies(base_dir, nickname, domain,
+                                http_prefix, post_filename,
+                                recent_posts_cache, debug)
     # finally, remove the post itself
     try:
-        os.remove(postFilename)
+        os.remove(post_filename)
     except OSError:
         if debug:
-            print('EX: deletePost unable to delete post ' + str(postFilename))
+            print('EX: delete_post unable to delete post ' +
+                  str(post_filename))
 
 
-def isValidLanguage(text: str) -> bool:
+def is_valid_language(text: str) -> bool:
     """Returns true if the given text contains a valid
     natural language string
     """
-    naturalLanguages = {
+    natural_languages = {
         "Latin": [65, 866],
         "Cyrillic": [1024, 1274],
         "Greek": [880, 1280],
@@ -1820,20 +1834,20 @@ def isValidLanguage(text: str) -> bool:
         "Khmer": [6016, 6144],
         "Mongolian": [6144, 6320]
     }
-    for langName, langRange in naturalLanguages.items():
-        okLang = True
-        for ch in text:
-            if ch.isdigit():
+    for lang_name, lang_range in natural_languages.items():
+        ok_lang = True
+        for char in text:
+            if char.isdigit():
                 continue
-            if ord(ch) not in range(langRange[0], langRange[1]):
-                okLang = False
+            if ord(char) not in range(lang_range[0], lang_range[1]):
+                ok_lang = False
                 break
-        if okLang:
+        if ok_lang:
             return True
     return False
 
 
-def _getReservedWords() -> str:
+def _get_reserved_words() -> str:
     return ('inbox', 'dm', 'outbox', 'following',
             'public', 'followers', 'category',
             'channel', 'calendar', 'video-channels',
@@ -1857,12 +1871,12 @@ def _getReservedWords() -> str:
             'ontologies', 'data')
 
 
-def getNicknameValidationPattern() -> str:
+def get_nickname_validation_pattern() -> str:
     """Returns a html text input validation pattern for nickname
     """
-    reservedNames = _getReservedWords()
+    reserved_names = _get_reserved_words()
     pattern = ''
-    for word in reservedNames:
+    for word in reserved_names:
         if pattern:
             pattern += '(?!.*\\b' + word + '\\b)'
         else:
@@ -1870,97 +1884,97 @@ def getNicknameValidationPattern() -> str:
     return pattern + '.*${1,30}'
 
 
-def _isReservedName(nickname: str) -> bool:
+def _is_reserved_name(nickname: str) -> bool:
     """Is the given nickname reserved for some special function?
     """
-    reservedNames = _getReservedWords()
-    if nickname in reservedNames:
+    reserved_names = _get_reserved_words()
+    if nickname in reserved_names:
         return True
     return False
 
 
-def validNickname(domain: str, nickname: str) -> bool:
+def valid_nickname(domain: str, nickname: str) -> bool:
     """Is the given nickname valid?
     """
     if len(nickname) == 0:
         return False
     if len(nickname) > 30:
         return False
-    if not isValidLanguage(nickname):
+    if not is_valid_language(nickname):
         return False
-    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@', '#', '!')
-    for c in forbiddenChars:
-        if c in nickname:
+    forbidden_chars = ('.', ' ', '/', '?', ':', ';', '@', '#', '!')
+    for char in forbidden_chars:
+        if char in nickname:
             return False
     # this should only apply for the shared inbox
     if nickname == domain:
         return False
-    if _isReservedName(nickname):
+    if _is_reserved_name(nickname):
         return False
     return True
 
 
-def noOfAccounts(baseDir: str) -> bool:
+def no_of_accounts(base_dir: str) -> bool:
     """Returns the number of accounts on the system
     """
-    accountCtr = 0
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    account_ctr = 0
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            if isAccountDir(account):
-                accountCtr += 1
+            if is_account_dir(account):
+                account_ctr += 1
         break
-    return accountCtr
+    return account_ctr
 
 
-def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
+def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
     """Returns the number of accounts on the system this month
     """
-    accountCtr = 0
-    currTime = int(time.time())
-    monthSeconds = int(60*60*24*30*months)
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    account_ctr = 0
+    curr_time = int(time.time())
+    month_seconds = int(60*60*24*30*months)
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            if not isAccountDir(account):
+            if not is_account_dir(account):
                 continue
-            lastUsedFilename = \
-                baseDir + '/accounts/' + account + '/.lastUsed'
-            if not os.path.isfile(lastUsedFilename):
+            last_used_filename = \
+                base_dir + '/accounts/' + account + '/.lastUsed'
+            if not os.path.isfile(last_used_filename):
                 continue
-            with open(lastUsedFilename, 'r') as lastUsedFile:
-                lastUsed = lastUsedFile.read()
-                if lastUsed.isdigit():
-                    timeDiff = (currTime - int(lastUsed))
-                    if timeDiff < monthSeconds:
-                        accountCtr += 1
+            with open(last_used_filename, 'r') as last_used_file:
+                last_used = last_used_file.read()
+                if last_used.isdigit():
+                    time_diff = (curr_time - int(last_used))
+                    if time_diff < month_seconds:
+                        account_ctr += 1
         break
-    return accountCtr
+    return account_ctr
 
 
-def isPublicPostFromUrl(baseDir: str, nickname: str, domain: str,
-                        postUrl: str) -> bool:
+def is_public_post_from_url(base_dir: str, nickname: str, domain: str,
+                            post_url: str) -> bool:
     """Returns whether the given url is a public post
     """
-    postFilename = locatePost(baseDir, nickname, domain, postUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, post_url)
+    if not post_filename:
         return False
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename, 1)
+    if not post_json_object:
         return False
-    return isPublicPost(postJsonObject)
+    return is_public_post(post_json_object)
 
 
-def isPublicPost(postJsonObject: {}) -> bool:
+def is_public_post(post_json_object: {}) -> bool:
     """Returns true if the given post is public
     """
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return False
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if not postJsonObject['object'].get('to'):
+    if not post_json_object['object'].get('to'):
         return False
-    for recipient in postJsonObject['object']['to']:
+    for recipient in post_json_object['object']['to']:
         if recipient.endswith('#Public'):
             return True
     return False
@@ -1970,227 +1984,229 @@ def copytree(src: str, dst: str, symlinks: str = False, ignore: bool = None):
     """Copy a directory
     """
     for item in os.listdir(src):
-        s = os.path.join(src, item)
-        d = os.path.join(dst, item)
-        if os.path.isdir(s):
-            shutil.copytree(s, d, symlinks, ignore)
+        s_dir = os.path.join(src, item)
+        d_dir = os.path.join(dst, item)
+        if os.path.isdir(s_dir):
+            shutil.copytree(s_dir, d_dir, symlinks, ignore)
         else:
-            shutil.copy2(s, d)
+            shutil.copy2(s_dir, d_dir)
 
 
-def getCachedPostDirectory(baseDir: str, nickname: str, domain: str) -> str:
+def get_cached_post_directory(base_dir: str,
+                              nickname: str, domain: str) -> str:
     """Returns the directory where the html post cache exists
     """
-    htmlPostCacheDir = acctDir(baseDir, nickname, domain) + '/postcache'
-    return htmlPostCacheDir
+    html_post_cache_dir = acct_dir(base_dir, nickname, domain) + '/postcache'
+    return html_post_cache_dir
 
 
-def getCachedPostFilename(baseDir: str, nickname: str, domain: str,
-                          postJsonObject: {}) -> str:
+def get_cached_post_filename(base_dir: str, nickname: str, domain: str,
+                             post_json_object: {}) -> str:
     """Returns the html cache filename for the given post
     """
-    cachedPostDir = getCachedPostDirectory(baseDir, nickname, domain)
-    if not os.path.isdir(cachedPostDir):
-        # print('ERROR: invalid html cache directory ' + cachedPostDir)
+    cached_post_dir = get_cached_post_directory(base_dir, nickname, domain)
+    if not os.path.isdir(cached_post_dir):
+        # print('ERROR: invalid html cache directory ' + cached_post_dir)
         return None
-    if '@' not in cachedPostDir:
-        # print('ERROR: invalid html cache directory ' + cachedPostDir)
+    if '@' not in cached_post_dir:
+        # print('ERROR: invalid html cache directory ' + cached_post_dir)
         return None
-    cachedPostId = removeIdEnding(postJsonObject['id'])
-    cachedPostFilename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
-    return cachedPostFilename + '.html'
+    cached_post_id = remove_id_ending(post_json_object['id'])
+    cached_post_filename = \
+        cached_post_dir + '/' + cached_post_id.replace('/', '#')
+    return cached_post_filename + '.html'
 
 
-def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
-                           postJsonObject: {}, htmlStr: str) -> None:
+def update_recent_posts_cache(recent_posts_cache: {}, max_recent_posts: int,
+                              post_json_object: {}, html_str: str) -> None:
     """Store recent posts in memory so that they can be quickly recalled
     """
-    if not postJsonObject.get('id'):
+    if not post_json_object.get('id'):
         return
-    postId = postJsonObject['id']
-    if '#' in postId:
-        postId = postId.split('#', 1)[0]
-    postId = removeIdEnding(postId).replace('/', '#')
-    if recentPostsCache.get('index'):
-        if postId in recentPostsCache['index']:
+    post_id = post_json_object['id']
+    if '#' in post_id:
+        post_id = post_id.split('#', 1)[0]
+    post_id = remove_id_ending(post_id).replace('/', '#')
+    if recent_posts_cache.get('index'):
+        if post_id in recent_posts_cache['index']:
             return
-        recentPostsCache['index'].append(postId)
-        postJsonObject['muted'] = False
-        recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-        recentPostsCache['html'][postId] = htmlStr
+        recent_posts_cache['index'].append(post_id)
+        post_json_object['muted'] = False
+        recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
+        recent_posts_cache['html'][post_id] = html_str
 
-        while len(recentPostsCache['html'].items()) > maxRecentPosts:
-            postId = recentPostsCache['index'][0]
-            recentPostsCache['index'].pop(0)
-            if recentPostsCache['json'].get(postId):
-                del recentPostsCache['json'][postId]
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
+        while len(recent_posts_cache['html'].items()) > max_recent_posts:
+            post_id = recent_posts_cache['index'][0]
+            recent_posts_cache['index'].pop(0)
+            if recent_posts_cache['json'].get(post_id):
+                del recent_posts_cache['json'][post_id]
+            if recent_posts_cache['html'].get(post_id):
+                del recent_posts_cache['html'][post_id]
     else:
-        recentPostsCache['index'] = [postId]
-        recentPostsCache['json'] = {}
-        recentPostsCache['html'] = {}
-        recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-        recentPostsCache['html'][postId] = htmlStr
+        recent_posts_cache['index'] = [post_id]
+        recent_posts_cache['json'] = {}
+        recent_posts_cache['html'] = {}
+        recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
+        recent_posts_cache['html'][post_id] = html_str
 
 
-def fileLastModified(filename: str) -> str:
+def file_last_modified(filename: str) -> str:
     """Returns the date when a file was last modified
     """
-    t = os.path.getmtime(filename)
-    modifiedTime = datetime.datetime.fromtimestamp(t)
-    return modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    time_val = os.path.getmtime(filename)
+    modified_time = datetime.datetime.fromtimestamp(time_val)
+    return modified_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def getCSS(baseDir: str, cssFilename: str, cssCache: {}) -> str:
+def get_css(base_dir: str, css_filename: str, css_cache: {}) -> str:
     """Retrieves the css for a given file, or from a cache
     """
     # does the css file exist?
-    if not os.path.isfile(cssFilename):
+    if not os.path.isfile(css_filename):
         return None
 
-    lastModified = fileLastModified(cssFilename)
+    last_modified = file_last_modified(css_filename)
 
     # has this already been loaded into the cache?
-    if cssCache.get(cssFilename):
-        if cssCache[cssFilename][0] == lastModified:
+    if css_cache.get(css_filename):
+        if css_cache[css_filename][0] == last_modified:
             # file hasn't changed, so return the version in the cache
-            return cssCache[cssFilename][1]
+            return css_cache[css_filename][1]
 
-    with open(cssFilename, 'r') as fpCSS:
-        css = fpCSS.read()
-        if cssCache.get(cssFilename):
+    with open(css_filename, 'r') as fp_css:
+        css = fp_css.read()
+        if css_cache.get(css_filename):
             # alter the cache contents
-            cssCache[cssFilename][0] = lastModified
-            cssCache[cssFilename][1] = css
+            css_cache[css_filename][0] = last_modified
+            css_cache[css_filename][1] = css
         else:
             # add entry to the cache
-            cssCache[cssFilename] = [lastModified, css]
+            css_cache[css_filename] = [last_modified, css]
         return css
 
     return None
 
 
-def isBlogPost(postJsonObject: {}) -> bool:
+def is_blog_post(post_json_object: {}) -> bool:
     """Is the given post a blog post?
     """
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if not hasObjectStringType(postJsonObject, False):
+    if not has_object_stringType(post_json_object, False):
         return False
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return False
-    if postJsonObject['object']['type'] != 'Article':
+    if post_json_object['object']['type'] != 'Article':
         return False
     return True
 
 
-def isNewsPost(postJsonObject: {}) -> bool:
+def is_news_post(post_json_object: {}) -> bool:
     """Is the given post a blog post?
     """
-    return postJsonObject.get('news')
+    return post_json_object.get('news')
 
 
-def _searchVirtualBoxPosts(baseDir: str, nickname: str, domain: str,
-                           searchStr: str, maxResults: int,
-                           boxName: str) -> []:
+def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
+                              search_str: str, max_results: int,
+                              box_name: str) -> []:
     """Searches through a virtual box, which is typically an index on the inbox
     """
-    indexFilename = \
-        acctDir(baseDir, nickname, domain) + '/' + boxName + '.index'
-    if boxName == 'bookmarks':
-        boxName = 'inbox'
-    path = acctDir(baseDir, nickname, domain) + '/' + boxName
+    index_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + box_name + '.index'
+    if box_name == 'bookmarks':
+        box_name = 'inbox'
+    path = acct_dir(base_dir, nickname, domain) + '/' + box_name
     if not os.path.isdir(path):
         return []
 
-    searchStr = searchStr.lower().strip()
+    search_str = search_str.lower().strip()
 
-    if '+' in searchStr:
-        searchWords = searchStr.split('+')
-        for index in range(len(searchWords)):
-            searchWords[index] = searchWords[index].strip()
-        print('SEARCH: ' + str(searchWords))
+    if '+' in search_str:
+        search_words = search_str.split('+')
+        for index in range(len(search_words)):
+            search_words[index] = search_words[index].strip()
+        print('SEARCH: ' + str(search_words))
     else:
-        searchWords = [searchStr]
+        search_words = [search_str]
 
     res = []
-    with open(indexFilename, 'r') as indexFile:
-        postFilename = 'start'
-        while postFilename:
-            postFilename = indexFile.readline()
-            if not postFilename:
+    with open(index_filename, 'r') as index_file:
+        post_filename = 'start'
+        while post_filename:
+            post_filename = index_file.readline()
+            if not post_filename:
                 break
-            if '.json' not in postFilename:
+            if '.json' not in post_filename:
                 break
-            postFilename = path + '/' + postFilename.strip()
-            if not os.path.isfile(postFilename):
+            post_filename = path + '/' + post_filename.strip()
+            if not os.path.isfile(post_filename):
                 continue
-            with open(postFilename, 'r') as postFile:
-                data = postFile.read().lower()
+            with open(post_filename, 'r') as post_file:
+                data = post_file.read().lower()
 
-                notFound = False
-                for keyword in searchWords:
+                not_found = False
+                for keyword in search_words:
                     if keyword not in data:
-                        notFound = True
+                        not_found = True
                         break
-                if notFound:
+                if not_found:
                     continue
 
-                res.append(postFilename)
-                if len(res) >= maxResults:
+                res.append(post_filename)
+                if len(res) >= max_results:
                     return res
     return res
 
 
-def searchBoxPosts(baseDir: str, nickname: str, domain: str,
-                   searchStr: str, maxResults: int,
-                   boxName='outbox') -> []:
+def search_box_posts(base_dir: str, nickname: str, domain: str,
+                     search_str: str, max_results: int,
+                     box_name='outbox') -> []:
     """Search your posts and return a list of the filenames
     containing matching strings
     """
-    path = acctDir(baseDir, nickname, domain) + '/' + boxName
+    path = acct_dir(base_dir, nickname, domain) + '/' + box_name
     # is this a virtual box, such as direct messages?
     if not os.path.isdir(path):
         if os.path.isfile(path + '.index'):
-            return _searchVirtualBoxPosts(baseDir, nickname, domain,
-                                          searchStr, maxResults, boxName)
+            return _search_virtual_box_posts(base_dir, nickname, domain,
+                                             search_str, max_results, box_name)
         return []
-    searchStr = searchStr.lower().strip()
+    search_str = search_str.lower().strip()
 
-    if '+' in searchStr:
-        searchWords = searchStr.split('+')
-        for index in range(len(searchWords)):
-            searchWords[index] = searchWords[index].strip()
-        print('SEARCH: ' + str(searchWords))
+    if '+' in search_str:
+        search_words = search_str.split('+')
+        for index in range(len(search_words)):
+            search_words[index] = search_words[index].strip()
+        print('SEARCH: ' + str(search_words))
     else:
-        searchWords = [searchStr]
+        search_words = [search_str]
 
     res = []
     for root, dirs, fnames in os.walk(path):
         for fname in fnames:
-            filePath = os.path.join(root, fname)
-            with open(filePath, 'r') as postFile:
-                data = postFile.read().lower()
+            file_path = os.path.join(root, fname)
+            with open(file_path, 'r') as post_file:
+                data = post_file.read().lower()
 
-                notFound = False
-                for keyword in searchWords:
+                not_found = False
+                for keyword in search_words:
                     if keyword not in data:
-                        notFound = True
+                        not_found = True
                         break
-                if notFound:
+                if not_found:
                     continue
 
-                res.append(filePath)
-                if len(res) >= maxResults:
+                res.append(file_path)
+                if len(res) >= max_results:
                     return res
         break
     return res
 
 
-def getFileCaseInsensitive(path: str) -> str:
+def get_file_case_insensitive(path: str) -> str:
     """Returns a case specific filename given a case insensitive version of it
     """
     if os.path.isfile(path):
@@ -2201,59 +2217,61 @@ def getFileCaseInsensitive(path: str) -> str:
     return None
 
 
-def undoLikesCollectionEntry(recentPostsCache: {},
-                             baseDir: str, postFilename: str, objectUrl: str,
-                             actor: str, domain: str, debug: bool,
-                             postJsonObject: {}) -> None:
+def undo_likes_collection_entry(recent_posts_cache: {},
+                                base_dir: str, post_filename: str,
+                                object_url: str,
+                                actor: str, domain: str, debug: bool,
+                                post_json_object: {}) -> None:
     """Undoes a like for a particular actor
     """
-    if not postJsonObject:
-        postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    if not post_json_object:
+        post_json_object = load_json(post_filename)
+    if not post_json_object:
         return
     # remove any cached version of this post so that the
     # like icon is changed
-    nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                               domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    nickname = get_nickname_from_actor(actor)
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
-                print('EX: undoLikesCollectionEntry ' +
+                print('EX: undo_likes_collection_entry ' +
                       'unable to delete cached post ' +
-                      str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+                      str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
+    obj = post_json_object
+    if has_object_dict(post_json_object):
+        obj = post_json_object['object']
     if not obj.get('likes'):
         return
     if not isinstance(obj['likes'], dict):
         return
     if not obj['likes'].get('items'):
         return
-    totalItems = 0
+    total_items = 0
     if obj['likes'].get('totalItems'):
-        totalItems = obj['likes']['totalItems']
-    itemFound = False
-    for likeItem in obj['likes']['items']:
-        if likeItem.get('actor'):
-            if likeItem['actor'] == actor:
+        total_items = obj['likes']['totalItems']
+    item_found = False
+    for like_item in obj['likes']['items']:
+        if like_item.get('actor'):
+            if like_item['actor'] == actor:
                 if debug:
                     print('DEBUG: like was removed for ' + actor)
-                obj['likes']['items'].remove(likeItem)
-                itemFound = True
+                obj['likes']['items'].remove(like_item)
+                item_found = True
                 break
-    if not itemFound:
+    if not item_found:
         return
-    if totalItems == 1:
+    if total_items == 1:
         if debug:
             print('DEBUG: likes was removed from post')
         del obj['likes']
@@ -2261,64 +2279,66 @@ def undoLikesCollectionEntry(recentPostsCache: {},
         itlen = len(obj['likes']['items'])
         obj['likes']['totalItems'] = itlen
 
-    saveJson(postJsonObject, postFilename)
+    save_json(post_json_object, post_filename)
 
 
-def undoReactionCollectionEntry(recentPostsCache: {},
-                                baseDir: str, postFilename: str,
-                                objectUrl: str,
-                                actor: str, domain: str, debug: bool,
-                                postJsonObject: {}, emojiContent: str) -> None:
+def undo_reaction_collection_entry(recent_posts_cache: {},
+                                   base_dir: str, post_filename: str,
+                                   object_url: str,
+                                   actor: str, domain: str, debug: bool,
+                                   post_json_object: {},
+                                   emoji_content: str) -> None:
     """Undoes an emoji reaction for a particular actor
     """
-    if not postJsonObject:
-        postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    if not post_json_object:
+        post_json_object = load_json(post_filename)
+    if not post_json_object:
         return
     # remove any cached version of this post so that the
     # like icon is changed
-    nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                               domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    nickname = get_nickname_from_actor(actor)
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
-                print('EX: undoReactionCollectionEntry ' +
+                print('EX: undo_reaction_collection_entry ' +
                       'unable to delete cached post ' +
-                      str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+                      str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
+    obj = post_json_object
+    if has_object_dict(post_json_object):
+        obj = post_json_object['object']
     if not obj.get('reactions'):
         return
     if not isinstance(obj['reactions'], dict):
         return
     if not obj['reactions'].get('items'):
         return
-    totalItems = 0
+    total_items = 0
     if obj['reactions'].get('totalItems'):
-        totalItems = obj['reactions']['totalItems']
-    itemFound = False
-    for likeItem in obj['reactions']['items']:
-        if likeItem.get('actor'):
-            if likeItem['actor'] == actor and \
-               likeItem['content'] == emojiContent:
+        total_items = obj['reactions']['totalItems']
+    item_found = False
+    for like_item in obj['reactions']['items']:
+        if like_item.get('actor'):
+            if like_item['actor'] == actor and \
+               like_item['content'] == emoji_content:
                 if debug:
                     print('DEBUG: emoji reaction was removed for ' + actor)
-                obj['reactions']['items'].remove(likeItem)
-                itemFound = True
+                obj['reactions']['items'].remove(like_item)
+                item_found = True
                 break
-    if not itemFound:
+    if not item_found:
         return
-    if totalItems == 1:
+    if total_items == 1:
         if debug:
             print('DEBUG: emoji reaction was removed from post')
         del obj['reactions']
@@ -2326,116 +2346,119 @@ def undoReactionCollectionEntry(recentPostsCache: {},
         itlen = len(obj['reactions']['items'])
         obj['reactions']['totalItems'] = itlen
 
-    saveJson(postJsonObject, postFilename)
+    save_json(post_json_object, post_filename)
 
 
-def undoAnnounceCollectionEntry(recentPostsCache: {},
-                                baseDir: str, postFilename: str,
-                                actor: str, domain: str, debug: bool) -> None:
+def undo_announce_collection_entry(recent_posts_cache: {},
+                                   base_dir: str, post_filename: str,
+                                   actor: str, domain: str,
+                                   debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from
     the "shares" collection within a post. Note that the "shares"
     collection has no relation to shared items in shares.py. It's
     shares of posts, not shares of physical objects.
     """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
-    nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
-                                               postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    nickname = get_nickname_from_actor(actor)
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain,
+                                 post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 if debug:
-                    print('EX: undoAnnounceCollectionEntry ' +
+                    print('EX: undo_announce_collection_entry ' +
                           'unable to delete cached post ' +
-                          str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+                          str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         if debug:
-            pprint(postJsonObject)
+            pprint(post_json_object)
             print('DEBUG: post has no object')
         return
-    if not postJsonObject['object'].get('shares'):
+    if not post_json_object['object'].get('shares'):
         return
-    if not postJsonObject['object']['shares'].get('items'):
+    if not post_json_object['object']['shares'].get('items'):
         return
-    totalItems = 0
-    if postJsonObject['object']['shares'].get('totalItems'):
-        totalItems = postJsonObject['object']['shares']['totalItems']
-    itemFound = False
-    for announceItem in postJsonObject['object']['shares']['items']:
-        if announceItem.get('actor'):
-            if announceItem['actor'] == actor:
+    total_items = 0
+    if post_json_object['object']['shares'].get('totalItems'):
+        total_items = post_json_object['object']['shares']['totalItems']
+    item_found = False
+    for announce_item in post_json_object['object']['shares']['items']:
+        if announce_item.get('actor'):
+            if announce_item['actor'] == actor:
                 if debug:
                     print('DEBUG: Announce was removed for ' + actor)
-                anIt = announceItem
-                postJsonObject['object']['shares']['items'].remove(anIt)
-                itemFound = True
+                an_it = announce_item
+                post_json_object['object']['shares']['items'].remove(an_it)
+                item_found = True
                 break
-    if not itemFound:
+    if not item_found:
         return
-    if totalItems == 1:
+    if total_items == 1:
         if debug:
             print('DEBUG: shares (announcements) ' +
                   'was removed from post')
-        del postJsonObject['object']['shares']
+        del post_json_object['object']['shares']
     else:
-        itlen = len(postJsonObject['object']['shares']['items'])
-        postJsonObject['object']['shares']['totalItems'] = itlen
+        itlen = len(post_json_object['object']['shares']['items'])
+        post_json_object['object']['shares']['totalItems'] = itlen
 
-    saveJson(postJsonObject, postFilename)
+    save_json(post_json_object, post_filename)
 
 
-def updateAnnounceCollection(recentPostsCache: {},
-                             baseDir: str, postFilename: str,
-                             actor: str,
-                             nickname: str, domain: str, debug: bool) -> None:
+def update_announce_collection(recent_posts_cache: {},
+                               base_dir: str, post_filename: str,
+                               actor: str, nickname: str, domain: str,
+                               debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the
     same as shared items within shares.py
     It's shares of posts, not shares of physical objects.
     """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
-                                               postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain,
+                                 post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 if debug:
-                    print('EX: updateAnnounceCollection ' +
+                    print('EX: update_announce_collection ' +
                           'unable to delete cached post ' +
-                          str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+                          str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         if debug:
-            pprint(postJsonObject)
-            print('DEBUG: post ' + postFilename + ' has no object')
+            pprint(post_json_object)
+            print('DEBUG: post ' + post_filename + ' has no object')
         return
-    postUrl = removeIdEnding(postJsonObject['id']) + '/shares'
-    if not postJsonObject['object'].get('shares'):
+    post_url = remove_id_ending(post_json_object['id']) + '/shares'
+    if not post_json_object['object'].get('shares'):
         if debug:
             print('DEBUG: Adding initial shares (announcements) to ' +
-                  postUrl)
-        announcementsJson = {
+                  post_url)
+        announcements_json = {
             "@context": "https://www.w3.org/ns/activitystreams",
-            'id': postUrl,
+            'id': post_url,
             'type': 'Collection',
             "totalItems": 1,
             'items': [{
@@ -2443,21 +2466,21 @@ def updateAnnounceCollection(recentPostsCache: {},
                 'actor': actor
             }]
         }
-        postJsonObject['object']['shares'] = announcementsJson
+        post_json_object['object']['shares'] = announcements_json
     else:
-        if postJsonObject['object']['shares'].get('items'):
-            sharesItems = postJsonObject['object']['shares']['items']
-            for announceItem in sharesItems:
-                if announceItem.get('actor'):
-                    if announceItem['actor'] == actor:
+        if post_json_object['object']['shares'].get('items'):
+            shares_items = post_json_object['object']['shares']['items']
+            for announce_item in shares_items:
+                if announce_item.get('actor'):
+                    if announce_item['actor'] == actor:
                         return
-            newAnnounce = {
+            new_announce = {
                 'type': 'Announce',
                 'actor': actor
             }
-            postJsonObject['object']['shares']['items'].append(newAnnounce)
-            itlen = len(postJsonObject['object']['shares']['items'])
-            postJsonObject['object']['shares']['totalItems'] = itlen
+            post_json_object['object']['shares']['items'].append(new_announce)
+            itlen = len(post_json_object['object']['shares']['items'])
+            post_json_object['object']['shares']['totalItems'] = itlen
         else:
             if debug:
                 print('DEBUG: shares (announcements) section of post ' +
@@ -2465,19 +2488,19 @@ def updateAnnounceCollection(recentPostsCache: {},
 
     if debug:
         print('DEBUG: saving post with shares (announcements) added')
-        pprint(postJsonObject)
-    saveJson(postJsonObject, postFilename)
+        pprint(post_json_object)
+    save_json(post_json_object, post_filename)
 
 
-def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
+def week_day_of_month_start(month_number: int, year: int) -> int:
     """Gets the day number of the first day of the month
     1=sun, 7=sat
     """
-    firstDayOfMonth = datetime.datetime(year, monthNumber, 1, 0, 0)
-    return int(firstDayOfMonth.strftime("%w")) + 1
+    first_day_of_month = datetime.datetime(year, month_number, 1, 0, 0)
+    return int(first_day_of_month.strftime("%w")) + 1
 
 
-def mediaFileMimeType(filename: str) -> str:
+def media_file_mime_type(filename: str) -> str:
     """Given a media filename return its mime type
     """
     if '.' not in filename:
@@ -2498,137 +2521,160 @@ def mediaFileMimeType(filename: str) -> str:
         'mp4': 'video/mp4',
         'ogv': 'video/ogv'
     }
-    fileExt = filename.split('.')[-1]
-    if not extensions.get(fileExt):
+    file_ext = filename.split('.')[-1]
+    if not extensions.get(file_ext):
         return 'image/png'
-    return extensions[fileExt]
+    return extensions[file_ext]
 
 
-def isRecentPost(postJsonObject: {}, maxDays: int) -> bool:
+def is_recent_post(post_json_object: {}, max_days: int) -> bool:
     """ Is the given post recent?
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if not postJsonObject['object'].get('published'):
+    if not post_json_object['object'].get('published'):
         return False
-    if not isinstance(postJsonObject['object']['published'], str):
+    if not isinstance(post_json_object['object']['published'], str):
         return False
-    currTime = datetime.datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
-    recently = daysSinceEpoch - maxDays
+    curr_time = datetime.datetime.utcnow()
+    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
+    recently = days_since_epoch - max_days
 
-    publishedDateStr = postJsonObject['object']['published']
+    published_date_str = post_json_object['object']['published']
     try:
-        publishedDate = \
-            datetime.datetime.strptime(publishedDateStr,
+        published_date = \
+            datetime.datetime.strptime(published_date_str,
                                        "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
-        print('EX: isRecentPost unrecognized published date ' +
-              str(publishedDateStr))
+        print('EX: is_recent_post unrecognized published date ' +
+              str(published_date_str))
         return False
 
-    publishedDaysSinceEpoch = \
-        (publishedDate - datetime.datetime(1970, 1, 1)).days
-    if publishedDaysSinceEpoch < recently:
+    published_days_since_epoch = \
+        (published_date - datetime.datetime(1970, 1, 1)).days
+    if published_days_since_epoch < recently:
         return False
     return True
 
 
-def camelCaseSplit(text: str) -> str:
+def camel_case_split(text: str) -> str:
     """ Splits CamelCase into "Camel Case"
     """
     matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|' +
                           '(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
     if not matches:
         return text
-    resultStr = ''
+    result_str = ''
     for word in matches:
-        resultStr += word.group(0) + ' '
-    return resultStr.strip()
+        result_str += word.group(0) + ' '
+    return result_str.strip()
 
 
-def rejectPostId(baseDir: str, nickname: str, domain: str,
-                 postId: str, recentPostsCache: {}) -> None:
+def convert_to_snake_case(text: str) -> str:
+    """Convert camel case to snake case
+    """
+    return camel_case_split(text).lower().replace(' ', '_')
+
+
+def _convert_to_camel_case(text: str) -> str:
+    """Convers a snake case string to camel case
+    """
+    if '_' not in text:
+        return text
+    words = text.split('_')
+    result = ''
+    ctr = 0
+    for wrd in words:
+        if ctr > 0:
+            result += wrd.title()
+        else:
+            result = wrd.lower()
+        ctr += 1
+    return result
+
+
+def reject_post_id(base_dir: str, nickname: str, domain: str,
+                   post_id: str, recent_posts_cache: {}) -> None:
     """ Marks the given post as rejected,
     for example an announce which is too old
     """
-    postFilename = locatePost(baseDir, nickname, domain, postId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, post_id)
+    if not post_filename:
         return
 
-    if recentPostsCache.get('index'):
+    if recent_posts_cache.get('index'):
         # if this is a full path then remove the directories
-        indexFilename = postFilename
-        if '/' in postFilename:
-            indexFilename = postFilename.split('/')[-1]
+        index_filename = post_filename
+        if '/' in post_filename:
+            index_filename = post_filename.split('/')[-1]
 
         # filename of the post without any extension or path
         # This should also correspond to any index entry in
         # the posts cache
-        postUrl = \
-            indexFilename.replace('\n', '').replace('\r', '')
-        postUrl = postUrl.replace('.json', '').strip()
+        post_url = \
+            index_filename.replace('\n', '').replace('\r', '')
+        post_url = post_url.replace('.json', '').strip()
 
-        if postUrl in recentPostsCache['index']:
-            if recentPostsCache['json'].get(postUrl):
-                del recentPostsCache['json'][postUrl]
-            if recentPostsCache['html'].get(postUrl):
-                del recentPostsCache['html'][postUrl]
+        if post_url in recent_posts_cache['index']:
+            if recent_posts_cache['json'].get(post_url):
+                del recent_posts_cache['json'][post_url]
+            if recent_posts_cache['html'].get(post_url):
+                del recent_posts_cache['html'][post_url]
 
-    with open(postFilename + '.reject', 'w+') as rejectFile:
-        rejectFile.write('\n')
+    with open(post_filename + '.reject', 'w+') as reject_file:
+        reject_file.write('\n')
 
 
-def isDM(postJsonObject: {}) -> bool:
+def is_dm(post_json_object: {}) -> bool:
     """Returns true if the given post is a DM
     """
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if postJsonObject['object']['type'] != 'Note' and \
-       postJsonObject['object']['type'] != 'Page' and \
-       postJsonObject['object']['type'] != 'Patch' and \
-       postJsonObject['object']['type'] != 'EncryptedMessage' and \
-       postJsonObject['object']['type'] != 'Article':
+    if post_json_object['object']['type'] != 'Note' and \
+       post_json_object['object']['type'] != 'Page' and \
+       post_json_object['object']['type'] != 'Patch' and \
+       post_json_object['object']['type'] != 'EncryptedMessage' and \
+       post_json_object['object']['type'] != 'Article':
         return False
-    if postJsonObject['object'].get('moderationStatus'):
+    if post_json_object['object'].get('moderationStatus'):
         return False
     fields = ('to', 'cc')
-    for f in fields:
-        if not postJsonObject['object'].get(f):
+    for field_name in fields:
+        if not post_json_object['object'].get(field_name):
             continue
-        for toAddress in postJsonObject['object'][f]:
-            if toAddress.endswith('#Public'):
+        for to_address in post_json_object['object'][field_name]:
+            if to_address.endswith('#Public'):
                 return False
-            if toAddress.endswith('followers'):
+            if to_address.endswith('followers'):
                 return False
     return True
 
 
-def isReply(postJsonObject: {}, actor: str) -> bool:
+def is_reply(post_json_object: {}, actor: str) -> bool:
     """Returns true if the given post is a reply to the given actor
     """
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if postJsonObject['object'].get('moderationStatus'):
+    if post_json_object['object'].get('moderationStatus'):
         return False
-    if postJsonObject['object']['type'] != 'Note' and \
-       postJsonObject['object']['type'] != 'Page' and \
-       postJsonObject['object']['type'] != 'EncryptedMessage' and \
-       postJsonObject['object']['type'] != 'Article':
+    if post_json_object['object']['type'] != 'Note' and \
+       post_json_object['object']['type'] != 'Page' and \
+       post_json_object['object']['type'] != 'EncryptedMessage' and \
+       post_json_object['object']['type'] != 'Article':
         return False
-    if postJsonObject['object'].get('inReplyTo'):
-        if isinstance(postJsonObject['object']['inReplyTo'], str):
-            if postJsonObject['object']['inReplyTo'].startswith(actor):
+    if post_json_object['object'].get('inReplyTo'):
+        if isinstance(post_json_object['object']['inReplyTo'], str):
+            if post_json_object['object']['inReplyTo'].startswith(actor):
                 return True
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return False
-    if not isinstance(postJsonObject['object']['tag'], list):
+    if not isinstance(post_json_object['object']['tag'], list):
         return False
-    for tag in postJsonObject['object']['tag']:
+    for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
             continue
         if tag['type'] == 'Mention':
@@ -2639,7 +2685,7 @@ def isReply(postJsonObject: {}, actor: str) -> bool:
     return False
 
 
-def containsPGPPublicKey(content: str) -> bool:
+def contains_pgp_public_key(content: str) -> bool:
     """Returns true if the given content contains a PGP public key
     """
     if '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
@@ -2648,7 +2694,7 @@ def containsPGPPublicKey(content: str) -> bool:
     return False
 
 
-def isPGPEncrypted(content: str) -> bool:
+def is_pgp_encrypted(content: str) -> bool:
     """Returns true if the given content is PGP encrypted
     """
     if '--BEGIN PGP MESSAGE--' in content:
@@ -2657,158 +2703,158 @@ def isPGPEncrypted(content: str) -> bool:
     return False
 
 
-def invalidCiphertext(content: str) -> bool:
+def invalid_ciphertext(content: str) -> bool:
     """Returns true if the given content contains an invalid key
     """
     if '----BEGIN ' in content or '----END ' in content:
-        if not containsPGPPublicKey(content) and \
-           not isPGPEncrypted(content):
+        if not contains_pgp_public_key(content) and \
+           not is_pgp_encrypted(content):
             return True
     return False
 
 
-def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
+def load_translations_from_file(base_dir: str, language: str) -> ({}, str):
     """Returns the translations dictionary
     """
-    if not os.path.isdir(baseDir + '/translations'):
+    if not os.path.isdir(base_dir + '/translations'):
         print('ERROR: translations directory not found')
         return None, None
     if not language:
-        systemLanguage = locale.getdefaultlocale()[0]
+        system_language = locale.getdefaultlocale()[0]
     else:
-        systemLanguage = language
-    if not systemLanguage:
-        systemLanguage = 'en'
-    if '_' in systemLanguage:
-        systemLanguage = systemLanguage.split('_')[0]
-    while '/' in systemLanguage:
-        systemLanguage = systemLanguage.split('/')[1]
-    if '.' in systemLanguage:
-        systemLanguage = systemLanguage.split('.')[0]
-    translationsFile = baseDir + '/translations/' + \
-        systemLanguage + '.json'
-    if not os.path.isfile(translationsFile):
-        systemLanguage = 'en'
-        translationsFile = baseDir + '/translations/' + \
-            systemLanguage + '.json'
-    return loadJson(translationsFile), systemLanguage
+        system_language = language
+    if not system_language:
+        system_language = 'en'
+    if '_' in system_language:
+        system_language = system_language.split('_')[0]
+    while '/' in system_language:
+        system_language = system_language.split('/')[1]
+    if '.' in system_language:
+        system_language = system_language.split('.')[0]
+    translations_file = base_dir + '/translations/' + \
+        system_language + '.json'
+    if not os.path.isfile(translations_file):
+        system_language = 'en'
+        translations_file = base_dir + '/translations/' + \
+            system_language + '.json'
+    return load_json(translations_file), system_language
 
 
-def dmAllowedFromDomain(baseDir: str,
-                        nickname: str, domain: str,
-                        sendingActorDomain: str) -> bool:
+def dm_allowed_from_domain(base_dir: str,
+                           nickname: str, domain: str,
+                           sending_actor_domain: str) -> bool:
     """When a DM is received and the .followDMs flag file exists
     Then optionally some domains can be specified as allowed,
     regardless of individual follows.
     i.e. Mostly you only want DMs from followers, but there are
     a few particular instances that you trust
     """
-    dmAllowedInstancesFilename = \
-        acctDir(baseDir, nickname, domain) + '/dmAllowedInstances.txt'
-    if not os.path.isfile(dmAllowedInstancesFilename):
+    dm_allowed_instances_file = \
+        acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
+    if not os.path.isfile(dm_allowed_instances_file):
         return False
-    if sendingActorDomain + '\n' in open(dmAllowedInstancesFilename).read():
+    if sending_actor_domain + '\n' in open(dm_allowed_instances_file).read():
         return True
     return False
 
 
-def getOccupationSkills(actorJson: {}) -> []:
+def get_occupation_skills(actor_json: {}) -> []:
     """Returns the list of skills for an actor
     """
-    if 'hasOccupation' not in actorJson:
+    if 'hasOccupation' not in actor_json:
         return []
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return []
-    for occupationItem in actorJson['hasOccupation']:
-        if not isinstance(occupationItem, dict):
+    for occupation_item in actor_json['hasOccupation']:
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if not occupationItem['@type'] == 'Occupation':
+        if not occupation_item['@type'] == 'Occupation':
             continue
-        if not occupationItem.get('skills'):
+        if not occupation_item.get('skills'):
             continue
-        if isinstance(occupationItem['skills'], list):
-            return occupationItem['skills']
-        elif isinstance(occupationItem['skills'], str):
-            return [occupationItem['skills']]
+        if isinstance(occupation_item['skills'], list):
+            return occupation_item['skills']
+        if isinstance(occupation_item['skills'], str):
+            return [occupation_item['skills']]
         break
     return []
 
 
-def getOccupationName(actorJson: {}) -> str:
+def get_occupation_name(actor_json: {}) -> str:
     """Returns the occupation name an actor
     """
-    if not actorJson.get('hasOccupation'):
+    if not actor_json.get('hasOccupation'):
         return ""
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return ""
-    for occupationItem in actorJson['hasOccupation']:
-        if not isinstance(occupationItem, dict):
+    for occupation_item in actor_json['hasOccupation']:
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] != 'Occupation':
+        if occupation_item['@type'] != 'Occupation':
             continue
-        if not occupationItem.get('name'):
+        if not occupation_item.get('name'):
             continue
-        if isinstance(occupationItem['name'], str):
-            return occupationItem['name']
+        if isinstance(occupation_item['name'], str):
+            return occupation_item['name']
         break
     return ""
 
 
-def setOccupationName(actorJson: {}, name: str) -> bool:
+def set_occupation_name(actor_json: {}, name: str) -> bool:
     """Sets the occupation name of an actor
     """
-    if not actorJson.get('hasOccupation'):
+    if not actor_json.get('hasOccupation'):
         return False
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return False
-    for index in range(len(actorJson['hasOccupation'])):
-        occupationItem = actorJson['hasOccupation'][index]
-        if not isinstance(occupationItem, dict):
+    for index in range(len(actor_json['hasOccupation'])):
+        occupation_item = actor_json['hasOccupation'][index]
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] != 'Occupation':
+        if occupation_item['@type'] != 'Occupation':
             continue
-        occupationItem['name'] = name
+        occupation_item['name'] = name
         return True
     return False
 
 
-def setOccupationSkillsList(actorJson: {}, skillsList: []) -> bool:
+def set_occupation_skills_list(actor_json: {}, skills_list: []) -> bool:
     """Sets the occupation skills for an actor
     """
-    if 'hasOccupation' not in actorJson:
+    if 'hasOccupation' not in actor_json:
         return False
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return False
-    for index in range(len(actorJson['hasOccupation'])):
-        occupationItem = actorJson['hasOccupation'][index]
-        if not isinstance(occupationItem, dict):
+    for index in range(len(actor_json['hasOccupation'])):
+        occupation_item = actor_json['hasOccupation'][index]
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] != 'Occupation':
+        if occupation_item['@type'] != 'Occupation':
             continue
-        occupationItem['skills'] = skillsList
+        occupation_item['skills'] = skills_list
         return True
     return False
 
 
-def isAccountDir(dirName: str) -> bool:
+def is_account_dir(dir_name: str) -> bool:
     """Is the given directory an account within /accounts ?
     """
-    if '@' not in dirName:
+    if '@' not in dir_name:
         return False
-    if 'inbox@' in dirName or 'news@' in dirName:
+    if 'inbox@' in dir_name or 'news@' in dir_name:
         return False
     return True
 
 
-def permittedDir(path: str) -> bool:
+def permitted_dir(path: str) -> bool:
     """These are special paths which should not be accessible
        directly via GET or POST
     """
@@ -2819,90 +2865,90 @@ def permittedDir(path: str) -> bool:
     return True
 
 
-def userAgentDomain(userAgent: str, debug: bool) -> str:
+def user_agent_domain(user_agent: str, debug: bool) -> str:
     """If the User-Agent string contains a domain
     then return it
     """
-    if '+http' not in userAgent:
+    if '+http' not in user_agent:
         return None
-    agentDomain = userAgent.split('+http')[1].strip()
-    if '://' in agentDomain:
-        agentDomain = agentDomain.split('://')[1]
-    if '/' in agentDomain:
-        agentDomain = agentDomain.split('/')[0]
-    if ')' in agentDomain:
-        agentDomain = agentDomain.split(')')[0].strip()
-    if ' ' in agentDomain:
-        agentDomain = agentDomain.replace(' ', '')
-    if ';' in agentDomain:
-        agentDomain = agentDomain.replace(';', '')
-    if '.' not in agentDomain:
+    agent_domain = user_agent.split('+http')[1].strip()
+    if '://' in agent_domain:
+        agent_domain = agent_domain.split('://')[1]
+    if '/' in agent_domain:
+        agent_domain = agent_domain.split('/')[0]
+    if ')' in agent_domain:
+        agent_domain = agent_domain.split(')')[0].strip()
+    if ' ' in agent_domain:
+        agent_domain = agent_domain.replace(' ', '')
+    if ';' in agent_domain:
+        agent_domain = agent_domain.replace(';', '')
+    if '.' not in agent_domain:
         return None
     if debug:
-        print('User-Agent Domain: ' + agentDomain)
-    return agentDomain
+        print('User-Agent Domain: ' + agent_domain)
+    return agent_domain
 
 
-def hasObjectDict(postJsonObject: {}) -> bool:
+def has_object_dict(post_json_object: {}) -> bool:
     """Returns true if the given post has an object dict
     """
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
+    if post_json_object.get('object'):
+        if isinstance(post_json_object['object'], dict):
             return True
     return False
 
 
-def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
+def get_alt_path(actor: str, domain_full: str, calling_domain: str) -> str:
     """Returns alternate path from the actor
     eg. https://clearnetdomain/path becomes http://oniondomain/path
     """
-    postActor = actor
-    if callingDomain not in actor and domainFull in actor:
-        if callingDomain.endswith('.onion') or \
-           callingDomain.endswith('.i2p'):
-            postActor = \
-                'http://' + callingDomain + actor.split(domainFull)[1]
-            print('Changed POST domain from ' + actor + ' to ' + postActor)
-    return postActor
+    post_actor = actor
+    if calling_domain not in actor and domain_full in actor:
+        if calling_domain.endswith('.onion') or \
+           calling_domain.endswith('.i2p'):
+            post_actor = \
+                'http://' + calling_domain + actor.split(domain_full)[1]
+            print('Changed POST domain from ' + actor + ' to ' + post_actor)
+    return post_actor
 
 
-def getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
+def get_actor_property_url(actor_json: {}, property_name: str) -> str:
     """Returns a url property from an actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    propertyName = propertyName.lower()
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_name = property_name.lower()
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith(propertyName):
+        if not property_value['name'].lower().startswith(property_name):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = propertyValue['value'].strip()
-        prefixes = getProtocolPrefixes()
-        prefixFound = False
+        property_value['value'] = property_value['value'].strip()
+        prefixes = get_protocol_prefixes()
+        prefix_found = False
         for prefix in prefixes:
-            if propertyValue['value'].startswith(prefix):
-                prefixFound = True
+            if property_value['value'].startswith(prefix):
+                prefix_found = True
                 break
-        if not prefixFound:
+        if not prefix_found:
             continue
-        if '.' not in propertyValue['value']:
+        if '.' not in property_value['value']:
             continue
-        if ' ' in propertyValue['value']:
+        if ' ' in property_value['value']:
             continue
-        if ',' in propertyValue['value']:
+        if ',' in property_value['value']:
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
-def removeDomainPort(domain: str) -> str:
+def remove_domain_port(domain: str) -> str:
     """If the domain has a port appended then remove it
     eg. mydomain.com:80 becomes mydomain.com
     """
@@ -2913,20 +2959,20 @@ def removeDomainPort(domain: str) -> str:
     return domain
 
 
-def getPortFromDomain(domain: str) -> int:
+def get_port_from_domain(domain: str) -> int:
     """If the domain has a port number appended then return it
     eg. mydomain.com:80 returns 80
     """
     if ':' in domain:
         if domain.startswith('did:'):
             return None
-        portStr = domain.split(':')[1]
-        if portStr.isdigit():
-            return int(portStr)
+        port_str = domain.split(':')[1]
+        if port_str.isdigit():
+            return int(port_str)
     return None
 
 
-def validUrlPrefix(url: str) -> bool:
+def valid_url_prefix(url: str) -> bool:
     """Does the given url have a valid prefix?
     """
     if '/' not in url:
@@ -2938,7 +2984,7 @@ def validUrlPrefix(url: str) -> bool:
     return False
 
 
-def removeLineEndings(text: str) -> str:
+def remove_line_endings(text: str) -> str:
     """Removes any newline from the end of a string
     """
     text = text.replace('\n', '')
@@ -2946,7 +2992,7 @@ def removeLineEndings(text: str) -> str:
     return text.strip()
 
 
-def validPassword(password: str) -> bool:
+def valid_password(password: str) -> bool:
     """Returns true if the given password is valid
     """
     if len(password) < 8:
@@ -2954,7 +3000,9 @@ def validPassword(password: str) -> bool:
     return True
 
 
-def isfloat(value):
+def is_float(value) -> bool:
+    """Is the given value a float?
+    """
     try:
         float(value)
         return True
@@ -2962,81 +3010,82 @@ def isfloat(value):
         return False
 
 
-def dateStringToSeconds(dateStr: str) -> int:
+def date_string_to_seconds(date_str: str) -> int:
     """Converts a date string (eg "published") into seconds since epoch
     """
     try:
-        expiryTime = \
-            datetime.datetime.strptime(dateStr, '%Y-%m-%dT%H:%M:%SZ')
+        expiry_time = \
+            datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
-        print('EX: dateStringToSeconds unable to parse date ' + str(dateStr))
+        print('EX: date_string_to_seconds unable to parse date ' +
+              str(date_str))
         return None
-    return int(datetime.datetime.timestamp(expiryTime))
+    return int(datetime.datetime.timestamp(expiry_time))
 
 
-def dateSecondsToString(dateSec: int) -> str:
+def date_seconds_to_string(date_sec: int) -> str:
     """Converts a date in seconds since epoch to a string
     """
-    thisDate = datetime.datetime.fromtimestamp(dateSec)
-    return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
+    this_date = datetime.datetime.fromtimestamp(date_sec)
+    return this_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def hasGroupType(baseDir: str, actor: str, personCache: {},
-                 debug: bool = False) -> bool:
+def has_group_type(base_dir: str, actor: str, person_cache: {},
+                   debug: bool = False) -> bool:
     """Does the given actor url have a group type?
     """
     # does the actor path clearly indicate that this is a group?
     # eg. https://lemmy/c/groupname
-    groupPaths = getGroupPaths()
-    for grpPath in groupPaths:
-        if grpPath in actor:
+    group_paths = get_group_paths()
+    for grp_path in group_paths:
+        if grp_path in actor:
             if debug:
-                print('grpPath ' + grpPath + ' in ' + actor)
+                print('grpPath ' + grp_path + ' in ' + actor)
             return True
     # is there a cached actor which can be examined for Group type?
-    return isGroupActor(baseDir, actor, personCache, debug)
+    return is_group_actor(base_dir, actor, person_cache, debug)
 
 
-def isGroupActor(baseDir: str, actor: str, personCache: {},
-                 debug: bool = False) -> bool:
+def is_group_actor(base_dir: str, actor: str, person_cache: {},
+                   debug: bool = False) -> bool:
     """Is the given actor a group?
     """
-    if personCache:
-        if personCache.get(actor):
-            if personCache[actor].get('actor'):
-                if personCache[actor]['actor'].get('type'):
-                    if personCache[actor]['actor']['type'] == 'Group':
+    if person_cache:
+        if person_cache.get(actor):
+            if person_cache[actor].get('actor'):
+                if person_cache[actor]['actor'].get('type'):
+                    if person_cache[actor]['actor']['type'] == 'Group':
                         if debug:
                             print('Cached actor ' + actor + ' has Group type')
                         return True
                 return False
     if debug:
         print('Actor ' + actor + ' not in cache')
-    cachedActorFilename = \
-        baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-    if not os.path.isfile(cachedActorFilename):
+    cached_actor_filename = \
+        base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+    if not os.path.isfile(cached_actor_filename):
         if debug:
-            print('Cached actor file not found ' + cachedActorFilename)
+            print('Cached actor file not found ' + cached_actor_filename)
         return False
-    if '"type": "Group"' in open(cachedActorFilename).read():
+    if '"type": "Group"' in open(cached_actor_filename).read():
         if debug:
-            print('Group type found in ' + cachedActorFilename)
+            print('Group type found in ' + cached_actor_filename)
         return True
     return False
 
 
-def isGroupAccount(baseDir: str, nickname: str, domain: str) -> bool:
+def is_group_account(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account is a group
     """
-    accountFilename = acctDir(baseDir, nickname, domain) + '.json'
-    if not os.path.isfile(accountFilename):
+    account_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(account_filename):
         return False
-    if '"type": "Group"' in open(accountFilename).read():
+    if '"type": "Group"' in open(account_filename).read():
         return True
     return False
 
 
-def getCurrencies() -> {}:
+def get_currencies() -> {}:
     """Returns a dictionary of currencies
     """
     return {
@@ -3099,129 +3148,129 @@ def getCurrencies() -> {}:
     }
 
 
-def getSupportedLanguages(baseDir: str) -> []:
+def get_supported_languages(base_dir: str) -> []:
     """Returns a list of supported languages
     """
-    translationsDir = baseDir + '/translations'
-    languagesStr = []
-    for _, _, files in os.walk(translationsDir):
-        for f in files:
-            if not f.endswith('.json'):
+    translations_dir = base_dir + '/translations'
+    languages_str = []
+    for _, _, files in os.walk(translations_dir):
+        for fname in files:
+            if not fname.endswith('.json'):
                 continue
-            lang = f.split('.')[0]
+            lang = fname.split('.')[0]
             if len(lang) == 2:
-                languagesStr.append(lang)
+                languages_str.append(lang)
         break
-    return languagesStr
+    return languages_str
 
 
-def getCategoryTypes(baseDir: str) -> []:
+def get_category_types(base_dir: str) -> []:
     """Returns the list of ontologies
     """
-    ontologyDir = baseDir + '/ontology'
+    ontology_dir = base_dir + '/ontology'
     categories = []
-    for _, _, files in os.walk(ontologyDir):
-        for f in files:
-            if not f.endswith('.json'):
+    for _, _, files in os.walk(ontology_dir):
+        for fname in files:
+            if not fname.endswith('.json'):
                 continue
-            if '#' in f or '~' in f:
+            if '#' in fname or '~' in fname:
                 continue
-            if f.startswith('custom'):
+            if fname.startswith('custom'):
                 continue
-            ontologyFilename = f.split('.')[0]
-            if 'Types' in ontologyFilename:
-                categories.append(ontologyFilename.replace('Types', ''))
+            ontology_filename = fname.split('.')[0]
+            if 'Types' in ontology_filename:
+                categories.append(ontology_filename.replace('Types', ''))
         break
     return categories
 
 
-def getSharesFilesList() -> []:
+def get_shares_files_list() -> []:
     """Returns the possible shares files
     """
     return ('shares', 'wanted')
 
 
-def replaceUsersWithAt(actor: str) -> str:
+def replace_users_with_at(actor: str) -> str:
     """ https://domain/users/nick becomes https://domain/@nick
     """
-    uPaths = getUserPaths()
-    for path in uPaths:
+    u_paths = get_user_paths()
+    for path in u_paths:
         if path in actor:
             actor = actor.replace(path, '/@')
             break
     return actor
 
 
-def hasActor(postJsonObject: {}, debug: bool) -> bool:
+def has_actor(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an actor?
     """
-    if postJsonObject.get('actor'):
-        if '#' in postJsonObject['actor']:
+    if post_json_object.get('actor'):
+        if '#' in post_json_object['actor']:
             return False
         return True
     if debug:
-        if postJsonObject.get('type'):
-            msg = postJsonObject['type'] + ' has missing actor'
-            if postJsonObject.get('id'):
-                msg += ' ' + postJsonObject['id']
+        if post_json_object.get('type'):
+            msg = post_json_object['type'] + ' has missing actor'
+            if post_json_object.get('id'):
+                msg += ' ' + post_json_object['id']
             print(msg)
     return False
 
 
-def hasObjectStringType(postJsonObject: {}, debug: bool) -> bool:
+def has_object_stringType(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have a type field within an object dict?
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         if debug:
-            print('hasObjectStringType no object found')
+            print('has_object_stringType no object found')
         return False
-    if postJsonObject['object'].get('type'):
-        if isinstance(postJsonObject['object']['type'], str):
+    if post_json_object['object'].get('type'):
+        if isinstance(post_json_object['object']['type'], str):
             return True
-        elif debug:
-            if postJsonObject.get('type'):
-                print('DEBUG: ' + postJsonObject['type'] +
+        if debug:
+            if post_json_object.get('type'):
+                print('DEBUG: ' + post_json_object['type'] +
                       ' type within object is not a string')
     if debug:
-        print('No type field within object ' + postJsonObject['id'])
+        print('No type field within object ' + post_json_object['id'])
     return False
 
 
-def hasObjectStringObject(postJsonObject: {}, debug: bool) -> bool:
+def has_object_string_object(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an object string field within an object dict?
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         if debug:
-            print('hasObjectStringType no object found')
+            print('has_object_stringType no object found')
         return False
-    if postJsonObject['object'].get('object'):
-        if isinstance(postJsonObject['object']['object'], str):
+    if post_json_object['object'].get('object'):
+        if isinstance(post_json_object['object']['object'], str):
             return True
         elif debug:
-            if postJsonObject.get('type'):
-                print('DEBUG: ' + postJsonObject['type'] +
+            if post_json_object.get('type'):
+                print('DEBUG: ' + post_json_object['type'] +
                       ' object within dict is not a string')
     if debug:
-        print('No object field within dict ' + postJsonObject['id'])
+        print('No object field within dict ' + post_json_object['id'])
     return False
 
 
-def hasObjectString(postJsonObject: {}, debug: bool) -> bool:
+def has_object_string(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an object string field?
     """
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], str):
+    if post_json_object.get('object'):
+        if isinstance(post_json_object['object'], str):
             return True
-        elif debug:
-            if postJsonObject.get('type'):
-                print('DEBUG: ' + postJsonObject['type'] +
+        if debug:
+            if post_json_object.get('type'):
+                print('DEBUG: ' + post_json_object['type'] +
                       ' object is not a string')
     if debug:
-        print('No object field within post ' + postJsonObject['id'])
+        print('No object field within post ' + post_json_object['id'])
     return False
 
 
-def getNewPostEndpoints() -> []:
+def get_new_post_endpoints() -> []:
     """Returns a list of endpoints for new posts
     """
     return (
@@ -3231,11 +3280,11 @@ def getNewPostEndpoints() -> []:
     )
 
 
-def getFavFilenameFromUrl(baseDir: str, faviconUrl: str) -> str:
+def get_fav_filename_from_url(base_dir: str, favicon_url: str) -> str:
     """Returns the cached filename for a favicon based upon its url
     """
-    if '://' in faviconUrl:
-        faviconUrl = faviconUrl.split('://')[1]
-    if '/favicon.' in faviconUrl:
-        faviconUrl = faviconUrl.replace('/favicon.', '.')
-    return baseDir + '/favicons/' + faviconUrl.replace('/', '-')
+    if '://' in favicon_url:
+        favicon_url = favicon_url.split('://')[1]
+    if '/favicon.' in favicon_url:
+        favicon_url = favicon_url.replace('/favicon.', '.')
+    return base_dir + '/favicons/' + favicon_url.replace('/', '-')

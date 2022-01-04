@@ -8,244 +8,246 @@ __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
 import os
-from utils import getConfigParam
-from utils import getNicknameFromActor
-from utils import isEditor
-from utils import isArtist
-from utils import removeDomainPort
-from utils import localActorUrl
-from webapp_utils import sharesTimelineJson
-from webapp_utils import htmlPostSeparator
-from webapp_utils import getLeftImageFile
-from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getBannerFile
-from webapp_utils import editTextField
-from shares import shareCategoryIcon
+from utils import get_config_param
+from utils import get_nickname_from_actor
+from utils import is_editor
+from utils import is_artist
+from utils import remove_domain_port
+from utils import local_actor_url
+from webapp_utils import shares_timeline_json
+from webapp_utils import html_post_separator
+from webapp_utils import get_left_image_file
+from webapp_utils import header_buttons_front_screen
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_banner_file
+from webapp_utils import edit_text_field
+from shares import share_category_icon
 
 
-def _linksExist(baseDir: str) -> bool:
+def _links_exist(base_dir: str) -> bool:
     """Returns true if links have been created
     """
-    linksFilename = baseDir + '/accounts/links.txt'
-    return os.path.isfile(linksFilename)
+    links_filename = base_dir + '/accounts/links.txt'
+    return os.path.isfile(links_filename)
 
 
-def _getLeftColumnShares(baseDir: str,
-                         httpPrefix: str, domain: str, domainFull: str,
-                         nickname: str,
-                         maxSharesInLeftColumn: int,
-                         translate: {},
-                         sharedItemsFederatedDomains: []) -> []:
+def _get_left_column_shares(base_dir: str,
+                            http_prefix: str, domain: str, domain_full: str,
+                            nickname: str,
+                            max_shares_in_left_column: int,
+                            translate: {},
+                            shared_items_federated_domains: []) -> []:
     """get any shares and turn them into the left column links format
     """
-    pageNumber = 1
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    page_number = 1
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     # NOTE: this could potentially be slow if the number of federated
     # shared items is large
-    sharesJson, lastPage = \
-        sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
-                           baseDir, domain, nickname, maxSharesInLeftColumn,
-                           sharedItemsFederatedDomains, 'shares')
-    if not sharesJson:
+    shares_json, _ = \
+        shares_timeline_json(actor, page_number, max_shares_in_left_column,
+                             base_dir, domain, nickname,
+                             max_shares_in_left_column,
+                             shared_items_federated_domains, 'shares')
+    if not shares_json:
         return []
 
-    linksList = []
+    links_list = []
     ctr = 0
-    for published, item in sharesJson.items():
+    for _, item in shares_json.items():
         sharedesc = item['displayName']
         if '<' in sharedesc or '?' in sharedesc:
             continue
-        shareId = item['shareId']
-        # selecting this link calls htmlShowShare
-        shareLink = actor + '?showshare=' + shareId
+        share_id = item['shareId']
+        # selecting this link calls html_show_share
+        share_link = actor + '?showshare=' + share_id
         if item.get('category'):
-            shareLink += '?category=' + item['category']
-            shareCategory = shareCategoryIcon(item['category'])
+            share_link += '?category=' + item['category']
+            share_category = share_category_icon(item['category'])
 
-        linksList.append(shareCategory + sharedesc + ' ' + shareLink)
+        links_list.append(share_category + sharedesc + ' ' + share_link)
         ctr += 1
-        if ctr >= maxSharesInLeftColumn:
+        if ctr >= max_shares_in_left_column:
             break
 
-    if linksList:
-        linksList = ['* ' + translate['Shares']] + linksList
-    return linksList
+    if links_list:
+        links_list = ['* ' + translate['Shares']] + links_list
+    return links_list
 
 
-def _getLeftColumnWanted(baseDir: str,
-                         httpPrefix: str, domain: str, domainFull: str,
-                         nickname: str,
-                         maxSharesInLeftColumn: int,
-                         translate: {},
-                         sharedItemsFederatedDomains: []) -> []:
+def _get_left_column_wanted(base_dir: str,
+                            http_prefix: str, domain: str, domain_full: str,
+                            nickname: str,
+                            max_shares_in_left_column: int,
+                            translate: {},
+                            shared_items_federated_domains: []) -> []:
     """get any wanted items and turn them into the left column links format
     """
-    pageNumber = 1
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    page_number = 1
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     # NOTE: this could potentially be slow if the number of federated
     # wanted items is large
-    sharesJson, lastPage = \
-        sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
-                           baseDir, domain, nickname, maxSharesInLeftColumn,
-                           sharedItemsFederatedDomains, 'wanted')
-    if not sharesJson:
+    shares_json, _ = \
+        shares_timeline_json(actor, page_number, max_shares_in_left_column,
+                             base_dir, domain, nickname,
+                             max_shares_in_left_column,
+                             shared_items_federated_domains, 'wanted')
+    if not shares_json:
         return []
 
-    linksList = []
+    links_list = []
     ctr = 0
-    for published, item in sharesJson.items():
+    for _, item in shares_json.items():
         sharedesc = item['displayName']
         if '<' in sharedesc or ';' in sharedesc:
             continue
-        shareId = item['shareId']
-        # selecting this link calls htmlShowShare
-        shareLink = actor + '?showwanted=' + shareId
-        linksList.append(sharedesc + ' ' + shareLink)
+        share_id = item['shareId']
+        # selecting this link calls html_show_share
+        share_link = actor + '?showwanted=' + share_id
+        links_list.append(sharedesc + ' ' + share_link)
         ctr += 1
-        if ctr >= maxSharesInLeftColumn:
+        if ctr >= max_shares_in_left_column:
             break
 
-    if linksList:
-        linksList = ['* ' + translate['Wanted']] + linksList
-    return linksList
+    if links_list:
+        links_list = ['* ' + translate['Wanted']] + links_list
+    return links_list
 
 
-def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
-                         httpPrefix: str, translate: {},
-                         editor: bool, artist: bool,
-                         showBackButton: bool, timelinePath: str,
-                         rssIconAtTop: bool, showHeaderImage: bool,
-                         frontPage: bool, theme: str,
-                         accessKeys: {},
-                         sharedItemsFederatedDomains: []) -> str:
+def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
+                            http_prefix: str, translate: {},
+                            editor: bool, artist: bool,
+                            show_back_button: bool, timelinePath: str,
+                            rss_icon_at_top: bool, show_header_image: bool,
+                            front_page: bool, theme: str,
+                            access_keys: {},
+                            shared_items_federated_domains: []) -> str:
     """Returns html content for the left column
     """
-    htmlStr = ''
+    html_str = ''
 
-    separatorStr = htmlPostSeparator(baseDir, 'left')
-    domain = removeDomainPort(domainFull)
+    separator_str = html_post_separator(base_dir, 'left')
+    domain = remove_domain_port(domain_full)
 
-    editImageClass = ''
-    if showHeaderImage:
-        leftImageFile, leftColumnImageFilename = \
-            getLeftImageFile(baseDir, nickname, domain, theme)
+    edit_image_class = ''
+    if show_header_image:
+        left_image_file, left_column_image_filename = \
+            get_left_image_file(base_dir, nickname, domain, theme)
 
         # show the image at the top of the column
-        editImageClass = 'leftColEdit'
-        if os.path.isfile(leftColumnImageFilename):
-            editImageClass = 'leftColEditImage'
-            htmlStr += \
+        edit_image_class = 'leftColEdit'
+        if os.path.isfile(left_column_image_filename):
+            edit_image_class = 'leftColEditImage'
+            html_str += \
                 '\n      <center>\n        <img class="leftColImg" ' + \
                 'alt="" loading="lazy" src="/users/' + \
-                nickname + '/' + leftImageFile + '" />\n' + \
+                nickname + '/' + left_image_file + '" />\n' + \
                 '      </center>\n'
 
-    if showBackButton:
-        htmlStr += \
+    if show_back_button:
+        html_str += \
             '      <div>      <a href="' + timelinePath + '">' + \
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
-    if (editor or rssIconAtTop) and not showHeaderImage:
-        htmlStr += '<div class="columnIcons">'
+    if (editor or rss_icon_at_top) and not show_header_image:
+        html_str += '<div class="columnIcons">'
 
-    if editImageClass == 'leftColEdit':
-        htmlStr += '\n      <center>\n'
+    if edit_image_class == 'leftColEdit':
+        html_str += '\n      <center>\n'
 
-    htmlStr += '      <div class="leftColIcons">\n'
+    html_str += '      <div class="leftColIcons">\n'
 
     if editor:
         # show the edit icon
-        htmlStr += \
+        html_str += \
             '      <a href="/users/' + nickname + '/editlinks" ' + \
-            'accesskey="' + accessKeys['menuEdit'] + '">' + \
-            '<img class="' + editImageClass + '" loading="lazy" alt="' + \
+            'accesskey="' + access_keys['menuEdit'] + '">' + \
+            '<img class="' + edit_image_class + '" loading="lazy" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
             translate['Edit Links'] + '" src="/icons/edit.png" /></a>\n'
 
     if artist:
         # show the theme designer icon
-        htmlStr += \
+        html_str += \
             '      <a href="/users/' + nickname + '/themedesigner" ' + \
-            'accesskey="' + accessKeys['menuThemeDesigner'] + '">' + \
-            '<img class="' + editImageClass + '" loading="lazy" alt="' + \
+            'accesskey="' + access_keys['menuThemeDesigner'] + '">' + \
+            '<img class="' + edit_image_class + '" loading="lazy" alt="' + \
             translate['Theme Designer'] + ' | " title="' + \
             translate['Theme Designer'] + '" src="/icons/theme.png" /></a>\n'
 
     # RSS icon
     if nickname != 'news':
         # rss feed for this account
-        rssUrl = httpPrefix + '://' + domainFull + \
+        rss_url = http_prefix + '://' + domain_full + \
             '/blog/' + nickname + '/rss.xml'
     else:
         # rss feed for all accounts on the instance
-        rssUrl = httpPrefix + '://' + domainFull + '/blog/rss.xml'
-    if not frontPage:
-        rssTitle = translate['RSS feed for your blog']
+        rss_url = http_prefix + '://' + domain_full + '/blog/rss.xml'
+    if not front_page:
+        rss_title = translate['RSS feed for your blog']
     else:
-        rssTitle = translate['RSS feed for this site']
-    rssIconStr = \
-        '      <a href="' + rssUrl + '"><img class="' + editImageClass + \
-        '" loading="lazy" alt="' + rssTitle + '" title="' + rssTitle + \
+        rss_title = translate['RSS feed for this site']
+    rss_icon_str = \
+        '      <a href="' + rss_url + '"><img class="' + edit_image_class + \
+        '" loading="lazy" alt="' + rss_title + '" title="' + rss_title + \
         '" src="/icons/logorss.png" /></a>\n'
-    if rssIconAtTop:
-        htmlStr += rssIconStr
-    htmlStr += '      </div>\n'
+    if rss_icon_at_top:
+        html_str += rss_icon_str
+    html_str += '      </div>\n'
 
-    if editImageClass == 'leftColEdit':
-        htmlStr += '      </center>\n'
+    if edit_image_class == 'leftColEdit':
+        html_str += '      </center>\n'
 
-    if (editor or rssIconAtTop) and not showHeaderImage:
-        htmlStr += '</div><br>'
+    if (editor or rss_icon_at_top) and not show_header_image:
+        html_str += '</div><br>'
 
-    # if showHeaderImage:
-    #     htmlStr += '<br>'
+    # if show_header_image:
+    #     html_str += '<br>'
 
     # flag used not to show the first separator
-    firstSeparatorAdded = False
+    first_separator_added = False
 
-    linksFilename = baseDir + '/accounts/links.txt'
-    linksFileContainsEntries = False
-    linksList = None
-    if os.path.isfile(linksFilename):
-        with open(linksFilename, 'r') as f:
-            linksList = f.readlines()
+    links_filename = base_dir + '/accounts/links.txt'
+    links_file_contains_entries = False
+    links_list = None
+    if os.path.isfile(links_filename):
+        with open(links_filename, 'r') as fp_links:
+            links_list = fp_links.readlines()
 
-    if not frontPage:
+    if not front_page:
         # show a number of shares
-        maxSharesInLeftColumn = 3
-        sharesList = \
-            _getLeftColumnShares(baseDir,
-                                 httpPrefix, domain, domainFull, nickname,
-                                 maxSharesInLeftColumn, translate,
-                                 sharedItemsFederatedDomains)
-        if linksList and sharesList:
-            linksList = sharesList + linksList
+        max_shares_in_left_column = 3
+        shares_list = \
+            _get_left_column_shares(base_dir,
+                                    http_prefix, domain, domain_full, nickname,
+                                    max_shares_in_left_column, translate,
+                                    shared_items_federated_domains)
+        if links_list and shares_list:
+            links_list = shares_list + links_list
 
-        wantedList = \
-            _getLeftColumnWanted(baseDir,
-                                 httpPrefix, domain, domainFull, nickname,
-                                 maxSharesInLeftColumn, translate,
-                                 sharedItemsFederatedDomains)
-        if linksList and wantedList:
-            linksList = wantedList + linksList
+        wanted_list = \
+            _get_left_column_wanted(base_dir,
+                                    http_prefix, domain, domain_full, nickname,
+                                    max_shares_in_left_column, translate,
+                                    shared_items_federated_domains)
+        if links_list and wanted_list:
+            links_list = wanted_list + links_list
 
-    newTabStr = ' target="_blank" rel="nofollow noopener noreferrer"'
-    if linksList:
-        htmlStr += '<nav>\n'
-        for lineStr in linksList:
-            if ' ' not in lineStr:
-                if '#' not in lineStr:
-                    if '*' not in lineStr:
-                        if not lineStr.startswith('['):
-                            if not lineStr.startswith('=> '):
+    new_tab_str = ' target="_blank" rel="nofollow noopener noreferrer"'
+    if links_list:
+        html_str += '<nav>\n'
+        for line_str in links_list:
+            if ' ' not in line_str:
+                if '#' not in line_str:
+                    if '*' not in line_str:
+                        if not line_str.startswith('['):
+                            if not line_str.startswith('=> '):
                                 continue
-            lineStr = lineStr.strip()
-            linkStr = None
-            if not lineStr.startswith('['):
-                words = lineStr.split(' ')
+            line_str = line_str.strip()
+            link_str = None
+            if not line_str.startswith('['):
+                words = line_str.split(' ')
                 # get the link
                 for word in words:
                     if word == '#':
@@ -255,168 +257,169 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     if word == '=>':
                         continue
                     if '://' in word:
-                        linkStr = word
+                        link_str = word
                         break
             else:
                 # markdown link
-                if ']' not in lineStr:
+                if ']' not in line_str:
                     continue
-                if '(' not in lineStr:
+                if '(' not in line_str:
                     continue
-                if ')' not in lineStr:
+                if ')' not in line_str:
                     continue
-                linkStr = lineStr.split('(')[1]
-                if ')' not in linkStr:
+                link_str = line_str.split('(')[1]
+                if ')' not in link_str:
                     continue
-                linkStr = linkStr.split(')')[0]
-                if '://' not in linkStr:
+                link_str = link_str.split(')')[0]
+                if '://' not in link_str:
                     continue
-                lineStr = lineStr.split('[')[1]
-                if ']' not in lineStr:
+                line_str = line_str.split('[')[1]
+                if ']' not in line_str:
                     continue
-                lineStr = lineStr.split(']')[0]
-            if linkStr:
-                lineStr = lineStr.replace(linkStr, '').strip()
+                line_str = line_str.split(']')[0]
+            if link_str:
+                line_str = line_str.replace(link_str, '').strip()
                 # avoid any dubious scripts being added
-                if '<' not in lineStr:
+                if '<' not in line_str:
                     # remove trailing comma if present
-                    if lineStr.endswith(','):
-                        lineStr = lineStr[:len(lineStr)-1]
+                    if line_str.endswith(','):
+                        line_str = line_str[:len(line_str)-1]
                     # add link to the returned html
-                    if '?showshare=' not in linkStr and \
-                       '?showwarning=' not in linkStr:
-                        htmlStr += \
-                            '      <p><a href="' + linkStr + \
-                            '"' + newTabStr + '>' + \
-                            lineStr + '</a></p>\n'
+                    if '?showshare=' not in link_str and \
+                       '?showwarning=' not in link_str:
+                        html_str += \
+                            '      <p><a href="' + link_str + \
+                            '"' + new_tab_str + '>' + \
+                            line_str + '</a></p>\n'
                     else:
-                        htmlStr += \
-                            '      <p><a href="' + linkStr + \
-                            '">' + lineStr + '</a></p>\n'
-                    linksFileContainsEntries = True
-                elif lineStr.startswith('=> '):
+                        html_str += \
+                            '      <p><a href="' + link_str + \
+                            '">' + line_str + '</a></p>\n'
+                    links_file_contains_entries = True
+                elif line_str.startswith('=> '):
                     # gemini style link
-                    lineStr = lineStr.replace('=> ', '')
-                    lineStr = lineStr.replace(linkStr, '')
+                    line_str = line_str.replace('=> ', '')
+                    line_str = line_str.replace(link_str, '')
                     # add link to the returned html
-                    if '?showshare=' not in linkStr and \
-                       '?showwarning=' not in linkStr:
-                        htmlStr += \
-                            '      <p><a href="' + linkStr + \
-                            '"' + newTabStr + '>' + \
-                            lineStr.strip() + '</a></p>\n'
+                    if '?showshare=' not in link_str and \
+                       '?showwarning=' not in link_str:
+                        html_str += \
+                            '      <p><a href="' + link_str + \
+                            '"' + new_tab_str + '>' + \
+                            line_str.strip() + '</a></p>\n'
                     else:
-                        htmlStr += \
-                            '      <p><a href="' + linkStr + \
-                            '">' + lineStr.strip() + '</a></p>\n'
-                    linksFileContainsEntries = True
+                        html_str += \
+                            '      <p><a href="' + link_str + \
+                            '">' + line_str.strip() + '</a></p>\n'
+                    links_file_contains_entries = True
             else:
-                if lineStr.startswith('#') or lineStr.startswith('*'):
-                    lineStr = lineStr[1:].strip()
-                    if firstSeparatorAdded:
-                        htmlStr += separatorStr
-                    firstSeparatorAdded = True
-                    htmlStr += \
+                if line_str.startswith('#') or line_str.startswith('*'):
+                    line_str = line_str[1:].strip()
+                    if first_separator_added:
+                        html_str += separator_str
+                    first_separator_added = True
+                    html_str += \
                         '      <h3 class="linksHeader">' + \
-                        lineStr + '</h3>\n'
+                        line_str + '</h3>\n'
                 else:
-                    htmlStr += \
-                        '      <p>' + lineStr + '</p>\n'
-                linksFileContainsEntries = True
-        htmlStr += '</nav>\n'
+                    html_str += \
+                        '      <p>' + line_str + '</p>\n'
+                links_file_contains_entries = True
+        html_str += '</nav>\n'
 
-    if firstSeparatorAdded:
-        htmlStr += separatorStr
-    htmlStr += \
+    if first_separator_added:
+        html_str += separator_str
+    html_str += \
         '<p class="login-text"><a href="/users/' + nickname + \
         '/catalog.csv">' + translate['Shares Catalog'] + '</a></p>'
-    htmlStr += \
+    html_str += \
         '<p class="login-text"><a href="/users/' + \
         nickname + '/accesskeys" accesskey="' + \
-        accessKeys['menuKeys'] + '">' + \
+        access_keys['menuKeys'] + '">' + \
         translate['Key Shortcuts'] + '</a></p>'
-    htmlStr += \
+    html_str += \
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>'
-    htmlStr += \
+    html_str += \
         '<p class="login-text"><a href="/terms">' + \
         translate['Terms of Service'] + '</a></p>'
 
-    if linksFileContainsEntries and not rssIconAtTop:
-        htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
+    if links_file_contains_entries and not rss_icon_at_top:
+        html_str += '<br><div class="columnIcons">' + rss_icon_str + '</div>'
 
-    return htmlStr
+    return html_str
 
 
-def htmlLinksMobile(cssCache: {}, baseDir: str,
-                    nickname: str, domainFull: str,
-                    httpPrefix: str, translate,
-                    timelinePath: str, authorized: bool,
-                    rssIconAtTop: bool,
-                    iconsAsButtons: bool,
-                    defaultTimeline: str,
-                    theme: str, accessKeys: {},
-                    sharedItemsFederatedDomains: []) -> str:
+def html_links_mobile(css_cache: {}, base_dir: str,
+                      nickname: str, domain_full: str,
+                      http_prefix: str, translate,
+                      timelinePath: str, authorized: bool,
+                      rss_icon_at_top: bool,
+                      icons_as_buttons: bool,
+                      default_timeline: str,
+                      theme: str, access_keys: {},
+                      shared_items_federated_domains: []) -> str:
     """Show the left column links within mobile view
     """
-    htmlStr = ''
+    html_str = ''
 
     # the css filename
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
     # is the user a site editor?
     if nickname == 'news':
         editor = False
         artist = False
     else:
-        editor = isEditor(baseDir, nickname)
-        artist = isArtist(baseDir, nickname)
+        editor = is_editor(base_dir, nickname)
+        artist = is_artist(base_dir, nickname)
 
-    domain = removeDomainPort(domainFull)
+    domain = remove_domain_port(domain_full)
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
-    htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    html_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    html_str += \
+        '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
-        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
 
-    htmlStr += '<div class="col-left-mobile">\n'
-    htmlStr += '<center>' + \
-        headerButtonsFrontScreen(translate, nickname,
-                                 'links', authorized,
-                                 iconsAsButtons) + '</center>'
-    htmlStr += \
-        getLeftColumnContent(baseDir, nickname, domainFull,
-                             httpPrefix, translate,
-                             editor, artist,
-                             False, timelinePath,
-                             rssIconAtTop, False, False,
-                             theme, accessKeys,
-                             sharedItemsFederatedDomains)
-    if editor and not _linksExist(baseDir):
-        htmlStr += '<br><br><br>\n<center>\n  '
-        htmlStr += translate['Select the edit icon to add web links']
-        htmlStr += '\n</center>\n'
+    html_str += '<div class="col-left-mobile">\n'
+    html_str += '<center>' + \
+        header_buttons_front_screen(translate, nickname,
+                                    'links', authorized,
+                                    icons_as_buttons) + '</center>'
+    html_str += \
+        get_left_column_content(base_dir, nickname, domain_full,
+                                http_prefix, translate,
+                                editor, artist,
+                                False, timelinePath,
+                                rss_icon_at_top, False, False,
+                                theme, access_keys,
+                                shared_items_federated_domains)
+    if editor and not _links_exist(base_dir):
+        html_str += '<br><br><br>\n<center>\n  '
+        html_str += translate['Select the edit icon to add web links']
+        html_str += '\n</center>\n'
 
     # end of col-left-mobile
-    htmlStr += '</div>\n'
+    html_str += '</div>\n'
 
-    htmlStr += '</div>\n' + htmlFooter()
-    return htmlStr
+    html_str += '</div>\n' + html_footer()
+    return html_str
 
 
-def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
-                  domain: str, port: int, httpPrefix: str,
-                  defaultTimeline: str, theme: str,
-                  accessKeys: {}) -> str:
+def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
+                    domain: str, port: int, http_prefix: str,
+                    default_timeline: str, theme: str,
+                    access_keys: {}) -> str:
     """Shows the edit links screen
     """
     if '/users/' not in path:
@@ -424,117 +427,119 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '').replace('/wanted', '')
 
-    nickname = getNicknameFromActor(path)
+    nickname = get_nickname_from_actor(path)
     if not nickname:
         return ''
 
     # is the user a moderator?
-    if not isEditor(baseDir, nickname):
+    if not is_editor(base_dir, nickname):
         return ''
 
-    cssFilename = baseDir + '/epicyon-links.css'
-    if os.path.isfile(baseDir + '/links.css'):
-        cssFilename = baseDir + '/links.css'
+    css_filename = base_dir + '/epicyon-links.css'
+    if os.path.isfile(base_dir + '/links.css'):
+        css_filename = base_dir + '/links.css'
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    editLinksForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    edit_links_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # top banner
-    editLinksForm += \
+    edit_links_form += \
         '<header>\n' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + \
+        '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
-    editLinksForm += \
+        'accesskey="' + access_keys['menuTimeline'] + '">\n'
+    edit_links_form += \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt = "" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '</header>\n'
 
-    editLinksForm += \
+    edit_links_form += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/linksdata">\n'
-    editLinksForm += \
+    edit_links_form += \
         '  <div class="vertical-center">\n'
-    editLinksForm += \
+    edit_links_form += \
         '    <div class="containerSubmitNewPost">\n'
-    editLinksForm += \
+    edit_links_form += \
         '      <h1>' + translate['Edit Links'] + '</h1>'
-    editLinksForm += \
+    edit_links_form += \
         '      <input type="submit" name="submitLinks" value="' + \
         translate['Submit'] + '" ' + \
-        'accesskey="' + accessKeys['submitButton'] + '">\n'
-    editLinksForm += \
+        'accesskey="' + access_keys['submitButton'] + '">\n'
+    edit_links_form += \
         '    </div>\n'
 
-    linksFilename = baseDir + '/accounts/links.txt'
-    linksStr = ''
-    if os.path.isfile(linksFilename):
-        with open(linksFilename, 'r') as fp:
-            linksStr = fp.read()
+    links_filename = base_dir + '/accounts/links.txt'
+    links_str = ''
+    if os.path.isfile(links_filename):
+        with open(links_filename, 'r') as fp_links:
+            links_str = fp_links.read()
 
-    editLinksForm += \
+    edit_links_form += \
         '<div class="container">'
-    editLinksForm += \
+    edit_links_form += \
         '  ' + \
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
-    newColLinkStr = translate['New link title and URL']
-    editLinksForm += editTextField(None, 'newColLink', '', newColLinkStr)
-    editLinksForm += \
+    new_col_link_str = translate['New link title and URL']
+    edit_links_form += \
+        edit_text_field(None, 'newColLink', '', new_col_link_str)
+    edit_links_form += \
         '  <textarea id="message" name="editedLinks" ' + \
-        'style="height:80vh" spellcheck="false">' + linksStr + '</textarea>'
-    editLinksForm += \
+        'style="height:80vh" spellcheck="false">' + links_str + '</textarea>'
+    edit_links_form += \
         '</div>'
 
     # the admin can edit terms of service and about text
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if adminNickname:
-        if nickname == adminNickname:
-            aboutFilename = baseDir + '/accounts/about.md'
-            aboutStr = ''
-            if os.path.isfile(aboutFilename):
-                with open(aboutFilename, 'r') as fp:
-                    aboutStr = fp.read()
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if admin_nickname:
+        if nickname == admin_nickname:
+            about_filename = base_dir + '/accounts/about.md'
+            about_str = ''
+            if os.path.isfile(about_filename):
+                with open(about_filename, 'r') as fp_about:
+                    about_str = fp_about.read()
 
-            editLinksForm += \
+            edit_links_form += \
                 '<div class="container">'
-            editLinksForm += \
+            edit_links_form += \
                 '  ' + \
                 translate['About this Instance'] + \
                 '<br>'
-            editLinksForm += \
+            edit_links_form += \
                 '  <textarea id="message" name="editedAbout" ' + \
                 'style="height:100vh" spellcheck="true" autocomplete="on">' + \
-                aboutStr + '</textarea>'
-            editLinksForm += \
+                about_str + '</textarea>'
+            edit_links_form += \
                 '</div>'
 
-            TOSFilename = baseDir + '/accounts/tos.md'
-            TOSStr = ''
-            if os.path.isfile(TOSFilename):
-                with open(TOSFilename, 'r') as fp:
-                    TOSStr = fp.read()
+            tos_filename = base_dir + '/accounts/tos.md'
+            tos_str = ''
+            if os.path.isfile(tos_filename):
+                with open(tos_filename, 'r') as fp_tos:
+                    tos_str = fp_tos.read()
 
-            editLinksForm += \
+            edit_links_form += \
                 '<div class="container">'
-            editLinksForm += \
+            edit_links_form += \
                 '  ' + \
                 translate['Terms of Service'] + \
                 '<br>'
-            editLinksForm += \
+            edit_links_form += \
                 '  <textarea id="message" name="editedTOS" ' + \
                 'style="height:100vh" spellcheck="true" autocomplete="on">' + \
-                TOSStr + '</textarea>'
-            editLinksForm += \
+                tos_str + '</textarea>'
+            edit_links_form += \
                 '</div>'
 
-    editLinksForm += htmlFooter()
-    return editLinksForm
+    edit_links_form += html_footer()
+    return edit_links_form

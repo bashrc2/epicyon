@@ -12,41 +12,42 @@ from uuid import UUID
 from datetime import datetime
 from datetime import timedelta
 
-from utils import isPublicPost
-from utils import loadJson
-from utils import saveJson
-from utils import locatePost
-from utils import hasObjectDict
-from utils import acctDir
+from utils import is_public_post
+from utils import load_json
+from utils import save_json
+from utils import locate_post
+from utils import has_object_dict
+from utils import acct_dir
 
 
-def _validUuid(testUuid: str, version: int):
+def _valid_uuid(test_uuid: str, version: int):
     """Check if uuid_to_test is a valid UUID
     """
     try:
-        uuid_obj = UUID(testUuid, version=version)
+        uuid_obj = UUID(test_uuid, version=version)
     except ValueError:
         return False
 
-    return str(uuid_obj) == testUuid
+    return str(uuid_obj) == test_uuid
 
 
-def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
+def _remove_event_from_timeline(event_id: str,
+                                tl_events_filename: str) -> None:
     """Removes the given event Id from the timeline
     """
-    if eventId + '\n' not in open(tlEventsFilename).read():
+    if event_id + '\n' not in open(tl_events_filename).read():
         return
-    with open(tlEventsFilename, 'r') as fp:
-        eventsTimeline = fp.read().replace(eventId + '\n', '')
+    with open(tl_events_filename, 'r') as fp_tl:
+        events_timeline = fp_tl.read().replace(event_id + '\n', '')
         try:
-            with open(tlEventsFilename, 'w+') as fp2:
-                fp2.write(eventsTimeline)
+            with open(tl_events_filename, 'w+') as fp2:
+                fp2.write(events_timeline)
         except OSError:
             print('EX: ERROR: unable to save events timeline')
 
 
-def saveEventPost(baseDir: str, handle: str, postId: str,
-                  eventJson: {}) -> bool:
+def save_event_post(base_dir: str, handle: str, post_id: str,
+                    event_json: {}) -> bool:
     """Saves an event to the calendar and/or the events timeline
     If an event has extra fields, as per Mobilizon,
     Then it is saved as a separate entity and added to the
@@ -54,104 +55,104 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
     See https://framagit.org/framasoft/mobilizon/-/blob/
     master/lib/federation/activity_stream/converter/event.ex
     """
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('WARN: Account does not exist at ' +
-              baseDir + '/accounts/' + handle)
-    calendarPath = baseDir + '/accounts/' + handle + '/calendar'
-    if not os.path.isdir(calendarPath):
-        os.mkdir(calendarPath)
+              base_dir + '/accounts/' + handle)
+    calendar_path = base_dir + '/accounts/' + handle + '/calendar'
+    if not os.path.isdir(calendar_path):
+        os.mkdir(calendar_path)
 
     # get the year, month and day from the event
-    eventTime = datetime.strptime(eventJson['startTime'],
-                                  "%Y-%m-%dT%H:%M:%S%z")
-    eventYear = int(eventTime.strftime("%Y"))
-    if eventYear < 2020 or eventYear >= 2100:
+    event_time = datetime.strptime(event_json['startTime'],
+                                   "%Y-%m-%dT%H:%M:%S%z")
+    event_year = int(event_time.strftime("%Y"))
+    if event_year < 2020 or event_year >= 2100:
         return False
-    eventMonthNumber = int(eventTime.strftime("%m"))
-    if eventMonthNumber < 1 or eventMonthNumber > 12:
+    event_month_number = int(event_time.strftime("%m"))
+    if event_month_number < 1 or event_month_number > 12:
         return False
-    eventDayOfMonth = int(eventTime.strftime("%d"))
-    if eventDayOfMonth < 1 or eventDayOfMonth > 31:
+    event_day_of_month = int(event_time.strftime("%d"))
+    if event_day_of_month < 1 or event_day_of_month > 31:
         return False
 
-    if eventJson.get('name') and eventJson.get('actor') and \
-       eventJson.get('uuid') and eventJson.get('content'):
-        if not _validUuid(eventJson['uuid'], 4):
+    if event_json.get('name') and event_json.get('actor') and \
+       event_json.get('uuid') and event_json.get('content'):
+        if not _valid_uuid(event_json['uuid'], 4):
             return False
         print('Mobilizon type event')
         # if this is a full description of an event then save it
         # as a separate json file
-        eventsPath = baseDir + '/accounts/' + handle + '/events'
-        if not os.path.isdir(eventsPath):
-            os.mkdir(eventsPath)
-        eventsYearPath = \
-            baseDir + '/accounts/' + handle + '/events/' + str(eventYear)
-        if not os.path.isdir(eventsYearPath):
-            os.mkdir(eventsYearPath)
-        eventId = str(eventYear) + '-' + eventTime.strftime("%m") + '-' + \
-            eventTime.strftime("%d") + '_' + eventJson['uuid']
-        eventFilename = eventsYearPath + '/' + eventId + '.json'
+        events_path = base_dir + '/accounts/' + handle + '/events'
+        if not os.path.isdir(events_path):
+            os.mkdir(events_path)
+        events_year_path = \
+            base_dir + '/accounts/' + handle + '/events/' + str(event_year)
+        if not os.path.isdir(events_year_path):
+            os.mkdir(events_year_path)
+        event_id = str(event_year) + '-' + event_time.strftime("%m") + '-' + \
+            event_time.strftime("%d") + '_' + event_json['uuid']
+        event_filename = events_year_path + '/' + event_id + '.json'
 
-        saveJson(eventJson, eventFilename)
+        save_json(event_json, event_filename)
         # save to the events timeline
-        tlEventsFilename = baseDir + '/accounts/' + handle + '/events.txt'
+        tl_events_filename = base_dir + '/accounts/' + handle + '/events.txt'
 
-        if os.path.isfile(tlEventsFilename):
-            _removeEventFromTimeline(eventId, tlEventsFilename)
+        if os.path.isfile(tl_events_filename):
+            _remove_event_from_timeline(event_id, tl_events_filename)
             try:
-                with open(tlEventsFilename, 'r+') as tlEventsFile:
-                    content = tlEventsFile.read()
-                    if eventId + '\n' not in content:
-                        tlEventsFile.seek(0, 0)
-                        tlEventsFile.write(eventId + '\n' + content)
-            except OSError as e:
+                with open(tl_events_filename, 'r+') as tl_events_file:
+                    content = tl_events_file.read()
+                    if event_id + '\n' not in content:
+                        tl_events_file.seek(0, 0)
+                        tl_events_file.write(event_id + '\n' + content)
+            except OSError as ex:
                 print('EX: Failed to write entry to events file ' +
-                      tlEventsFilename + ' ' + str(e))
+                      tl_events_filename + ' ' + str(ex))
                 return False
         else:
             try:
-                with open(tlEventsFilename, 'w+') as tlEventsFile:
-                    tlEventsFile.write(eventId + '\n')
+                with open(tl_events_filename, 'w+') as tl_events_file:
+                    tl_events_file.write(event_id + '\n')
             except OSError:
-                print('EX: unable to write ' + tlEventsFilename)
+                print('EX: unable to write ' + tl_events_filename)
 
     # create a directory for the calendar year
-    if not os.path.isdir(calendarPath + '/' + str(eventYear)):
-        os.mkdir(calendarPath + '/' + str(eventYear))
+    if not os.path.isdir(calendar_path + '/' + str(event_year)):
+        os.mkdir(calendar_path + '/' + str(event_year))
 
     # calendar month file containing event post Ids
-    calendarFilename = calendarPath + '/' + str(eventYear) + \
-        '/' + str(eventMonthNumber) + '.txt'
+    calendar_filename = calendar_path + '/' + str(event_year) + \
+        '/' + str(event_month_number) + '.txt'
 
     # Does this event post already exist within the calendar month?
-    if os.path.isfile(calendarFilename):
-        if postId in open(calendarFilename).read():
+    if os.path.isfile(calendar_filename):
+        if post_id in open(calendar_filename).read():
             # Event post already exists
             return False
 
     # append the post Id to the file for the calendar month
     try:
-        with open(calendarFilename, 'a+') as calendarFile:
-            calendarFile.write(postId + '\n')
+        with open(calendar_filename, 'a+') as calendar_file:
+            calendar_file.write(post_id + '\n')
     except OSError:
-        print('EX: unable to append ' + calendarFilename)
+        print('EX: unable to append ' + calendar_filename)
 
     # create a file which will trigger a notification that
     # a new event has been added
-    calNotifyFilename = baseDir + '/accounts/' + handle + '/.newCalendar'
-    notifyStr = \
-        '/calendar?year=' + str(eventYear) + '?month=' + \
-        str(eventMonthNumber) + '?day=' + str(eventDayOfMonth)
+    cal_notify_filename = base_dir + '/accounts/' + handle + '/.newCalendar'
+    notify_str = \
+        '/calendar?year=' + str(event_year) + '?month=' + \
+        str(event_month_number) + '?day=' + str(event_day_of_month)
     try:
-        with open(calNotifyFilename, 'w+') as calendarNotificationFile:
-            calendarNotificationFile.write(notifyStr)
+        with open(cal_notify_filename, 'w+') as cal_file:
+            cal_file.write(notify_str)
     except OSError:
-        print('EX: unable to write ' + calNotifyFilename)
+        print('EX: unable to write ' + cal_notify_filename)
         return False
     return True
 
 
-def _isHappeningEvent(tag: {}) -> bool:
+def _is_happening_event(tag: {}) -> bool:
     """Is this tag an Event or Place ActivityStreams type?
     """
     if not tag.get('type'):
@@ -161,21 +162,21 @@ def _isHappeningEvent(tag: {}) -> bool:
     return True
 
 
-def _isHappeningPost(postJsonObject: {}) -> bool:
+def _is_happening_post(post_json_object: {}) -> bool:
     """Is this a post with tags?
     """
-    if not postJsonObject:
+    if not post_json_object:
         return False
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return False
     return True
 
 
-def getTodaysEvents(baseDir: str, nickname: str, domain: str,
-                    currYear: int, currMonthNumber: int,
-                    currDayOfMonth: int) -> {}:
+def get_todays_events(base_dir: str, nickname: str, domain: str,
+                      currYear: int, currMonthNumber: int,
+                      currDayOfMonth: int) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
@@ -185,110 +186,111 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
     else:
         year = currYear
     if not currMonthNumber:
-        monthNumber = now.month
+        month_number = now.month
     else:
-        monthNumber = currMonthNumber
+        month_number = currMonthNumber
     if not currDayOfMonth:
-        dayNumber = now.day
+        day_number = now.day
     else:
-        dayNumber = currDayOfMonth
+        day_number = currDayOfMonth
 
-    calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
-        '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
+    calendar_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
     events = {}
-    if not os.path.isfile(calendarFilename):
+    if not os.path.isfile(calendar_filename):
         return events
 
-    calendarPostIds = []
-    recreateEventsFile = False
-    with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
-            if not postFilename:
-                recreateEventsFile = True
+    calendar_post_ids = []
+    recreate_events_file = False
+    with open(calendar_filename, 'r') as events_file:
+        for post_id in events_file:
+            post_id = post_id.replace('\n', '').replace('\r', '')
+            post_filename = locate_post(base_dir, nickname, domain, post_id)
+            if not post_filename:
+                recreate_events_file = True
                 continue
 
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
+            post_json_object = load_json(post_filename)
+            if not _is_happening_post(post_json_object):
                 continue
 
-            publicEvent = isPublicPost(postJsonObject)
+            public_event = is_public_post(post_json_object)
 
-            postEvent = []
-            dayOfMonth = None
-            for tag in postJsonObject['object']['tag']:
-                if not _isHappeningEvent(tag):
+            post_event = []
+            day_of_month = None
+            for tag in post_json_object['object']['tag']:
+                if not _is_happening_event(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':
                     # tag is an event
                     if not tag.get('startTime'):
                         continue
-                    eventTime = \
+                    event_time = \
                         datetime.strptime(tag['startTime'],
                                           "%Y-%m-%dT%H:%M:%S%z")
-                    if int(eventTime.strftime("%Y")) == year and \
-                       int(eventTime.strftime("%m")) == monthNumber and \
-                       int(eventTime.strftime("%d")) == dayNumber:
-                        dayOfMonth = str(int(eventTime.strftime("%d")))
-                        if '#statuses#' in postId:
+                    if int(event_time.strftime("%Y")) == year and \
+                       int(event_time.strftime("%m")) == month_number and \
+                       int(event_time.strftime("%d")) == day_number:
+                        day_of_month = str(int(event_time.strftime("%d")))
+                        if '#statuses#' in post_id:
                             # link to the id so that the event can be
                             # easily deleted
-                            tag['postId'] = postId.split('#statuses#')[1]
-                            tag['sender'] = postId.split('#statuses#')[0]
+                            tag['post_id'] = post_id.split('#statuses#')[1]
+                            tag['sender'] = post_id.split('#statuses#')[0]
                             tag['sender'] = tag['sender'].replace('#', '/')
-                            tag['public'] = publicEvent
-                        postEvent.append(tag)
+                            tag['public'] = public_event
+                        post_event.append(tag)
                 else:
                     # tag is a place
-                    postEvent.append(tag)
-            if postEvent and dayOfMonth:
-                calendarPostIds.append(postId)
-                if not events.get(dayOfMonth):
-                    events[dayOfMonth] = []
-                events[dayOfMonth].append(postEvent)
+                    post_event.append(tag)
+            if post_event and day_of_month:
+                calendar_post_ids.append(post_id)
+                if not events.get(day_of_month):
+                    events[day_of_month] = []
+                events[day_of_month].append(post_event)
 
     # if some posts have been deleted then regenerate the calendar file
-    if recreateEventsFile:
+    if recreate_events_file:
         try:
-            with open(calendarFilename, 'w+') as calendarFile:
-                for postId in calendarPostIds:
-                    calendarFile.write(postId + '\n')
+            with open(calendar_filename, 'w+') as calendar_file:
+                for post_id in calendar_post_ids:
+                    calendar_file.write(post_id + '\n')
         except OSError:
-            print('EX: unable to write ' + calendarFilename)
+            print('EX: unable to write ' + calendar_filename)
 
     return events
 
 
-def dayEventsCheck(baseDir: str, nickname: str, domain: str, currDate) -> bool:
+def day_events_check(base_dir: str, nickname: str, domain: str,
+                     currDate) -> bool:
     """Are there calendar events for the given date?
     """
     year = currDate.year
-    monthNumber = currDate.month
-    dayNumber = currDate.day
+    month_number = currDate.month
+    day_number = currDate.day
 
-    calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
-        '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
-    if not os.path.isfile(calendarFilename):
+    calendar_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
+    if not os.path.isfile(calendar_filename):
         return False
 
-    eventsExist = False
-    with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
-            if not postFilename:
+    events_exist = False
+    with open(calendar_filename, 'r') as events_file:
+        for post_id in events_file:
+            post_id = post_id.replace('\n', '').replace('\r', '')
+            post_filename = locate_post(base_dir, nickname, domain, post_id)
+            if not post_filename:
                 continue
 
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
+            post_json_object = load_json(post_filename)
+            if not _is_happening_post(post_json_object):
                 continue
 
-            for tag in postJsonObject['object']['tag']:
-                if not _isHappeningEvent(tag):
+            for tag in post_json_object['object']['tag']:
+                if not _is_happening_event(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] != 'Event':
@@ -296,180 +298,181 @@ def dayEventsCheck(baseDir: str, nickname: str, domain: str, currDate) -> bool:
                 # tag is an event
                 if not tag.get('startTime'):
                     continue
-                eventTime = \
+                event_time = \
                     datetime.strptime(tag['startTime'],
                                       "%Y-%m-%dT%H:%M:%S%z")
-                if int(eventTime.strftime("%d")) != dayNumber:
+                if int(event_time.strftime("%d")) != day_number:
                     continue
-                if int(eventTime.strftime("%m")) != monthNumber:
+                if int(event_time.strftime("%m")) != month_number:
                     continue
-                if int(eventTime.strftime("%Y")) != year:
+                if int(event_time.strftime("%Y")) != year:
                     continue
-                eventsExist = True
+                events_exist = True
                 break
 
-    return eventsExist
+    return events_exist
 
 
-def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
+def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
     """Retrieves calendar events for this week
     Returns a dictionary indexed by day number of lists containing
     Event and Place activities
     Note: currently not used but could be with a weekly calendar screen
     """
     now = datetime.now()
-    endOfWeek = now + timedelta(7)
+    end_of_week = now + timedelta(7)
     year = now.year
-    monthNumber = now.month
+    month_number = now.month
 
-    calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
-        '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
+    calendar_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
 
     events = {}
-    if not os.path.isfile(calendarFilename):
+    if not os.path.isfile(calendar_filename):
         return events
 
-    calendarPostIds = []
-    recreateEventsFile = False
-    with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
-            if not postFilename:
-                recreateEventsFile = True
+    calendar_post_ids = []
+    recreate_events_file = False
+    with open(calendar_filename, 'r') as events_file:
+        for post_id in events_file:
+            post_id = post_id.replace('\n', '').replace('\r', '')
+            post_filename = locate_post(base_dir, nickname, domain, post_id)
+            if not post_filename:
+                recreate_events_file = True
                 continue
 
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
+            post_json_object = load_json(post_filename)
+            if not _is_happening_post(post_json_object):
                 continue
 
-            postEvent = []
-            weekDayIndex = None
-            for tag in postJsonObject['object']['tag']:
-                if not _isHappeningEvent(tag):
+            post_event = []
+            week_day_index = None
+            for tag in post_json_object['object']['tag']:
+                if not _is_happening_event(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':
                     # tag is an event
                     if not tag.get('startTime'):
                         continue
-                    eventTime = \
+                    event_time = \
                         datetime.strptime(tag['startTime'],
                                           "%Y-%m-%dT%H:%M:%S%z")
-                    if eventTime >= now and eventTime <= endOfWeek:
-                        weekDayIndex = (eventTime - now).days()
-                        postEvent.append(tag)
+                    if event_time >= now and event_time <= end_of_week:
+                        week_day_index = (event_time - now).days()
+                        post_event.append(tag)
                 else:
                     # tag is a place
-                    postEvent.append(tag)
-            if postEvent and weekDayIndex:
-                calendarPostIds.append(postId)
-                if not events.get(weekDayIndex):
-                    events[weekDayIndex] = []
-                events[weekDayIndex].append(postEvent)
+                    post_event.append(tag)
+            if post_event and week_day_index:
+                calendar_post_ids.append(post_id)
+                if not events.get(week_day_index):
+                    events[week_day_index] = []
+                events[week_day_index].append(post_event)
 
     # if some posts have been deleted then regenerate the calendar file
-    if recreateEventsFile:
+    if recreate_events_file:
         try:
-            with open(calendarFilename, 'w+') as calendarFile:
-                for postId in calendarPostIds:
-                    calendarFile.write(postId + '\n')
+            with open(calendar_filename, 'w+') as calendar_file:
+                for post_id in calendar_post_ids:
+                    calendar_file.write(post_id + '\n')
         except OSError:
-            print('EX: unable to write ' + calendarFilename)
+            print('EX: unable to write ' + calendar_filename)
 
     return events
 
 
-def getCalendarEvents(baseDir: str, nickname: str, domain: str,
-                      year: int, monthNumber: int) -> {}:
+def get_calendar_events(base_dir: str, nickname: str, domain: str,
+                        year: int, month_number: int) -> {}:
     """Retrieves calendar events
     Returns a dictionary indexed by day number of lists containing
     Event and Place activities
     """
-    calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
-        '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
+    calendar_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
 
     events = {}
-    if not os.path.isfile(calendarFilename):
+    if not os.path.isfile(calendar_filename):
         return events
 
-    calendarPostIds = []
-    recreateEventsFile = False
-    with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
-            if not postFilename:
-                recreateEventsFile = True
+    calendar_post_ids = []
+    recreate_events_file = False
+    with open(calendar_filename, 'r') as events_file:
+        for post_id in events_file:
+            post_id = post_id.replace('\n', '').replace('\r', '')
+            post_filename = locate_post(base_dir, nickname, domain, post_id)
+            if not post_filename:
+                recreate_events_file = True
                 continue
 
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
+            post_json_object = load_json(post_filename)
+            if not _is_happening_post(post_json_object):
                 continue
 
-            postEvent = []
-            dayOfMonth = None
-            for tag in postJsonObject['object']['tag']:
-                if not _isHappeningEvent(tag):
+            post_event = []
+            day_of_month = None
+            for tag in post_json_object['object']['tag']:
+                if not _is_happening_event(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':
                     # tag is an event
                     if not tag.get('startTime'):
                         continue
-                    eventTime = \
+                    event_time = \
                         datetime.strptime(tag['startTime'],
                                           "%Y-%m-%dT%H:%M:%S%z")
-                    if int(eventTime.strftime("%Y")) == year and \
-                       int(eventTime.strftime("%m")) == monthNumber:
-                        dayOfMonth = str(int(eventTime.strftime("%d")))
-                        postEvent.append(tag)
+                    if int(event_time.strftime("%Y")) == year and \
+                       int(event_time.strftime("%m")) == month_number:
+                        day_of_month = str(int(event_time.strftime("%d")))
+                        post_event.append(tag)
                 else:
                     # tag is a place
-                    postEvent.append(tag)
+                    post_event.append(tag)
 
-            if postEvent and dayOfMonth:
-                calendarPostIds.append(postId)
-                if not events.get(dayOfMonth):
-                    events[dayOfMonth] = []
-                events[dayOfMonth].append(postEvent)
+            if post_event and day_of_month:
+                calendar_post_ids.append(post_id)
+                if not events.get(day_of_month):
+                    events[day_of_month] = []
+                events[day_of_month].append(post_event)
 
     # if some posts have been deleted then regenerate the calendar file
-    if recreateEventsFile:
+    if recreate_events_file:
         try:
-            with open(calendarFilename, 'w+') as calendarFile:
-                for postId in calendarPostIds:
-                    calendarFile.write(postId + '\n')
+            with open(calendar_filename, 'w+') as calendar_file:
+                for post_id in calendar_post_ids:
+                    calendar_file.write(post_id + '\n')
         except OSError:
-            print('EX: unable to write ' + calendarFilename)
+            print('EX: unable to write ' + calendar_filename)
 
     return events
 
 
-def removeCalendarEvent(baseDir: str, nickname: str, domain: str,
-                        year: int, monthNumber: int, messageId: str) -> None:
+def remove_calendar_event(base_dir: str, nickname: str, domain: str,
+                          year: int, month_number: int,
+                          message_id: str) -> None:
     """Removes a calendar event
     """
-    calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
-        '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
-    if not os.path.isfile(calendarFilename):
+    calendar_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
+    if not os.path.isfile(calendar_filename):
         return
-    if '/' in messageId:
-        messageId = messageId.replace('/', '#')
-    if messageId not in open(calendarFilename).read():
+    if '/' in message_id:
+        message_id = message_id.replace('/', '#')
+    if message_id not in open(calendar_filename).read():
         return
     lines = None
-    with open(calendarFilename, 'r') as f:
-        lines = f.readlines()
+    with open(calendar_filename, 'r') as fp_cal:
+        lines = fp_cal.readlines()
     if not lines:
         return
     try:
-        with open(calendarFilename, 'w+') as f:
+        with open(calendar_filename, 'w+') as fp_cal:
             for line in lines:
-                if messageId not in line:
-                    f.write(line)
+                if message_id not in line:
+                    fp_cal.write(line)
     except OSError:
-        print('EX: unable to write ' + calendarFilename)
+        print('EX: unable to write ' + calendar_filename)

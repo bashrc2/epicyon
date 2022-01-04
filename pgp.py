@@ -10,420 +10,421 @@ __module_group__ = "Profile Metadata"
 import os
 import subprocess
 from pathlib import Path
-from person import getActorJson
-from utils import containsPGPPublicKey
-from utils import isPGPEncrypted
-from utils import getFullDomain
-from utils import getStatusNumber
-from utils import localActorUrl
-from utils import replaceUsersWithAt
-from webfinger import webfingerHandle
-from posts import getPersonBox
-from auth import createBasicAuthHeader
-from session import postJson
+from person import get_actor_json
+from utils import contains_pgp_public_key
+from utils import is_pgp_encrypted
+from utils import get_full_domain
+from utils import get_status_number
+from utils import local_actor_url
+from utils import replace_users_with_at
+from webfinger import webfinger_handle
+from posts import get_person_box
+from auth import create_basic_auth_header
+from session import post_json
 
 
-def getEmailAddress(actorJson: {}) -> str:
+def get_email_address(actor_json: {}) -> str:
     """Returns the email address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('email'):
+        if not property_value['name'].lower().startswith('email'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        if '@' not in propertyValue['value']:
+        if '@' not in property_value['value']:
             continue
-        if '.' not in propertyValue['value']:
+        if '.' not in property_value['value']:
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
-def getPGPpubKey(actorJson: {}) -> str:
+def get_pgp_pub_key(actor_json: {}) -> str:
     """Returns PGP public key for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('pgp'):
+        if not property_value['name'].lower().startswith('pgp'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        if not containsPGPPublicKey(propertyValue['value']):
+        if not contains_pgp_public_key(property_value['value']):
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
-def getPGPfingerprint(actorJson: {}) -> str:
+def get_pgp_fingerprint(actor_json: {}) -> str:
     """Returns PGP fingerprint for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('openpgp'):
+        if not property_value['name'].lower().startswith('openpgp'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        if len(propertyValue['value']) < 10:
+        if len(property_value['value']) < 10:
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
-def setEmailAddress(actorJson: {}, emailAddress: str) -> None:
+def set_email_address(actor_json: {}, email_address: str) -> None:
     """Sets the email address for the given actor
     """
-    notEmailAddress = False
-    if '@' not in emailAddress:
-        notEmailAddress = True
-    if '.' not in emailAddress:
-        notEmailAddress = True
-    if '<' in emailAddress:
-        notEmailAddress = True
-    if emailAddress.startswith('@'):
-        notEmailAddress = True
+    not_email_address = False
+    if '@' not in email_address:
+        not_email_address = True
+    if '.' not in email_address:
+        not_email_address = True
+    if '<' in email_address:
+        not_email_address = True
+    if email_address.startswith('@'):
+        not_email_address = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('email'):
+        if not property_value['name'].lower().startswith('email'):
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
-    if notEmailAddress:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_email_address:
         return
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('email'):
+        if not property_value['name'].lower().startswith('email'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = emailAddress
+        property_value['value'] = email_address
         return
 
-    newEmailAddress = {
+    new_email_address = {
         "name": "Email",
         "type": "PropertyValue",
-        "value": emailAddress
+        "value": email_address
     }
-    actorJson['attachment'].append(newEmailAddress)
+    actor_json['attachment'].append(new_email_address)
 
 
-def setPGPpubKey(actorJson: {}, PGPpubKey: str) -> None:
+def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
     """Sets a PGP public key for the given actor
     """
-    removeKey = False
-    if not PGPpubKey:
-        removeKey = True
+    remove_key = False
+    if not pgp_pub_key:
+        remove_key = True
     else:
-        if not containsPGPPublicKey(PGPpubKey):
-            removeKey = True
-        if '<' in PGPpubKey:
-            removeKey = True
+        if not contains_pgp_public_key(pgp_pub_key):
+            remove_key = True
+        if '<' in pgp_pub_key:
+            remove_key = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('pgp'):
+        if not property_value['name'].lower().startswith('pgp'):
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyValue)
-    if removeKey:
+    if property_found:
+        actor_json['attachment'].remove(property_value)
+    if remove_key:
         return
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('pgp'):
+        if not property_value['name'].lower().startswith('pgp'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = PGPpubKey
+        property_value['value'] = pgp_pub_key
         return
 
-    newPGPpubKey = {
+    newpgp_pub_key = {
         "name": "PGP",
         "type": "PropertyValue",
-        "value": PGPpubKey
+        "value": pgp_pub_key
     }
-    actorJson['attachment'].append(newPGPpubKey)
+    actor_json['attachment'].append(newpgp_pub_key)
 
 
-def setPGPfingerprint(actorJson: {}, fingerprint: str) -> None:
+def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
     """Sets a PGP fingerprint for the given actor
     """
-    removeFingerprint = False
+    remove_fingerprint = False
     if not fingerprint:
-        removeFingerprint = True
+        remove_fingerprint = True
     else:
         if len(fingerprint) < 10:
-            removeFingerprint = True
+            remove_fingerprint = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('openpgp'):
+        if not property_value['name'].lower().startswith('openpgp'):
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyValue)
-    if removeFingerprint:
+    if property_found:
+        actor_json['attachment'].remove(property_value)
+    if remove_fingerprint:
         return
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('openpgp'):
+        if not property_value['name'].lower().startswith('openpgp'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = fingerprint.strip()
+        property_value['value'] = fingerprint.strip()
         return
 
-    newPGPfingerprint = {
+    newpgp_fingerprint = {
         "name": "OpenPGP",
         "type": "PropertyValue",
         "value": fingerprint
     }
-    actorJson['attachment'].append(newPGPfingerprint)
+    actor_json['attachment'].append(newpgp_fingerprint)
 
 
-def extractPGPPublicKey(content: str) -> str:
+def extract_pgp_public_key(content: str) -> str:
     """Returns the PGP key from the given text
     """
-    startBlock = '--BEGIN PGP PUBLIC KEY BLOCK--'
-    endBlock = '--END PGP PUBLIC KEY BLOCK--'
-    if startBlock not in content:
+    start_block = '--BEGIN PGP PUBLIC KEY BLOCK--'
+    end_block = '--END PGP PUBLIC KEY BLOCK--'
+    if start_block not in content:
         return None
-    if endBlock not in content:
+    if end_block not in content:
         return None
     if '\n' not in content:
         return None
-    linesList = content.split('\n')
+    lines_list = content.split('\n')
     extracting = False
-    publicKey = ''
-    for line in linesList:
+    public_key = ''
+    for line in lines_list:
         if not extracting:
-            if startBlock in line:
+            if start_block in line:
                 extracting = True
         else:
-            if endBlock in line:
-                publicKey += line
+            if end_block in line:
+                public_key += line
                 break
         if extracting:
-            publicKey += line + '\n'
-    return publicKey
+            public_key += line + '\n'
+    return public_key
 
 
-def _pgpImportPubKey(recipientPubKey: str) -> str:
+def _pgp_import_pub_key(recipient_pub_key: str) -> str:
     """ Import the given public key
     """
     # do a dry run
-    cmdImportPubKey = \
-        'echo "' + recipientPubKey + '" | gpg --dry-run --import 2> /dev/null'
-    proc = subprocess.Popen([cmdImportPubKey],
+    cmd_import_pub_key = \
+        'echo "' + recipient_pub_key + \
+        '" | gpg --dry-run --import 2> /dev/null'
+    proc = subprocess.Popen([cmd_import_pub_key],
                             stdout=subprocess.PIPE, shell=True)
-    (importResult, err) = proc.communicate()
+    (import_result, err) = proc.communicate()
     if err:
         return None
 
     # this time for real
-    cmdImportPubKey = \
-        'echo "' + recipientPubKey + '" | gpg --import 2> /dev/null'
-    proc = subprocess.Popen([cmdImportPubKey],
+    cmd_import_pub_key = \
+        'echo "' + recipient_pub_key + '" | gpg --import 2> /dev/null'
+    proc = subprocess.Popen([cmd_import_pub_key],
                             stdout=subprocess.PIPE, shell=True)
-    (importResult, err) = proc.communicate()
+    (import_result, err) = proc.communicate()
     if err:
         return None
 
     # get the key id
-    cmdImportPubKey = \
-        'echo "' + recipientPubKey + '" | gpg --show-keys'
-    proc = subprocess.Popen([cmdImportPubKey],
+    cmd_import_pub_key = \
+        'echo "' + recipient_pub_key + '" | gpg --show-keys'
+    proc = subprocess.Popen([cmd_import_pub_key],
                             stdout=subprocess.PIPE, shell=True)
-    (importResult, err) = proc.communicate()
-    if not importResult:
+    (import_result, err) = proc.communicate()
+    if not import_result:
         return None
-    importResult = importResult.decode('utf-8').split('\n')
-    keyId = ''
-    for line in importResult:
+    import_result = import_result.decode('utf-8').split('\n')
+    key_id = ''
+    for line in import_result:
         if line.startswith('pub'):
             continue
-        elif line.startswith('uid'):
+        if line.startswith('uid'):
             continue
-        elif line.startswith('sub'):
+        if line.startswith('sub'):
             continue
-        keyId = line.strip()
+        key_id = line.strip()
         break
-    return keyId
+    return key_id
 
 
-def _pgpEncrypt(content: str, recipientPubKey: str) -> str:
+def _pgp_encrypt(content: str, recipient_pub_key: str) -> str:
     """ Encrypt using your default pgp key to the given recipient
     """
-    keyId = _pgpImportPubKey(recipientPubKey)
-    if not keyId:
+    key_id = _pgp_import_pub_key(recipient_pub_key)
+    if not key_id:
         return None
 
-    cmdEncrypt = \
+    cmd_encrypt = \
         'echo "' + content + '" | gpg --encrypt --armor --recipient ' + \
-        keyId + ' 2> /dev/null'
-    proc = subprocess.Popen([cmdEncrypt],
+        key_id + ' 2> /dev/null'
+    proc = subprocess.Popen([cmd_encrypt],
                             stdout=subprocess.PIPE, shell=True)
-    (encryptResult, err) = proc.communicate()
-    if not encryptResult:
+    (encrypt_result, _) = proc.communicate()
+    if not encrypt_result:
         return None
-    encryptResult = encryptResult.decode('utf-8')
-    if not isPGPEncrypted(encryptResult):
+    encrypt_result = encrypt_result.decode('utf-8')
+    if not is_pgp_encrypted(encrypt_result):
         return None
-    return encryptResult
+    return encrypt_result
 
 
-def _getPGPPublicKeyFromActor(signingPrivateKeyPem: str,
-                              domain: str, handle: str,
-                              actorJson: {} = None) -> str:
+def _get_pgp_public_key_from_actor(signing_priv_key_pem: str,
+                                   domain: str, handle: str,
+                                   actor_json: {} = None) -> str:
     """Searches tags on the actor to see if there is any PGP
     public key specified
     """
-    if not actorJson:
-        actorJson, asHeader = \
-            getActorJson(domain, handle, False, False, False, True,
-                         signingPrivateKeyPem, None)
-    if not actorJson:
+    if not actor_json:
+        actor_json, _ = \
+            get_actor_json(domain, handle, False, False, False, True,
+                           signing_priv_key_pem, None)
+    if not actor_json:
         return None
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return None
-    if not isinstance(actorJson['attachment'], list):
+    if not isinstance(actor_json['attachment'], list):
         return None
     # search through the tags on the actor
-    for tag in actorJson['attachment']:
+    for tag in actor_json['attachment']:
         if not isinstance(tag, dict):
             continue
         if not tag.get('value'):
             continue
         if not isinstance(tag['value'], str):
             continue
-        if containsPGPPublicKey(tag['value']):
+        if contains_pgp_public_key(tag['value']):
             return tag['value']
     return None
 
 
-def hasLocalPGPkey() -> bool:
+def has_local_pg_pkey() -> bool:
     """Returns true if there is a local .gnupg directory
     """
-    homeDir = str(Path.home())
-    gpgDir = homeDir + '/.gnupg'
-    if os.path.isdir(gpgDir):
-        keyId = pgpLocalPublicKey()
-        if keyId:
+    home_dir = str(Path.home())
+    gpg_dir = home_dir + '/.gnupg'
+    if os.path.isdir(gpg_dir):
+        key_id = pgp_local_public_key()
+        if key_id:
             return True
     return False
 
 
-def pgpEncryptToActor(domain: str, content: str, toHandle: str,
-                      signingPrivateKeyPem: str) -> str:
+def pgp_encrypt_to_actor(domain: str, content: str, toHandle: str,
+                         signing_priv_key_pem: str) -> str:
     """PGP encrypt a message to the given actor or handle
     """
     # get the actor and extract the pgp public key from it
-    recipientPubKey = \
-        _getPGPPublicKeyFromActor(signingPrivateKeyPem, domain, toHandle)
-    if not recipientPubKey:
+    recipient_pub_key = \
+        _get_pgp_public_key_from_actor(signing_priv_key_pem, domain, toHandle)
+    if not recipient_pub_key:
         return None
     # encrypt using the recipient public key
-    return _pgpEncrypt(content, recipientPubKey)
+    return _pgp_encrypt(content, recipient_pub_key)
 
 
-def pgpDecrypt(domain: str, content: str, fromHandle: str,
-               signingPrivateKeyPem: str) -> str:
+def pgp_decrypt(domain: str, content: str, fromHandle: str,
+                signing_priv_key_pem: str) -> str:
     """ Encrypt using your default pgp key to the given recipient
     fromHandle can be a handle or actor url
     """
-    if not isPGPEncrypted(content):
+    if not is_pgp_encrypted(content):
         return content
 
     # if the public key is also included within the message then import it
-    if containsPGPPublicKey(content):
-        pubKey = extractPGPPublicKey(content)
+    if contains_pgp_public_key(content):
+        pub_key = extract_pgp_public_key(content)
     else:
-        pubKey = \
-            _getPGPPublicKeyFromActor(signingPrivateKeyPem,
-                                      domain, content, fromHandle)
-    if pubKey:
-        _pgpImportPubKey(pubKey)
+        pub_key = \
+            _get_pgp_public_key_from_actor(signing_priv_key_pem,
+                                           domain, content, fromHandle)
+    if pub_key:
+        _pgp_import_pub_key(pub_key)
 
-    cmdDecrypt = \
+    cmd_decrypt = \
         'echo "' + content + '" | gpg --decrypt --armor 2> /dev/null'
-    proc = subprocess.Popen([cmdDecrypt],
+    proc = subprocess.Popen([cmd_decrypt],
                             stdout=subprocess.PIPE, shell=True)
-    (decryptResult, err) = proc.communicate()
-    if not decryptResult:
+    (decrypt_result, _) = proc.communicate()
+    if not decrypt_result:
         return content
-    decryptResult = decryptResult.decode('utf-8').strip()
-    return decryptResult
+    decrypt_result = decrypt_result.decode('utf-8').strip()
+    return decrypt_result
 
 
-def _pgpLocalPublicKeyId() -> str:
+def _pgp_local_public_key_id() -> str:
     """Gets the local pgp public key ID
     """
-    cmdStr = \
+    cmd_str = \
         "gpgconf --list-options gpg | " + \
         "awk -F: '$1 == \"default-key\" {print $10}'"
-    proc = subprocess.Popen([cmdStr],
+    proc = subprocess.Popen([cmd_str],
                             stdout=subprocess.PIPE, shell=True)
     (result, err) = proc.communicate()
     if err:
@@ -435,64 +436,64 @@ def _pgpLocalPublicKeyId() -> str:
     return result.decode('utf-8').replace('"', '').strip()
 
 
-def pgpLocalPublicKey() -> str:
+def pgp_local_public_key() -> str:
     """Gets the local pgp public key
     """
-    keyId = _pgpLocalPublicKeyId()
-    if not keyId:
-        keyId = ''
-    cmdStr = "gpg --armor --export " + keyId
-    proc = subprocess.Popen([cmdStr],
+    key_id = _pgp_local_public_key_id()
+    if not key_id:
+        key_id = ''
+    cmd_str = "gpg --armor --export " + key_id
+    proc = subprocess.Popen([cmd_str],
                             stdout=subprocess.PIPE, shell=True)
     (result, err) = proc.communicate()
     if err:
         return None
     if not result:
         return None
-    return extractPGPPublicKey(result.decode('utf-8'))
+    return extract_pgp_public_key(result.decode('utf-8'))
 
 
-def pgpPublicKeyUpload(baseDir: str, session,
-                       nickname: str, password: str,
-                       domain: str, port: int,
-                       httpPrefix: str,
-                       cachedWebfingers: {}, personCache: {},
-                       debug: bool, test: str,
-                       signingPrivateKeyPem: str) -> {}:
+def pgp_public_key_upload(base_dir: str, session,
+                          nickname: str, password: str,
+                          domain: str, port: int,
+                          http_prefix: str,
+                          cached_webfingers: {}, person_cache: {},
+                          debug: bool, test: str,
+                          signing_priv_key_pem: str) -> {}:
     if debug:
-        print('pgpPublicKeyUpload')
+        print('pgp_public_key_upload')
 
     if not session:
         if debug:
-            print('WARN: No session for pgpPublicKeyUpload')
+            print('WARN: No session for pgp_public_key_upload')
         return None
 
     if not test:
         if debug:
             print('Getting PGP public key')
-        PGPpubKey = pgpLocalPublicKey()
-        if not PGPpubKey:
+        pgp_pub_key = pgp_local_public_key()
+        if not pgp_pub_key:
             return None
-        PGPpubKeyId = _pgpLocalPublicKeyId()
+        pgp_pub_key_id = _pgp_local_public_key_id()
     else:
         if debug:
             print('Testing with PGP public key ' + test)
-        PGPpubKey = test
-        PGPpubKeyId = None
+        pgp_pub_key = test
+        pgp_pub_key_id = None
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     if debug:
-        print('PGP test domain: ' + domainFull)
+        print('PGP test domain: ' + domain_full)
 
-    handle = nickname + '@' + domainFull
+    handle = nickname + '@' + domain_full
 
     if debug:
         print('Getting actor for ' + handle)
 
-    actorJson, asHeader = \
-        getActorJson(domainFull, handle, False, False, debug, True,
-                     signingPrivateKeyPem, session)
-    if not actorJson:
+    actor_json, _ = \
+        get_actor_json(domain_full, handle, False, False, debug, True,
+                       signing_priv_key_pem, session)
+    if not actor_json:
         if debug:
             print('No actor returned for ' + handle)
         return None
@@ -500,121 +501,122 @@ def pgpPublicKeyUpload(baseDir: str, session,
     if debug:
         print('Actor for ' + handle + ' obtained')
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
-    handle = replaceUsersWithAt(actor)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
+    handle = replace_users_with_at(actor)
 
     # check that this looks like the correct actor
-    if not actorJson.get('id'):
+    if not actor_json.get('id'):
         if debug:
             print('Actor has no id')
         return None
-    if not actorJson.get('url'):
+    if not actor_json.get('url'):
         if debug:
             print('Actor has no url')
         return None
-    if not actorJson.get('type'):
+    if not actor_json.get('type'):
         if debug:
             print('Actor has no type')
         return None
-    if actorJson['id'] != actor:
+    if actor_json['id'] != actor:
         if debug:
             print('Actor id is not ' + actor +
-                  ' instead is ' + actorJson['id'])
+                  ' instead is ' + actor_json['id'])
         return None
-    if actorJson['url'] != handle:
+    if actor_json['url'] != handle:
         if debug:
             print('Actor url is not ' + handle)
         return None
-    if actorJson['type'] != 'Person':
+    if actor_json['type'] != 'Person':
         if debug:
             print('Actor type is not Person')
         return None
 
     # set the pgp details
-    if PGPpubKeyId:
-        setPGPfingerprint(actorJson, PGPpubKeyId)
+    if pgp_pub_key_id:
+        set_pgp_fingerprint(actor_json, pgp_pub_key_id)
     else:
         if debug:
             print('No PGP key Id. Continuing anyway.')
 
     if debug:
         print('Setting PGP key within ' + actor)
-    setPGPpubKey(actorJson, PGPpubKey)
+    set_pgp_pub_key(actor_json, pgp_pub_key)
 
     # create an actor update
-    statusNumber, published = getStatusNumber()
-    actorUpdate = {
+    status_number, _ = get_status_number()
+    actor_update = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': actor + '#updates/' + statusNumber,
+        'id': actor + '#updates/' + status_number,
         'type': 'Update',
         'actor': actor,
         'to': [actor],
         'cc': [],
-        'object': actorJson
+        'object': actor_json
     }
     if debug:
-        print('actor update is ' + str(actorUpdate))
+        print('actor update is ' + str(actor_update))
 
     # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, __version__, debug, False,
-                        signingPrivateKeyPem)
-    if not wfRequest:
+    wf_request = \
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         domain, __version__, debug, False,
+                         signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: pgp actor update webfinger failed for ' +
                   handle)
         return None
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         if debug:
             print('WARN: Webfinger for ' + handle +
-                  ' did not return a dict. ' + str(wfRequest))
+                  ' did not return a dict. ' + str(wf_request))
         return None
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                    baseDir, session, wfRequest, personCache,
-                                    __version__, httpPrefix, nickname,
-                                    domain, postToBox, 35725)
+    origin_domain = domain
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem, origin_domain,
+                            base_dir, session, wf_request,
+                            person_cache,
+                            __version__, http_prefix, nickname,
+                            domain, post_to_box, 35725)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: No ' + post_to_box + ' was found for ' + handle)
         return None
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: No actor was found for ' + handle)
         return None
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
     quiet = not debug
     tries = 0
     while tries < 4:
-        postResult = \
-            postJson(httpPrefix, domainFull,
-                     session, actorUpdate, [], inboxUrl,
-                     headers, 5, quiet)
-        if postResult:
+        post_result = \
+            post_json(http_prefix, domain_full,
+                      session, actor_update, [], inbox_url,
+                      headers, 5, quiet)
+        if post_result:
             break
         tries += 1
 
-    if postResult is None:
+    if post_result is None:
         if debug:
             print('DEBUG: POST pgp actor update failed for c2s to ' +
-                  inboxUrl)
+                  inbox_url)
         return None
 
     if debug:
         print('DEBUG: c2s POST pgp actor update success')
 
-    return actorUpdate
+    return actor_update

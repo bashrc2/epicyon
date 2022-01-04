@@ -8,27 +8,27 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from utils import getConfigParam
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
+from utils import get_config_param
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
 
 
-def htmlSuspended(cssCache: {}, baseDir: str) -> str:
+def html_suspended(css_cache: {}, base_dir: str) -> str:
     """Show the screen for suspended accounts
     """
-    suspendedForm = ''
-    cssFilename = baseDir + '/epicyon-suspended.css'
-    if os.path.isfile(baseDir + '/suspended.css'):
-        cssFilename = baseDir + '/suspended.css'
+    suspended_form = ''
+    css_filename = base_dir + '/epicyon-suspended.css'
+    if os.path.isfile(base_dir + '/suspended.css'):
+        css_filename = base_dir + '/suspended.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    suspendedForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    suspendedForm += \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    suspended_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    suspended_form += \
         '<div><center>\n' + \
         '  <p class="screentitle">Account Suspended</p>\n' + \
         '  <p>See <a href="/terms">Terms of Service</a></p>\n' + \
         '</center></div>\n'
-    suspendedForm += htmlFooter()
-    return suspendedForm
+    suspended_form += html_footer()
+    return suspended_form

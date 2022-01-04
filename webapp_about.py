@@ -9,57 +9,57 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
-from utils import getConfigParam
-from webapp_utils import htmlHeaderWithWebsiteMarkup
-from webapp_utils import htmlFooter
-from markdown import markdownToHtml
+from utils import get_config_param
+from webapp_utils import html_header_with_website_markup
+from webapp_utils import html_footer
+from markdown import markdown_to_html
 
 
-def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
-              domainFull: str, onionDomain: str, translate: {},
-              systemLanguage: str) -> str:
+def html_about(css_cache: {}, base_dir: str, http_prefix: str,
+               domain_full: str, onion_domain: str, translate: {},
+               system_language: str) -> str:
     """Show the about screen
     """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if not os.path.isfile(baseDir + '/accounts/about.md'):
-        copyfile(baseDir + '/default_about.md',
-                 baseDir + '/accounts/about.md')
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if not os.path.isfile(base_dir + '/accounts/about.md'):
+        copyfile(base_dir + '/default_about.md',
+                 base_dir + '/accounts/about.md')
 
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
-            copyfile(baseDir + '/accounts/login-background-custom.jpg',
-                     baseDir + '/accounts/login-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/login-background.jpg'):
+            copyfile(base_dir + '/accounts/login-background-custom.jpg',
+                     base_dir + '/accounts/login-background.jpg')
 
-    aboutText = 'Information about this instance goes here.'
-    if os.path.isfile(baseDir + '/accounts/about.md'):
-        with open(baseDir + '/accounts/about.md', 'r') as aboutFile:
-            aboutText = markdownToHtml(aboutFile.read())
+    about_text = 'Information about this instance goes here.'
+    if os.path.isfile(base_dir + '/accounts/about.md'):
+        with open(base_dir + '/accounts/about.md', 'r') as fp_about:
+            about_text = markdown_to_html(fp_about.read())
 
-    aboutForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    about_form = ''
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    aboutForm = \
-        htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
-                                    httpPrefix, domainFull,
-                                    systemLanguage)
-    aboutForm += '<div class="container">' + aboutText + '</div>'
-    if onionDomain:
-        aboutForm += \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    about_form = \
+        html_header_with_website_markup(css_filename, instance_title,
+                                        http_prefix, domain_full,
+                                        system_language)
+    about_form += '<div class="container">' + about_text + '</div>'
+    if onion_domain:
+        about_form += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">' + \
-            'http://' + onionDomain + '</p>\n</center></div>\n'
-    if adminNickname:
-        adminActor = '/users/' + adminNickname
-        aboutForm += \
+            'http://' + onion_domain + '</p>\n</center></div>\n'
+    if admin_nickname:
+        admin_actor = '/users/' + admin_nickname
+        about_form += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">' + \
             translate['Administered by'] + ' <a href="' + \
-            adminActor + '">' + adminNickname + '</a>. ' + \
+            admin_actor + '">' + admin_nickname + '</a>. ' + \
             translate['Version'] + ' ' + __version__ + \
             '</p>\n</center></div>\n'
-    aboutForm += htmlFooter()
-    return aboutForm
+    about_form += html_footer()
+    return about_form

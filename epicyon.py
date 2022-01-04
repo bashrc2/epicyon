@@ -13,113 +13,112 @@ import sys
 import time
 import argparse
 import getpass
-from person import getActorJson
-from person import createPerson
-from person import createGroup
-from person import setProfileImage
-from person import removeAccount
-from person import activateAccount
-from person import deactivateAccount
-from skills import setSkillLevel
-from roles import setRole
-from webfinger import webfingerHandle
-from bookmarks import sendBookmarkViaServer
-from bookmarks import sendUndoBookmarkViaServer
-from posts import getInstanceActorKey
-from posts import sendMuteViaServer
-from posts import sendUndoMuteViaServer
-from posts import c2sBoxJson
-from posts import downloadFollowCollection
-from posts import getPublicPostDomains
-from posts import getPublicPostDomainsBlocked
-from posts import sendBlockViaServer
-from posts import sendUndoBlockViaServer
-from posts import createPublicPost
-from posts import deleteAllPosts
-from posts import archivePosts
-from posts import sendPostViaServer
-from posts import getPublicPostsOfPerson
-from posts import getUserUrl
-from posts import checkDomains
-from session import createSession
-from session import getJson
-from session import downloadHtml
-from newswire import getRSS
-from filters import addFilter
-from filters import removeFilter
+from person import get_actor_json
+from person import create_person
+from person import create_group
+from person import set_profile_image
+from person import remove_account
+from person import activate_account
+from person import deactivate_account
+from skills import set_skill_level
+from roles import set_role
+from webfinger import webfinger_handle
+from bookmarks import send_bookmark_via_server
+from bookmarks import send_undo_bookmark_via_server
+from posts import get_instance_actor_key
+from posts import send_mute_via_server
+from posts import send_undo_mute_via_server
+from posts import c2s_box_json
+from posts import download_follow_collection
+from posts import get_public_post_domains
+from posts import get_public_post_domains_blocked
+from posts import send_block_via_server
+from posts import send_undo_block_via_server
+from posts import create_public_post
+from posts import delete_all_posts
+from posts import archive_posts
+from posts import send_post_via_server
+from posts import get_public_posts_of_person
+from posts import get_user_url
+from posts import check_domains
+from session import create_session
+from session import get_json
+from session import download_html
+from newswire import get_rss
+from filters import add_filter
+from filters import remove_filter
 from pprint import pprint
-from daemon import runDaemon
-from follow import getFollowRequestsViaServer
-from follow import getFollowingViaServer
-from follow import getFollowersViaServer
-from follow import clearFollows
-from follow import followerOfPerson
-from follow import sendFollowRequestViaServer
-from follow import sendUnfollowRequestViaServer
-from tests import testSharedItemsFederation
-from tests import testGroupFollow
-from tests import testPostMessageBetweenServers
-from tests import testFollowBetweenServers
-from tests import testClientToServer
-from tests import testUpdateActor
-from tests import runAllTests
-from auth import storeBasicCredentials
-from auth import createPassword
-from utils import removeDomainPort
-from utils import getPortFromDomain
-from utils import hasUsersPath
-from utils import getFullDomain
-from utils import setConfigParam
-from utils import getConfigParam
-from utils import getDomainFromActor
-from utils import getNicknameFromActor
-from utils import followPerson
-from utils import validNickname
-from utils import getProtocolPrefixes
-from utils import acctDir
-from media import archiveMedia
-from media import getAttachmentMediaType
-from delete import sendDeleteViaServer
-from like import sendLikeViaServer
-from like import sendUndoLikeViaServer
-from reaction import sendReactionViaServer
-from reaction import sendUndoReactionViaServer
-from reaction import validEmojiContent
-from skills import sendSkillViaServer
-from availability import setAvailability
-from availability import sendAvailabilityViaServer
-from manualapprove import manualDenyFollowRequest
-from manualapprove import manualApproveFollowRequest
-from shares import sendShareViaServer
-from shares import sendUndoShareViaServer
-from shares import sendWantedViaServer
-from shares import sendUndoWantedViaServer
-from shares import addShare
-from theme import setTheme
-from announce import sendAnnounceViaServer
-from socnet import instancesGraph
-from migrate import migrateAccounts
-from desktop_client import runDesktopClient
+from daemon import run_daemon
+from follow import get_follow_requests_via_server
+from follow import get_following_via_server
+from follow import get_followers_via_server
+from follow import clear_follows
+from follow import add_follower_of_person
+from follow import send_follow_requestViaServer
+from follow import send_unfollow_request_via_server
+from tests import test_shared_items_federation
+from tests import test_group_follow
+from tests import test_post_message_between_servers
+from tests import test_follow_between_servers
+from tests import test_client_to_server
+from tests import test_update_actor
+from tests import run_all_tests
+from auth import store_basic_credentials
+from auth import create_password
+from utils import remove_domain_port
+from utils import get_port_from_domain
+from utils import has_users_path
+from utils import get_full_domain
+from utils import set_config_param
+from utils import get_config_param
+from utils import get_domain_from_actor
+from utils import get_nickname_from_actor
+from utils import follow_person
+from utils import valid_nickname
+from utils import get_protocol_prefixes
+from utils import acct_dir
+from media import archive_media
+from media import get_attachment_media_type
+from delete import send_delete_via_server
+from like import send_like_via_server
+from like import send_undo_like_via_server
+from reaction import send_reaction_via_server
+from reaction import send_undo_reaction_via_server
+from reaction import valid_emoji_content
+from skills import send_skill_via_server
+from availability import set_availability
+from availability import send_availability_via_server
+from manualapprove import manual_deny_follow_request
+from manualapprove import manual_approve_follow_request
+from shares import send_share_via_server
+from shares import send_undo_share_via_server
+from shares import send_wanted_via_server
+from shares import send_undo_wanted_via_server
+from shares import add_share
+from theme import set_theme
+from announce import send_announce_via_server
+from socnet import instances_graph
+from migrate import migrate_accounts
+from desktop_client import run_desktop_client
 
 
-def str2bool(v) -> bool:
+def str2bool(value_str) -> bool:
     """Returns true if the given value is a boolean
     """
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+    if isinstance(value_str, bool):
+        return value_str
+    if value_str.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    if value_str.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+    raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 parser = argparse.ArgumentParser(description='ActivityPub Server')
-parser.add_argument('--contentLicenseUrl', type=str,
+parser.add_argument('--content_license_url', type=str,
                     default='https://creativecommons.org/licenses/by/4.0',
                     help='Url of the license used for the instance content')
-parser.add_argument('--listsEnabled', type=str,
+parser.add_argument('--lists_enabled', type=str,
                     default=None,
                     help='Names of content warning lists enabled. ' +
                     'See the cwlists directory')
@@ -165,7 +164,7 @@ parser.add_argument('-o', '--onion', dest='onion', type=str,
                     default=None,
                     help='Onion domain name of the server if ' +
                     'primarily on clearnet')
-parser.add_argument('--i2pDomain', dest='i2pDomain', type=str,
+parser.add_argument('--i2p_domain', dest='i2p_domain', type=str,
                     default=None,
                     help='i2p domain name of the server if ' +
                     'primarily on clearnet')
@@ -173,49 +172,49 @@ parser.add_argument('-p', '--port', dest='port', type=int,
                     default=None,
                     help='Port number to run on')
 parser.add_argument('--postsPerSource',
-                    dest='maxNewswirePostsPerSource', type=int,
+                    dest='max_newswire_postsPerSource', type=int,
                     default=4,
                     help='Maximum newswire posts per feed or account')
-parser.add_argument('--dormantMonths',
-                    dest='dormantMonths', type=int,
+parser.add_argument('--dormant_months',
+                    dest='dormant_months', type=int,
                     default=3,
                     help='How many months does a followed account need to ' +
                     'be unseen for before being considered dormant')
-parser.add_argument('--defaultReplyIntervalHours',
-                    dest='defaultReplyIntervalHours', type=int,
+parser.add_argument('--default_reply_interval_hrs',
+                    dest='default_reply_interval_hrs', type=int,
                     default=1000,
                     help='How many hours after publication of a post ' +
                     'are replies to it permitted')
-parser.add_argument('--sendThreadsTimeoutMins',
-                    dest='sendThreadsTimeoutMins', type=int,
+parser.add_argument('--send_threads_timeout_mins',
+                    dest='send_threads_timeout_mins', type=int,
                     default=30,
                     help='How many minutes before a thread to send out ' +
                     'posts expires')
-parser.add_argument('--maxNewswirePosts',
-                    dest='maxNewswirePosts', type=int,
+parser.add_argument('--max_newswire_posts',
+                    dest='max_newswire_posts', type=int,
                     default=20,
                     help='Maximum newswire posts in the right column')
 parser.add_argument('--maxFeedSize',
-                    dest='maxNewswireFeedSizeKb', type=int,
+                    dest='max_newswire_feed_size_kb', type=int,
                     default=10240,
                     help='Maximum newswire rss/atom feed size in K')
-parser.add_argument('--maxFeedItemSizeKb',
-                    dest='maxFeedItemSizeKb', type=int,
+parser.add_argument('--max_feed_item_size_kb',
+                    dest='max_feed_item_size_kb', type=int,
                     default=2048,
                     help='Maximum size of an individual rss/atom ' +
                     'feed item in K')
-parser.add_argument('--maxMirroredArticles',
-                    dest='maxMirroredArticles', type=int,
+parser.add_argument('--max_mirrored_articles',
+                    dest='max_mirrored_articles', type=int,
                     default=100,
                     help='Maximum number of news articles to mirror.' +
                     ' Set to zero for indefinite mirroring.')
-parser.add_argument('--maxNewsPosts',
-                    dest='maxNewsPosts', type=int,
+parser.add_argument('--max_news_posts',
+                    dest='max_news_posts', type=int,
                     default=0,
                     help='Maximum number of news timeline posts to keep. ' +
                     'Zero for no expiry.')
-parser.add_argument('--maxFollowers',
-                    dest='maxFollowers', type=int,
+parser.add_argument('--max_followers',
+                    dest='max_followers', type=int,
                     default=2000,
                     help='Maximum number of followers per account. ' +
                     'Zero for no limit.')
@@ -223,18 +222,18 @@ parser.add_argument('--followers',
                     dest='followers', type=str,
                     default='',
                     help='Show list of followers for the given actor')
-parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
+parser.add_argument('--postcache', dest='max_recent_posts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
-parser.add_argument('--proxy', dest='proxyPort', type=int, default=None,
+parser.add_argument('--proxy', dest='proxy_port', type=int, default=None,
                     help='Proxy port number to run on')
-parser.add_argument('--path', dest='baseDir',
+parser.add_argument('--path', dest='base_dir',
                     type=str, default=os.getcwd(),
                     help='Directory in which to store posts')
-parser.add_argument('--ytdomain', dest='YTReplacementDomain',
+parser.add_argument('--ytdomain', dest='yt_replace_domain',
                     type=str, default=None,
                     help='Domain used to replace youtube.com')
-parser.add_argument('--twitterdomain', dest='twitterReplacementDomain',
+parser.add_argument('--twitterdomain', dest='twitter_replacement_domain',
                     type=str, default=None,
                     help='Domain used to replace twitter.com')
 parser.add_argument('--language', dest='language',
@@ -278,7 +277,7 @@ parser.add_argument('--postDomainsBlocked', dest='postDomainsBlocked',
                     type=str, default=None,
                     help='Show blocked domains referenced in public '
                     'posts for the given handle')
-parser.add_argument('--checkDomains', dest='checkDomains', type=str,
+parser.add_argument('--check_domains', dest='check_domains', type=str,
                     default=None,
                     help='Check domains of non-mutual followers for '
                     'domains which are globally blocked by this instance')
@@ -295,10 +294,10 @@ parser.add_argument('--htmlpost', dest='htmlpost', type=str, default=None,
                     help='Show the html for a given activitypub url')
 parser.add_argument('--rss', dest='rss', type=str, default=None,
                     help='Show an rss feed for a given url')
-parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
+parser.add_argument('-f', '--federate', nargs='+', dest='federation_list',
                     help='Specify federation list separated by spaces')
 parser.add_argument('--federateshares', nargs='+',
-                    dest='sharedItemsFederatedDomains',
+                    dest='shared_items_federated_domains',
                     help='Specify federation list for shared items, ' +
                     'separated by spaces')
 parser.add_argument("--following", "--followingList",
@@ -324,71 +323,71 @@ parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Enable replies to a post")
-parser.add_argument("--showPublishAsIcon",
-                    dest='showPublishAsIcon',
+parser.add_argument("--show_publish_as_icon",
+                    dest='show_publish_as_icon',
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Whether to show newswire publish " +
                     "as an icon or a button")
-parser.add_argument("--fullWidthTimelineButtonHeader",
-                    dest='fullWidthTimelineButtonHeader',
+parser.add_argument("--full_width_tl_button_header",
+                    dest='full_width_tl_button_header',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to show the timeline " +
                     "button header containing inbox and outbox " +
                     "as the full width of the screen")
-parser.add_argument("--iconsAsButtons",
-                    dest='iconsAsButtons',
+parser.add_argument("--icons_as_buttons",
+                    dest='icons_as_buttons',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show header icons as buttons")
-parser.add_argument("--logLoginFailures",
-                    dest='logLoginFailures',
+parser.add_argument("--log_login_failures",
+                    dest='log_login_failures',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to log longin failures")
-parser.add_argument("--rssIconAtTop",
-                    dest='rssIconAtTop',
+parser.add_argument("--rss_icon_at_top",
+                    dest='rss_icon_at_top',
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Whether to show the rss icon at teh top or bottom" +
                     "of the timeline")
-parser.add_argument("--lowBandwidth",
-                    dest='lowBandwidth',
+parser.add_argument("--low_bandwidth",
+                    dest='low_bandwidth',
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Whether to use low bandwidth images")
-parser.add_argument("--publishButtonAtTop",
-                    dest='publishButtonAtTop',
+parser.add_argument("--publish_button_at_top",
+                    dest='publish_button_at_top',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to show the publish button at the top of " +
                     "the newswire column")
-parser.add_argument("--allowLocalNetworkAccess",
-                    dest='allowLocalNetworkAccess',
+parser.add_argument("--allow_local_network_access",
+                    dest='allow_local_network_access',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to allow access to local network " +
                     "addresses. This might be useful when deploying in " +
                     "a mesh network")
-parser.add_argument("--verifyAllSignatures",
-                    dest='verifyAllSignatures',
+parser.add_argument("--verify_all_signatures",
+                    dest='verify_all_signatures',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to require that all incoming " +
                     "posts have valid jsonld signatures")
-parser.add_argument("--brochMode",
-                    dest='brochMode',
+parser.add_argument("--broch_mode",
+                    dest='broch_mode',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable broch mode")
 parser.add_argument("--nodeinfoaccounts",
-                    dest='showNodeInfoAccounts',
+                    dest='show_node_info_accounts',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show numbers of accounts within nodeinfo metadata")
 parser.add_argument("--nodeinfoversion",
-                    dest='showNodeInfoVersion',
+                    dest='show_node_info_version',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show version number within nodeinfo metadata")
@@ -428,12 +427,12 @@ parser.add_argument("--debug", type=str2bool, nargs='?',
 parser.add_argument("--notificationSounds", type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Play notification sounds")
-parser.add_argument("--secureMode", type=str2bool, nargs='?',
+parser.add_argument("--secure_mode", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Requires all GET requests to be signed, " +
                     "so that the sender can be identifies and " +
                     "blocked  if neccessary")
-parser.add_argument("--instanceOnlySkillsSearch", type=str2bool, nargs='?',
+parser.add_argument("--instance_only_skills_search", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Skills searches only return " +
                     "results from this instance")
@@ -487,7 +486,7 @@ parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
                     default=1,
                     help='Minimum number of votes to remove or add' +
                     ' a newswire item')
-parser.add_argument('--maxLikeCount', dest='maxLikeCount', type=int,
+parser.add_argument('--max_like_count', dest='max_like_count', type=int,
                     default=10,
                     help='Maximum number of likes displayed on a post')
 parser.add_argument('--votingtime', dest='votingtime', type=int,
@@ -556,12 +555,12 @@ parser.add_argument('--deny', dest='deny', type=str, default=None,
 parser.add_argument("-c", "--client", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Use as an ActivityPub client")
-parser.add_argument('--maxreplies', dest='maxReplies', type=int, default=64,
+parser.add_argument('--maxreplies', dest='max_replies', type=int, default=64,
                     help='Maximum number of replies to a post')
-parser.add_argument('--maxMentions', '--hellthread', dest='maxMentions',
+parser.add_argument('--max_mentions', '--hellthread', dest='max_mentions',
                     type=int, default=10,
                     help='Maximum number of mentions within a post')
-parser.add_argument('--maxEmoji', '--maxemoji', dest='maxEmoji',
+parser.add_argument('--max_emoji', '--maxemoji', dest='max_emoji',
                     type=int, default=10,
                     help='Maximum number of emoji within a post')
 parser.add_argument('--role', dest='role', type=str, default=None,
@@ -591,11 +590,11 @@ parser.add_argument('--filter', dest='filterStr', type=str, default=None,
                     'cause a message to be ignored')
 parser.add_argument('--unfilter', dest='unfilterStr', type=str, default=None,
                     help='Remove a filter on a particular word or phrase')
-parser.add_argument('--domainmax', dest='domainMaxPostsPerDay', type=int,
+parser.add_argument('--domainmax', dest='domain_max_posts_per_day', type=int,
                     default=8640,
                     help='Maximum number of received posts ' +
                     'from a domain per day')
-parser.add_argument('--accountmax', dest='accountMaxPostsPerDay', type=int,
+parser.add_argument('--accountmax', dest='account_max_posts_per_day', type=int,
                     default=8640,
                     help='Maximum number of received posts ' +
                     'from an account per day')
@@ -659,28 +658,28 @@ else:
         debug = True
 
 if args.tests:
-    runAllTests()
+    run_all_tests()
     sys.exit()
 if args.testsnetwork:
     print('Network Tests')
-    baseDir = os.getcwd()
-    testSharedItemsFederation(baseDir)
-    testGroupFollow(baseDir)
-    testPostMessageBetweenServers(baseDir)
-    testFollowBetweenServers(baseDir)
-    testClientToServer(baseDir)
-    testUpdateActor(baseDir)
+    base_dir = os.getcwd()
+    test_shared_items_federation(base_dir)
+    test_group_follow(base_dir)
+    test_post_message_between_servers(base_dir)
+    test_follow_between_servers(base_dir)
+    test_client_to_server(base_dir)
+    test_update_actor(base_dir)
     print('All tests succeeded')
     sys.exit()
 
-httpPrefix = 'https'
+http_prefix = 'https'
 if args.http or args.i2p:
-    httpPrefix = 'http'
+    http_prefix = 'http'
 elif args.gnunet:
-    httpPrefix = 'gnunet'
+    http_prefix = 'gnunet'
 
-baseDir = args.baseDir
-if baseDir.endswith('/'):
+base_dir = args.base_dir
+if base_dir.endswith('/'):
     print("--path option should not end with '/'")
     sys.exit()
 
@@ -688,23 +687,25 @@ if baseDir.endswith('/'):
 if args.libretranslateUrl:
     if '://' in args.libretranslateUrl and \
        '.' in args.libretranslateUrl:
-        setConfigParam(baseDir, 'libretranslateUrl', args.libretranslateUrl)
+        set_config_param(base_dir, 'libretranslateUrl', args.libretranslateUrl)
 if args.libretranslateApiKey:
-    setConfigParam(baseDir, 'libretranslateApiKey', args.libretranslateApiKey)
+    set_config_param(base_dir, 'libretranslateApiKey',
+                     args.libretranslateApiKey)
 
 if args.posts:
     if not args.domain:
-        originDomain = getConfigParam(baseDir, 'domain')
+        originDomain = get_config_param(base_dir, 'domain')
     else:
         originDomain = args.domain
     if debug:
         print('originDomain: ' + str(originDomain))
     if '@' not in args.posts:
         if '/users/' in args.posts:
-            postsNickname = getNicknameFromActor(args.posts)
-            postsDomain, postsPort = getDomainFromActor(args.posts)
+            posts_nickname = get_nickname_from_actor(args.posts)
+            posts_domain, posts_port = get_domain_from_actor(args.posts)
             args.posts = \
-                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
+                get_full_domain(posts_nickname + '@' + posts_domain,
+                                posts_port)
         else:
             print('Syntax: --posts nickname@domain')
             sys.exit()
@@ -712,33 +713,34 @@ if args.posts:
         args.port = 443
     nickname = args.posts.split('@')[0]
     domain = args.posts.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
-    getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
-                           proxyType, args.port, httpPrefix, debug,
-                           __version__, args.language,
-                           signingPrivateKeyPem, originDomain)
+    signing_priv_key_pem = get_instance_actor_key(base_dir, originDomain)
+    get_public_posts_of_person(base_dir, nickname, domain, False, True,
+                               proxy_type, args.port, http_prefix, debug,
+                               __version__, args.language,
+                               signing_priv_key_pem, originDomain)
     sys.exit()
 
 if args.postDomains:
     if '@' not in args.postDomains:
         if '/users/' in args.postDomains:
-            postsNickname = getNicknameFromActor(args.postDomains)
-            postsDomain, postsPort = getDomainFromActor(args.postDomains)
+            posts_nickname = get_nickname_from_actor(args.postDomains)
+            posts_domain, posts_port = get_domain_from_actor(args.postDomains)
             args.postDomains = \
-                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
+                get_full_domain(posts_nickname + '@' + posts_domain,
+                                posts_port)
         else:
             print('Syntax: --postDomains nickname@domain')
             sys.exit()
@@ -746,38 +748,39 @@ if args.postDomains:
         args.port = 443
     nickname = args.postDomains.split('@')[0]
     domain = args.postDomains.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
-    wordFrequency = {}
-    domainList = []
+        proxy_type = 'gnunet'
+    word_frequency = {}
+    domain_list = []
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = None
+    signing_priv_key_pem = None
     if not args.domain:
-        originDomain = getConfigParam(baseDir, 'domain')
+        originDomain = get_config_param(base_dir, 'domain')
     else:
         originDomain = args.domain
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
-    domainList = getPublicPostDomains(None,
-                                      baseDir, nickname, domain,
-                                      originDomain,
-                                      proxyType, args.port,
-                                      httpPrefix, debug,
-                                      __version__,
-                                      wordFrequency, domainList,
-                                      args.language,
-                                      signingPrivateKeyPem)
-    for postDomain in domainList:
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, originDomain)
+    domain_list = \
+        get_public_post_domains(None,
+                                base_dir, nickname, domain,
+                                originDomain,
+                                proxy_type, args.port,
+                                http_prefix, debug,
+                                __version__,
+                                word_frequency, domain_list,
+                                args.language,
+                                signing_priv_key_pem)
+    for postDomain in domain_list:
         print(postDomain)
     sys.exit()
 
@@ -786,11 +789,12 @@ if args.postDomainsBlocked:
     # given handle but which are globally blocked on this instance
     if '@' not in args.postDomainsBlocked:
         if '/users/' in args.postDomainsBlocked:
-            postsNickname = getNicknameFromActor(args.postDomainsBlocked)
-            postsDomain, postsPort = \
-                getDomainFromActor(args.postDomainsBlocked)
+            posts_nickname = get_nickname_from_actor(args.postDomainsBlocked)
+            posts_domain, posts_port = \
+                get_domain_from_actor(args.postDomainsBlocked)
             args.postDomainsBlocked = \
-                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
+                get_full_domain(posts_nickname + '@' + posts_domain,
+                                posts_port)
         else:
             print('Syntax: --postDomainsBlocked nickname@domain')
             sys.exit()
@@ -798,76 +802,78 @@ if args.postDomainsBlocked:
         args.port = 443
     nickname = args.postDomainsBlocked.split('@')[0]
     domain = args.postDomainsBlocked.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
-    wordFrequency = {}
-    domainList = []
+        proxy_type = 'gnunet'
+    word_frequency = {}
+    domain_list = []
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    domainList = getPublicPostDomainsBlocked(None,
-                                             baseDir, nickname, domain,
-                                             proxyType, args.port,
-                                             httpPrefix, debug,
-                                             __version__,
-                                             wordFrequency, domainList,
-                                             args.language,
-                                             signingPrivateKeyPem)
-    for postDomain in domainList:
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    domain_list = \
+        get_public_post_domains_blocked(None,
+                                        base_dir, nickname, domain,
+                                        proxy_type, args.port,
+                                        http_prefix, debug,
+                                        __version__,
+                                        word_frequency, domain_list,
+                                        args.language,
+                                        signing_priv_key_pem)
+    for postDomain in domain_list:
         print(postDomain)
     sys.exit()
 
-if args.checkDomains:
+if args.check_domains:
     # Domains which were referenced in public posts by a
     # given handle but which are globally blocked on this instance
-    if '@' not in args.checkDomains:
-        if '/users/' in args.checkDomains:
-            postsNickname = getNicknameFromActor(args.posts)
-            postsDomain, postsPort = getDomainFromActor(args.posts)
-            args.checkDomains = \
-                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
+    if '@' not in args.check_domains:
+        if '/users/' in args.check_domains:
+            posts_nickname = get_nickname_from_actor(args.posts)
+            posts_domain, posts_port = get_domain_from_actor(args.posts)
+            args.check_domains = \
+                get_full_domain(posts_nickname + '@' + posts_domain,
+                                posts_port)
         else:
-            print('Syntax: --checkDomains nickname@domain')
+            print('Syntax: --check_domains nickname@domain')
             sys.exit()
     if not args.http:
         args.port = 443
-    nickname = args.checkDomains.split('@')[0]
-    domain = args.checkDomains.split('@')[1]
-    proxyType = None
+    nickname = args.check_domains.split('@')[0]
+    domain = args.check_domains.split('@')[1]
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
-    maxBlockedDomains = 0
+        proxy_type = 'gnunet'
+    max_blocked_domains = 0
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    checkDomains(None,
-                 baseDir, nickname, domain,
-                 proxyType, args.port,
-                 httpPrefix, debug,
-                 __version__,
-                 maxBlockedDomains, False, args.language,
-                 signingPrivateKeyPem)
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    check_domains(None,
+                  base_dir, nickname, domain,
+                  proxy_type, args.port,
+                  http_prefix, debug,
+                  __version__,
+                  max_blocked_domains, False, args.language,
+                  signing_priv_key_pem)
     sys.exit()
 
 if args.socnet:
@@ -878,25 +884,25 @@ if args.socnet:
 
     if not args.http:
         args.port = 443
-    proxyType = 'tor'
+    proxy_type = 'tor'
     if not args.language:
         args.language = 'en'
     if not args.domain:
-        args.domain = getConfigParam(baseDir, 'domain')
+        args.domain = get_config_param(base_dir, 'domain')
     domain = ''
     if args.domain:
         domain = args.domain
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    dotGraph = instancesGraph(baseDir, args.socnet,
-                              proxyType, args.port,
-                              httpPrefix, debug,
-                              __version__, args.language,
-                              signingPrivateKeyPem)
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    dot_graph = instances_graph(base_dir, args.socnet,
+                                proxy_type, args.port,
+                                http_prefix, debug,
+                                __version__, args.language,
+                                signing_priv_key_pem)
     try:
-        with open('socnet.dot', 'w+') as fp:
-            fp.write(dotGraph)
+        with open('socnet.dot', 'w+') as fp_soc:
+            fp_soc.write(dot_graph)
             print('Saved to socnet.dot')
     except OSError:
         print('EX: commandline unable to write socnet.dot')
@@ -904,7 +910,7 @@ if args.socnet:
 
 if args.postsraw:
     if not args.domain:
-        originDomain = getConfigParam(baseDir, 'domain')
+        originDomain = get_config_param(base_dir, 'domain')
     else:
         originDomain = args.domain
     if debug:
@@ -916,136 +922,136 @@ if args.postsraw:
         args.port = 443
     nickname = args.postsraw.split('@')[0]
     domain = args.postsraw.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
-    getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
-                           proxyType, args.port, httpPrefix, debug,
-                           __version__, args.language,
-                           signingPrivateKeyPem, originDomain)
+    signing_priv_key_pem = get_instance_actor_key(base_dir, originDomain)
+    get_public_posts_of_person(base_dir, nickname, domain, False, False,
+                               proxy_type, args.port, http_prefix, debug,
+                               __version__, args.language,
+                               signing_priv_key_pem, originDomain)
     sys.exit()
 
 if args.json:
-    session = createSession(None)
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    session = create_session(None)
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
     if not args.domain:
-        args.domain = getConfigParam(baseDir, 'domain')
+        args.domain = get_config_param(base_dir, 'domain')
     domain = ''
     if args.domain:
         domain = args.domain
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     if debug:
-        print('baseDir: ' + str(baseDir))
-        if signingPrivateKeyPem:
+        print('base_dir: ' + str(base_dir))
+        if signing_priv_key_pem:
             print('Obtained instance actor signing key')
         else:
             print('Did not obtain instance actor key for ' + domain)
-    testJson = getJson(signingPrivateKeyPem, session, args.json, asHeader,
-                       None, debug, __version__, httpPrefix, domain)
-    if testJson:
-        pprint(testJson)
+    test_json = get_json(signing_priv_key_pem, session, args.json, as_header,
+                         None, debug, __version__, http_prefix, domain)
+    if test_json:
+        pprint(test_json)
     sys.exit()
 
 if args.htmlpost:
-    session = createSession(None)
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'text/html; profile="' + profileStr + '"'
+    session = create_session(None)
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'text/html; profile="' + profile_str + '"'
     }
     if not args.domain:
-        args.domain = getConfigParam(baseDir, 'domain')
+        args.domain = get_config_param(base_dir, 'domain')
     domain = ''
     if args.domain:
         domain = args.domain
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     if debug:
-        print('baseDir: ' + str(baseDir))
-        if signingPrivateKeyPem:
+        print('base_dir: ' + str(base_dir))
+        if signing_priv_key_pem:
             print('Obtained instance actor signing key')
         else:
             print('Did not obtain instance actor key for ' + domain)
-    testHtml = downloadHtml(signingPrivateKeyPem, session, args.htmlpost,
-                            asHeader, None, debug, __version__,
-                            httpPrefix, domain)
+    testHtml = download_html(signing_priv_key_pem, session, args.htmlpost,
+                             as_header, None, debug, __version__,
+                             http_prefix, domain)
     if testHtml:
         print(testHtml)
     sys.exit()
 
 # create cache for actors
-if not os.path.isdir(baseDir + '/cache'):
-    os.mkdir(baseDir + '/cache')
-if not os.path.isdir(baseDir + '/cache/actors'):
+if not os.path.isdir(base_dir + '/cache'):
+    os.mkdir(base_dir + '/cache')
+if not os.path.isdir(base_dir + '/cache/actors'):
     print('Creating actors cache')
-    os.mkdir(baseDir + '/cache/actors')
-if not os.path.isdir(baseDir + '/cache/announce'):
+    os.mkdir(base_dir + '/cache/actors')
+if not os.path.isdir(base_dir + '/cache/announce'):
     print('Creating announce cache')
-    os.mkdir(baseDir + '/cache/announce')
+    os.mkdir(base_dir + '/cache/announce')
 
 # set the theme in config.json
-themeName = getConfigParam(baseDir, 'theme')
-if not themeName:
-    setConfigParam(baseDir, 'theme', 'default')
-    themeName = 'default'
+theme_name = get_config_param(base_dir, 'theme')
+if not theme_name:
+    set_config_param(base_dir, 'theme', 'default')
+    theme_name = 'default'
 
 if not args.mediainstance:
-    mediaInstance = getConfigParam(baseDir, 'mediaInstance')
-    if mediaInstance is not None:
-        args.mediainstance = mediaInstance
+    media_instance = get_config_param(base_dir, 'mediaInstance')
+    if media_instance is not None:
+        args.mediainstance = media_instance
         if args.mediainstance:
             args.blogsinstance = False
             args.newsinstance = False
 
 if not args.newsinstance:
-    newsInstance = getConfigParam(baseDir, 'newsInstance')
-    if newsInstance is not None:
-        args.newsinstance = newsInstance
+    news_instance = get_config_param(base_dir, 'newsInstance')
+    if news_instance is not None:
+        args.newsinstance = news_instance
         if args.newsinstance:
             args.blogsinstance = False
             args.mediainstance = False
 
 if not args.blogsinstance:
-    blogsInstance = getConfigParam(baseDir, 'blogsInstance')
-    if blogsInstance is not None:
-        args.blogsinstance = blogsInstance
+    blogs_instance = get_config_param(base_dir, 'blogsInstance')
+    if blogs_instance is not None:
+        args.blogsinstance = blogs_instance
         if args.blogsinstance:
             args.mediainstance = False
             args.newsinstance = False
 
 # set the instance title in config.json
-title = getConfigParam(baseDir, 'instanceTitle')
+title = get_config_param(base_dir, 'instanceTitle')
 if not title:
-    setConfigParam(baseDir, 'instanceTitle', 'Epicyon')
+    set_config_param(base_dir, 'instanceTitle', 'Epicyon')
 
 # set the instance description in config.json
-descFull = getConfigParam(baseDir, 'instanceDescription')
+descFull = get_config_param(base_dir, 'instanceDescription')
 if not descFull:
-    setConfigParam(baseDir, 'instanceDescription',
-                   'Just another ActivityPub server')
+    set_config_param(base_dir, 'instanceDescription',
+                     'Just another ActivityPub server')
 
 # set the short instance description in config.json
-descShort = getConfigParam(baseDir, 'instanceDescriptionShort')
+descShort = get_config_param(base_dir, 'instanceDescriptionShort')
 if not descShort:
-    setConfigParam(baseDir, 'instanceDescriptionShort',
-                   'Just another ActivityPub server')
+    set_config_param(base_dir, 'instanceDescriptionShort',
+                     'Just another ActivityPub server')
 
 if args.domain:
     domain = args.domain
-    setConfigParam(baseDir, 'domain', domain)
+    set_config_param(base_dir, 'domain', domain)
 
 if args.rss:
-    session = createSession(None)
-    testRSS = getRSS(baseDir, domain, session, args.rss,
-                     False, False, 1000, 1000, 1000, 1000, debug)
+    session = create_session(None)
+    testRSS = get_rss(base_dir, domain, session, args.rss,
+                      False, False, 1000, 1000, 1000, 1000, debug)
     pprint(testRSS)
     sys.exit()
 
@@ -1055,21 +1061,21 @@ if args.onion:
         sys.exit()
     if '://' in args.onion:
         args.onion = args.onion.split('://')[1]
-    onionDomain = args.onion
-    setConfigParam(baseDir, 'onion', onionDomain)
+    onion_domain = args.onion
+    set_config_param(base_dir, 'onion', onion_domain)
 
-i2pDomain = None
-if args.i2pDomain:
-    if not args.i2pDomain.endswith('.i2p'):
-        print(args.i2pDomain + ' does not look like an i2p domain')
+i2p_domain = None
+if args.i2p_domain:
+    if not args.i2p_domain.endswith('.i2p'):
+        print(args.i2p_domain + ' does not look like an i2p domain')
         sys.exit()
-    if '://' in args.i2pDomain:
+    if '://' in args.i2p_domain:
         args.onion = args.onion.split('://')[1]
-    i2pDomain = args.i2pDomain
-    setConfigParam(baseDir, 'i2pDomain', i2pDomain)
+    i2p_domain = args.i2p_domain
+    set_config_param(base_dir, 'i2pDomain', i2p_domain)
 
 if not args.language:
-    languageCode = getConfigParam(baseDir, 'language')
+    languageCode = get_config_param(base_dir, 'language')
     if languageCode:
         args.language = languageCode
     else:
@@ -1077,58 +1083,58 @@ if not args.language:
 
 # maximum number of new registrations
 if not args.maxRegistrations:
-    maxRegistrations = getConfigParam(baseDir, 'maxRegistrations')
+    maxRegistrations = get_config_param(base_dir, 'maxRegistrations')
     if not maxRegistrations:
         maxRegistrations = 10
-        setConfigParam(baseDir, 'maxRegistrations', str(maxRegistrations))
+        set_config_param(base_dir, 'maxRegistrations', str(maxRegistrations))
     else:
         maxRegistrations = int(maxRegistrations)
 else:
     maxRegistrations = args.maxRegistrations
-    setConfigParam(baseDir, 'maxRegistrations', str(maxRegistrations))
+    set_config_param(base_dir, 'maxRegistrations', str(maxRegistrations))
 
 # if this is the initial run then allow new registrations
-if not getConfigParam(baseDir, 'registration'):
+if not get_config_param(base_dir, 'registration'):
     if args.registration.lower() == 'open':
-        setConfigParam(baseDir, 'registration', 'open')
-        setConfigParam(baseDir, 'maxRegistrations', str(maxRegistrations))
-        setConfigParam(baseDir, 'registrationsRemaining',
-                       str(maxRegistrations))
+        set_config_param(base_dir, 'registration', 'open')
+        set_config_param(base_dir, 'maxRegistrations', str(maxRegistrations))
+        set_config_param(base_dir, 'registrationsRemaining',
+                         str(maxRegistrations))
 
 if args.resetregistrations:
-    setConfigParam(baseDir, 'registrationsRemaining', str(maxRegistrations))
+    set_config_param(base_dir, 'registrationsRemaining', str(maxRegistrations))
     print('Number of new registrations reset to ' + str(maxRegistrations))
 
 # unique ID for the instance
-instanceId = getConfigParam(baseDir, 'instanceId')
-if not instanceId:
-    instanceId = createPassword(32)
-    setConfigParam(baseDir, 'instanceId', instanceId)
-    print('Instance ID: ' + instanceId)
+instance_id = get_config_param(base_dir, 'instanceId')
+if not instance_id:
+    instance_id = create_password(32)
+    set_config_param(base_dir, 'instanceId', instance_id)
+    print('Instance ID: ' + instance_id)
 
 # get domain name from configuration
-configDomain = getConfigParam(baseDir, 'domain')
+configDomain = get_config_param(base_dir, 'domain')
 if configDomain:
     domain = configDomain
 else:
     domain = 'localhost'
 
 # get onion domain name from configuration
-configOnionDomain = getConfigParam(baseDir, 'onion')
+configOnionDomain = get_config_param(base_dir, 'onion')
 if configOnionDomain:
-    onionDomain = configOnionDomain
+    onion_domain = configOnionDomain
 else:
-    onionDomain = None
+    onion_domain = None
 
 # get i2p domain name from configuration
-configi2pDomain = getConfigParam(baseDir, 'i2pDomain')
-if configi2pDomain:
-    i2pDomain = configi2pDomain
+configi2p_domain = get_config_param(base_dir, 'i2pDomain')
+if configi2p_domain:
+    i2p_domain = configi2p_domain
 else:
-    i2pDomain = None
+    i2p_domain = None
 
 # get port number from configuration
-configPort = getConfigParam(baseDir, 'port')
+configPort = get_config_param(base_dir, 'port')
 if configPort:
     port = configPort
 else:
@@ -1138,41 +1144,41 @@ else:
     else:
         port = 443
 
-configProxyPort = getConfigParam(baseDir, 'proxyPort')
+configProxyPort = get_config_param(base_dir, 'proxyPort')
 if configProxyPort:
-    proxyPort = configProxyPort
+    proxy_port = configProxyPort
 else:
-    proxyPort = port
+    proxy_port = port
 
 nickname = None
 if args.nickname:
     nickname = nickname
 
-federationList = []
-if args.federationList:
-    if len(args.federationList) == 1:
-        if not (args.federationList[0].lower() == 'any' or
-                args.federationList[0].lower() == 'all' or
-                args.federationList[0].lower() == '*'):
-            for federationDomain in args.federationList:
+federation_list = []
+if args.federation_list:
+    if len(args.federation_list) == 1:
+        if not (args.federation_list[0].lower() == 'any' or
+                args.federation_list[0].lower() == 'all' or
+                args.federation_list[0].lower() == '*'):
+            for federationDomain in args.federation_list:
                 if '@' in federationDomain:
                     print(federationDomain +
                           ': Federate with domains, not individual accounts')
                     sys.exit()
-            federationList = args.federationList.copy()
-        setConfigParam(baseDir, 'federationList', federationList)
+            federation_list = args.federation_list.copy()
+        set_config_param(base_dir, 'federationList', federation_list)
 else:
-    configFederationList = getConfigParam(baseDir, 'federationList')
+    configFederationList = get_config_param(base_dir, 'federationList')
     if configFederationList:
-        federationList = configFederationList
+        federation_list = configFederationList
 
-proxyType = None
+proxy_type = None
 if args.tor or domain.endswith('.onion'):
-    proxyType = 'tor'
+    proxy_type = 'tor'
 elif args.i2p or domain.endswith('.i2p'):
-    proxyType = 'i2p'
+    proxy_type = 'i2p'
 elif args.gnunet:
-    proxyType = 'gnunet'
+    proxy_type = 'gnunet'
 
 if args.approve:
     if not args.nickname:
@@ -1181,25 +1187,25 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    session = createSession(proxyType)
-    sendThreads = []
+    session = create_session(proxy_type)
+    send_threads = []
     postLog = []
-    cachedWebfingers = {}
-    personCache = {}
+    cached_webfingers = {}
+    person_cache = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    manualApproveFollowRequest(session, baseDir,
-                               httpPrefix,
-                               args.nickname, domain, port,
-                               args.approve,
-                               federationList,
-                               sendThreads, postLog,
-                               cachedWebfingers, personCache,
-                               debug, __version__,
-                               signingPrivateKeyPem)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    manual_approve_follow_request(session, base_dir,
+                                  http_prefix,
+                                  args.nickname, domain, port,
+                                  args.approve,
+                                  federation_list,
+                                  send_threads, postLog,
+                                  cached_webfingers, person_cache,
+                                  debug, __version__,
+                                  signing_priv_key_pem)
     sys.exit()
 
 if args.deny:
@@ -1209,25 +1215,25 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    session = createSession(proxyType)
-    sendThreads = []
+    session = create_session(proxy_type)
+    send_threads = []
     postLog = []
-    cachedWebfingers = {}
-    personCache = {}
+    cached_webfingers = {}
+    person_cache = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    manualDenyFollowRequest(session, baseDir,
-                            httpPrefix,
-                            args.nickname, domain, port,
-                            args.deny,
-                            federationList,
-                            sendThreads, postLog,
-                            cachedWebfingers, personCache,
-                            debug, __version__,
-                            signingPrivateKeyPem)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    manual_deny_follow_request(session, base_dir,
+                               http_prefix,
+                               args.nickname, domain, port,
+                               args.deny,
+                               federation_list,
+                               send_threads, postLog,
+                               cached_webfingers, person_cache,
+                               debug, __version__,
+                               signing_priv_key_pem)
     sys.exit()
 
 if args.followerspending:
@@ -1235,15 +1241,15 @@ if args.followerspending:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    accountsDir = acctDir(baseDir, args.nickname, domain)
-    approveFollowsFilename = accountsDir + '/followrequests.txt'
-    approveCtr = 0
-    if os.path.isfile(approveFollowsFilename):
-        with open(approveFollowsFilename, 'r') as approvefile:
+    accounts_dir = acct_dir(base_dir, args.nickname, domain)
+    approve_follows_filename = accounts_dir + '/followrequests.txt'
+    approve_ctr = 0
+    if os.path.isfile(approve_follows_filename):
+        with open(approve_follows_filename, 'r') as approvefile:
             for approve in approvefile:
                 print(approve.replace('\n', '').replace('\r', ''))
-                approveCtr += 1
-    if approveCtr == 0:
+                approve_ctr += 1
+    if approve_ctr == 0:
         print('There are no follow requests pending approval.')
     sys.exit()
 
@@ -1260,7 +1266,7 @@ if args.message:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = create_session(proxy_type)
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
         sys.exit()
@@ -1272,59 +1278,59 @@ if args.message:
         print('        --sendto followers')
         sys.exit()
     if '@' in args.sendto:
-        toNickname = args.sendto.split('@')[0]
-        toDomain = args.sendto.split('@')[1]
-        toDomain = toDomain.replace('\n', '').replace('\r', '')
-        toPort = 443
-        if ':' in toDomain:
-            toPort = getPortFromDomain(toDomain)
-            toDomain = removeDomainPort(toDomain)
+        to_nickname = args.sendto.split('@')[0]
+        to_domain = args.sendto.split('@')[1]
+        to_domain = to_domain.replace('\n', '').replace('\r', '')
+        to_port = 443
+        if ':' in to_domain:
+            to_port = get_port_from_domain(to_domain)
+            to_domain = remove_domain_port(to_domain)
     else:
         if args.sendto.endswith('followers'):
-            toNickname = None
-            toDomain = 'followers'
-            toPort = port
+            to_nickname = None
+            to_domain = 'followers'
+            to_port = port
         else:
-            toNickname = None
-            toDomain = 'public'
-            toPort = port
+            to_nickname = None
+            to_domain = 'public'
+            to_port = port
 
-    ccUrl = None
+    cc_url = None
     sendMessage = args.message
-    followersOnly = args.followersonly
-    clientToServer = args.client
-    attachedImageDescription = args.imageDescription
+    followers_only = args.followersonly
+    client_to_server = args.client
+    attached_image_description = args.imageDescription
     city = 'London, England'
-    sendThreads = []
+    send_threads = []
     postLog = []
-    personCache = {}
-    cachedWebfingers = {}
+    person_cache = {}
+    cached_webfingers = {}
     subject = args.subject
     attach = args.attach
-    mediaType = None
+    media_type = None
     if attach:
-        mediaType = getAttachmentMediaType(attach)
-    replyTo = args.replyto
-    followersOnly = False
-    isArticle = False
+        media_type = get_attachment_media_type(attach)
+    reply_to = args.replyto
+    followers_only = False
+    is_article = False
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending post to ' + args.sendto)
 
-    sendPostViaServer(signingPrivateKeyPem, __version__,
-                      baseDir, session, args.nickname, args.password,
-                      domain, port,
-                      toNickname, toDomain, toPort, ccUrl,
-                      httpPrefix, sendMessage, followersOnly,
-                      args.commentsEnabled, attach, mediaType,
-                      attachedImageDescription, city,
-                      cachedWebfingers, personCache, isArticle,
-                      args.language, args.lowBandwidth,
-                      args.contentLicenseUrl, args.debug,
-                      replyTo, replyTo, args.conversationId, subject)
+    send_post_via_server(signing_priv_key_pem, __version__,
+                         base_dir, session, args.nickname, args.password,
+                         domain, port,
+                         to_nickname, to_domain, to_port, cc_url,
+                         http_prefix, sendMessage, followers_only,
+                         args.commentsEnabled, attach, media_type,
+                         attached_image_description, city,
+                         cached_webfingers, person_cache, is_article,
+                         args.language, args.low_bandwidth,
+                         args.content_license_url, args.debug,
+                         reply_to, reply_to, args.conversationId, subject)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1342,21 +1348,21 @@ if args.announce:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending announce/repeat of ' + args.announce)
 
-    sendAnnounceViaServer(baseDir, session, args.nickname, args.password,
-                          domain, port,
-                          httpPrefix, args.announce,
-                          cachedWebfingers, personCache,
-                          True, __version__, signingPrivateKeyPem)
+    send_announce_via_server(base_dir, session, args.nickname, args.password,
+                             domain, port,
+                             http_prefix, args.announce,
+                             cached_webfingers, person_cache,
+                             True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1378,31 +1384,31 @@ if args.box:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    session = createSession(proxyType)
-    boxJson = c2sBoxJson(baseDir, session,
-                         args.nickname, args.password,
-                         domain, port, httpPrefix,
-                         args.box, args.pageNumber,
-                         args.debug, signingPrivateKeyPem)
-    if boxJson:
-        pprint(boxJson)
+    session = create_session(proxy_type)
+    box_json = c2s_box_json(base_dir, session,
+                            args.nickname, args.password,
+                            domain, port, http_prefix,
+                            args.box, args.pageNumber,
+                            args.debug, signing_priv_key_pem)
+    if box_json:
+        pprint(box_json)
     else:
         print('Box not found: ' + args.box)
     sys.exit()
@@ -1447,32 +1453,32 @@ if args.itemName:
               'with the --duration option')
         sys.exit()
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending shared item: ' + args.itemName)
 
-    sendShareViaServer(baseDir, session,
-                       args.nickname, args.password,
-                       domain, port,
-                       httpPrefix,
-                       args.itemName,
-                       args.summary,
-                       args.itemImage,
-                       args.itemQty,
-                       args.itemType,
-                       args.itemCategory,
-                       args.location,
-                       args.duration,
-                       cachedWebfingers, personCache,
-                       debug, __version__,
-                       args.itemPrice, args.itemCurrency,
-                       signingPrivateKeyPem)
+    send_share_via_server(base_dir, session,
+                          args.nickname, args.password,
+                          domain, port,
+                          http_prefix,
+                          args.itemName,
+                          args.summary,
+                          args.itemImage,
+                          args.itemQty,
+                          args.itemType,
+                          args.itemCategory,
+                          args.location,
+                          args.duration,
+                          cached_webfingers, person_cache,
+                          debug, __version__,
+                          args.itemPrice, args.itemCurrency,
+                          signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1490,23 +1496,23 @@ if args.undoItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo of shared item: ' + args.undoItemName)
 
-    sendUndoShareViaServer(baseDir, session,
-                           args.nickname, args.password,
-                           domain, port,
-                           httpPrefix,
-                           args.undoItemName,
-                           cachedWebfingers, personCache,
-                           debug, __version__, signingPrivateKeyPem)
+    send_undo_share_via_server(base_dir, session,
+                               args.nickname, args.password,
+                               domain, port,
+                               http_prefix,
+                               args.undoItemName,
+                               cached_webfingers, person_cache,
+                               debug, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1552,32 +1558,32 @@ if args.wantedItemName:
               'with the --duration option')
         sys.exit()
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending wanted item: ' + args.wantedItemName)
 
-    sendWantedViaServer(baseDir, session,
-                        args.nickname, args.password,
-                        domain, port,
-                        httpPrefix,
-                        args.wantedItemName,
-                        args.summary,
-                        args.itemImage,
-                        args.itemQty,
-                        args.itemType,
-                        args.itemCategory,
-                        args.location,
-                        args.duration,
-                        cachedWebfingers, personCache,
-                        debug, __version__,
-                        args.itemPrice, args.itemCurrency,
-                        signingPrivateKeyPem)
+    send_wanted_via_server(base_dir, session,
+                           args.nickname, args.password,
+                           domain, port,
+                           http_prefix,
+                           args.wantedItemName,
+                           args.summary,
+                           args.itemImage,
+                           args.itemQty,
+                           args.itemType,
+                           args.itemCategory,
+                           args.location,
+                           args.duration,
+                           cached_webfingers, person_cache,
+                           debug, __version__,
+                           args.itemPrice, args.itemCurrency,
+                           signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1595,23 +1601,23 @@ if args.undoWantedItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo of wanted item: ' + args.undoWantedItemName)
 
-    sendUndoWantedViaServer(baseDir, session,
-                            args.nickname, args.password,
-                            domain, port,
-                            httpPrefix,
-                            args.undoWantedItemName,
-                            cachedWebfingers, personCache,
-                            debug, __version__, signingPrivateKeyPem)
+    send_undo_wanted_via_server(base_dir, session,
+                                args.nickname, args.password,
+                                domain, port,
+                                http_prefix,
+                                args.undoWantedItemName,
+                                cached_webfingers, person_cache,
+                                debug, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1629,22 +1635,22 @@ if args.like:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending like of ' + args.like)
 
-    sendLikeViaServer(baseDir, session,
-                      args.nickname, args.password,
-                      domain, port,
-                      httpPrefix, args.like,
-                      cachedWebfingers, personCache,
-                      True, __version__, signingPrivateKeyPem)
+    send_like_via_server(base_dir, session,
+                         args.nickname, args.password,
+                         domain, port,
+                         http_prefix, args.like,
+                         cached_webfingers, person_cache,
+                         True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1657,7 +1663,7 @@ if args.react:
     if not args.emoji:
         print('Specify a reaction emoji with the --emoji option')
         sys.exit()
-    if not validEmojiContent(args.emoji):
+    if not valid_emoji_content(args.emoji):
         print('This is not a valid emoji')
         sys.exit()
 
@@ -1668,22 +1674,22 @@ if args.react:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending emoji reaction ' + args.emoji + ' to ' + args.react)
 
-    sendReactionViaServer(baseDir, session,
-                          args.nickname, args.password,
-                          domain, port,
-                          httpPrefix, args.react, args.emoji,
-                          cachedWebfingers, personCache,
-                          True, __version__, signingPrivateKeyPem)
+    send_reaction_via_server(base_dir, session,
+                             args.nickname, args.password,
+                             domain, port,
+                             http_prefix, args.react, args.emoji,
+                             cached_webfingers, person_cache,
+                             True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1701,23 +1707,23 @@ if args.undolike:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo like of ' + args.undolike)
 
-    sendUndoLikeViaServer(baseDir, session,
-                          args.nickname, args.password,
-                          domain, port,
-                          httpPrefix, args.undolike,
-                          cachedWebfingers, personCache,
-                          True, __version__,
-                          signingPrivateKeyPem)
+    send_undo_like_via_server(base_dir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              http_prefix, args.undolike,
+                              cached_webfingers, person_cache,
+                              True, __version__,
+                              signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1730,7 +1736,7 @@ if args.undoreact:
     if not args.emoji:
         print('Specify a reaction emoji with the --emoji option')
         sys.exit()
-    if not validEmojiContent(args.emoji):
+    if not valid_emoji_content(args.emoji):
         print('This is not a valid emoji')
         sys.exit()
 
@@ -1741,23 +1747,23 @@ if args.undoreact:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo emoji reaction ' + args.emoji + ' to ' + args.react)
 
-    sendUndoReactionViaServer(baseDir, session,
-                              args.nickname, args.password,
-                              domain, port,
-                              httpPrefix, args.undoreact, args.emoji,
-                              cachedWebfingers, personCache,
-                              True, __version__,
-                              signingPrivateKeyPem)
+    send_undo_reaction_via_server(base_dir, session,
+                                  args.nickname, args.password,
+                                  domain, port,
+                                  http_prefix, args.undoreact, args.emoji,
+                                  cached_webfingers, person_cache,
+                                  True, __version__,
+                                  signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1775,23 +1781,23 @@ if args.bookmark:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending bookmark of ' + args.bookmark)
 
-    sendBookmarkViaServer(baseDir, session,
-                          args.nickname, args.password,
-                          domain, port,
-                          httpPrefix, args.bookmark,
-                          cachedWebfingers, personCache,
-                          True, __version__,
-                          signingPrivateKeyPem)
+    send_bookmark_via_server(base_dir, session,
+                             args.nickname, args.password,
+                             domain, port,
+                             http_prefix, args.bookmark,
+                             cached_webfingers, person_cache,
+                             True, __version__,
+                             signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1809,22 +1815,22 @@ if args.unbookmark:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo bookmark of ' + args.unbookmark)
 
-    sendUndoBookmarkViaServer(baseDir, session,
-                              args.nickname, args.password,
-                              domain, port,
-                              httpPrefix, args.unbookmark,
-                              cachedWebfingers, personCache,
-                              True, __version__, signingPrivateKeyPem)
+    send_undo_bookmark_via_server(base_dir, session,
+                                  args.nickname, args.password,
+                                  domain, port,
+                                  http_prefix, args.unbookmark,
+                                  cached_webfingers, person_cache,
+                                  True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1842,22 +1848,22 @@ if args.delete:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending delete request of ' + args.delete)
 
-    sendDeleteViaServer(baseDir, session,
-                        args.nickname, args.password,
-                        domain, port,
-                        httpPrefix, args.delete,
-                        cachedWebfingers, personCache,
-                        True, __version__, signingPrivateKeyPem)
+    send_delete_via_server(base_dir, session,
+                           args.nickname, args.password,
+                           domain, port,
+                           http_prefix, args.delete,
+                           cached_webfingers, person_cache,
+                           True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1878,31 +1884,31 @@ if args.follow:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    followNickname = getNicknameFromActor(args.follow)
-    if not followNickname:
+    follow_nickname = get_nickname_from_actor(args.follow)
+    if not follow_nickname:
         print('Unable to find nickname in ' + args.follow)
         sys.exit()
-    followDomain, followPort = getDomainFromActor(args.follow)
+    follow_domain, follow_port = get_domain_from_actor(args.follow)
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
+    follow_http_prefix = http_prefix
     if args.follow.startswith('https'):
-        followHttpPrefix = 'https'
+        follow_http_prefix = 'https'
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    sendFollowRequestViaServer(baseDir, session,
-                               args.nickname, args.password,
-                               domain, port,
-                               followNickname, followDomain, followPort,
-                               httpPrefix,
-                               cachedWebfingers, personCache,
-                               debug, __version__, signingPrivateKeyPem)
+    send_follow_requestViaServer(base_dir, session,
+                                 args.nickname, args.password,
+                                 domain, port,
+                                 follow_nickname, follow_domain, follow_port,
+                                 follow_http_prefix,
+                                 cached_webfingers, person_cache,
+                                 debug, __version__, signing_priv_key_pem)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -1924,31 +1930,31 @@ if args.unfollow:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    followNickname = getNicknameFromActor(args.unfollow)
-    if not followNickname:
+    follow_nickname = get_nickname_from_actor(args.unfollow)
+    if not follow_nickname:
         print('WARN: unable to find nickname in ' + args.unfollow)
         sys.exit()
-    followDomain, followPort = getDomainFromActor(args.unfollow)
+    follow_domain, follow_port = get_domain_from_actor(args.unfollow)
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
+    follow_http_prefix = http_prefix
     if args.follow.startswith('https'):
-        followHttpPrefix = 'https'
+        follow_http_prefix = 'https'
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    sendUnfollowRequestViaServer(baseDir, session,
-                                 args.nickname, args.password,
-                                 domain, port,
-                                 followNickname, followDomain, followPort,
-                                 httpPrefix,
-                                 cachedWebfingers, personCache,
-                                 debug, __version__, signingPrivateKeyPem)
+    send_unfollow_request_via_server(base_dir, session,
+                                     args.nickname, args.password,
+                                     domain, port,
+                                     follow_nickname, follow_domain,
+                                     follow_port, follow_http_prefix,
+                                     cached_webfingers, person_cache,
+                                     debug, __version__, signing_priv_key_pem)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -1967,25 +1973,25 @@ if args.followingList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
+    follow_http_prefix = http_prefix
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    followingJson = \
-        getFollowingViaServer(baseDir, session,
-                              args.nickname, args.password,
-                              domain, port,
-                              httpPrefix, args.pageNumber,
-                              cachedWebfingers, personCache,
-                              debug, __version__, signingPrivateKeyPem)
-    if followingJson:
-        pprint(followingJson)
+    following_json = \
+        get_following_via_server(base_dir, session,
+                                 args.nickname, args.password,
+                                 domain, port,
+                                 follow_http_prefix, args.pageNumber,
+                                 cached_webfingers, person_cache,
+                                 debug, __version__, signing_priv_key_pem)
+    if following_json:
+        pprint(following_json)
     sys.exit()
 
 if args.followersList:
@@ -2000,26 +2006,26 @@ if args.followersList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
+    follow_http_prefix = http_prefix
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    followersJson = \
-        getFollowersViaServer(baseDir, session,
-                              args.nickname, args.password,
-                              domain, port,
-                              httpPrefix, args.pageNumber,
-                              cachedWebfingers, personCache,
-                              debug, __version__,
-                              signingPrivateKeyPem)
-    if followersJson:
-        pprint(followersJson)
+    followers_json = \
+        get_followers_via_server(base_dir, session,
+                                 args.nickname, args.password,
+                                 domain, port,
+                                 follow_http_prefix, args.pageNumber,
+                                 cached_webfingers, person_cache,
+                                 debug, __version__,
+                                 signing_priv_key_pem)
+    if followers_json:
+        pprint(followers_json)
     sys.exit()
 
 if args.followRequestsList:
@@ -2034,70 +2040,71 @@ if args.followRequestsList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
+    follow_http_prefix = http_prefix
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    followRequestsJson = \
-        getFollowRequestsViaServer(baseDir, session,
-                                   args.nickname, args.password,
-                                   domain, port,
-                                   httpPrefix, args.pageNumber,
-                                   cachedWebfingers, personCache,
-                                   debug, __version__, signingPrivateKeyPem)
-    if followRequestsJson:
-        pprint(followRequestsJson)
+    follow_requests_json = \
+        get_follow_requests_via_server(base_dir, session,
+                                       args.nickname, args.password,
+                                       domain, port,
+                                       follow_http_prefix, args.pageNumber,
+                                       cached_webfingers, person_cache,
+                                       debug, __version__,
+                                       signing_priv_key_pem)
+    if follow_requests_json:
+        pprint(follow_requests_json)
     sys.exit()
 
 nickname = 'admin'
 if args.domain:
     domain = args.domain
-    setConfigParam(baseDir, 'domain', domain)
+    set_config_param(base_dir, 'domain', domain)
 if args.port:
     port = args.port
-    setConfigParam(baseDir, 'port', port)
-if args.proxyPort:
-    proxyPort = args.proxyPort
-    setConfigParam(baseDir, 'proxyPort', proxyPort)
+    set_config_param(base_dir, 'port', port)
+if args.proxy_port:
+    proxy_port = args.proxy_port
+    set_config_param(base_dir, 'proxyPort', proxy_port)
 if args.gnunet:
-    httpPrefix = 'gnunet'
+    http_prefix = 'gnunet'
 if args.dat or args.hyper:
-    httpPrefix = 'hyper'
+    http_prefix = 'hyper'
 if args.i2p:
-    httpPrefix = 'http'
+    http_prefix = 'http'
 
 if args.migrations:
-    cachedWebfingers = {}
+    cached_webfingers = {}
     if args.http or domain.endswith('.onion'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         port = 80
-        proxyType = 'tor'
+        proxy_type = 'tor'
     elif domain.endswith('.i2p'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         port = 80
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
     elif args.gnunet:
-        httpPrefix = 'gnunet'
+        http_prefix = 'gnunet'
         port = 80
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     else:
-        httpPrefix = 'https'
+        http_prefix = 'https'
         port = 443
-    session = createSession(proxyType)
+    session = create_session(proxy_type)
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    ctr = migrateAccounts(baseDir, session,
-                          httpPrefix, cachedWebfingers,
-                          True, signingPrivateKeyPem)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    ctr = migrate_accounts(base_dir, session,
+                           http_prefix, cached_webfingers,
+                           True, signing_priv_key_pem)
     if ctr == 0:
         print('No followed accounts have moved')
     else:
@@ -2106,16 +2113,16 @@ if args.migrations:
 
 if args.actor:
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     if debug:
-        print('baseDir: ' + str(baseDir))
-        if signingPrivateKeyPem:
+        print('base_dir: ' + str(base_dir))
+        if signing_priv_key_pem:
             print('Obtained instance actor signing key')
         else:
             print('Did not obtain instance actor key for ' + domain)
-    getActorJson(domain, args.actor, args.http, args.gnunet,
-                 debug, False, signingPrivateKeyPem, None)
+    get_actor_json(domain, args.actor, args.http, args.gnunet,
+                   debug, False, signing_priv_key_pem, None)
     sys.exit()
 
 if args.followers:
@@ -2125,11 +2132,11 @@ if args.followers:
        args.followers.startswith('http') or \
        args.followers.startswith('hyper'):
         # format: https://domain/@nick
-        prefixes = getProtocolPrefixes()
+        prefixes = get_protocol_prefixes()
         for prefix in prefixes:
             args.followers = args.followers.replace(prefix, '')
         args.followers = args.followers.replace('/@', '/users/')
-        if not hasUsersPath(args.followers):
+        if not has_users_path(args.followers):
             print('Expected actor format: ' +
                   'https://domain/@nick or https://domain/users/nick')
             sys.exit()
@@ -2170,23 +2177,23 @@ if args.followers:
         nickname = args.followers.split('@')[0]
         domain = args.followers.split('@')[1]
         domain = domain.replace('\n', '').replace('\r', '')
-    cachedWebfingers = {}
+    cached_webfingers = {}
     if args.http or domain.endswith('.onion'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         port = 80
-        proxyType = 'tor'
+        proxy_type = 'tor'
     elif domain.endswith('.i2p'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         port = 80
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
     elif args.gnunet:
-        httpPrefix = 'gnunet'
+        http_prefix = 'gnunet'
         port = 80
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     else:
-        httpPrefix = 'https'
+        http_prefix = 'https'
         port = 443
-    session = createSession(proxyType)
+    session = create_session(proxy_type)
     if nickname == 'inbox':
         nickname = domain
 
@@ -2194,63 +2201,63 @@ if args.followers:
     if args.domain:
         hostDomain = args.domain
     handle = nickname + '@' + domain
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    wfRequest = webfingerHandle(session, handle,
-                                httpPrefix, cachedWebfingers,
-                                hostDomain, __version__, debug, False,
-                                signingPrivateKeyPem)
-    if not wfRequest:
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    wf_request = webfinger_handle(session, handle,
+                                  http_prefix, cached_webfingers,
+                                  hostDomain, __version__, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         print('Unable to webfinger ' + handle)
         sys.exit()
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+              str(wf_request))
         sys.exit()
 
-    personUrl = None
-    if wfRequest.get('errors'):
-        print('wfRequest error: ' + str(wfRequest['errors']))
-        if hasUsersPath(args.followers):
-            personUrl = originalActor
+    person_url = None
+    if wf_request.get('errors'):
+        print('wf_request error: ' + str(wf_request['errors']))
+        if has_users_path(args.followers):
+            person_url = originalActor
         else:
             sys.exit()
 
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'application/activity+json; profile="' + profile_str + '"'
     }
-    if not personUrl:
-        personUrl = getUserUrl(wfRequest, 0, args.debug)
+    if not person_url:
+        person_url = get_user_url(wf_request, 0, args.debug)
     if nickname == domain:
-        personUrl = personUrl.replace('/users/', '/actor/')
-        personUrl = personUrl.replace('/accounts/', '/actor/')
-        personUrl = personUrl.replace('/channel/', '/actor/')
-        personUrl = personUrl.replace('/profile/', '/actor/')
-        personUrl = personUrl.replace('/u/', '/actor/')
-        personUrl = personUrl.replace('/c/', '/actor/')
-    if not personUrl:
+        person_url = person_url.replace('/users/', '/actor/')
+        person_url = person_url.replace('/accounts/', '/actor/')
+        person_url = person_url.replace('/channel/', '/actor/')
+        person_url = person_url.replace('/profile/', '/actor/')
+        person_url = person_url.replace('/u/', '/actor/')
+        person_url = person_url.replace('/c/', '/actor/')
+    if not person_url:
         # try single user instance
-        personUrl = httpPrefix + '://' + domain
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        person_url = http_prefix + '://' + domain
+        profile_str = 'https://www.w3.org/ns/activitystreams'
+        as_header = {
+            'Accept': 'application/ld+json; profile="' + profile_str + '"'
         }
-    if '/channel/' in personUrl or '/accounts/' in personUrl:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    if '/channel/' in person_url or '/accounts/' in person_url:
+        profile_str = 'https://www.w3.org/ns/activitystreams'
+        as_header = {
+            'Accept': 'application/ld+json; profile="' + profile_str + '"'
         }
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    followersList = \
-        downloadFollowCollection(signingPrivateKeyPem,
-                                 'followers', session,
-                                 httpPrefix, personUrl, 1, 3, args.debug)
-    if followersList:
-        for actor in followersList:
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    followers_list = \
+        download_follow_collection(signing_priv_key_pem,
+                                   'followers', session,
+                                   http_prefix, person_url, 1, 3, args.debug)
+    if followers_list:
+        for actor in followers_list:
             print(actor)
     sys.exit()
 
@@ -2260,17 +2267,17 @@ if args.addaccount:
         domain = args.addaccount.split('@')[1]
     else:
         nickname = args.addaccount
-        if not args.domain or not getConfigParam(baseDir, 'domain'):
+        if not args.domain or not get_config_param(base_dir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
 
-    configuredDomain = getConfigParam(baseDir, 'domain')
-    if configuredDomain:
-        if domain != configuredDomain:
-            print('The account domain is expected to be ' + configuredDomain)
+    configured_domain = get_config_param(base_dir, 'domain')
+    if configured_domain:
+        if domain != configured_domain:
+            print('The account domain is expected to be ' + configured_domain)
             sys.exit()
 
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
 
@@ -2283,20 +2290,20 @@ if args.addaccount:
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    accountDir = acctDir(baseDir, nickname, domain)
-    if os.path.isdir(accountDir):
+    account_dir = acct_dir(base_dir, nickname, domain)
+    if os.path.isdir(account_dir):
         print('Account already exists')
         sys.exit()
-    if os.path.isdir(baseDir + '/deactivated/' + nickname + '@' + domain):
+    if os.path.isdir(base_dir + '/deactivated/' + nickname + '@' + domain):
         print('Account is deactivated')
         sys.exit()
     if domain.endswith('.onion') or \
        domain.endswith('.i2p'):
         port = 80
-        httpPrefix = 'http'
-    createPerson(baseDir, nickname, domain, port, httpPrefix,
-                 True, not args.noapproval, args.password.strip())
-    if os.path.isdir(accountDir):
+        http_prefix = 'http'
+    create_person(base_dir, nickname, domain, port, http_prefix,
+                  True, not args.noapproval, args.password.strip())
+    if os.path.isdir(account_dir):
         print('Account created for ' + nickname + '@' + domain)
     else:
         print('Account creation failed')
@@ -2308,13 +2315,13 @@ if args.addgroup:
         domain = args.addgroup.split('@')[1]
     else:
         nickname = args.addgroup
-        if not args.domain or not getConfigParam(baseDir, 'domain'):
+        if not args.domain or not get_config_param(base_dir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
     if nickname.startswith('!'):
         # remove preceding group indicator
         nickname = nickname[1:]
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
     if not args.password:
@@ -2326,13 +2333,13 @@ if args.addgroup:
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    accountDir = acctDir(baseDir, nickname, domain)
-    if os.path.isdir(accountDir):
+    account_dir = acct_dir(base_dir, nickname, domain)
+    if os.path.isdir(account_dir):
         print('Group already exists')
         sys.exit()
-    createGroup(baseDir, nickname, domain, port, httpPrefix,
-                True, args.password.strip())
-    if os.path.isdir(accountDir):
+    create_group(base_dir, nickname, domain, port, http_prefix,
+                 True, args.password.strip())
+    if os.path.isdir(account_dir):
         print('Group created for ' + nickname + '@' + domain)
     else:
         print('Group creation failed')
@@ -2350,28 +2357,28 @@ if args.rmaccount:
         domain = args.rmaccount.split('@')[1]
     else:
         nickname = args.rmaccount
-        if not args.domain or not getConfigParam(baseDir, 'domain'):
+        if not args.domain or not get_config_param(base_dir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
         if args.domain:
             domain = args.domain
         else:
-            domain = getConfigParam(baseDir, 'domain')
+            domain = get_config_param(base_dir, 'domain')
 
-    configuredDomain = getConfigParam(baseDir, 'domain')
-    if configuredDomain:
-        if domain != configuredDomain:
-            print('The account domain is expected to be ' + configuredDomain)
+    configured_domain = get_config_param(base_dir, 'domain')
+    if configured_domain:
+        if domain != configured_domain:
+            print('The account domain is expected to be ' + configured_domain)
             sys.exit()
 
     if args.deactivate:
-        if deactivateAccount(baseDir, nickname, domain):
+        if deactivate_account(base_dir, nickname, domain):
             print('Account for ' + nickname + '@' + domain +
                   ' was deactivated')
         else:
             print('Account for ' + nickname + '@' + domain + ' was not found')
         sys.exit()
-    if removeAccount(baseDir, nickname, domain, port):
+    if remove_account(base_dir, nickname, domain, port):
         if not args.rmgroup:
             print('Account for ' + nickname + '@' + domain + ' was removed')
         else:
@@ -2384,10 +2391,10 @@ if args.activate:
         domain = args.activate.split('@')[1]
     else:
         nickname = args.activate
-        if not args.domain or not getConfigParam(baseDir, 'domain'):
+        if not args.domain or not get_config_param(base_dir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
-    if activateAccount(baseDir, nickname, domain):
+    if activate_account(base_dir, nickname, domain):
         print('Account for ' + nickname + '@' + domain + ' was activated')
     else:
         print('Deactivated account for ' + nickname + '@' + domain +
@@ -2403,21 +2410,21 @@ if args.changepassword:
         domain = args.changepassword[0].split('@')[1]
     else:
         nickname = args.changepassword[0]
-        if not args.domain or not getConfigParam(baseDir, 'domain'):
+        if not args.domain or not get_config_param(base_dir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
-    newPassword = args.changepassword[1]
-    if len(newPassword) < 8:
+    new_password = args.changepassword[1]
+    if len(new_password) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    accountDir = acctDir(baseDir, nickname, domain)
-    if not os.path.isdir(accountDir):
+    account_dir = acct_dir(base_dir, nickname, domain)
+    if not os.path.isdir(account_dir):
         print('Account ' + nickname + '@' + domain + ' not found')
         sys.exit()
-    passwordFile = baseDir + '/accounts/passwords'
-    if os.path.isfile(passwordFile):
-        if nickname + ':' in open(passwordFile).read():
-            storeBasicCredentials(baseDir, nickname, newPassword)
+    password_file = base_dir + '/accounts/passwords'
+    if os.path.isfile(password_file):
+        if nickname + ':' in open(password_file).read():
+            store_basic_credentials(base_dir, nickname, new_password)
             print('Password for ' + nickname + ' was changed')
         else:
             print(nickname + ' is not in the passwords file')
@@ -2433,8 +2440,9 @@ if args.archive:
         print('Archiving with deletion of old posts...')
     else:
         print('Archiving to ' + args.archive + '...')
-    archiveMedia(baseDir, args.archive, args.archiveWeeks)
-    archivePosts(baseDir, httpPrefix, args.archive, {}, args.archiveMaxPosts)
+    archive_media(base_dir, args.archive, args.archiveWeeks)
+    archive_posts(base_dir, http_prefix, args.archive, {},
+                  args.archiveMaxPosts)
     print('Archiving complete')
     sys.exit()
 
@@ -2450,9 +2458,9 @@ if args.avatar:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
     city = 'London, England'
-    if setProfileImage(baseDir, httpPrefix, args.nickname, domain,
-                       port, args.avatar, 'avatar', '128x128', city,
-                       args.contentLicenseUrl):
+    if set_profile_image(base_dir, http_prefix, args.nickname, domain,
+                         port, args.avatar, 'avatar', '128x128', city,
+                         args.content_license_url):
         print('Avatar added for ' + args.nickname)
     else:
         print('Avatar was not added for ' + args.nickname)
@@ -2466,9 +2474,9 @@ if args.backgroundImage:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
     city = 'London, England'
-    if setProfileImage(baseDir, httpPrefix, args.nickname, domain,
-                       port, args.backgroundImage, 'background',
-                       '256x256', city, args.contentLicenseUrl):
+    if set_profile_image(base_dir, http_prefix, args.nickname, domain,
+                         port, args.backgroundImage, 'background',
+                         '256x256', city, args.content_license_url):
         print('Background image added for ' + args.nickname)
     else:
         print('Background image was not added for ' + args.nickname)
@@ -2495,24 +2503,24 @@ if args.skill:
         print('Skill level should be a percentage in the range 0-100')
         sys.exit()
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending ' + args.skill + ' skill level ' +
           str(args.skillLevelPercent) + ' for ' + nickname)
 
-    sendSkillViaServer(baseDir, session,
-                       nickname, args.password,
-                       domain, port,
-                       httpPrefix,
-                       args.skill, args.skillLevelPercent,
-                       cachedWebfingers, personCache,
-                       True, __version__, signingPrivateKeyPem)
+    send_skill_via_server(base_dir, session,
+                          nickname, args.password,
+                          domain, port,
+                          http_prefix,
+                          args.skill, args.skillLevelPercent,
+                          cached_webfingers, person_cache,
+                          True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2530,23 +2538,22 @@ if args.availability:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending availability status of ' + nickname +
           ' as ' + args.availability)
 
-    sendAvailabilityViaServer(baseDir, session, nickname, args.password,
-                              domain, port,
-                              httpPrefix,
-                              args.availability,
-                              cachedWebfingers, personCache,
-                              True, __version__, signingPrivateKeyPem)
+    send_availability_via_server(base_dir, session, nickname, args.password,
+                                 domain, port, http_prefix,
+                                 args.availability,
+                                 cached_webfingers, person_cache,
+                                 True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2574,51 +2581,51 @@ if args.desktop:
 
     args.password = args.password.replace('\n', '')
 
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
 
     # only store inbox posts if we are not running as a daemon
     storeInboxPosts = not args.noKeyPress
 
-    runDesktopClient(baseDir, proxyType, httpPrefix,
-                     nickname, domain, port, args.password,
-                     args.screenreader, args.language,
-                     args.notificationSounds,
-                     args.notificationType,
-                     args.noKeyPress,
-                     storeInboxPosts,
-                     args.notifyShowNewPosts,
-                     args.language,
-                     args.debug, args.lowBandwidth)
+    run_desktop_client(base_dir, proxy_type, http_prefix,
+                       nickname, domain, port, args.password,
+                       args.screenreader, args.language,
+                       args.notificationSounds,
+                       args.notificationType,
+                       args.noKeyPress,
+                       storeInboxPosts,
+                       args.notifyShowNewPosts,
+                       args.language,
+                       args.debug, args.low_bandwidth)
     sys.exit()
 
-if federationList:
-    print('Federating with: ' + str(federationList))
-if args.sharedItemsFederatedDomains:
+if federation_list:
+    print('Federating with: ' + str(federation_list))
+if args.shared_items_federated_domains:
     print('Federating shared items with: ' +
-          args.sharedItemsFederatedDomains)
+          args.shared_items_federated_domains)
 
-sharedItemsFederatedDomains = []
-if args.sharedItemsFederatedDomains:
-    sharedItemsFederatedDomainsStr = args.sharedItemsFederatedDomains
-    setConfigParam(baseDir, 'sharedItemsFederatedDomains',
-                   sharedItemsFederatedDomainsStr)
+shared_items_federated_domains = []
+if args.shared_items_federated_domains:
+    fed_domains_str = args.shared_items_federated_domains
+    set_config_param(base_dir, 'sharedItemsFederatedDomains',
+                     fed_domains_str)
 else:
-    sharedItemsFederatedDomainsStr = \
-        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
-if sharedItemsFederatedDomainsStr:
-    sharedItemsFederatedDomainsList = sharedItemsFederatedDomainsStr.split(',')
-    for sharedFederatedDomain in sharedItemsFederatedDomainsList:
-        sharedItemsFederatedDomains.append(sharedFederatedDomain.strip())
+    fed_domains_str = \
+        get_config_param(base_dir, 'sharedItemsFederatedDomains')
+if fed_domains_str:
+    fed_domains_list = fed_domains_str.split(',')
+    for shared_federated_domain in fed_domains_list:
+        shared_items_federated_domains.append(shared_federated_domain.strip())
 
 if args.block:
     if not nickname:
@@ -2633,32 +2640,32 @@ if args.block:
     args.password = args.password.replace('\n', '')
 
     if '@' in args.block:
-        blockedDomain = args.block.split('@')[1]
-        blockedDomain = blockedDomain.replace('\n', '').replace('\r', '')
-        blockedNickname = args.block.split('@')[0]
-        blockedActor = httpPrefix + '://' + blockedDomain + \
-            '/users/' + blockedNickname
-        args.block = blockedActor
+        blocked_domain = args.block.split('@')[1]
+        blocked_domain = blocked_domain.replace('\n', '').replace('\r', '')
+        blocked_nickname = args.block.split('@')[0]
+        blocked_actor = http_prefix + '://' + blocked_domain + \
+            '/users/' + blocked_nickname
+        args.block = blocked_actor
     else:
         if '/users/' not in args.block:
             print(args.block + ' does not look like an actor url')
             sys.exit()
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending block of ' + args.block)
 
-    sendBlockViaServer(baseDir, session, nickname, args.password,
-                       domain, port,
-                       httpPrefix, args.block,
-                       cachedWebfingers, personCache,
-                       True, __version__, signingPrivateKeyPem)
+    send_block_via_server(base_dir, session, nickname, args.password,
+                          domain, port,
+                          http_prefix, args.block,
+                          cached_webfingers, person_cache,
+                          True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2676,21 +2683,21 @@ if args.mute:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending mute of ' + args.mute)
 
-    sendMuteViaServer(baseDir, session, nickname, args.password,
-                      domain, port,
-                      httpPrefix, args.mute,
-                      cachedWebfingers, personCache,
-                      True, __version__, signingPrivateKeyPem)
+    send_mute_via_server(base_dir, session, nickname, args.password,
+                         domain, port,
+                         http_prefix, args.mute,
+                         cached_webfingers, person_cache,
+                         True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2708,21 +2715,21 @@ if args.unmute:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo mute of ' + args.unmute)
 
-    sendUndoMuteViaServer(baseDir, session, nickname, args.password,
-                          domain, port,
-                          httpPrefix, args.unmute,
-                          cachedWebfingers, personCache,
-                          True, __version__, signingPrivateKeyPem)
+    send_undo_mute_via_server(base_dir, session, nickname, args.password,
+                              domain, port,
+                              http_prefix, args.unmute,
+                              cached_webfingers, person_cache,
+                              True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2741,32 +2748,32 @@ if args.unblock:
     args.password = args.password.replace('\n', '')
 
     if '@' in args.unblock:
-        blockedDomain = args.unblock.split('@')[1]
-        blockedDomain = blockedDomain.replace('\n', '').replace('\r', '')
-        blockedNickname = args.unblock.split('@')[0]
-        blockedActor = httpPrefix + '://' + blockedDomain + \
-            '/users/' + blockedNickname
-        args.unblock = blockedActor
+        blocked_domain = args.unblock.split('@')[1]
+        blocked_domain = blocked_domain.replace('\n', '').replace('\r', '')
+        blocked_nickname = args.unblock.split('@')[0]
+        blocked_actor = http_prefix + '://' + blocked_domain + \
+            '/users/' + blocked_nickname
+        args.unblock = blocked_actor
     else:
         if '/users/' not in args.unblock:
             print(args.unblock + ' does not look like an actor url')
             sys.exit()
 
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
+    session = create_session(proxy_type)
+    person_cache = {}
+    cached_webfingers = {}
     if not domain:
-        domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        domain = get_config_param(base_dir, 'domain')
+    signing_priv_key_pem = None
+    if args.secure_mode:
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo block of ' + args.unblock)
 
-    sendUndoBlockViaServer(baseDir, session, nickname, args.password,
-                           domain, port,
-                           httpPrefix, args.unblock,
-                           cachedWebfingers, personCache,
-                           True, __version__, signingPrivateKeyPem)
+    send_undo_block_via_server(base_dir, session, nickname, args.password,
+                               domain, port,
+                               http_prefix, args.unblock,
+                               cached_webfingers, person_cache,
+                               True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2776,7 +2783,7 @@ if args.filterStr:
     if not args.nickname:
         print('Please specify a nickname')
         sys.exit()
-    if addFilter(baseDir, args.nickname, domain, args.filterStr):
+    if add_filter(base_dir, args.nickname, domain, args.filterStr):
         print('Filter added to ' + args.nickname + ': ' + args.filterStr)
     sys.exit()
 
@@ -2784,7 +2791,7 @@ if args.unfilterStr:
     if not args.nickname:
         print('Please specify a nickname')
         sys.exit()
-    if removeFilter(baseDir, args.nickname, domain, args.unfilterStr):
+    if remove_filter(base_dir, args.nickname, domain, args.unfilterStr):
         print('Filter removed from ' + args.nickname + ': ' + args.unfilterStr)
     sys.exit()
 
@@ -2795,466 +2802,467 @@ if args.testdata:
     password = 'boringpassword'
     print('Generating some test data for user: ' + nickname)
 
-    if os.path.isdir(baseDir + '/tags'):
-        shutil.rmtree(baseDir + '/tags', ignore_errors=False, onerror=None)
-    if os.path.isdir(baseDir + '/accounts'):
-        shutil.rmtree(baseDir + '/accounts', ignore_errors=False, onerror=None)
-    if os.path.isdir(baseDir + '/keys'):
-        shutil.rmtree(baseDir + '/keys', ignore_errors=False, onerror=None)
-    if os.path.isdir(baseDir + '/media'):
-        shutil.rmtree(baseDir + '/media', ignore_errors=False, onerror=None)
-    if os.path.isdir(baseDir + '/sharefiles'):
-        shutil.rmtree(baseDir + '/sharefiles',
+    if os.path.isdir(base_dir + '/tags'):
+        shutil.rmtree(base_dir + '/tags', ignore_errors=False, onerror=None)
+    if os.path.isdir(base_dir + '/accounts'):
+        shutil.rmtree(base_dir + '/accounts',
                       ignore_errors=False, onerror=None)
-    if os.path.isdir(baseDir + '/wfendpoints'):
-        shutil.rmtree(baseDir + '/wfendpoints',
+    if os.path.isdir(base_dir + '/keys'):
+        shutil.rmtree(base_dir + '/keys', ignore_errors=False, onerror=None)
+    if os.path.isdir(base_dir + '/media'):
+        shutil.rmtree(base_dir + '/media', ignore_errors=False, onerror=None)
+    if os.path.isdir(base_dir + '/sharefiles'):
+        shutil.rmtree(base_dir + '/sharefiles',
+                      ignore_errors=False, onerror=None)
+    if os.path.isdir(base_dir + '/wfendpoints'):
+        shutil.rmtree(base_dir + '/wfendpoints',
                       ignore_errors=False, onerror=None)
 
-    setConfigParam(baseDir, 'registrationsRemaining',
-                   str(maxRegistrations))
+    set_config_param(base_dir, 'registrationsRemaining',
+                     str(maxRegistrations))
 
-    createPerson(baseDir, 'maxboardroom', domain, port, httpPrefix,
-                 True, False, password)
-    createPerson(baseDir, 'ultrapancake', domain, port, httpPrefix,
-                 True, False, password)
-    createPerson(baseDir, 'drokk', domain, port, httpPrefix,
-                 True, False, password)
-    createPerson(baseDir, 'sausagedog', domain, port, httpPrefix,
-                 True, False, password)
+    create_person(base_dir, 'maxboardroom', domain, port, http_prefix,
+                  True, False, password)
+    create_person(base_dir, 'ultrapancake', domain, port, http_prefix,
+                  True, False, password)
+    create_person(base_dir, 'drokk', domain, port, http_prefix,
+                  True, False, password)
+    create_person(base_dir, 'sausagedog', domain, port, http_prefix,
+                  True, False, password)
 
-    createPerson(baseDir, nickname, domain, port, httpPrefix,
-                 True, False, 'likewhateveryouwantscoob')
-    setSkillLevel(baseDir, nickname, domain, 'testing', 60)
-    setSkillLevel(baseDir, nickname, domain, 'typing', 50)
-    setRole(baseDir, nickname, domain, 'admin')
-    setAvailability(baseDir, nickname, domain, 'busy')
+    create_person(base_dir, nickname, domain, port, http_prefix,
+                  True, False, 'likewhateveryouwantscoob')
+    set_skill_level(base_dir, nickname, domain, 'testing', 60)
+    set_skill_level(base_dir, nickname, domain, 'typing', 50)
+    set_role(base_dir, nickname, domain, 'admin')
+    set_availability(base_dir, nickname, domain, 'busy')
 
-    addShare(baseDir,
-             httpPrefix, nickname, domain, port,
-             "spanner",
-             "It's a spanner",
-             "img/shares1.png",
-             1, "tool",
-             "mechanical",
-             "City", "0", "GBP",
-             "2 months",
-             debug, city, args.language, {}, 'shares', args.lowBandwidth,
-             args.contentLicenseUrl)
-    addShare(baseDir,
-             httpPrefix, nickname, domain, port,
-             "witch hat",
-             "Spooky",
-             "img/shares2.png",
-             1, "hat",
-             "clothing",
-             "City", "0", "GBP",
-             "3 months",
-             debug, city, args.language, {}, 'shares', args.lowBandwidth,
-             args.contentLicenseUrl)
+    add_share(base_dir,
+              http_prefix, nickname, domain, port,
+              "spanner",
+              "It's a spanner",
+              "img/shares1.png",
+              1, "tool",
+              "mechanical",
+              "City", "0", "GBP",
+              "2 months",
+              debug, city, args.language, {}, 'shares', args.low_bandwidth,
+              args.content_license_url)
+    add_share(base_dir,
+              http_prefix, nickname, domain, port,
+              "witch hat",
+              "Spooky",
+              "img/shares2.png",
+              1, "hat",
+              "clothing",
+              "City", "0", "GBP",
+              "3 months",
+              debug, city, args.language, {}, 'shares', args.low_bandwidth,
+              args.content_license_url)
 
-    deleteAllPosts(baseDir, nickname, domain, 'inbox')
-    deleteAllPosts(baseDir, nickname, domain, 'outbox')
+    delete_all_posts(base_dir, nickname, domain, 'inbox')
+    delete_all_posts(base_dir, nickname, domain, 'outbox')
 
-    testFollowersOnly = False
-    testSaveToFile = True
-    testC2S = False
-    testCommentsEnabled = True
-    testAttachImageFilename = None
-    testMediaType = None
-    testImageDescription = None
-    testCity = 'London, England'
-    testInReplyTo = None
-    testInReplyToAtomUri = None
-    testSubject = None
-    testSchedulePost = False
-    testEventDate = None
-    testEventTime = None
-    testLocation = None
-    testIsArticle = False
-    conversationId = None
-    lowBandwidth = False
+    test_followers_only = False
+    test_save_to_file = True
+    test_c2s = False
+    test_comments_enabled = True
+    test_attach_image_filename = None
+    test_media_type = None
+    test_image_description = None
+    test_city = 'London, England'
+    test_in_reply_to = None
+    test_in_reply_to_atom_uri = None
+    test_subject = None
+    test_schedule_post = False
+    test_event_date = None
+    test_event_time = None
+    test_location = None
+    test_is_article = False
+    conversation_id = None
+    low_bandwidth = False
 
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "like this is totally just a #test man",
-                     testFollowersOnly,
-                     testSaveToFile,
-                     testC2S,
-                     testCommentsEnabled,
-                     testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity,
-                     testInReplyTo, testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "Zoiks!!!",
-                     testFollowersOnly,
-                     testSaveToFile,
-                     testC2S,
-                     testCommentsEnabled,
-                     testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity,
-                     testInReplyTo, testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "Hey scoob we need like a hundred more #milkshakes",
-                     testFollowersOnly,
-                     testSaveToFile,
-                     testC2S,
-                     testCommentsEnabled,
-                     testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity,
-                     testInReplyTo, testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "Getting kinda spooky around here",
-                     testFollowersOnly,
-                     testSaveToFile,
-                     testC2S,
-                     testCommentsEnabled,
-                     testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity,
-                     'someone', testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "And they would have gotten away with it too" +
-                     "if it wasn't for those pesky hackers",
-                     testFollowersOnly,
-                     testSaveToFile,
-                     testC2S,
-                     testCommentsEnabled,
-                     'img/logo.png', 'image/png',
-                     'Description of image', testCity,
-                     testInReplyTo, testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "man these centralized sites are like the worst!",
-                     testFollowersOnly,
-                     testSaveToFile,
-                     testC2S,
-                     testCommentsEnabled,
-                     testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity,
-                     testInReplyTo, testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "another mystery solved #test",
-                     testFollowersOnly,
-                     testSaveToFile,
-                     testC2S,
-                     testCommentsEnabled,
-                     testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity,
-                     testInReplyTo, testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "let's go bowling",
-                     testFollowersOnly,
-                     testSaveToFile,
-                     testC2S,
-                     testCommentsEnabled,
-                     testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity,
-                     testInReplyTo, testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
-    domainFull = domain + ':' + str(port)
-    clearFollows(baseDir, nickname, domain)
-    followPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
-                 federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'ultrapancake', domainFull,
-                 federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'sausagedog', domainFull,
-                 federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'drokk', domainFull,
-                 federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'drokk', domainFull,
-                     federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
-                     federationList, False, False)
-    setConfigParam(baseDir, 'admin', nickname)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       "like this is totally just a #test man",
+                       test_followers_only,
+                       test_save_to_file,
+                       test_c2s,
+                       test_comments_enabled,
+                       test_attach_image_filename,
+                       test_media_type, test_image_description, test_city,
+                       test_in_reply_to, test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, args.language, conversation_id,
+                       low_bandwidth, args.content_license_url)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       "Zoiks!!!",
+                       test_followers_only,
+                       test_save_to_file,
+                       test_c2s,
+                       test_comments_enabled,
+                       test_attach_image_filename,
+                       test_media_type, test_image_description, test_city,
+                       test_in_reply_to, test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, args.language, conversation_id,
+                       low_bandwidth, args.content_license_url)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       "Hey scoob we need like a hundred more #milkshakes",
+                       test_followers_only,
+                       test_save_to_file,
+                       test_c2s,
+                       test_comments_enabled,
+                       test_attach_image_filename,
+                       test_media_type, test_image_description, test_city,
+                       test_in_reply_to, test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, args.language, conversation_id,
+                       low_bandwidth, args.content_license_url)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       "Getting kinda spooky around here",
+                       test_followers_only,
+                       test_save_to_file,
+                       test_c2s,
+                       test_comments_enabled,
+                       test_attach_image_filename,
+                       test_media_type, test_image_description, test_city,
+                       'someone', test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, args.language, conversation_id,
+                       low_bandwidth, args.content_license_url)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       "And they would have gotten away with it too" +
+                       "if it wasn't for those pesky hackers",
+                       test_followers_only,
+                       test_save_to_file,
+                       test_c2s,
+                       test_comments_enabled,
+                       'img/logo.png', 'image/png',
+                       'Description of image', test_city,
+                       test_in_reply_to, test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, args.language, conversation_id,
+                       low_bandwidth, args.content_license_url)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       "man these centralized sites are like the worst!",
+                       test_followers_only,
+                       test_save_to_file,
+                       test_c2s,
+                       test_comments_enabled,
+                       test_attach_image_filename,
+                       test_media_type, test_image_description, test_city,
+                       test_in_reply_to, test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, args.language, conversation_id,
+                       low_bandwidth, args.content_license_url)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       "another mystery solved #test",
+                       test_followers_only,
+                       test_save_to_file,
+                       test_c2s,
+                       test_comments_enabled,
+                       test_attach_image_filename,
+                       test_media_type, test_image_description, test_city,
+                       test_in_reply_to, test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, args.language, conversation_id,
+                       low_bandwidth, args.content_license_url)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       "let's go bowling",
+                       test_followers_only,
+                       test_save_to_file,
+                       test_c2s,
+                       test_comments_enabled,
+                       test_attach_image_filename,
+                       test_media_type, test_image_description, test_city,
+                       test_in_reply_to, test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, args.language, conversation_id,
+                       low_bandwidth, args.content_license_url)
+    domain_full = domain + ':' + str(port)
+    clear_follows(base_dir, nickname, domain)
+    follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'ultrapancake', domain_full,
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'sausagedog', domain_full,
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'drokk', domain_full,
+                  federation_list, False, False)
+    add_follower_of_person(base_dir, nickname, domain, 'drokk', domain_full,
+                           federation_list, False, False)
+    add_follower_of_person(base_dir, nickname, domain, 'maxboardroom',
+                           domain_full, federation_list, False, False)
+    set_config_param(base_dir, 'admin', nickname)
 
 # set a lower bound to the maximum mentions
 # so that it can't be accidentally set to zero and disable replies
-if args.maxMentions < 4:
-    args.maxMentions = 4
+if args.max_mentions < 4:
+    args.max_mentions = 4
 
-registration = getConfigParam(baseDir, 'registration')
+registration = get_config_param(base_dir, 'registration')
 if not registration:
     registration = False
 
-minimumvotes = getConfigParam(baseDir, 'minvotes')
+minimumvotes = get_config_param(base_dir, 'minvotes')
 if minimumvotes:
     args.minimumvotes = int(minimumvotes)
 
-contentLicenseUrl = ''
-if args.contentLicenseUrl:
-    contentLicenseUrl = args.contentLicenseUrl
-    setConfigParam(baseDir, 'contentLicenseUrl', contentLicenseUrl)
+content_license_url = ''
+if args.content_license_url:
+    content_license_url = args.content_license_url
+    set_config_param(base_dir, 'contentLicenseUrl', content_license_url)
 else:
-    contentLicenseUrl = getConfigParam(baseDir, 'contentLicenseUrl')
+    content_license_url = get_config_param(base_dir, 'contentLicenseUrl')
 
-votingtime = getConfigParam(baseDir, 'votingtime')
+votingtime = get_config_param(base_dir, 'votingtime')
 if votingtime:
     args.votingtime = votingtime
 
 # only show the date at the bottom of posts
-dateonly = getConfigParam(baseDir, 'dateonly')
+dateonly = get_config_param(base_dir, 'dateonly')
 if dateonly:
     args.dateonly = dateonly
 
 # set the maximum number of newswire posts per account or rss feed
-maxNewswirePostsPerSource = \
-    getConfigParam(baseDir, 'maxNewswirePostsPerSource')
-if maxNewswirePostsPerSource:
-    args.maxNewswirePostsPerSource = int(maxNewswirePostsPerSource)
+max_newswire_postsPerSource = \
+    get_config_param(base_dir, 'maxNewswirePostsPerSource')
+if max_newswire_postsPerSource:
+    args.max_newswire_postsPerSource = int(max_newswire_postsPerSource)
 
 # set the maximum number of newswire posts appearing in the right column
-maxNewswirePosts = \
-    getConfigParam(baseDir, 'maxNewswirePosts')
-if maxNewswirePosts:
-    args.maxNewswirePosts = int(maxNewswirePosts)
+max_newswire_posts = \
+    get_config_param(base_dir, 'maxNewswirePosts')
+if max_newswire_posts:
+    args.max_newswire_posts = int(max_newswire_posts)
 
 # set the maximum size of a newswire rss/atom feed in Kilobytes
-maxNewswireFeedSizeKb = \
-    getConfigParam(baseDir, 'maxNewswireFeedSizeKb')
-if maxNewswireFeedSizeKb:
-    args.maxNewswireFeedSizeKb = int(maxNewswireFeedSizeKb)
+max_newswire_feed_size_kb = \
+    get_config_param(base_dir, 'maxNewswireFeedSizeKb')
+if max_newswire_feed_size_kb:
+    args.max_newswire_feed_size_kb = int(max_newswire_feed_size_kb)
 
-maxMirroredArticles = \
-    getConfigParam(baseDir, 'maxMirroredArticles')
-if maxMirroredArticles is not None:
-    args.maxMirroredArticles = int(maxMirroredArticles)
+max_mirrored_articles = \
+    get_config_param(base_dir, 'maxMirroredArticles')
+if max_mirrored_articles is not None:
+    args.max_mirrored_articles = int(max_mirrored_articles)
 
-maxNewsPosts = \
-    getConfigParam(baseDir, 'maxNewsPosts')
-if maxNewsPosts is not None:
-    args.maxNewsPosts = int(maxNewsPosts)
+max_news_posts = \
+    get_config_param(base_dir, 'maxNewsPosts')
+if max_news_posts is not None:
+    args.max_news_posts = int(max_news_posts)
 
-maxFollowers = \
-    getConfigParam(baseDir, 'maxFollowers')
-if maxFollowers is not None:
-    args.maxFollowers = int(maxFollowers)
+max_followers = \
+    get_config_param(base_dir, 'maxFollowers')
+if max_followers is not None:
+    args.max_followers = int(max_followers)
 
-maxFeedItemSizeKb = \
-    getConfigParam(baseDir, 'maxFeedItemSizeKb')
-if maxFeedItemSizeKb is not None:
-    args.maxFeedItemSizeKb = int(maxFeedItemSizeKb)
+max_feed_item_size_kb = \
+    get_config_param(base_dir, 'maxFeedItemSizeKb')
+if max_feed_item_size_kb is not None:
+    args.max_feed_item_size_kb = int(max_feed_item_size_kb)
 
-dormantMonths = \
-    getConfigParam(baseDir, 'dormantMonths')
-if dormantMonths is not None:
-    args.dormantMonths = int(dormantMonths)
+dormant_months = \
+    get_config_param(base_dir, 'dormantMonths')
+if dormant_months is not None:
+    args.dormant_months = int(dormant_months)
 
-sendThreadsTimeoutMins = \
-    getConfigParam(baseDir, 'sendThreadsTimeoutMins')
-if sendThreadsTimeoutMins is not None:
-    args.sendThreadsTimeoutMins = int(sendThreadsTimeoutMins)
+send_threads_timeout_mins = \
+    get_config_param(base_dir, 'sendThreadsTimeoutMins')
+if send_threads_timeout_mins is not None:
+    args.send_threads_timeout_mins = int(send_threads_timeout_mins)
 
-maxLikeCount = \
-    getConfigParam(baseDir, 'maxLikeCount')
-if maxLikeCount is not None:
-    args.maxLikeCount = int(maxLikeCount)
+max_like_count = \
+    get_config_param(base_dir, 'maxLikeCount')
+if max_like_count is not None:
+    args.max_like_count = int(max_like_count)
 
-showPublishAsIcon = \
-    getConfigParam(baseDir, 'showPublishAsIcon')
-if showPublishAsIcon is not None:
-    args.showPublishAsIcon = bool(showPublishAsIcon)
+show_publish_as_icon = \
+    get_config_param(base_dir, 'showPublishAsIcon')
+if show_publish_as_icon is not None:
+    args.show_publish_as_icon = bool(show_publish_as_icon)
 
-iconsAsButtons = \
-    getConfigParam(baseDir, 'iconsAsButtons')
-if iconsAsButtons is not None:
-    args.iconsAsButtons = bool(iconsAsButtons)
+icons_as_buttons = \
+    get_config_param(base_dir, 'iconsAsButtons')
+if icons_as_buttons is not None:
+    args.icons_as_buttons = bool(icons_as_buttons)
 
-rssIconAtTop = \
-    getConfigParam(baseDir, 'rssIconAtTop')
-if rssIconAtTop is not None:
-    args.rssIconAtTop = bool(rssIconAtTop)
+rss_icon_at_top = \
+    get_config_param(base_dir, 'rssIconAtTop')
+if rss_icon_at_top is not None:
+    args.rss_icon_at_top = bool(rss_icon_at_top)
 
-publishButtonAtTop = \
-    getConfigParam(baseDir, 'publishButtonAtTop')
-if publishButtonAtTop is not None:
-    args.publishButtonAtTop = bool(publishButtonAtTop)
+publish_button_at_top = \
+    get_config_param(base_dir, 'publishButtonAtTop')
+if publish_button_at_top is not None:
+    args.publish_button_at_top = bool(publish_button_at_top)
 
-fullWidthTimelineButtonHeader = \
-    getConfigParam(baseDir, 'fullWidthTimelineButtonHeader')
-if fullWidthTimelineButtonHeader is not None:
-    args.fullWidthTimelineButtonHeader = bool(fullWidthTimelineButtonHeader)
+full_width_tl_button_header = \
+    get_config_param(base_dir, 'fullWidthTlButtonHeader')
+if full_width_tl_button_header is not None:
+    args.full_width_tl_button_header = bool(full_width_tl_button_header)
 
-allowLocalNetworkAccess = \
-    getConfigParam(baseDir, 'allowLocalNetworkAccess')
-if allowLocalNetworkAccess is not None:
-    args.allowLocalNetworkAccess = bool(allowLocalNetworkAccess)
+allow_local_network_access = \
+    get_config_param(base_dir, 'allowLocalNetworkAccess')
+if allow_local_network_access is not None:
+    args.allow_local_network_access = bool(allow_local_network_access)
 
-verifyAllSignatures = \
-    getConfigParam(baseDir, 'verifyAllSignatures')
-if verifyAllSignatures is not None:
-    args.verifyAllSignatures = bool(verifyAllSignatures)
+verify_all_signatures = \
+    get_config_param(base_dir, 'verifyAllSignatures')
+if verify_all_signatures is not None:
+    args.verify_all_signatures = bool(verify_all_signatures)
 
-brochMode = \
-    getConfigParam(baseDir, 'brochMode')
-if brochMode is not None:
-    args.brochMode = bool(brochMode)
+broch_mode = \
+    get_config_param(base_dir, 'brochMode')
+if broch_mode is not None:
+    args.broch_mode = bool(broch_mode)
 
-logLoginFailures = \
-    getConfigParam(baseDir, 'logLoginFailures')
-if logLoginFailures is not None:
-    args.logLoginFailures = bool(logLoginFailures)
+log_login_failures = \
+    get_config_param(base_dir, 'logLoginFailures')
+if log_login_failures is not None:
+    args.log_login_failures = bool(log_login_failures)
 
-showNodeInfoAccounts = \
-    getConfigParam(baseDir, 'showNodeInfoAccounts')
-if showNodeInfoAccounts is not None:
-    args.showNodeInfoAccounts = bool(showNodeInfoAccounts)
+show_node_info_accounts = \
+    get_config_param(base_dir, 'showNodeInfoAccounts')
+if show_node_info_accounts is not None:
+    args.show_node_info_accounts = bool(show_node_info_accounts)
 
-showNodeInfoVersion = \
-    getConfigParam(baseDir, 'showNodeInfoVersion')
-if showNodeInfoVersion is not None:
-    args.showNodeInfoVersion = bool(showNodeInfoVersion)
+show_node_info_version = \
+    get_config_param(base_dir, 'showNodeInfoVersion')
+if show_node_info_version is not None:
+    args.show_node_info_version = bool(show_node_info_version)
 
-lowBandwidth = \
-    getConfigParam(baseDir, 'lowBandwidth')
-if lowBandwidth is not None:
-    args.lowBandwidth = bool(lowBandwidth)
+low_bandwidth = \
+    get_config_param(base_dir, 'lowBandwidth')
+if low_bandwidth is not None:
+    args.low_bandwidth = bool(low_bandwidth)
 
-userAgentsBlocked = []
+user_agents_blocked = []
 if args.userAgentBlocks:
-    userAgentsBlockedStr = args.userAgentBlocks
-    setConfigParam(baseDir, 'userAgentsBlocked', userAgentsBlockedStr)
+    user_agents_blocked_str = args.userAgentBlocks
+    set_config_param(base_dir, 'userAgentsBlocked', user_agents_blocked_str)
 else:
-    userAgentsBlockedStr = \
-        getConfigParam(baseDir, 'userAgentsBlocked')
-if userAgentsBlockedStr:
-    agentBlocksList = userAgentsBlockedStr.split(',')
-    for agentBlockStr in agentBlocksList:
-        userAgentsBlocked.append(agentBlockStr.strip())
+    user_agents_blocked_str = \
+        get_config_param(base_dir, 'userAgentsBlocked')
+if user_agents_blocked_str:
+    agent_blocks_list = user_agents_blocked_str.split(',')
+    for agentBlockStr in agent_blocks_list:
+        user_agents_blocked.append(agentBlockStr.strip())
 
-listsEnabled = ''
-if args.listsEnabled:
-    listsEnabled = args.listsEnabled
-    setConfigParam(baseDir, 'listsEnabled', listsEnabled)
+lists_enabled = ''
+if args.lists_enabled:
+    lists_enabled = args.lists_enabled
+    set_config_param(base_dir, 'listsEnabled', lists_enabled)
 else:
-    listsEnabled = getConfigParam(baseDir, 'listsEnabled')
+    lists_enabled = get_config_param(base_dir, 'listsEnabled')
 
 city = \
-    getConfigParam(baseDir, 'city')
+    get_config_param(base_dir, 'city')
 if city is not None:
     args.city = city
 
-YTDomain = getConfigParam(baseDir, 'youtubedomain')
-if YTDomain:
-    if '://' in YTDomain:
-        YTDomain = YTDomain.split('://')[1]
-    if '/' in YTDomain:
-        YTDomain = YTDomain.split('/')[0]
-    if '.' in YTDomain:
-        args.YTReplacementDomain = YTDomain
+yt_domain = get_config_param(base_dir, 'youtubedomain')
+if yt_domain:
+    if '://' in yt_domain:
+        yt_domain = yt_domain.split('://')[1]
+    if '/' in yt_domain:
+        yt_domain = yt_domain.split('/')[0]
+    if '.' in yt_domain:
+        args.yt_replace_domain = yt_domain
 
-twitterDomain = getConfigParam(baseDir, 'twitterdomain')
-if twitterDomain:
-    if '://' in twitterDomain:
-        twitterDomain = twitterDomain.split('://')[1]
-    if '/' in twitterDomain:
-        twitterDomain = twitterDomain.split('/')[0]
-    if '.' in twitterDomain:
-        args.twitterReplacementDomain = twitterDomain
+twitter_domain = get_config_param(base_dir, 'twitterdomain')
+if twitter_domain:
+    if '://' in twitter_domain:
+        twitter_domain = twitter_domain.split('://')[1]
+    if '/' in twitter_domain:
+        twitter_domain = twitter_domain.split('/')[0]
+    if '.' in twitter_domain:
+        args.twitter_replacement_domain = twitter_domain
 
-if setTheme(baseDir, themeName, domain,
-            args.allowLocalNetworkAccess, args.language):
-    print('Theme set to ' + themeName)
+if set_theme(base_dir, theme_name, domain,
+             args.allow_local_network_access, args.language):
+    print('Theme set to ' + theme_name)
 
 # whether new registrations are open or closed
 if args.registration:
     if args.registration.lower() == 'open':
-        registration = getConfigParam(baseDir, 'registration')
+        registration = get_config_param(base_dir, 'registration')
         if not registration:
-            setConfigParam(baseDir, 'registrationsRemaining',
-                           str(maxRegistrations))
+            set_config_param(base_dir, 'registrationsRemaining',
+                             str(maxRegistrations))
         else:
             if registration != 'open':
-                setConfigParam(baseDir, 'registrationsRemaining',
-                               str(maxRegistrations))
-        setConfigParam(baseDir, 'registration', 'open')
+                set_config_param(base_dir, 'registrationsRemaining',
+                                 str(maxRegistrations))
+        set_config_param(base_dir, 'registration', 'open')
         print('New registrations open')
     else:
-        setConfigParam(baseDir, 'registration', 'closed')
+        set_config_param(base_dir, 'registration', 'closed')
         print('New registrations closed')
 
-defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
-if not defaultCurrency:
-    setConfigParam(baseDir, 'defaultCurrency', 'EUR')
+default_currency = get_config_param(base_dir, 'defaultCurrency')
+if not default_currency:
+    set_config_param(base_dir, 'defaultCurrency', 'EUR')
 if args.defaultCurrency:
     if args.defaultCurrency == args.defaultCurrency.upper():
-        setConfigParam(baseDir, 'defaultCurrency', args.defaultCurrency)
+        set_config_param(base_dir, 'defaultCurrency', args.defaultCurrency)
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    runDaemon(contentLicenseUrl,
-              listsEnabled,
-              args.defaultReplyIntervalHours,
-              args.lowBandwidth, args.maxLikeCount,
-              sharedItemsFederatedDomains,
-              userAgentsBlocked,
-              args.logLoginFailures,
-              args.city,
-              args.showNodeInfoAccounts,
-              args.showNodeInfoVersion,
-              args.brochMode,
-              args.verifyAllSignatures,
-              args.sendThreadsTimeoutMins,
-              args.dormantMonths,
-              args.maxNewswirePosts,
-              args.allowLocalNetworkAccess,
-              args.maxFeedItemSizeKb,
-              args.publishButtonAtTop,
-              args.rssIconAtTop,
-              args.iconsAsButtons,
-              args.fullWidthTimelineButtonHeader,
-              args.showPublishAsIcon,
-              args.maxFollowers,
-              args.maxNewsPosts,
-              args.maxMirroredArticles,
-              args.maxNewswireFeedSizeKb,
-              args.maxNewswirePostsPerSource,
-              args.dateonly,
-              args.votingtime,
-              args.positivevoting,
-              args.minimumvotes,
-              args.newsinstance,
-              args.blogsinstance, args.mediainstance,
-              args.maxRecentPosts,
-              not args.nosharedinbox,
-              registration, args.language, __version__,
-              instanceId, args.client, baseDir,
-              domain, onionDomain, i2pDomain,
-              args.YTReplacementDomain,
-              args.twitterReplacementDomain,
-              port, proxyPort, httpPrefix,
-              federationList, args.maxMentions,
-              args.maxEmoji, args.secureMode,
-              proxyType, args.maxReplies,
-              args.domainMaxPostsPerDay,
-              args.accountMaxPostsPerDay,
-              args.allowdeletion, debug, False,
-              args.instanceOnlySkillsSearch, [],
-              not args.noapproval)
+    run_daemon(content_license_url,
+               lists_enabled,
+               args.default_reply_interval_hrs,
+               args.low_bandwidth, args.max_like_count,
+               shared_items_federated_domains,
+               user_agents_blocked,
+               args.log_login_failures,
+               args.city,
+               args.show_node_info_accounts,
+               args.show_node_info_version,
+               args.broch_mode,
+               args.verify_all_signatures,
+               args.send_threads_timeout_mins,
+               args.dormant_months,
+               args.max_newswire_posts,
+               args.allow_local_network_access,
+               args.max_feed_item_size_kb,
+               args.publish_button_at_top,
+               args.rss_icon_at_top,
+               args.icons_as_buttons,
+               args.full_width_tl_button_header,
+               args.show_publish_as_icon,
+               args.max_followers,
+               args.max_news_posts,
+               args.max_mirrored_articles,
+               args.max_newswire_feed_size_kb,
+               args.max_newswire_postsPerSource,
+               args.dateonly,
+               args.votingtime,
+               args.positivevoting,
+               args.minimumvotes,
+               args.newsinstance,
+               args.blogsinstance, args.mediainstance,
+               args.max_recent_posts,
+               not args.nosharedinbox,
+               registration, args.language, __version__,
+               instance_id, args.client, base_dir,
+               domain, onion_domain, i2p_domain,
+               args.yt_replace_domain,
+               args.twitter_replacement_domain,
+               port, proxy_port, http_prefix,
+               federation_list, args.max_mentions,
+               args.max_emoji, args.secure_mode,
+               proxy_type, args.max_replies,
+               args.domain_max_posts_per_day,
+               args.account_max_posts_per_day,
+               args.allowdeletion, debug, False,
+               args.instance_only_skills_search, [],
+               not args.noapproval)

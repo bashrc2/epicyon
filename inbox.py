@@ -12,220 +12,219 @@ import os
 import datetime
 import time
 import random
-from linked_data_sig import verifyJsonSignature
-from languages import understoodPostLanguage
-from like import updateLikesCollection
-from reaction import updateReactionCollection
-from reaction import validEmojiContent
-from utils import domainPermitted
-from utils import isGroupAccount
-from utils import isSystemAccount
-from utils import invalidCiphertext
-from utils import removeHtml
-from utils import fileLastModified
-from utils import hasObjectString
-from utils import hasObjectStringObject
-from utils import getReplyIntervalHours
-from utils import canReplyTo
-from utils import getUserPaths
-from utils import getBaseContentFromPost
-from utils import acctDir
-from utils import removeDomainPort
-from utils import getPortFromDomain
-from utils import hasObjectDict
-from utils import dmAllowedFromDomain
-from utils import isRecentPost
-from utils import getConfigParam
-from utils import hasUsersPath
-from utils import validPostDate
-from utils import getFullDomain
-from utils import removeIdEnding
-from utils import getProtocolPrefixes
-from utils import isBlogPost
-from utils import removeAvatarFromCache
-from utils import isPublicPost
-from utils import getCachedPostFilename
-from utils import removePostFromCache
-from utils import urlPermitted
-from utils import createInboxQueueDir
-from utils import getStatusNumber
-from utils import getDomainFromActor
-from utils import getNicknameFromActor
-from utils import locatePost
-from utils import deletePost
-from utils import removeModerationPostFromIndex
-from utils import loadJson
-from utils import saveJson
-from utils import undoLikesCollectionEntry
-from utils import undoReactionCollectionEntry
-from utils import hasGroupType
-from utils import localActorUrl
-from utils import hasObjectStringType
-from categories import getHashtagCategories
-from categories import setHashtagCategory
-from httpsig import getDigestAlgorithmFromHeaders
-from httpsig import verifyPostHeaders
-from session import createSession
-from follow import followerApprovalActive
-from follow import isFollowingActor
-from follow import getFollowersOfActor
-from follow import unfollowerOfAccount
-from follow import isFollowerOfPerson
-from follow import followedAccountAccepts
-from follow import storeFollowRequest
-from follow import noOfFollowRequests
-from follow import getNoOfFollowers
-from follow import followApprovalRequired
+from linked_data_sig import verify_json_signature
+from languages import understood_post_language
+from like import update_likes_collection
+from reaction import update_reaction_collection
+from reaction import valid_emoji_content
+from utils import domain_permitted
+from utils import is_group_account
+from utils import is_system_account
+from utils import invalid_ciphertext
+from utils import remove_html
+from utils import file_last_modified
+from utils import has_object_string
+from utils import has_object_string_object
+from utils import get_reply_interval_hours
+from utils import can_reply_to
+from utils import get_user_paths
+from utils import get_base_content_from_post
+from utils import acct_dir
+from utils import remove_domain_port
+from utils import get_port_from_domain
+from utils import has_object_dict
+from utils import dm_allowed_from_domain
+from utils import is_recent_post
+from utils import get_config_param
+from utils import has_users_path
+from utils import valid_post_date
+from utils import get_full_domain
+from utils import remove_id_ending
+from utils import get_protocol_prefixes
+from utils import is_blog_post
+from utils import remove_avatar_from_cache
+from utils import is_public_post
+from utils import get_cached_post_filename
+from utils import remove_post_from_cache
+from utils import url_permitted
+from utils import create_inbox_queue_dir
+from utils import get_status_number
+from utils import get_domain_from_actor
+from utils import get_nickname_from_actor
+from utils import locate_post
+from utils import delete_post
+from utils import remove_moderation_post_from_index
+from utils import load_json
+from utils import save_json
+from utils import undo_likes_collection_entry
+from utils import undo_reaction_collection_entry
+from utils import has_group_type
+from utils import local_actor_url
+from utils import has_object_stringType
+from categories import get_hashtag_categories
+from categories import set_hashtag_category
+from httpsig import get_digest_algorithm_from_headers
+from httpsig import verify_post_headers
+from session import create_session
+from follow import follower_approval_active
+from follow import is_following_actor
+from follow import get_followers_of_actor
+from follow import unfollower_of_account
+from follow import is_follower_of_person
+from follow import followed_account_accepts
+from follow import store_follow_request
+from follow import no_of_follow_requests
+from follow import get_no_of_followers
+from follow import follow_approval_required
 from pprint import pprint
-from cache import storePersonInCache
-from cache import getPersonPubKey
-from acceptreject import receiveAcceptReject
-from bookmarks import updateBookmarksCollection
-from bookmarks import undoBookmarksCollectionEntry
-from blocking import isBlocked
-from blocking import isBlockedDomain
-from blocking import brochModeLapses
-from filters import isFiltered
-from utils import updateAnnounceCollection
-from utils import undoAnnounceCollectionEntry
-from utils import dangerousMarkup
-from utils import isDM
-from utils import isReply
-from utils import hasActor
-from httpsig import messageContentDigest
-from posts import editedPostFilename
-from posts import savePostToBox
-from posts import isCreateInsideAnnounce
-from posts import createDirectMessagePost
-from posts import validContentWarning
-from posts import downloadAnnounce
-from posts import isMuted
-from posts import isImageMedia
-from posts import sendSignedJson
-from posts import sendToFollowersThread
-from webapp_post import individualPostAsHtml
-from question import questionUpdateVotes
-from media import replaceYouTube
-from media import replaceTwitter
-from git import isGitPatch
-from git import receiveGitPatch
-from followingCalendar import receivingCalendarEvents
-from happening import saveEventPost
-from delete import removeOldHashtags
-from categories import guessHashtagCategory
-from context import hasValidContext
-from speaker import updateSpeaker
-from announce import isSelfAnnounce
-from announce import createAnnounce
-from notifyOnPost import notifyWhenPersonPosts
-from conversation import updateConversation
-from content import validHashTag
-from webapp_hashtagswarm import htmlHashTagSwarm
-from person import validSendingActor
+from cache import store_person_in_cache
+from cache import get_person_pub_key
+from acceptreject import receive_accept_reject
+from bookmarks import update_bookmarks_collection
+from bookmarks import undo_bookmarks_collection_entry
+from blocking import is_blocked
+from blocking import is_blocked_domain
+from blocking import broch_modeLapses
+from filters import is_filtered
+from utils import update_announce_collection
+from utils import undo_announce_collection_entry
+from utils import dangerous_markup
+from utils import is_dm
+from utils import is_reply
+from utils import has_actor
+from httpsig import message_content_digest
+from posts import edited_post_filename
+from posts import save_post_to_box
+from posts import is_create_inside_announce
+from posts import create_direct_message_post
+from posts import valid_content_warning
+from posts import download_announce
+from posts import is_muted_conv
+from posts import is_image_media
+from posts import send_signed_json
+from posts import send_to_followers_thread
+from webapp_post import individual_post_as_html
+from question import question_update_votes
+from media import replace_you_tube
+from media import replace_twitter
+from git import is_git_patch
+from git import receive_git_patch
+from followingCalendar import receiving_calendar_events
+from happening import save_event_post
+from delete import remove_old_hashtags
+from categories import guess_hashtag_category
+from context import has_valid_context
+from speaker import update_speaker
+from announce import is_self_announce
+from announce import create_announce
+from notifyOnPost import notify_when_person_posts
+from conversation import update_conversation
+from content import valid_hash_tag
+from webapp_hashtagswarm import html_hash_tag_swarm
+from person import valid_sending_actor
 
 
-def _storeLastPostId(baseDir: str, nickname: str, domain: str,
-                     postJsonObject: {}) -> None:
+def _store_last_post_id(base_dir: str, nickname: str, domain: str,
+                        post_json_object: {}) -> None:
     """Stores the id of the last post made by an actor
     When a new post arrives this allows it to be compared against the last
     to see if it is an edited post.
     It would be great if edited posts contained a back reference id to the
     source but we don't live in that ideal world.
     """
-    actor = postId = None
-    if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('attributedTo'):
-            if isinstance(postJsonObject['object']['attributedTo'], str):
-                actor = postJsonObject['object']['attributedTo']
-                postId = removeIdEnding(postJsonObject['object']['id'])
+    actor = post_id = None
+    if has_object_dict(post_json_object):
+        if post_json_object['object'].get('attributedTo'):
+            if isinstance(post_json_object['object']['attributedTo'], str):
+                actor = post_json_object['object']['attributedTo']
+                post_id = remove_id_ending(post_json_object['object']['id'])
     if not actor:
-        actor = postJsonObject['actor']
-        postId = removeIdEnding(postJsonObject['id'])
+        actor = post_json_object['actor']
+        post_id = remove_id_ending(post_json_object['id'])
     if not actor:
         return
-    lastpostDir = acctDir(baseDir, nickname, domain) + '/lastpost'
-    if not os.path.isdir(lastpostDir):
-        os.mkdir(lastpostDir)
-    actorFilename = lastpostDir + '/' + actor.replace('/', '#')
+    lastpost_dir = acct_dir(base_dir, nickname, domain) + '/lastpost'
+    if not os.path.isdir(lastpost_dir):
+        os.mkdir(lastpost_dir)
+    actor_filename = lastpost_dir + '/' + actor.replace('/', '#')
     try:
-        with open(actorFilename, 'w+') as fp:
-            fp.write(postId)
+        with open(actor_filename, 'w+') as fp_actor:
+            fp_actor.write(post_id)
     except OSError:
-        print('EX: Unable to write last post id to ' + actorFilename)
+        print('EX: Unable to write last post id to ' + actor_filename)
 
 
-def _updateCachedHashtagSwarm(baseDir: str, nickname: str, domain: str,
-                              httpPrefix: str, domainFull: str,
-                              translate: {}) -> bool:
+def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
+                                 http_prefix: str, domain_full: str,
+                                 translate: {}) -> bool:
     """Updates the hashtag swarm stored as a file
     """
-    cachedHashtagSwarmFilename = \
-        acctDir(baseDir, nickname, domain) + '/.hashtagSwarm'
-    saveSwarm = True
-    if os.path.isfile(cachedHashtagSwarmFilename):
-        lastModified = fileLastModified(cachedHashtagSwarmFilename)
-        modifiedDate = None
+    cached_hashtag_swarm_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.hashtagSwarm'
+    save_swarm = True
+    if os.path.isfile(cached_hashtag_swarm_filename):
+        last_modified = file_last_modified(cached_hashtag_swarm_filename)
+        modified_date = None
         try:
-            modifiedDate = \
-                datetime.datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
+            modified_date = \
+                datetime.datetime.strptime(last_modified, "%Y-%m-%dT%H:%M:%SZ")
         except BaseException:
             print('EX: unable to parse last modified cache date ' +
-                  str(lastModified))
-            pass
-        if modifiedDate:
-            currDate = datetime.datetime.utcnow()
-            timeDiff = currDate - modifiedDate
-            diffMins = int(timeDiff.total_seconds() / 60)
-            if diffMins < 10:
+                  str(last_modified))
+        if modified_date:
+            curr_date = datetime.datetime.utcnow()
+            time_diff = curr_date - modified_date
+            diff_mins = int(time_diff.total_seconds() / 60)
+            if diff_mins < 10:
                 # was saved recently, so don't save again
                 # This avoids too much disk I/O
-                saveSwarm = False
+                save_swarm = False
             else:
                 print('Updating cached hashtag swarm, last changed ' +
-                      str(diffMins) + ' minutes ago')
+                      str(diff_mins) + ' minutes ago')
         else:
-            print('WARN: no modified date for ' + str(lastModified))
-    if saveSwarm:
-        actor = localActorUrl(httpPrefix, nickname, domainFull)
-        newSwarmStr = htmlHashTagSwarm(baseDir, actor, translate)
-        if newSwarmStr:
+            print('WARN: no modified date for ' + str(last_modified))
+    if save_swarm:
+        actor = local_actor_url(http_prefix, nickname, domain_full)
+        new_swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
+        if new_swarm_str:
             try:
-                with open(cachedHashtagSwarmFilename, 'w+') as fp:
-                    fp.write(newSwarmStr)
+                with open(cached_hashtag_swarm_filename, 'w+') as fp_swarm:
+                    fp_swarm.write(new_swarm_str)
                     return True
             except OSError:
                 print('EX: unable to write cached hashtag swarm ' +
-                      cachedHashtagSwarmFilename)
+                      cached_hashtag_swarm_filename)
     return False
 
 
-def storeHashTags(baseDir: str, nickname: str, domain: str,
-                  httpPrefix: str, domainFull: str,
-                  postJsonObject: {}, translate: {}) -> None:
+def store_hash_tags(base_dir: str, nickname: str, domain: str,
+                    http_prefix: str, domain_full: str,
+                    post_json_object: {}, translate: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
     """
-    if not isPublicPost(postJsonObject):
+    if not is_public_post(post_json_object):
         return
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return
-    if not postJsonObject.get('id'):
+    if not post_json_object.get('id'):
         return
-    if not isinstance(postJsonObject['object']['tag'], list):
+    if not isinstance(post_json_object['object']['tag'], list):
         return
-    tagsDir = baseDir + '/tags'
+    tags_dir = base_dir + '/tags'
 
     # add tags directory if it doesn't exist
-    if not os.path.isdir(tagsDir):
+    if not os.path.isdir(tags_dir):
         print('Creating tags directory')
-        os.mkdir(tagsDir)
+        os.mkdir(tags_dir)
 
-    hashtagCategories = getHashtagCategories(baseDir)
+    hashtag_categories = get_hashtag_categories(base_dir)
 
-    hashtagsCtr = 0
-    for tag in postJsonObject['object']['tag']:
+    hashtags_ctr = 0
+    for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
             continue
         if not isinstance(tag['type'], str):
@@ -234,102 +233,105 @@ def storeHashTags(baseDir: str, nickname: str, domain: str,
             continue
         if not tag.get('name'):
             continue
-        tagName = tag['name'].replace('#', '').strip()
-        if not validHashTag(tagName):
+        tag_name = tag['name'].replace('#', '').strip()
+        if not valid_hash_tag(tag_name):
             continue
-        tagsFilename = tagsDir + '/' + tagName + '.txt'
-        postUrl = removeIdEnding(postJsonObject['id'])
-        postUrl = postUrl.replace('/', '#')
-        daysDiff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
-        daysSinceEpoch = daysDiff.days
-        tagline = str(daysSinceEpoch) + '  ' + nickname + '  ' + postUrl + '\n'
-        hashtagsCtr += 1
-        if not os.path.isfile(tagsFilename):
+        tags_filename = tags_dir + '/' + tag_name + '.txt'
+        post_url = remove_id_ending(post_json_object['id'])
+        post_url = post_url.replace('/', '#')
+        days_diff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
+        days_since_epoch = days_diff.days
+        tag_line = \
+            str(days_since_epoch) + '  ' + nickname + '  ' + post_url + '\n'
+        hashtags_ctr += 1
+        if not os.path.isfile(tags_filename):
             try:
-                with open(tagsFilename, 'w+') as tagsFile:
-                    tagsFile.write(tagline)
+                with open(tags_filename, 'w+') as tags_file:
+                    tags_file.write(tag_line)
             except OSError:
-                print('EX: unable to write ' + tagsFilename)
+                print('EX: unable to write ' + tags_filename)
         else:
-            if postUrl not in open(tagsFilename).read():
+            if post_url not in open(tags_filename).read():
                 try:
-                    with open(tagsFilename, 'r+') as tagsFile:
-                        content = tagsFile.read()
-                        if tagline not in content:
-                            tagsFile.seek(0, 0)
-                            tagsFile.write(tagline + content)
-                except OSError as e:
+                    with open(tags_filename, 'r+') as tags_file:
+                        content = tags_file.read()
+                        if tag_line not in content:
+                            tags_file.seek(0, 0)
+                            tags_file.write(tag_line + content)
+                except OSError as ex:
                     print('EX: Failed to write entry to tags file ' +
-                          tagsFilename + ' ' + str(e))
-                removeOldHashtags(baseDir, 3)
+                          tags_filename + ' ' + str(ex))
+                remove_old_hashtags(base_dir, 3)
 
         # automatically assign a category to the tag if possible
-        categoryFilename = tagsDir + '/' + tagName + '.category'
-        if not os.path.isfile(categoryFilename):
-            categoryStr = \
-                guessHashtagCategory(tagName, hashtagCategories)
-            if categoryStr:
-                setHashtagCategory(baseDir, tagName, categoryStr, False)
+        category_filename = tags_dir + '/' + tag_name + '.category'
+        if not os.path.isfile(category_filename):
+            category_str = \
+                guess_hashtag_category(tag_name, hashtag_categories)
+            if category_str:
+                set_hashtag_category(base_dir, tag_name, category_str, False)
 
     # if some hashtags were found then recalculate the swarm
     # ready for later display
-    if hashtagsCtr > 0:
-        _updateCachedHashtagSwarm(baseDir, nickname, domain,
-                                  httpPrefix, domainFull, translate)
+    if hashtags_ctr > 0:
+        _update_cached_hashtag_swarm(base_dir, nickname, domain,
+                                     http_prefix, domain_full, translate)
 
 
-def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
-                               translate: {},
-                               baseDir: str, httpPrefix: str,
-                               session, cachedWebfingers: {}, personCache: {},
-                               nickname: str, domain: str, port: int,
-                               postJsonObject: {},
-                               allowDeletion: bool, boxname: str,
-                               showPublishedDateOnly: bool,
-                               peertubeInstances: [],
-                               allowLocalNetworkAccess: bool,
-                               themeName: str, systemLanguage: str,
-                               maxLikeCount: int,
-                               signingPrivateKeyPem: str,
-                               CWlists: {},
-                               listsEnabled: str) -> None:
+def _inbox_store_post_to_html_cache(recent_posts_cache: {},
+                                    max_recent_posts: int,
+                                    translate: {},
+                                    base_dir: str, http_prefix: str,
+                                    session, cached_webfingers: {},
+                                    person_cache: {},
+                                    nickname: str, domain: str, port: int,
+                                    post_json_object: {},
+                                    allow_deletion: bool, boxname: str,
+                                    show_published_date_only: bool,
+                                    peertube_instances: [],
+                                    allow_local_network_access: bool,
+                                    theme_name: str, system_language: str,
+                                    max_like_count: int,
+                                    signing_priv_key_pem: str,
+                                    cw_lists: {},
+                                    lists_enabled: str) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
-    pageNumber = -999
-    avatarUrl = None
+    page_number = -999
+    avatar_url = None
     if boxname != 'outbox':
         boxname = 'inbox'
 
-    notDM = not isDM(postJsonObject)
-    YTReplacementDomain = getConfigParam(baseDir, 'youtubedomain')
-    twitterReplacementDomain = getConfigParam(baseDir, 'twitterdomain')
-    individualPostAsHtml(signingPrivateKeyPem,
-                         True, recentPostsCache, maxRecentPosts,
-                         translate, pageNumber,
-                         baseDir, session, cachedWebfingers,
-                         personCache,
-                         nickname, domain, port, postJsonObject,
-                         avatarUrl, True, allowDeletion,
-                         httpPrefix, __version__, boxname,
-                         YTReplacementDomain, twitterReplacementDomain,
-                         showPublishedDateOnly,
-                         peertubeInstances, allowLocalNetworkAccess,
-                         themeName, systemLanguage, maxLikeCount,
-                         notDM, True, True, False, True, False,
-                         CWlists, listsEnabled)
+    not_dm = not is_dm(post_json_object)
+    yt_replace_domain = get_config_param(base_dir, 'youtubedomain')
+    twitter_replacement_domain = get_config_param(base_dir, 'twitterdomain')
+    individual_post_as_html(signing_priv_key_pem,
+                            True, recent_posts_cache, max_recent_posts,
+                            translate, page_number,
+                            base_dir, session, cached_webfingers,
+                            person_cache,
+                            nickname, domain, port, post_json_object,
+                            avatar_url, True, allow_deletion,
+                            http_prefix, __version__, boxname,
+                            yt_replace_domain, twitter_replacement_domain,
+                            show_published_date_only,
+                            peertube_instances, allow_local_network_access,
+                            theme_name, system_language, max_like_count,
+                            not_dm, True, True, False, True, False,
+                            cw_lists, lists_enabled)
 
 
-def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
+def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
     """
-    domain = removeDomainPort(domain)
-    inboxDir = acctDir(baseDir, nickname, domain) + '/inbox'
-    if not os.path.isdir(inboxDir):
+    domain = remove_domain_port(domain)
+    inbox_dir = acct_dir(base_dir, nickname, domain) + '/inbox'
+    if not os.path.isdir(inbox_dir):
         return True
-    for subdir, dirs, files in os.walk(inboxDir):
-        for f in files:
-            filename = os.path.join(subdir, f)
+    for subdir, _, files in os.walk(inbox_dir):
+        for fname in files:
+            filename = os.path.join(subdir, fname)
             if not os.path.isfile(filename):
                 print('filename: ' + filename)
                 return False
@@ -340,248 +342,252 @@ def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
     return True
 
 
-def validInboxFilenames(baseDir: str, nickname: str, domain: str,
-                        expectedDomain: str, expectedPort: int) -> bool:
+def valid_inbox_filenames(base_dir: str, nickname: str, domain: str,
+                          expected_domain: str, expected_port: int) -> bool:
     """Used by unit tests to check that the port number gets appended to
     domain names within saved post filenames
     """
-    domain = removeDomainPort(domain)
-    inboxDir = acctDir(baseDir, nickname, domain) + '/inbox'
-    if not os.path.isdir(inboxDir):
-        print('Not an inbox directory: ' + inboxDir)
+    domain = remove_domain_port(domain)
+    inbox_dir = acct_dir(base_dir, nickname, domain) + '/inbox'
+    if not os.path.isdir(inbox_dir):
+        print('Not an inbox directory: ' + inbox_dir)
         return True
-    expectedStr = expectedDomain + ':' + str(expectedPort)
-    expectedFound = False
+    expected_str = expected_domain + ':' + str(expected_port)
+    expected_found = False
     ctr = 0
-    for subdir, dirs, files in os.walk(inboxDir):
-        for f in files:
-            filename = os.path.join(subdir, f)
+    for subdir, _, files in os.walk(inbox_dir):
+        for fname in files:
+            filename = os.path.join(subdir, fname)
             ctr += 1
             if not os.path.isfile(filename):
                 print('filename: ' + filename)
                 return False
-            if expectedStr in filename:
-                expectedFound = True
+            if expected_str in filename:
+                expected_found = True
         break
     if ctr == 0:
         return True
-    if not expectedFound:
-        print('Expected file was not found: ' + expectedStr)
-        for subdir, dirs, files in os.walk(inboxDir):
-            for f in files:
-                filename = os.path.join(subdir, f)
+    if not expected_found:
+        print('Expected file was not found: ' + expected_str)
+        for subdir, _, files in os.walk(inbox_dir):
+            for fname in files:
+                filename = os.path.join(subdir, fname)
                 print(filename)
             break
         return False
     return True
 
 
-def inboxMessageHasParams(messageJson: {}) -> bool:
+def inbox_message_has_params(message_json: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
     """
-    expectedParams = ['actor', 'type', 'object']
-    for param in expectedParams:
-        if not messageJson.get(param):
-            # print('inboxMessageHasParams: ' +
-            #       param + ' ' + str(messageJson))
+    expected_params = ['actor', 'type', 'object']
+    for param in expected_params:
+        if not message_json.get(param):
+            # print('inbox_message_has_params: ' +
+            #       param + ' ' + str(message_json))
             return False
 
     # actor should be a string
-    if not isinstance(messageJson['actor'], str):
+    if not isinstance(message_json['actor'], str):
         print('WARN: actor should be a string, but is actually: ' +
-              str(messageJson['actor']))
-        pprint(messageJson)
+              str(message_json['actor']))
+        pprint(message_json)
         return False
 
     # type should be a string
-    if not isinstance(messageJson['type'], str):
-        print('WARN: type from ' + str(messageJson['actor']) +
+    if not isinstance(message_json['type'], str):
+        print('WARN: type from ' + str(message_json['actor']) +
               ' should be a string, but is actually: ' +
-              str(messageJson['type']))
+              str(message_json['type']))
         return False
 
     # object should be a dict or a string
-    if not hasObjectDict(messageJson):
-        if not isinstance(messageJson['object'], str):
-            print('WARN: object from ' + str(messageJson['actor']) +
+    if not has_object_dict(message_json):
+        if not isinstance(message_json['object'], str):
+            print('WARN: object from ' + str(message_json['actor']) +
                   ' should be a dict or string, but is actually: ' +
-                  str(messageJson['object']))
+                  str(message_json['object']))
             return False
 
-    if not messageJson.get('to'):
-        allowedWithoutToParam = ['Like', 'EmojiReact',
-                                 'Follow', 'Join', 'Request',
-                                 'Accept', 'Capability', 'Undo']
-        if messageJson['type'] not in allowedWithoutToParam:
+    if not message_json.get('to'):
+        allowed_without_to_param = ['Like', 'EmojiReact',
+                                    'Follow', 'Join', 'Request',
+                                    'Accept', 'Capability', 'Undo']
+        if message_json['type'] not in allowed_without_to_param:
             return False
     return True
 
 
-def inboxPermittedMessage(domain: str, messageJson: {},
-                          federationList: []) -> bool:
+def inbox_permitted_message(domain: str, message_json: {},
+                            federation_list: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
-    if not hasActor(messageJson, False):
+    if not has_actor(message_json, False):
         return False
 
-    actor = messageJson['actor']
+    actor = message_json['actor']
     # always allow the local domain
     if domain in actor:
         return True
 
-    if not urlPermitted(actor, federationList):
+    if not url_permitted(actor, federation_list):
         return False
 
-    alwaysAllowedTypes = (
+    always_allowed_types = (
         'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce'
     )
-    if messageJson['type'] not in alwaysAllowedTypes:
-        if not hasObjectDict(messageJson):
+    if message_json['type'] not in always_allowed_types:
+        if not has_object_dict(message_json):
             return True
-        if messageJson['object'].get('inReplyTo'):
-            inReplyTo = messageJson['object']['inReplyTo']
-            if not isinstance(inReplyTo, str):
+        if message_json['object'].get('inReplyTo'):
+            in_reply_to = message_json['object']['inReplyTo']
+            if not isinstance(in_reply_to, str):
                 return False
-            if not urlPermitted(inReplyTo, federationList):
+            if not url_permitted(in_reply_to, federation_list):
                 return False
 
     return True
 
 
-def savePostToInboxQueue(baseDir: str, httpPrefix: str,
-                         nickname: str, domain: str,
-                         postJsonObject: {},
-                         originalPostJsonObject: {},
-                         messageBytes: str,
-                         httpHeaders: {},
-                         postPath: str, debug: bool,
-                         blockedCache: [], systemLanguage: str) -> str:
+def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
+                             nickname: str, domain: str,
+                             post_json_object: {},
+                             original_post_json_object: {},
+                             message_bytes: str,
+                             http_headers: {},
+                             post_path: str, debug: bool,
+                             blocked_cache: [], system_language: str) -> str:
     """Saves the given json to the inbox queue for the person
-    keyId specifies the actor sending the post
+    key_id specifies the actor sending the post
     """
-    if len(messageBytes) > 10240:
+    if len(message_bytes) > 10240:
         print('WARN: inbox message too long ' +
-              str(len(messageBytes)) + ' bytes')
+              str(len(message_bytes)) + ' bytes')
         return None
-    originalDomain = domain
-    domain = removeDomainPort(domain)
+    original_domain = domain
+    domain = remove_domain_port(domain)
 
     # block at the ealiest stage possible, which means the data
     # isn't written to file
-    postNickname = None
-    postDomain = None
+    post_nickname = None
+    post_domain = None
     actor = None
-    if postJsonObject.get('actor'):
-        if not isinstance(postJsonObject['actor'], str):
+    if post_json_object.get('actor'):
+        if not isinstance(post_json_object['actor'], str):
             return None
-        actor = postJsonObject['actor']
-        postNickname = getNicknameFromActor(postJsonObject['actor'])
-        if not postNickname:
-            print('No post Nickname in actor ' + postJsonObject['actor'])
+        actor = post_json_object['actor']
+        post_nickname = get_nickname_from_actor(post_json_object['actor'])
+        if not post_nickname:
+            print('No post Nickname in actor ' + post_json_object['actor'])
             return None
-        postDomain, postPort = getDomainFromActor(postJsonObject['actor'])
-        if not postDomain:
+        post_domain, post_port = \
+            get_domain_from_actor(post_json_object['actor'])
+        if not post_domain:
             if debug:
-                pprint(postJsonObject)
+                pprint(post_json_object)
             print('No post Domain in actor')
             return None
-        if isBlocked(baseDir, nickname, domain,
-                     postNickname, postDomain, blockedCache):
+        if is_blocked(base_dir, nickname, domain,
+                      post_nickname, post_domain, blocked_cache):
             if debug:
-                print('DEBUG: post from ' + postNickname + ' blocked')
+                print('DEBUG: post from ' + post_nickname + ' blocked')
             return None
-        postDomain = getFullDomain(postDomain, postPort)
+        post_domain = get_full_domain(post_domain, post_port)
 
-    if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('inReplyTo'):
-            if isinstance(postJsonObject['object']['inReplyTo'], str):
-                inReplyTo = \
-                    postJsonObject['object']['inReplyTo']
-                replyDomain, replyPort = \
-                    getDomainFromActor(inReplyTo)
-                if isBlockedDomain(baseDir, replyDomain, blockedCache):
+    if has_object_dict(post_json_object):
+        if post_json_object['object'].get('inReplyTo'):
+            if isinstance(post_json_object['object']['inReplyTo'], str):
+                in_reply_to = \
+                    post_json_object['object']['inReplyTo']
+                reply_domain, _ = \
+                    get_domain_from_actor(in_reply_to)
+                if is_blocked_domain(base_dir, reply_domain, blocked_cache):
                     if debug:
                         print('WARN: post contains reply from ' +
                               str(actor) +
-                              ' to a blocked domain: ' + replyDomain)
+                              ' to a blocked domain: ' + reply_domain)
                     return None
-                else:
-                    replyNickname = \
-                        getNicknameFromActor(inReplyTo)
-                    if replyNickname and replyDomain:
-                        if isBlocked(baseDir, nickname, domain,
-                                     replyNickname, replyDomain,
-                                     blockedCache):
-                            if debug:
-                                print('WARN: post contains reply from ' +
-                                      str(actor) +
-                                      ' to a blocked account: ' +
-                                      replyNickname + '@' + replyDomain)
-                            return None
-        if postJsonObject['object'].get('content'):
-            contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
-            if contentStr:
-                if isFiltered(baseDir, nickname, domain, contentStr):
+
+                reply_nickname = \
+                    get_nickname_from_actor(in_reply_to)
+                if reply_nickname and reply_domain:
+                    if is_blocked(base_dir, nickname, domain,
+                                  reply_nickname, reply_domain,
+                                  blocked_cache):
+                        if debug:
+                            print('WARN: post contains reply from ' +
+                                  str(actor) +
+                                  ' to a blocked account: ' +
+                                  reply_nickname + '@' + reply_domain)
+                        return None
+
+        if post_json_object['object'].get('content'):
+            content_str = \
+                get_base_content_from_post(post_json_object, system_language)
+            if content_str:
+                if is_filtered(base_dir, nickname, domain, content_str):
                     if debug:
                         print('WARN: post was filtered out due to content')
                     return None
-    originalPostId = None
-    if postJsonObject.get('id'):
-        if not isinstance(postJsonObject['id'], str):
+    original_post_id = None
+    if post_json_object.get('id'):
+        if not isinstance(post_json_object['id'], str):
             return None
-        originalPostId = removeIdEnding(postJsonObject['id'])
+        original_post_id = remove_id_ending(post_json_object['id'])
 
-    currTime = datetime.datetime.utcnow()
+    curr_time = datetime.datetime.utcnow()
 
-    postId = None
-    if postJsonObject.get('id'):
-        postId = removeIdEnding(postJsonObject['id'])
-        published = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-    if not postId:
-        statusNumber, published = getStatusNumber()
+    post_id = None
+    if post_json_object.get('id'):
+        post_id = remove_id_ending(post_json_object['id'])
+        published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    if not post_id:
+        status_number, published = get_status_number()
         if actor:
-            postId = actor + '/statuses/' + statusNumber
+            post_id = actor + '/statuses/' + status_number
         else:
-            postId = localActorUrl(httpPrefix, nickname, originalDomain) + \
-                '/statuses/' + statusNumber
+            post_id = \
+                local_actor_url(http_prefix, nickname, original_domain) + \
+                '/statuses/' + status_number
 
-    # NOTE: don't change postJsonObject['id'] before signature check
+    # NOTE: don't change post_json_object['id'] before signature check
 
-    inboxQueueDir = createInboxQueueDir(nickname, domain, baseDir)
+    inbox_queue_dir = create_inbox_queue_dir(nickname, domain, base_dir)
 
     handle = nickname + '@' + domain
-    destination = baseDir + '/accounts/' + \
-        handle + '/inbox/' + postId.replace('/', '#') + '.json'
-    filename = inboxQueueDir + '/' + postId.replace('/', '#') + '.json'
+    destination = base_dir + '/accounts/' + \
+        handle + '/inbox/' + post_id.replace('/', '#') + '.json'
+    filename = inbox_queue_dir + '/' + post_id.replace('/', '#') + '.json'
 
-    sharedInboxItem = False
+    shared_inbox_item = False
     if nickname == 'inbox':
-        nickname = originalDomain
-        sharedInboxItem = True
+        nickname = original_domain
+        shared_inbox_item = True
 
-    digestStartTime = time.time()
-    digestAlgorithm = getDigestAlgorithmFromHeaders(httpHeaders)
-    digest = messageContentDigest(messageBytes, digestAlgorithm)
-    timeDiffStr = str(int((time.time() - digestStartTime) * 1000))
+    digest_start_time = time.time()
+    digest_algorithm = get_digest_algorithm_from_headers(http_headers)
+    digest = message_content_digest(message_bytes, digest_algorithm)
+    time_diff_str = str(int((time.time() - digest_start_time) * 1000))
     if debug:
-        while len(timeDiffStr) < 6:
-            timeDiffStr = '0' + timeDiffStr
-        print('DIGEST|' + timeDiffStr + '|' + filename)
+        while len(time_diff_str) < 6:
+            time_diff_str = '0' + time_diff_str
+        print('DIGEST|' + time_diff_str + '|' + filename)
 
-    newQueueItem = {
-        'originalId': originalPostId,
-        'id': postId,
+    new_queue_item = {
+        'originalId': original_post_id,
+        'id': post_id,
         'actor': actor,
         'nickname': nickname,
         'domain': domain,
-        'postNickname': postNickname,
-        'postDomain': postDomain,
-        'sharedInbox': sharedInboxItem,
+        'postNickname': post_nickname,
+        'postDomain': post_domain,
+        'sharedInbox': shared_inbox_item,
         'published': published,
-        'httpHeaders': httpHeaders,
-        'path': postPath,
-        'post': postJsonObject,
-        'original': originalPostJsonObject,
+        'httpHeaders': http_headers,
+        'path': post_path,
+        'post': post_json_object,
+        'original': original_post_json_object,
         'digest': digest,
         'filename': filename,
         'destination': destination
@@ -589,1079 +595,1095 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
 
     if debug:
         print('Inbox queue item created')
-    saveJson(newQueueItem, filename)
+    save_json(new_queue_item, filename)
     return filename
 
 
-def _inboxPostRecipientsAdd(baseDir: str, httpPrefix: str, toList: [],
-                            recipientsDict: {},
-                            domainMatch: str, domain: str,
-                            actor: str, debug: bool) -> bool:
+def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
+                               recipients_dict: {},
+                               domain_match: str, domain: str,
+                               actor: str, debug: bool) -> bool:
     """Given a list of post recipients (toList) from 'to' or 'cc' parameters
-    populate a recipientsDict with the handle for each
+    populate a recipients_dict with the handle for each
     """
-    followerRecipients = False
+    follower_recipients = False
     for recipient in toList:
         if not recipient:
             continue
         # is this a to a local account?
-        if domainMatch in recipient:
+        if domain_match in recipient:
             # get the handle for the local account
-            nickname = recipient.split(domainMatch)[1]
+            nickname = recipient.split(domain_match)[1]
             handle = nickname + '@' + domain
-            if os.path.isdir(baseDir + '/accounts/' + handle):
-                recipientsDict[handle] = None
+            if os.path.isdir(base_dir + '/accounts/' + handle):
+                recipients_dict[handle] = None
             else:
                 if debug:
-                    print('DEBUG: ' + baseDir + '/accounts/' +
+                    print('DEBUG: ' + base_dir + '/accounts/' +
                           handle + ' does not exist')
         else:
             if debug:
                 print('DEBUG: ' + recipient + ' is not local to ' +
-                      domainMatch)
+                      domain_match)
                 print(str(toList))
         if recipient.endswith('followers'):
             if debug:
                 print('DEBUG: followers detected as post recipients')
-            followerRecipients = True
-    return followerRecipients, recipientsDict
+            follower_recipients = True
+    return follower_recipients, recipients_dict
 
 
-def _inboxPostRecipients(baseDir: str, postJsonObject: {},
-                         httpPrefix: str, domain: str, port: int,
-                         debug: bool) -> ([], []):
+def _inbox_post_recipients(base_dir: str, post_json_object: {},
+                           http_prefix: str, domain: str, port: int,
+                           debug: bool) -> ([], []):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
     """
-    recipientsDict = {}
-    recipientsDictFollowers = {}
+    recipients_dict = {}
+    recipients_dict_followers = {}
 
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         if debug:
-            pprint(postJsonObject)
+            pprint(post_json_object)
             print('WARNING: inbox post has no actor')
-        return recipientsDict, recipientsDictFollowers
+        return recipients_dict, recipients_dict_followers
 
-    domain = removeDomainPort(domain)
-    domainBase = domain
-    domain = getFullDomain(domain, port)
-    domainMatch = '/' + domain + '/users/'
+    domain = remove_domain_port(domain)
+    domain_base = domain
+    domain = get_full_domain(domain, port)
+    domain_match = '/' + domain + '/users/'
 
-    actor = postJsonObject['actor']
+    actor = post_json_object['actor']
     # first get any specific people which the post is addressed to
 
-    followerRecipients = False
-    if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('to'):
-            if isinstance(postJsonObject['object']['to'], list):
-                recipientsList = postJsonObject['object']['to']
+    follower_recipients = False
+    if has_object_dict(post_json_object):
+        if post_json_object['object'].get('to'):
+            if isinstance(post_json_object['object']['to'], list):
+                recipients_list = post_json_object['object']['to']
             else:
-                recipientsList = [postJsonObject['object']['to']]
+                recipients_list = [post_json_object['object']['to']]
             if debug:
                 print('DEBUG: resolving "to"')
-            includesFollowers, recipientsDict = \
-                _inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                        recipientsList,
-                                        recipientsDict,
-                                        domainMatch, domainBase,
-                                        actor, debug)
-            if includesFollowers:
-                followerRecipients = True
+            includes_followers, recipients_dict = \
+                _inbox_post_recipients_add(base_dir, http_prefix,
+                                           recipients_list,
+                                           recipients_dict,
+                                           domain_match, domain_base,
+                                           actor, debug)
+            if includes_followers:
+                follower_recipients = True
         else:
             if debug:
                 print('DEBUG: inbox post has no "to"')
 
-        if postJsonObject['object'].get('cc'):
-            if isinstance(postJsonObject['object']['cc'], list):
-                recipientsList = postJsonObject['object']['cc']
+        if post_json_object['object'].get('cc'):
+            if isinstance(post_json_object['object']['cc'], list):
+                recipients_list = post_json_object['object']['cc']
             else:
-                recipientsList = [postJsonObject['object']['cc']]
-            includesFollowers, recipientsDict = \
-                _inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                        recipientsList,
-                                        recipientsDict,
-                                        domainMatch, domainBase,
-                                        actor, debug)
-            if includesFollowers:
-                followerRecipients = True
+                recipients_list = [post_json_object['object']['cc']]
+            includes_followers, recipients_dict = \
+                _inbox_post_recipients_add(base_dir, http_prefix,
+                                           recipients_list,
+                                           recipients_dict,
+                                           domain_match, domain_base,
+                                           actor, debug)
+            if includes_followers:
+                follower_recipients = True
         else:
             if debug:
                 print('DEBUG: inbox post has no cc')
     else:
-        if debug and postJsonObject.get('object'):
-            if isinstance(postJsonObject['object'], str):
-                if '/statuses/' in postJsonObject['object']:
+        if debug and post_json_object.get('object'):
+            if isinstance(post_json_object['object'], str):
+                if '/statuses/' in post_json_object['object']:
                     print('DEBUG: inbox item is a link to a post')
                 else:
-                    if '/users/' in postJsonObject['object']:
+                    if '/users/' in post_json_object['object']:
                         print('DEBUG: inbox item is a link to an actor')
 
-    if postJsonObject.get('to'):
-        if isinstance(postJsonObject['to'], list):
-            recipientsList = postJsonObject['to']
+    if post_json_object.get('to'):
+        if isinstance(post_json_object['to'], list):
+            recipients_list = post_json_object['to']
         else:
-            recipientsList = [postJsonObject['to']]
-        includesFollowers, recipientsDict = \
-            _inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                    recipientsList,
-                                    recipientsDict,
-                                    domainMatch, domainBase,
-                                    actor, debug)
-        if includesFollowers:
-            followerRecipients = True
+            recipients_list = [post_json_object['to']]
+        includes_followers, recipients_dict = \
+            _inbox_post_recipients_add(base_dir, http_prefix,
+                                       recipients_list,
+                                       recipients_dict,
+                                       domain_match, domain_base,
+                                       actor, debug)
+        if includes_followers:
+            follower_recipients = True
 
-    if postJsonObject.get('cc'):
-        if isinstance(postJsonObject['cc'], list):
-            recipientsList = postJsonObject['cc']
+    if post_json_object.get('cc'):
+        if isinstance(post_json_object['cc'], list):
+            recipients_list = post_json_object['cc']
         else:
-            recipientsList = [postJsonObject['cc']]
-        includesFollowers, recipientsDict = \
-            _inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                    recipientsList,
-                                    recipientsDict,
-                                    domainMatch, domainBase,
-                                    actor, debug)
-        if includesFollowers:
-            followerRecipients = True
+            recipients_list = [post_json_object['cc']]
+        includes_followers, recipients_dict = \
+            _inbox_post_recipients_add(base_dir, http_prefix,
+                                       recipients_list,
+                                       recipients_dict,
+                                       domain_match, domain_base,
+                                       actor, debug)
+        if includes_followers:
+            follower_recipients = True
 
-    if not followerRecipients:
+    if not follower_recipients:
         if debug:
             print('DEBUG: no followers were resolved')
-        return recipientsDict, recipientsDictFollowers
+        return recipients_dict, recipients_dict_followers
 
     # now resolve the followers
-    recipientsDictFollowers = \
-        getFollowersOfActor(baseDir, actor, debug)
+    recipients_dict_followers = \
+        get_followers_of_actor(base_dir, actor, debug)
 
-    return recipientsDict, recipientsDictFollowers
+    return recipients_dict, recipients_dict_followers
 
 
-def _receiveUndoFollow(session, baseDir: str, httpPrefix: str,
-                       port: int, messageJson: {},
-                       federationList: [],
-                       debug: bool) -> bool:
-    if not messageJson['object'].get('actor'):
+def _receive_undo_follow(session, base_dir: str, http_prefix: str,
+                         port: int, message_json: {},
+                         federation_list: [],
+                         debug: bool) -> bool:
+    if not message_json['object'].get('actor'):
         if debug:
             print('DEBUG: follow request has no actor within object')
         return False
-    if not hasUsersPath(messageJson['object']['actor']):
+    if not has_users_path(message_json['object']['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing ' +
                   'from actor within object')
         return False
-    if messageJson['object']['actor'] != messageJson['actor']:
+    if message_json['object']['actor'] != message_json['actor']:
         if debug:
             print('DEBUG: actors do not match')
         return False
 
-    nicknameFollower = \
-        getNicknameFromActor(messageJson['object']['actor'])
-    if not nicknameFollower:
+    nickname_follower = \
+        get_nickname_from_actor(message_json['object']['actor'])
+    if not nickname_follower:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['actor'])
+              message_json['object']['actor'])
         return False
-    domainFollower, portFollower = \
-        getDomainFromActor(messageJson['object']['actor'])
-    domainFollowerFull = getFullDomain(domainFollower, portFollower)
+    domain_follower, port_follower = \
+        get_domain_from_actor(message_json['object']['actor'])
+    domain_follower_full = get_full_domain(domain_follower, port_follower)
 
-    nicknameFollowing = \
-        getNicknameFromActor(messageJson['object']['object'])
-    if not nicknameFollowing:
+    nickname_following = \
+        get_nickname_from_actor(message_json['object']['object'])
+    if not nickname_following:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['object'])
+              message_json['object']['object'])
         return False
-    domainFollowing, portFollowing = \
-        getDomainFromActor(messageJson['object']['object'])
-    domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
+    domain_following, port_following = \
+        get_domain_from_actor(message_json['object']['object'])
+    domain_following_full = get_full_domain(domain_following, port_following)
 
-    groupAccount = hasGroupType(baseDir, messageJson['object']['actor'], None)
-    if unfollowerOfAccount(baseDir,
-                           nicknameFollowing, domainFollowingFull,
-                           nicknameFollower, domainFollowerFull,
-                           debug, groupAccount):
-        print(nicknameFollowing + '@' + domainFollowingFull + ': '
-              'Follower ' + nicknameFollower + '@' + domainFollowerFull +
+    group_account = \
+        has_group_type(base_dir, message_json['object']['actor'], None)
+    if unfollower_of_account(base_dir,
+                             nickname_following, domain_following_full,
+                             nickname_follower, domain_follower_full,
+                             debug, group_account):
+        print(nickname_following + '@' + domain_following_full + ': '
+              'Follower ' + nickname_follower + '@' + domain_follower_full +
               ' was removed')
         return True
 
     if debug:
         print('DEBUG: Follower ' +
-              nicknameFollower + '@' + domainFollowerFull +
+              nickname_follower + '@' + domain_follower_full +
               ' was not removed')
     return False
 
 
-def _receiveUndo(session, baseDir: str, httpPrefix: str,
-                 port: int, sendThreads: [], postLog: [],
-                 cachedWebfingers: {}, personCache: {},
-                 messageJson: {}, federationList: [],
-                 debug: bool) -> bool:
+def _receive_undo(session, base_dir: str, http_prefix: str,
+                  port: int, send_threads: [], post_log: [],
+                  cached_webfingers: {}, person_cache: {},
+                  message_json: {}, federation_list: [],
+                  debug: bool) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
-    if not messageJson['type'].startswith('Undo'):
+    if not message_json['type'].startswith('Undo'):
         return False
     if debug:
         print('DEBUG: Undo activity received')
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return False
-    if not hasObjectStringObject(messageJson, debug):
+    if not has_object_string_object(message_json, debug):
         return False
-    if messageJson['object']['type'] == 'Follow' or \
-       messageJson['object']['type'] == 'Join':
-        return _receiveUndoFollow(session, baseDir, httpPrefix,
-                                  port, messageJson,
-                                  federationList, debug)
+    if message_json['object']['type'] == 'Follow' or \
+       message_json['object']['type'] == 'Join':
+        return _receive_undo_follow(session, base_dir, http_prefix,
+                                    port, message_json,
+                                    federation_list, debug)
     return False
 
 
-def _personReceiveUpdate(baseDir: str,
-                         domain: str, port: int,
-                         updateNickname: str, updateDomain: str,
-                         updatePort: int,
-                         personJson: {}, personCache: {},
-                         debug: bool) -> bool:
+def _person_receive_update(base_dir: str,
+                           domain: str, port: int,
+                           update_nickname: str, update_domain: str,
+                           update_port: int,
+                           person_json: {}, person_cache: {},
+                           debug: bool) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
     if debug:
-        print('Receiving actor update for ' + personJson['url'] +
-              ' ' + str(personJson))
-    domainFull = getFullDomain(domain, port)
-    updateDomainFull = getFullDomain(updateDomain, updatePort)
-    usersPaths = getUserPaths()
-    usersStrFound = False
-    for usersStr in usersPaths:
-        actor = updateDomainFull + usersStr + updateNickname
-        if actor in personJson['id']:
-            usersStrFound = True
+        print('Receiving actor update for ' + person_json['url'] +
+              ' ' + str(person_json))
+    domain_full = get_full_domain(domain, port)
+    update_domain_full = get_full_domain(update_domain, update_port)
+    users_paths = get_user_paths()
+    users_str_found = False
+    for users_str in users_paths:
+        actor = update_domain_full + users_str + update_nickname
+        if actor in person_json['id']:
+            users_str_found = True
             break
-    if not usersStrFound:
+    if not users_str_found:
         if debug:
             print('actor: ' + actor)
-            print('id: ' + personJson['id'])
+            print('id: ' + person_json['id'])
             print('DEBUG: Actor does not match id')
         return False
-    if updateDomainFull == domainFull:
+    if update_domain_full == domain_full:
         if debug:
             print('DEBUG: You can only receive actor updates ' +
                   'for domains other than your own')
         return False
-    if not personJson.get('publicKey'):
+    if not person_json.get('publicKey'):
         if debug:
             print('DEBUG: actor update does not contain a public key')
         return False
-    if not personJson['publicKey'].get('publicKeyPem'):
+    if not person_json['publicKey'].get('publicKeyPem'):
         if debug:
             print('DEBUG: actor update does not contain a public key Pem')
         return False
-    actorFilename = baseDir + '/cache/actors/' + \
-        personJson['id'].replace('/', '#') + '.json'
+    actor_filename = base_dir + '/cache/actors/' + \
+        person_json['id'].replace('/', '#') + '.json'
     # check that the public keys match.
     # If they don't then this may be a nefarious attempt to hack an account
-    idx = personJson['id']
-    if personCache.get(idx):
-        if personCache[idx]['actor']['publicKey']['publicKeyPem'] != \
-           personJson['publicKey']['publicKeyPem']:
+    idx = person_json['id']
+    if person_cache.get(idx):
+        if person_cache[idx]['actor']['publicKey']['publicKeyPem'] != \
+           person_json['publicKey']['publicKeyPem']:
             if debug:
                 print('WARN: Public key does not match when updating actor')
             return False
     else:
-        if os.path.isfile(actorFilename):
-            existingPersonJson = loadJson(actorFilename)
-            if existingPersonJson:
-                if existingPersonJson['publicKey']['publicKeyPem'] != \
-                   personJson['publicKey']['publicKeyPem']:
+        if os.path.isfile(actor_filename):
+            existing_person_json = load_json(actor_filename)
+            if existing_person_json:
+                if existing_person_json['publicKey']['publicKeyPem'] != \
+                   person_json['publicKey']['publicKeyPem']:
                     if debug:
                         print('WARN: Public key does not match ' +
                               'cached actor when updating')
                     return False
     # save to cache in memory
-    storePersonInCache(baseDir, personJson['id'], personJson,
-                       personCache, True)
+    store_person_in_cache(base_dir, person_json['id'], person_json,
+                          person_cache, True)
     # save to cache on file
-    if saveJson(personJson, actorFilename):
+    if save_json(person_json, actor_filename):
         if debug:
-            print('actor updated for ' + personJson['id'])
+            print('actor updated for ' + person_json['id'])
 
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
-    actorStr = personJson['id'].replace('/', '-')
-    removeAvatarFromCache(baseDir, actorStr)
+    actor_str = person_json['id'].replace('/', '-')
+    remove_avatar_from_cache(base_dir, actor_str)
     return True
 
 
-def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
-                             baseDir: str,
-                             nickname: str, domain: str) -> None:
+def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
+                                base_dir: str,
+                                nickname: str, domain: str) -> None:
     """Updating a question as new votes arrive
     """
     # message url of the question
-    if not messageJson.get('id'):
+    if not message_json.get('id'):
         return
-    if not hasActor(messageJson, False):
+    if not has_actor(message_json, False):
         return
-    messageId = removeIdEnding(messageJson['id'])
-    if '#' in messageId:
-        messageId = messageId.split('#', 1)[0]
+    message_id = remove_id_ending(message_json['id'])
+    if '#' in message_id:
+        message_id = message_id.split('#', 1)[0]
     # find the question post
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
+    if not post_filename:
         return
     # load the json for the question
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename, 1)
+    if not post_json_object:
         return
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return
     # does the actor match?
-    if postJsonObject['actor'] != messageJson['actor']:
+    if post_json_object['actor'] != message_json['actor']:
         return
-    saveJson(messageJson, postFilename)
+    save_json(message_json, post_filename)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, messageJson)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain, message_json)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
-                print('EX: _receiveUpdateToQuestion unable to delete ' +
-                      cachedPostFilename)
+                print('EX: _receive_update_to_question unable to delete ' +
+                      cached_post_filename)
     # remove from memory cache
-    removePostFromCache(messageJson, recentPostsCache)
+    remove_post_from_cache(message_json, recent_posts_cache)
 
 
-def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
-                   httpPrefix: str, domain: str, port: int,
-                   sendThreads: [], postLog: [], cachedWebfingers: {},
-                   personCache: {}, messageJson: {}, federationList: [],
-                   nickname: str, debug: bool) -> bool:
+def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
+                             http_prefix: str, domain: str, port: int,
+                             send_threads: [], post_log: [],
+                             cached_webfingers: {},
+                             person_cache: {}, message_json: {},
+                             federation_list: [],
+                             nickname: str, debug: bool) -> bool:
     """Receives an Update activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Update':
+    if message_json['type'] != 'Update':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
 
-    if messageJson['object']['type'] == 'Question':
-        _receiveUpdateToQuestion(recentPostsCache, messageJson,
-                                 baseDir, nickname, domain)
+    if message_json['object']['type'] == 'Question':
+        _receive_update_to_question(recent_posts_cache, message_json,
+                                    base_dir, nickname, domain)
         if debug:
             print('DEBUG: Question update was received')
         return True
 
-    if messageJson['object']['type'] == 'Person' or \
-       messageJson['object']['type'] == 'Application' or \
-       messageJson['object']['type'] == 'Group' or \
-       messageJson['object']['type'] == 'Service':
-        if messageJson['object'].get('url') and \
-           messageJson['object'].get('id'):
+    if message_json['object']['type'] == 'Person' or \
+       message_json['object']['type'] == 'Application' or \
+       message_json['object']['type'] == 'Group' or \
+       message_json['object']['type'] == 'Service':
+        if message_json['object'].get('url') and \
+           message_json['object'].get('id'):
             if debug:
-                print('Request to update actor: ' + str(messageJson))
-            updateNickname = getNicknameFromActor(messageJson['actor'])
-            if updateNickname:
-                updateDomain, updatePort = \
-                    getDomainFromActor(messageJson['actor'])
-                if _personReceiveUpdate(baseDir,
-                                        domain, port,
-                                        updateNickname, updateDomain,
-                                        updatePort,
-                                        messageJson['object'],
-                                        personCache, debug):
-                    print('Person Update: ' + str(messageJson))
+                print('Request to update actor: ' + str(message_json))
+            update_nickname = get_nickname_from_actor(message_json['actor'])
+            if update_nickname:
+                update_domain, update_port = \
+                    get_domain_from_actor(message_json['actor'])
+                if _person_receive_update(base_dir,
+                                          domain, port,
+                                          update_nickname, update_domain,
+                                          update_port,
+                                          message_json['object'],
+                                          person_cache, debug):
+                    print('Person Update: ' + str(message_json))
                     if debug:
                         print('DEBUG: Profile update was received for ' +
-                              messageJson['object']['url'])
+                              message_json['object']['url'])
                         return True
     return False
 
 
-def _receiveLike(recentPostsCache: {},
-                 session, handle: str, isGroup: bool, baseDir: str,
-                 httpPrefix: str, domain: str, port: int,
-                 onionDomain: str,
-                 sendThreads: [], postLog: [], cachedWebfingers: {},
-                 personCache: {}, messageJson: {}, federationList: [],
-                 debug: bool,
-                 signingPrivateKeyPem: str,
-                 maxRecentPosts: int, translate: {},
-                 allowDeletion: bool,
-                 YTReplacementDomain: str,
-                 twitterReplacementDomain: str,
-                 peertubeInstances: [],
-                 allowLocalNetworkAccess: bool,
-                 themeName: str, systemLanguage: str,
-                 maxLikeCount: int, CWlists: {},
-                 listsEnabled: str) -> bool:
+def _receive_like(recent_posts_cache: {},
+                  session, handle: str, is_group: bool, base_dir: str,
+                  http_prefix: str, domain: str, port: int,
+                  onion_domain: str,
+                  send_threads: [], post_log: [], cached_webfingers: {},
+                  person_cache: {}, message_json: {}, federation_list: [],
+                  debug: bool,
+                  signing_priv_key_pem: str,
+                  max_recent_posts: int, translate: {},
+                  allow_deletion: bool,
+                  yt_replace_domain: str,
+                  twitter_replacement_domain: str,
+                  peertube_instances: [],
+                  allow_local_network_access: bool,
+                  theme_name: str, system_language: str,
+                  max_like_count: int, cw_lists: {},
+                  lists_enabled: str) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Like':
+    if message_json['type'] != 'Like':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasObjectString(messageJson, debug):
+    if not has_object_string(message_json, debug):
         return False
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if '/statuses/' not in messageJson['object']:
+    if '/statuses/' not in message_json['object']:
         if debug:
             print('DEBUG: "statuses" missing from object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
-    handleName = handle.split('@')[0]
-    handleDom = handle.split('@')[1]
-    postLikedId = messageJson['object']
-    postFilename = locatePost(baseDir, handleName, handleDom, postLikedId)
-    if not postFilename:
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
+    post_liked_id = message_json['object']
+    post_filename = \
+        locate_post(base_dir, handle_name, handle_dom, post_liked_id)
+    if not post_filename:
         if debug:
             print('DEBUG: post not found in inbox or outbox')
-            print(postLikedId)
+            print(post_liked_id)
         return True
     if debug:
         print('DEBUG: liked post found in inbox')
 
-    likeActor = messageJson['actor']
-    handleName = handle.split('@')[0]
-    handleDom = handle.split('@')[1]
-    if not _alreadyLiked(baseDir,
-                         handleName, handleDom,
-                         postLikedId,
-                         likeActor):
-        _likeNotify(baseDir, domain, onionDomain, handle,
-                    likeActor, postLikedId)
-    updateLikesCollection(recentPostsCache, baseDir, postFilename,
-                          postLikedId, likeActor,
-                          handleName, domain, debug, None)
+    like_actor = message_json['actor']
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
+    if not _already_liked(base_dir,
+                          handle_name, handle_dom,
+                          post_liked_id,
+                          like_actor):
+        _like_notify(base_dir, domain, onion_domain, handle,
+                     like_actor, post_liked_id)
+    update_likes_collection(recent_posts_cache, base_dir, post_filename,
+                            post_liked_id, like_actor,
+                            handle_name, domain, debug, None)
     # regenerate the html
-    likedPostJson = loadJson(postFilename, 0, 1)
-    if likedPostJson:
-        if likedPostJson.get('type'):
-            if likedPostJson['type'] == 'Announce' and \
-               likedPostJson.get('object'):
-                if isinstance(likedPostJson['object'], str):
-                    announceLikeUrl = likedPostJson['object']
-                    announceLikedFilename = \
-                        locatePost(baseDir, handleName,
-                                   domain, announceLikeUrl)
-                    if announceLikedFilename:
-                        postLikedId = announceLikeUrl
-                        postFilename = announceLikedFilename
-                        updateLikesCollection(recentPostsCache,
-                                              baseDir,
-                                              postFilename,
-                                              postLikedId,
-                                              likeActor,
-                                              handleName,
-                                              domain, debug, None)
-        if likedPostJson:
+    liked_post_json = load_json(post_filename, 0, 1)
+    if liked_post_json:
+        if liked_post_json.get('type'):
+            if liked_post_json['type'] == 'Announce' and \
+               liked_post_json.get('object'):
+                if isinstance(liked_post_json['object'], str):
+                    announce_like_url = liked_post_json['object']
+                    announce_liked_filename = \
+                        locate_post(base_dir, handle_name,
+                                    domain, announce_like_url)
+                    if announce_liked_filename:
+                        post_liked_id = announce_like_url
+                        post_filename = announce_liked_filename
+                        update_likes_collection(recent_posts_cache,
+                                                base_dir,
+                                                post_filename,
+                                                post_liked_id,
+                                                like_actor,
+                                                handle_name,
+                                                domain, debug, None)
+        if liked_post_json:
             if debug:
-                cachedPostFilename = \
-                    getCachedPostFilename(baseDir, handleName, domain,
-                                          likedPostJson)
-                print('Liked post json: ' + str(likedPostJson))
-                print('Liked post nickname: ' + handleName + ' ' + domain)
-                print('Liked post cache: ' + str(cachedPostFilename))
-            pageNumber = 1
-            showPublishedDateOnly = False
-            showIndividualPostIcons = True
-            manuallyApproveFollowers = \
-                followerApprovalActive(baseDir, handleName, domain)
-            notDM = not isDM(likedPostJson)
-            individualPostAsHtml(signingPrivateKeyPem, False,
-                                 recentPostsCache, maxRecentPosts,
-                                 translate, pageNumber, baseDir,
-                                 session, cachedWebfingers, personCache,
-                                 handleName, domain, port, likedPostJson,
-                                 None, True, allowDeletion,
-                                 httpPrefix, __version__,
-                                 'inbox',
-                                 YTReplacementDomain,
-                                 twitterReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances,
-                                 allowLocalNetworkAccess,
-                                 themeName, systemLanguage,
-                                 maxLikeCount, notDM,
-                                 showIndividualPostIcons,
-                                 manuallyApproveFollowers,
-                                 False, True, False, CWlists,
-                                 listsEnabled)
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, handle_name, domain,
+                                             liked_post_json)
+                print('Liked post json: ' + str(liked_post_json))
+                print('Liked post nickname: ' + handle_name + ' ' + domain)
+                print('Liked post cache: ' + str(cached_post_filename))
+            page_number = 1
+            show_published_date_only = False
+            show_individual_post_icons = True
+            manually_approve_followers = \
+                follower_approval_active(base_dir, handle_name, domain)
+            not_dm = not is_dm(liked_post_json)
+            individual_post_as_html(signing_priv_key_pem, False,
+                                    recent_posts_cache, max_recent_posts,
+                                    translate, page_number, base_dir,
+                                    session, cached_webfingers, person_cache,
+                                    handle_name, domain, port, liked_post_json,
+                                    None, True, allow_deletion,
+                                    http_prefix, __version__,
+                                    'inbox',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count, not_dm,
+                                    show_individual_post_icons,
+                                    manually_approve_followers,
+                                    False, True, False, cw_lists,
+                                    lists_enabled)
     return True
 
 
-def _receiveUndoLike(recentPostsCache: {},
-                     session, handle: str, isGroup: bool, baseDir: str,
-                     httpPrefix: str, domain: str, port: int,
-                     sendThreads: [], postLog: [], cachedWebfingers: {},
-                     personCache: {}, messageJson: {}, federationList: [],
-                     debug: bool,
-                     signingPrivateKeyPem: str,
-                     maxRecentPosts: int, translate: {},
-                     allowDeletion: bool,
-                     YTReplacementDomain: str,
-                     twitterReplacementDomain: str,
-                     peertubeInstances: [],
-                     allowLocalNetworkAccess: bool,
-                     themeName: str, systemLanguage: str,
-                     maxLikeCount: int, CWlists: {},
-                     listsEnabled: str) -> bool:
+def _receive_undo_like(recent_posts_cache: {},
+                       session, handle: str, is_group: bool, base_dir: str,
+                       http_prefix: str, domain: str, port: int,
+                       send_threads: [], post_log: [], cached_webfingers: {},
+                       person_cache: {}, message_json: {}, federation_list: [],
+                       debug: bool,
+                       signing_priv_key_pem: str,
+                       max_recent_posts: int, translate: {},
+                       allow_deletion: bool,
+                       yt_replace_domain: str,
+                       twitter_replacement_domain: str,
+                       peertube_instances: [],
+                       allow_local_network_access: bool,
+                       theme_name: str, system_language: str,
+                       max_like_count: int, cw_lists: {},
+                       lists_enabled: str) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Undo':
+    if message_json['type'] != 'Undo':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return False
-    if messageJson['object']['type'] != 'Like':
+    if message_json['object']['type'] != 'Like':
         return False
-    if not hasObjectStringObject(messageJson, debug):
+    if not has_object_string_object(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'] + ' like')
+                  message_json['type'] + ' like')
         return False
-    if '/statuses/' not in messageJson['object']['object']:
+    if '/statuses/' not in message_json['object']['object']:
         if debug:
             print('DEBUG: "statuses" missing from like object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of undo like - ' + handle)
     # if this post in the outbox of the person?
-    handleName = handle.split('@')[0]
-    handleDom = handle.split('@')[1]
-    postFilename = \
-        locatePost(baseDir, handleName, handleDom,
-                   messageJson['object']['object'])
-    if not postFilename:
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
+    post_filename = \
+        locate_post(base_dir, handle_name, handle_dom,
+                    message_json['object']['object'])
+    if not post_filename:
         if debug:
             print('DEBUG: unliked post not found in inbox or outbox')
-            print(messageJson['object']['object'])
+            print(message_json['object']['object'])
         return True
     if debug:
         print('DEBUG: liked post found in inbox. Now undoing.')
-    likeActor = messageJson['actor']
-    postLikedId = messageJson['object']
-    undoLikesCollectionEntry(recentPostsCache, baseDir, postFilename,
-                             postLikedId, likeActor, domain, debug, None)
+    like_actor = message_json['actor']
+    post_liked_id = message_json['object']
+    undo_likes_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                post_liked_id, like_actor, domain, debug, None)
     # regenerate the html
-    likedPostJson = loadJson(postFilename, 0, 1)
-    if likedPostJson:
-        if likedPostJson.get('type'):
-            if likedPostJson['type'] == 'Announce' and \
-               likedPostJson.get('object'):
-                if isinstance(likedPostJson['object'], str):
-                    announceLikeUrl = likedPostJson['object']
-                    announceLikedFilename = \
-                        locatePost(baseDir, handleName,
-                                   domain, announceLikeUrl)
-                    if announceLikedFilename:
-                        postLikedId = announceLikeUrl
-                        postFilename = announceLikedFilename
-                        undoLikesCollectionEntry(recentPostsCache, baseDir,
-                                                 postFilename, postLikedId,
-                                                 likeActor, domain, debug,
-                                                 None)
-        if likedPostJson:
+    liked_post_json = load_json(post_filename, 0, 1)
+    if liked_post_json:
+        if liked_post_json.get('type'):
+            if liked_post_json['type'] == 'Announce' and \
+               liked_post_json.get('object'):
+                if isinstance(liked_post_json['object'], str):
+                    announce_like_url = liked_post_json['object']
+                    announce_liked_filename = \
+                        locate_post(base_dir, handle_name,
+                                    domain, announce_like_url)
+                    if announce_liked_filename:
+                        post_liked_id = announce_like_url
+                        post_filename = announce_liked_filename
+                        undo_likes_collection_entry(recent_posts_cache,
+                                                    base_dir,
+                                                    post_filename,
+                                                    post_liked_id,
+                                                    like_actor, domain, debug,
+                                                    None)
+        if liked_post_json:
             if debug:
-                cachedPostFilename = \
-                    getCachedPostFilename(baseDir, handleName, domain,
-                                          likedPostJson)
-                print('Unliked post json: ' + str(likedPostJson))
-                print('Unliked post nickname: ' + handleName + ' ' + domain)
-                print('Unliked post cache: ' + str(cachedPostFilename))
-            pageNumber = 1
-            showPublishedDateOnly = False
-            showIndividualPostIcons = True
-            manuallyApproveFollowers = \
-                followerApprovalActive(baseDir, handleName, domain)
-            notDM = not isDM(likedPostJson)
-            individualPostAsHtml(signingPrivateKeyPem, False,
-                                 recentPostsCache, maxRecentPosts,
-                                 translate, pageNumber, baseDir,
-                                 session, cachedWebfingers, personCache,
-                                 handleName, domain, port, likedPostJson,
-                                 None, True, allowDeletion,
-                                 httpPrefix, __version__,
-                                 'inbox',
-                                 YTReplacementDomain,
-                                 twitterReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances,
-                                 allowLocalNetworkAccess,
-                                 themeName, systemLanguage,
-                                 maxLikeCount, notDM,
-                                 showIndividualPostIcons,
-                                 manuallyApproveFollowers,
-                                 False, True, False, CWlists,
-                                 listsEnabled)
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, handle_name, domain,
+                                             liked_post_json)
+                print('Unliked post json: ' + str(liked_post_json))
+                print('Unliked post nickname: ' + handle_name + ' ' + domain)
+                print('Unliked post cache: ' + str(cached_post_filename))
+            page_number = 1
+            show_published_date_only = False
+            show_individual_post_icons = True
+            manually_approve_followers = \
+                follower_approval_active(base_dir, handle_name, domain)
+            not_dm = not is_dm(liked_post_json)
+            individual_post_as_html(signing_priv_key_pem, False,
+                                    recent_posts_cache, max_recent_posts,
+                                    translate, page_number, base_dir,
+                                    session, cached_webfingers, person_cache,
+                                    handle_name, domain, port, liked_post_json,
+                                    None, True, allow_deletion,
+                                    http_prefix, __version__,
+                                    'inbox',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count, not_dm,
+                                    show_individual_post_icons,
+                                    manually_approve_followers,
+                                    False, True, False, cw_lists,
+                                    lists_enabled)
     return True
 
 
-def _receiveReaction(recentPostsCache: {},
-                     session, handle: str, isGroup: bool, baseDir: str,
-                     httpPrefix: str, domain: str, port: int,
-                     onionDomain: str,
-                     sendThreads: [], postLog: [], cachedWebfingers: {},
-                     personCache: {}, messageJson: {}, federationList: [],
-                     debug: bool,
-                     signingPrivateKeyPem: str,
-                     maxRecentPosts: int, translate: {},
-                     allowDeletion: bool,
-                     YTReplacementDomain: str,
-                     twitterReplacementDomain: str,
-                     peertubeInstances: [],
-                     allowLocalNetworkAccess: bool,
-                     themeName: str, systemLanguage: str,
-                     maxLikeCount: int, CWlists: {},
-                     listsEnabled: str) -> bool:
+def _receive_reaction(recent_posts_cache: {},
+                      session, handle: str, is_group: bool, base_dir: str,
+                      http_prefix: str, domain: str, port: int,
+                      onion_domain: str,
+                      send_threads: [], post_log: [], cached_webfingers: {},
+                      person_cache: {}, message_json: {}, federation_list: [],
+                      debug: bool,
+                      signing_priv_key_pem: str,
+                      max_recent_posts: int, translate: {},
+                      allow_deletion: bool,
+                      yt_replace_domain: str,
+                      twitter_replacement_domain: str,
+                      peertube_instances: [],
+                      allow_local_network_access: bool,
+                      theme_name: str, system_language: str,
+                      max_like_count: int, cw_lists: {},
+                      lists_enabled: str) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'EmojiReact':
+    if message_json['type'] != 'EmojiReact':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasObjectString(messageJson, debug):
+    if not has_object_string(message_json, debug):
         return False
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not messageJson.get('content'):
+    if not message_json.get('content'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "content"')
+            print('DEBUG: ' + message_json['type'] + ' has no "content"')
         return False
-    if not isinstance(messageJson['content'], str):
+    if not isinstance(message_json['content'], str):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' content is not string')
+            print('DEBUG: ' + message_json['type'] + ' content is not string')
         return False
-    if not validEmojiContent(messageJson['content']):
-        print('_receiveReaction: Invalid emoji reaction: "' +
-              messageJson['content'] + '" from ' + messageJson['actor'])
+    if not valid_emoji_content(message_json['content']):
+        print('_receive_reaction: Invalid emoji reaction: "' +
+              message_json['content'] + '" from ' + message_json['actor'])
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if '/statuses/' not in messageJson['object']:
+    if '/statuses/' not in message_json['object']:
         if debug:
             print('DEBUG: "statuses" missing from object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of emoji reaction - ' + handle)
-    if os.path.isfile(baseDir + '/accounts/' + handle +
+    if os.path.isfile(base_dir + '/accounts/' + handle +
                       '/.hideReactionButton'):
         print('Emoji reaction rejected by ' + handle +
               ' due to their settings')
         return True
     # if this post in the outbox of the person?
-    handleName = handle.split('@')[0]
-    handleDom = handle.split('@')[1]
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
 
-    postReactionId = messageJson['object']
-    emojiContent = removeHtml(messageJson['content'])
-    if not emojiContent:
+    post_reaction_id = message_json['object']
+    emoji_content = remove_html(message_json['content'])
+    if not emoji_content:
         if debug:
             print('DEBUG: emoji reaction has no content')
         return True
-    postFilename = locatePost(baseDir, handleName, handleDom, postReactionId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, handle_name, handle_dom,
+                                post_reaction_id)
+    if not post_filename:
         if debug:
             print('DEBUG: emoji reaction post not found in inbox or outbox')
-            print(postReactionId)
+            print(post_reaction_id)
         return True
     if debug:
         print('DEBUG: emoji reaction post found in inbox')
 
-    reactionActor = messageJson['actor']
-    handleName = handle.split('@')[0]
-    handleDom = handle.split('@')[1]
-    if not _alreadyReacted(baseDir,
-                           handleName, handleDom,
-                           postReactionId,
-                           reactionActor,
-                           emojiContent):
-        _reactionNotify(baseDir, domain, onionDomain, handle,
-                        reactionActor, postReactionId, emojiContent)
-    updateReactionCollection(recentPostsCache, baseDir, postFilename,
-                             postReactionId, reactionActor,
-                             handleName, domain, debug, None, emojiContent)
+    reaction_actor = message_json['actor']
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
+    if not _already_reacted(base_dir,
+                            handle_name, handle_dom,
+                            post_reaction_id,
+                            reaction_actor,
+                            emoji_content):
+        _reaction_notify(base_dir, domain, onion_domain, handle,
+                         reaction_actor, post_reaction_id, emoji_content)
+    update_reaction_collection(recent_posts_cache, base_dir, post_filename,
+                               post_reaction_id, reaction_actor,
+                               handle_name, domain, debug, None, emoji_content)
     # regenerate the html
-    reactionPostJson = loadJson(postFilename, 0, 1)
-    if reactionPostJson:
-        if reactionPostJson.get('type'):
-            if reactionPostJson['type'] == 'Announce' and \
-               reactionPostJson.get('object'):
-                if isinstance(reactionPostJson['object'], str):
-                    announceReactionUrl = reactionPostJson['object']
-                    announceReactionFilename = \
-                        locatePost(baseDir, handleName,
-                                   domain, announceReactionUrl)
-                    if announceReactionFilename:
-                        postReactionId = announceReactionUrl
-                        postFilename = announceReactionFilename
-                        updateReactionCollection(recentPostsCache,
-                                                 baseDir,
-                                                 postFilename,
-                                                 postReactionId,
-                                                 reactionActor,
-                                                 handleName,
-                                                 domain, debug, None,
-                                                 emojiContent)
-        if reactionPostJson:
+    reaction_post_json = load_json(post_filename, 0, 1)
+    if reaction_post_json:
+        if reaction_post_json.get('type'):
+            if reaction_post_json['type'] == 'Announce' and \
+               reaction_post_json.get('object'):
+                if isinstance(reaction_post_json['object'], str):
+                    announce_reaction_url = reaction_post_json['object']
+                    announce_reaction_filename = \
+                        locate_post(base_dir, handle_name,
+                                    domain, announce_reaction_url)
+                    if announce_reaction_filename:
+                        post_reaction_id = announce_reaction_url
+                        post_filename = announce_reaction_filename
+                        update_reaction_collection(recent_posts_cache,
+                                                   base_dir,
+                                                   post_filename,
+                                                   post_reaction_id,
+                                                   reaction_actor,
+                                                   handle_name,
+                                                   domain, debug, None,
+                                                   emoji_content)
+        if reaction_post_json:
             if debug:
-                cachedPostFilename = \
-                    getCachedPostFilename(baseDir, handleName, domain,
-                                          reactionPostJson)
-                print('Reaction post json: ' + str(reactionPostJson))
-                print('Reaction post nickname: ' + handleName + ' ' + domain)
-                print('Reaction post cache: ' + str(cachedPostFilename))
-            pageNumber = 1
-            showPublishedDateOnly = False
-            showIndividualPostIcons = True
-            manuallyApproveFollowers = \
-                followerApprovalActive(baseDir, handleName, domain)
-            notDM = not isDM(reactionPostJson)
-            individualPostAsHtml(signingPrivateKeyPem, False,
-                                 recentPostsCache, maxRecentPosts,
-                                 translate, pageNumber, baseDir,
-                                 session, cachedWebfingers, personCache,
-                                 handleName, domain, port, reactionPostJson,
-                                 None, True, allowDeletion,
-                                 httpPrefix, __version__,
-                                 'inbox',
-                                 YTReplacementDomain,
-                                 twitterReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances,
-                                 allowLocalNetworkAccess,
-                                 themeName, systemLanguage,
-                                 maxLikeCount, notDM,
-                                 showIndividualPostIcons,
-                                 manuallyApproveFollowers,
-                                 False, True, False, CWlists,
-                                 listsEnabled)
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, handle_name, domain,
+                                             reaction_post_json)
+                print('Reaction post json: ' + str(reaction_post_json))
+                print('Reaction post nickname: ' + handle_name + ' ' + domain)
+                print('Reaction post cache: ' + str(cached_post_filename))
+            page_number = 1
+            show_published_date_only = False
+            show_individual_post_icons = True
+            manually_approve_followers = \
+                follower_approval_active(base_dir, handle_name, domain)
+            not_dm = not is_dm(reaction_post_json)
+            individual_post_as_html(signing_priv_key_pem, False,
+                                    recent_posts_cache, max_recent_posts,
+                                    translate, page_number, base_dir,
+                                    session, cached_webfingers, person_cache,
+                                    handle_name, domain, port,
+                                    reaction_post_json,
+                                    None, True, allow_deletion,
+                                    http_prefix, __version__,
+                                    'inbox',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count, not_dm,
+                                    show_individual_post_icons,
+                                    manually_approve_followers,
+                                    False, True, False, cw_lists,
+                                    lists_enabled)
     return True
 
 
-def _receiveUndoReaction(recentPostsCache: {},
-                         session, handle: str, isGroup: bool, baseDir: str,
-                         httpPrefix: str, domain: str, port: int,
-                         sendThreads: [], postLog: [], cachedWebfingers: {},
-                         personCache: {}, messageJson: {}, federationList: [],
-                         debug: bool,
-                         signingPrivateKeyPem: str,
-                         maxRecentPosts: int, translate: {},
-                         allowDeletion: bool,
-                         YTReplacementDomain: str,
-                         twitterReplacementDomain: str,
-                         peertubeInstances: [],
-                         allowLocalNetworkAccess: bool,
-                         themeName: str, systemLanguage: str,
-                         maxLikeCount: int, CWlists: {},
-                         listsEnabled: str) -> bool:
+def _receive_undo_reaction(recent_posts_cache: {},
+                           session, handle: str, is_group: bool, base_dir: str,
+                           http_prefix: str, domain: str, port: int,
+                           send_threads: [], post_log: [],
+                           cached_webfingers: {},
+                           person_cache: {}, message_json: {},
+                           federation_list: [],
+                           debug: bool,
+                           signing_priv_key_pem: str,
+                           max_recent_posts: int, translate: {},
+                           allow_deletion: bool,
+                           yt_replace_domain: str,
+                           twitter_replacement_domain: str,
+                           peertube_instances: [],
+                           allow_local_network_access: bool,
+                           theme_name: str, system_language: str,
+                           max_like_count: int, cw_lists: {},
+                           lists_enabled: str) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Undo':
+    if message_json['type'] != 'Undo':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return False
-    if messageJson['object']['type'] != 'EmojiReact':
+    if message_json['object']['type'] != 'EmojiReact':
         return False
-    if not hasObjectStringObject(messageJson, debug):
+    if not has_object_string_object(message_json, debug):
         return False
-    if not messageJson['object'].get('content'):
+    if not message_json['object'].get('content'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "content"')
+            print('DEBUG: ' + message_json['type'] + ' has no "content"')
         return False
-    if not isinstance(messageJson['object']['content'], str):
+    if not isinstance(message_json['object']['content'], str):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' content is not string')
+            print('DEBUG: ' + message_json['type'] + ' content is not string')
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'] + ' reaction')
+                  message_json['type'] + ' reaction')
         return False
-    if '/statuses/' not in messageJson['object']['object']:
+    if '/statuses/' not in message_json['object']['object']:
         if debug:
             print('DEBUG: "statuses" missing from reaction object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of undo reaction - ' + handle)
     # if this post in the outbox of the person?
-    handleName = handle.split('@')[0]
-    handleDom = handle.split('@')[1]
-    postFilename = \
-        locatePost(baseDir, handleName, handleDom,
-                   messageJson['object']['object'])
-    if not postFilename:
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
+    post_filename = \
+        locate_post(base_dir, handle_name, handle_dom,
+                    message_json['object']['object'])
+    if not post_filename:
         if debug:
             print('DEBUG: unreaction post not found in inbox or outbox')
-            print(messageJson['object']['object'])
+            print(message_json['object']['object'])
         return True
     if debug:
         print('DEBUG: reaction post found in inbox. Now undoing.')
-    reactionActor = messageJson['actor']
-    postReactionId = messageJson['object']
-    emojiContent = removeHtml(messageJson['object']['content'])
-    if not emojiContent:
+    reaction_actor = message_json['actor']
+    post_reaction_id = message_json['object']
+    emoji_content = remove_html(message_json['object']['content'])
+    if not emoji_content:
         if debug:
             print('DEBUG: unreaction has no content')
         return True
-    undoReactionCollectionEntry(recentPostsCache, baseDir, postFilename,
-                                postReactionId, reactionActor, domain,
-                                debug, None, emojiContent)
+    undo_reaction_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                   post_reaction_id, reaction_actor, domain,
+                                   debug, None, emoji_content)
     # regenerate the html
-    reactionPostJson = loadJson(postFilename, 0, 1)
-    if reactionPostJson:
-        if reactionPostJson.get('type'):
-            if reactionPostJson['type'] == 'Announce' and \
-               reactionPostJson.get('object'):
-                if isinstance(reactionPostJson['object'], str):
-                    announceReactionUrl = reactionPostJson['object']
-                    announceReactionFilename = \
-                        locatePost(baseDir, handleName,
-                                   domain, announceReactionUrl)
-                    if announceReactionFilename:
-                        postReactionId = announceReactionUrl
-                        postFilename = announceReactionFilename
-                        undoReactionCollectionEntry(recentPostsCache, baseDir,
-                                                    postFilename,
-                                                    postReactionId,
-                                                    reactionActor, domain,
-                                                    debug, None,
-                                                    emojiContent)
-        if reactionPostJson:
+    reaction_post_json = load_json(post_filename, 0, 1)
+    if reaction_post_json:
+        if reaction_post_json.get('type'):
+            if reaction_post_json['type'] == 'Announce' and \
+               reaction_post_json.get('object'):
+                if isinstance(reaction_post_json['object'], str):
+                    announce_reaction_url = reaction_post_json['object']
+                    announce_reaction_filename = \
+                        locate_post(base_dir, handle_name,
+                                    domain, announce_reaction_url)
+                    if announce_reaction_filename:
+                        post_reaction_id = announce_reaction_url
+                        post_filename = announce_reaction_filename
+                        undo_reaction_collection_entry(recent_posts_cache,
+                                                       base_dir,
+                                                       post_filename,
+                                                       post_reaction_id,
+                                                       reaction_actor,
+                                                       domain,
+                                                       debug, None,
+                                                       emoji_content)
+        if reaction_post_json:
             if debug:
-                cachedPostFilename = \
-                    getCachedPostFilename(baseDir, handleName, domain,
-                                          reactionPostJson)
-                print('Unreaction post json: ' + str(reactionPostJson))
-                print('Unreaction post nickname: ' + handleName + ' ' + domain)
-                print('Unreaction post cache: ' + str(cachedPostFilename))
-            pageNumber = 1
-            showPublishedDateOnly = False
-            showIndividualPostIcons = True
-            manuallyApproveFollowers = \
-                followerApprovalActive(baseDir, handleName, domain)
-            notDM = not isDM(reactionPostJson)
-            individualPostAsHtml(signingPrivateKeyPem, False,
-                                 recentPostsCache, maxRecentPosts,
-                                 translate, pageNumber, baseDir,
-                                 session, cachedWebfingers, personCache,
-                                 handleName, domain, port, reactionPostJson,
-                                 None, True, allowDeletion,
-                                 httpPrefix, __version__,
-                                 'inbox',
-                                 YTReplacementDomain,
-                                 twitterReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances,
-                                 allowLocalNetworkAccess,
-                                 themeName, systemLanguage,
-                                 maxLikeCount, notDM,
-                                 showIndividualPostIcons,
-                                 manuallyApproveFollowers,
-                                 False, True, False, CWlists,
-                                 listsEnabled)
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, handle_name, domain,
+                                             reaction_post_json)
+                print('Unreaction post json: ' + str(reaction_post_json))
+                print('Unreaction post nickname: ' +
+                      handle_name + ' ' + domain)
+                print('Unreaction post cache: ' + str(cached_post_filename))
+            page_number = 1
+            show_published_date_only = False
+            show_individual_post_icons = True
+            manually_approve_followers = \
+                follower_approval_active(base_dir, handle_name, domain)
+            not_dm = not is_dm(reaction_post_json)
+            individual_post_as_html(signing_priv_key_pem, False,
+                                    recent_posts_cache, max_recent_posts,
+                                    translate, page_number, base_dir,
+                                    session, cached_webfingers, person_cache,
+                                    handle_name, domain, port,
+                                    reaction_post_json,
+                                    None, True, allow_deletion,
+                                    http_prefix, __version__,
+                                    'inbox',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count, not_dm,
+                                    show_individual_post_icons,
+                                    manually_approve_followers,
+                                    False, True, False, cw_lists,
+                                    lists_enabled)
     return True
 
 
-def _receiveBookmark(recentPostsCache: {},
-                     session, handle: str, isGroup: bool, baseDir: str,
-                     httpPrefix: str, domain: str, port: int,
-                     sendThreads: [], postLog: [], cachedWebfingers: {},
-                     personCache: {}, messageJson: {}, federationList: [],
-                     debug: bool, signingPrivateKeyPem: str,
-                     maxRecentPosts: int, translate: {},
-                     allowDeletion: bool,
-                     YTReplacementDomain: str,
-                     twitterReplacementDomain: str,
-                     peertubeInstances: [],
-                     allowLocalNetworkAccess: bool,
-                     themeName: str, systemLanguage: str,
-                     maxLikeCount: int, CWlists: {},
-                     listsEnabled: {}) -> bool:
+def _receive_bookmark(recent_posts_cache: {},
+                      session, handle: str, is_group: bool, base_dir: str,
+                      http_prefix: str, domain: str, port: int,
+                      send_threads: [], post_log: [], cached_webfingers: {},
+                      person_cache: {}, message_json: {}, federation_list: [],
+                      debug: bool, signing_priv_key_pem: str,
+                      max_recent_posts: int, translate: {},
+                      allow_deletion: bool,
+                      yt_replace_domain: str,
+                      twitter_replacement_domain: str,
+                      peertube_instances: [],
+                      allow_local_network_access: bool,
+                      theme_name: str, system_language: str,
+                      max_like_count: int, cw_lists: {},
+                      lists_enabled: {}) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return False
-    if messageJson['type'] != 'Add':
+    if message_json['type'] != 'Add':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not messageJson.get('target'):
+    if not message_json.get('target'):
         if debug:
             print('DEBUG: no target in inbox bookmark Add')
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return False
-    if not isinstance(messageJson['target'], str):
+    if not isinstance(message_json['target'], str):
         if debug:
             print('DEBUG: inbox bookmark Add target is not string')
         return False
-    domainFull = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     nickname = handle.split('@')[0]
-    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox bookmark Add unexpected actor')
         return False
-    if not messageJson['target'].endswith(messageJson['actor'] +
-                                          '/tlbookmarks'):
+    if not message_json['target'].endswith(message_json['actor'] +
+                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: inbox bookmark Add target invalid ' +
-                  messageJson['target'])
+                  message_json['target'])
         return False
-    if messageJson['object']['type'] != 'Document':
+    if message_json['object']['type'] != 'Document':
         if debug:
             print('DEBUG: inbox bookmark Add type is not Document')
         return False
-    if not messageJson['object'].get('url'):
+    if not message_json['object'].get('url'):
         if debug:
             print('DEBUG: inbox bookmark Add missing url')
         return False
-    if '/statuses/' not in messageJson['object']['url']:
+    if '/statuses/' not in message_json['object']['url']:
         if debug:
             print('DEBUG: inbox bookmark Add missing statuses un url')
         return False
     if debug:
         print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
 
-    messageUrl = removeIdEnding(messageJson['object']['url'])
-    domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageUrl)
-    if not postFilename:
+    message_url = remove_id_ending(message_json['object']['url'])
+    domain = remove_domain_port(domain)
+    post_filename = locate_post(base_dir, nickname, domain, message_url)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s inbox like post not found in inbox or outbox')
-            print(messageUrl)
+            print(message_url)
         return True
 
-    updateBookmarksCollection(recentPostsCache, baseDir, postFilename,
-                              messageJson['object']['url'],
-                              messageJson['actor'], domain, debug)
+    update_bookmarks_collection(recent_posts_cache, base_dir, post_filename,
+                                message_json['object']['url'],
+                                message_json['actor'], domain, debug)
     # regenerate the html
-    bookmarkedPostJson = loadJson(postFilename, 0, 1)
-    if bookmarkedPostJson:
+    bookmarked_post_json = load_json(post_filename, 0, 1)
+    if bookmarked_post_json:
         if debug:
-            cachedPostFilename = \
-                getCachedPostFilename(baseDir, nickname, domain,
-                                      bookmarkedPostJson)
-            print('Bookmarked post json: ' + str(bookmarkedPostJson))
+            cached_post_filename = \
+                get_cached_post_filename(base_dir, nickname, domain,
+                                         bookmarked_post_json)
+            print('Bookmarked post json: ' + str(bookmarked_post_json))
             print('Bookmarked post nickname: ' + nickname + ' ' + domain)
-            print('Bookmarked post cache: ' + str(cachedPostFilename))
-        pageNumber = 1
-        showPublishedDateOnly = False
-        showIndividualPostIcons = True
-        manuallyApproveFollowers = \
-            followerApprovalActive(baseDir, nickname, domain)
-        notDM = not isDM(bookmarkedPostJson)
-        individualPostAsHtml(signingPrivateKeyPem, False,
-                             recentPostsCache, maxRecentPosts,
-                             translate, pageNumber, baseDir,
-                             session, cachedWebfingers, personCache,
-                             nickname, domain, port, bookmarkedPostJson,
-                             None, True, allowDeletion,
-                             httpPrefix, __version__,
-                             'inbox',
-                             YTReplacementDomain,
-                             twitterReplacementDomain,
-                             showPublishedDateOnly,
-                             peertubeInstances,
-                             allowLocalNetworkAccess,
-                             themeName, systemLanguage,
-                             maxLikeCount, notDM,
-                             showIndividualPostIcons,
-                             manuallyApproveFollowers,
-                             False, True, False, CWlists,
-                             listsEnabled)
+            print('Bookmarked post cache: ' + str(cached_post_filename))
+        page_number = 1
+        show_published_date_only = False
+        show_individual_post_icons = True
+        manually_approve_followers = \
+            follower_approval_active(base_dir, nickname, domain)
+        not_dm = not is_dm(bookmarked_post_json)
+        individual_post_as_html(signing_priv_key_pem, False,
+                                recent_posts_cache, max_recent_posts,
+                                translate, page_number, base_dir,
+                                session, cached_webfingers, person_cache,
+                                nickname, domain, port, bookmarked_post_json,
+                                None, True, allow_deletion,
+                                http_prefix, __version__,
+                                'inbox',
+                                yt_replace_domain,
+                                twitter_replacement_domain,
+                                show_published_date_only,
+                                peertube_instances,
+                                allow_local_network_access,
+                                theme_name, system_language,
+                                max_like_count, not_dm,
+                                show_individual_post_icons,
+                                manually_approve_followers,
+                                False, True, False, cw_lists,
+                                lists_enabled)
     return True
 
 
-def _receiveUndoBookmark(recentPostsCache: {},
-                         session, handle: str, isGroup: bool, baseDir: str,
-                         httpPrefix: str, domain: str, port: int,
-                         sendThreads: [], postLog: [], cachedWebfingers: {},
-                         personCache: {}, messageJson: {}, federationList: [],
-                         debug: bool, signingPrivateKeyPem: str,
-                         maxRecentPosts: int, translate: {},
-                         allowDeletion: bool,
-                         YTReplacementDomain: str,
-                         twitterReplacementDomain: str,
-                         peertubeInstances: [],
-                         allowLocalNetworkAccess: bool,
-                         themeName: str, systemLanguage: str,
-                         maxLikeCount: int, CWlists: {},
-                         listsEnabled: str) -> bool:
+def _receive_undo_bookmark(recent_posts_cache: {},
+                           session, handle: str, is_group: bool, base_dir: str,
+                           http_prefix: str, domain: str, port: int,
+                           send_threads: [], post_log: [],
+                           cached_webfingers: {},
+                           person_cache: {}, message_json: {},
+                           federation_list: [],
+                           debug: bool, signing_priv_key_pem: str,
+                           max_recent_posts: int, translate: {},
+                           allow_deletion: bool,
+                           yt_replace_domain: str,
+                           twitter_replacement_domain: str,
+                           peertube_instances: [],
+                           allow_local_network_access: bool,
+                           theme_name: str, system_language: str,
+                           max_like_count: int, cw_lists: {},
+                           lists_enabled: str) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return False
-    if messageJson['type'] != 'Remove':
+    if message_json['type'] != 'Remove':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not messageJson.get('target'):
+    if not message_json.get('target'):
         if debug:
             print('DEBUG: no target in inbox undo bookmark Remove')
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return False
-    if not isinstance(messageJson['target'], str):
+    if not isinstance(message_json['target'], str):
         if debug:
             print('DEBUG: inbox Remove bookmark target is not string')
         return False
-    domainFull = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     nickname = handle.split('@')[0]
-    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox undo bookmark Remove unexpected actor')
         return False
-    if not messageJson['target'].endswith(messageJson['actor'] +
-                                          '/tlbookmarks'):
+    if not message_json['target'].endswith(message_json['actor'] +
+                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: inbox undo bookmark Remove target invalid ' +
-                  messageJson['target'])
+                  message_json['target'])
         return False
-    if messageJson['object']['type'] != 'Document':
+    if message_json['object']['type'] != 'Document':
         if debug:
             print('DEBUG: inbox undo bookmark Remove type is not Document')
         return False
-    if not messageJson['object'].get('url'):
+    if not message_json['object'].get('url'):
         if debug:
             print('DEBUG: inbox undo bookmark Remove missing url')
         return False
-    if '/statuses/' not in messageJson['object']['url']:
+    if '/statuses/' not in message_json['object']['url']:
         if debug:
             print('DEBUG: inbox undo bookmark Remove missing statuses un url')
         return False
@@ -1669,527 +1691,530 @@ def _receiveUndoBookmark(recentPostsCache: {},
         print('DEBUG: c2s inbox Remove bookmark ' +
               'request arrived in outbox')
 
-    messageUrl = removeIdEnding(messageJson['object']['url'])
-    domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageUrl)
-    if not postFilename:
+    message_url = remove_id_ending(message_json['object']['url'])
+    domain = remove_domain_port(domain)
+    post_filename = locate_post(base_dir, nickname, domain, message_url)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s inbox like post not found in inbox or outbox')
-            print(messageUrl)
+            print(message_url)
         return True
 
-    undoBookmarksCollectionEntry(recentPostsCache, baseDir, postFilename,
-                                 messageJson['object']['url'],
-                                 messageJson['actor'], domain, debug)
+    undo_bookmarks_collection_entry(recent_posts_cache, base_dir,
+                                    post_filename,
+                                    message_json['object']['url'],
+                                    message_json['actor'], domain, debug)
     # regenerate the html
-    bookmarkedPostJson = loadJson(postFilename, 0, 1)
-    if bookmarkedPostJson:
+    bookmarked_post_json = load_json(post_filename, 0, 1)
+    if bookmarked_post_json:
         if debug:
-            cachedPostFilename = \
-                getCachedPostFilename(baseDir, nickname, domain,
-                                      bookmarkedPostJson)
-            print('Unbookmarked post json: ' + str(bookmarkedPostJson))
+            cached_post_filename = \
+                get_cached_post_filename(base_dir, nickname, domain,
+                                         bookmarked_post_json)
+            print('Unbookmarked post json: ' + str(bookmarked_post_json))
             print('Unbookmarked post nickname: ' + nickname + ' ' + domain)
-            print('Unbookmarked post cache: ' + str(cachedPostFilename))
-        pageNumber = 1
-        showPublishedDateOnly = False
-        showIndividualPostIcons = True
-        manuallyApproveFollowers = \
-            followerApprovalActive(baseDir, nickname, domain)
-        notDM = not isDM(bookmarkedPostJson)
-        individualPostAsHtml(signingPrivateKeyPem, False,
-                             recentPostsCache, maxRecentPosts,
-                             translate, pageNumber, baseDir,
-                             session, cachedWebfingers, personCache,
-                             nickname, domain, port, bookmarkedPostJson,
-                             None, True, allowDeletion,
-                             httpPrefix, __version__,
-                             'inbox',
-                             YTReplacementDomain,
-                             twitterReplacementDomain,
-                             showPublishedDateOnly,
-                             peertubeInstances,
-                             allowLocalNetworkAccess,
-                             themeName, systemLanguage,
-                             maxLikeCount, notDM,
-                             showIndividualPostIcons,
-                             manuallyApproveFollowers,
-                             False, True, False, CWlists, listsEnabled)
+            print('Unbookmarked post cache: ' + str(cached_post_filename))
+        page_number = 1
+        show_published_date_only = False
+        show_individual_post_icons = True
+        manually_approve_followers = \
+            follower_approval_active(base_dir, nickname, domain)
+        not_dm = not is_dm(bookmarked_post_json)
+        individual_post_as_html(signing_priv_key_pem, False,
+                                recent_posts_cache, max_recent_posts,
+                                translate, page_number, base_dir,
+                                session, cached_webfingers, person_cache,
+                                nickname, domain, port, bookmarked_post_json,
+                                None, True, allow_deletion,
+                                http_prefix, __version__,
+                                'inbox',
+                                yt_replace_domain,
+                                twitter_replacement_domain,
+                                show_published_date_only,
+                                peertube_instances,
+                                allow_local_network_access,
+                                theme_name, system_language,
+                                max_like_count, not_dm,
+                                show_individual_post_icons,
+                                manually_approve_followers,
+                                False, True, False, cw_lists, lists_enabled)
     return True
 
 
-def _receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
-                   httpPrefix: str, domain: str, port: int,
-                   sendThreads: [], postLog: [], cachedWebfingers: {},
-                   personCache: {}, messageJson: {}, federationList: [],
-                   debug: bool, allowDeletion: bool,
-                   recentPostsCache: {}) -> bool:
+def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
+                    http_prefix: str, domain: str, port: int,
+                    send_threads: [], post_log: [], cached_webfingers: {},
+                    person_cache: {}, message_json: {}, federation_list: [],
+                    debug: bool, allow_deletion: bool,
+                    recent_posts_cache: {}) -> bool:
     """Receives a Delete activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Delete':
+    if message_json['type'] != 'Delete':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
     if debug:
         print('DEBUG: Delete activity arrived')
-    if not hasObjectString(messageJson, debug):
+    if not has_object_string(message_json, debug):
         return False
-    domainFull = getFullDomain(domain, port)
-    deletePrefix = httpPrefix + '://' + domainFull + '/'
-    if (not allowDeletion and
-        (not messageJson['object'].startswith(deletePrefix) or
-         not messageJson['actor'].startswith(deletePrefix))):
+    domain_full = get_full_domain(domain, port)
+    delete_prefix = http_prefix + '://' + domain_full + '/'
+    if (not allow_deletion and
+        (not message_json['object'].startswith(delete_prefix) or
+         not message_json['actor'].startswith(delete_prefix))):
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return False
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if '/statuses/' not in messageJson['object']:
+    if '/statuses/' not in message_json['object']:
         if debug:
             print('DEBUG: "statuses" missing from object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if messageJson['actor'] not in messageJson['object']:
+    if message_json['actor'] not in message_json['object']:
         if debug:
             print('DEBUG: actor is not the owner of the post to be deleted')
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
-    messageId = removeIdEnding(messageJson['object'])
-    removeModerationPostFromIndex(baseDir, messageId, debug)
-    handleNickname = handle.split('@')[0]
-    handleDomain = handle.split('@')[1]
-    postFilename = locatePost(baseDir, handleNickname,
-                              handleDomain, messageId)
-    if not postFilename:
+    message_id = remove_id_ending(message_json['object'])
+    remove_moderation_post_from_index(base_dir, message_id, debug)
+    handle_nickname = handle.split('@')[0]
+    handle_domain = handle.split('@')[1]
+    post_filename = locate_post(base_dir, handle_nickname,
+                                handle_domain, message_id)
+    if not post_filename:
         if debug:
             print('DEBUG: delete post not found in inbox or outbox')
-            print(messageId)
+            print(message_id)
         return True
-    deletePost(baseDir, httpPrefix, handleNickname,
-               handleDomain, postFilename, debug,
-               recentPostsCache)
+    delete_post(base_dir, http_prefix, handle_nickname,
+                handle_domain, post_filename, debug,
+                recent_posts_cache)
     if debug:
-        print('DEBUG: post deleted - ' + postFilename)
+        print('DEBUG: post deleted - ' + post_filename)
 
     # also delete any local blogs saved to the news actor
-    if handleNickname != 'news' and handleDomain == domainFull:
-        postFilename = locatePost(baseDir, 'news',
-                                  handleDomain, messageId)
-        if postFilename:
-            deletePost(baseDir, httpPrefix, 'news',
-                       handleDomain, postFilename, debug,
-                       recentPostsCache)
+    if handle_nickname != 'news' and handle_domain == domain_full:
+        post_filename = locate_post(base_dir, 'news',
+                                    handle_domain, message_id)
+        if post_filename:
+            delete_post(base_dir, http_prefix, 'news',
+                        handle_domain, post_filename, debug,
+                        recent_posts_cache)
             if debug:
-                print('DEBUG: blog post deleted - ' + postFilename)
+                print('DEBUG: blog post deleted - ' + post_filename)
     return True
 
 
-def _receiveAnnounce(recentPostsCache: {},
-                     session, handle: str, isGroup: bool, baseDir: str,
-                     httpPrefix: str,
-                     domain: str, onionDomain: str, port: int,
-                     sendThreads: [], postLog: [], cachedWebfingers: {},
-                     personCache: {}, messageJson: {}, federationList: [],
-                     debug: bool, translate: {},
-                     YTReplacementDomain: str,
-                     twitterReplacementDomain: str,
-                     allowLocalNetworkAccess: bool,
-                     themeName: str, systemLanguage: str,
-                     signingPrivateKeyPem: str,
-                     maxRecentPosts: int,
-                     allowDeletion: bool,
-                     peertubeInstances: [],
-                     maxLikeCount: int, CWlists: {},
-                     listsEnabled: str) -> bool:
+def _receive_announce(recent_posts_cache: {},
+                      session, handle: str, is_group: bool, base_dir: str,
+                      http_prefix: str,
+                      domain: str, onion_domain: str, port: int,
+                      send_threads: [], post_log: [], cached_webfingers: {},
+                      person_cache: {}, message_json: {}, federation_list: [],
+                      debug: bool, translate: {},
+                      yt_replace_domain: str,
+                      twitter_replacement_domain: str,
+                      allow_local_network_access: bool,
+                      theme_name: str, system_language: str,
+                      signing_priv_key_pem: str,
+                      max_recent_posts: int,
+                      allow_deletion: bool,
+                      peertube_instances: [],
+                      max_like_count: int, cw_lists: {},
+                      lists_enabled: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Announce':
+    if message_json['type'] != 'Announce':
         return False
     if '@' not in handle:
         if debug:
             print('DEBUG: bad handle ' + handle)
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
     if debug:
         print('DEBUG: receiving announce on ' + handle)
-    if not hasObjectString(messageJson, debug):
+    if not has_object_string(message_json, debug):
         return False
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if isSelfAnnounce(messageJson):
+    if is_self_announce(message_json):
         if debug:
             print('DEBUG: self-boost rejected')
         return False
-    if not hasUsersPath(messageJson['object']):
+    if not has_users_path(message_json['object']):
         if debug:
             print('DEBUG: ' +
                   '"users", "channel" or "profile" missing in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
 
-    blockedCache = {}
-    prefixes = getProtocolPrefixes()
+    blocked_cache = {}
+    prefixes = get_protocol_prefixes()
     # is the domain of the announce actor blocked?
-    objectDomain = messageJson['object']
+    object_domain = message_json['object']
     for prefix in prefixes:
-        objectDomain = objectDomain.replace(prefix, '')
-    if '/' in objectDomain:
-        objectDomain = objectDomain.split('/')[0]
-    if isBlockedDomain(baseDir, objectDomain):
+        object_domain = object_domain.replace(prefix, '')
+    if '/' in object_domain:
+        object_domain = object_domain.split('/')[0]
+    if is_blocked_domain(base_dir, object_domain):
         if debug:
             print('DEBUG: announced domain is blocked')
         return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of announce - ' + handle)
 
     # is the announce actor blocked?
     nickname = handle.split('@')[0]
-    actorNickname = getNicknameFromActor(messageJson['actor'])
-    actorDomain, actorPort = getDomainFromActor(messageJson['actor'])
-    if isBlocked(baseDir, nickname, domain, actorNickname, actorDomain):
+    actor_nickname = get_nickname_from_actor(message_json['actor'])
+    actor_domain, _ = get_domain_from_actor(message_json['actor'])
+    if is_blocked(base_dir, nickname, domain, actor_nickname, actor_domain):
         print('Receive announce blocked for actor: ' +
-              actorNickname + '@' + actorDomain)
+              actor_nickname + '@' + actor_domain)
         return False
 
     # also check the actor for the url being announced
-    announcedActorNickname = getNicknameFromActor(messageJson['object'])
+    announcedActorNickname = get_nickname_from_actor(message_json['object'])
     announcedActorDomain, announcedActorPort = \
-        getDomainFromActor(messageJson['object'])
-    if isBlocked(baseDir, nickname, domain,
-                 announcedActorNickname, announcedActorDomain):
+        get_domain_from_actor(message_json['object'])
+    if is_blocked(base_dir, nickname, domain,
+                  announcedActorNickname, announcedActorDomain):
         print('Receive announce object blocked for actor: ' +
               announcedActorNickname + '@' + announcedActorDomain)
         return False
 
     # is this post in the outbox of the person?
-    postFilename = locatePost(baseDir, nickname, domain,
-                              messageJson['object'])
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain,
+                                message_json['object'])
+    if not post_filename:
         if debug:
             print('DEBUG: announce post not found in inbox or outbox')
-            print(messageJson['object'])
+            print(message_json['object'])
         return True
-    updateAnnounceCollection(recentPostsCache, baseDir, postFilename,
-                             messageJson['actor'], nickname, domain, debug)
+    update_announce_collection(recent_posts_cache, base_dir, post_filename,
+                               message_json['actor'], nickname, domain, debug)
     if debug:
-        print('DEBUG: Downloading announce post ' + messageJson['actor'] +
-              ' -> ' + messageJson['object'])
-    domainFull = getFullDomain(domain, port)
+        print('DEBUG: Downloading announce post ' + message_json['actor'] +
+              ' -> ' + message_json['object'])
+    domain_full = get_full_domain(domain, port)
 
     # Generate html. This also downloads the announced post.
-    pageNumber = 1
-    showPublishedDateOnly = False
-    showIndividualPostIcons = True
-    manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-    notDM = True
+    page_number = 1
+    show_published_date_only = False
+    show_individual_post_icons = True
+    manually_approve_followers = \
+        follower_approval_active(base_dir, nickname, domain)
+    not_dm = True
     if debug:
-        print('Generating html for announce ' + messageJson['id'])
-    announceHtml = \
-        individualPostAsHtml(signingPrivateKeyPem, True,
-                             recentPostsCache, maxRecentPosts,
-                             translate, pageNumber, baseDir,
-                             session, cachedWebfingers, personCache,
-                             nickname, domain, port, messageJson,
-                             None, True, allowDeletion,
-                             httpPrefix, __version__,
-                             'inbox',
-                             YTReplacementDomain,
-                             twitterReplacementDomain,
-                             showPublishedDateOnly,
-                             peertubeInstances,
-                             allowLocalNetworkAccess,
-                             themeName, systemLanguage,
-                             maxLikeCount, notDM,
-                             showIndividualPostIcons,
-                             manuallyApproveFollowers,
-                             False, True, False, CWlists,
-                             listsEnabled)
-    if not announceHtml:
+        print('Generating html for announce ' + message_json['id'])
+    announce_html = \
+        individual_post_as_html(signing_priv_key_pem, True,
+                                recent_posts_cache, max_recent_posts,
+                                translate, page_number, base_dir,
+                                session, cached_webfingers, person_cache,
+                                nickname, domain, port, message_json,
+                                None, True, allow_deletion,
+                                http_prefix, __version__,
+                                'inbox',
+                                yt_replace_domain,
+                                twitter_replacement_domain,
+                                show_published_date_only,
+                                peertube_instances,
+                                allow_local_network_access,
+                                theme_name, system_language,
+                                max_like_count, not_dm,
+                                show_individual_post_icons,
+                                manually_approve_followers,
+                                False, True, False, cw_lists,
+                                lists_enabled)
+    if not announce_html:
         print('WARN: Unable to generate html for announce ' +
-              str(messageJson))
+              str(message_json))
     else:
         if debug:
-            print('Generated announce html ' + announceHtml.replace('\n', ''))
+            print('Generated announce html ' + announce_html.replace('\n', ''))
 
-    postJsonObject = downloadAnnounce(session, baseDir,
-                                      httpPrefix,
-                                      nickname, domain,
-                                      messageJson,
-                                      __version__, translate,
-                                      YTReplacementDomain,
-                                      twitterReplacementDomain,
-                                      allowLocalNetworkAccess,
-                                      recentPostsCache, debug,
-                                      systemLanguage,
-                                      domainFull, personCache,
-                                      signingPrivateKeyPem,
-                                      blockedCache)
-    if not postJsonObject:
-        print('WARN: unable to download announce: ' + str(messageJson))
-        notInOnion = True
-        if onionDomain:
-            if onionDomain in messageJson['object']:
-                notInOnion = False
-        if domain not in messageJson['object'] and notInOnion:
-            if os.path.isfile(postFilename):
+    post_json_object = download_announce(session, base_dir,
+                                         http_prefix,
+                                         nickname, domain,
+                                         message_json,
+                                         __version__, translate,
+                                         yt_replace_domain,
+                                         twitter_replacement_domain,
+                                         allow_local_network_access,
+                                         recent_posts_cache, debug,
+                                         system_language,
+                                         domain_full, person_cache,
+                                         signing_priv_key_pem,
+                                         blocked_cache)
+    if not post_json_object:
+        print('WARN: unable to download announce: ' + str(message_json))
+        not_in_onion = True
+        if onion_domain:
+            if onion_domain in message_json['object']:
+                not_in_onion = False
+        if domain not in message_json['object'] and not_in_onion:
+            if os.path.isfile(post_filename):
                 # if the announce can't be downloaded then remove it
                 try:
-                    os.remove(postFilename)
+                    os.remove(post_filename)
                 except OSError:
-                    print('EX: _receiveAnnounce unable to delete ' +
-                          str(postFilename))
+                    print('EX: _receive_announce unable to delete ' +
+                          str(post_filename))
     else:
         if debug:
             print('DEBUG: Announce post downloaded for ' +
-                  messageJson['actor'] + ' -> ' + messageJson['object'])
-        storeHashTags(baseDir, nickname, domain,
-                      httpPrefix, domainFull,
-                      postJsonObject, translate)
+                  message_json['actor'] + ' -> ' + message_json['object'])
+        store_hash_tags(base_dir, nickname, domain,
+                        http_prefix, domain_full,
+                        post_json_object, translate)
         # Try to obtain the actor for this person
         # so that their avatar can be shown
-        lookupActor = None
-        if postJsonObject.get('attributedTo'):
-            if isinstance(postJsonObject['attributedTo'], str):
-                lookupActor = postJsonObject['attributedTo']
+        lookup_actor = None
+        if post_json_object.get('attributedTo'):
+            if isinstance(post_json_object['attributedTo'], str):
+                lookup_actor = post_json_object['attributedTo']
         else:
-            if hasObjectDict(postJsonObject):
-                if postJsonObject['object'].get('attributedTo'):
-                    attrib = postJsonObject['object']['attributedTo']
+            if has_object_dict(post_json_object):
+                if post_json_object['object'].get('attributedTo'):
+                    attrib = post_json_object['object']['attributedTo']
                     if isinstance(attrib, str):
-                        lookupActor = attrib
-        if lookupActor:
-            if hasUsersPath(lookupActor):
-                if '/statuses/' in lookupActor:
-                    lookupActor = lookupActor.split('/statuses/')[0]
+                        lookup_actor = attrib
+        if lookup_actor:
+            if has_users_path(lookup_actor):
+                if '/statuses/' in lookup_actor:
+                    lookup_actor = lookup_actor.split('/statuses/')[0]
 
-                if isRecentPost(postJsonObject, 3):
-                    if not os.path.isfile(postFilename + '.tts'):
-                        domainFull = getFullDomain(domain, port)
-                        updateSpeaker(baseDir, httpPrefix,
-                                      nickname, domain, domainFull,
-                                      postJsonObject, personCache,
-                                      translate, lookupActor,
-                                      themeName)
+                if is_recent_post(post_json_object, 3):
+                    if not os.path.isfile(post_filename + '.tts'):
+                        domain_full = get_full_domain(domain, port)
+                        update_speaker(base_dir, http_prefix,
+                                       nickname, domain, domain_full,
+                                       post_json_object, person_cache,
+                                       translate, lookup_actor,
+                                       theme_name)
                         try:
-                            with open(postFilename + '.tts', 'w+') as ttsFile:
-                                ttsFile.write('\n')
+                            with open(post_filename + '.tts', 'w+') as ttsfile:
+                                ttsfile.write('\n')
                         except OSError:
                             print('EX: unable to write recent post ' +
-                                  postFilename)
+                                  post_filename)
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
-                          lookupActor)
+                          lookup_actor)
                 for tries in range(6):
-                    pubKey = \
-                        getPersonPubKey(baseDir, session, lookupActor,
-                                        personCache, debug,
-                                        __version__, httpPrefix,
-                                        domain, onionDomain,
-                                        signingPrivateKeyPem)
-                    if pubKey:
+                    pub_key = \
+                        get_person_pub_key(base_dir, session, lookup_actor,
+                                           person_cache, debug,
+                                           __version__, http_prefix,
+                                           domain, onion_domain,
+                                           signing_priv_key_pem)
+                    if pub_key:
                         if debug:
                             print('DEBUG: public key obtained for announce: ' +
-                                  lookupActor)
+                                  lookup_actor)
                         break
 
                     if debug:
                         print('DEBUG: Retry ' + str(tries + 1) +
-                              ' obtaining actor for ' + lookupActor)
+                              ' obtaining actor for ' + lookup_actor)
                     time.sleep(5)
         if debug:
             print('DEBUG: announced/repeated post arrived in inbox')
     return True
 
 
-def _receiveUndoAnnounce(recentPostsCache: {},
-                         session, handle: str, isGroup: bool, baseDir: str,
-                         httpPrefix: str, domain: str, port: int,
-                         sendThreads: [], postLog: [], cachedWebfingers: {},
-                         personCache: {}, messageJson: {}, federationList: [],
-                         debug: bool) -> bool:
+def _receive_undo_announce(recent_posts_cache: {},
+                           session, handle: str, is_group: bool, base_dir: str,
+                           http_prefix: str, domain: str, port: int,
+                           send_threads: [], post_log: [],
+                           cached_webfingers: {},
+                           person_cache: {}, message_json: {},
+                           federation_list: [],
+                           debug: bool) -> bool:
     """Receives an undo announce activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Undo':
+    if message_json['type'] != 'Undo':
         return False
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasObjectDict(messageJson):
+    if not has_object_dict(message_json):
         return False
-    if not hasObjectStringObject(messageJson, debug):
+    if not has_object_string_object(message_json, debug):
         return False
-    if messageJson['object']['type'] != 'Announce':
+    if message_json['object']['type'] != 'Announce':
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'] + ' announce')
+                  message_json['type'] + ' announce')
         return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of undo announce - ' + handle)
     # if this post in the outbox of the person?
-    handleName = handle.split('@')[0]
-    handleDom = handle.split('@')[1]
-    postFilename = locatePost(baseDir, handleName, handleDom,
-                              messageJson['object']['object'])
-    if not postFilename:
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
+    post_filename = locate_post(base_dir, handle_name, handle_dom,
+                                message_json['object']['object'])
+    if not post_filename:
         if debug:
             print('DEBUG: undo announce post not found in inbox or outbox')
-            print(messageJson['object']['object'])
+            print(message_json['object']['object'])
         return True
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
 
-    postJsonObject = loadJson(postFilename)
-    if postJsonObject:
-        if not postJsonObject.get('type'):
-            if postJsonObject['type'] != 'Announce':
+    post_json_object = load_json(post_filename)
+    if post_json_object:
+        if not post_json_object.get('type'):
+            if post_json_object['type'] != 'Announce':
                 if debug:
                     print("DEBUG: Attempt to undo something " +
                           "which isn't an announcement")
                 return False
-    undoAnnounceCollectionEntry(recentPostsCache, baseDir, postFilename,
-                                messageJson['actor'], domain, debug)
-    if os.path.isfile(postFilename):
+    undo_announce_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                   message_json['actor'], domain, debug)
+    if os.path.isfile(post_filename):
         try:
-            os.remove(postFilename)
+            os.remove(post_filename)
         except OSError:
-            print('EX: _receiveUndoAnnounce unable to delete ' +
-                  str(postFilename))
+            print('EX: _receive_undo_announce unable to delete ' +
+                  str(post_filename))
     return True
 
 
-def jsonPostAllowsComments(postJsonObject: {}) -> bool:
+def json_post_allows_comments(post_json_object: {}) -> bool:
     """Returns true if the given post allows comments/replies
     """
-    if 'commentsEnabled' in postJsonObject:
-        return postJsonObject['commentsEnabled']
-    if 'rejectReplies' in postJsonObject:
-        return not postJsonObject['rejectReplies']
-    if postJsonObject.get('object'):
-        if not hasObjectDict(postJsonObject):
+    if 'commentsEnabled' in post_json_object:
+        return post_json_object['commentsEnabled']
+    if 'rejectReplies' in post_json_object:
+        return not post_json_object['rejectReplies']
+    if post_json_object.get('object'):
+        if not has_object_dict(post_json_object):
             return False
-        elif 'commentsEnabled' in postJsonObject['object']:
-            return postJsonObject['object']['commentsEnabled']
-        elif 'rejectReplies' in postJsonObject['object']:
-            return not postJsonObject['object']['rejectReplies']
+        if 'commentsEnabled' in post_json_object['object']:
+            return post_json_object['object']['commentsEnabled']
+        if 'rejectReplies' in post_json_object['object']:
+            return not post_json_object['object']['rejectReplies']
     return True
 
 
-def _postAllowsComments(postFilename: str) -> bool:
+def _post_allow_comments(post_filename: str) -> bool:
     """Returns true if the given post allows comments/replies
     """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
         return False
-    return jsonPostAllowsComments(postJsonObject)
+    return json_post_allows_comments(post_json_object)
 
 
-def populateReplies(baseDir: str, httpPrefix: str, domain: str,
-                    messageJson: {}, maxReplies: int, debug: bool) -> bool:
+def populate_replies(base_dir: str, http_prefix: str, domain: str,
+                     message_json: {}, max_replies: int, debug: bool) -> bool:
     """Updates the list of replies for a post on this domain if
     a reply to it arrives
     """
-    if not messageJson.get('id'):
+    if not message_json.get('id'):
         return False
-    if not hasObjectDict(messageJson):
+    if not has_object_dict(message_json):
         return False
-    if not messageJson['object'].get('inReplyTo'):
+    if not message_json['object'].get('inReplyTo'):
         return False
-    if not messageJson['object'].get('to'):
+    if not message_json['object'].get('to'):
         return False
-    replyTo = messageJson['object']['inReplyTo']
-    if not isinstance(replyTo, str):
+    reply_to = message_json['object']['inReplyTo']
+    if not isinstance(reply_to, str):
         return False
     if debug:
         print('DEBUG: post contains a reply')
     # is this a reply to a post on this domain?
-    if not replyTo.startswith(httpPrefix + '://' + domain + '/'):
+    if not reply_to.startswith(http_prefix + '://' + domain + '/'):
         if debug:
             print('DEBUG: post is a reply to another not on this domain')
-            print(replyTo)
-            print('Expected: ' + httpPrefix + '://' + domain + '/')
+            print(reply_to)
+            print('Expected: ' + http_prefix + '://' + domain + '/')
         return False
-    replyToNickname = getNicknameFromActor(replyTo)
-    if not replyToNickname:
-        print('DEBUG: no nickname found for ' + replyTo)
+    reply_to_nickname = get_nickname_from_actor(reply_to)
+    if not reply_to_nickname:
+        print('DEBUG: no nickname found for ' + reply_to)
         return False
-    replyToDomain, replyToPort = getDomainFromActor(replyTo)
-    if not replyToDomain:
+    reply_to_domain, _ = get_domain_from_actor(reply_to)
+    if not reply_to_domain:
         if debug:
-            print('DEBUG: no domain found for ' + replyTo)
+            print('DEBUG: no domain found for ' + reply_to)
         return False
 
-    postFilename = locatePost(baseDir, replyToNickname,
-                              replyToDomain, replyTo)
-    if not postFilename:
+    post_filename = locate_post(base_dir, reply_to_nickname,
+                                reply_to_domain, reply_to)
+    if not post_filename:
         if debug:
-            print('DEBUG: post may have expired - ' + replyTo)
+            print('DEBUG: post may have expired - ' + reply_to)
         return False
 
-    if not _postAllowsComments(postFilename):
+    if not _post_allow_comments(post_filename):
         if debug:
-            print('DEBUG: post does not allow comments - ' + replyTo)
+            print('DEBUG: post does not allow comments - ' + reply_to)
         return False
     # populate a text file containing the ids of replies
-    postRepliesFilename = postFilename.replace('.json', '.replies')
-    messageId = removeIdEnding(messageJson['id'])
-    if os.path.isfile(postRepliesFilename):
-        numLines = sum(1 for line in open(postRepliesFilename))
-        if numLines > maxReplies:
+    post_replies_filename = post_filename.replace('.json', '.replies')
+    message_id = remove_id_ending(message_json['id'])
+    if os.path.isfile(post_replies_filename):
+        num_lines = sum(1 for line in open(post_replies_filename))
+        if num_lines > max_replies:
             return False
-        if messageId not in open(postRepliesFilename).read():
+        if message_id not in open(post_replies_filename).read():
             try:
-                with open(postRepliesFilename, 'a+') as repliesFile:
-                    repliesFile.write(messageId + '\n')
+                with open(post_replies_filename, 'a+') as replies_file:
+                    replies_file.write(message_id + '\n')
             except OSError:
-                print('EX: unable to append ' + postRepliesFilename)
+                print('EX: unable to append ' + post_replies_filename)
     else:
         try:
-            with open(postRepliesFilename, 'w+') as repliesFile:
-                repliesFile.write(messageId + '\n')
+            with open(post_replies_filename, 'w+') as replies_file:
+                replies_file.write(message_id + '\n')
         except OSError:
-            print('EX: unable to write ' + postRepliesFilename)
+            print('EX: unable to write ' + post_replies_filename)
     return True
 
 
-def _estimateNumberOfMentions(content: str) -> int:
+def _estimate_number_of_mentions(content: str) -> int:
     """Returns a rough estimate of the number of mentions
     """
     return int(content.count('@') / 2)
 
 
-def _estimateNumberOfEmoji(content: str) -> int:
+def _estimate_number_of_emoji(content: str) -> int:
     """Returns a rough estimate of the number of emoji
     """
     return int(content.count(':') / 2)
 
 
-def _validPostContent(baseDir: str, nickname: str, domain: str,
-                      messageJson: {}, maxMentions: int, maxEmoji: int,
-                      allowLocalNetworkAccess: bool, debug: bool,
-                      systemLanguage: str,
-                      httpPrefix: str, domainFull: str,
-                      personCache: {}) -> bool:
+def _valid_post_content(base_dir: str, nickname: str, domain: str,
+                        message_json: {}, max_mentions: int, max_emoji: int,
+                        allow_local_network_access: bool, debug: bool,
+                        system_language: str,
+                        http_prefix: str, domain_full: str,
+                        person_cache: {}) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -2197,91 +2222,91 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
     Check if it's a git patch
     Check number of tags and mentions is reasonable
     """
-    if not hasObjectDict(messageJson):
+    if not has_object_dict(message_json):
         return True
-    if not messageJson['object'].get('content'):
+    if not message_json['object'].get('content'):
         return True
 
-    if not messageJson['object'].get('published'):
+    if not message_json['object'].get('published'):
         return False
-    if 'T' not in messageJson['object']['published']:
+    if 'T' not in message_json['object']['published']:
         return False
-    if 'Z' not in messageJson['object']['published']:
+    if 'Z' not in message_json['object']['published']:
         return False
-    if not validPostDate(messageJson['object']['published'], 90, debug):
+    if not valid_post_date(message_json['object']['published'], 90, debug):
         return False
 
     summary = None
-    if messageJson['object'].get('summary'):
-        summary = messageJson['object']['summary']
+    if message_json['object'].get('summary'):
+        summary = message_json['object']['summary']
         if not isinstance(summary, str):
             print('WARN: content warning is not a string')
             return False
-        if summary != validContentWarning(summary):
+        if summary != valid_content_warning(summary):
             print('WARN: invalid content warning ' + summary)
             return False
 
     # check for patches before dangeousMarkup, which excludes code
-    if isGitPatch(baseDir, nickname, domain,
-                  messageJson['object']['type'],
-                  summary,
-                  messageJson['object']['content']):
+    if is_git_patch(base_dir, nickname, domain,
+                    message_json['object']['type'],
+                    summary,
+                    message_json['object']['content']):
         return True
 
-    contentStr = getBaseContentFromPost(messageJson, systemLanguage)
-    if dangerousMarkup(contentStr, allowLocalNetworkAccess):
-        if messageJson['object'].get('id'):
-            print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
+    content_str = get_base_content_from_post(message_json, system_language)
+    if dangerous_markup(content_str, allow_local_network_access):
+        if message_json['object'].get('id'):
+            print('REJECT ARBITRARY HTML: ' + message_json['object']['id'])
         print('REJECT ARBITRARY HTML: bad string in post - ' +
-              contentStr)
+              content_str)
         return False
 
     # check (rough) number of mentions
-    mentionsEst = _estimateNumberOfMentions(contentStr)
-    if mentionsEst > maxMentions:
-        if messageJson['object'].get('id'):
-            print('REJECT HELLTHREAD: ' + messageJson['object']['id'])
+    mentions_est = _estimate_number_of_mentions(content_str)
+    if mentions_est > max_mentions:
+        if message_json['object'].get('id'):
+            print('REJECT HELLTHREAD: ' + message_json['object']['id'])
         print('REJECT HELLTHREAD: Too many mentions in post - ' +
-              contentStr)
+              content_str)
         return False
-    if _estimateNumberOfEmoji(contentStr) > maxEmoji:
-        if messageJson['object'].get('id'):
-            print('REJECT EMOJI OVERLOAD: ' + messageJson['object']['id'])
+    if _estimate_number_of_emoji(content_str) > max_emoji:
+        if message_json['object'].get('id'):
+            print('REJECT EMOJI OVERLOAD: ' + message_json['object']['id'])
         print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
-              contentStr)
+              content_str)
         return False
     # check number of tags
-    if messageJson['object'].get('tag'):
-        if not isinstance(messageJson['object']['tag'], list):
-            messageJson['object']['tag'] = []
+    if message_json['object'].get('tag'):
+        if not isinstance(message_json['object']['tag'], list):
+            message_json['object']['tag'] = []
         else:
-            if len(messageJson['object']['tag']) > int(maxMentions * 2):
-                if messageJson['object'].get('id'):
-                    print('REJECT: ' + messageJson['object']['id'])
+            if len(message_json['object']['tag']) > int(max_mentions * 2):
+                if message_json['object'].get('id'):
+                    print('REJECT: ' + message_json['object']['id'])
                 print('REJECT: Too many tags in post - ' +
-                      messageJson['object']['tag'])
+                      message_json['object']['tag'])
                 return False
     # check that the post is in a language suitable for this account
-    if not understoodPostLanguage(baseDir, nickname, domain,
-                                  messageJson, systemLanguage,
-                                  httpPrefix, domainFull,
-                                  personCache):
+    if not understood_post_language(base_dir, nickname, domain,
+                                    message_json, system_language,
+                                    http_prefix, domain_full,
+                                    person_cache):
         return False
     # check for filtered content
-    if isFiltered(baseDir, nickname, domain, contentStr):
+    if is_filtered(base_dir, nickname, domain, content_str):
         print('REJECT: content filtered')
         return False
-    if messageJson['object'].get('inReplyTo'):
-        if isinstance(messageJson['object']['inReplyTo'], str):
-            originalPostId = messageJson['object']['inReplyTo']
-            postPostFilename = locatePost(baseDir, nickname, domain,
-                                          originalPostId)
-            if postPostFilename:
-                if not _postAllowsComments(postPostFilename):
+    if message_json['object'].get('inReplyTo'):
+        if isinstance(message_json['object']['inReplyTo'], str):
+            original_post_id = message_json['object']['inReplyTo']
+            post_post_filename = locate_post(base_dir, nickname, domain,
+                                             original_post_id)
+            if post_post_filename:
+                if not _post_allow_comments(post_post_filename):
                     print('REJECT: reply to post which does not ' +
-                          'allow comments: ' + originalPostId)
+                          'allow comments: ' + original_post_id)
                     return False
-    if invalidCiphertext(messageJson['object']['content']):
+    if invalid_ciphertext(message_json['object']['content']):
         print('REJECT: malformed ciphertext in content')
         return False
     if debug:
@@ -2289,85 +2314,86 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def _obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
-                              domain: str, onionDomain: str, personCache: {},
-                              postJsonObject: {}, debug: bool,
-                              signingPrivateKeyPem: str) -> None:
+def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
+                                  domain: str, onion_domain: str,
+                                  person_cache: {},
+                                  post_json_object: {}, debug: bool,
+                                  signing_priv_key_pem: str) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return
 
-    if not postJsonObject['object'].get('inReplyTo'):
+    if not post_json_object['object'].get('inReplyTo'):
         return
 
-    lookupActor = postJsonObject['object']['inReplyTo']
-    if not lookupActor:
+    lookup_actor = post_json_object['object']['inReplyTo']
+    if not lookup_actor:
         return
 
-    if not isinstance(lookupActor, str):
+    if not isinstance(lookup_actor, str):
         return
 
-    if not hasUsersPath(lookupActor):
+    if not has_users_path(lookup_actor):
         return
 
-    if '/statuses/' in lookupActor:
-        lookupActor = lookupActor.split('/statuses/')[0]
+    if '/statuses/' in lookup_actor:
+        lookup_actor = lookup_actor.split('/statuses/')[0]
 
     if debug:
-        print('DEBUG: Obtaining actor for reply post ' + lookupActor)
+        print('DEBUG: Obtaining actor for reply post ' + lookup_actor)
 
     for tries in range(6):
-        pubKey = \
-            getPersonPubKey(baseDir, session, lookupActor,
-                            personCache, debug,
-                            __version__, httpPrefix,
-                            domain, onionDomain, signingPrivateKeyPem)
-        if pubKey:
+        pub_key = \
+            get_person_pub_key(base_dir, session, lookup_actor,
+                               person_cache, debug,
+                               __version__, http_prefix,
+                               domain, onion_domain, signing_priv_key_pem)
+        if pub_key:
             if debug:
-                print('DEBUG: public key obtained for reply: ' + lookupActor)
+                print('DEBUG: public key obtained for reply: ' + lookup_actor)
             break
 
         if debug:
             print('DEBUG: Retry ' + str(tries + 1) +
-                  ' obtaining actor for ' + lookupActor)
+                  ' obtaining actor for ' + lookup_actor)
         time.sleep(5)
 
 
-def _dmNotify(baseDir: str, handle: str, url: str) -> None:
+def _dm_notify(base_dir: str, handle: str, url: str) -> None:
     """Creates a notification that a new DM has arrived
     """
-    accountDir = baseDir + '/accounts/' + handle
-    if not os.path.isdir(accountDir):
+    account_dir = base_dir + '/accounts/' + handle
+    if not os.path.isdir(account_dir):
         return
-    dmFile = accountDir + '/.newDM'
-    if not os.path.isfile(dmFile):
+    dm_file = account_dir + '/.newDM'
+    if not os.path.isfile(dm_file):
         try:
-            with open(dmFile, 'w+') as fp:
-                fp.write(url)
+            with open(dm_file, 'w+') as fp_dm:
+                fp_dm.write(url)
         except OSError:
-            print('EX: unable to write ' + dmFile)
+            print('EX: unable to write ' + dm_file)
 
 
-def _alreadyLiked(baseDir: str, nickname: str, domain: str,
-                  postUrl: str, likerActor: str) -> bool:
+def _already_liked(base_dir: str, nickname: str, domain: str,
+                   post_url: str, likerActor: str) -> bool:
     """Is the given post already liked by the given handle?
     """
-    postFilename = \
-        locatePost(baseDir, nickname, domain, postUrl)
-    if not postFilename:
+    post_filename = \
+        locate_post(base_dir, nickname, domain, post_url)
+    if not post_filename:
         return False
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename, 1)
+    if not post_json_object:
         return False
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if not postJsonObject['object'].get('likes'):
+    if not post_json_object['object'].get('likes'):
         return False
-    if not postJsonObject['object']['likes'].get('items'):
+    if not post_json_object['object']['likes'].get('items'):
         return False
-    for like in postJsonObject['object']['likes']['items']:
+    for like in post_json_object['object']['likes']['items']:
         if not like.get('type'):
             continue
         if not like.get('actor'):
@@ -2379,25 +2405,25 @@ def _alreadyLiked(baseDir: str, nickname: str, domain: str,
     return False
 
 
-def _alreadyReacted(baseDir: str, nickname: str, domain: str,
-                    postUrl: str, reactionActor: str,
-                    emojiContent: str) -> bool:
+def _already_reacted(base_dir: str, nickname: str, domain: str,
+                     post_url: str, reaction_actor: str,
+                     emoji_content: str) -> bool:
     """Is the given post already emoji reacted by the given handle?
     """
-    postFilename = \
-        locatePost(baseDir, nickname, domain, postUrl)
-    if not postFilename:
+    post_filename = \
+        locate_post(base_dir, nickname, domain, post_url)
+    if not post_filename:
         return False
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename, 1)
+    if not post_json_object:
         return False
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return False
-    if not postJsonObject['object'].get('reactions'):
+    if not post_json_object['object'].get('reactions'):
         return False
-    if not postJsonObject['object']['reactions'].get('items'):
+    if not post_json_object['object']['reactions'].get('items'):
         return False
-    for react in postJsonObject['object']['reactions']['items']:
+    for react in post_json_object['object']['reactions']['items']:
         if not react.get('type'):
             continue
         if not react.get('content'):
@@ -2406,15 +2432,15 @@ def _alreadyReacted(baseDir: str, nickname: str, domain: str,
             continue
         if react['type'] != 'EmojiReact':
             continue
-        if react['content'] != emojiContent:
+        if react['content'] != emoji_content:
             continue
-        if react['actor'] == reactionActor:
+        if react['actor'] == reaction_actor:
             return True
     return False
 
 
-def _likeNotify(baseDir: str, domain: str, onionDomain: str,
-                handle: str, actor: str, url: str) -> None:
+def _like_notify(base_dir: str, domain: str, onion_domain: str,
+                 handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
     """
     # This is not you liking your own post
@@ -2424,59 +2450,59 @@ def _likeNotify(baseDir: str, domain: str, onionDomain: str,
     # check that the liked post was by this handle
     nickname = handle.split('@')[0]
     if '/' + domain + '/users/' + nickname not in url:
-        if not onionDomain:
+        if not onion_domain:
             return
-        if '/' + onionDomain + '/users/' + nickname not in url:
+        if '/' + onion_domain + '/users/' + nickname not in url:
             return
 
-    accountDir = baseDir + '/accounts/' + handle
+    account_dir = base_dir + '/accounts/' + handle
 
     # are like notifications enabled?
-    notifyLikesEnabledFilename = accountDir + '/.notifyLikes'
-    if not os.path.isfile(notifyLikesEnabledFilename):
+    notify_likes_enabled_filename = account_dir + '/.notifyLikes'
+    if not os.path.isfile(notify_likes_enabled_filename):
         return
 
-    likeFile = accountDir + '/.newLike'
-    if os.path.isfile(likeFile):
-        if '##sent##' not in open(likeFile).read():
+    like_file = account_dir + '/.newLike'
+    if os.path.isfile(like_file):
+        if '##sent##' not in open(like_file).read():
             return
 
-    likerNickname = getNicknameFromActor(actor)
-    likerDomain, likerPort = getDomainFromActor(actor)
-    if likerNickname and likerDomain:
-        likerHandle = likerNickname + '@' + likerDomain
+    liker_nickname = get_nickname_from_actor(actor)
+    liker_domain, _ = get_domain_from_actor(actor)
+    if liker_nickname and liker_domain:
+        liker_handle = liker_nickname + '@' + liker_domain
     else:
-        print('_likeNotify likerHandle: ' +
-              str(likerNickname) + '@' + str(likerDomain))
-        likerHandle = actor
-    if likerHandle != handle:
-        likeStr = likerHandle + ' ' + url + '?likedBy=' + actor
-        prevLikeFile = accountDir + '/.prevLike'
+        print('_like_notify liker_handle: ' +
+              str(liker_nickname) + '@' + str(liker_domain))
+        liker_handle = actor
+    if liker_handle != handle:
+        like_str = liker_handle + ' ' + url + '?likedBy=' + actor
+        prev_like_file = account_dir + '/.prevLike'
         # was there a previous like notification?
-        if os.path.isfile(prevLikeFile):
+        if os.path.isfile(prev_like_file):
             # is it the same as the current notification ?
-            with open(prevLikeFile, 'r') as fp:
-                prevLikeStr = fp.read()
-                if prevLikeStr == likeStr:
+            with open(prev_like_file, 'r') as fp_like:
+                prev_like_str = fp_like.read()
+                if prev_like_str == like_str:
                     return
         try:
-            with open(prevLikeFile, 'w+') as fp:
-                fp.write(likeStr)
+            with open(prev_like_file, 'w+') as fp_like:
+                fp_like.write(like_str)
         except OSError:
             print('EX: ERROR: unable to save previous like notification ' +
-                  prevLikeFile)
+                  prev_like_file)
 
         try:
-            with open(likeFile, 'w+') as fp:
-                fp.write(likeStr)
+            with open(like_file, 'w+') as fp_like:
+                fp_like.write(like_str)
         except OSError:
             print('EX: ERROR: unable to write like notification file ' +
-                  likeFile)
+                  like_file)
 
 
-def _reactionNotify(baseDir: str, domain: str, onionDomain: str,
-                    handle: str, actor: str,
-                    url: str, emojiContent: str) -> None:
+def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
+                     handle: str, actor: str,
+                     url: str, emoji_content: str) -> None:
     """Creates a notification that an emoji reaction has arrived
     """
     # This is not you reacting to your own post
@@ -2486,274 +2512,277 @@ def _reactionNotify(baseDir: str, domain: str, onionDomain: str,
     # check that the reaction post was by this handle
     nickname = handle.split('@')[0]
     if '/' + domain + '/users/' + nickname not in url:
-        if not onionDomain:
+        if not onion_domain:
             return
-        if '/' + onionDomain + '/users/' + nickname not in url:
+        if '/' + onion_domain + '/users/' + nickname not in url:
             return
 
-    accountDir = baseDir + '/accounts/' + handle
+    account_dir = base_dir + '/accounts/' + handle
 
     # are reaction notifications enabled?
-    notifyReactionEnabledFilename = accountDir + '/.notifyReactions'
-    if not os.path.isfile(notifyReactionEnabledFilename):
+    notify_reaction_enabled_filename = account_dir + '/.notifyReactions'
+    if not os.path.isfile(notify_reaction_enabled_filename):
         return
 
-    reactionFile = accountDir + '/.newReaction'
-    if os.path.isfile(reactionFile):
-        if '##sent##' not in open(reactionFile).read():
+    reaction_file = account_dir + '/.newReaction'
+    if os.path.isfile(reaction_file):
+        if '##sent##' not in open(reaction_file).read():
             return
 
-    reactionNickname = getNicknameFromActor(actor)
-    reactionDomain, reactionPort = getDomainFromActor(actor)
-    if reactionNickname and reactionDomain:
-        reactionHandle = reactionNickname + '@' + reactionDomain
+    reaction_nickname = get_nickname_from_actor(actor)
+    reaction_domain, _ = get_domain_from_actor(actor)
+    if reaction_nickname and reaction_domain:
+        reaction_handle = reaction_nickname + '@' + reaction_domain
     else:
-        print('_reactionNotify reactionHandle: ' +
-              str(reactionNickname) + '@' + str(reactionDomain))
-        reactionHandle = actor
-    if reactionHandle != handle:
-        reactionStr = \
-            reactionHandle + ' ' + url + '?reactBy=' + actor + \
-            ';emoj=' + emojiContent
-        prevReactionFile = accountDir + '/.prevReaction'
+        print('_reaction_notify reaction_handle: ' +
+              str(reaction_nickname) + '@' + str(reaction_domain))
+        reaction_handle = actor
+    if reaction_handle != handle:
+        reaction_str = \
+            reaction_handle + ' ' + url + '?reactBy=' + actor + \
+            ';emoj=' + emoji_content
+        prev_reaction_file = account_dir + '/.prevReaction'
         # was there a previous reaction notification?
-        if os.path.isfile(prevReactionFile):
+        if os.path.isfile(prev_reaction_file):
             # is it the same as the current notification ?
-            with open(prevReactionFile, 'r') as fp:
-                prevReactionStr = fp.read()
-                if prevReactionStr == reactionStr:
+            with open(prev_reaction_file, 'r') as fp_react:
+                prev_reaction_str = fp_react.read()
+                if prev_reaction_str == reaction_str:
                     return
         try:
-            with open(prevReactionFile, 'w+') as fp:
-                fp.write(reactionStr)
+            with open(prev_reaction_file, 'w+') as fp_react:
+                fp_react.write(reaction_str)
         except OSError:
             print('EX: ERROR: unable to save previous reaction notification ' +
-                  prevReactionFile)
+                  prev_reaction_file)
 
         try:
-            with open(reactionFile, 'w+') as fp:
-                fp.write(reactionStr)
+            with open(reaction_file, 'w+') as fp_react:
+                fp_react.write(reaction_str)
         except OSError:
             print('EX: ERROR: unable to write reaction notification file ' +
-                  reactionFile)
+                  reaction_file)
 
 
-def _notifyPostArrival(baseDir: str, handle: str, url: str) -> None:
+def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
     """Creates a notification that a new post has arrived.
     This is for followed accounts with the notify checkbox enabled
     on the person options screen
     """
-    accountDir = baseDir + '/accounts/' + handle
-    if not os.path.isdir(accountDir):
+    account_dir = base_dir + '/accounts/' + handle
+    if not os.path.isdir(account_dir):
         return
-    notifyFile = accountDir + '/.newNotifiedPost'
-    if os.path.isfile(notifyFile):
+    notify_file = account_dir + '/.newNotifiedPost'
+    if os.path.isfile(notify_file):
         # check that the same notification is not repeatedly sent
-        with open(notifyFile, 'r') as fp:
-            existingNotificationMessage = fp.read()
-            if url in existingNotificationMessage:
+        with open(notify_file, 'r') as fp_notify:
+            existing_notification_message = fp_notify.read()
+            if url in existing_notification_message:
                 return
     try:
-        with open(notifyFile, 'w+') as fp:
-            fp.write(url)
+        with open(notify_file, 'w+') as fp_notify:
+            fp_notify.write(url)
     except OSError:
-        print('EX: unable to write ' + notifyFile)
+        print('EX: unable to write ' + notify_file)
 
 
-def _replyNotify(baseDir: str, handle: str, url: str) -> None:
+def _reply_notify(base_dir: str, handle: str, url: str) -> None:
     """Creates a notification that a new reply has arrived
     """
-    accountDir = baseDir + '/accounts/' + handle
-    if not os.path.isdir(accountDir):
+    account_dir = base_dir + '/accounts/' + handle
+    if not os.path.isdir(account_dir):
         return
-    replyFile = accountDir + '/.newReply'
-    if not os.path.isfile(replyFile):
+    reply_file = account_dir + '/.newReply'
+    if not os.path.isfile(reply_file):
         try:
-            with open(replyFile, 'w+') as fp:
-                fp.write(url)
+            with open(reply_file, 'w+') as fp_reply:
+                fp_reply.write(url)
         except OSError:
-            print('EX: unable to write ' + replyFile)
+            print('EX: unable to write ' + reply_file)
 
 
-def _gitPatchNotify(baseDir: str, handle: str,
-                    subject: str, content: str,
-                    fromNickname: str, fromDomain: str) -> None:
+def _git_patch_notify(base_dir: str, handle: str,
+                      subject: str, content: str,
+                      from_nickname: str, from_domain: str) -> None:
     """Creates a notification that a new git patch has arrived
     """
-    accountDir = baseDir + '/accounts/' + handle
-    if not os.path.isdir(accountDir):
+    account_dir = base_dir + '/accounts/' + handle
+    if not os.path.isdir(account_dir):
         return
-    patchFile = accountDir + '/.newPatch'
+    patch_file = account_dir + '/.newPatch'
     subject = subject.replace('[PATCH]', '').strip()
-    handle = '@' + fromNickname + '@' + fromDomain
+    handle = '@' + from_nickname + '@' + from_domain
     try:
-        with open(patchFile, 'w+') as fp:
-            fp.write('git ' + handle + ' ' + subject)
+        with open(patch_file, 'w+') as fp_patch:
+            fp_patch.write('git ' + handle + ' ' + subject)
     except OSError:
-        print('EX: unable to write ' + patchFile)
+        print('EX: unable to write ' + patch_file)
 
 
-def _groupHandle(baseDir: str, handle: str) -> bool:
+def _group_handle(base_dir: str, handle: str) -> bool:
     """Is the given account handle a group?
     """
-    actorFile = baseDir + '/accounts/' + handle + '.json'
-    if not os.path.isfile(actorFile):
+    actor_file = base_dir + '/accounts/' + handle + '.json'
+    if not os.path.isfile(actor_file):
         return False
-    actorJson = loadJson(actorFile)
-    if not actorJson:
+    actor_json = load_json(actor_file)
+    if not actor_json:
         return False
-    return actorJson['type'] == 'Group'
+    return actor_json['type'] == 'Group'
 
 
-def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
-                        postJsonObject: {},
-                        httpPrefix: str, federationList: [],
-                        sendThreads: [], postLog: [], cachedWebfingers: {},
-                        personCache: {}, debug: bool,
-                        systemLanguage: str,
-                        onionDomain: str, i2pDomain: str,
-                        signingPrivateKeyPem: str) -> None:
+def _send_to_group_members(session, base_dir: str, handle: str, port: int,
+                           post_json_object: {},
+                           http_prefix: str, federation_list: [],
+                           send_threads: [], post_log: [],
+                           cached_webfingers: {},
+                           person_cache: {}, debug: bool,
+                           system_language: str,
+                           onion_domain: str, i2p_domain: str,
+                           signing_priv_key_pem: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
     if debug:
         print('\n\n=========================================================')
         print(handle + ' sending to group members')
 
-    sharedItemFederationTokens = {}
-    sharedItemsFederatedDomains = []
-    sharedItemsFederatedDomainsStr = \
-        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
-    if sharedItemsFederatedDomainsStr:
-        siFederatedDomainsList = \
-            sharedItemsFederatedDomainsStr.split(',')
-        for sharedFederatedDomain in siFederatedDomainsList:
-            domainStr = sharedFederatedDomain.strip()
-            sharedItemsFederatedDomains.append(domainStr)
+    shared_item_federation_tokens = {}
+    shared_items_federated_domains = []
+    shared_items_federated_domains_str = \
+        get_config_param(base_dir, 'shared_items_federated_domains')
+    if shared_items_federated_domains_str:
+        si_federated_domains_list = \
+            shared_items_federated_domains_str.split(',')
+        for shared_federated_domain in si_federated_domains_list:
+            domain_str = shared_federated_domain.strip()
+            shared_items_federated_domains.append(domain_str)
 
-    followersFile = baseDir + '/accounts/' + handle + '/followers.txt'
-    if not os.path.isfile(followersFile):
+    followers_file = base_dir + '/accounts/' + handle + '/followers.txt'
+    if not os.path.isfile(followers_file):
         return
-    if not postJsonObject.get('to'):
+    if not post_json_object.get('to'):
         return
-    if not postJsonObject.get('object'):
+    if not post_json_object.get('object'):
         return
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return
     nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
-    domainFull = getFullDomain(domain, port)
-    groupActor = localActorUrl(httpPrefix, nickname, domainFull)
-    if groupActor not in postJsonObject['to']:
+    domain_full = get_full_domain(domain, port)
+    group_actor = local_actor_url(http_prefix, nickname, domain_full)
+    if group_actor not in post_json_object['to']:
         return
-    cc = ''
+    cc_str = ''
     nickname = handle.split('@')[0].replace('!', '')
 
     # save to the group outbox so that replies will be to the group
     # rather than the original sender
-    savePostToBox(baseDir, httpPrefix, None,
-                  nickname, domain, postJsonObject, 'outbox')
+    save_post_to_box(base_dir, http_prefix, None,
+                     nickname, domain, post_json_object, 'outbox')
 
-    postId = removeIdEnding(postJsonObject['object']['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     if debug:
-        print('Group announce: ' + postId)
-    announceJson = \
-        createAnnounce(session, baseDir, federationList,
-                       nickname, domain, port,
-                       groupActor + '/followers', cc,
-                       httpPrefix, postId, False, False,
-                       sendThreads, postLog,
-                       personCache, cachedWebfingers,
-                       debug, __version__, signingPrivateKeyPem)
+        print('Group announce: ' + post_id)
+    announce_json = \
+        create_announce(session, base_dir, federation_list,
+                        nickname, domain, port,
+                        group_actor + '/followers', cc_str,
+                        http_prefix, post_id, False, False,
+                        send_threads, post_log,
+                        person_cache, cached_webfingers,
+                        debug, __version__, signing_priv_key_pem)
 
-    sendToFollowersThread(session, baseDir, nickname, domain,
-                          onionDomain, i2pDomain, port,
-                          httpPrefix, federationList,
-                          sendThreads, postLog,
-                          cachedWebfingers, personCache,
-                          announceJson, debug, __version__,
-                          sharedItemsFederatedDomains,
-                          sharedItemFederationTokens,
-                          signingPrivateKeyPem)
+    send_to_followers_thread(session, base_dir, nickname, domain,
+                             onion_domain, i2p_domain, port,
+                             http_prefix, federation_list,
+                             send_threads, post_log,
+                             cached_webfingers, person_cache,
+                             announce_json, debug, __version__,
+                             shared_items_federated_domains,
+                             shared_item_federation_tokens,
+                             signing_priv_key_pem)
 
 
-def _inboxUpdateCalendar(baseDir: str, handle: str,
-                         postJsonObject: {}) -> None:
+def _inbox_update_calendar(base_dir: str, handle: str,
+                           post_json_object: {}) -> None:
     """Detects whether the tag list on a post contains calendar events
     and if so saves the post id to a file in the calendar directory
     for the account
     """
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return
-    if not isinstance(postJsonObject['object']['tag'], list):
-        return
-
-    actor = postJsonObject['actor']
-    actorNickname = getNicknameFromActor(actor)
-    actorDomain, actorPort = getDomainFromActor(actor)
-    handleNickname = handle.split('@')[0]
-    handleDomain = handle.split('@')[1]
-    if not receivingCalendarEvents(baseDir,
-                                   handleNickname, handleDomain,
-                                   actorNickname, actorDomain):
+    if not isinstance(post_json_object['object']['tag'], list):
         return
 
-    postId = removeIdEnding(postJsonObject['id']).replace('/', '#')
+    actor = post_json_object['actor']
+    actor_nickname = get_nickname_from_actor(actor)
+    actor_domain, _ = get_domain_from_actor(actor)
+    handle_nickname = handle.split('@')[0]
+    handle_domain = handle.split('@')[1]
+    if not receiving_calendar_events(base_dir,
+                                     handle_nickname, handle_domain,
+                                     actor_nickname, actor_domain):
+        return
+
+    post_id = remove_id_ending(post_json_object['id']).replace('/', '#')
 
     # look for events within the tags list
-    for tagDict in postJsonObject['object']['tag']:
-        if not tagDict.get('type'):
+    for tag_dict in post_json_object['object']['tag']:
+        if not tag_dict.get('type'):
             continue
-        if tagDict['type'] != 'Event':
+        if tag_dict['type'] != 'Event':
             continue
-        if not tagDict.get('startTime'):
+        if not tag_dict.get('startTime'):
             continue
-        saveEventPost(baseDir, handle, postId, tagDict)
+        save_event_post(base_dir, handle, post_id, tag_dict)
 
 
-def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
-                     destinationFilename: str, debug: bool) -> bool:
+def inbox_update_index(boxname: str, base_dir: str, handle: str,
+                       destination_filename: str, debug: bool) -> bool:
     """Updates the index of received posts
     The new entry is added to the top of the file
     """
-    indexFilename = baseDir + '/accounts/' + handle + '/' + boxname + '.index'
+    index_filename = \
+        base_dir + '/accounts/' + handle + '/' + boxname + '.index'
     if debug:
-        print('DEBUG: Updating index ' + indexFilename)
+        print('DEBUG: Updating index ' + index_filename)
 
-    if '/' + boxname + '/' in destinationFilename:
-        destinationFilename = destinationFilename.split('/' + boxname + '/')[1]
+    if '/' + boxname + '/' in destination_filename:
+        destination_filename = \
+            destination_filename.split('/' + boxname + '/')[1]
 
     # remove the path
-    if '/' in destinationFilename:
-        destinationFilename = destinationFilename.split('/')[-1]
+    if '/' in destination_filename:
+        destination_filename = destination_filename.split('/')[-1]
 
     written = False
-    if os.path.isfile(indexFilename):
+    if os.path.isfile(index_filename):
         try:
-            with open(indexFilename, 'r+') as indexFile:
-                content = indexFile.read()
-                if destinationFilename + '\n' not in content:
-                    indexFile.seek(0, 0)
-                    indexFile.write(destinationFilename + '\n' + content)
+            with open(index_filename, 'r+') as index_file:
+                content = index_file.read()
+                if destination_filename + '\n' not in content:
+                    index_file.seek(0, 0)
+                    index_file.write(destination_filename + '\n' + content)
                 written = True
                 return True
-        except OSError as e:
-            print('EX: Failed to write entry to index ' + str(e))
+        except OSError as ex:
+            print('EX: Failed to write entry to index ' + str(ex))
     else:
         try:
-            with open(indexFilename, 'w+') as indexFile:
-                indexFile.write(destinationFilename + '\n')
+            with open(index_filename, 'w+') as index_file:
+                index_file.write(destination_filename + '\n')
                 written = True
-        except OSError as e:
-            print('EX: Failed to write initial entry to index ' + str(e))
+        except OSError as ex:
+            print('EX: Failed to write initial entry to index ' + str(ex))
 
     return written
 
 
-def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
+def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
     """Updates the time when the given handle last saw the given actor
     This can later be used to indicate if accounts are dormant/abandoned/moved
     """
@@ -2761,128 +2790,130 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
         return
     nickname = handle.split('@')[0]
     domain = handle.split('@')[1]
-    domain = removeDomainPort(domain)
-    accountPath = acctDir(baseDir, nickname, domain)
-    if not os.path.isdir(accountPath):
+    domain = remove_domain_port(domain)
+    account_path = acct_dir(base_dir, nickname, domain)
+    if not os.path.isdir(account_path):
         return
-    if not isFollowingActor(baseDir, nickname, domain, actor):
+    if not is_following_actor(base_dir, nickname, domain, actor):
         return
-    lastSeenPath = accountPath + '/lastseen'
-    if not os.path.isdir(lastSeenPath):
-        os.mkdir(lastSeenPath)
-    lastSeenFilename = lastSeenPath + '/' + actor.replace('/', '#') + '.txt'
-    currTime = datetime.datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    last_seen_path = account_path + '/lastseen'
+    if not os.path.isdir(last_seen_path):
+        os.mkdir(last_seen_path)
+    last_seen_filename = \
+        last_seen_path + '/' + actor.replace('/', '#') + '.txt'
+    curr_time = datetime.datetime.utcnow()
+    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
     # has the value changed?
-    if os.path.isfile(lastSeenFilename):
-        with open(lastSeenFilename, 'r') as lastSeenFile:
-            daysSinceEpochFile = lastSeenFile.read()
-            if int(daysSinceEpochFile) == daysSinceEpoch:
+    if os.path.isfile(last_seen_filename):
+        with open(last_seen_filename, 'r') as last_seen_file:
+            days_since_epoch_file = last_seen_file.read()
+            if int(days_since_epoch_file) == days_since_epoch:
                 # value hasn't changed, so we can save writing anything to file
                 return
     try:
-        with open(lastSeenFilename, 'w+') as lastSeenFile:
-            lastSeenFile.write(str(daysSinceEpoch))
+        with open(last_seen_filename, 'w+') as last_seen_file:
+            last_seen_file.write(str(days_since_epoch))
     except OSError:
-        print('EX: unable to write ' + lastSeenFilename)
+        print('EX: unable to write ' + last_seen_filename)
 
 
-def _bounceDM(senderPostId: str, session, httpPrefix: str,
-              baseDir: str, nickname: str, domain: str, port: int,
-              sendingHandle: str, federationList: [],
-              sendThreads: [], postLog: [],
-              cachedWebfingers: {}, personCache: {},
-              translate: {}, debug: bool,
-              lastBounceMessage: [], systemLanguage: str,
-              signingPrivateKeyPem: str,
-              contentLicenseUrl: str) -> bool:
+def _bounce_dm(senderPostId: str, session, http_prefix: str,
+               base_dir: str, nickname: str, domain: str, port: int,
+               sending_handle: str, federation_list: [],
+               send_threads: [], post_log: [],
+               cached_webfingers: {}, person_cache: {},
+               translate: {}, debug: bool,
+               last_bounce_message: [], system_language: str,
+               signing_priv_key_pem: str,
+               content_license_url: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
     print(nickname + '@' + domain +
-          ' cannot receive DM from ' + sendingHandle +
+          ' cannot receive DM from ' + sending_handle +
           ' because they do not follow them')
 
     # Don't send out bounce messages too frequently.
     # Otherwise an adversary could try to DoS your instance
     # by continuously sending DMs to you
-    currTime = int(time.time())
-    if currTime - lastBounceMessage[0] < 60:
+    curr_time = int(time.time())
+    if curr_time - last_bounce_message[0] < 60:
         return False
 
     # record the last time that a bounce was generated
-    lastBounceMessage[0] = currTime
+    last_bounce_message[0] = curr_time
 
-    senderNickname = sendingHandle.split('@')[0]
-    groupAccount = False
-    if sendingHandle.startswith('!'):
-        sendingHandle = sendingHandle[1:]
-        groupAccount = True
-    senderDomain = sendingHandle.split('@')[1]
-    senderPort = port
-    if ':' in senderDomain:
-        senderPort = getPortFromDomain(senderDomain)
-        senderDomain = removeDomainPort(senderDomain)
-    cc = []
+    sender_nickname = sending_handle.split('@')[0]
+    group_account = False
+    if sending_handle.startswith('!'):
+        sending_handle = sending_handle[1:]
+        group_account = True
+    sender_domain = sending_handle.split('@')[1]
+    sender_port = port
+    if ':' in sender_domain:
+        sender_port = get_port_from_domain(sender_domain)
+        sender_domain = remove_domain_port(sender_domain)
+    cc_list = []
 
     # create the bounce DM
     subject = None
     content = translate['DM bounce']
-    followersOnly = False
-    saveToFile = False
-    clientToServer = False
-    commentsEnabled = False
-    attachImageFilename = None
-    mediaType = None
-    imageDescription = ''
+    followers_only = False
+    save_to_file = False
+    client_to_server = False
+    comments_enabled = False
+    attach_image_filename = None
+    media_type = None
+    image_description = ''
     city = 'London, England'
-    inReplyTo = removeIdEnding(senderPostId)
-    inReplyToAtomUri = None
-    schedulePost = False
-    eventDate = None
-    eventTime = None
+    in_reply_to = remove_id_ending(senderPostId)
+    in_reply_to_atom_uri = None
+    schedule_post = False
+    event_date = None
+    event_time = None
     location = None
-    conversationId = None
-    lowBandwidth = False
-    postJsonObject = \
-        createDirectMessagePost(baseDir, nickname, domain, port,
-                                httpPrefix, content, followersOnly,
-                                saveToFile, clientToServer,
-                                commentsEnabled,
-                                attachImageFilename, mediaType,
-                                imageDescription, city,
-                                inReplyTo, inReplyToAtomUri,
-                                subject, debug, schedulePost,
-                                eventDate, eventTime, location,
-                                systemLanguage, conversationId, lowBandwidth,
-                                contentLicenseUrl)
-    if not postJsonObject:
-        print('WARN: unable to create bounce message to ' + sendingHandle)
+    conversation_id = None
+    low_bandwidth = False
+    post_json_object = \
+        create_direct_message_post(base_dir, nickname, domain, port,
+                                   http_prefix, content, followers_only,
+                                   save_to_file, client_to_server,
+                                   comments_enabled,
+                                   attach_image_filename, media_type,
+                                   image_description, city,
+                                   in_reply_to, in_reply_to_atom_uri,
+                                   subject, debug, schedule_post,
+                                   event_date, event_time, location,
+                                   system_language, conversation_id,
+                                   low_bandwidth,
+                                   content_license_url)
+    if not post_json_object:
+        print('WARN: unable to create bounce message to ' + sending_handle)
         return False
     # bounce DM goes back to the sender
-    print('Sending bounce DM to ' + sendingHandle)
-    sendSignedJson(postJsonObject, session, baseDir,
-                   nickname, domain, port,
-                   senderNickname, senderDomain, senderPort, cc,
-                   httpPrefix, False, False, federationList,
-                   sendThreads, postLog, cachedWebfingers,
-                   personCache, debug, __version__, None, groupAccount,
-                   signingPrivateKeyPem, 7238634)
+    print('Sending bounce DM to ' + sending_handle)
+    send_signed_json(post_json_object, session, base_dir,
+                     nickname, domain, port,
+                     sender_nickname, sender_domain, sender_port, cc_list,
+                     http_prefix, False, False, federation_list,
+                     send_threads, post_log, cached_webfingers,
+                     person_cache, debug, __version__, None, group_account,
+                     signing_priv_key_pem, 7238634)
     return True
 
 
-def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
-               postJsonObject: {}, updateIndexList: [],
-               session, httpPrefix: str,
-               federationList: [],
-               sendThreads: [], postLog: [],
-               cachedWebfingers: {},
-               personCache: {},
-               translate: {}, debug: bool,
-               lastBounceMessage: [],
-               handle: str, systemLanguage: str,
-               signingPrivateKeyPem: str,
-               contentLicenseUrl: str) -> bool:
+def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
+                 post_json_object: {}, update_index_list: [],
+                 session, http_prefix: str,
+                 federation_list: [],
+                 send_threads: [], post_log: [],
+                 cached_webfingers: {},
+                 person_cache: {},
+                 translate: {}, debug: bool,
+                 last_bounce_message: [],
+                 handle: str, system_language: str,
+                 signing_priv_key_pem: str,
+                 content_license_url: str) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -2891,1363 +2922,1383 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
 
     # check for the flag file which indicates to
     # only receive DMs from people you are following
-    followDMsFilename = acctDir(baseDir, nickname, domain) + '/.followDMs'
-    if not os.path.isfile(followDMsFilename):
+    follow_dms_filename = acct_dir(base_dir, nickname, domain) + '/.followDMs'
+    if not os.path.isfile(follow_dms_filename):
         # dm index will be updated
-        updateIndexList.append('dm')
-        actUrl = localActorUrl(httpPrefix, nickname, domain)
-        _dmNotify(baseDir, handle, actUrl + '/dm')
+        update_index_list.append('dm')
+        act_url = local_actor_url(http_prefix, nickname, domain)
+        _dm_notify(base_dir, handle, act_url + '/dm')
         return True
 
     # get the file containing following handles
-    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
     # who is sending a DM?
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return False
-    sendingActor = postJsonObject['actor']
-    sendingActorNickname = \
-        getNicknameFromActor(sendingActor)
-    if not sendingActorNickname:
+    sending_actor = post_json_object['actor']
+    sending_actor_nickname = \
+        get_nickname_from_actor(sending_actor)
+    if not sending_actor_nickname:
         return False
-    sendingActorDomain, sendingActorPort = \
-        getDomainFromActor(sendingActor)
-    if not sendingActorDomain:
+    sending_actor_domain, _ = \
+        get_domain_from_actor(sending_actor)
+    if not sending_actor_domain:
         return False
     # Is this DM to yourself? eg. a reminder
-    sendingToSelf = False
-    if sendingActorNickname == nickname and \
-       sendingActorDomain == domain:
-        sendingToSelf = True
+    sending_to_self = False
+    if sending_actor_nickname == nickname and \
+       sending_actor_domain == domain:
+        sending_to_self = True
 
     # check that the following file exists
-    if not sendingToSelf:
-        if not os.path.isfile(followingFilename):
+    if not sending_to_self:
+        if not os.path.isfile(following_filename):
             print('No following.txt file exists for ' +
                   nickname + '@' + domain +
                   ' so not accepting DM from ' +
-                  sendingActorNickname + '@' +
-                  sendingActorDomain)
+                  sending_actor_nickname + '@' +
+                  sending_actor_domain)
             return False
 
     # Not sending to yourself
-    if not sendingToSelf:
+    if not sending_to_self:
         # get the handle of the DM sender
-        sendH = sendingActorNickname + '@' + sendingActorDomain
+        send_h = sending_actor_nickname + '@' + sending_actor_domain
         # check the follow
-        if not isFollowingActor(baseDir, nickname, domain, sendH):
+        if not is_following_actor(base_dir, nickname, domain, send_h):
             # DMs may always be allowed from some domains
-            if not dmAllowedFromDomain(baseDir,
-                                       nickname, domain,
-                                       sendingActorDomain):
+            if not dm_allowed_from_domain(base_dir,
+                                          nickname, domain,
+                                          sending_actor_domain):
                 # send back a bounce DM
-                if postJsonObject.get('id') and \
-                   postJsonObject.get('object'):
+                if post_json_object.get('id') and \
+                   post_json_object.get('object'):
                     # don't send bounces back to
                     # replies to bounce messages
-                    obj = postJsonObject['object']
+                    obj = post_json_object['object']
                     if isinstance(obj, dict):
                         if not obj.get('inReplyTo'):
-                            bouncedId = removeIdEnding(postJsonObject['id'])
-                            _bounceDM(bouncedId,
-                                      session, httpPrefix,
-                                      baseDir,
-                                      nickname, domain,
-                                      port, sendH,
-                                      federationList,
-                                      sendThreads, postLog,
-                                      cachedWebfingers,
-                                      personCache,
-                                      translate, debug,
-                                      lastBounceMessage,
-                                      systemLanguage,
-                                      signingPrivateKeyPem,
-                                      contentLicenseUrl)
+                            bounced_id = \
+                                remove_id_ending(post_json_object['id'])
+                            _bounce_dm(bounced_id,
+                                       session, http_prefix,
+                                       base_dir,
+                                       nickname, domain,
+                                       port, send_h,
+                                       federation_list,
+                                       send_threads, post_log,
+                                       cached_webfingers,
+                                       person_cache,
+                                       translate, debug,
+                                       last_bounce_message,
+                                       system_language,
+                                       signing_priv_key_pem,
+                                       content_license_url)
                 return False
 
     # dm index will be updated
-    updateIndexList.append('dm')
-    actUrl = localActorUrl(httpPrefix, nickname, domain)
-    _dmNotify(baseDir, handle, actUrl + '/dm')
+    update_index_list.append('dm')
+    act_url = local_actor_url(http_prefix, nickname, domain)
+    _dm_notify(base_dir, handle, act_url + '/dm')
     return True
 
 
-def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
-                         httpPrefix: str, handle: str, debug: bool,
-                         postJsonObject: {}, recentPostsCache: {},
-                         session, onionDomain: str, i2pDomain: str, port: int,
-                         federationList: [], sendThreads: [], postLog: [],
-                         cachedWebfingers: {}, personCache: {},
-                         signingPrivateKeyPem: str,
-                         maxRecentPosts: int, translate: {},
-                         allowDeletion: bool,
-                         YTReplacementDomain: str,
-                         twitterReplacementDomain: str,
-                         peertubeInstances: [],
-                         allowLocalNetworkAccess: bool,
-                         themeName: str, systemLanguage: str,
-                         maxLikeCount: int,
-                         CWlists: {}, listsEnabled: bool) -> None:
+def _receive_question_vote(base_dir: str, nickname: str, domain: str,
+                           http_prefix: str, handle: str, debug: bool,
+                           post_json_object: {}, recent_posts_cache: {},
+                           session, onion_domain: str,
+                           i2p_domain: str, port: int,
+                           federation_list: [], send_threads: [], post_log: [],
+                           cached_webfingers: {}, person_cache: {},
+                           signing_priv_key_pem: str,
+                           max_recent_posts: int, translate: {},
+                           allow_deletion: bool,
+                           yt_replace_domain: str,
+                           twitter_replacement_domain: str,
+                           peertube_instances: [],
+                           allow_local_network_access: bool,
+                           theme_name: str, system_language: str,
+                           max_like_count: int,
+                           cw_lists: {}, lists_enabled: bool) -> None:
     """Updates the votes on a Question/poll
     """
     # if this is a reply to a question then update the votes
-    questionJson, questionPostFilename = \
-        questionUpdateVotes(baseDir, nickname, domain, postJsonObject)
-    if not questionJson:
+    question_json, question_post_filename = \
+        question_update_votes(base_dir, nickname, domain, post_json_object)
+    if not question_json:
         return
-    if not questionPostFilename:
+    if not question_post_filename:
         return
 
-    removePostFromCache(questionJson, recentPostsCache)
+    remove_post_from_cache(question_json, recent_posts_cache)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, questionJson)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain, question_json)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 print('EX: replytoQuestion unable to delete ' +
-                      cachedPostFilename)
+                      cached_post_filename)
 
-    pageNumber = 1
-    showPublishedDateOnly = False
-    showIndividualPostIcons = True
-    manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-    notDM = not isDM(questionJson)
-    individualPostAsHtml(signingPrivateKeyPem, False,
-                         recentPostsCache, maxRecentPosts,
-                         translate, pageNumber, baseDir,
-                         session, cachedWebfingers, personCache,
-                         nickname, domain, port, questionJson,
-                         None, True, allowDeletion,
-                         httpPrefix, __version__,
-                         'inbox',
-                         YTReplacementDomain,
-                         twitterReplacementDomain,
-                         showPublishedDateOnly,
-                         peertubeInstances,
-                         allowLocalNetworkAccess,
-                         themeName, systemLanguage,
-                         maxLikeCount, notDM,
-                         showIndividualPostIcons,
-                         manuallyApproveFollowers,
-                         False, True, False, CWlists,
-                         listsEnabled)
+    page_number = 1
+    show_published_date_only = False
+    show_individual_post_icons = True
+    manually_approve_followers = \
+        follower_approval_active(base_dir, nickname, domain)
+    not_dm = not is_dm(question_json)
+    individual_post_as_html(signing_priv_key_pem, False,
+                            recent_posts_cache, max_recent_posts,
+                            translate, page_number, base_dir,
+                            session, cached_webfingers, person_cache,
+                            nickname, domain, port, question_json,
+                            None, True, allow_deletion,
+                            http_prefix, __version__,
+                            'inbox',
+                            yt_replace_domain,
+                            twitter_replacement_domain,
+                            show_published_date_only,
+                            peertube_instances,
+                            allow_local_network_access,
+                            theme_name, system_language,
+                            max_like_count, not_dm,
+                            show_individual_post_icons,
+                            manually_approve_followers,
+                            False, True, False, cw_lists,
+                            lists_enabled)
 
     # add id to inbox index
-    inboxUpdateIndex('inbox', baseDir, handle,
-                     questionPostFilename, debug)
+    inbox_update_index('inbox', base_dir, handle,
+                       question_post_filename, debug)
 
     # Is this a question created by this instance?
-    idPrefix = httpPrefix + '://' + domain
-    if not questionJson['object']['id'].startswith(idPrefix):
+    id_prefix = http_prefix + '://' + domain
+    if not question_json['object']['id'].startswith(id_prefix):
         return
     # if the votes on a question have changed then
     # send out an update
-    questionJson['type'] = 'Update'
-    sharedItemsFederatedDomains = []
-    sharedItemFederationTokens = {}
-    sendToFollowersThread(session, baseDir, nickname, domain,
-                          onionDomain, i2pDomain, port,
-                          httpPrefix, federationList,
-                          sendThreads, postLog,
-                          cachedWebfingers, personCache,
-                          postJsonObject, debug, __version__,
-                          sharedItemsFederatedDomains,
-                          sharedItemFederationTokens,
-                          signingPrivateKeyPem)
+    question_json['type'] = 'Update'
+    shared_items_federated_domains = []
+    shared_item_federation_tokens = {}
+    send_to_followers_thread(session, base_dir, nickname, domain,
+                             onion_domain, i2p_domain, port,
+                             http_prefix, federation_list,
+                             send_threads, post_log,
+                             cached_webfingers, person_cache,
+                             post_json_object, debug, __version__,
+                             shared_items_federated_domains,
+                             shared_item_federation_tokens,
+                             signing_priv_key_pem)
 
 
-def _createReplyNotificationFile(baseDir: str, nickname: str, domain: str,
-                                 handle: str, debug: bool, postIsDM: bool,
-                                 postJsonObject: {}, actor: str,
-                                 updateIndexList: [], httpPrefix: str,
-                                 defaultReplyIntervalHours: int) -> bool:
+def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
+                                    handle: str, debug: bool, post_is_dm: bool,
+                                    post_json_object: {}, actor: str,
+                                    update_index_list: [], http_prefix: str,
+                                    default_reply_interval_hrs: int) -> bool:
     """Generates a file indicating that a new reply has arrived
     The file can then be used by other systems to create a notification
     xmpp, matrix, email, etc
     """
-    isReplyToMutedPost = False
-    if postIsDM:
-        return isReplyToMutedPost
-    if not isReply(postJsonObject, actor):
-        return isReplyToMutedPost
+    is_reply_to_muted_post = False
+    if post_is_dm:
+        return is_reply_to_muted_post
+    if not is_reply(post_json_object, actor):
+        return is_reply_to_muted_post
     if nickname == 'inbox':
-        return isReplyToMutedPost
+        return is_reply_to_muted_post
     # replies index will be updated
-    updateIndexList.append('tlreplies')
+    update_index_list.append('tlreplies')
 
-    conversationId = None
-    if postJsonObject['object'].get('conversation'):
-        conversationId = postJsonObject['object']['conversation']
+    conversation_id = None
+    if post_json_object['object'].get('conversation'):
+        conversation_id = post_json_object['object']['conversation']
 
-    if not postJsonObject['object'].get('inReplyTo'):
-        return isReplyToMutedPost
-    inReplyTo = postJsonObject['object']['inReplyTo']
-    if not inReplyTo:
-        return isReplyToMutedPost
-    if not isinstance(inReplyTo, str):
-        return isReplyToMutedPost
-    if not isMuted(baseDir, nickname, domain, inReplyTo, conversationId):
+    if not post_json_object['object'].get('inReplyTo'):
+        return is_reply_to_muted_post
+    in_reply_to = post_json_object['object']['inReplyTo']
+    if not in_reply_to:
+        return is_reply_to_muted_post
+    if not isinstance(in_reply_to, str):
+        return is_reply_to_muted_post
+    if not is_muted_conv(base_dir, nickname, domain, in_reply_to,
+                         conversation_id):
         # check if the reply is within the allowed time period
         # after publication
-        replyIntervalHours = \
-            getReplyIntervalHours(baseDir, nickname, domain,
-                                  defaultReplyIntervalHours)
-        if canReplyTo(baseDir, nickname, domain, inReplyTo,
-                      replyIntervalHours):
-            actUrl = localActorUrl(httpPrefix, nickname, domain)
-            _replyNotify(baseDir, handle, actUrl + '/tlreplies')
+        reply_interval_hours = \
+            get_reply_interval_hours(base_dir, nickname, domain,
+                                     default_reply_interval_hrs)
+        if can_reply_to(base_dir, nickname, domain, in_reply_to,
+                        reply_interval_hours):
+            act_url = local_actor_url(http_prefix, nickname, domain)
+            _reply_notify(base_dir, handle, act_url + '/tlreplies')
         else:
             if debug:
-                print('Reply to ' + inReplyTo + ' is outside of the ' +
-                      'permitted interval of ' + str(replyIntervalHours) +
+                print('Reply to ' + in_reply_to + ' is outside of the ' +
+                      'permitted interval of ' + str(reply_interval_hours) +
                       ' hours')
             return False
     else:
-        isReplyToMutedPost = True
-    return isReplyToMutedPost
+        is_reply_to_muted_post = True
+    return is_reply_to_muted_post
 
 
-def _lowFrequencyPostNotification(baseDir: str, httpPrefix: str, nickname: str,
-                                  domain: str, port: int, handle: str,
-                                  postIsDM: bool, jsonObj: {}) -> None:
+def _low_frequency_post_notification(base_dir: str, http_prefix: str,
+                                     nickname: str, domain: str,
+                                     port: int, handle: str,
+                                     post_is_dm: bool, json_obj: {}) -> None:
     """Should we notify that a post from this person has arrived?
     This is for cases where the notify checkbox is enabled on the
     person options screen
     """
-    if postIsDM:
+    if post_is_dm:
         return
-    if not jsonObj:
+    if not json_obj:
         return
-    if not jsonObj.get('attributedTo'):
+    if not json_obj.get('attributedTo'):
         return
-    if not jsonObj.get('id'):
+    if not json_obj.get('id'):
         return
-    attributedTo = jsonObj['attributedTo']
-    if not isinstance(attributedTo, str):
+    attributed_to = json_obj['attributedTo']
+    if not isinstance(attributed_to, str):
         return
-    fromNickname = getNicknameFromActor(attributedTo)
-    fromDomain, fromPort = getDomainFromActor(attributedTo)
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
-    if notifyWhenPersonPosts(baseDir, nickname, domain,
-                             fromNickname, fromDomainFull):
-        postId = removeIdEnding(jsonObj['id'])
-        domFull = getFullDomain(domain, port)
-        postLink = \
-            localActorUrl(httpPrefix, nickname, domFull) + \
-            '?notifypost=' + postId.replace('/', '-')
-        _notifyPostArrival(baseDir, handle, postLink)
+    from_nickname = get_nickname_from_actor(attributed_to)
+    from_domain, from_port = get_domain_from_actor(attributed_to)
+    from_domain_full = get_full_domain(from_domain, from_port)
+    if notify_when_person_posts(base_dir, nickname, domain,
+                                from_nickname, from_domain_full):
+        post_id = remove_id_ending(json_obj['id'])
+        dom_full = get_full_domain(domain, port)
+        post_link = \
+            local_actor_url(http_prefix, nickname, dom_full) + \
+            '?notifypost=' + post_id.replace('/', '-')
+        _notify_post_arrival(base_dir, handle, post_link)
 
 
-def _checkForGitPatches(baseDir: str, nickname: str, domain: str,
-                        handle: str, jsonObj: {}) -> int:
+def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
+                           handle: str, json_obj: {}) -> int:
     """check for incoming git patches
     """
-    if not jsonObj:
+    if not json_obj:
         return 0
-    if not jsonObj.get('content'):
+    if not json_obj.get('content'):
         return 0
-    if not jsonObj.get('summary'):
+    if not json_obj.get('summary'):
         return 0
-    if not jsonObj.get('attributedTo'):
+    if not json_obj.get('attributedTo'):
         return 0
-    attributedTo = jsonObj['attributedTo']
-    if not isinstance(attributedTo, str):
+    attributed_to = json_obj['attributedTo']
+    if not isinstance(attributed_to, str):
         return 0
-    fromNickname = getNicknameFromActor(attributedTo)
-    fromDomain, fromPort = getDomainFromActor(attributedTo)
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
-    if receiveGitPatch(baseDir, nickname, domain,
-                       jsonObj['type'], jsonObj['summary'],
-                       jsonObj['content'],
-                       fromNickname, fromDomainFull):
-        _gitPatchNotify(baseDir, handle,
-                        jsonObj['summary'], jsonObj['content'],
-                        fromNickname, fromDomainFull)
+    from_nickname = get_nickname_from_actor(attributed_to)
+    from_domain, from_port = get_domain_from_actor(attributed_to)
+    from_domain_full = get_full_domain(from_domain, from_port)
+    if receive_git_patch(base_dir, nickname, domain,
+                         json_obj['type'], json_obj['summary'],
+                         json_obj['content'],
+                         from_nickname, from_domain_full):
+        _git_patch_notify(base_dir, handle,
+                          json_obj['summary'], json_obj['content'],
+                          from_nickname, from_domain_full)
         return 1
-    elif '[PATCH]' in jsonObj['content']:
-        print('WARN: git patch not accepted - ' + jsonObj['summary'])
+    if '[PATCH]' in json_obj['content']:
+        print('WARN: git patch not accepted - ' + json_obj['summary'])
         return 2
     return 0
 
 
-def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
-                       session, keyId: str, handle: str, messageJson: {},
-                       baseDir: str, httpPrefix: str, sendThreads: [],
-                       postLog: [], cachedWebfingers: {}, personCache: {},
-                       queue: [], domain: str,
-                       onionDomain: str, i2pDomain: str,
-                       port: int, proxyType: str,
-                       federationList: [], debug: bool,
-                       queueFilename: str, destinationFilename: str,
-                       maxReplies: int, allowDeletion: bool,
-                       maxMentions: int, maxEmoji: int, translate: {},
-                       unitTest: bool,
-                       YTReplacementDomain: str,
-                       twitterReplacementDomain: str,
-                       showPublishedDateOnly: bool,
-                       allowLocalNetworkAccess: bool,
-                       peertubeInstances: [],
-                       lastBounceMessage: [],
-                       themeName: str, systemLanguage: str,
-                       maxLikeCount: int,
-                       signingPrivateKeyPem: str,
-                       defaultReplyIntervalHours: int,
-                       CWlists: {}, listsEnabled: str,
-                       contentLicenseUrl: str) -> bool:
+def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
+                         session, key_id: str, handle: str, message_json: {},
+                         base_dir: str, http_prefix: str, send_threads: [],
+                         post_log: [], cached_webfingers: {}, person_cache: {},
+                         queue: [], domain: str,
+                         onion_domain: str, i2p_domain: str,
+                         port: int, proxy_type: str,
+                         federation_list: [], debug: bool,
+                         queue_filename: str, destination_filename: str,
+                         max_replies: int, allow_deletion: bool,
+                         max_mentions: int, max_emoji: int, translate: {},
+                         unit_test: bool,
+                         yt_replace_domain: str,
+                         twitter_replacement_domain: str,
+                         show_published_date_only: bool,
+                         allow_local_network_access: bool,
+                         peertube_instances: [],
+                         last_bounce_message: [],
+                         theme_name: str, system_language: str,
+                         max_like_count: int,
+                         signing_priv_key_pem: str,
+                         default_reply_interval_hrs: int,
+                         cw_lists: {}, lists_enabled: str,
+                         content_license_url: str) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
-    actor = keyId
+    actor = key_id
     if '#' in actor:
-        actor = keyId.split('#')[0]
+        actor = key_id.split('#')[0]
 
-    _updateLastSeen(baseDir, handle, actor)
+    _update_last_seen(base_dir, handle, actor)
 
-    postIsDM = False
-    isGroup = _groupHandle(baseDir, handle)
+    post_is_dm = False
+    is_group = _group_handle(base_dir, handle)
 
-    if _receiveLike(recentPostsCache,
-                    session, handle, isGroup,
-                    baseDir, httpPrefix,
-                    domain, port,
-                    onionDomain,
-                    sendThreads, postLog,
-                    cachedWebfingers,
-                    personCache,
-                    messageJson,
-                    federationList,
-                    debug, signingPrivateKeyPem,
-                    maxRecentPosts, translate,
-                    allowDeletion,
-                    YTReplacementDomain,
-                    twitterReplacementDomain,
-                    peertubeInstances,
-                    allowLocalNetworkAccess,
-                    themeName, systemLanguage,
-                    maxLikeCount, CWlists, listsEnabled):
+    if _receive_like(recent_posts_cache,
+                     session, handle, is_group,
+                     base_dir, http_prefix,
+                     domain, port,
+                     onion_domain,
+                     send_threads, post_log,
+                     cached_webfingers,
+                     person_cache,
+                     message_json,
+                     federation_list,
+                     debug, signing_priv_key_pem,
+                     max_recent_posts, translate,
+                     allow_deletion,
+                     yt_replace_domain,
+                     twitter_replacement_domain,
+                     peertube_instances,
+                     allow_local_network_access,
+                     theme_name, system_language,
+                     max_like_count, cw_lists, lists_enabled):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         return False
 
-    if _receiveUndoLike(recentPostsCache,
-                        session, handle, isGroup,
-                        baseDir, httpPrefix,
-                        domain, port,
-                        sendThreads, postLog,
-                        cachedWebfingers,
-                        personCache,
-                        messageJson,
-                        federationList,
-                        debug, signingPrivateKeyPem,
-                        maxRecentPosts, translate,
-                        allowDeletion,
-                        YTReplacementDomain,
-                        twitterReplacementDomain,
-                        peertubeInstances,
-                        allowLocalNetworkAccess,
-                        themeName, systemLanguage,
-                        maxLikeCount, CWlists, listsEnabled):
+    if _receive_undo_like(recent_posts_cache,
+                          session, handle, is_group,
+                          base_dir, http_prefix,
+                          domain, port,
+                          send_threads, post_log,
+                          cached_webfingers,
+                          person_cache,
+                          message_json,
+                          federation_list,
+                          debug, signing_priv_key_pem,
+                          max_recent_posts, translate,
+                          allow_deletion,
+                          yt_replace_domain,
+                          twitter_replacement_domain,
+                          peertube_instances,
+                          allow_local_network_access,
+                          theme_name, system_language,
+                          max_like_count, cw_lists, lists_enabled):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         return False
 
-    if _receiveReaction(recentPostsCache,
-                        session, handle, isGroup,
-                        baseDir, httpPrefix,
-                        domain, port,
-                        onionDomain,
-                        sendThreads, postLog,
-                        cachedWebfingers,
-                        personCache,
-                        messageJson,
-                        federationList,
-                        debug, signingPrivateKeyPem,
-                        maxRecentPosts, translate,
-                        allowDeletion,
-                        YTReplacementDomain,
-                        twitterReplacementDomain,
-                        peertubeInstances,
-                        allowLocalNetworkAccess,
-                        themeName, systemLanguage,
-                        maxLikeCount, CWlists, listsEnabled):
+    if _receive_reaction(recent_posts_cache,
+                         session, handle, is_group,
+                         base_dir, http_prefix,
+                         domain, port,
+                         onion_domain,
+                         send_threads, post_log,
+                         cached_webfingers,
+                         person_cache,
+                         message_json,
+                         federation_list,
+                         debug, signing_priv_key_pem,
+                         max_recent_posts, translate,
+                         allow_deletion,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         peertube_instances,
+                         allow_local_network_access,
+                         theme_name, system_language,
+                         max_like_count, cw_lists, lists_enabled):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         return False
 
-    if _receiveUndoReaction(recentPostsCache,
-                            session, handle, isGroup,
-                            baseDir, httpPrefix,
-                            domain, port,
-                            sendThreads, postLog,
-                            cachedWebfingers,
-                            personCache,
-                            messageJson,
-                            federationList,
-                            debug, signingPrivateKeyPem,
-                            maxRecentPosts, translate,
-                            allowDeletion,
-                            YTReplacementDomain,
-                            twitterReplacementDomain,
-                            peertubeInstances,
-                            allowLocalNetworkAccess,
-                            themeName, systemLanguage,
-                            maxLikeCount, CWlists, listsEnabled):
+    if _receive_undo_reaction(recent_posts_cache,
+                              session, handle, is_group,
+                              base_dir, http_prefix,
+                              domain, port,
+                              send_threads, post_log,
+                              cached_webfingers,
+                              person_cache,
+                              message_json,
+                              federation_list,
+                              debug, signing_priv_key_pem,
+                              max_recent_posts, translate,
+                              allow_deletion,
+                              yt_replace_domain,
+                              twitter_replacement_domain,
+                              peertube_instances,
+                              allow_local_network_access,
+                              theme_name, system_language,
+                              max_like_count, cw_lists, lists_enabled):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
         return False
 
-    if _receiveBookmark(recentPostsCache,
-                        session, handle, isGroup,
-                        baseDir, httpPrefix,
-                        domain, port,
-                        sendThreads, postLog,
-                        cachedWebfingers,
-                        personCache,
-                        messageJson,
-                        federationList,
-                        debug, signingPrivateKeyPem,
-                        maxRecentPosts, translate,
-                        allowDeletion,
-                        YTReplacementDomain,
-                        twitterReplacementDomain,
-                        peertubeInstances,
-                        allowLocalNetworkAccess,
-                        themeName, systemLanguage,
-                        maxLikeCount, CWlists, listsEnabled):
+    if _receive_bookmark(recent_posts_cache,
+                         session, handle, is_group,
+                         base_dir, http_prefix,
+                         domain, port,
+                         send_threads, post_log,
+                         cached_webfingers,
+                         person_cache,
+                         message_json,
+                         federation_list,
+                         debug, signing_priv_key_pem,
+                         max_recent_posts, translate,
+                         allow_deletion,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         peertube_instances,
+                         allow_local_network_access,
+                         theme_name, system_language,
+                         max_like_count, cw_lists, lists_enabled):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         return False
 
-    if _receiveUndoBookmark(recentPostsCache,
-                            session, handle, isGroup,
-                            baseDir, httpPrefix,
-                            domain, port,
-                            sendThreads, postLog,
-                            cachedWebfingers,
-                            personCache,
-                            messageJson,
-                            federationList,
-                            debug, signingPrivateKeyPem,
-                            maxRecentPosts, translate,
-                            allowDeletion,
-                            YTReplacementDomain,
-                            twitterReplacementDomain,
-                            peertubeInstances,
-                            allowLocalNetworkAccess,
-                            themeName, systemLanguage,
-                            maxLikeCount, CWlists, listsEnabled):
+    if _receive_undo_bookmark(recent_posts_cache,
+                              session, handle, is_group,
+                              base_dir, http_prefix,
+                              domain, port,
+                              send_threads, post_log,
+                              cached_webfingers,
+                              person_cache,
+                              message_json,
+                              federation_list,
+                              debug, signing_priv_key_pem,
+                              max_recent_posts, translate,
+                              allow_deletion,
+                              yt_replace_domain,
+                              twitter_replacement_domain,
+                              peertube_instances,
+                              allow_local_network_access,
+                              theme_name, system_language,
+                              max_like_count, cw_lists, lists_enabled):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
 
-    if isCreateInsideAnnounce(messageJson):
-        messageJson = messageJson['object']
+    if is_create_inside_announce(message_json):
+        message_json = message_json['object']
 
-    if _receiveAnnounce(recentPostsCache,
-                        session, handle, isGroup,
-                        baseDir, httpPrefix,
-                        domain, onionDomain, port,
-                        sendThreads, postLog,
-                        cachedWebfingers,
-                        personCache,
-                        messageJson,
-                        federationList,
-                        debug, translate,
-                        YTReplacementDomain,
-                        twitterReplacementDomain,
-                        allowLocalNetworkAccess,
-                        themeName, systemLanguage,
-                        signingPrivateKeyPem,
-                        maxRecentPosts,
-                        allowDeletion,
-                        peertubeInstances,
-                        maxLikeCount, CWlists, listsEnabled):
+    if _receive_announce(recent_posts_cache,
+                         session, handle, is_group,
+                         base_dir, http_prefix,
+                         domain, onion_domain, port,
+                         send_threads, post_log,
+                         cached_webfingers,
+                         person_cache,
+                         message_json,
+                         federation_list,
+                         debug, translate,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         allow_local_network_access,
+                         theme_name, system_language,
+                         signing_priv_key_pem,
+                         max_recent_posts,
+                         allow_deletion,
+                         peertube_instances,
+                         max_like_count, cw_lists, lists_enabled):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
-    if _receiveUndoAnnounce(recentPostsCache,
-                            session, handle, isGroup,
-                            baseDir, httpPrefix,
-                            domain, port,
-                            sendThreads, postLog,
-                            cachedWebfingers,
-                            personCache,
-                            messageJson,
-                            federationList,
-                            debug):
+    if _receive_undo_announce(recent_posts_cache,
+                              session, handle, is_group,
+                              base_dir, http_prefix,
+                              domain, port,
+                              send_threads, post_log,
+                              cached_webfingers,
+                              person_cache,
+                              message_json,
+                              federation_list,
+                              debug):
         if debug:
             print('DEBUG: Undo announce accepted from ' + actor)
         return False
 
-    if _receiveDelete(session, handle, isGroup,
-                      baseDir, httpPrefix,
-                      domain, port,
-                      sendThreads, postLog,
-                      cachedWebfingers,
-                      personCache,
-                      messageJson,
-                      federationList,
-                      debug, allowDeletion,
-                      recentPostsCache):
+    if _receive_delete(session, handle, is_group,
+                       base_dir, http_prefix,
+                       domain, port,
+                       send_threads, post_log,
+                       cached_webfingers,
+                       person_cache,
+                       message_json,
+                       federation_list,
+                       debug, allow_deletion,
+                       recent_posts_cache):
         if debug:
             print('DEBUG: Delete accepted from ' + actor)
         return False
 
     if debug:
         print('DEBUG: initial checks passed')
-        print('copy queue file from ' + queueFilename +
-              ' to ' + destinationFilename)
+        print('copy queue file from ' + queue_filename +
+              ' to ' + destination_filename)
 
-    if os.path.isfile(destinationFilename):
+    if os.path.isfile(destination_filename):
         return True
 
-    if messageJson.get('postNickname'):
-        postJsonObject = messageJson['post']
+    if message_json.get('postNickname'):
+        post_json_object = message_json['post']
     else:
-        postJsonObject = messageJson
+        post_json_object = message_json
 
     nickname = handle.split('@')[0]
-    jsonObj = None
-    domainFull = getFullDomain(domain, port)
-    if _validPostContent(baseDir, nickname, domain,
-                         postJsonObject, maxMentions, maxEmoji,
-                         allowLocalNetworkAccess, debug,
-                         systemLanguage, httpPrefix,
-                         domainFull, personCache):
+    json_obj = None
+    domain_full = get_full_domain(domain, port)
+    if _valid_post_content(base_dir, nickname, domain,
+                           post_json_object, max_mentions, max_emoji,
+                           allow_local_network_access, debug,
+                           system_language, http_prefix,
+                           domain_full, person_cache):
         # is the sending actor valid?
-        if not validSendingActor(session, baseDir, nickname, domain,
-                                 personCache, postJsonObject,
-                                 signingPrivateKeyPem, debug, unitTest):
+        if not valid_sending_actor(session, base_dir, nickname, domain,
+                                   person_cache, post_json_object,
+                                   signing_priv_key_pem, debug, unit_test):
             return False
 
-        if postJsonObject.get('object'):
-            jsonObj = postJsonObject['object']
-            if not isinstance(jsonObj, dict):
-                jsonObj = None
+        if post_json_object.get('object'):
+            json_obj = post_json_object['object']
+            if not isinstance(json_obj, dict):
+                json_obj = None
         else:
-            jsonObj = postJsonObject
+            json_obj = post_json_object
 
-        if _checkForGitPatches(baseDir, nickname, domain,
-                               handle, jsonObj) == 2:
+        if _check_for_git_patches(base_dir, nickname, domain,
+                                  handle, json_obj) == 2:
             return False
 
         # replace YouTube links, so they get less tracking data
-        replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
+        replace_you_tube(post_json_object, yt_replace_domain, system_language)
         # replace twitter link domains, so that you can view twitter posts
         # without having an account
-        replaceTwitter(postJsonObject, twitterReplacementDomain,
-                       systemLanguage)
+        replace_twitter(post_json_object, twitter_replacement_domain,
+                        system_language)
 
         # list of indexes to be updated
-        updateIndexList = ['inbox']
-        populateReplies(baseDir, httpPrefix, domain, postJsonObject,
-                        maxReplies, debug)
+        update_index_list = ['inbox']
+        populate_replies(base_dir, http_prefix, domain, post_json_object,
+                         max_replies, debug)
 
-        _receiveQuestionVote(baseDir, nickname, domain,
-                             httpPrefix, handle, debug,
-                             postJsonObject, recentPostsCache,
-                             session, onionDomain, i2pDomain, port,
-                             federationList, sendThreads, postLog,
-                             cachedWebfingers, personCache,
-                             signingPrivateKeyPem,
-                             maxRecentPosts, translate,
-                             allowDeletion,
-                             YTReplacementDomain,
-                             twitterReplacementDomain,
-                             peertubeInstances,
-                             allowLocalNetworkAccess,
-                             themeName, systemLanguage,
-                             maxLikeCount,
-                             CWlists, listsEnabled)
+        _receive_question_vote(base_dir, nickname, domain,
+                               http_prefix, handle, debug,
+                               post_json_object, recent_posts_cache,
+                               session, onion_domain, i2p_domain, port,
+                               federation_list, send_threads, post_log,
+                               cached_webfingers, person_cache,
+                               signing_priv_key_pem,
+                               max_recent_posts, translate,
+                               allow_deletion,
+                               yt_replace_domain,
+                               twitter_replacement_domain,
+                               peertube_instances,
+                               allow_local_network_access,
+                               theme_name, system_language,
+                               max_like_count,
+                               cw_lists, lists_enabled)
 
-        isReplyToMutedPost = False
+        is_reply_to_muted_post = False
 
-        if not isGroup:
+        if not is_group:
             # create a DM notification file if needed
-            postIsDM = isDM(postJsonObject)
-            if postIsDM:
-                if not _isValidDM(baseDir, nickname, domain, port,
-                                  postJsonObject, updateIndexList,
-                                  session, httpPrefix,
-                                  federationList,
-                                  sendThreads, postLog,
-                                  cachedWebfingers,
-                                  personCache,
-                                  translate, debug,
-                                  lastBounceMessage,
-                                  handle, systemLanguage,
-                                  signingPrivateKeyPem,
-                                  contentLicenseUrl):
+            post_is_dm = is_dm(post_json_object)
+            if post_is_dm:
+                if not _is_valid_dm(base_dir, nickname, domain, port,
+                                    post_json_object, update_index_list,
+                                    session, http_prefix,
+                                    federation_list,
+                                    send_threads, post_log,
+                                    cached_webfingers,
+                                    person_cache,
+                                    translate, debug,
+                                    last_bounce_message,
+                                    handle, system_language,
+                                    signing_priv_key_pem,
+                                    content_license_url):
                     return False
 
             # get the actor being replied to
-            actor = localActorUrl(httpPrefix, nickname, domainFull)
+            actor = local_actor_url(http_prefix, nickname, domain_full)
 
             # create a reply notification file if needed
-            isReplyToMutedPost = \
-                _createReplyNotificationFile(baseDir, nickname, domain,
-                                             handle, debug, postIsDM,
-                                             postJsonObject, actor,
-                                             updateIndexList, httpPrefix,
-                                             defaultReplyIntervalHours)
+            is_reply_to_muted_post = \
+                _create_reply_notification_file(base_dir, nickname, domain,
+                                                handle, debug, post_is_dm,
+                                                post_json_object, actor,
+                                                update_index_list, http_prefix,
+                                                default_reply_interval_hrs)
 
-            if isImageMedia(session, baseDir, httpPrefix,
-                            nickname, domain, postJsonObject,
-                            translate,
-                            YTReplacementDomain,
-                            twitterReplacementDomain,
-                            allowLocalNetworkAccess,
-                            recentPostsCache, debug, systemLanguage,
-                            domainFull, personCache, signingPrivateKeyPem):
+            if is_image_media(session, base_dir, http_prefix,
+                              nickname, domain, post_json_object,
+                              translate,
+                              yt_replace_domain,
+                              twitter_replacement_domain,
+                              allow_local_network_access,
+                              recent_posts_cache, debug, system_language,
+                              domain_full, person_cache, signing_priv_key_pem):
                 # media index will be updated
-                updateIndexList.append('tlmedia')
-            if isBlogPost(postJsonObject):
+                update_index_list.append('tlmedia')
+            if is_blog_post(post_json_object):
                 # blogs index will be updated
-                updateIndexList.append('tlblogs')
+                update_index_list.append('tlblogs')
 
         # get the avatar for a reply/announce
-        _obtainAvatarForReplyPost(session, baseDir,
-                                  httpPrefix, domain, onionDomain,
-                                  personCache, postJsonObject, debug,
-                                  signingPrivateKeyPem)
+        _obtain_avatar_for_reply_post(session, base_dir,
+                                      http_prefix, domain, onion_domain,
+                                      person_cache, post_json_object, debug,
+                                      signing_priv_key_pem)
 
         # save the post to file
-        if saveJson(postJsonObject, destinationFilename):
-            _lowFrequencyPostNotification(baseDir, httpPrefix,
-                                          nickname, domain, port,
-                                          handle, postIsDM, jsonObj)
+        if save_json(post_json_object, destination_filename):
+            _low_frequency_post_notification(base_dir, http_prefix,
+                                             nickname, domain, port,
+                                             handle, post_is_dm, json_obj)
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
-            if isReplyToMutedPost:
-                print('MUTE REPLY: ' + destinationFilename)
-                destinationFilenameMuted = destinationFilename + '.muted'
+            if is_reply_to_muted_post:
+                print('MUTE REPLY: ' + destination_filename)
+                destination_filename_muted = destination_filename + '.muted'
                 try:
-                    with open(destinationFilenameMuted, 'w+') as muteFile:
-                        muteFile.write('\n')
+                    with open(destination_filename_muted, 'w+') as mute_file:
+                        mute_file.write('\n')
                 except OSError:
-                    print('EX: unable to write ' + destinationFilenameMuted)
+                    print('EX: unable to write ' + destination_filename_muted)
 
             # update the indexes for different timelines
-            for boxname in updateIndexList:
-                if not inboxUpdateIndex(boxname, baseDir, handle,
-                                        destinationFilename, debug):
+            for boxname in update_index_list:
+                if not inbox_update_index(boxname, base_dir, handle,
+                                          destination_filename, debug):
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if boxname == 'inbox':
-                        if isRecentPost(postJsonObject, 3):
-                            domainFull = getFullDomain(domain, port)
-                            updateSpeaker(baseDir, httpPrefix,
-                                          nickname, domain, domainFull,
-                                          postJsonObject, personCache,
-                                          translate, None, themeName)
-                    if not unitTest:
+                        if is_recent_post(post_json_object, 3):
+                            domain_full = get_full_domain(domain, port)
+                            update_speaker(base_dir, http_prefix,
+                                           nickname, domain, domain_full,
+                                           post_json_object, person_cache,
+                                           translate, None, theme_name)
+                    if not unit_test:
                         if debug:
                             print('Saving inbox post as html to cache')
 
-                        htmlCacheStartTime = time.time()
-                        handleName = handle.split('@')[0]
-                        _inboxStorePostToHtmlCache(recentPostsCache,
-                                                   maxRecentPosts,
-                                                   translate, baseDir,
-                                                   httpPrefix,
-                                                   session, cachedWebfingers,
-                                                   personCache,
-                                                   handleName,
-                                                   domain, port,
-                                                   postJsonObject,
-                                                   allowDeletion,
-                                                   boxname,
-                                                   showPublishedDateOnly,
-                                                   peertubeInstances,
-                                                   allowLocalNetworkAccess,
-                                                   themeName, systemLanguage,
-                                                   maxLikeCount,
-                                                   signingPrivateKeyPem,
-                                                   CWlists, listsEnabled)
+                        html_cache_start_time = time.time()
+                        handle_name = handle.split('@')[0]
+                        allow_local_net_access = allow_local_network_access
+                        show_pub_date_only = show_published_date_only
+                        _inbox_store_post_to_html_cache(recent_posts_cache,
+                                                        max_recent_posts,
+                                                        translate, base_dir,
+                                                        http_prefix,
+                                                        session,
+                                                        cached_webfingers,
+                                                        person_cache,
+                                                        handle_name,
+                                                        domain, port,
+                                                        post_json_object,
+                                                        allow_deletion,
+                                                        boxname,
+                                                        show_pub_date_only,
+                                                        peertube_instances,
+                                                        allow_local_net_access,
+                                                        theme_name,
+                                                        system_language,
+                                                        max_like_count,
+                                                        signing_priv_key_pem,
+                                                        cw_lists,
+                                                        lists_enabled)
                         if debug:
-                            timeDiff = \
-                                str(int((time.time() - htmlCacheStartTime) *
+                            time_diff = \
+                                str(int((time.time() - html_cache_start_time) *
                                         1000))
-                            print('Saved ' + boxname +
-                                  ' post as html to cache in ' +
-                                  timeDiff + ' mS')
+                            print('Saved ' +
+                                  boxname + ' post as html to cache in ' +
+                                  time_diff + ' mS')
 
-            handleName = handle.split('@')[0]
+            handle_name = handle.split('@')[0]
 
             # is this an edit of a previous post?
             # in Mastodon "delete and redraft"
-            # NOTE: this must be done before updateConversation is called
-            editedFilename = \
-                editedPostFilename(baseDir, handleName, domain,
-                                   postJsonObject, debug, 300)
+            # NOTE: this must be done before update_conversation is called
+            edited_filename = \
+                edited_post_filename(base_dir, handle_name, domain,
+                                     post_json_object, debug, 300)
 
-            updateConversation(baseDir, handleName, domain, postJsonObject)
+            update_conversation(base_dir, handle_name, domain,
+                                post_json_object)
 
             # If this was an edit then delete the previous version of the post
-            if editedFilename:
-                deletePost(baseDir, httpPrefix,
-                           nickname, domain, editedFilename,
-                           debug, recentPostsCache)
+            if edited_filename:
+                delete_post(base_dir, http_prefix,
+                            nickname, domain, edited_filename,
+                            debug, recent_posts_cache)
 
             # store the id of the last post made by this actor
-            _storeLastPostId(baseDir, nickname, domain, postJsonObject)
+            _store_last_post_id(base_dir, nickname, domain, post_json_object)
 
-            _inboxUpdateCalendar(baseDir, handle, postJsonObject)
+            _inbox_update_calendar(base_dir, handle, post_json_object)
 
-            storeHashTags(baseDir, handleName, domain,
-                          httpPrefix, domainFull,
-                          postJsonObject, translate)
+            store_hash_tags(base_dir, handle_name, domain,
+                            http_prefix, domain_full,
+                            post_json_object, translate)
 
             # send the post out to group members
-            if isGroup:
-                _sendToGroupMembers(session, baseDir, handle, port,
-                                    postJsonObject,
-                                    httpPrefix, federationList, sendThreads,
-                                    postLog, cachedWebfingers, personCache,
-                                    debug, systemLanguage,
-                                    onionDomain, i2pDomain,
-                                    signingPrivateKeyPem)
+            if is_group:
+                _send_to_group_members(session, base_dir, handle, port,
+                                       post_json_object,
+                                       http_prefix, federation_list,
+                                       send_threads,
+                                       post_log, cached_webfingers,
+                                       person_cache,
+                                       debug, system_language,
+                                       onion_domain, i2p_domain,
+                                       signing_priv_key_pem)
 
     # if the post wasn't saved
-    if not os.path.isfile(destinationFilename):
+    if not os.path.isfile(destination_filename):
         return False
 
     return True
 
 
-def clearQueueItems(baseDir: str, queue: []) -> None:
+def clear_queue_items(base_dir: str, queue: []) -> None:
     """Clears the queue for each account
     """
     ctr = 0
     queue.clear()
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            queueDir = baseDir + '/accounts/' + account + '/queue'
-            if not os.path.isdir(queueDir):
+            queue_dir = base_dir + '/accounts/' + account + '/queue'
+            if not os.path.isdir(queue_dir):
                 continue
-            for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
+            for _, _, queuefiles in os.walk(queue_dir):
                 for qfile in queuefiles:
                     try:
-                        os.remove(os.path.join(queueDir, qfile))
+                        os.remove(os.path.join(queue_dir, qfile))
                         ctr += 1
                     except OSError:
-                        print('EX: clearQueueItems unable to delete ' + qfile)
+                        print('EX: clear_queue_items unable to delete ' +
+                              qfile)
                 break
         break
     if ctr > 0:
         print('Removed ' + str(ctr) + ' inbox queue items')
 
 
-def _restoreQueueItems(baseDir: str, queue: []) -> None:
+def _restore_queue_items(base_dir: str, queue: []) -> None:
     """Checks the queue for each account and appends filenames
     """
     queue.clear()
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            queueDir = baseDir + '/accounts/' + account + '/queue'
-            if not os.path.isdir(queueDir):
+            queue_dir = base_dir + '/accounts/' + account + '/queue'
+            if not os.path.isdir(queue_dir):
                 continue
-            for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
+            for _, _, queuefiles in os.walk(queue_dir):
                 for qfile in queuefiles:
-                    queue.append(os.path.join(queueDir, qfile))
+                    queue.append(os.path.join(queue_dir, qfile))
                 break
         break
     if len(queue) > 0:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
 
 
-def runInboxQueueWatchdog(projectVersion: str, httpd) -> None:
+def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
     print('Starting inbox queue watchdog')
-    inboxQueueOriginal = httpd.thrInboxQueue.clone(runInboxQueue)
+    inbox_queue_original = httpd.thrInboxQueue.clone(run_inbox_queue)
     httpd.thrInboxQueue.start()
     while True:
         time.sleep(20)
-        if not httpd.thrInboxQueue.is_alive() or httpd.restartInboxQueue:
-            httpd.restartInboxQueueInProgress = True
+        if not httpd.thrInboxQueue.is_alive() or httpd.restart_inbox_queue:
+            httpd.restart_inbox_queue_in_progress = True
             httpd.thrInboxQueue.kill()
-            httpd.thrInboxQueue = inboxQueueOriginal.clone(runInboxQueue)
-            httpd.inboxQueue.clear()
+            httpd.thrInboxQueue = inbox_queue_original.clone(run_inbox_queue)
+            httpd.inbox_queue.clear()
             httpd.thrInboxQueue.start()
             print('Restarting inbox queue...')
-            httpd.restartInboxQueueInProgress = False
-            httpd.restartInboxQueue = False
+            httpd.restart_inbox_queue_in_progress = False
+            httpd.restart_inbox_queue = False
 
 
-def _inboxQuotaExceeded(queue: {}, queueFilename: str,
-                        queueJson: {}, quotasDaily: {}, quotasPerMin: {},
-                        domainMaxPostsPerDay: int,
-                        accountMaxPostsPerDay: int,
-                        debug: bool) -> bool:
+def _inbox_quota_exceeded(queue: {}, queue_filename: str,
+                          queue_json: {}, quotas_daily: {}, quotas_per_min: {},
+                          domain_max_posts_per_day: int,
+                          account_max_posts_per_day: int,
+                          debug: bool) -> bool:
     """limit the number of posts which can arrive per domain per day
     """
-    postDomain = queueJson['postDomain']
-    if not postDomain:
+    post_domain = queue_json['postDomain']
+    if not post_domain:
         return False
 
-    if domainMaxPostsPerDay > 0:
-        if quotasDaily['domains'].get(postDomain):
-            if quotasDaily['domains'][postDomain] > \
-               domainMaxPostsPerDay:
+    if domain_max_posts_per_day > 0:
+        if quotas_daily['domains'].get(post_domain):
+            if quotas_daily['domains'][post_domain] > \
+               domain_max_posts_per_day:
                 print('Queue: Quota per day - Maximum posts for ' +
-                      postDomain + ' reached (' +
-                      str(domainMaxPostsPerDay) + ')')
+                      post_domain + ' reached (' +
+                      str(domain_max_posts_per_day) + ')')
                 if len(queue) > 0:
                     try:
-                        os.remove(queueFilename)
+                        os.remove(queue_filename)
                     except OSError:
-                        print('EX: _inboxQuotaExceeded unable to delete ' +
-                              str(queueFilename))
+                        print('EX: _inbox_quota_exceeded unable to delete ' +
+                              str(queue_filename))
                     queue.pop(0)
                 return True
-            quotasDaily['domains'][postDomain] += 1
+            quotas_daily['domains'][post_domain] += 1
         else:
-            quotasDaily['domains'][postDomain] = 1
+            quotas_daily['domains'][post_domain] = 1
 
-        if quotasPerMin['domains'].get(postDomain):
-            domainMaxPostsPerMin = \
-                int(domainMaxPostsPerDay / (24 * 60))
-            if domainMaxPostsPerMin < 5:
-                domainMaxPostsPerMin = 5
-            if quotasPerMin['domains'][postDomain] > \
-               domainMaxPostsPerMin:
+        if quotas_per_min['domains'].get(post_domain):
+            domain_max_posts_per_min = \
+                int(domain_max_posts_per_day / (24 * 60))
+            if domain_max_posts_per_min < 5:
+                domain_max_posts_per_min = 5
+            if quotas_per_min['domains'][post_domain] > \
+               domain_max_posts_per_min:
                 print('Queue: Quota per min - Maximum posts for ' +
-                      postDomain + ' reached (' +
-                      str(domainMaxPostsPerMin) + ')')
+                      post_domain + ' reached (' +
+                      str(domain_max_posts_per_min) + ')')
                 if len(queue) > 0:
                     try:
-                        os.remove(queueFilename)
+                        os.remove(queue_filename)
                     except OSError:
-                        print('EX: _inboxQuotaExceeded unable to delete ' +
-                              str(queueFilename))
+                        print('EX: _inbox_quota_exceeded unable to delete ' +
+                              str(queue_filename))
                     queue.pop(0)
                 return True
-            quotasPerMin['domains'][postDomain] += 1
+            quotas_per_min['domains'][post_domain] += 1
         else:
-            quotasPerMin['domains'][postDomain] = 1
+            quotas_per_min['domains'][post_domain] = 1
 
-    if accountMaxPostsPerDay > 0:
-        postHandle = queueJson['postNickname'] + '@' + postDomain
-        if quotasDaily['accounts'].get(postHandle):
-            if quotasDaily['accounts'][postHandle] > \
-               accountMaxPostsPerDay:
+    if account_max_posts_per_day > 0:
+        post_handle = queue_json['postNickname'] + '@' + post_domain
+        if quotas_daily['accounts'].get(post_handle):
+            if quotas_daily['accounts'][post_handle] > \
+               account_max_posts_per_day:
                 print('Queue: Quota account posts per day -' +
                       ' Maximum posts for ' +
-                      postHandle + ' reached (' +
-                      str(accountMaxPostsPerDay) + ')')
+                      post_handle + ' reached (' +
+                      str(account_max_posts_per_day) + ')')
                 if len(queue) > 0:
                     try:
-                        os.remove(queueFilename)
+                        os.remove(queue_filename)
                     except OSError:
-                        print('EX: _inboxQuotaExceeded unable to delete ' +
-                              str(queueFilename))
+                        print('EX: _inbox_quota_exceeded unable to delete ' +
+                              str(queue_filename))
                     queue.pop(0)
                 return True
-            quotasDaily['accounts'][postHandle] += 1
+            quotas_daily['accounts'][post_handle] += 1
         else:
-            quotasDaily['accounts'][postHandle] = 1
+            quotas_daily['accounts'][post_handle] = 1
 
-        if quotasPerMin['accounts'].get(postHandle):
-            accountMaxPostsPerMin = \
-                int(accountMaxPostsPerDay / (24 * 60))
-            if accountMaxPostsPerMin < 5:
-                accountMaxPostsPerMin = 5
-            if quotasPerMin['accounts'][postHandle] > \
-               accountMaxPostsPerMin:
+        if quotas_per_min['accounts'].get(post_handle):
+            account_max_posts_per_min = \
+                int(account_max_posts_per_day / (24 * 60))
+            if account_max_posts_per_min < 5:
+                account_max_posts_per_min = 5
+            if quotas_per_min['accounts'][post_handle] > \
+               account_max_posts_per_min:
                 print('Queue: Quota account posts per min -' +
                       ' Maximum posts for ' +
-                      postHandle + ' reached (' +
-                      str(accountMaxPostsPerMin) + ')')
+                      post_handle + ' reached (' +
+                      str(account_max_posts_per_min) + ')')
                 if len(queue) > 0:
                     try:
-                        os.remove(queueFilename)
+                        os.remove(queue_filename)
                     except OSError:
-                        print('EX: _inboxQuotaExceeded unable to delete ' +
-                              str(queueFilename))
+                        print('EX: _inbox_quota_exceeded unable to delete ' +
+                              str(queue_filename))
                     queue.pop(0)
                 return True
-            quotasPerMin['accounts'][postHandle] += 1
+            quotas_per_min['accounts'][post_handle] += 1
         else:
-            quotasPerMin['accounts'][postHandle] = 1
+            quotas_per_min['accounts'][post_handle] = 1
 
     if debug:
-        if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
-            pprint(quotasDaily)
+        if account_max_posts_per_day > 0 or domain_max_posts_per_day > 0:
+            pprint(quotas_daily)
     return False
 
 
-def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
+def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
     """check if a json signature exists on this post
     """
-    hasJsonSignature = False
-    jwebsigType = None
-    originalJson = queueJson['original']
-    if not originalJson.get('@context') or \
-       not originalJson.get('signature'):
-        return hasJsonSignature, jwebsigType
-    if not isinstance(originalJson['signature'], dict):
-        return hasJsonSignature, jwebsigType
+    has_json_signature = False
+    jwebsig_type = None
+    original_json = queue_json['original']
+    if not original_json.get('@context') or \
+       not original_json.get('signature'):
+        return has_json_signature, jwebsig_type
+    if not isinstance(original_json['signature'], dict):
+        return has_json_signature, jwebsig_type
     # see https://tools.ietf.org/html/rfc7515
-    jwebsig = originalJson['signature']
+    jwebsig = original_json['signature']
     # signature exists and is of the expected type
     if not jwebsig.get('type') or \
        not jwebsig.get('signatureValue'):
-        return hasJsonSignature, jwebsigType
-    jwebsigType = jwebsig['type']
-    if jwebsigType == 'RsaSignature2017':
-        if hasValidContext(originalJson):
-            hasJsonSignature = True
+        return has_json_signature, jwebsig_type
+    jwebsig_type = jwebsig['type']
+    if jwebsig_type == 'RsaSignature2017':
+        if has_valid_context(original_json):
+            has_json_signature = True
         else:
-            unknownContextsFile = \
-                baseDir + '/accounts/unknownContexts.txt'
-            unknownContext = str(originalJson['@context'])
+            unknown_contexts_file = \
+                base_dir + '/accounts/unknownContexts.txt'
+            unknown_context = str(original_json['@context'])
 
-            print('unrecognized @context: ' + unknownContext)
+            print('unrecognized @context: ' + unknown_context)
 
-            alreadyUnknown = False
-            if os.path.isfile(unknownContextsFile):
-                if unknownContext in \
-                   open(unknownContextsFile).read():
-                    alreadyUnknown = True
+            already_unknown = False
+            if os.path.isfile(unknown_contexts_file):
+                if unknown_context in \
+                   open(unknown_contexts_file).read():
+                    already_unknown = True
 
-            if not alreadyUnknown:
+            if not already_unknown:
                 try:
-                    with open(unknownContextsFile, 'a+') as unknownFile:
-                        unknownFile.write(unknownContext + '\n')
+                    with open(unknown_contexts_file, 'a+') as unknown_file:
+                        unknown_file.write(unknown_context + '\n')
                 except OSError:
-                    print('EX: unable to append ' + unknownContextsFile)
+                    print('EX: unable to append ' + unknown_contexts_file)
     else:
-        print('Unrecognized jsonld signature type: ' + jwebsigType)
+        print('Unrecognized jsonld signature type: ' + jwebsig_type)
 
-        unknownSignaturesFile = \
-            baseDir + '/accounts/unknownJsonSignatures.txt'
+        unknown_signatures_file = \
+            base_dir + '/accounts/unknownJsonSignatures.txt'
 
-        alreadyUnknown = False
-        if os.path.isfile(unknownSignaturesFile):
-            if jwebsigType in \
-               open(unknownSignaturesFile).read():
-                alreadyUnknown = True
+        already_unknown = False
+        if os.path.isfile(unknown_signatures_file):
+            if jwebsig_type in \
+               open(unknown_signatures_file).read():
+                already_unknown = True
 
-        if not alreadyUnknown:
+        if not already_unknown:
             try:
-                with open(unknownSignaturesFile, 'a+') as unknownFile:
-                    unknownFile.write(jwebsigType + '\n')
+                with open(unknown_signatures_file, 'a+') as unknown_file:
+                    unknown_file.write(jwebsig_type + '\n')
             except OSError:
-                print('EX: unable to append ' + unknownSignaturesFile)
-    return hasJsonSignature, jwebsigType
+                print('EX: unable to append ' + unknown_signatures_file)
+    return has_json_signature, jwebsig_type
 
 
-def _receiveFollowRequest(session, baseDir: str, httpPrefix: str,
-                          port: int, sendThreads: [], postLog: [],
-                          cachedWebfingers: {}, personCache: {},
-                          messageJson: {}, federationList: [],
-                          debug: bool, projectVersion: str,
-                          maxFollowers: int, onionDomain: str,
-                          signingPrivateKeyPem: str, unitTest: bool) -> bool:
+def _receive_follow_request(session, base_dir: str, http_prefix: str,
+                            port: int, send_threads: [], post_log: [],
+                            cached_webfingers: {}, person_cache: {},
+                            message_json: {}, federation_list: [],
+                            debug: bool, project_version: str,
+                            max_followers: int, onion_domain: str,
+                            signing_priv_key_pem: str,
+                            unit_test: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
-    if not messageJson['type'].startswith('Follow'):
-        if not messageJson['type'].startswith('Join'):
+    if not message_json['type'].startswith('Follow'):
+        if not message_json['type'].startswith('Join'):
             return False
     print('Receiving follow request')
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: users/profile/accounts/channel missing from actor')
         return False
-    domain, tempPort = getDomainFromActor(messageJson['actor'])
-    fromPort = port
-    domainFull = getFullDomain(domain, tempPort)
-    if tempPort:
-        fromPort = tempPort
-    if not domainPermitted(domain, federationList):
+    domain, temp_port = get_domain_from_actor(message_json['actor'])
+    from_port = port
+    domain_full = get_full_domain(domain, temp_port)
+    if temp_port:
+        from_port = temp_port
+    if not domain_permitted(domain, federation_list):
         if debug:
             print('DEBUG: follower from domain not permitted - ' + domain)
         return False
-    nickname = getNicknameFromActor(messageJson['actor'])
+    nickname = get_nickname_from_actor(message_json['actor'])
     if not nickname:
         # single user instance
         nickname = 'dev'
         if debug:
             print('DEBUG: follow request does not contain a ' +
                   'nickname. Assuming single user instance.')
-    if not messageJson.get('to'):
-        messageJson['to'] = messageJson['object']
-    if not hasUsersPath(messageJson['object']):
+    if not message_json.get('to'):
+        message_json['to'] = message_json['object']
+    if not has_users_path(message_json['object']):
         if debug:
             print('DEBUG: users/profile/channel/accounts ' +
                   'not found within object')
         return False
-    domainToFollow, tempPort = getDomainFromActor(messageJson['object'])
-    if not domainPermitted(domainToFollow, federationList):
+    domain_to_follow, temp_port = get_domain_from_actor(message_json['object'])
+    if not domain_permitted(domain_to_follow, federation_list):
         if debug:
-            print('DEBUG: follow domain not permitted ' + domainToFollow)
+            print('DEBUG: follow domain not permitted ' + domain_to_follow)
         return True
-    domainToFollowFull = getFullDomain(domainToFollow, tempPort)
-    nicknameToFollow = getNicknameFromActor(messageJson['object'])
-    if not nicknameToFollow:
+    domain_to_follow_full = get_full_domain(domain_to_follow, temp_port)
+    nickname_to_follow = get_nickname_from_actor(message_json['object'])
+    if not nickname_to_follow:
         if debug:
             print('DEBUG: follow request does not contain a ' +
                   'nickname for the account followed')
         return True
-    if isSystemAccount(nicknameToFollow):
+    if is_system_account(nickname_to_follow):
         if debug:
             print('DEBUG: Cannot follow system account - ' +
-                  nicknameToFollow)
+                  nickname_to_follow)
         return True
-    if maxFollowers > 0:
-        if getNoOfFollowers(baseDir,
-                            nicknameToFollow, domainToFollow,
-                            True) > maxFollowers:
-            print('WARN: ' + nicknameToFollow +
+    if max_followers > 0:
+        if get_no_of_followers(base_dir,
+                               nickname_to_follow, domain_to_follow,
+                               True) > max_followers:
+            print('WARN: ' + nickname_to_follow +
                   ' has reached their maximum number of followers')
             return True
-    handleToFollow = nicknameToFollow + '@' + domainToFollow
-    if domainToFollow == domain:
-        if not os.path.isdir(baseDir + '/accounts/' + handleToFollow):
+    handle_to_follow = nickname_to_follow + '@' + domain_to_follow
+    if domain_to_follow == domain:
+        if not os.path.isdir(base_dir + '/accounts/' + handle_to_follow):
             if debug:
                 print('DEBUG: followed account not found - ' +
-                      baseDir + '/accounts/' + handleToFollow)
+                      base_dir + '/accounts/' + handle_to_follow)
             return True
 
-    if isFollowerOfPerson(baseDir,
-                          nicknameToFollow, domainToFollowFull,
-                          nickname, domainFull):
+    if is_follower_of_person(base_dir,
+                             nickname_to_follow, domain_to_follow_full,
+                             nickname, domain_full):
         if debug:
             print('DEBUG: ' + nickname + '@' + domain +
                   ' is already a follower of ' +
-                  nicknameToFollow + '@' + domainToFollow)
+                  nickname_to_follow + '@' + domain_to_follow)
         return True
 
-    approveHandle = nickname + '@' + domainFull
+    approve_handle = nickname + '@' + domain_full
 
     # is the actor sending the request valid?
-    if not validSendingActor(session, baseDir,
-                             nicknameToFollow, domainToFollow,
-                             personCache, messageJson,
-                             signingPrivateKeyPem, debug, unitTest):
-        print('REJECT spam follow request ' + approveHandle)
+    if not valid_sending_actor(session, base_dir,
+                               nickname_to_follow, domain_to_follow,
+                               person_cache, message_json,
+                               signing_priv_key_pem, debug, unit_test):
+        print('REJECT spam follow request ' + approve_handle)
         return False
 
     # what is the followers policy?
-    if followApprovalRequired(baseDir, nicknameToFollow,
-                              domainToFollow, debug, approveHandle):
+    if follow_approval_required(base_dir, nickname_to_follow,
+                                domain_to_follow, debug, approve_handle):
         print('Follow approval is required')
         if domain.endswith('.onion'):
-            if noOfFollowRequests(baseDir,
-                                  nicknameToFollow, domainToFollow,
-                                  nickname, domain, fromPort,
-                                  'onion') > 5:
+            if no_of_follow_requests(base_dir,
+                                     nickname_to_follow, domain_to_follow,
+                                     nickname, domain, from_port,
+                                     'onion') > 5:
                 print('Too many follow requests from onion addresses')
                 return False
         elif domain.endswith('.i2p'):
-            if noOfFollowRequests(baseDir,
-                                  nicknameToFollow, domainToFollow,
-                                  nickname, domain, fromPort,
-                                  'i2p') > 5:
+            if no_of_follow_requests(base_dir,
+                                     nickname_to_follow, domain_to_follow,
+                                     nickname, domain, from_port,
+                                     'i2p') > 5:
                 print('Too many follow requests from i2p addresses')
                 return False
         else:
-            if noOfFollowRequests(baseDir,
-                                  nicknameToFollow, domainToFollow,
-                                  nickname, domain, fromPort,
-                                  '') > 10:
+            if no_of_follow_requests(base_dir,
+                                     nickname_to_follow, domain_to_follow,
+                                     nickname, domain, from_port,
+                                     '') > 10:
                 print('Too many follow requests')
                 return False
 
         # Get the actor for the follower and add it to the cache.
         # Getting their public key has the same result
         if debug:
-            print('Obtaining the following actor: ' + messageJson['actor'])
-        if not getPersonPubKey(baseDir, session, messageJson['actor'],
-                               personCache, debug, projectVersion,
-                               httpPrefix, domainToFollow, onionDomain,
-                               signingPrivateKeyPem):
+            print('Obtaining the following actor: ' + message_json['actor'])
+        if not get_person_pub_key(base_dir, session, message_json['actor'],
+                                  person_cache, debug, project_version,
+                                  http_prefix, domain_to_follow, onion_domain,
+                                  signing_priv_key_pem):
             if debug:
                 print('Unable to obtain following actor: ' +
-                      messageJson['actor'])
+                      message_json['actor'])
 
-        groupAccount = \
-            hasGroupType(baseDir, messageJson['actor'], personCache)
-        if groupAccount and isGroupAccount(baseDir, nickname, domain):
+        group_account = \
+            has_group_type(base_dir, message_json['actor'], person_cache)
+        if group_account and is_group_account(base_dir, nickname, domain):
             print('Group cannot follow a group')
             return False
 
         print('Storing follow request for approval')
-        return storeFollowRequest(baseDir,
-                                  nicknameToFollow, domainToFollow, port,
-                                  nickname, domain, fromPort,
-                                  messageJson, debug, messageJson['actor'],
-                                  groupAccount)
+        return store_follow_request(base_dir,
+                                    nickname_to_follow, domain_to_follow, port,
+                                    nickname, domain, from_port,
+                                    message_json, debug, message_json['actor'],
+                                    group_account)
     else:
-        print('Follow request does not require approval ' + approveHandle)
+        print('Follow request does not require approval ' + approve_handle)
         # update the followers
-        accountToBeFollowed = \
-            acctDir(baseDir, nicknameToFollow, domainToFollow)
-        if os.path.isdir(accountToBeFollowed):
-            followersFilename = accountToBeFollowed + '/followers.txt'
+        account_to_be_followed = \
+            acct_dir(base_dir, nickname_to_follow, domain_to_follow)
+        if os.path.isdir(account_to_be_followed):
+            followers_filename = account_to_be_followed + '/followers.txt'
 
             # for actors which don't follow the mastodon
             # /users/ path convention store the full actor
-            if '/users/' not in messageJson['actor']:
-                approveHandle = messageJson['actor']
+            if '/users/' not in message_json['actor']:
+                approve_handle = message_json['actor']
 
             # Get the actor for the follower and add it to the cache.
             # Getting their public key has the same result
             if debug:
-                print('Obtaining the following actor: ' + messageJson['actor'])
-            if not getPersonPubKey(baseDir, session, messageJson['actor'],
-                                   personCache, debug, projectVersion,
-                                   httpPrefix, domainToFollow, onionDomain,
-                                   signingPrivateKeyPem):
+                print('Obtaining the following actor: ' +
+                      message_json['actor'])
+            if not get_person_pub_key(base_dir, session, message_json['actor'],
+                                      person_cache, debug, project_version,
+                                      http_prefix, domain_to_follow,
+                                      onion_domain, signing_priv_key_pem):
                 if debug:
                     print('Unable to obtain following actor: ' +
-                          messageJson['actor'])
+                          message_json['actor'])
 
             print('Updating followers file: ' +
-                  followersFilename + ' adding ' + approveHandle)
-            if os.path.isfile(followersFilename):
-                if approveHandle not in open(followersFilename).read():
-                    groupAccount = \
-                        hasGroupType(baseDir,
-                                     messageJson['actor'], personCache)
+                  followers_filename + ' adding ' + approve_handle)
+            if os.path.isfile(followers_filename):
+                if approve_handle not in open(followers_filename).read():
+                    group_account = \
+                        has_group_type(base_dir,
+                                       message_json['actor'], person_cache)
                     if debug:
-                        print(approveHandle + ' / ' + messageJson['actor'] +
-                              ' is Group: ' + str(groupAccount))
-                    if groupAccount and \
-                       isGroupAccount(baseDir, nickname, domain):
+                        print(approve_handle + ' / ' + message_json['actor'] +
+                              ' is Group: ' + str(group_account))
+                    if group_account and \
+                       is_group_account(base_dir, nickname, domain):
                         print('Group cannot follow a group')
                         return False
                     try:
-                        with open(followersFilename, 'r+') as followersFile:
-                            content = followersFile.read()
-                            if approveHandle + '\n' not in content:
-                                followersFile.seek(0, 0)
-                                if not groupAccount:
-                                    followersFile.write(approveHandle +
-                                                        '\n' + content)
+                        with open(followers_filename, 'r+') as followers_file:
+                            content = followers_file.read()
+                            if approve_handle + '\n' not in content:
+                                followers_file.seek(0, 0)
+                                if not group_account:
+                                    followers_file.write(approve_handle +
+                                                         '\n' + content)
                                 else:
-                                    followersFile.write('!' + approveHandle +
-                                                        '\n' + content)
-                    except Exception as e:
+                                    followers_file.write('!' + approve_handle +
+                                                         '\n' + content)
+                    except Exception as ex:
                         print('WARN: ' +
                               'Failed to write entry to followers file ' +
-                              str(e))
+                              str(ex))
             else:
                 try:
-                    with open(followersFilename, 'w+') as followersFile:
-                        followersFile.write(approveHandle + '\n')
+                    with open(followers_filename, 'w+') as followers_file:
+                        followers_file.write(approve_handle + '\n')
                 except OSError:
-                    print('EX: unable to write ' + followersFilename)
+                    print('EX: unable to write ' + followers_filename)
 
     print('Beginning follow accept')
-    return followedAccountAccepts(session, baseDir, httpPrefix,
-                                  nicknameToFollow, domainToFollow, port,
-                                  nickname, domain, fromPort,
-                                  messageJson['actor'], federationList,
-                                  messageJson, sendThreads, postLog,
-                                  cachedWebfingers, personCache,
-                                  debug, projectVersion, True,
-                                  signingPrivateKeyPem)
+    return followed_account_accepts(session, base_dir, http_prefix,
+                                    nickname_to_follow, domain_to_follow, port,
+                                    nickname, domain, from_port,
+                                    message_json['actor'], federation_list,
+                                    message_json, send_threads, post_log,
+                                    cached_webfingers, person_cache,
+                                    debug, project_version, True,
+                                    signing_priv_key_pem)
 
 
-def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
-                  projectVersion: str,
-                  baseDir: str, httpPrefix: str, sendThreads: [], postLog: [],
-                  cachedWebfingers: {}, personCache: {}, queue: [],
-                  domain: str,
-                  onionDomain: str, i2pDomain: str, port: int, proxyType: str,
-                  federationList: [], maxReplies: int,
-                  domainMaxPostsPerDay: int, accountMaxPostsPerDay: int,
-                  allowDeletion: bool, debug: bool, maxMentions: int,
-                  maxEmoji: int, translate: {}, unitTest: bool,
-                  YTReplacementDomain: str,
-                  twitterReplacementDomain: str,
-                  showPublishedDateOnly: bool,
-                  maxFollowers: int, allowLocalNetworkAccess: bool,
-                  peertubeInstances: [],
-                  verifyAllSignatures: bool,
-                  themeName: str, systemLanguage: str,
-                  maxLikeCount: int, signingPrivateKeyPem: str,
-                  defaultReplyIntervalHours: int,
-                  CWlists: {}) -> None:
+def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
+                    project_version: str,
+                    base_dir: str, http_prefix: str,
+                    send_threads: [], post_log: [],
+                    cached_webfingers: {}, person_cache: {}, queue: [],
+                    domain: str,
+                    onion_domain: str, i2p_domain: str,
+                    port: int, proxy_type: str,
+                    federation_list: [], max_replies: int,
+                    domain_max_posts_per_day: int,
+                    account_max_posts_per_day: int,
+                    allow_deletion: bool, debug: bool, max_mentions: int,
+                    max_emoji: int, translate: {}, unit_test: bool,
+                    yt_replace_domain: str,
+                    twitter_replacement_domain: str,
+                    show_published_date_only: bool,
+                    max_followers: int,
+                    allow_local_network_access: bool,
+                    peertube_instances: [],
+                    verify_all_signatures: bool,
+                    theme_name: str, system_language: str,
+                    max_like_count: int, signing_priv_key_pem: str,
+                    default_reply_interval_hrs: int,
+                    cw_lists: {}) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
-    currSessionTime = int(time.time())
-    sessionLastUpdate = currSessionTime
+    curr_session_time = int(time.time())
+    session_last_update = curr_session_time
     print('Starting new session when starting inbox queue')
-    session = createSession(proxyType)
-    inboxHandle = 'inbox@' + domain
+    session = create_session(proxy_type)
+    inbox_handle = 'inbox@' + domain
     if debug:
         print('DEBUG: Inbox queue running')
 
     # if queue processing was interrupted (eg server crash)
     # then this loads any outstanding items back into the queue
-    _restoreQueueItems(baseDir, queue)
+    _restore_queue_items(base_dir, queue)
 
     # keep track of numbers of incoming posts per day
-    quotasLastUpdateDaily = int(time.time())
-    quotasDaily = {
+    quotas_last_update_daily = int(time.time())
+    quotas_daily = {
         'domains': {},
         'accounts': {}
     }
-    quotasLastUpdatePerMin = int(time.time())
-    quotasPerMin = {
+    quotas_last_update_per_min = int(time.time())
+    quotas_per_min = {
         'domains': {},
         'accounts': {}
     }
 
-    heartBeatCtr = 0
-    queueRestoreCtr = 0
+    heart_beat_ctr = 0
+    queue_restore_ctr = 0
 
     # time when the last DM bounce message was sent
     # This is in a list so that it can be changed by reference
-    # within _bounceDM
-    lastBounceMessage = [int(time.time())]
+    # within _bounce_dm
+    last_bounce_message = [int(time.time())]
 
     # how long it takes for broch mode to lapse
-    brochLapseDays = random.randrange(7, 14)
+    broch_lapse_days = random.randrange(7, 14)
 
     while True:
         time.sleep(1)
 
         # heartbeat to monitor whether the inbox queue is running
-        heartBeatCtr += 1
-        if heartBeatCtr >= 10:
+        heart_beat_ctr += 1
+        if heart_beat_ctr >= 10:
             # turn off broch mode after it has timed out
-            if brochModeLapses(baseDir, brochLapseDays):
-                brochLapseDays = random.randrange(7, 14)
+            if broch_modeLapses(base_dir, broch_lapse_days):
+                broch_lapse_days = random.randrange(7, 14)
             print('>>> Heartbeat Q:' + str(len(queue)) + ' ' +
                   '{:%F %T}'.format(datetime.datetime.now()))
-            heartBeatCtr = 0
+            heart_beat_ctr = 0
 
         if len(queue) == 0:
             # restore any remaining queue items
-            queueRestoreCtr += 1
-            if queueRestoreCtr >= 30:
-                queueRestoreCtr = 0
-                _restoreQueueItems(baseDir, queue)
+            queue_restore_ctr += 1
+            if queue_restore_ctr >= 30:
+                queue_restore_ctr = 0
+                _restore_queue_items(base_dir, queue)
             continue
 
-        currTime = int(time.time())
+        curr_time = int(time.time())
 
         # recreate the session periodically
-        if not session or currTime - sessionLastUpdate > 21600:
+        if not session or curr_time - session_last_update > 21600:
             print('Regenerating inbox queue session at 6hr interval')
-            session = createSession(proxyType)
+            session = create_session(proxy_type)
             if not session:
                 continue
-            sessionLastUpdate = currTime
+            session_last_update = curr_time
 
         # oldest item first
         queue.sort()
-        queueFilename = queue[0]
-        if not os.path.isfile(queueFilename):
+        queue_filename = queue[0]
+        if not os.path.isfile(queue_filename):
             print("Queue: queue item rejected because it has no file: " +
-                  queueFilename)
+                  queue_filename)
             if len(queue) > 0:
                 queue.pop(0)
             continue
 
         if debug:
-            print('Loading queue item ' + queueFilename)
+            print('Loading queue item ' + queue_filename)
 
         # Load the queue json
-        queueJson = loadJson(queueFilename, 1)
-        if not queueJson:
-            print('Queue: runInboxQueue failed to load inbox queue item ' +
-                  queueFilename)
+        queue_json = load_json(queue_filename, 1)
+        if not queue_json:
+            print('Queue: run_inbox_queue failed to load inbox queue item ' +
+                  queue_filename)
             # Assume that the file is probably corrupt/unreadable
             if len(queue) > 0:
                 queue.pop(0)
             # delete the queue file
-            if os.path.isfile(queueFilename):
+            if os.path.isfile(queue_filename):
                 try:
-                    os.remove(queueFilename)
+                    os.remove(queue_filename)
                 except OSError:
-                    print('EX: runInboxQueue 1 unable to delete ' +
-                          str(queueFilename))
+                    print('EX: run_inbox_queue 1 unable to delete ' +
+                          str(queue_filename))
             continue
 
         # clear the daily quotas for maximum numbers of received posts
-        if currTime - quotasLastUpdateDaily > 60 * 60 * 24:
-            quotasDaily = {
+        if curr_time - quotas_last_update_daily > 60 * 60 * 24:
+            quotas_daily = {
                 'domains': {},
                 'accounts': {}
             }
-            quotasLastUpdateDaily = currTime
+            quotas_last_update_daily = curr_time
 
-        if currTime - quotasLastUpdatePerMin > 60:
+        if curr_time - quotas_last_update_per_min > 60:
             # clear the per minute quotas for maximum numbers of received posts
-            quotasPerMin = {
+            quotas_per_min = {
                 'domains': {},
                 'accounts': {}
             }
             # also check if the json signature enforcement has changed
-            verifyAllSigs = getConfigParam(baseDir, "verifyAllSignatures")
-            if verifyAllSigs is not None:
-                verifyAllSignatures = verifyAllSigs
+            verify_all_sigs = get_config_param(base_dir, "verifyAllSignatures")
+            if verify_all_sigs is not None:
+                verify_all_signatures = verify_all_sigs
             # change the last time that this was done
-            quotasLastUpdatePerMin = currTime
+            quotas_last_update_per_min = curr_time
 
-        if _inboxQuotaExceeded(queue, queueFilename,
-                               queueJson, quotasDaily, quotasPerMin,
-                               domainMaxPostsPerDay,
-                               accountMaxPostsPerDay, debug):
+        if _inbox_quota_exceeded(queue, queue_filename,
+                                 queue_json, quotas_daily, quotas_per_min,
+                                 domain_max_posts_per_day,
+                                 account_max_posts_per_day, debug):
             continue
 
-        if debug and queueJson.get('actor'):
-            print('Obtaining public key for actor ' + queueJson['actor'])
+        if debug and queue_json.get('actor'):
+            print('Obtaining public key for actor ' + queue_json['actor'])
 
         # Try a few times to obtain the public key
-        pubKey = None
-        keyId = None
+        pub_key = None
+        key_id = None
         for tries in range(8):
-            keyId = None
-            signatureParams = \
-                queueJson['httpHeaders']['signature'].split(',')
-            for signatureItem in signatureParams:
-                if signatureItem.startswith('keyId='):
-                    if '"' in signatureItem:
-                        keyId = signatureItem.split('"')[1]
+            key_id = None
+            signature_params = \
+                queue_json['httpHeaders']['signature'].split(',')
+            for signature_item in signature_params:
+                if signature_item.startswith('keyId='):
+                    if '"' in signature_item:
+                        key_id = signature_item.split('"')[1]
                         break
-            if not keyId:
+            if not key_id:
                 print('Queue: No keyId in signature: ' +
-                      queueJson['httpHeaders']['signature'])
-                pubKey = None
+                      queue_json['httpHeaders']['signature'])
+                pub_key = None
                 break
 
-            pubKey = \
-                getPersonPubKey(baseDir, session, keyId,
-                                personCache, debug,
-                                projectVersion, httpPrefix,
-                                domain, onionDomain, signingPrivateKeyPem)
-            if pubKey:
+            pub_key = \
+                get_person_pub_key(base_dir, session, key_id,
+                                   person_cache, debug,
+                                   project_version, http_prefix,
+                                   domain, onion_domain, signing_priv_key_pem)
+            if pub_key:
                 if debug:
-                    print('DEBUG: public key: ' + str(pubKey))
+                    print('DEBUG: public key: ' + str(pub_key))
                 break
 
             if debug:
                 print('DEBUG: Retry ' + str(tries+1) +
-                      ' obtaining public key for ' + keyId)
+                      ' obtaining public key for ' + key_id)
             time.sleep(1)
 
-        if not pubKey:
+        if not pub_key:
             if debug:
-                print('Queue: public key could not be obtained from ' + keyId)
-            if os.path.isfile(queueFilename):
+                print('Queue: public key could not be obtained from ' + key_id)
+            if os.path.isfile(queue_filename):
                 try:
-                    os.remove(queueFilename)
+                    os.remove(queue_filename)
                 except OSError:
-                    print('EX: runInboxQueue 2 unable to delete ' +
-                          str(queueFilename))
+                    print('EX: run_inbox_queue 2 unable to delete ' +
+                          str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -4255,187 +4306,187 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # check the http header signature
         if debug:
             print('DEBUG: checking http header signature')
-            pprint(queueJson['httpHeaders'])
-        postStr = json.dumps(queueJson['post'])
-        httpSignatureFailed = False
-        if not verifyPostHeaders(httpPrefix,
-                                 pubKey,
-                                 queueJson['httpHeaders'],
-                                 queueJson['path'], False,
-                                 queueJson['digest'],
-                                 postStr,
-                                 debug):
-            httpSignatureFailed = True
+            pprint(queue_json['httpHeaders'])
+        post_str = json.dumps(queue_json['post'])
+        http_signature_failed = False
+        if not verify_post_headers(http_prefix, pub_key,
+                                   queue_json['httpHeaders'],
+                                   queue_json['path'], False,
+                                   queue_json['digest'],
+                                   post_str, debug):
+            http_signature_failed = True
             print('Queue: Header signature check failed')
-            pprint(queueJson['httpHeaders'])
+            pprint(queue_json['httpHeaders'])
         else:
             if debug:
                 print('DEBUG: http header signature check success')
 
         # check if a json signature exists on this post
-        hasJsonSignature, jwebsigType = _checkJsonSignature(baseDir, queueJson)
+        has_json_signature, jwebsig_type = \
+            _check_json_signature(base_dir, queue_json)
 
         # strict enforcement of json signatures
-        if not hasJsonSignature:
-            if httpSignatureFailed:
-                if jwebsigType:
+        if not has_json_signature:
+            if http_signature_failed:
+                if jwebsig_type:
                     print('Queue: Header signature check failed and does ' +
                           'not have a recognised jsonld signature type ' +
-                          jwebsigType)
+                          jwebsig_type)
                 else:
                     print('Queue: Header signature check failed and ' +
                           'does not have jsonld signature')
                 if debug:
-                    pprint(queueJson['httpHeaders'])
+                    pprint(queue_json['httpHeaders'])
 
-            if verifyAllSignatures:
-                originalJson = queueJson['original']
+            if verify_all_signatures:
+                original_json = queue_json['original']
                 print('Queue: inbox post does not have a jsonld signature ' +
-                      keyId + ' ' + str(originalJson))
+                      key_id + ' ' + str(original_json))
 
-            if httpSignatureFailed or verifyAllSignatures:
-                if os.path.isfile(queueFilename):
+            if http_signature_failed or verify_all_signatures:
+                if os.path.isfile(queue_filename):
                     try:
-                        os.remove(queueFilename)
+                        os.remove(queue_filename)
                     except OSError:
-                        print('EX: runInboxQueue 3 unable to delete ' +
-                              str(queueFilename))
+                        print('EX: run_inbox_queue 3 unable to delete ' +
+                              str(queue_filename))
                 if len(queue) > 0:
                     queue.pop(0)
                 continue
         else:
-            if httpSignatureFailed or verifyAllSignatures:
+            if http_signature_failed or verify_all_signatures:
                 # use the original json message received, not one which
                 # may have been modified along the way
-                originalJson = queueJson['original']
-                if not verifyJsonSignature(originalJson, pubKey):
+                original_json = queue_json['original']
+                if not verify_json_signature(original_json, pub_key):
                     if debug:
                         print('WARN: jsonld inbox signature check failed ' +
-                              keyId + ' ' + pubKey + ' ' + str(originalJson))
+                              key_id + ' ' + pub_key + ' ' +
+                              str(original_json))
                     else:
                         print('WARN: jsonld inbox signature check failed ' +
-                              keyId)
-                    if os.path.isfile(queueFilename):
+                              key_id)
+                    if os.path.isfile(queue_filename):
                         try:
-                            os.remove(queueFilename)
+                            os.remove(queue_filename)
                         except OSError:
-                            print('EX: runInboxQueue 4 unable to delete ' +
-                                  str(queueFilename))
+                            print('EX: run_inbox_queue 4 unable to delete ' +
+                                  str(queue_filename))
                     if len(queue) > 0:
                         queue.pop(0)
                     continue
                 else:
-                    if httpSignatureFailed:
+                    if http_signature_failed:
                         print('jsonld inbox signature check success ' +
-                              'via relay ' + keyId)
+                              'via relay ' + key_id)
                     else:
-                        print('jsonld inbox signature check success ' + keyId)
+                        print('jsonld inbox signature check success ' + key_id)
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
-        # if queueJson['post'].get('id'):
-        #     queueJson['post']['id'] = queueJson['id']
+        # if queue_json['post'].get('id'):
+        #     queue_json['post']['id'] = queue_json['id']
 
-        if _receiveUndo(session,
-                        baseDir, httpPrefix, port,
-                        sendThreads, postLog,
-                        cachedWebfingers,
-                        personCache,
-                        queueJson['post'],
-                        federationList,
-                        debug):
-            print('Queue: Undo accepted from ' + keyId)
-            if os.path.isfile(queueFilename):
+        if _receive_undo(session,
+                         base_dir, http_prefix, port,
+                         send_threads, post_log,
+                         cached_webfingers,
+                         person_cache,
+                         queue_json['post'],
+                         federation_list,
+                         debug):
+            print('Queue: Undo accepted from ' + key_id)
+            if os.path.isfile(queue_filename):
                 try:
-                    os.remove(queueFilename)
+                    os.remove(queue_filename)
                 except OSError:
-                    print('EX: runInboxQueue 5 unable to delete ' +
-                          str(queueFilename))
+                    print('EX: run_inbox_queue 5 unable to delete ' +
+                          str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
             continue
 
         if debug:
             print('DEBUG: checking for follow requests')
-        if _receiveFollowRequest(session,
-                                 baseDir, httpPrefix, port,
-                                 sendThreads, postLog,
-                                 cachedWebfingers,
-                                 personCache,
-                                 queueJson['post'],
-                                 federationList,
-                                 debug, projectVersion,
-                                 maxFollowers, onionDomain,
-                                 signingPrivateKeyPem, unitTest):
-            if os.path.isfile(queueFilename):
+        if _receive_follow_request(session,
+                                   base_dir, http_prefix, port,
+                                   send_threads, post_log,
+                                   cached_webfingers,
+                                   person_cache,
+                                   queue_json['post'],
+                                   federation_list,
+                                   debug, project_version,
+                                   max_followers, onion_domain,
+                                   signing_priv_key_pem, unit_test):
+            if os.path.isfile(queue_filename):
                 try:
-                    os.remove(queueFilename)
+                    os.remove(queue_filename)
                 except OSError:
-                    print('EX: runInboxQueue 6 unable to delete ' +
-                          str(queueFilename))
+                    print('EX: run_inbox_queue 6 unable to delete ' +
+                          str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
-            print('Queue: Follow activity for ' + keyId +
+            print('Queue: Follow activity for ' + key_id +
                   ' removed from queue')
             continue
         else:
             if debug:
                 print('DEBUG: No follow requests')
 
-        if receiveAcceptReject(session,
-                               baseDir, httpPrefix, domain, port,
-                               sendThreads, postLog,
-                               cachedWebfingers, personCache,
-                               queueJson['post'],
-                               federationList, debug):
-            print('Queue: Accept/Reject received from ' + keyId)
-            if os.path.isfile(queueFilename):
+        if receive_accept_reject(session,
+                                 base_dir, http_prefix, domain, port,
+                                 send_threads, post_log,
+                                 cached_webfingers, person_cache,
+                                 queue_json['post'],
+                                 federation_list, debug):
+            print('Queue: Accept/Reject received from ' + key_id)
+            if os.path.isfile(queue_filename):
                 try:
-                    os.remove(queueFilename)
+                    os.remove(queue_filename)
                 except OSError:
-                    print('EX: runInboxQueue 7 unable to delete ' +
-                          str(queueFilename))
+                    print('EX: run_inbox_queue 7 unable to delete ' +
+                          str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
             continue
 
-        if _receiveUpdate(recentPostsCache, session,
-                          baseDir, httpPrefix,
-                          domain, port,
-                          sendThreads, postLog,
-                          cachedWebfingers,
-                          personCache,
-                          queueJson['post'],
-                          federationList,
-                          queueJson['postNickname'],
-                          debug):
+        if _receive_update_activity(recent_posts_cache, session,
+                                    base_dir, http_prefix,
+                                    domain, port,
+                                    send_threads, post_log,
+                                    cached_webfingers,
+                                    person_cache,
+                                    queue_json['post'],
+                                    federation_list,
+                                    queue_json['postNickname'],
+                                    debug):
             if debug:
-                print('Queue: Update accepted from ' + keyId)
-            if os.path.isfile(queueFilename):
+                print('Queue: Update accepted from ' + key_id)
+            if os.path.isfile(queue_filename):
                 try:
-                    os.remove(queueFilename)
+                    os.remove(queue_filename)
                 except OSError:
-                    print('EX: runInboxQueue 8 unable to delete ' +
-                          str(queueFilename))
+                    print('EX: run_inbox_queue 8 unable to delete ' +
+                          str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
             continue
 
         # get recipients list
-        recipientsDict, recipientsDictFollowers = \
-            _inboxPostRecipients(baseDir, queueJson['post'],
-                                 httpPrefix, domain, port, debug)
-        if len(recipientsDict.items()) == 0 and \
-           len(recipientsDictFollowers.items()) == 0:
+        recipients_dict, recipients_dict_followers = \
+            _inbox_post_recipients(base_dir, queue_json['post'],
+                                   http_prefix, domain, port, debug)
+        if len(recipients_dict.items()) == 0 and \
+           len(recipients_dict_followers.items()) == 0:
             if debug:
                 print('Queue: no recipients were resolved ' +
                       'for post arriving in inbox')
-            if os.path.isfile(queueFilename):
+            if os.path.isfile(queue_filename):
                 try:
-                    os.remove(queueFilename)
+                    os.remove(queue_filename)
                 except OSError:
-                    print('EX: runInboxQueue 9 unable to delete ' +
-                          str(queueFilename))
+                    print('EX: run_inbox_queue 9 unable to delete ' +
+                          str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -4443,79 +4494,79 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # if there are only a small number of followers then
         # process them as if they were specifically
         # addresses to particular accounts
-        noOfFollowItems = len(recipientsDictFollowers.items())
-        if noOfFollowItems > 0:
+        no_of_follow_items = len(recipients_dict_followers.items())
+        if no_of_follow_items > 0:
             # always deliver to individual inboxes
-            if noOfFollowItems < 999999:
+            if no_of_follow_items < 999999:
                 if debug:
-                    print('DEBUG: moving ' + str(noOfFollowItems) +
+                    print('DEBUG: moving ' + str(no_of_follow_items) +
                           ' inbox posts addressed to followers')
-                for handle, postItem in recipientsDictFollowers.items():
-                    recipientsDict[handle] = postItem
-                recipientsDictFollowers = {}
-#            recipientsList = [recipientsDict, recipientsDictFollowers]
+                for handle, post_item in recipients_dict_followers.items():
+                    recipients_dict[handle] = post_item
+                recipients_dict_followers = {}
+#            recipients_list = [recipients_dict, recipients_dict_followers]
 
         if debug:
             print('*************************************')
             print('Resolved recipients list:')
-            pprint(recipientsDict)
+            pprint(recipients_dict)
             print('Resolved followers list:')
-            pprint(recipientsDictFollowers)
+            pprint(recipients_dict_followers)
             print('*************************************')
 
         # Copy any posts addressed to followers into the shared inbox
         # this avoid copying file multiple times to potentially many
         # individual inboxes
-        if len(recipientsDictFollowers) > 0:
-            sharedInboxPostFilename = \
-                queueJson['destination'].replace(inboxHandle, inboxHandle)
-            if not os.path.isfile(sharedInboxPostFilename):
-                saveJson(queueJson['post'], sharedInboxPostFilename)
+        if len(recipients_dict_followers) > 0:
+            shared_inbox_post_filename = \
+                queue_json['destination'].replace(inbox_handle, inbox_handle)
+            if not os.path.isfile(shared_inbox_post_filename):
+                save_json(queue_json['post'], shared_inbox_post_filename)
 
-        listsEnabled = getConfigParam(baseDir, "listsEnabled")
-        contentLicenseUrl = getConfigParam(baseDir, "contentLicenseUrl")
+        lists_enabled = get_config_param(base_dir, "listsEnabled")
+        content_license_url = get_config_param(base_dir, "contentLicenseUrl")
 
         # for posts addressed to specific accounts
-        for handle, capsId in recipientsDict.items():
+        for handle, _ in recipients_dict.items():
             destination = \
-                queueJson['destination'].replace(inboxHandle, handle)
-            _inboxAfterInitial(recentPostsCache,
-                               maxRecentPosts,
-                               session, keyId, handle,
-                               queueJson['post'],
-                               baseDir, httpPrefix,
-                               sendThreads, postLog,
-                               cachedWebfingers,
-                               personCache, queue,
-                               domain,
-                               onionDomain, i2pDomain,
-                               port, proxyType,
-                               federationList,
-                               debug,
-                               queueFilename, destination,
-                               maxReplies, allowDeletion,
-                               maxMentions, maxEmoji,
-                               translate, unitTest,
-                               YTReplacementDomain,
-                               twitterReplacementDomain,
-                               showPublishedDateOnly,
-                               allowLocalNetworkAccess,
-                               peertubeInstances,
-                               lastBounceMessage,
-                               themeName, systemLanguage,
-                               maxLikeCount,
-                               signingPrivateKeyPem,
-                               defaultReplyIntervalHours,
-                               CWlists, listsEnabled,
-                               contentLicenseUrl)
+                queue_json['destination'].replace(inbox_handle, handle)
+            _inbox_after_initial(recent_posts_cache,
+                                 max_recent_posts,
+                                 session, key_id, handle,
+                                 queue_json['post'],
+                                 base_dir, http_prefix,
+                                 send_threads, post_log,
+                                 cached_webfingers,
+                                 person_cache, queue,
+                                 domain,
+                                 onion_domain, i2p_domain,
+                                 port, proxy_type,
+                                 federation_list,
+                                 debug,
+                                 queue_filename, destination,
+                                 max_replies, allow_deletion,
+                                 max_mentions, max_emoji,
+                                 translate, unit_test,
+                                 yt_replace_domain,
+                                 twitter_replacement_domain,
+                                 show_published_date_only,
+                                 allow_local_network_access,
+                                 peertube_instances,
+                                 last_bounce_message,
+                                 theme_name, system_language,
+                                 max_like_count,
+                                 signing_priv_key_pem,
+                                 default_reply_interval_hrs,
+                                 cw_lists, lists_enabled,
+                                 content_license_url)
             if debug:
-                pprint(queueJson['post'])
+                pprint(queue_json['post'])
                 print('Queue: Queue post accepted')
-        if os.path.isfile(queueFilename):
+        if os.path.isfile(queue_filename):
             try:
-                os.remove(queueFilename)
+                os.remove(queue_filename)
             except OSError:
-                print('EX: runInboxQueue 10 unable to delete ' +
-                      str(queueFilename))
+                print('EX: run_inbox_queue 10 unable to delete ' +
+                      str(queue_filename))
         if len(queue) > 0:
             queue.pop(0)

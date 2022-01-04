@@ -9,47 +9,48 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
-from utils import getConfigParam
-from utils import localActorUrl
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from markdown import markdownToHtml
+from utils import get_config_param
+from utils import local_actor_url
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from markdown import markdown_to_html
 
 
-def htmlTermsOfService(cssCache: {}, baseDir: str,
-                       httpPrefix: str, domainFull: str) -> str:
+def html_terms_of_service(css_cache: {}, base_dir: str,
+                          http_prefix: str, domain_full: str) -> str:
     """Show the terms of service screen
     """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if not os.path.isfile(baseDir + '/accounts/tos.md'):
-        copyfile(baseDir + '/default_tos.md',
-                 baseDir + '/accounts/tos.md')
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if not os.path.isfile(base_dir + '/accounts/tos.md'):
+        copyfile(base_dir + '/default_tos.md',
+                 base_dir + '/accounts/tos.md')
 
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
-            copyfile(baseDir + '/accounts/login-background-custom.jpg',
-                     baseDir + '/accounts/login-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/login-background.jpg'):
+            copyfile(base_dir + '/accounts/login-background-custom.jpg',
+                     base_dir + '/accounts/login-background.jpg')
 
-    TOSText = 'Terms of Service go here.'
-    if os.path.isfile(baseDir + '/accounts/tos.md'):
-        with open(baseDir + '/accounts/tos.md', 'r') as file:
-            TOSText = markdownToHtml(file.read())
+    tos_text = 'Terms of Service go here.'
+    if os.path.isfile(base_dir + '/accounts/tos.md'):
+        with open(base_dir + '/accounts/tos.md', 'r') as file:
+            tos_text = markdown_to_html(file.read())
 
-    TOSForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    tos_form = ''
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    TOSForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    TOSForm += '<div class="container">' + TOSText + '</div>\n'
-    if adminNickname:
-        adminActor = localActorUrl(httpPrefix, adminNickname, domainFull)
-        TOSForm += \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    tos_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    tos_form += '<div class="container">' + tos_text + '</div>\n'
+    if admin_nickname:
+        admin_actor = local_actor_url(http_prefix, admin_nickname, domain_full)
+        tos_form += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">Administered by <a href="' + \
-            adminActor + '">' + adminNickname + '</a></p>\n' + \
+            admin_actor + '">' + admin_nickname + '</a></p>\n' + \
             '</center></div>\n'
-    TOSForm += htmlFooter()
-    return TOSForm
+    tos_form += html_footer()
+    return tos_form

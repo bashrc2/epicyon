@@ -8,67 +8,67 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getEnigmaPubKey(actorJson: {}) -> str:
+def get_enigma_pub_key(actor_json: {}) -> str:
     """Returns Enigma public key for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('enigma'):
+        if not property_value['name'].lower().startswith('enigma'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
-def setEnigmaPubKey(actorJson: {}, enigmaPubKey: str) -> None:
+def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
     """Sets a Enigma public key for the given actor
     """
-    removeKey = False
-    if not enigmaPubKey:
-        removeKey = True
+    remove_key = False
+    if not enigma_pub_key:
+        remove_key = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('enigma'):
+        if not property_value['name'].lower().startswith('enigma'):
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyValue)
-    if removeKey:
+    if property_found:
+        actor_json['attachment'].remove(property_value)
+    if remove_key:
         return
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('enigma'):
+        if not property_value['name'].lower().startswith('enigma'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = enigmaPubKey
+        property_value['value'] = enigma_pub_key
         return
 
-    newenigmaPubKey = {
+    new_enigma_pub_key = {
         "name": "Enigma",
         "type": "PropertyValue",
-        "value": enigmaPubKey
+        "value": enigma_pub_key
     }
-    actorJson['attachment'].append(newenigmaPubKey)
+    actor_json['attachment'].append(new_enigma_pub_key)

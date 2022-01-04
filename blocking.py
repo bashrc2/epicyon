@@ -11,552 +11,558 @@ import os
 import json
 import time
 from datetime import datetime
-from utils import hasObjectString
-from utils import hasObjectStringObject
-from utils import hasObjectStringType
-from utils import removeDomainPort
-from utils import hasObjectDict
-from utils import isAccountDir
-from utils import getCachedPostFilename
-from utils import loadJson
-from utils import saveJson
-from utils import fileLastModified
-from utils import setConfigParam
-from utils import hasUsersPath
-from utils import getFullDomain
-from utils import removeIdEnding
-from utils import isEvil
-from utils import locatePost
-from utils import evilIncarnate
-from utils import getDomainFromActor
-from utils import getNicknameFromActor
-from utils import acctDir
-from utils import localActorUrl
-from utils import hasActor
-from conversation import muteConversation
-from conversation import unmuteConversation
+from utils import has_object_string
+from utils import has_object_string_object
+from utils import has_object_stringType
+from utils import remove_domain_port
+from utils import has_object_dict
+from utils import is_account_dir
+from utils import get_cached_post_filename
+from utils import load_json
+from utils import save_json
+from utils import file_last_modified
+from utils import set_config_param
+from utils import has_users_path
+from utils import get_full_domain
+from utils import remove_id_ending
+from utils import is_evil
+from utils import locate_post
+from utils import evil_incarnate
+from utils import get_domain_from_actor
+from utils import get_nickname_from_actor
+from utils import acct_dir
+from utils import local_actor_url
+from utils import has_actor
+from conversation import mute_conversation
+from conversation import unmute_conversation
 
 
-def addGlobalBlock(baseDir: str,
-                   blockNickname: str, blockDomain: str) -> bool:
+def add_global_block(base_dir: str,
+                     block_nickname: str, block_domain: str) -> bool:
     """Global block which applies to all accounts
     """
-    blockingFilename = baseDir + '/accounts/blocking.txt'
-    if not blockNickname.startswith('#'):
+    blocking_filename = base_dir + '/accounts/blocking.txt'
+    if not block_nickname.startswith('#'):
         # is the handle already blocked?
-        blockHandle = blockNickname + '@' + blockDomain
-        if os.path.isfile(blockingFilename):
-            if blockHandle in open(blockingFilename).read():
+        block_handle = block_nickname + '@' + block_domain
+        if os.path.isfile(blocking_filename):
+            if block_handle in open(blocking_filename).read():
                 return False
         # block an account handle or domain
         try:
-            with open(blockingFilename, 'a+') as blockFile:
-                blockFile.write(blockHandle + '\n')
+            with open(blocking_filename, 'a+') as block_file:
+                block_file.write(block_handle + '\n')
         except OSError:
-            print('EX: unable to save blocked handle ' + blockHandle)
+            print('EX: unable to save blocked handle ' + block_handle)
             return False
     else:
-        blockHashtag = blockNickname
+        block_hashtag = block_nickname
         # is the hashtag already blocked?
-        if os.path.isfile(blockingFilename):
-            if blockHashtag + '\n' in open(blockingFilename).read():
+        if os.path.isfile(blocking_filename):
+            if block_hashtag + '\n' in open(blocking_filename).read():
                 return False
         # block a hashtag
         try:
-            with open(blockingFilename, 'a+') as blockFile:
-                blockFile.write(blockHashtag + '\n')
+            with open(blocking_filename, 'a+') as block_file:
+                block_file.write(block_hashtag + '\n')
         except OSError:
-            print('EX: unable to save blocked hashtag ' + blockHashtag)
+            print('EX: unable to save blocked hashtag ' + block_hashtag)
             return False
     return True
 
 
-def addBlock(baseDir: str, nickname: str, domain: str,
-             blockNickname: str, blockDomain: str) -> bool:
+def add_block(base_dir: str, nickname: str, domain: str,
+              block_nickname: str, block_domain: str) -> bool:
     """Block the given account
     """
-    if blockDomain.startswith(domain) and nickname == blockNickname:
+    if block_domain.startswith(domain) and nickname == block_nickname:
         # don't block self
         return False
 
-    domain = removeDomainPort(domain)
-    blockingFilename = acctDir(baseDir, nickname, domain) + '/blocking.txt'
-    blockHandle = blockNickname + '@' + blockDomain
-    if os.path.isfile(blockingFilename):
-        if blockHandle + '\n' in open(blockingFilename).read():
+    domain = remove_domain_port(domain)
+    blocking_filename = acct_dir(base_dir, nickname, domain) + '/blocking.txt'
+    block_handle = block_nickname + '@' + block_domain
+    if os.path.isfile(blocking_filename):
+        if block_handle + '\n' in open(blocking_filename).read():
             return False
 
     # if we are following then unfollow
-    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
-    if os.path.isfile(followingFilename):
-        if blockHandle + '\n' in open(followingFilename).read():
-            followingStr = ''
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
+    if os.path.isfile(following_filename):
+        if block_handle + '\n' in open(following_filename).read():
+            following_str = ''
             try:
-                with open(followingFilename, 'r') as followingFile:
-                    followingStr = followingFile.read()
+                with open(following_filename, 'r') as foll_file:
+                    following_str = foll_file.read()
             except OSError:
-                print('EX: Unable to read following ' + followingFilename)
+                print('EX: Unable to read following ' + following_filename)
                 return False
 
-            if followingStr:
-                followingStr = followingStr.replace(blockHandle + '\n', '')
+            if following_str:
+                following_str = following_str.replace(block_handle + '\n', '')
 
             try:
-                with open(followingFilename, 'w+') as followingFile:
-                    followingFile.write(followingStr)
+                with open(following_filename, 'w+') as foll_file:
+                    foll_file.write(following_str)
             except OSError:
-                print('EX: Unable to write following ' + followingStr)
+                print('EX: Unable to write following ' + following_str)
                 return False
 
     # if they are a follower then remove them
-    followersFilename = acctDir(baseDir, nickname, domain) + '/followers.txt'
-    if os.path.isfile(followersFilename):
-        if blockHandle + '\n' in open(followersFilename).read():
-            followersStr = ''
+    followers_filename = \
+        acct_dir(base_dir, nickname, domain) + '/followers.txt'
+    if os.path.isfile(followers_filename):
+        if block_handle + '\n' in open(followers_filename).read():
+            followers_str = ''
             try:
-                with open(followersFilename, 'r') as followersFile:
-                    followersStr = followersFile.read()
+                with open(followers_filename, 'r') as foll_file:
+                    followers_str = foll_file.read()
             except OSError:
-                print('EX: Unable to read followers ' + followersFilename)
+                print('EX: Unable to read followers ' + followers_filename)
                 return False
 
-            if followersStr:
-                followersStr = followersStr.replace(blockHandle + '\n', '')
+            if followers_str:
+                followers_str = followers_str.replace(block_handle + '\n', '')
 
             try:
-                with open(followersFilename, 'w+') as followersFile:
-                    followersFile.write(followersStr)
+                with open(followers_filename, 'w+') as foll_file:
+                    foll_file.write(followers_str)
             except OSError:
-                print('EX: Unable to write followers ' + followersStr)
+                print('EX: Unable to write followers ' + followers_str)
                 return False
 
     try:
-        with open(blockingFilename, 'a+') as blockFile:
-            blockFile.write(blockHandle + '\n')
+        with open(blocking_filename, 'a+') as block_file:
+            block_file.write(block_handle + '\n')
     except OSError:
-        print('EX: unable to append block handle ' + blockHandle)
+        print('EX: unable to append block handle ' + block_handle)
         return False
     return True
 
 
-def removeGlobalBlock(baseDir: str,
-                      unblockNickname: str,
-                      unblockDomain: str) -> bool:
+def remove_global_block(base_dir: str,
+                        unblock_nickname: str,
+                        unblock_domain: str) -> bool:
     """Unblock the given global block
     """
-    unblockingFilename = baseDir + '/accounts/blocking.txt'
-    if not unblockNickname.startswith('#'):
-        unblockHandle = unblockNickname + '@' + unblockDomain
-        if os.path.isfile(unblockingFilename):
-            if unblockHandle in open(unblockingFilename).read():
+    unblocking_filename = base_dir + '/accounts/blocking.txt'
+    if not unblock_nickname.startswith('#'):
+        unblock_handle = unblock_nickname + '@' + unblock_domain
+        if os.path.isfile(unblocking_filename):
+            if unblock_handle in open(unblocking_filename).read():
                 try:
-                    with open(unblockingFilename, 'r') as fp:
-                        with open(unblockingFilename + '.new', 'w+') as fpnew:
-                            for line in fp:
+                    with open(unblocking_filename, 'r') as fp_unblock:
+                        with open(unblocking_filename + '.new', 'w+') as fpnew:
+                            for line in fp_unblock:
                                 handle = \
                                     line.replace('\n', '').replace('\r', '')
-                                if unblockHandle not in line:
+                                if unblock_handle not in line:
                                     fpnew.write(handle + '\n')
-                except OSError as e:
+                except OSError as ex:
                     print('EX: failed to remove global block ' +
-                          unblockingFilename + ' ' + str(e))
+                          unblocking_filename + ' ' + str(ex))
                     return False
 
-                if os.path.isfile(unblockingFilename + '.new'):
+                if os.path.isfile(unblocking_filename + '.new'):
                     try:
-                        os.rename(unblockingFilename + '.new',
-                                  unblockingFilename)
+                        os.rename(unblocking_filename + '.new',
+                                  unblocking_filename)
                     except OSError:
-                        print('EX: unable to rename ' + unblockingFilename)
+                        print('EX: unable to rename ' + unblocking_filename)
                         return False
                     return True
     else:
-        unblockHashtag = unblockNickname
-        if os.path.isfile(unblockingFilename):
-            if unblockHashtag + '\n' in open(unblockingFilename).read():
+        unblock_hashtag = unblock_nickname
+        if os.path.isfile(unblocking_filename):
+            if unblock_hashtag + '\n' in open(unblocking_filename).read():
                 try:
-                    with open(unblockingFilename, 'r') as fp:
-                        with open(unblockingFilename + '.new', 'w+') as fpnew:
-                            for line in fp:
-                                blockLine = \
+                    with open(unblocking_filename, 'r') as fp_unblock:
+                        with open(unblocking_filename + '.new', 'w+') as fpnew:
+                            for line in fp_unblock:
+                                block_line = \
                                     line.replace('\n', '').replace('\r', '')
-                                if unblockHashtag not in line:
-                                    fpnew.write(blockLine + '\n')
-                except OSError as e:
+                                if unblock_hashtag not in line:
+                                    fpnew.write(block_line + '\n')
+                except OSError as ex:
                     print('EX: failed to remove global hashtag block ' +
-                          unblockingFilename + ' ' + str(e))
+                          unblocking_filename + ' ' + str(ex))
                     return False
 
-                if os.path.isfile(unblockingFilename + '.new'):
+                if os.path.isfile(unblocking_filename + '.new'):
                     try:
-                        os.rename(unblockingFilename + '.new',
-                                  unblockingFilename)
+                        os.rename(unblocking_filename + '.new',
+                                  unblocking_filename)
                     except OSError:
-                        print('EX: unable to rename 2 ' + unblockingFilename)
+                        print('EX: unable to rename 2 ' + unblocking_filename)
                         return False
                     return True
     return False
 
 
-def removeBlock(baseDir: str, nickname: str, domain: str,
-                unblockNickname: str, unblockDomain: str) -> bool:
+def remove_block(base_dir: str, nickname: str, domain: str,
+                 unblock_nickname: str, unblock_domain: str) -> bool:
     """Unblock the given account
     """
-    domain = removeDomainPort(domain)
-    unblockingFilename = acctDir(baseDir, nickname, domain) + '/blocking.txt'
-    unblockHandle = unblockNickname + '@' + unblockDomain
-    if os.path.isfile(unblockingFilename):
-        if unblockHandle in open(unblockingFilename).read():
+    domain = remove_domain_port(domain)
+    unblocking_filename = \
+        acct_dir(base_dir, nickname, domain) + '/blocking.txt'
+    unblock_handle = unblock_nickname + '@' + unblock_domain
+    if os.path.isfile(unblocking_filename):
+        if unblock_handle in open(unblocking_filename).read():
             try:
-                with open(unblockingFilename, 'r') as fp:
-                    with open(unblockingFilename + '.new', 'w+') as fpnew:
-                        for line in fp:
+                with open(unblocking_filename, 'r') as fp_unblock:
+                    with open(unblocking_filename + '.new', 'w+') as fpnew:
+                        for line in fp_unblock:
                             handle = line.replace('\n', '').replace('\r', '')
-                            if unblockHandle not in line:
+                            if unblock_handle not in line:
                                 fpnew.write(handle + '\n')
-            except OSError as e:
+            except OSError as ex:
                 print('EX: failed to remove block ' +
-                      unblockingFilename + ' ' + str(e))
+                      unblocking_filename + ' ' + str(ex))
                 return False
 
-            if os.path.isfile(unblockingFilename + '.new'):
+            if os.path.isfile(unblocking_filename + '.new'):
                 try:
-                    os.rename(unblockingFilename + '.new', unblockingFilename)
+                    os.rename(unblocking_filename + '.new',
+                              unblocking_filename)
                 except OSError:
-                    print('EX: unable to rename 3 ' + unblockingFilename)
+                    print('EX: unable to rename 3 ' + unblocking_filename)
                     return False
                 return True
     return False
 
 
-def isBlockedHashtag(baseDir: str, hashtag: str) -> bool:
+def is_blocked_hashtag(base_dir: str, hashtag: str) -> bool:
     """Is the given hashtag blocked?
     """
     # avoid very long hashtags
     if len(hashtag) > 32:
         return True
-    globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-    if os.path.isfile(globalBlockingFilename):
+    global_blocking_filename = base_dir + '/accounts/blocking.txt'
+    if os.path.isfile(global_blocking_filename):
         hashtag = hashtag.strip('\n').strip('\r')
         if not hashtag.startswith('#'):
             hashtag = '#' + hashtag
-        if hashtag + '\n' in open(globalBlockingFilename).read():
+        if hashtag + '\n' in open(global_blocking_filename).read():
             return True
     return False
 
 
-def getDomainBlocklist(baseDir: str) -> str:
+def get_domain_blocklist(base_dir: str) -> str:
     """Returns all globally blocked domains as a string
     This can be used for fast matching to mitigate flooding
     """
-    blockedStr = ''
+    blocked_str = ''
 
-    evilDomains = evilIncarnate()
-    for evil in evilDomains:
-        blockedStr += evil + '\n'
+    evil_domains = evil_incarnate()
+    for evil in evil_domains:
+        blocked_str += evil + '\n'
 
-    globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-    if not os.path.isfile(globalBlockingFilename):
-        return blockedStr
+    global_blocking_filename = base_dir + '/accounts/blocking.txt'
+    if not os.path.isfile(global_blocking_filename):
+        return blocked_str
     try:
-        with open(globalBlockingFilename, 'r') as fpBlocked:
-            blockedStr += fpBlocked.read()
+        with open(global_blocking_filename, 'r') as fp_blocked:
+            blocked_str += fp_blocked.read()
     except OSError:
-        print('EX: unable to read ' + globalBlockingFilename)
-    return blockedStr
+        print('EX: unable to read ' + global_blocking_filename)
+    return blocked_str
 
 
-def updateBlockedCache(baseDir: str,
-                       blockedCache: [],
-                       blockedCacheLastUpdated: int,
-                       blockedCacheUpdateSecs: int) -> int:
+def update_blocked_cache(base_dir: str,
+                         blocked_cache: [],
+                         blocked_cache_last_updated: int,
+                         blocked_cache_update_secs: int) -> int:
     """Updates the cache of globally blocked domains held in memory
     """
-    currTime = int(time.time())
-    if blockedCacheLastUpdated > currTime:
+    curr_time = int(time.time())
+    if blocked_cache_last_updated > curr_time:
         print('WARN: Cache updated in the future')
-        blockedCacheLastUpdated = 0
-    secondsSinceLastUpdate = currTime - blockedCacheLastUpdated
-    if secondsSinceLastUpdate < blockedCacheUpdateSecs:
-        return blockedCacheLastUpdated
-    globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-    if not os.path.isfile(globalBlockingFilename):
-        return blockedCacheLastUpdated
+        blocked_cache_last_updated = 0
+    seconds_since_last_update = curr_time - blocked_cache_last_updated
+    if seconds_since_last_update < blocked_cache_update_secs:
+        return blocked_cache_last_updated
+    global_blocking_filename = base_dir + '/accounts/blocking.txt'
+    if not os.path.isfile(global_blocking_filename):
+        return blocked_cache_last_updated
     try:
-        with open(globalBlockingFilename, 'r') as fpBlocked:
-            blockedLines = fpBlocked.readlines()
+        with open(global_blocking_filename, 'r') as fp_blocked:
+            blocked_lines = fp_blocked.readlines()
             # remove newlines
-            for index in range(len(blockedLines)):
-                blockedLines[index] = blockedLines[index].replace('\n', '')
+            for index in range(len(blocked_lines)):
+                blocked_lines[index] = blocked_lines[index].replace('\n', '')
             # update the cache
-            blockedCache.clear()
-            blockedCache += blockedLines
-    except OSError as e:
-        print('EX: unable to read ' + globalBlockingFilename + ' ' + str(e))
-    return currTime
+            blocked_cache.clear()
+            blocked_cache += blocked_lines
+    except OSError as ex:
+        print('EX: unable to read ' + global_blocking_filename + ' ' + str(ex))
+    return curr_time
 
 
-def _getShortDomain(domain: str) -> str:
+def _get_short_domain(domain: str) -> str:
     """ by checking a shorter version we can thwart adversaries
     who constantly change their subdomain
     e.g. subdomain123.mydomain.com becomes mydomain.com
     """
     sections = domain.split('.')
-    noOfSections = len(sections)
-    if noOfSections > 2:
-        return sections[noOfSections-2] + '.' + sections[-1]
+    no_of_sections = len(sections)
+    if no_of_sections > 2:
+        return sections[no_of_sections-2] + '.' + sections[-1]
     return None
 
 
-def isBlockedDomain(baseDir: str, domain: str,
-                    blockedCache: [] = None) -> bool:
+def is_blocked_domain(base_dir: str, domain: str,
+                      blocked_cache: [] = None) -> bool:
     """Is the given domain blocked?
     """
     if '.' not in domain:
         return False
 
-    if isEvil(domain):
+    if is_evil(domain):
         return True
 
-    shortDomain = _getShortDomain(domain)
+    short_domain = _get_short_domain(domain)
 
-    if not brochModeIsActive(baseDir):
-        if blockedCache:
-            for blockedStr in blockedCache:
-                if '*@' + domain in blockedStr:
+    if not broch_mode_is_active(base_dir):
+        if blocked_cache:
+            for blocked_str in blocked_cache:
+                if '*@' + domain in blocked_str:
                     return True
-                if shortDomain:
-                    if '*@' + shortDomain in blockedStr:
+                if short_domain:
+                    if '*@' + short_domain in blocked_str:
                         return True
         else:
             # instance block list
-            globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-            if os.path.isfile(globalBlockingFilename):
+            global_blocking_filename = base_dir + '/accounts/blocking.txt'
+            if os.path.isfile(global_blocking_filename):
                 try:
-                    with open(globalBlockingFilename, 'r') as fpBlocked:
-                        blockedStr = fpBlocked.read()
-                        if '*@' + domain in blockedStr:
+                    with open(global_blocking_filename, 'r') as fp_blocked:
+                        blocked_str = fp_blocked.read()
+                        if '*@' + domain in blocked_str:
                             return True
-                        if shortDomain:
-                            if '*@' + shortDomain in blockedStr:
+                        if short_domain:
+                            if '*@' + short_domain in blocked_str:
                                 return True
-                except OSError as e:
-                    print('EX: unable to read ' + globalBlockingFilename +
-                          ' ' + str(e))
+                except OSError as ex:
+                    print('EX: unable to read ' + global_blocking_filename +
+                          ' ' + str(ex))
     else:
-        allowFilename = baseDir + '/accounts/allowedinstances.txt'
+        allow_filename = base_dir + '/accounts/allowedinstances.txt'
         # instance allow list
-        if not shortDomain:
-            if domain not in open(allowFilename).read():
+        if not short_domain:
+            if domain not in open(allow_filename).read():
                 return True
         else:
-            if shortDomain not in open(allowFilename).read():
+            if short_domain not in open(allow_filename).read():
                 return True
 
     return False
 
 
-def isBlocked(baseDir: str, nickname: str, domain: str,
-              blockNickname: str, blockDomain: str,
-              blockedCache: [] = None) -> bool:
+def is_blocked(base_dir: str, nickname: str, domain: str,
+               block_nickname: str, block_domain: str,
+               blocked_cache: [] = None) -> bool:
     """Is the given nickname blocked?
     """
-    if isEvil(blockDomain):
+    if is_evil(block_domain):
         return True
 
-    blockHandle = None
-    if blockNickname and blockDomain:
-        blockHandle = blockNickname + '@' + blockDomain
+    block_handle = None
+    if block_nickname and block_domain:
+        block_handle = block_nickname + '@' + block_domain
 
-    if not brochModeIsActive(baseDir):
+    if not broch_mode_is_active(base_dir):
         # instance level block list
-        if blockedCache:
-            for blockedStr in blockedCache:
-                if '*@' + domain in blockedStr:
+        if blocked_cache:
+            for blocked_str in blocked_cache:
+                if '*@' + domain in blocked_str:
                     return True
-                if blockHandle:
-                    if blockHandle in blockedStr:
+                if block_handle:
+                    if block_handle in blocked_str:
                         return True
         else:
-            globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-            if os.path.isfile(globalBlockingFilename):
-                if '*@' + blockDomain in open(globalBlockingFilename).read():
+            global_blocks_filename = base_dir + '/accounts/blocking.txt'
+            if os.path.isfile(global_blocks_filename):
+                if '*@' + block_domain in open(global_blocks_filename).read():
                     return True
-                if blockHandle:
-                    if blockHandle in open(globalBlockingFilename).read():
+                if block_handle:
+                    if block_handle in open(global_blocks_filename).read():
                         return True
     else:
         # instance allow list
-        allowFilename = baseDir + '/accounts/allowedinstances.txt'
-        shortDomain = _getShortDomain(blockDomain)
-        if not shortDomain:
-            if blockDomain not in open(allowFilename).read():
+        allow_filename = base_dir + '/accounts/allowedinstances.txt'
+        short_domain = _get_short_domain(block_domain)
+        if not short_domain:
+            if block_domain not in open(allow_filename).read():
                 return True
         else:
-            if shortDomain not in open(allowFilename).read():
+            if short_domain not in open(allow_filename).read():
                 return True
 
     # account level allow list
-    accountDir = acctDir(baseDir, nickname, domain)
-    allowFilename = accountDir + '/allowedinstances.txt'
-    if os.path.isfile(allowFilename):
-        if blockDomain not in open(allowFilename).read():
+    account_dir = acct_dir(base_dir, nickname, domain)
+    allow_filename = account_dir + '/allowedinstances.txt'
+    if os.path.isfile(allow_filename):
+        if block_domain not in open(allow_filename).read():
             return True
 
     # account level block list
-    blockingFilename = accountDir + '/blocking.txt'
-    if os.path.isfile(blockingFilename):
-        if '*@' + blockDomain in open(blockingFilename).read():
+    blocking_filename = account_dir + '/blocking.txt'
+    if os.path.isfile(blocking_filename):
+        if '*@' + block_domain in open(blocking_filename).read():
             return True
-        if blockHandle:
-            if blockHandle in open(blockingFilename).read():
+        if block_handle:
+            if block_handle in open(blocking_filename).read():
                 return True
     return False
 
 
-def outboxBlock(baseDir: str, httpPrefix: str,
-                nickname: str, domain: str, port: int,
-                messageJson: {}, debug: bool) -> bool:
+def outbox_block(base_dir: str, http_prefix: str,
+                 nickname: str, domain: str, port: int,
+                 message_json: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: block - no type')
         return False
-    if not messageJson['type'] == 'Block':
+    if not message_json['type'] == 'Block':
         if debug:
             print('DEBUG: not a block')
         return False
-    if not hasObjectString(messageJson, debug):
+    if not has_object_string(message_json, debug):
         return False
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object'])
-    if '/statuses/' not in messageId:
+    message_id = remove_id_ending(message_json['object'])
+    if '/statuses/' not in message_id:
         if debug:
             print('DEBUG: c2s block object is not a status')
         return False
-    if not hasUsersPath(messageId):
+    if not has_users_path(message_id):
         if debug:
             print('DEBUG: c2s block object has no nickname')
         return False
-    domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
-    if not postFilename:
+    domain = remove_domain_port(domain)
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s block post not found in inbox or outbox')
-            print(messageId)
+            print(message_id)
         return False
-    nicknameBlocked = getNicknameFromActor(messageJson['object'])
-    if not nicknameBlocked:
-        print('WARN: unable to find nickname in ' + messageJson['object'])
+    nickname_blocked = get_nickname_from_actor(message_json['object'])
+    if not nickname_blocked:
+        print('WARN: unable to find nickname in ' + message_json['object'])
         return False
-    domainBlocked, portBlocked = getDomainFromActor(messageJson['object'])
-    domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
+    domain_blocked, port_blocked = \
+        get_domain_from_actor(message_json['object'])
+    domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
 
-    addBlock(baseDir, nickname, domain,
-             nicknameBlocked, domainBlockedFull)
+    add_block(base_dir, nickname, domain,
+              nickname_blocked, domain_blocked_full)
 
     if debug:
-        print('DEBUG: post blocked via c2s - ' + postFilename)
+        print('DEBUG: post blocked via c2s - ' + post_filename)
     return True
 
 
-def outboxUndoBlock(baseDir: str, httpPrefix: str,
-                    nickname: str, domain: str, port: int,
-                    messageJson: {}, debug: bool) -> None:
+def outbox_undo_block(base_dir: str, http_prefix: str,
+                      nickname: str, domain: str, port: int,
+                      message_json: {}, debug: bool) -> None:
     """ When an undo block request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: undo block - no type')
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         if debug:
             print('DEBUG: not an undo block')
         return
 
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'Block':
+    if not message_json['object']['type'] == 'Block':
         if debug:
             print('DEBUG: not an undo block')
         return
-    if not hasObjectStringObject(messageJson, debug):
+    if not has_object_string_object(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s undo block request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object']['object'])
-    if '/statuses/' not in messageId:
+    message_id = remove_id_ending(message_json['object']['object'])
+    if '/statuses/' not in message_id:
         if debug:
             print('DEBUG: c2s undo block object is not a status')
         return
-    if not hasUsersPath(messageId):
+    if not has_users_path(message_id):
         if debug:
             print('DEBUG: c2s undo block object has no nickname')
         return
-    domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
-    if not postFilename:
+    domain = remove_domain_port(domain)
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s undo block post not found in inbox or outbox')
-            print(messageId)
+            print(message_id)
         return
-    nicknameBlocked = getNicknameFromActor(messageJson['object']['object'])
-    if not nicknameBlocked:
+    nickname_blocked = \
+        get_nickname_from_actor(message_json['object']['object'])
+    if not nickname_blocked:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['object'])
+              message_json['object']['object'])
         return
-    domainObject = messageJson['object']['object']
-    domainBlocked, portBlocked = getDomainFromActor(domainObject)
-    domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
+    domain_object = message_json['object']['object']
+    domain_blocked, port_blocked = get_domain_from_actor(domain_object)
+    domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
 
-    removeBlock(baseDir, nickname, domain,
-                nicknameBlocked, domainBlockedFull)
+    remove_block(base_dir, nickname, domain,
+                 nickname_blocked, domain_blocked_full)
     if debug:
-        print('DEBUG: post undo blocked via c2s - ' + postFilename)
+        print('DEBUG: post undo blocked via c2s - ' + post_filename)
 
 
-def mutePost(baseDir: str, nickname: str, domain: str, port: int,
-             httpPrefix: str, postId: str, recentPostsCache: {},
-             debug: bool) -> None:
+def mute_post(base_dir: str, nickname: str, domain: str, port: int,
+              http_prefix: str, post_id: str, recent_posts_cache: {},
+              debug: bool) -> None:
     """ Mutes the given post
     """
-    print('mutePost: postId ' + postId)
-    postFilename = locatePost(baseDir, nickname, domain, postId)
-    if not postFilename:
-        print('mutePost: file not found ' + postId)
+    print('mute_post: post_id ' + post_id)
+    post_filename = locate_post(base_dir, nickname, domain, post_id)
+    if not post_filename:
+        print('mute_post: file not found ' + post_id)
         return
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
-        print('mutePost: object not loaded ' + postId)
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
+        print('mute_post: object not loaded ' + post_id)
         return
-    print('mutePost: ' + str(postJsonObject))
+    print('mute_post: ' + str(post_json_object))
 
-    postJsonObj = postJsonObject
-    alsoUpdatePostId = None
-    if hasObjectDict(postJsonObject):
-        postJsonObj = postJsonObject['object']
+    post_json_obj = post_json_object
+    also_update_post_id = None
+    if has_object_dict(post_json_object):
+        post_json_obj = post_json_object['object']
     else:
-        if hasObjectString(postJsonObject, debug):
-            alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
+        if has_object_string(post_json_object, debug):
+            also_update_post_id = remove_id_ending(post_json_object['object'])
 
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    domain_full = get_full_domain(domain, port)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    if postJsonObj.get('conversation'):
-        muteConversation(baseDir, nickname, domain,
-                         postJsonObj['conversation'])
+    if post_json_obj.get('conversation'):
+        mute_conversation(base_dir, nickname, domain,
+                          post_json_obj['conversation'])
 
     # does this post have ignores on it from differenent actors?
-    if not postJsonObj.get('ignores'):
+    if not post_json_obj.get('ignores'):
         if debug:
-            print('DEBUG: Adding initial mute to ' + postId)
-        ignoresJson = {
+            print('DEBUG: Adding initial mute to ' + post_id)
+        ignores_json = {
             "@context": "https://www.w3.org/ns/activitystreams",
-            'id': postId,
+            'id': post_id,
             'type': 'Collection',
             "totalItems": 1,
             'items': [{
@@ -564,323 +570,325 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
                 'actor': actor
             }]
         }
-        postJsonObj['ignores'] = ignoresJson
+        post_json_obj['ignores'] = ignores_json
     else:
-        if not postJsonObj['ignores'].get('items'):
-            postJsonObj['ignores']['items'] = []
-        itemsList = postJsonObj['ignores']['items']
-        for ignoresItem in itemsList:
-            if ignoresItem.get('actor'):
-                if ignoresItem['actor'] == actor:
+        if not post_json_obj['ignores'].get('items'):
+            post_json_obj['ignores']['items'] = []
+        items_list = post_json_obj['ignores']['items']
+        for ignores_item in items_list:
+            if ignores_item.get('actor'):
+                if ignores_item['actor'] == actor:
                     return
-        newIgnore = {
+        new_ignore = {
             'type': 'Ignore',
             'actor': actor
         }
-        igIt = len(itemsList)
-        itemsList.append(newIgnore)
-        postJsonObj['ignores']['totalItems'] = igIt
-    postJsonObj['muted'] = True
-    if saveJson(postJsonObject, postFilename):
-        print('mutePost: saved ' + postFilename)
+        ig_it = len(items_list)
+        items_list.append(new_ignore)
+        post_json_obj['ignores']['totalItems'] = ig_it
+    post_json_obj['muted'] = True
+    if save_json(post_json_object, post_filename):
+        print('mute_post: saved ' + post_filename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain, post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
-                print('MUTE: cached post removed ' + cachedPostFilename)
+                os.remove(cached_post_filename)
+                print('MUTE: cached post removed ' + cached_post_filename)
             except OSError:
                 print('EX: MUTE cached post not removed ' +
-                      cachedPostFilename)
-                pass
+                      cached_post_filename)
         else:
-            print('MUTE: cached post not found ' + cachedPostFilename)
+            print('MUTE: cached post not found ' + cached_post_filename)
 
     try:
-        with open(postFilename + '.muted', 'w+') as muteFile:
-            muteFile.write('\n')
+        with open(post_filename + '.muted', 'w+') as mute_file:
+            mute_file.write('\n')
     except OSError:
-        print('EX: Failed to save mute file ' + postFilename + '.muted')
+        print('EX: Failed to save mute file ' + post_filename + '.muted')
         return
-    print('MUTE: ' + postFilename + '.muted file added')
+    print('MUTE: ' + post_filename + '.muted file added')
 
     # if the post is in the recent posts cache then mark it as muted
-    if recentPostsCache.get('index'):
-        postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
-        if postId in recentPostsCache['index']:
-            print('MUTE: ' + postId + ' is in recent posts cache')
-        if recentPostsCache.get('json'):
-            recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-            print('MUTE: ' + postId +
+    if recent_posts_cache.get('index'):
+        post_id = \
+            remove_id_ending(post_json_object['id']).replace('/', '#')
+        if post_id in recent_posts_cache['index']:
+            print('MUTE: ' + post_id + ' is in recent posts cache')
+        if recent_posts_cache.get('json'):
+            recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
+            print('MUTE: ' + post_id +
                   ' marked as muted in recent posts memory cache')
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
-                print('MUTE: ' + postId + ' removed cached html')
+        if recent_posts_cache.get('html'):
+            if recent_posts_cache['html'].get(post_id):
+                del recent_posts_cache['html'][post_id]
+                print('MUTE: ' + post_id + ' removed cached html')
 
-    if alsoUpdatePostId:
-        postFilename = locatePost(baseDir, nickname, domain, alsoUpdatePostId)
-        if os.path.isfile(postFilename):
-            postJsonObj = loadJson(postFilename)
-            cachedPostFilename = \
-                getCachedPostFilename(baseDir, nickname, domain,
-                                      postJsonObj)
-            if cachedPostFilename:
-                if os.path.isfile(cachedPostFilename):
+    if also_update_post_id:
+        post_filename = locate_post(base_dir, nickname, domain,
+                                    also_update_post_id)
+        if os.path.isfile(post_filename):
+            post_json_obj = load_json(post_filename)
+            cached_post_filename = \
+                get_cached_post_filename(base_dir, nickname, domain,
+                                         post_json_obj)
+            if cached_post_filename:
+                if os.path.isfile(cached_post_filename):
                     try:
-                        os.remove(cachedPostFilename)
+                        os.remove(cached_post_filename)
                         print('MUTE: cached referenced post removed ' +
-                              cachedPostFilename)
+                              cached_post_filename)
                     except OSError:
                         print('EX: ' +
                               'MUTE cached referenced post not removed ' +
-                              cachedPostFilename)
-                        pass
+                              cached_post_filename)
 
-        if recentPostsCache.get('json'):
-            if recentPostsCache['json'].get(alsoUpdatePostId):
-                del recentPostsCache['json'][alsoUpdatePostId]
-                print('MUTE: ' + alsoUpdatePostId + ' removed referenced json')
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(alsoUpdatePostId):
-                del recentPostsCache['html'][alsoUpdatePostId]
-                print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
+        if recent_posts_cache.get('json'):
+            if recent_posts_cache['json'].get(also_update_post_id):
+                del recent_posts_cache['json'][also_update_post_id]
+                print('MUTE: ' + also_update_post_id +
+                      ' removed referenced json')
+        if recent_posts_cache.get('html'):
+            if recent_posts_cache['html'].get(also_update_post_id):
+                del recent_posts_cache['html'][also_update_post_id]
+                print('MUTE: ' + also_update_post_id +
+                      ' removed referenced html')
 
 
-def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
-               httpPrefix: str, postId: str, recentPostsCache: {},
-               debug: bool) -> None:
+def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
+                http_prefix: str, post_id: str, recent_posts_cache: {},
+                debug: bool) -> None:
     """ Unmutes the given post
     """
-    postFilename = locatePost(baseDir, nickname, domain, postId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, post_id)
+    if not post_filename:
         return
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
         return
 
-    muteFilename = postFilename + '.muted'
-    if os.path.isfile(muteFilename):
+    mute_filename = post_filename + '.muted'
+    if os.path.isfile(mute_filename):
         try:
-            os.remove(muteFilename)
+            os.remove(mute_filename)
         except OSError:
             if debug:
-                print('EX: unmutePost mute filename not deleted ' +
-                      str(muteFilename))
-        print('UNMUTE: ' + muteFilename + ' file removed')
+                print('EX: unmute_post mute filename not deleted ' +
+                      str(mute_filename))
+        print('UNMUTE: ' + mute_filename + ' file removed')
 
-    postJsonObj = postJsonObject
-    alsoUpdatePostId = None
-    if hasObjectDict(postJsonObject):
-        postJsonObj = postJsonObject['object']
+    post_json_obj = post_json_object
+    also_update_post_id = None
+    if has_object_dict(post_json_object):
+        post_json_obj = post_json_object['object']
     else:
-        if hasObjectString(postJsonObject, debug):
-            alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
+        if has_object_string(post_json_object, debug):
+            also_update_post_id = remove_id_ending(post_json_object['object'])
 
-    if postJsonObj.get('conversation'):
-        unmuteConversation(baseDir, nickname, domain,
-                           postJsonObj['conversation'])
+    if post_json_obj.get('conversation'):
+        unmute_conversation(base_dir, nickname, domain,
+                            post_json_obj['conversation'])
 
-    if postJsonObj.get('ignores'):
-        domainFull = getFullDomain(domain, port)
-        actor = localActorUrl(httpPrefix, nickname, domainFull)
-        totalItems = 0
-        if postJsonObj['ignores'].get('totalItems'):
-            totalItems = postJsonObj['ignores']['totalItems']
-        itemsList = postJsonObj['ignores']['items']
-        for ignoresItem in itemsList:
-            if ignoresItem.get('actor'):
-                if ignoresItem['actor'] == actor:
+    if post_json_obj.get('ignores'):
+        domain_full = get_full_domain(domain, port)
+        actor = local_actor_url(http_prefix, nickname, domain_full)
+        total_items = 0
+        if post_json_obj['ignores'].get('totalItems'):
+            total_items = post_json_obj['ignores']['totalItems']
+        items_list = post_json_obj['ignores']['items']
+        for ignores_item in items_list:
+            if ignores_item.get('actor'):
+                if ignores_item['actor'] == actor:
                     if debug:
                         print('DEBUG: mute was removed for ' + actor)
-                    itemsList.remove(ignoresItem)
+                    items_list.remove(ignores_item)
                     break
-        if totalItems == 1:
+        if total_items == 1:
             if debug:
                 print('DEBUG: mute was removed from post')
-            del postJsonObj['ignores']
+            del post_json_obj['ignores']
         else:
-            igItLen = len(postJsonObj['ignores']['items'])
-            postJsonObj['ignores']['totalItems'] = igItLen
-    postJsonObj['muted'] = False
-    saveJson(postJsonObject, postFilename)
+            ig_it_len = len(post_json_obj['ignores']['items'])
+            post_json_obj['ignores']['totalItems'] = ig_it_len
+    post_json_obj['muted'] = False
+    save_json(post_json_object, post_filename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain, post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 if debug:
-                    print('EX: unmutePost cached post not deleted ' +
-                          str(cachedPostFilename))
+                    print('EX: unmute_post cached post not deleted ' +
+                          str(cached_post_filename))
 
     # if the post is in the recent posts cache then mark it as unmuted
-    if recentPostsCache.get('index'):
-        postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
-        if postId in recentPostsCache['index']:
-            print('UNMUTE: ' + postId + ' is in recent posts cache')
-        if recentPostsCache.get('json'):
-            recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-            print('UNMUTE: ' + postId +
+    if recent_posts_cache.get('index'):
+        post_id = \
+            remove_id_ending(post_json_object['id']).replace('/', '#')
+        if post_id in recent_posts_cache['index']:
+            print('UNMUTE: ' + post_id + ' is in recent posts cache')
+        if recent_posts_cache.get('json'):
+            recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
+            print('UNMUTE: ' + post_id +
                   ' marked as unmuted in recent posts cache')
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
-                print('UNMUTE: ' + postId + ' removed cached html')
-    if alsoUpdatePostId:
-        postFilename = locatePost(baseDir, nickname, domain, alsoUpdatePostId)
-        if os.path.isfile(postFilename):
-            postJsonObj = loadJson(postFilename)
-            cachedPostFilename = \
-                getCachedPostFilename(baseDir, nickname, domain,
-                                      postJsonObj)
-            if cachedPostFilename:
-                if os.path.isfile(cachedPostFilename):
+        if recent_posts_cache.get('html'):
+            if recent_posts_cache['html'].get(post_id):
+                del recent_posts_cache['html'][post_id]
+                print('UNMUTE: ' + post_id + ' removed cached html')
+    if also_update_post_id:
+        post_filename = locate_post(base_dir, nickname, domain,
+                                    also_update_post_id)
+        if os.path.isfile(post_filename):
+            post_json_obj = load_json(post_filename)
+            cached_post_filename = \
+                get_cached_post_filename(base_dir, nickname, domain,
+                                         post_json_obj)
+            if cached_post_filename:
+                if os.path.isfile(cached_post_filename):
                     try:
-                        os.remove(cachedPostFilename)
+                        os.remove(cached_post_filename)
                         print('MUTE: cached referenced post removed ' +
-                              cachedPostFilename)
+                              cached_post_filename)
                     except OSError:
                         if debug:
                             print('EX: ' +
-                                  'unmutePost cached ref post not removed ' +
-                                  str(cachedPostFilename))
+                                  'unmute_post cached ref post not removed ' +
+                                  str(cached_post_filename))
 
-        if recentPostsCache.get('json'):
-            if recentPostsCache['json'].get(alsoUpdatePostId):
-                del recentPostsCache['json'][alsoUpdatePostId]
+        if recent_posts_cache.get('json'):
+            if recent_posts_cache['json'].get(also_update_post_id):
+                del recent_posts_cache['json'][also_update_post_id]
                 print('UNMUTE: ' +
-                      alsoUpdatePostId + ' removed referenced json')
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(alsoUpdatePostId):
-                del recentPostsCache['html'][alsoUpdatePostId]
+                      also_update_post_id + ' removed referenced json')
+        if recent_posts_cache.get('html'):
+            if recent_posts_cache['html'].get(also_update_post_id):
+                del recent_posts_cache['html'][also_update_post_id]
                 print('UNMUTE: ' +
-                      alsoUpdatePostId + ' removed referenced html')
+                      also_update_post_id + ' removed referenced html')
 
 
-def outboxMute(baseDir: str, httpPrefix: str,
-               nickname: str, domain: str, port: int,
-               messageJson: {}, debug: bool,
-               recentPostsCache: {}) -> None:
+def outbox_mute(base_dir: str, http_prefix: str,
+                nickname: str, domain: str, port: int,
+                message_json: {}, debug: bool,
+                recent_posts_cache: {}) -> None:
     """When a mute is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return
-    domainFull = getFullDomain(domain, port)
-    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+    domain_full = get_full_domain(domain, port)
+    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         return
-    if not messageJson['type'] == 'Ignore':
+    if not message_json['type'] == 'Ignore':
         return
-    if not hasObjectString(messageJson, debug):
+    if not has_object_string(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s mute request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object'])
-    if '/statuses/' not in messageId:
+    message_id = remove_id_ending(message_json['object'])
+    if '/statuses/' not in message_id:
         if debug:
             print('DEBUG: c2s mute object is not a status')
         return
-    if not hasUsersPath(messageId):
+    if not has_users_path(message_id):
         if debug:
             print('DEBUG: c2s mute object has no nickname')
         return
-    domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
-    if not postFilename:
+    domain = remove_domain_port(domain)
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s mute post not found in inbox or outbox')
-            print(messageId)
+            print(message_id)
         return
-    nicknameMuted = getNicknameFromActor(messageJson['object'])
-    if not nicknameMuted:
-        print('WARN: unable to find nickname in ' + messageJson['object'])
+    nickname_muted = get_nickname_from_actor(message_json['object'])
+    if not nickname_muted:
+        print('WARN: unable to find nickname in ' + message_json['object'])
         return
 
-    mutePost(baseDir, nickname, domain, port,
-             httpPrefix, messageJson['object'], recentPostsCache,
-             debug)
+    mute_post(base_dir, nickname, domain, port,
+              http_prefix, message_json['object'], recent_posts_cache,
+              debug)
 
     if debug:
-        print('DEBUG: post muted via c2s - ' + postFilename)
+        print('DEBUG: post muted via c2s - ' + post_filename)
 
 
-def outboxUndoMute(baseDir: str, httpPrefix: str,
-                   nickname: str, domain: str, port: int,
-                   messageJson: {}, debug: bool,
-                   recentPostsCache: {}) -> None:
+def outbox_undo_mute(base_dir: str, http_prefix: str,
+                     nickname: str, domain: str, port: int,
+                     message_json: {}, debug: bool,
+                     recent_posts_cache: {}) -> None:
     """When an undo mute is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not hasActor(messageJson, debug):
+    if not has_actor(message_json, debug):
         return
-    domainFull = getFullDomain(domain, port)
-    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+    domain_full = get_full_domain(domain, port)
+    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not has_object_stringType(message_json, debug):
         return
-    if messageJson['object']['type'] != 'Ignore':
+    if message_json['object']['type'] != 'Ignore':
         return
-    if not isinstance(messageJson['object']['object'], str):
+    if not isinstance(message_json['object']['object'], str):
         if debug:
             print('DEBUG: undo mute object is not a string')
         return
     if debug:
         print('DEBUG: c2s undo mute request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object']['object'])
-    if '/statuses/' not in messageId:
+    message_id = remove_id_ending(message_json['object']['object'])
+    if '/statuses/' not in message_id:
         if debug:
             print('DEBUG: c2s undo mute object is not a status')
         return
-    if not hasUsersPath(messageId):
+    if not has_users_path(message_id):
         if debug:
             print('DEBUG: c2s undo mute object has no nickname')
         return
-    domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
-    if not postFilename:
+    domain = remove_domain_port(domain)
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s undo mute post not found in inbox or outbox')
-            print(messageId)
+            print(message_id)
         return
-    nicknameMuted = getNicknameFromActor(messageJson['object']['object'])
-    if not nicknameMuted:
+    nickname_muted = get_nickname_from_actor(message_json['object']['object'])
+    if not nickname_muted:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['object'])
+              message_json['object']['object'])
         return
 
-    unmutePost(baseDir, nickname, domain, port,
-               httpPrefix, messageJson['object']['object'],
-               recentPostsCache, debug)
+    unmute_post(base_dir, nickname, domain, port,
+                http_prefix, message_json['object']['object'],
+                recent_posts_cache, debug)
 
     if debug:
-        print('DEBUG: post undo mute via c2s - ' + postFilename)
+        print('DEBUG: post undo mute via c2s - ' + post_filename)
 
 
-def brochModeIsActive(baseDir: str) -> bool:
+def broch_mode_is_active(base_dir: str) -> bool:
     """Returns true if broch mode is active
     """
-    allowFilename = baseDir + '/accounts/allowedinstances.txt'
-    return os.path.isfile(allowFilename)
+    allow_filename = base_dir + '/accounts/allowedinstances.txt'
+    return os.path.isfile(allow_filename)
 
 
-def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
+def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
     """Broch mode can be used to lock down the instance during
     a period of time when it is temporarily under attack.
     For example, where an adversary is constantly spinning up new
@@ -889,139 +897,139 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
     to construct an instance level allow list. Anything arriving
     which is then not from one of the allowed domains will be dropped
     """
-    allowFilename = baseDir + '/accounts/allowedinstances.txt'
+    allow_filename = base_dir + '/accounts/allowedinstances.txt'
 
     if not enabled:
         # remove instance allow list
-        if os.path.isfile(allowFilename):
+        if os.path.isfile(allow_filename):
             try:
-                os.remove(allowFilename)
+                os.remove(allow_filename)
             except OSError:
-                print('EX: setBrochMode allow file not deleted ' +
-                      str(allowFilename))
+                print('EX: set_broch_mode allow file not deleted ' +
+                      str(allow_filename))
             print('Broch mode turned off')
     else:
-        if os.path.isfile(allowFilename):
-            lastModified = fileLastModified(allowFilename)
-            print('Broch mode already activated ' + lastModified)
+        if os.path.isfile(allow_filename):
+            last_modified = file_last_modified(allow_filename)
+            print('Broch mode already activated ' + last_modified)
             return
         # generate instance allow list
-        allowedDomains = [domainFull]
-        followFiles = ('following.txt', 'followers.txt')
-        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        allowed_domains = [domain_full]
+        follow_files = ('following.txt', 'followers.txt')
+        for subdir, dirs, files in os.walk(base_dir + '/accounts'):
             for acct in dirs:
-                if not isAccountDir(acct):
+                if not is_account_dir(acct):
                     continue
-                accountDir = os.path.join(baseDir + '/accounts', acct)
-                for followFileType in followFiles:
-                    followingFilename = accountDir + '/' + followFileType
-                    if not os.path.isfile(followingFilename):
+                account_dir = os.path.join(base_dir + '/accounts', acct)
+                for follow_file_type in follow_files:
+                    following_filename = account_dir + '/' + follow_file_type
+                    if not os.path.isfile(following_filename):
                         continue
                     try:
-                        with open(followingFilename, 'r') as f:
-                            followList = f.readlines()
-                            for handle in followList:
+                        with open(following_filename, 'r') as foll_file:
+                            follow_list = foll_file.readlines()
+                            for handle in follow_list:
                                 if '@' not in handle:
                                     continue
                                 handle = handle.replace('\n', '')
-                                handleDomain = handle.split('@')[1]
-                                if handleDomain not in allowedDomains:
-                                    allowedDomains.append(handleDomain)
-                    except OSError as e:
-                        print('EX: failed to read ' + followingFilename +
-                              ' ' + str(e))
+                                handle_domain = handle.split('@')[1]
+                                if handle_domain not in allowed_domains:
+                                    allowed_domains.append(handle_domain)
+                    except OSError as ex:
+                        print('EX: failed to read ' + following_filename +
+                              ' ' + str(ex))
             break
 
         # write the allow file
         try:
-            with open(allowFilename, 'w+') as allowFile:
-                allowFile.write(domainFull + '\n')
-                for d in allowedDomains:
-                    allowFile.write(d + '\n')
+            with open(allow_filename, 'w+') as allow_file:
+                allow_file.write(domain_full + '\n')
+                for allowed in allowed_domains:
+                    allow_file.write(allowed + '\n')
                 print('Broch mode enabled')
-        except OSError as e:
-            print('EX: Broch mode not enabled due to file write ' + str(e))
+        except OSError as ex:
+            print('EX: Broch mode not enabled due to file write ' + str(ex))
             return
 
-    setConfigParam(baseDir, "brochMode", enabled)
+    set_config_param(base_dir, "brochMode", enabled)
 
 
-def brochModeLapses(baseDir: str, lapseDays: int) -> bool:
+def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
     """After broch mode is enabled it automatically
     elapses after a period of time
     """
-    allowFilename = baseDir + '/accounts/allowedinstances.txt'
-    if not os.path.isfile(allowFilename):
+    allow_filename = base_dir + '/accounts/allowedinstances.txt'
+    if not os.path.isfile(allow_filename):
         return False
-    lastModified = fileLastModified(allowFilename)
-    modifiedDate = None
+    last_modified = file_last_modified(allow_filename)
+    modified_date = None
     try:
-        modifiedDate = \
-            datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
+        modified_date = \
+            datetime.strptime(last_modified, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
-        print('EX: brochModeLapses date not parsed ' + str(lastModified))
+        print('EX: broch_modeLapses date not parsed ' + str(last_modified))
         return False
-    if not modifiedDate:
+    if not modified_date:
         return False
-    currTime = datetime.datetime.utcnow()
-    daysSinceBroch = (currTime - modifiedDate).days
-    if daysSinceBroch >= lapseDays:
+    curr_time = datetime.datetime.utcnow()
+    days_since_broch = (curr_time - modified_date).days
+    if days_since_broch >= lapseDays:
         removed = False
         try:
-            os.remove(allowFilename)
+            os.remove(allow_filename)
             removed = True
         except OSError:
-            print('EX: brochModeLapses allow file not deleted ' +
-                  str(allowFilename))
+            print('EX: broch_modeLapses allow file not deleted ' +
+                  str(allow_filename))
         if removed:
-            setConfigParam(baseDir, "brochMode", False)
+            set_config_param(base_dir, "brochMode", False)
             print('Broch mode has elapsed')
             return True
     return False
 
 
-def loadCWLists(baseDir: str, verbose: bool) -> {}:
+def load_cw_lists(base_dir: str, verbose: bool) -> {}:
     """Load lists used for content warnings
     """
-    if not os.path.isdir(baseDir + '/cwlists'):
+    if not os.path.isdir(base_dir + '/cwlists'):
         return {}
     result = {}
-    for subdir, dirs, files in os.walk(baseDir + '/cwlists'):
-        for f in files:
-            if not f.endswith('.json'):
+    for subdir, dirs, files in os.walk(base_dir + '/cwlists'):
+        for fname in files:
+            if not fname.endswith('.json'):
                 continue
-            listFilename = os.path.join(baseDir + '/cwlists', f)
-            print('listFilename: ' + listFilename)
-            listJson = loadJson(listFilename, 0, 1)
-            if not listJson:
+            list_filename = os.path.join(base_dir + '/cwlists', fname)
+            print('list_filename: ' + list_filename)
+            list_json = load_json(list_filename, 0, 1)
+            if not list_json:
                 continue
-            if not listJson.get('name'):
+            if not list_json.get('name'):
                 continue
-            if not listJson.get('words') and not listJson.get('domains'):
+            if not list_json.get('words') and not list_json.get('domains'):
                 continue
-            name = listJson['name']
+            name = list_json['name']
             if verbose:
                 print('List: ' + name)
-            result[name] = listJson
+            result[name] = list_json
     return result
 
 
-def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
-                   listsEnabled: str) -> None:
+def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
+                      lists_enabled: str) -> None:
     """Adds content warnings by matching the post content
     against domains or keywords
     """
-    if not listsEnabled:
+    if not lists_enabled:
         return
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return
-    cw = ''
-    if postJsonObject['object'].get('summary'):
-        cw = postJsonObject['object']['summary']
+    cw_text = ''
+    if post_json_object['object'].get('summary'):
+        cw_text = post_json_object['object']['summary']
 
-    content = postJsonObject['object']['content']
-    for name, item in CWlists.items():
-        if name not in listsEnabled:
+    content = post_json_object['object']['content']
+    for name, item in cw_lists.items():
+        if name not in lists_enabled:
             continue
         if not item.get('warning'):
             continue
@@ -1032,7 +1040,7 @@ def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
             warning = translate[warning]
 
         # is the warning already in the CW?
-        if warning in cw:
+        if warning in cw_text:
             continue
 
         matched = False
@@ -1041,10 +1049,10 @@ def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
         if item.get('domains'):
             for domain in item['domains']:
                 if domain in content:
-                    if cw:
-                        cw = warning + ' / ' + cw
+                    if cw_text:
+                        cw_text = warning + ' / ' + cw_text
                     else:
-                        cw = warning
+                        cw_text = warning
                     matched = True
                     break
 
@@ -1053,19 +1061,19 @@ def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
 
         # match words within the content
         if item.get('words'):
-            for wordStr in item['words']:
-                if wordStr in content:
-                    if cw:
-                        cw = warning + ' / ' + cw
+            for word_str in item['words']:
+                if word_str in content:
+                    if cw_text:
+                        cw_text = warning + ' / ' + cw_text
                     else:
-                        cw = warning
+                        cw_text = warning
                     break
-    if cw:
-        postJsonObject['object']['summary'] = cw
-        postJsonObject['object']['sensitive'] = True
+    if cw_text:
+        post_json_object['object']['summary'] = cw_text
+        post_json_object['object']['sensitive'] = True
 
 
-def getCWlistVariable(listName: str) -> str:
+def get_cw_list_variable(listName: str) -> str:
     """Returns the variable associated with a CW list
     """
     return 'list' + listName.replace(' ', '').replace("'", '')

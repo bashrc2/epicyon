@@ -42,10 +42,10 @@ from context import getApschemaV1_9
 from context import getApschemaV1_20
 from context import getApschemaV1_21
 from context import getLitepubV0_1
-from context import getLitepubSocial
-from context import getV1Schema
-from context import getV1SecuritySchema
-from context import getActivitystreamsSchema
+from context import get_litepub_social
+from context import get_v1schema
+from context import get_v1security_schema
+from context import get_activitystreams_schema
 
 try:
     from functools import cmp_to_key
@@ -109,7 +109,7 @@ RDF_FIRST = RDF + 'first'
 RDF_REST = RDF + 'rest'
 RDF_NIL = RDF + 'nil'
 RDF_TYPE = RDF + 'type'
-RDF_LANGSTRING = RDF + 'langString'
+RDF_LANGSTRING = RDF + 'lang_string'
 
 # JSON-LD keywords
 KEYWORDS = [
@@ -386,21 +386,21 @@ def load_document(url):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
-                'document': getV1Schema()
+                'document': get_v1schema()
             }
             return doc
         if url == 'https://w3id.org/security/v1':
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
-                'document': getV1SecuritySchema()
+                'document': get_v1security_schema()
             }
             return doc
         elif url == 'https://www.w3.org/ns/activitystreams':
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
-                'document': getActivitystreamsSchema()
+                'document': get_activitystreams_schema()
             }
             return doc
         elif url.endswith('/apschema/v1.9'):
@@ -435,12 +435,12 @@ def load_document(url):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
-                'document': getLitepubSocial()
+                'document': get_litepub_social()
             }
             return doc
         return None
-    except JsonLdError as e:
-        raise e
+    except JsonLdError as ex:
+        raise ex
     except Exception as cause:
         raise JsonLdError(
             'Could not retrieve a JSON-LD document from the URL.',

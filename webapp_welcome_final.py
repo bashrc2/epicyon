@@ -9,62 +9,63 @@ __module_group__ = "Onboarding"
 
 import os
 from shutil import copyfile
-from utils import removeHtml
-from utils import getConfigParam
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from markdown import markdownToHtml
+from utils import remove_html
+from utils import get_config_param
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from markdown import markdown_to_html
 
 
-def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,
-                     httpPrefix: str, domainFull: str,
-                     language: str, translate: {},
-                     themeName: str) -> str:
+def html_welcome_final(base_dir: str, nickname: str, domain: str,
+                       http_prefix: str, domain_full: str,
+                       language: str, translate: {},
+                       theme_name: str) -> str:
     """Returns the final welcome screen after first login
     """
     # set a custom background for the welcome screen
-    if os.path.isfile(baseDir + '/accounts/welcome-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/welcome-background.jpg'):
-            copyfile(baseDir + '/accounts/welcome-background-custom.jpg',
-                     baseDir + '/accounts/welcome-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/welcome-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/welcome-background.jpg'):
+            copyfile(base_dir + '/accounts/welcome-background-custom.jpg',
+                     base_dir + '/accounts/welcome-background.jpg')
 
-    finalText = 'Welcome to Epicyon'
-    finalFilename = baseDir + '/accounts/welcome_final.md'
-    if not os.path.isfile(finalFilename):
-        defaultFilename = None
-        if themeName:
-            defaultFilename = \
-                baseDir + '/theme/' + themeName + '/welcome/' + \
+    final_text = 'Welcome to Epicyon'
+    final_filename = base_dir + '/accounts/welcome_final.md'
+    if not os.path.isfile(final_filename):
+        default_filename = None
+        if theme_name:
+            default_filename = \
+                base_dir + '/theme/' + theme_name + '/welcome/' + \
                 'final_' + language + '.md'
-            if not os.path.isfile(defaultFilename):
-                defaultFilename = None
-        if not defaultFilename:
-            defaultFilename = \
-                baseDir + '/defaultwelcome/final_' + language + '.md'
-        if not os.path.isfile(defaultFilename):
-            defaultFilename = baseDir + '/defaultwelcome/final_en.md'
-        copyfile(defaultFilename, finalFilename)
+            if not os.path.isfile(default_filename):
+                default_filename = None
+        if not default_filename:
+            default_filename = \
+                base_dir + '/defaultwelcome/final_' + language + '.md'
+        if not os.path.isfile(default_filename):
+            default_filename = base_dir + '/defaultwelcome/final_en.md'
+        copyfile(default_filename, final_filename)
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    if not instanceTitle:
-        instanceTitle = 'Epicyon'
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    if not instance_title:
+        instance_title = 'Epicyon'
 
-    if os.path.isfile(finalFilename):
-        with open(finalFilename, 'r') as finalFile:
-            finalText = finalFile.read()
-            finalText = finalText.replace('INSTANCE', instanceTitle)
-            finalText = markdownToHtml(removeHtml(finalText))
+    if os.path.isfile(final_filename):
+        with open(final_filename, 'r') as final_file:
+            final_text = final_file.read()
+            final_text = final_text.replace('INSTANCE', instance_title)
+            final_text = markdown_to_html(remove_html(final_text))
 
-    finalForm = ''
-    cssFilename = baseDir + '/epicyon-welcome.css'
-    if os.path.isfile(baseDir + '/welcome.css'):
-        cssFilename = baseDir + '/welcome.css'
+    final_form = ''
+    css_filename = base_dir + '/epicyon-welcome.css'
+    if os.path.isfile(base_dir + '/welcome.css'):
+        css_filename = base_dir + '/welcome.css'
 
-    finalForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    final_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
-    finalForm += \
-        '<div class="container">' + finalText + '</div>\n' + \
+    final_form += \
+        '<div class="container">' + final_text + '</div>\n' + \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \
         'action="/users/' + nickname + '/profiledata">\n' + \
@@ -75,6 +76,6 @@ def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,
         'name="welcomeCompleteButton">' + translate['Next'] + '</button>\n' + \
         '</div>\n'
 
-    finalForm += '</form>\n'
-    finalForm += htmlFooter()
-    return finalForm
+    final_form += '</form>\n'
+    final_form += html_footer()
+    return final_form

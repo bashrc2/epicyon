@@ -10,456 +10,467 @@ __module_group__ = "Calendar"
 import os
 from datetime import datetime
 from datetime import date
-from utils import getDisplayName
-from utils import getConfigParam
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
-from utils import locatePost
-from utils import loadJson
-from utils import weekDayOfMonthStart
-from utils import getAltPath
-from utils import removeDomainPort
-from utils import acctDir
-from utils import localActorUrl
-from utils import replaceUsersWithAt
-from happening import getTodaysEvents
-from happening import getCalendarEvents
-from webapp_utils import setCustomBackground
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import htmlHideFromScreenReader
-from webapp_utils import htmlKeyboardNavigation
+from utils import get_display_name
+from utils import get_config_param
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import locate_post
+from utils import load_json
+from utils import week_day_of_month_start
+from utils import get_alt_path
+from utils import remove_domain_port
+from utils import acct_dir
+from utils import local_actor_url
+from utils import replace_users_with_at
+from happening import get_todays_events
+from happening import get_calendar_events
+from webapp_utils import set_custom_background
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import html_hide_from_screen_reader
+from webapp_utils import html_keyboard_navigation
 
 
-def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
-                              path: str, httpPrefix: str,
-                              domainFull: str, postId: str, postTime: str,
-                              year: int, monthNumber: int,
-                              dayNumber: int, callingDomain: str) -> str:
+def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
+                                 path: str, http_prefix: str,
+                                 domain_full: str, post_id: str,
+                                 post_time: str,
+                                 year: int, month_number: int,
+                                 day_number: int, calling_domain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
-    nickname = getNicknameFromActor(path)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
-    domain, port = getDomainFromActor(actor)
-    messageId = actor + '/statuses/' + postId
+    nickname = get_nickname_from_actor(path)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
+    domain, _ = get_domain_from_actor(actor)
+    message_id = actor + '/statuses/' + post_id
 
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
+    if not post_filename:
         return None
 
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
         return None
 
-    deletePostStr = None
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    delete_post_str = None
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    deletePostStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    deletePostStr += \
-        '<center><h1>' + postTime + ' ' + str(year) + '/' + \
-        str(monthNumber) + \
-        '/' + str(dayNumber) + '</h1></center>'
-    deletePostStr += '<center>'
-    deletePostStr += '  <p class="followText">' + \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    delete_post_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    delete_post_str += \
+        '<center><h1>' + post_time + ' ' + str(year) + '/' + \
+        str(month_number) + \
+        '/' + str(day_number) + '</h1></center>'
+    delete_post_str += '<center>'
+    delete_post_str += '  <p class="followText">' + \
         translate['Delete this event'] + '</p>'
 
-    postActor = getAltPath(actor, domainFull, callingDomain)
-    deletePostStr += \
-        '  <form method="POST" action="' + postActor + '/rmpost">\n'
-    deletePostStr += '    <input type="hidden" name="year" value="' + \
+    post_actor = get_alt_path(actor, domain_full, calling_domain)
+    delete_post_str += \
+        '  <form method="POST" action="' + post_actor + '/rmpost">\n'
+    delete_post_str += '    <input type="hidden" name="year" value="' + \
         str(year) + '">\n'
-    deletePostStr += '    <input type="hidden" name="month" value="' + \
-        str(monthNumber) + '">\n'
-    deletePostStr += '    <input type="hidden" name="day" value="' + \
-        str(dayNumber) + '">\n'
-    deletePostStr += \
+    delete_post_str += '    <input type="hidden" name="month" value="' + \
+        str(month_number) + '">\n'
+    delete_post_str += '    <input type="hidden" name="day" value="' + \
+        str(day_number) + '">\n'
+    delete_post_str += \
         '    <input type="hidden" name="pageNumber" value="1">\n'
-    deletePostStr += \
+    delete_post_str += \
         '    <input type="hidden" name="messageId" value="' + \
-        messageId + '">\n'
-    deletePostStr += \
+        message_id + '">\n'
+    delete_post_str += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'
-    deletePostStr += \
+    delete_post_str += \
         '    <a href="' + actor + '/calendar?year=' + \
         str(year) + '?month=' + \
-        str(monthNumber) + '"><button class="button">' + \
+        str(month_number) + '"><button class="button">' + \
         translate['No'] + '</button></a>\n'
-    deletePostStr += '  </form>\n'
-    deletePostStr += '</center>\n'
-    deletePostStr += htmlFooter()
-    return deletePostStr
+    delete_post_str += '  </form>\n'
+    delete_post_str += '</center>\n'
+    delete_post_str += html_footer()
+    return delete_post_str
 
 
-def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
-                     baseDir: str, path: str,
-                     year: int, monthNumber: int, dayNumber: int,
-                     nickname: str, domain: str, dayEvents: [],
-                     monthName: str, actor: str) -> str:
+def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
+                       base_dir: str, path: str,
+                       year: int, month_number: int, day_number: int,
+                       nickname: str, domain: str, day_events: [],
+                       month_name: str, actor: str) -> str:
     """Show a day within the calendar
     """
-    accountDir = acctDir(baseDir, nickname, domain)
-    calendarFile = accountDir + '/.newCalendar'
-    if os.path.isfile(calendarFile):
+    account_dir = acct_dir(base_dir, nickname, domain)
+    calendar_file = account_dir + '/.newCalendar'
+    if os.path.isfile(calendar_file):
         try:
-            os.remove(calendarFile)
+            os.remove(calendar_file)
         except OSError:
-            print('EX: _htmlCalendarDay unable to delete ' + calendarFile)
+            print('EX: _html_calendar_day unable to delete ' + calendar_file)
 
-    cssFilename = baseDir + '/epicyon-calendar.css'
-    if os.path.isfile(baseDir + '/calendar.css'):
-        cssFilename = baseDir + '/calendar.css'
+    css_filename = base_dir + '/epicyon-calendar.css'
+    if os.path.isfile(base_dir + '/calendar.css'):
+        css_filename = base_dir + '/calendar.css'
 
-    calActor = actor
+    cal_actor = actor
     if '/users/' in actor:
-        calActor = '/users/' + actor.split('/users/')[1]
+        cal_actor = '/users/' + actor.split('/users/')[1]
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    calendarStr += '<main><table class="calendar">\n'
-    calendarStr += '<caption class="calendar__banner--month">\n'
-    calendarStr += \
-        '  <a href="' + calActor + '/calendar?year=' + str(year) + \
-        '?month=' + str(monthNumber) + '">\n'
-    calendarStr += \
-        '  <h1>' + str(dayNumber) + ' ' + monthName + \
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    calendar_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    calendar_str += '<main><table class="calendar">\n'
+    calendar_str += '<caption class="calendar__banner--month">\n'
+    calendar_str += \
+        '  <a href="' + cal_actor + '/calendar?year=' + str(year) + \
+        '?month=' + str(month_number) + '">\n'
+    calendar_str += \
+        '  <h1>' + str(day_number) + ' ' + month_name + \
         '</h1></a><br><span class="year">' + str(year) + '</span>\n'
-    calendarStr += '</caption>\n'
-    calendarStr += '<tbody>\n'
+    calendar_str += '</caption>\n'
+    calendar_str += '<tbody>\n'
 
-    if dayEvents:
-        for eventPost in dayEvents:
-            eventTime = None
-            eventDescription = None
-            eventPlace = None
-            postId = None
-            senderName = ''
-            senderActor = None
-            eventIsPublic = False
+    if day_events:
+        for event_post in day_events:
+            event_time = None
+            event_description = None
+            event_place = None
+            post_id = None
+            sender_name = ''
+            sender_actor = None
+            event_is_public = False
             # get the time place and description
-            for ev in eventPost:
-                if ev['type'] == 'Event':
-                    if ev.get('postId'):
-                        postId = ev['postId']
-                    if ev.get('startTime'):
-                        eventDate = \
-                            datetime.strptime(ev['startTime'],
+            for evnt in event_post:
+                if evnt['type'] == 'Event':
+                    if evnt.get('post_id'):
+                        post_id = evnt['post_id']
+                    if evnt.get('startTime'):
+                        event_date = \
+                            datetime.strptime(evnt['startTime'],
                                               "%Y-%m-%dT%H:%M:%S%z")
-                        eventTime = eventDate.strftime("%H:%M").strip()
-                    if 'public' in ev:
-                        if ev['public'] is True:
-                            eventIsPublic = True
-                    if ev.get('sender'):
+                        event_time = event_date.strftime("%H:%M").strip()
+                    if 'public' in evnt:
+                        if evnt['public'] is True:
+                            event_is_public = True
+                    if evnt.get('sender'):
                         # get display name from sending actor
-                        if ev.get('sender'):
-                            senderActor = ev['sender']
-                            dispName = \
-                                getDisplayName(baseDir, senderActor,
-                                               personCache)
-                            if dispName:
-                                senderName = \
-                                    '<a href="' + senderActor + '">' + \
-                                    dispName + '</a>: '
-                    if ev.get('name'):
-                        eventDescription = ev['name'].strip()
-                elif ev['type'] == 'Place':
-                    if ev.get('name'):
-                        eventPlace = ev['name']
+                        if evnt.get('sender'):
+                            sender_actor = evnt['sender']
+                            disp_name = \
+                                get_display_name(base_dir, sender_actor,
+                                                 person_cache)
+                            if disp_name:
+                                sender_name = \
+                                    '<a href="' + sender_actor + '">' + \
+                                    disp_name + '</a>: '
+                    if evnt.get('name'):
+                        event_description = evnt['name'].strip()
+                elif evnt['type'] == 'Place':
+                    if evnt.get('name'):
+                        event_place = evnt['name']
 
             # prepend a link to the sender of the calendar item
-            if senderName and eventDescription:
+            if sender_name and event_description:
                 # if the sender is also mentioned within the event
                 # description then this is a reminder
-                senderActor2 = replaceUsersWithAt(senderActor)
-                if senderActor not in eventDescription and \
-                   senderActor2 not in eventDescription:
-                    eventDescription = senderName + eventDescription
+                sender_actor2 = replace_users_with_at(sender_actor)
+                if sender_actor not in event_description and \
+                   sender_actor2 not in event_description:
+                    event_description = sender_name + event_description
                 else:
-                    eventDescription = \
-                        translate['Reminder'] + ': ' + eventDescription
+                    event_description = \
+                        translate['Reminder'] + ': ' + event_description
 
-            deleteButtonStr = ''
-            if postId:
-                deleteButtonStr = \
-                    '<td class="calendar__day__icons"><a href="' + calActor + \
-                    '/eventdelete?eventid=' + postId + '?year=' + str(year) + \
-                    '?month=' + str(monthNumber) + '?day=' + str(dayNumber) + \
-                    '?time=' + eventTime + \
+            delete_button_str = ''
+            if post_id:
+                delete_button_str = \
+                    '<td class="calendar__day__icons"><a href="' + \
+                    cal_actor + \
+                    '/eventdelete?eventid=' + post_id + \
+                    '?year=' + str(year) + \
+                    '?month=' + str(month_number) + \
+                    '?day=' + str(day_number) + \
+                    '?time=' + event_time + \
                     '">\n<img class="calendardayicon" loading="lazy" alt="' + \
                     translate['Delete this event'] + ' |" title="' + \
                     translate['Delete this event'] + '" src="/' + \
                     'icons/delete.png" /></a></td>\n'
 
-            eventClass = 'calendar__day__event'
-            calItemClass = 'calItem'
-            if eventIsPublic:
-                eventClass = 'calendar__day__event__public'
-                calItemClass = 'calItemPublic'
-            if eventTime and eventDescription and eventPlace:
-                calendarStr += \
-                    '<tr class="' + calItemClass + '">' + \
-                    '<td class="calendar__day__time"><b>' + eventTime + \
-                    '</b></td><td class="' + eventClass + '">' + \
+            event_class = 'calendar__day__event'
+            cal_item_class = 'calItem'
+            if event_is_public:
+                event_class = 'calendar__day__event__public'
+                cal_item_class = 'calItemPublic'
+            if event_time and event_description and event_place:
+                calendar_str += \
+                    '<tr class="' + cal_item_class + '">' + \
+                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '</b></td><td class="' + event_class + '">' + \
                     '<span class="place">' + \
-                    eventPlace + '</span><br>' + eventDescription + \
-                    '</td>' + deleteButtonStr + '</tr>\n'
-            elif eventTime and eventDescription and not eventPlace:
-                calendarStr += \
-                    '<tr class="' + calItemClass + '">' + \
-                    '<td class="calendar__day__time"><b>' + eventTime + \
-                    '</b></td><td class="' + eventClass + '">' + \
-                    eventDescription + '</td>' + deleteButtonStr + '</tr>\n'
-            elif not eventTime and eventDescription and not eventPlace:
-                calendarStr += \
-                    '<tr class="' + calItemClass + '">' + \
+                    event_place + '</span><br>' + event_description + \
+                    '</td>' + delete_button_str + '</tr>\n'
+            elif event_time and event_description and not event_place:
+                calendar_str += \
+                    '<tr class="' + cal_item_class + '">' + \
+                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '</b></td><td class="' + event_class + '">' + \
+                    event_description + '</td>' + delete_button_str + '</tr>\n'
+            elif not event_time and event_description and not event_place:
+                calendar_str += \
+                    '<tr class="' + cal_item_class + '">' + \
                     '<td class="calendar__day__time">' + \
-                    '</td><td class="' + eventClass + '">' + \
-                    eventDescription + '</td>' + deleteButtonStr + '</tr>\n'
-            elif not eventTime and eventDescription and eventPlace:
-                calendarStr += \
-                    '<tr class="' + calItemClass + '">' + \
+                    '</td><td class="' + event_class + '">' + \
+                    event_description + '</td>' + delete_button_str + '</tr>\n'
+            elif not event_time and event_description and event_place:
+                calendar_str += \
+                    '<tr class="' + cal_item_class + '">' + \
                     '<td class="calendar__day__time"></td>' + \
-                    '<td class="' + eventClass + '"><span class="place">' + \
-                    eventPlace + '</span><br>' + eventDescription + \
-                    '</td>' + deleteButtonStr + '</tr>\n'
-            elif eventTime and not eventDescription and eventPlace:
-                calendarStr += \
-                    '<tr class="' + calItemClass + '">' + \
-                    '<td class="calendar__day__time"><b>' + eventTime + \
-                    '</b></td><td class="' + eventClass + '">' + \
+                    '<td class="' + event_class + '"><span class="place">' + \
+                    event_place + '</span><br>' + event_description + \
+                    '</td>' + delete_button_str + '</tr>\n'
+            elif event_time and not event_description and event_place:
+                calendar_str += \
+                    '<tr class="' + cal_item_class + '">' + \
+                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '</b></td><td class="' + event_class + '">' + \
                     '<span class="place">' + \
-                    eventPlace + '</span></td>' + \
-                    deleteButtonStr + '</tr>\n'
+                    event_place + '</span></td>' + \
+                    delete_button_str + '</tr>\n'
 
-    calendarStr += '</tbody>\n'
-    calendarStr += '</table></main>\n'
-    calendarStr += htmlFooter()
+    calendar_str += '</tbody>\n'
+    calendar_str += '</table></main>\n'
+    calendar_str += html_footer()
 
-    return calendarStr
+    return calendar_str
 
 
-def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
-                 baseDir: str, path: str,
-                 httpPrefix: str, domainFull: str,
-                 textModeBanner: str, accessKeys: {}) -> str:
+def html_calendar(person_cache: {}, css_cache: {}, translate: {},
+                  base_dir: str, path: str,
+                  http_prefix: str, domain_full: str,
+                  text_mode_banner: str, access_keys: {}) -> str:
     """Show the calendar for a person
     """
-    domain = removeDomainPort(domainFull)
+    domain = remove_domain_port(domain_full)
 
-    monthNumber = 0
-    dayNumber = None
+    month_number = 0
+    day_number = None
     year = 1970
-    actor = httpPrefix + '://' + domainFull + path.replace('/calendar', '')
+    actor = http_prefix + '://' + domain_full + path.replace('/calendar', '')
     if '?' in actor:
         first = True
-        for p in actor.split('?'):
+        for part in actor.split('?'):
             if not first:
-                if '=' in p:
-                    if p.split('=')[0] == 'year':
-                        numStr = p.split('=')[1]
-                        if numStr.isdigit():
-                            year = int(numStr)
-                    elif p.split('=')[0] == 'month':
-                        numStr = p.split('=')[1]
-                        if numStr.isdigit():
-                            monthNumber = int(numStr)
-                    elif p.split('=')[0] == 'day':
-                        numStr = p.split('=')[1]
-                        if numStr.isdigit():
-                            dayNumber = int(numStr)
+                if '=' in part:
+                    if part.split('=')[0] == 'year':
+                        num_str = part.split('=')[1]
+                        if num_str.isdigit():
+                            year = int(num_str)
+                    elif part.split('=')[0] == 'month':
+                        num_str = part.split('=')[1]
+                        if num_str.isdigit():
+                            month_number = int(num_str)
+                    elif part.split('=')[0] == 'day':
+                        num_str = part.split('=')[1]
+                        if num_str.isdigit():
+                            day_number = int(num_str)
             first = False
         actor = actor.split('?')[0]
 
-    currDate = datetime.now()
-    if year == 1970 and monthNumber == 0:
-        year = currDate.year
-        monthNumber = currDate.month
+    curr_date = datetime.now()
+    if year == 1970 and month_number == 0:
+        year = curr_date.year
+        month_number = curr_date.month
 
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
 
-    setCustomBackground(baseDir, 'calendar-background', 'calendar-background')
+    set_custom_background(base_dir, 'calendar-background',
+                          'calendar-background')
 
     months = (
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
     )
-    monthName = translate[months[monthNumber - 1]]
+    month_name = translate[months[month_number - 1]]
 
-    if dayNumber:
-        dayEvents = None
+    if day_number:
+        day_events = None
         events = \
-            getTodaysEvents(baseDir, nickname, domain,
-                            year, monthNumber, dayNumber)
+            get_todays_events(base_dir, nickname, domain,
+                              year, month_number, day_number)
         if events:
-            if events.get(str(dayNumber)):
-                dayEvents = events[str(dayNumber)]
-        return _htmlCalendarDay(personCache, cssCache,
-                                translate, baseDir, path,
-                                year, monthNumber, dayNumber,
-                                nickname, domain, dayEvents,
-                                monthName, actor)
+            if events.get(str(day_number)):
+                day_events = events[str(day_number)]
+        return _html_calendar_day(person_cache, css_cache,
+                                  translate, base_dir, path,
+                                  year, month_number, day_number,
+                                  nickname, domain, day_events,
+                                  month_name, actor)
 
     events = \
-        getCalendarEvents(baseDir, nickname, domain, year, monthNumber)
+        get_calendar_events(base_dir, nickname, domain, year, month_number)
 
-    prevYear = year
-    prevMonthNumber = monthNumber - 1
-    if prevMonthNumber < 1:
-        prevMonthNumber = 12
-        prevYear = year - 1
+    prev_year = year
+    prev_month_number = month_number - 1
+    if prev_month_number < 1:
+        prev_month_number = 12
+        prev_year = year - 1
 
-    nextYear = year
-    nextMonthNumber = monthNumber + 1
-    if nextMonthNumber > 12:
-        nextMonthNumber = 1
-        nextYear = year + 1
+    next_year = year
+    next_month_number = month_number + 1
+    if next_month_number > 12:
+        next_month_number = 1
+        next_year = year + 1
 
-    print('Calendar year=' + str(year) + ' month=' + str(monthNumber) +
-          ' ' + str(weekDayOfMonthStart(monthNumber, year)))
+    print('Calendar year=' + str(year) + ' month=' + str(month_number) +
+          ' ' + str(week_day_of_month_start(month_number, year)))
 
-    if monthNumber < 12:
-        daysInMonth = \
-            (date(year, monthNumber + 1, 1) - date(year, monthNumber, 1)).days
+    if month_number < 12:
+        days_in_month = \
+            (date(year, month_number + 1, 1) -
+             date(year, month_number, 1)).days
     else:
-        daysInMonth = \
-            (date(year + 1, 1, 1) - date(year, monthNumber, 1)).days
-    # print('daysInMonth ' + str(monthNumber) + ': ' + str(daysInMonth))
+        days_in_month = \
+            (date(year + 1, 1, 1) - date(year, month_number, 1)).days
+    # print('days_in_month ' + str(month_number) + ': ' + str(days_in_month))
 
-    cssFilename = baseDir + '/epicyon-calendar.css'
-    if os.path.isfile(baseDir + '/calendar.css'):
-        cssFilename = baseDir + '/calendar.css'
+    css_filename = base_dir + '/epicyon-calendar.css'
+    if os.path.isfile(base_dir + '/calendar.css'):
+        css_filename = base_dir + '/calendar.css'
 
-    calActor = actor
+    cal_actor = actor
     if '/users/' in actor:
-        calActor = '/users/' + actor.split('/users/')[1]
+        cal_actor = '/users/' + actor.split('/users/')[1]
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    headerStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    header_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # the main graphical calendar as a table
-    calendarStr = '<main><table class="calendar">\n'
-    calendarStr += '<caption class="calendar__banner--month">\n'
-    calendarStr += \
-        '  <a href="' + calActor + '/calendar?year=' + str(prevYear) + \
-        '?month=' + str(prevMonthNumber) + '" ' + \
-        'accesskey="' + accessKeys['Page up'] + '">'
-    calendarStr += \
+    calendar_str = '<main><table class="calendar">\n'
+    calendar_str += '<caption class="calendar__banner--month">\n'
+    calendar_str += \
+        '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
+        '?month=' + str(prev_month_number) + '" ' + \
+        'accesskey="' + access_keys['Page up'] + '">'
+    calendar_str += \
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
-    calendarStr += '  <a href="' + calActor + '/inbox" title="'
-    calendarStr += translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">'
-    calendarStr += '  <h1>' + monthName + '</h1></a>\n'
-    calendarStr += \
-        '  <a href="' + calActor + '/calendar?year=' + str(nextYear) + \
-        '?month=' + str(nextMonthNumber) + '" ' + \
-        'accesskey="' + accessKeys['Page down'] + '">'
-    calendarStr += \
+    calendar_str += '  <a href="' + cal_actor + '/inbox" title="'
+    calendar_str += translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">'
+    calendar_str += '  <h1>' + month_name + '</h1></a>\n'
+    calendar_str += \
+        '  <a href="' + cal_actor + '/calendar?year=' + str(next_year) + \
+        '?month=' + str(next_month_number) + '" ' + \
+        'accesskey="' + access_keys['Page down'] + '">'
+    calendar_str += \
         '  <img loading="lazy" alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \
         '/prev.png" class="buttonnext"/></a>\n'
-    calendarStr += '</caption>\n'
-    calendarStr += '<thead>\n'
-    calendarStr += '<tr>\n'
+    calendar_str += '</caption>\n'
+    calendar_str += '<thead>\n'
+    calendar_str += '<tr>\n'
     days = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
-    for d in days:
-        calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-            translate[d] + '</th>\n'
-    calendarStr += '</tr>\n'
-    calendarStr += '</thead>\n'
-    calendarStr += '<tbody>\n'
+    for day in days:
+        calendar_str += '  <th scope="col" class="calendar__day__header">' + \
+            translate[day] + '</th>\n'
+    calendar_str += '</tr>\n'
+    calendar_str += '</thead>\n'
+    calendar_str += '<tbody>\n'
 
     # beginning of the links used for accessibility
-    navLinks = {}
-    timelineLinkStr = htmlHideFromScreenReader('🏠') + ' ' + \
+    nav_links = {}
+    timeline_link_str = html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
-    navLinks[timelineLinkStr] = calActor + '/inbox'
+    nav_links[timeline_link_str] = cal_actor + '/inbox'
 
-    dayOfMonth = 0
-    dow = weekDayOfMonthStart(monthNumber, year)
-    for weekOfMonth in range(1, 7):
-        if dayOfMonth == daysInMonth:
+    day_of_month = 0
+    dow = week_day_of_month_start(month_number, year)
+    for week_of_month in range(1, 7):
+        if day_of_month == days_in_month:
             continue
-        calendarStr += '  <tr>\n'
-        for dayNumber in range(1, 8):
-            if (weekOfMonth > 1 and dayOfMonth < daysInMonth) or \
-               (weekOfMonth == 1 and dayNumber >= dow):
-                dayOfMonth += 1
+        calendar_str += '  <tr>\n'
+        for day_number in range(1, 8):
+            if (week_of_month > 1 and day_of_month < days_in_month) or \
+               (week_of_month == 1 and day_number >= dow):
+                day_of_month += 1
 
-                isToday = False
-                if year == currDate.year:
-                    if currDate.month == monthNumber:
-                        if dayOfMonth == currDate.day:
-                            isToday = True
-                if events.get(str(dayOfMonth)):
-                    url = calActor + '/calendar?year=' + \
+                is_today = False
+                if year == curr_date.year:
+                    if curr_date.month == month_number:
+                        if day_of_month == curr_date.day:
+                            is_today = True
+                if events.get(str(day_of_month)):
+                    url = cal_actor + '/calendar?year=' + \
                         str(year) + '?month=' + \
-                        str(monthNumber) + '?day=' + str(dayOfMonth)
-                    dayDescription = monthName + ' ' + str(dayOfMonth)
-                    dayLink = '<a href="' + url + '" ' + \
-                        'title="' + dayDescription + '">' + \
-                        str(dayOfMonth) + '</a>'
+                        str(month_number) + '?day=' + str(day_of_month)
+                    day_description = month_name + ' ' + str(day_of_month)
+                    day_link = '<a href="' + url + '" ' + \
+                        'title="' + day_description + '">' + \
+                        str(day_of_month) + '</a>'
                     # accessibility menu links
-                    menuOptionStr = \
-                        htmlHideFromScreenReader('📅') + ' ' + \
-                        dayDescription
-                    navLinks[menuOptionStr] = url
+                    menu_option_str = \
+                        html_hide_from_screen_reader('📅') + ' ' + \
+                        day_description
+                    nav_links[menu_option_str] = url
                     # there are events for this day
-                    if not isToday:
-                        calendarStr += \
+                    if not is_today:
+                        calendar_str += \
                             '    <td class="calendar__day__cell" ' + \
                             'data-event="">' + \
-                            dayLink + '</td>\n'
+                            day_link + '</td>\n'
                     else:
-                        calendarStr += \
+                        calendar_str += \
                             '    <td class="calendar__day__cell" ' + \
                             'data-today-event="">' + \
-                            dayLink + '</td>\n'
+                            day_link + '</td>\n'
                 else:
                     # No events today
-                    if not isToday:
-                        calendarStr += \
+                    if not is_today:
+                        calendar_str += \
                             '    <td class="calendar__day__cell">' + \
-                            str(dayOfMonth) + '</td>\n'
+                            str(day_of_month) + '</td>\n'
                     else:
-                        calendarStr += \
+                        calendar_str += \
                             '    <td class="calendar__day__cell" ' + \
-                            'data-today="">' + str(dayOfMonth) + '</td>\n'
+                            'data-today="">' + str(day_of_month) + '</td>\n'
             else:
-                calendarStr += '    <td class="calendar__day__cell"></td>\n'
-        calendarStr += '  </tr>\n'
+                calendar_str += '    <td class="calendar__day__cell"></td>\n'
+        calendar_str += '  </tr>\n'
 
-    calendarStr += '</tbody>\n'
-    calendarStr += '</table></main>\n'
+    calendar_str += '</tbody>\n'
+    calendar_str += '</table></main>\n'
 
     # end of the links used for accessibility
-    nextMonthStr = \
-        htmlHideFromScreenReader('→') + ' ' + translate['Next month']
-    navLinks[nextMonthStr] = calActor + '/calendar?year=' + str(nextYear) + \
-        '?month=' + str(nextMonthNumber)
-    prevMonthStr = \
-        htmlHideFromScreenReader('←') + ' ' + translate['Previous month']
-    navLinks[prevMonthStr] = calActor + '/calendar?year=' + str(prevYear) + \
-        '?month=' + str(prevMonthNumber)
-    navAccessKeys = {
+    next_month_str = \
+        html_hide_from_screen_reader('→') + ' ' + translate['Next month']
+    nav_links[next_month_str] = \
+        cal_actor + '/calendar?year=' + str(next_year) + \
+        '?month=' + str(next_month_number)
+    prev_month_str = \
+        html_hide_from_screen_reader('←') + ' ' + translate['Previous month']
+    nav_links[prev_month_str] = \
+        cal_actor + '/calendar?year=' + str(prev_year) + \
+        '?month=' + str(prev_month_number)
+    nav_access_keys = {
     }
-    screenReaderCal = \
-        htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
-                               monthName)
+    screen_reader_cal = \
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys,
+                                 month_name)
 
-    newEventStr = \
+    new_event_str = \
         '<br><center>\n<p>\n' + \
-        '<a href="' + calActor + '/newreminder">➕ ' + \
+        '<a href="' + cal_actor + '/newreminder">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
-    calStr = \
-        headerStr + screenReaderCal + calendarStr + newEventStr + htmlFooter()
+    cal_str = \
+        header_str + screen_reader_cal + calendar_str + \
+        new_event_str + html_footer()
 
-    return calStr
+    return cal_str

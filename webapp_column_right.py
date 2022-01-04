@@ -9,217 +9,219 @@ __module_group__ = "Web Interface Columns"
 
 import os
 from datetime import datetime
-from content import removeLongWords
-from content import limitRepeatedWords
-from utils import getFavFilenameFromUrl
-from utils import getBaseContentFromPost
-from utils import removeHtml
-from utils import locatePost
-from utils import loadJson
-from utils import votesOnNewswireItem
-from utils import getNicknameFromActor
-from utils import isEditor
-from utils import getConfigParam
-from utils import removeDomainPort
-from utils import acctDir
-from posts import isModerator
-from newswire import getNewswireFaviconUrl
-from webapp_utils import getRightImageFile
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getBannerFile
-from webapp_utils import htmlPostSeparator
-from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import editTextField
+from content import remove_long_words
+from content import limit_repeated_words
+from utils import get_fav_filename_from_url
+from utils import get_base_content_from_post
+from utils import remove_html
+from utils import locate_post
+from utils import load_json
+from utils import votes_on_newswire_item
+from utils import get_nickname_from_actor
+from utils import is_editor
+from utils import get_config_param
+from utils import remove_domain_port
+from utils import acct_dir
+from posts import is_moderator
+from newswire import get_newswire_favicon_url
+from webapp_utils import get_right_image_file
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_banner_file
+from webapp_utils import html_post_separator
+from webapp_utils import header_buttons_front_screen
+from webapp_utils import edit_text_field
 
 
-def _votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
+def _votes_indicator(total_votes: int, positive_voting: bool) -> str:
     """Returns an indicator of the number of votes on a newswire item
     """
-    if totalVotes <= 0:
+    if total_votes <= 0:
         return ''
-    totalVotesStr = ' '
-    for v in range(totalVotes):
-        if positiveVoting:
-            totalVotesStr += '✓'
+    total_votes_str = ' '
+    for _ in range(total_votes):
+        if positive_voting:
+            total_votes_str += '✓'
         else:
-            totalVotesStr += '✗'
-    return totalVotesStr
+            total_votes_str += '✗'
+    return total_votes_str
 
 
-def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
-                          httpPrefix: str, translate: {},
-                          moderator: bool, editor: bool,
-                          newswire: {}, positiveVoting: bool,
-                          showBackButton: bool, timelinePath: str,
-                          showPublishButton: bool,
-                          showPublishAsIcon: bool,
-                          rssIconAtTop: bool,
-                          publishButtonAtTop: bool,
-                          authorized: bool,
-                          showHeaderImage: bool,
-                          theme: str,
-                          defaultTimeline: str,
-                          accessKeys: {}) -> str:
+def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
+                             http_prefix: str, translate: {},
+                             moderator: bool, editor: bool,
+                             newswire: {}, positive_voting: bool,
+                             show_back_button: bool, timeline_path: str,
+                             show_publish_button: bool,
+                             show_publish_as_icon: bool,
+                             rss_icon_at_top: bool,
+                             publish_button_at_top: bool,
+                             authorized: bool,
+                             show_header_image: bool,
+                             theme: str,
+                             default_timeline: str,
+                             access_keys: {}) -> str:
     """Returns html content for the right column
     """
-    htmlStr = ''
+    html_str = ''
 
-    domain = removeDomainPort(domainFull)
+    domain = remove_domain_port(domain_full)
 
     if authorized:
         # only show the publish button if logged in, otherwise replace it with
         # a login button
-        titleStr = translate['Publish a blog article']
-        if defaultTimeline == 'tlfeatures':
-            titleStr = translate['Publish a news article']
-        publishButtonStr = \
+        title_str = translate['Publish a blog article']
+        if default_timeline == 'tlfeatures':
+            title_str = translate['Publish a news article']
+        publish_button_str = \
             '        <a href="' + \
             '/users/' + nickname + '/newblog?nodropdown" ' + \
-            'title="' + titleStr + '" ' + \
-            'accesskey="' + accessKeys['menuNewPost'] + '">' + \
+            'title="' + title_str + '" ' + \
+            'accesskey="' + access_keys['menuNewPost'] + '">' + \
             '<button class="publishbtn">' + \
             translate['Publish'] + '</button></a>\n'
     else:
         # if not logged in then replace the publish button with
         # a login button
-        publishButtonStr = \
+        publish_button_str = \
             '        <a href="/login"><button class="publishbtn">' + \
             translate['Login'] + '</button></a>\n'
 
     # show publish button at the top if needed
-    if publishButtonAtTop:
-        htmlStr += '<center>' + publishButtonStr + '</center>'
+    if publish_button_at_top:
+        html_str += '<center>' + publish_button_str + '</center>'
 
     # show a column header image, eg. title of the theme or newswire banner
-    editImageClass = ''
-    if showHeaderImage:
-        rightImageFile, rightColumnImageFilename = \
-            getRightImageFile(baseDir, nickname, domain, theme)
+    edit_image_class = ''
+    if show_header_image:
+        right_image_file, right_column_image_filename = \
+            get_right_image_file(base_dir, nickname, domain, theme)
 
         # show the image at the top of the column
-        editImageClass = 'rightColEdit'
-        if os.path.isfile(rightColumnImageFilename):
-            editImageClass = 'rightColEditImage'
-            htmlStr += \
+        edit_image_class = 'rightColEdit'
+        if os.path.isfile(right_column_image_filename):
+            edit_image_class = 'rightColEditImage'
+            html_str += \
                 '\n      <center>\n' + \
                 '          <img class="rightColImg" ' + \
                 'alt="" loading="lazy" src="/users/' + \
-                nickname + '/' + rightImageFile + '" />\n' + \
+                nickname + '/' + right_image_file + '" />\n' + \
                 '      </center>\n'
 
-    if (showPublishButton or editor or rssIconAtTop) and not showHeaderImage:
-        htmlStr += '<div class="columnIcons">'
+    if show_publish_button or editor or rss_icon_at_top:
+        if not show_header_image:
+            html_str += '<div class="columnIcons">'
 
-    if editImageClass == 'rightColEdit':
-        htmlStr += '\n      <center>\n'
+    if edit_image_class == 'rightColEdit':
+        html_str += '\n      <center>\n'
 
     # whether to show a back icon
     # This is probably going to be osolete soon
-    if showBackButton:
-        htmlStr += \
-            '      <a href="' + timelinePath + '">' + \
+    if show_back_button:
+        html_str += \
+            '      <a href="' + timeline_path + '">' + \
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
-    if showPublishButton and not publishButtonAtTop:
-        if not showPublishAsIcon:
-            htmlStr += publishButtonStr
+    if show_publish_button and not publish_button_at_top:
+        if not show_publish_as_icon:
+            html_str += publish_button_str
 
     # show the edit icon
     if editor:
-        if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
+        if os.path.isfile(base_dir + '/accounts/newswiremoderation.txt'):
             # show the edit icon highlighted
-            htmlStr += \
+            html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/editnewswire" ' + \
-                'accesskey="' + accessKeys['menuEdit'] + '">' + \
-                '<img class="' + editImageClass + \
+                'accesskey="' + access_keys['menuEdit'] + '">' + \
+                '<img class="' + edit_image_class + \
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit_notify.png" /></a>\n'
         else:
             # show the edit icon
-            htmlStr += \
+            html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/editnewswire" ' + \
-                'accesskey="' + accessKeys['menuEdit'] + '">' + \
-                '<img class="' + editImageClass + \
+                'accesskey="' + access_keys['menuEdit'] + '">' + \
+                '<img class="' + edit_image_class + \
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit.png" /></a>\n'
 
     # show the RSS icons
-    rssIconStr = \
+    rss_icon_str = \
         '        <a href="/categories.xml">' + \
-        '<img class="' + editImageClass + \
+        '<img class="' + edit_image_class + \
         '" loading="lazy" alt="' + \
         translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
         translate['Hashtag Categories RSS Feed'] + '" src="/' + \
         'icons/categoriesrss.png" /></a>\n'
-    rssIconStr += \
+    rss_icon_str += \
         '        <a href="/newswire.xml">' + \
-        '<img class="' + editImageClass + \
+        '<img class="' + edit_image_class + \
         '" loading="lazy" alt="' + \
         translate['Newswire RSS Feed'] + ' | " title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         'icons/logorss.png" /></a>\n'
-    if rssIconAtTop:
-        htmlStr += rssIconStr
+    if rss_icon_at_top:
+        html_str += rss_icon_str
 
     # show publish icon at top
-    if showPublishButton:
-        if showPublishAsIcon:
-            titleStr = translate['Publish a blog article']
-            if defaultTimeline == 'tlfeatures':
-                titleStr = translate['Publish a news article']
-            htmlStr += \
+    if show_publish_button:
+        if show_publish_as_icon:
+            title_str = translate['Publish a blog article']
+            if default_timeline == 'tlfeatures':
+                title_str = translate['Publish a news article']
+            html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/newblog?nodropdown" ' + \
-                'accesskey="' + accessKeys['menuNewPost'] + '">' + \
-                '<img class="' + editImageClass + \
+                'accesskey="' + access_keys['menuNewPost'] + '">' + \
+                '<img class="' + edit_image_class + \
                 '" loading="lazy" alt="' + \
-                titleStr + '" title="' + \
-                titleStr + '" src="/' + \
+                title_str + '" title="' + \
+                title_str + '" src="/' + \
                 'icons/publish.png" /></a>\n'
 
-    if editImageClass == 'rightColEdit':
-        htmlStr += '      </center>\n'
+    if edit_image_class == 'rightColEdit':
+        html_str += '      </center>\n'
     else:
-        if showHeaderImage:
-            htmlStr += '      <br>\n'
+        if show_header_image:
+            html_str += '      <br>\n'
 
-    if (showPublishButton or editor or rssIconAtTop) and not showHeaderImage:
-        htmlStr += '</div><br>'
+    if show_publish_button or editor or rss_icon_at_top:
+        if not show_header_image:
+            html_str += '</div><br>'
 
     # show the newswire lines
-    newswireContentStr = \
-        _htmlNewswire(baseDir, newswire, nickname, moderator, translate,
-                      positiveVoting)
-    htmlStr += newswireContentStr
+    newswire_content_str = \
+        _html_newswire(base_dir, newswire, nickname, moderator, translate,
+                       positive_voting)
+    html_str += newswire_content_str
 
     # show the rss icon at the bottom, typically on the right hand side
-    if newswireContentStr and not rssIconAtTop:
-        htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
-    return htmlStr
+    if newswire_content_str and not rss_icon_at_top:
+        html_str += '<br><div class="columnIcons">' + rss_icon_str + '</div>'
+    return html_str
 
 
-def _getBrokenFavSubstitute() -> str:
+def _get_broken_fav_substitute() -> str:
     """Substitute link used if a favicon is not available
     """
     return " onerror=\"this.onerror=null; this.src='/newswire_favicon.ico'\""
 
 
-def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
-                  translate: {}, positiveVoting: bool) -> str:
+def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
+                   translate: {}, positive_voting: bool) -> str:
     """Converts a newswire dict into html
     """
-    separatorStr = htmlPostSeparator(baseDir, 'right')
-    htmlStr = ''
-    for dateStr, item in newswire.items():
-        item[0] = removeHtml(item[0]).strip()
+    separator_str = html_post_separator(base_dir, 'right')
+    html_str = ''
+    for date_str, item in newswire.items():
+        item[0] = remove_html(item[0]).strip()
         if not item[0]:
             continue
         # remove any CDATA
@@ -228,184 +230,186 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             if ']' in item[0]:
                 item[0] = item[0].split(']')[0]
         try:
-            publishedDate = \
-                datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+            published_date = \
+                datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S%z")
         except BaseException:
-            print('EX: _htmlNewswire bad date format ' + dateStr)
+            print('EX: _html_newswire bad date format ' + date_str)
             continue
-        dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
+        date_shown = published_date.strftime("%Y-%m-%d %H:%M")
 
-        dateStrLink = dateStr.replace('T', ' ')
-        dateStrLink = dateStrLink.replace('Z', '')
+        date_str_link = date_str.replace('T', ' ')
+        date_str_link = date_str_link.replace('Z', '')
         url = item[1]
-        faviconUrl = getNewswireFaviconUrl(url)
-        faviconLink = ''
-        if faviconUrl:
-            cachedFaviconFilename = getFavFilenameFromUrl(baseDir, faviconUrl)
-            if os.path.isfile(cachedFaviconFilename):
-                faviconUrl = \
-                    cachedFaviconFilename.replace(baseDir, '')
+        favicon_url = get_newswire_favicon_url(url)
+        favicon_link = ''
+        if favicon_url:
+            cached_favicon_filename = \
+                get_fav_filename_from_url(base_dir, favicon_url)
+            if os.path.isfile(cached_favicon_filename):
+                favicon_url = \
+                    cached_favicon_filename.replace(base_dir, '')
             else:
                 extensions = ('png', 'jpg', 'gif', 'avif', 'svg', 'webp')
                 for ext in extensions:
-                    cachedFaviconFilename = \
-                        getFavFilenameFromUrl(baseDir, faviconUrl)
-                    cachedFaviconFilename = \
-                        cachedFaviconFilename.replace('.ico', '.' + ext)
-                    if os.path.isfile(cachedFaviconFilename):
-                        faviconUrl = \
-                            cachedFaviconFilename.replace(baseDir, '')
+                    cached_favicon_filename = \
+                        get_fav_filename_from_url(base_dir, favicon_url)
+                    cached_favicon_filename = \
+                        cached_favicon_filename.replace('.ico', '.' + ext)
+                    if os.path.isfile(cached_favicon_filename):
+                        favicon_url = \
+                            cached_favicon_filename.replace(base_dir, '')
 
-            faviconLink = \
-                '<img loading="lazy" src="' + faviconUrl + '" ' + \
-                'alt="" ' + _getBrokenFavSubstitute() + '/>'
-        moderatedItem = item[5]
-        htmlStr += separatorStr
-        if moderatedItem and 'vote:' + nickname in item[2]:
-            totalVotesStr = ''
-            totalVotes = 0
+            favicon_link = \
+                '<img loading="lazy" src="' + favicon_url + '" ' + \
+                'alt="" ' + _get_broken_fav_substitute() + '/>'
+        moderated_item = item[5]
+        html_str += separator_str
+        if moderated_item and 'vote:' + nickname in item[2]:
+            total_votes_str = ''
+            total_votes = 0
             if moderator:
-                totalVotes = votesOnNewswireItem(item[2])
-                totalVotesStr = \
-                    _votesIndicator(totalVotes, positiveVoting)
+                total_votes = votes_on_newswire_item(item[2])
+                total_votes_str = \
+                    _votes_indicator(total_votes, positive_voting)
 
-            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
-            title = limitRepeatedWords(title, 6)
-            htmlStr += '<p class="newswireItemVotedOn">' + \
+            title = remove_long_words(item[0], 16, []).replace('\n', '<br>')
+            title = limit_repeated_words(title, 6)
+            html_str += '<p class="newswireItemVotedOn">' + \
                 '<a href="' + url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
                 '<span class="newswireItemVotedOn">' + \
-                faviconLink + title + '</span></a>' + totalVotesStr
+                favicon_link + title + '</span></a>' + total_votes_str
             if moderator:
-                htmlStr += \
-                    ' ' + dateShown + '<a href="/users/' + nickname + \
-                    '/newswireunvote=' + dateStrLink + '" ' + \
+                html_str += \
+                    ' ' + date_shown + '<a href="/users/' + nickname + \
+                    '/newswireunvote=' + date_str_link + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
-                htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
+                html_str += '<img loading="lazy" class="voteicon" src="/' + \
                     'alt="' + translate['Remove Vote'] + '" ' + \
                     'icons/vote.png" /></a></p>\n'
             else:
-                htmlStr += ' <span class="newswireDateVotedOn">'
-                htmlStr += dateShown + '</span></p>\n'
+                html_str += ' <span class="newswireDateVotedOn">'
+                html_str += date_shown + '</span></p>\n'
         else:
-            totalVotesStr = ''
-            totalVotes = 0
+            total_votes_str = ''
+            total_votes = 0
             if moderator:
-                if moderatedItem:
-                    totalVotes = votesOnNewswireItem(item[2])
+                if moderated_item:
+                    total_votes = votes_on_newswire_item(item[2])
                     # show a number of ticks or crosses for how many
                     # votes for or against
-                    totalVotesStr = \
-                        _votesIndicator(totalVotes, positiveVoting)
+                    total_votes_str = \
+                        _votes_indicator(total_votes, positive_voting)
 
-            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
-            title = limitRepeatedWords(title, 6)
-            if moderator and moderatedItem:
-                htmlStr += '<p class="newswireItemModerated">' + \
+            title = remove_long_words(item[0], 16, []).replace('\n', '<br>')
+            title = limit_repeated_words(title, 6)
+            if moderator and moderated_item:
+                html_str += '<p class="newswireItemModerated">' + \
                     '<a href="' + url + '" target="_blank" ' + \
                     'rel="nofollow noopener noreferrer">' + \
-                    faviconLink + title + '</a>' + totalVotesStr
-                htmlStr += ' ' + dateShown
-                htmlStr += '<a href="/users/' + nickname + \
-                    '/newswirevote=' + dateStrLink + '" ' + \
+                    favicon_link + title + '</a>' + total_votes_str
+                html_str += ' ' + date_shown
+                html_str += '<a href="/users/' + nickname + \
+                    '/newswirevote=' + date_str_link + '" ' + \
                     'title="' + translate['Vote'] + '">'
-                htmlStr += '<img class="voteicon" ' + \
+                html_str += '<img class="voteicon" ' + \
                     'alt="' + translate['Vote'] + '" ' + \
                     'src="/icons/vote.png" /></a>'
-                htmlStr += '</p>\n'
+                html_str += '</p>\n'
             else:
-                htmlStr += '<p class="newswireItem">' + \
+                html_str += '<p class="newswireItem">' + \
                     '<a href="' + url + '" target="_blank" ' + \
                     'rel="nofollow noopener noreferrer">' + \
-                    faviconLink + title + '</a>' + totalVotesStr
-                htmlStr += ' <span class="newswireDate">'
-                htmlStr += dateShown + '</span></p>\n'
+                    favicon_link + title + '</a>' + total_votes_str
+                html_str += ' <span class="newswireDate">'
+                html_str += date_shown + '</span></p>\n'
 
-    if htmlStr:
-        htmlStr = '<nav>\n' + htmlStr + '</nav>\n'
-    return htmlStr
+    if html_str:
+        html_str = '<nav>\n' + html_str + '</nav>\n'
+    return html_str
 
 
-def htmlCitations(baseDir: str, nickname: str, domain: str,
-                  httpPrefix: str, defaultTimeline: str,
-                  translate: {}, newswire: {}, cssCache: {},
-                  blogTitle: str, blogContent: str,
-                  blogImageFilename: str,
-                  blogImageAttachmentMediaType: str,
-                  blogImageDescription: str,
-                  theme: str) -> str:
+def html_citations(base_dir: str, nickname: str, domain: str,
+                   http_prefix: str, default_timeline: str,
+                   translate: {}, newswire: {}, css_cache: {},
+                   blog_title: str, blog_content: str,
+                   blog_image_filename: str,
+                   blog_image_attachment_media_type: str,
+                   blog_image_description: str,
+                   theme: str) -> str:
     """Show the citations screen when creating a blog
     """
-    htmlStr = ''
+    html_str = ''
 
     # create a list of dates for citations
     # these can then be used to re-select checkboxes later
-    citationsFilename = \
-        acctDir(baseDir, nickname, domain) + '/.citations.txt'
-    citationsSelected = []
-    if os.path.isfile(citationsFilename):
-        citationsSeparator = '#####'
-        with open(citationsFilename, 'r') as f:
-            citations = f.readlines()
+    citations_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.citations.txt'
+    citations_selected = []
+    if os.path.isfile(citations_filename):
+        citations_separator = '#####'
+        with open(citations_filename, 'r') as fp_cit:
+            citations = fp_cit.readlines()
             for line in citations:
-                if citationsSeparator not in line:
+                if citations_separator not in line:
                     continue
-                sections = line.strip().split(citationsSeparator)
+                sections = line.strip().split(citations_separator)
                 if len(sections) != 3:
                     continue
-                dateStr = sections[0]
-                citationsSelected.append(dateStr)
+                date_str = sections[0]
+                citations_selected.append(date_str)
 
     # the css filename
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    html_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # top banner
-    bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
-    htmlStr += \
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    html_str += \
         '<a href="/users/' + nickname + '/newblog" title="' + \
         translate['Go Back'] + '" alt="' + \
         translate['Go Back'] + '">\n'
-    htmlStr += '<img loading="lazy" class="timeline-banner" ' + \
+    html_str += '<img loading="lazy" class="timeline-banner" ' + \
         'alt="" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + banner_file + '" /></a>\n'
 
-    htmlStr += \
+    html_str += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="/users/' + nickname + \
         '/citationsdata">\n'
-    htmlStr += '  <center>\n'
-    htmlStr += translate['Choose newswire items ' +
-                         'referenced in your article'] + '<br>'
-    if blogTitle is None:
-        blogTitle = ''
-    htmlStr += \
+    html_str += '  <center>\n'
+    html_str += translate['Choose newswire items ' +
+                          'referenced in your article'] + '<br>'
+    if blog_title is None:
+        blog_title = ''
+    html_str += \
         '    <input type="hidden" name="blogTitle" value="' + \
-        blogTitle + '">\n'
-    if blogContent is None:
-        blogContent = ''
-    htmlStr += \
+        blog_title + '">\n'
+    if blog_content is None:
+        blog_content = ''
+    html_str += \
         '    <input type="hidden" name="blogContent" value="' + \
-        blogContent + '">\n'
+        blog_content + '">\n'
     # submit button
-    htmlStr += \
+    html_str += \
         '    <input type="submit" name="submitCitations" value="' + \
         translate['Submit'] + '">\n'
-    htmlStr += '  </center>\n'
+    html_str += '  </center>\n'
 
-    citationsSeparator = '#####'
+    citations_separator = '#####'
 
     # list of newswire items
     if newswire:
         ctr = 0
-        for dateStr, item in newswire.items():
-            item[0] = removeHtml(item[0]).strip()
+        for date_str, item in newswire.items():
+            item[0] = remove_html(item[0]).strip()
             if not item[0]:
                 continue
             # remove any CDATA
@@ -414,112 +418,113 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
                 if ']' in item[0]:
                     item[0] = item[0].split(']')[0]
             # should this checkbox be selected?
-            selectedStr = ''
-            if dateStr in citationsSelected:
-                selectedStr = ' checked'
+            selected_str = ''
+            if date_str in citations_selected:
+                selected_str = ' checked'
 
-            publishedDate = \
-                datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
-            dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
+            published_date = \
+                datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S%z")
+            date_shown = published_date.strftime("%Y-%m-%d %H:%M")
 
-            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
-            title = limitRepeatedWords(title, 6)
+            title = remove_long_words(item[0], 16, []).replace('\n', '<br>')
+            title = limit_repeated_words(title, 6)
             link = item[1]
 
-            citationValue = \
-                dateStr + citationsSeparator + \
-                title + citationsSeparator + \
+            citation_value = \
+                date_str + citations_separator + \
+                title + citations_separator + \
                 link
-            htmlStr += \
+            html_str += \
                 '<input type="checkbox" name="newswire' + str(ctr) + \
-                '" value="' + citationValue + '"' + selectedStr + '/>' + \
+                '" value="' + citation_value + '"' + selected_str + '/>' + \
                 '<a href="' + link + '"><cite>' + title + '</cite></a> '
-            htmlStr += '<span class="newswireDate">' + \
-                dateShown + '</span><br>\n'
+            html_str += '<span class="newswireDate">' + \
+                date_shown + '</span><br>\n'
             ctr += 1
 
-    htmlStr += '</form>\n'
-    return htmlStr + htmlFooter()
+    html_str += '</form>\n'
+    return html_str + html_footer()
 
 
-def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
-                       domain: str, domainFull: str,
-                       httpPrefix: str, translate: {},
-                       newswire: {},
-                       positiveVoting: bool,
-                       timelinePath: str,
-                       showPublishAsIcon: bool,
-                       authorized: bool,
-                       rssIconAtTop: bool,
-                       iconsAsButtons: bool,
-                       defaultTimeline: str,
-                       theme: str,
-                       accessKeys: {}) -> str:
+def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
+                         domain: str, domain_full: str,
+                         http_prefix: str, translate: {},
+                         newswire: {},
+                         positive_voting: bool,
+                         timeline_path: str,
+                         show_publish_as_icon: bool,
+                         authorized: bool,
+                         rss_icon_at_top: bool,
+                         icons_as_buttons: bool,
+                         default_timeline: str,
+                         theme: str,
+                         access_keys: {}) -> str:
     """Shows the mobile version of the newswire right column
     """
-    htmlStr = ''
+    html_str = ''
 
     # the css filename
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
     if nickname == 'news':
         editor = False
         moderator = False
     else:
         # is the user a moderator?
-        moderator = isModerator(baseDir, nickname)
+        moderator = is_moderator(base_dir, nickname)
 
         # is the user a site editor?
-        editor = isEditor(baseDir, nickname)
+        editor = is_editor(base_dir, nickname)
 
-    showPublishButton = editor
+    show_publish_button = editor
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    html_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
-    bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
-    htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    html_str += \
+        '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Timeline banner image'] + '" ' + \
-        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
 
-    htmlStr += '<div class="col-right-mobile">\n'
+    html_str += '<div class="col-right-mobile">\n'
 
-    htmlStr += '<center>' + \
-        headerButtonsFrontScreen(translate, nickname,
-                                 'newswire', authorized,
-                                 iconsAsButtons) + '</center>'
-    htmlStr += \
-        getRightColumnContent(baseDir, nickname, domainFull,
-                              httpPrefix, translate,
-                              moderator, editor,
-                              newswire, positiveVoting,
-                              False, timelinePath, showPublishButton,
-                              showPublishAsIcon, rssIconAtTop, False,
-                              authorized, False, theme,
-                              defaultTimeline, accessKeys)
+    html_str += '<center>' + \
+        header_buttons_front_screen(translate, nickname,
+                                    'newswire', authorized,
+                                    icons_as_buttons) + '</center>'
+    html_str += \
+        get_right_column_content(base_dir, nickname, domain_full,
+                                 http_prefix, translate,
+                                 moderator, editor,
+                                 newswire, positive_voting,
+                                 False, timeline_path, show_publish_button,
+                                 show_publish_as_icon, rss_icon_at_top, False,
+                                 authorized, False, theme,
+                                 default_timeline, access_keys)
     if editor and not newswire:
-        htmlStr += '<br><br><br>\n'
-        htmlStr += '<center>\n  '
-        htmlStr += translate['Select the edit icon to add RSS feeds']
-        htmlStr += '\n</center>\n'
+        html_str += '<br><br><br>\n'
+        html_str += '<center>\n  '
+        html_str += translate['Select the edit icon to add RSS feeds']
+        html_str += '\n</center>\n'
     # end of col-right-mobile
-    htmlStr += '</div\n>'
+    html_str += '</div\n>'
 
-    htmlStr += htmlFooter()
-    return htmlStr
+    html_str += html_footer()
+    return html_str
 
 
-def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
-                     domain: str, port: int, httpPrefix: str,
-                     defaultTimeline: str, theme: str,
-                     accessKeys: {}) -> str:
+def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
+                       domain: str, port: int, http_prefix: str,
+                       default_timeline: str, theme: str,
+                       access_keys: {}) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -527,189 +532,192 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '').replace('/wanted', '')
 
-    nickname = getNicknameFromActor(path)
+    nickname = get_nickname_from_actor(path)
     if not nickname:
         return ''
 
     # is the user a moderator?
-    if not isModerator(baseDir, nickname):
+    if not is_moderator(base_dir, nickname):
         return ''
 
-    cssFilename = baseDir + '/epicyon-links.css'
-    if os.path.isfile(baseDir + '/links.css'):
-        cssFilename = baseDir + '/links.css'
+    css_filename = base_dir + '/epicyon-links.css'
+    if os.path.isfile(base_dir + '/links.css'):
+        css_filename = base_dir + '/links.css'
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    editNewswireForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    edit_newswire_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # top banner
-    editNewswireForm += \
+    edit_newswire_form += \
         '<header>' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + \
+        '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
-    editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" ' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">\n'
+    edit_newswire_form += \
+        '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + banner_file + '" ' + \
         'alt="" /></a>\n</header>'
 
-    editNewswireForm += \
+    edit_newswire_form += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newswiredata">\n'
-    editNewswireForm += \
+    edit_newswire_form += \
         '  <div class="vertical-center">\n'
-    editNewswireForm += \
+    edit_newswire_form += \
         '    <h1>' + translate['Edit newswire'] + '</h1>'
-    editNewswireForm += \
+    edit_newswire_form += \
         '    <div class="containerSubmitNewPost">\n'
-    editNewswireForm += \
+    edit_newswire_form += \
         '      <input type="submit" name="submitNewswire" value="' + \
         translate['Submit'] + '" ' + \
-        'accesskey="' + accessKeys['submitButton'] + '">\n'
-    editNewswireForm += \
+        'accesskey="' + access_keys['submitButton'] + '">\n'
+    edit_newswire_form += \
         '    </div>\n'
 
-    newswireFilename = baseDir + '/accounts/newswire.txt'
-    newswireStr = ''
-    if os.path.isfile(newswireFilename):
-        with open(newswireFilename, 'r') as fp:
-            newswireStr = fp.read()
+    newswire_filename = base_dir + '/accounts/newswire.txt'
+    newswire_str = ''
+    if os.path.isfile(newswire_filename):
+        with open(newswire_filename, 'r') as fp_news:
+            newswire_str = fp_news.read()
 
-    editNewswireForm += \
+    edit_newswire_form += \
         '<div class="container">'
 
-    editNewswireForm += \
+    edit_newswire_form += \
         '  ' + \
         translate['Add RSS feed links below.'] + \
         '<br>'
-    newFeedStr = translate['New feed URL']
-    editNewswireForm += editTextField(None, 'newNewswireFeed', '', newFeedStr)
-    editNewswireForm += \
+    new_feed_str = translate['New feed URL']
+    edit_newswire_form += \
+        edit_text_field(None, 'newNewswireFeed', '', new_feed_str)
+    edit_newswire_form += \
         '  <textarea id="message" name="editedNewswire" ' + \
         'style="height:80vh" spellcheck="false">' + \
-        newswireStr + '</textarea>'
+        newswire_str + '</textarea>'
 
-    filterStr = ''
-    filterFilename = \
-        baseDir + '/accounts/news@' + domain + '/filters.txt'
-    if os.path.isfile(filterFilename):
-        with open(filterFilename, 'r') as filterfile:
-            filterStr = filterfile.read()
+    filter_str = ''
+    filter_filename = \
+        base_dir + '/accounts/news@' + domain + '/filters.txt'
+    if os.path.isfile(filter_filename):
+        with open(filter_filename, 'r') as filterfile:
+            filter_str = filterfile.read()
 
-    editNewswireForm += \
+    edit_newswire_form += \
         '      <br><b><label class="labels">' + \
         translate['Filtered words'] + '</label></b>\n'
-    editNewswireForm += '      <br><label class="labels">' + \
+    edit_newswire_form += '      <br><label class="labels">' + \
         translate['One per line'] + '</label>'
-    editNewswireForm += '      <textarea id="message" ' + \
+    edit_newswire_form += '      <textarea id="message" ' + \
         'name="filteredWordsNewswire" style="height:50vh" ' + \
-        'spellcheck="true">' + filterStr + '</textarea>\n'
+        'spellcheck="true">' + filter_str + '</textarea>\n'
 
-    hashtagRulesStr = ''
-    hashtagRulesFilename = \
-        baseDir + '/accounts/hashtagrules.txt'
-    if os.path.isfile(hashtagRulesFilename):
-        with open(hashtagRulesFilename, 'r') as rulesfile:
-            hashtagRulesStr = rulesfile.read()
+    hashtag_rules_str = ''
+    hashtag_rules_filename = \
+        base_dir + '/accounts/hashtagrules.txt'
+    if os.path.isfile(hashtag_rules_filename):
+        with open(hashtag_rules_filename, 'r') as rulesfile:
+            hashtag_rules_str = rulesfile.read()
 
-    editNewswireForm += \
+    edit_newswire_form += \
         '      <br><b><label class="labels">' + \
         translate['News tagging rules'] + '</label></b>\n'
-    editNewswireForm += '      <br><label class="labels">' + \
+    edit_newswire_form += '      <br><label class="labels">' + \
         translate['One per line'] + '.</label>\n'
-    editNewswireForm += \
+    edit_newswire_form += \
         '      <a href="' + \
         'https://gitlab.com/bashrc2/epicyon/-/raw/main/hashtagrules.txt' + \
         '">' + translate['See instructions'] + '</a>\n'
-    editNewswireForm += '      <textarea id="message" ' + \
+    edit_newswire_form += '      <textarea id="message" ' + \
         'name="hashtagRulesList" style="height:80vh" spellcheck="false">' + \
-        hashtagRulesStr + '</textarea>\n'
+        hashtag_rules_str + '</textarea>\n'
 
-    editNewswireForm += \
+    edit_newswire_form += \
         '</div>'
 
-    editNewswireForm += htmlFooter()
-    return editNewswireForm
+    edit_newswire_form += html_footer()
+    return edit_newswire_form
 
 
-def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
-                     domain: str, port: int,
-                     httpPrefix: str, postUrl: str,
-                     systemLanguage: str) -> str:
+def html_edit_news_post(css_cache: {}, translate: {}, base_dir: str, path: str,
+                        domain: str, port: int, http_prefix: str, postUrl: str,
+                        system_language: str) -> str:
     """Edits a news post on the news/features timeline
     """
     if '/users/' not in path:
         return ''
-    pathOriginal = path
+    path_original = path
 
-    nickname = getNicknameFromActor(path)
+    nickname = get_nickname_from_actor(path)
     if not nickname:
         return ''
 
     # is the user an editor?
-    if not isEditor(baseDir, nickname):
+    if not is_editor(base_dir, nickname):
         return ''
 
     postUrl = postUrl.replace('/', '#')
-    postFilename = locatePost(baseDir, nickname, domain, postUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, postUrl)
+    if not post_filename:
         return ''
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
         return ''
 
-    cssFilename = baseDir + '/epicyon-links.css'
-    if os.path.isfile(baseDir + '/links.css'):
-        cssFilename = baseDir + '/links.css'
+    css_filename = base_dir + '/epicyon-links.css'
+    if os.path.isfile(base_dir + '/links.css'):
+        css_filename = base_dir + '/links.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    editNewsPostForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    editNewsPostForm += \
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    edit_news_post_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    edit_news_post_form += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'
-    editNewsPostForm += \
+    edit_news_post_form += \
         '  <div class="vertical-center">\n'
-    editNewsPostForm += \
+    edit_news_post_form += \
         '    <h1>' + translate['Edit News Post'] + '</h1>'
-    editNewsPostForm += \
+    edit_news_post_form += \
         '    <div class="container">\n'
-    editNewsPostForm += \
-        '      <a href="' + pathOriginal + '/tlnews">' + \
+    edit_news_post_form += \
+        '      <a href="' + path_original + '/tlnews">' + \
         '<button class="cancelbtn">' + translate['Go Back'] + '</button></a>\n'
-    editNewsPostForm += \
+    edit_news_post_form += \
         '      <input type="submit" name="submitEditedNewsPost" value="' + \
         translate['Submit'] + '">\n'
-    editNewsPostForm += \
+    edit_news_post_form += \
         '    </div>\n'
 
-    editNewsPostForm += \
+    edit_news_post_form += \
         '<div class="container">'
 
-    editNewsPostForm += \
+    edit_news_post_form += \
         '  <input type="hidden" name="newsPostUrl" value="' + \
         postUrl + '">\n'
 
-    newsPostTitle = postJsonObject['object']['summary']
-    editNewsPostForm += \
+    news_post_title = post_json_object['object']['summary']
+    edit_news_post_form += \
         '  <input type="text" name="newsPostTitle" value="' + \
-        newsPostTitle + '"><br>\n'
+        news_post_title + '"><br>\n'
 
-    newsPostContent = getBaseContentFromPost(postJsonObject, systemLanguage)
-    editNewsPostForm += \
+    news_post_content = get_base_content_from_post(post_json_object,
+                                                   system_language)
+    edit_news_post_form += \
         '  <textarea id="message" name="editedNewsPost" ' + \
         'style="height:600px" spellcheck="true">' + \
-        newsPostContent + '</textarea>'
+        news_post_content + '</textarea>'
 
-    editNewsPostForm += \
+    edit_news_post_form += \
         '</div>'
 
-    editNewsPostForm += htmlFooter()
-    return editNewsPostForm
+    edit_news_post_form += html_footer()
+    return edit_news_post_form
