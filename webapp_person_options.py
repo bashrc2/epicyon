@@ -193,6 +193,11 @@ def html_person_options(default_timeline: str,
             '<p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
             email_address + '">' + remove_html(email_address) + '</a></p>\n'
+    if web_address:
+        options_str += \
+            '<p class="imText">🌐 ' + \
+            '<a href="' + remove_html(web_address) + '">' + \
+            web_address + '</a></p>\n'
     if xmpp_address:
         options_str += \
             '<p class="imText">' + translate['XMPP'] + \
