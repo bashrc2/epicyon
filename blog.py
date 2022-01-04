@@ -786,7 +786,7 @@ def html_edit_blog(media_instance: bool, translate: {},
     """
     post_filename = locate_post(base_dir, nickname, domain, post_url)
     if not post_filename:
-        print('Edit blog: Filename not found for ' + post_url)
+        print('Edit blog: filename not found for ' + post_url)
         return None
 
     post_json_object = load_json(post_filename)

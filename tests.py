@@ -3739,7 +3739,7 @@ def _test_danger_css(base_dir: str) -> None:
 
 
 def _test_danger_svg(base_dir: str) -> None:
-    print('testDangerousSVG')
+    print('test_dangerous_svg')
     svg_content = \
         '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
         '  <circle cx="5" cy="5" r="4" />' + \
@@ -3770,7 +3770,7 @@ def _test_danger_svg(base_dir: str) -> None:
 
 
 def _test_danger_markup():
-    print('testDangerousMarkup')
+    print('test_dangerous_markup')
     allow_local_network_access = False
     content = '<p>This is a valid message</p>'
     assert not dangerous_markup(content, allow_local_network_access)
@@ -3851,7 +3851,7 @@ def _run_html_replace_quote_marks():
 
 
 def _test_json_post_allows_comment():
-    print('test_jsonPostAllowsComments')
+    print('test_json_post_allows_comments')
     post_json_object = {
         "id": "123"
     }
@@ -3893,7 +3893,7 @@ def _test_json_post_allows_comment():
 
 
 def _test_remove_id_ending():
-    print('testRemoveIdEnding')
+    print('test_remove_id_ending')
     test_str = 'https://activitypub.somedomain.net'
     result_str = remove_id_ending(test_str)
     assert result_str == 'https://activitypub.somedomain.net'
@@ -3919,7 +3919,7 @@ def _test_remove_id_ending():
 
 
 def _test_valid_content_warning():
-    print('testValidContentWarning')
+    print('test_valid_content_warning')
     result_str = valid_content_warning('Valid content warning')
     assert result_str == 'Valid content warning'
 
@@ -3932,7 +3932,7 @@ def _test_valid_content_warning():
 
 
 def _test_translations(base_dir: str) -> None:
-    print('testTranslations')
+    print('test_translations')
     languages_str = get_supported_languages(base_dir)
     assert languages_str
 
@@ -3958,7 +3958,7 @@ def _test_translations(base_dir: str) -> None:
 
 
 def _test_constant_time_string():
-    print('testConstantTimeStringCheck')
+    print('test_constant_time_string_check')
     assert constant_time_string_check('testing', 'testing')
     assert not constant_time_string_check('testing', '1234')
     assert not constant_time_string_check('testing', '1234567')
@@ -3995,7 +3995,7 @@ def _test_constant_time_string():
 
 
 def _test_replace_email_quote():
-    print('testReplaceEmailQuote')
+    print('test_replace_email_quote')
     test_str = '<p>This content has no quote.</p>'
     assert html_replace_email_quote(test_str) == test_str
 
@@ -4053,7 +4053,7 @@ def _test_replace_email_quote():
 
 
 def _test_strip_html_tag():
-    print('testRemoveHtmlTag')
+    print('test_remove_html_tag')
     test_str = "<p><img width=\"864\" height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
     result_str = remove_html_tag(test_str, 'width')
@@ -4062,7 +4062,7 @@ def _test_strip_html_tag():
 
 
 def _test_hashtag_rules():
-    print('testHashtagRuleTree')
+    print('test_hashtag_rule_tree')
     operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
 
     url = 'testsite.com'
@@ -4194,7 +4194,7 @@ def _test_hashtag_rules():
 
 
 def _test_newswire_tags():
-    print('testNewswireTags')
+    print('test_newswire_tags')
     rss_description = '<img src="https://somesite/someimage.jpg" ' + \
         'class="misc-stuff" alt="#ExcitingHashtag" ' + \
         'srcset="https://somesite/someimage.jpg" ' + \
@@ -4208,7 +4208,7 @@ def _test_newswire_tags():
 
 
 def _test_first_paragraph_from_string():
-    print('testFirstParagraphFromString')
+    print('test_first_paragraph_from_string')
     test_str = \
         '<p><a href="https://somesite.com/somepath">This is a test</a></p>' + \
         '<p>This is another paragraph</p>'
@@ -4223,7 +4223,7 @@ def _test_first_paragraph_from_string():
 
 
 def _test_parse_feed_date():
-    print('testParseFeedDate')
+    print('test_parse_feed_date')
 
     pub_date = "2020-12-14T00:08:06+00:00"
     published_date = parse_feed_date(pub_date)
@@ -4243,7 +4243,7 @@ def _test_parse_feed_date():
 
 
 def _test_valid_nick():
-    print('testValidNickname')
+    print('test_valid_nickname')
     domain = 'somedomain.net'
 
     nickname = 'myvalidnick'
@@ -4260,7 +4260,7 @@ def _test_valid_nick():
 
 
 def _test_guess_tag_category() -> None:
-    print('testGuessHashtagCategory')
+    print('test_guess_hashtag_category')
     hashtag_categories = {
         "foo": ["swan", "goose"],
         "bar": ["cats", "mouse"]
@@ -4273,11 +4273,10 @@ def _test_guess_tag_category() -> None:
 
 
 def _test_mentioned_people(base_dir: str) -> None:
-    print('testGetMentionedPeople')
+    print('test_get_mentioned_people')
     content = "@dragon@cave.site @bat@cave.site This is a test."
-    actors = get_mentioned_people(base_dir, 'https',
-                                  content,
-                                  'mydomain', False)
+    actors = \
+        get_mentioned_people(base_dir, 'https', content, 'mydomain', False)
     assert actors
     assert len(actors) == 2
     assert actors[0] == "https://cave.site/users/dragon"
@@ -4503,7 +4502,7 @@ def _diagram_groups(include_groups: [],
 
 
 def _test_post_variable_names():
-    print('testPostVariableNames')
+    print('test_post_variable_names')
 
     for _, _, files in os.walk('.'):
         for source_file in files:
@@ -4537,7 +4536,7 @@ def _test_post_variable_names():
 
 
 def _test_config_param_names():
-    print('testConfigParamNames')
+    print('test_config_param_names')
 
     fnames = ('get_config_param', 'set_config_param')
     for _, _, files in os.walk('.'):
@@ -4586,7 +4585,7 @@ def _test_config_param_names():
 
 
 def _test_source_contains_no_tabs():
-    print('testSourceContainsNoTabs')
+    print('test_source_contains_no_tabs')
 
     for _, _, files in os.walk('.'):
         for source_file in files:
@@ -4608,7 +4607,7 @@ def _test_source_contains_no_tabs():
 
 
 def _test_checkbox_names():
-    print('testCheckboxNames')
+    print('test_checkbox_names')
 
     fnames = ['edit_text_field', 'edit_check_box', 'edit_text_area']
     for _, _, files in os.walk('.'):
@@ -4653,7 +4652,7 @@ def _test_checkbox_names():
 
 
 def _test_post_field_names(source_file: str, fieldnames: []):
-    print('test_POST_field_Names')
+    print('test_post_field_Names')
 
     fnames = []
     for field in fieldnames:
@@ -4722,7 +4721,7 @@ def _test_post_field_names(source_file: str, fieldnames: []):
 
 
 def _test_functions():
-    print('test_Functions')
+    print('test_functions')
     function = {}
     function_properties = {}
     modules = {}
@@ -5087,6 +5086,7 @@ def _test_functions():
 
 
 def _test_links_within_post(base_dir: str) -> None:
+    print('test_links_within_post')
     system_language = 'en'
     nickname = 'test27636'
     domain = 'rando.site'
@@ -5167,7 +5167,7 @@ def _test_links_within_post(base_dir: str) -> None:
 
 
 def _test_mastoapi():
-    print('testMastoApi')
+    print('test_masto_api')
     nickname = 'ThisIsATestNickname'
     masto_id = get_masto_api_v1id_from_nickname(nickname)
     assert masto_id
@@ -5178,7 +5178,7 @@ def _test_mastoapi():
 
 
 def _test_domain_handling():
-    print('testDomainHandling')
+    print('test_domain_handling')
     test_domain = 'localhost'
     assert decoded_host(test_domain) == test_domain
     test_domain = '127.0.0.1:60'
@@ -5190,7 +5190,7 @@ def _test_domain_handling():
 
 
 def _test_prepare_html_post_nick():
-    print('testPrepareHtmlPostNickname')
+    print('test_prepare_html_post_nickname')
     post_html = '<a class="imageAnchor" href="/users/bob?replyfollowers='
     post_html += '<a class="imageAnchor" href="/users/bob?repeatprivate='
     result = prepare_html_post_nickname('alice', post_html)
@@ -5205,7 +5205,7 @@ def _test_prepare_html_post_nick():
 
 
 def _test_valid_hash_tag():
-    print('testValidHashTag')
+    print('test_valid_hash_tag')
     assert valid_hash_tag('ThisIsValid')
     assert valid_hash_tag('ThisIsValid12345')
     assert valid_hash_tag('ThisIsVälid')
@@ -5220,7 +5220,7 @@ def _test_valid_hash_tag():
 
 
 def _test_markdown_to_html():
-    print('testMarkdownToHtml')
+    print('test_markdown_to_html')
     markdown = 'This is just plain text'
     assert markdown_to_html(markdown) == markdown
 
@@ -5267,7 +5267,7 @@ def _test_markdown_to_html():
 
 
 def _test_extract_text_fields_from_post():
-    print('testExtractTextFieldsInPOST')
+    print('test_extract_text_fields_in_post')
     boundary = '-----------------------------116202748023898664511855843036'
     form_data = '-----------------------------116202748023898664511855' + \
         '843036\r\nContent-Disposition: form-data; name="submitPost"' + \
@@ -5323,7 +5323,7 @@ def _test_speaker_replace_link():
 
 
 def _test_camel_case_split():
-    print('testCamelCaseSplit')
+    print('test_camel_case_split')
     test_str = 'ThisIsCamelCase'
     assert camel_case_split(test_str) == 'This Is Camel Case'
 
@@ -5332,7 +5332,7 @@ def _test_camel_case_split():
 
 
 def _test_emoji_images():
-    print('testEmojiImages')
+    print('test_emoji_images')
     emoji_filename = 'emoji/default_emoji.json'
     assert os.path.isfile(emoji_filename)
     emoji_json = load_json(emoji_filename)
@@ -5496,7 +5496,7 @@ def test_update_actor(base_dir: str):
 
 
 def _test_remove_interactions() -> None:
-    print('testRemovePostInteractions')
+    print('test_remove_post_interactions')
     post_json_object = {
         "type": "Create",
         "object": {
@@ -5529,7 +5529,7 @@ def _test_remove_interactions() -> None:
 
 
 def _test_spoofed_geolocation() -> None:
-    print('testSpoofGeolocation')
+    print('test_spoof_geolocation')
     nogo_line = \
         'NEW YORK, USA: 73.951W,40.879,  73.974W,40.83,  ' + \
         '74.029W,40.756,  74.038W,40.713,  74.056W,40.713,  ' + \
@@ -5772,7 +5772,7 @@ def _test_spoofed_geolocation() -> None:
 
 
 def _test_skills() -> None:
-    print('testSkills')
+    print('test_skills')
     actor_json = {
         'hasOccupation': [
             {
@@ -5798,7 +5798,7 @@ def _test_skills() -> None:
 
 
 def _test_roles() -> None:
-    print('testRoles')
+    print('test_roles')
     actor_json = {
         'hasOccupation': [
             {
@@ -5822,7 +5822,7 @@ def _test_roles() -> None:
 
 
 def _test_useragent_domain() -> None:
-    print('testUserAgentDomain')
+    print('test_user_agent_domain')
     user_agent = \
         'http.rb/4.4.1 (Mastodon/9.10.11; +https://mastodon.something/)'
     assert user_agent_domain(user_agent, False) == 'mastodon.something'
@@ -5832,7 +5832,7 @@ def _test_useragent_domain() -> None:
 
 
 def _test_switch_word(base_dir: str) -> None:
-    print('testSwitchWords')
+    print('test_switch_words')
     rules = [
         "rock -> hamster",
         "orange -> lemon"
@@ -5854,7 +5854,7 @@ def _test_switch_word(base_dir: str) -> None:
 
 
 def _test_word_lengths_limit() -> None:
-    print('testLimitWordLengths')
+    print('test_limit_word_lengths')
     max_word_length = 13
     text = "This is a test"
     result = limit_word_lengths(text, max_word_length)
@@ -5866,7 +5866,7 @@ def _test_word_lengths_limit() -> None:
 
 
 def _test_limit_repeted_words() -> None:
-    print('limit_repeated_words')
+    print('test_limit_repeated_words')
     text = \
         "This is a preamble.\n\n" + \
         "Same Same Same Same Same Same Same Same Same Same " + \
@@ -5903,7 +5903,7 @@ def _test_limit_repeted_words() -> None:
 
 
 def _test_set_actor_language():
-    print('testSetActorLanguages')
+    print('test_set_actor_languages')
     actor_json = {
         "attachment": []
     }
@@ -5922,7 +5922,7 @@ def _test_set_actor_language():
 
 
 def _test_get_links_from_content():
-    print('testGetLinksFromContent')
+    print('test_get_links_from_content')
     content = 'This text has no links'
     links = get_links_from_content(content)
     assert not links
@@ -5946,7 +5946,7 @@ def _test_get_links_from_content():
 
 
 def _test_authorized_shared_items():
-    print('testAuthorizeSharedItems')
+    print('test_authorize_shared_items')
     shared_items_fed_domains = \
         ['dog.domain', 'cat.domain', 'birb.domain']
     tokens_json = \
@@ -5992,7 +5992,7 @@ def _test_authorized_shared_items():
 
 
 def _test_date_conversions() -> None:
-    print('testDateConversions')
+    print('test_date_conversions')
     date_str = "2021-05-16T14:37:41Z"
     date_sec = date_string_to_seconds(date_str)
     date_str2 = date_seconds_to_string(date_sec)
@@ -6000,7 +6000,7 @@ def _test_date_conversions() -> None:
 
 
 def _test_valid_password():
-    print('testValidPassword')
+    print('test_valid_password')
     assert not valid_password('123')
     assert not valid_password('')
     assert valid_password('パスワード12345')
@@ -6009,7 +6009,7 @@ def _test_valid_password():
 
 
 def _test_get_price_from_string() -> None:
-    print('testGetPriceFromString')
+    print('test_get_price_from_string')
     price, curr = get_price_from_string("5.23")
     assert price == "5.23"
     assert curr == "EUR"
@@ -6080,7 +6080,7 @@ def _translate_ontology(base_dir: str) -> None:
 
 
 def _test_can_replyto(base_dir: str) -> None:
-    print('testCanReplyTo')
+    print('test_can_reply_to')
     system_language = 'en'
     nickname = 'test27637'
     domain = 'rando.site'
@@ -6142,7 +6142,7 @@ def _test_can_replyto(base_dir: str) -> None:
 
 
 def _test_seconds_between_publish() -> None:
-    print('testSecondsBetweenPublished')
+    print('test_seconds_between_published')
     published1 = "2021-10-14T09:39:27Z"
     published2 = "2021-10-14T09:41:28Z"
 
@@ -6155,7 +6155,7 @@ def _test_seconds_between_publish() -> None:
 
 
 def _test_word_similarity() -> None:
-    print('testWordsSimilarity')
+    print('test_words_similarity')
     min_words = 10
     content1 = "This is the same"
     content2 = "This is the same"
@@ -6179,7 +6179,7 @@ def _test_word_similarity() -> None:
 
 
 def _test_add_cw_lists(base_dir: str) -> None:
-    print('testAddCWfromLists')
+    print('test_add_CW_from_lists')
     translate = {}
     cw_lists = load_cw_lists(base_dir, True)
     assert cw_lists
@@ -6220,7 +6220,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
 
 
 def _test_valid_emoji_content() -> None:
-    print('testValidEmojiContent')
+    print('test_valid_emoji_content')
     assert not valid_emoji_content(None)
     assert not valid_emoji_content(' ')
     assert not valid_emoji_content('j')
@@ -6231,7 +6231,7 @@ def _test_valid_emoji_content() -> None:
 
 def _test_httpsig_base_new(with_digest: bool, base_dir: str,
                            algorithm: str, digest_algorithm: str) -> None:
-    print('testHttpsigNew(' + str(with_digest) + ')')
+    print('test_httpsig_new(' + str(with_digest) + ')')
 
     debug = True
     path = base_dir + '/.testHttpsigBaseNew'
