@@ -18787,6 +18787,10 @@ def run_daemon(content_license_url: str,
     httpd.domainBlocklist = get_domain_blocklist(base_dir)
 
     httpd.manual_follower_approval = manual_follower_approval
+    if domain.endswith('.onion'):
+        onion_domain = domain
+    elif domain.endswith('.i2p'):
+        i2p_domain = domain
     httpd.onion_domain = onion_domain
     httpd.i2p_domain = i2p_domain
     httpd.media_instance = media_instance
