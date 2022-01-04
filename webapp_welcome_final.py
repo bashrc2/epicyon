@@ -28,44 +28,44 @@ def html_welcome_final(base_dir: str, nickname: str, domain: str,
             copyfile(base_dir + '/accounts/welcome-background-custom.jpg',
                      base_dir + '/accounts/welcome-background.jpg')
 
-    finalText = 'Welcome to Epicyon'
-    finalFilename = base_dir + '/accounts/welcome_final.md'
-    if not os.path.isfile(finalFilename):
-        defaultFilename = None
+    final_text = 'Welcome to Epicyon'
+    final_filename = base_dir + '/accounts/welcome_final.md'
+    if not os.path.isfile(final_filename):
+        default_filename = None
         if theme_name:
-            defaultFilename = \
+            default_filename = \
                 base_dir + '/theme/' + theme_name + '/welcome/' + \
                 'final_' + language + '.md'
-            if not os.path.isfile(defaultFilename):
-                defaultFilename = None
-        if not defaultFilename:
-            defaultFilename = \
+            if not os.path.isfile(default_filename):
+                default_filename = None
+        if not default_filename:
+            default_filename = \
                 base_dir + '/defaultwelcome/final_' + language + '.md'
-        if not os.path.isfile(defaultFilename):
-            defaultFilename = base_dir + '/defaultwelcome/final_en.md'
-        copyfile(defaultFilename, finalFilename)
+        if not os.path.isfile(default_filename):
+            default_filename = base_dir + '/defaultwelcome/final_en.md'
+        copyfile(default_filename, final_filename)
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    if not instanceTitle:
-        instanceTitle = 'Epicyon'
+    if not instance_title:
+        instance_title = 'Epicyon'
 
-    if os.path.isfile(finalFilename):
-        with open(finalFilename, 'r') as finalFile:
-            finalText = finalFile.read()
-            finalText = finalText.replace('INSTANCE', instanceTitle)
-            finalText = markdown_to_html(remove_html(finalText))
+    if os.path.isfile(final_filename):
+        with open(final_filename, 'r') as final_file:
+            final_text = final_file.read()
+            final_text = final_text.replace('INSTANCE', instance_title)
+            final_text = markdown_to_html(remove_html(final_text))
 
-    finalForm = ''
+    final_form = ''
     css_filename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
         css_filename = base_dir + '/welcome.css'
 
-    finalForm = \
-        html_header_with_external_style(css_filename, instanceTitle, None)
+    final_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
-    finalForm += \
-        '<div class="container">' + finalText + '</div>\n' + \
+    final_form += \
+        '<div class="container">' + final_text + '</div>\n' + \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \
         'action="/users/' + nickname + '/profiledata">\n' + \
@@ -76,6 +76,6 @@ def html_welcome_final(base_dir: str, nickname: str, domain: str,
         'name="welcomeCompleteButton">' + translate['Next'] + '</button>\n' + \
         '</div>\n'
 
-    finalForm += '</form>\n'
-    finalForm += html_footer()
-    return finalForm
+    final_form += '</form>\n'
+    final_form += html_footer()
+    return final_form
