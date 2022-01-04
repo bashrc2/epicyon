@@ -30,27 +30,27 @@ def html_terms_of_service(css_cache: {}, base_dir: str,
             copyfile(base_dir + '/accounts/login-background-custom.jpg',
                      base_dir + '/accounts/login-background.jpg')
 
-    TOSText = 'Terms of Service go here.'
+    tos_text = 'Terms of Service go here.'
     if os.path.isfile(base_dir + '/accounts/tos.md'):
         with open(base_dir + '/accounts/tos.md', 'r') as file:
-            TOSText = markdown_to_html(file.read())
+            tos_text = markdown_to_html(file.read())
 
-    TOSForm = ''
+    tos_form = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    TOSForm = \
-        html_header_with_external_style(css_filename, instanceTitle, None)
-    TOSForm += '<div class="container">' + TOSText + '</div>\n'
+    tos_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    tos_form += '<div class="container">' + tos_text + '</div>\n'
     if admin_nickname:
-        adminActor = local_actor_url(http_prefix, admin_nickname, domain_full)
-        TOSForm += \
+        admin_actor = local_actor_url(http_prefix, admin_nickname, domain_full)
+        tos_form += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">Administered by <a href="' + \
-            adminActor + '">' + admin_nickname + '</a></p>\n' + \
+            admin_actor + '">' + admin_nickname + '</a></p>\n' + \
             '</center></div>\n'
-    TOSForm += html_footer()
-    return TOSForm
+    tos_form += html_footer()
+    return tos_form
