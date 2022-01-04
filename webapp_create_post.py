@@ -385,7 +385,10 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             translate['Replying to'] + '...'
     placeholder_message = ''
     if category != 'accommodation':
-        placeholder_message = translate['Write something'] + '...'
+        if default_timeline == 'tlfeatures':
+            placeholder_message = translate['Write your news report'] + '...'
+        else:
+            placeholder_message = translate['Write something'] + '...'
     else:
         idx = 'Introduce yourself and specify the date ' + \
             'and time when you wish to stay'
