@@ -172,82 +172,82 @@ def html_theme_designer(css_cache: {}, base_dir: str,
                         theme_name: str, access_keys: {}) -> str:
     """Edit theme settings
     """
-    themeFilename = base_dir + '/theme/' + theme_name + '/theme.json'
-    themeJson = {}
-    if os.path.isfile(themeFilename):
-        themeJson = load_json(themeFilename)
+    theme_filename = base_dir + '/theme/' + theme_name + '/theme.json'
+    theme_json = {}
+    if os.path.isfile(theme_filename):
+        theme_json = load_json(theme_filename)
 
     # set custom theme parameters
-    customVariablesFile = base_dir + '/accounts/theme.json'
-    if os.path.isfile(customVariablesFile):
-        customThemeParams = load_json(customVariablesFile, 0)
-        if customThemeParams:
-            for variableName, value in customThemeParams.items():
-                themeJson[variableName] = value
+    custom_variables_file = base_dir + '/accounts/theme.json'
+    if os.path.isfile(custom_variables_file):
+        custom_theme_params = load_json(custom_variables_file, 0)
+        if custom_theme_params:
+            for variable_name, value in custom_theme_params.items():
+                theme_json[variable_name] = value
 
-    themeForm = ''
+    theme_form = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    themeForm = \
-        html_header_with_external_style(css_filename, instanceTitle, None)
-    banner_file, banner_filename = \
+    theme_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme_name)
-    themeForm += \
+    theme_form += \
         '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'title="' + translate['Switch to timeline view'] + '" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
-    themeForm += '<div class="container">\n'
+    theme_form += '<div class="container">\n'
 
-    themeForm += \
+    theme_form += \
         '    <h1>' + translate['Theme Designer'] + '</h1>\n'
 
-    themeForm += '  <form method="POST" action="' + \
+    theme_form += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeThemeSettings">\n'
 
-    resetKey = access_keys['menuLogout']
-    submitKey = access_keys['submitButton']
-    themeForm += \
+    reset_key = access_keys['menuLogout']
+    submit_key = access_keys['submitButton']
+    theme_form += \
         '    <center>\n' + \
         '    <button type="submit" class="button" ' + \
         'name="submitThemeDesignerReset" ' + \
-        'accesskey="' + resetKey + '">' + \
+        'accesskey="' + reset_key + '">' + \
         translate['Reset'] + '</button>\n' + \
         '    <button type="submit" class="button" ' + \
-        'name="submitThemeDesigner" accesskey="' + submitKey + '">' + \
+        'name="submitThemeDesigner" accesskey="' + submit_key + '">' + \
         translate['Submit'] + '</button>\n    </center>\n'
 
-    tableStr = '    <table class="accesskeys">\n'
-    tableStr += '      <colgroup>\n'
-    tableStr += '        <col span="1" class="accesskeys-left">\n'
-    tableStr += '        <col span="1" class="accesskeys-center">\n'
-    tableStr += '      </colgroup>\n'
-    tableStr += '      <tbody>\n'
+    table_str = '    <table class="accesskeys">\n'
+    table_str += '      <colgroup>\n'
+    table_str += '        <col span="1" class="accesskeys-left">\n'
+    table_str += '        <col span="1" class="accesskeys-center">\n'
+    table_str += '      </colgroup>\n'
+    table_str += '      <tbody>\n'
 
-    fontStr = '    <div class="container">\n' + tableStr
-    colorStr = '    <div class="container">\n' + tableStr
-    dimensionStr = '    <div class="container">\n' + tableStr
-    switchStr = '    <div class="container">\n' + tableStr
-    for variableName, value in themeJson.items():
-        if 'font-size' in variableName:
-            variableNameStr = variableName.replace('-', ' ')
-            variableNameStr = variableNameStr.title()
-            fontStr += \
+    font_str = '    <div class="container">\n' + table_str
+    color_str = '    <div class="container">\n' + table_str
+    dimension_str = '    <div class="container">\n' + table_str
+    switch_str = '    <div class="container">\n' + table_str
+    for variable_name, value in theme_json.items():
+        if 'font-size' in variable_name:
+            variable_name_str = variable_name.replace('-', ' ')
+            variable_name_str = variable_name_str.title()
+            font_str += \
                 '      <tr><td><label class="labels">' + \
-                variableNameStr + '</label></td>'
-            fontStr += \
+                variable_name_str + '</label></td>'
+            font_str += \
                 '<td><input type="text" name="themeSetting_' + \
-                variableName + '" value="' + str(value) + \
-                '" title="' + variableNameStr + '"></td></tr>\n'
-        elif ('-color' in variableName or
-              '-background' in variableName or
-              variableName.endswith('-text') or
+                variable_name + '" value="' + str(value) + \
+                '" title="' + variable_name_str + '"></td></tr>\n'
+        elif ('-color' in variable_name or
+              '-background' in variable_name or
+              variable_name.endswith('-text') or
               value.startswith('#') or
               color_to_hex.get(value)):
             # only use colors defined as hex
@@ -256,76 +256,78 @@ def html_theme_designer(css_cache: {}, base_dir: str,
                     value = color_to_hex[value]
                 else:
                     continue
-            variableNameStr = variableName.replace('-', ' ')
-            if ' color' in variableNameStr:
-                variableNameStr = variableNameStr.replace(' color', '')
-            if ' bg' in variableNameStr:
-                variableNameStr = variableNameStr.replace(' bg', ' background')
-            elif ' fg' in variableNameStr:
-                variableNameStr = variableNameStr.replace(' fg', ' foreground')
-            if variableNameStr == 'cw':
-                variableNameStr = 'content warning'
-            variableNameStr = variableNameStr.title()
-            colorStr += \
+            variable_name_str = variable_name.replace('-', ' ')
+            if ' color' in variable_name_str:
+                variable_name_str = variable_name_str.replace(' color', '')
+            if ' bg' in variable_name_str:
+                variable_name_str = \
+                    variable_name_str.replace(' bg', ' background')
+            elif ' fg' in variable_name_str:
+                variable_name_str = \
+                    variable_name_str.replace(' fg', ' foreground')
+            if variable_name_str == 'cw':
+                variable_name_str = 'content warning'
+            variable_name_str = variable_name_str.title()
+            color_str += \
                 '      <tr><td><label class="labels">' + \
-                variableNameStr + '</label></td>'
-            colorStr += \
+                variable_name_str + '</label></td>'
+            color_str += \
                 '<td><input type="color" name="themeSetting_' + \
-                variableName + '" value="' + str(value) + \
-                '" title="' + variableNameStr + '"></td></tr>\n'
-        elif (('-width' in variableName or
-               '-height' in variableName or
-               '-spacing' in variableName or
-               '-margin' in variableName or
-               '-vertical' in variableName) and
+                variable_name + '" value="' + str(value) + \
+                '" title="' + variable_name_str + '"></td></tr>\n'
+        elif (('-width' in variable_name or
+               '-height' in variable_name or
+               '-spacing' in variable_name or
+               '-margin' in variable_name or
+               '-vertical' in variable_name) and
               (value.lower() != 'true' and value.lower() != 'false')):
-            variableNameStr = variableName.replace('-', ' ')
-            variableNameStr = variableNameStr.title()
-            dimensionStr += \
+            variable_name_str = variable_name.replace('-', ' ')
+            variable_name_str = variable_name_str.title()
+            dimension_str += \
                 '      <tr><td><label class="labels">' + \
-                variableNameStr + '</label></td>'
-            dimensionStr += \
+                variable_name_str + '</label></td>'
+            dimension_str += \
                 '<td><input type="text" name="themeSetting_' + \
-                variableName + '" value="' + str(value) + \
-                '" title="' + variableNameStr + '"></td></tr>\n'
+                variable_name + '" value="' + str(value) + \
+                '" title="' + variable_name_str + '"></td></tr>\n'
         elif value.title() == 'True' or value.title() == 'False':
-            variableNameStr = variableName.replace('-', ' ')
-            variableNameStr = variableNameStr.title()
-            switchStr += \
+            variable_name_str = variable_name.replace('-', ' ')
+            variable_name_str = variable_name_str.title()
+            switch_str += \
                 '      <tr><td><label class="labels">' + \
-                variableNameStr + '</label></td>'
-            checkedStr = ''
+                variable_name_str + '</label></td>'
+            checked_str = ''
             if value.title() == 'True':
-                checkedStr = ' checked'
-            switchStr += \
+                checked_str = ' checked'
+            switch_str += \
                 '<td><input type="checkbox" class="profilecheckbox" ' + \
-                'name="themeSetting_' + variableName + '"' + \
-                checkedStr + '></td></tr>\n'
+                'name="themeSetting_' + variable_name + '"' + \
+                checked_str + '></td></tr>\n'
 
-    colorStr += '    </table>\n    </div>\n'
-    fontStr += '    </table>\n    </div>\n'
-    dimensionStr += '    </table>\n    </div>\n'
-    switchStr += '    </table>\n    </div>\n'
+    color_str += '    </table>\n    </div>\n'
+    font_str += '    </table>\n    </div>\n'
+    dimension_str += '    </table>\n    </div>\n'
+    switch_str += '    </table>\n    </div>\n'
 
-    themeFormats = '.zip, .gz'
-    exportImportStr = '    <div class="container">\n'
-    exportImportStr += \
+    theme_formats = '.zip, .gz'
+    export_import_str = '    <div class="container">\n'
+    export_import_str += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
-    exportImportStr += '      <input type="file" id="import_theme" '
-    exportImportStr += 'name="submitImportTheme" '
-    exportImportStr += 'accept="' + themeFormats + '">\n'
-    exportImportStr += \
+    export_import_str += '      <input type="file" id="import_theme" '
+    export_import_str += 'name="submitImportTheme" '
+    export_import_str += 'accept="' + theme_formats + '">\n'
+    export_import_str += \
         '      <label class="labels">' + \
         translate['Export Theme'] + '</label><br>\n'
-    exportImportStr += \
+    export_import_str += \
         '      <button type="submit" class="button" ' + \
         'name="submitExportTheme">➤</button><br>\n'
-    exportImportStr += '    </div>\n'
+    export_import_str += '    </div>\n'
 
-    themeForm += colorStr + fontStr + dimensionStr
-    themeForm += switchStr + exportImportStr
-    themeForm += '  </form>\n'
-    themeForm += '</div>\n'
-    themeForm += html_footer()
-    return themeForm
+    theme_form += color_str + font_str + dimension_str
+    theme_form += switch_str + export_import_str
+    theme_form += '  </form>\n'
+    theme_form += '</div>\n'
+    theme_form += html_footer()
+    return theme_form

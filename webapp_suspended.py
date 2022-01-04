@@ -16,19 +16,19 @@ from webapp_utils import html_footer
 def html_suspended(css_cache: {}, base_dir: str) -> str:
     """Show the screen for suspended accounts
     """
-    suspendedForm = ''
+    suspended_form = ''
     css_filename = base_dir + '/epicyon-suspended.css'
     if os.path.isfile(base_dir + '/suspended.css'):
         css_filename = base_dir + '/suspended.css'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    suspendedForm = \
-        html_header_with_external_style(css_filename, instanceTitle, None)
-    suspendedForm += \
+    suspended_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    suspended_form += \
         '<div><center>\n' + \
         '  <p class="screentitle">Account Suspended</p>\n' + \
         '  <p>See <a href="/terms">Terms of Service</a></p>\n' + \
         '</center></div>\n'
-    suspendedForm += html_footer()
-    return suspendedForm
+    suspended_form += html_footer()
+    return suspended_form
