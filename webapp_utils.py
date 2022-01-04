@@ -41,29 +41,29 @@ def get_broken_link_substitute() -> str:
 
 
 def html_following_list(css_cache: {}, base_dir: str,
-                        followingFilename: str) -> str:
+                        following_filename: str) -> str:
     """Returns a list of handles being followed
     """
-    with open(followingFilename, 'r') as followingFile:
-        msg = followingFile.read()
-        followingList = msg.split('\n')
-        followingList.sort()
-        if followingList:
+    with open(following_filename, 'r') as following_file:
+        msg = following_file.read()
+        following_list = msg.split('\n')
+        following_list.sort()
+        if following_list:
             css_filename = base_dir + '/epicyon-profile.css'
             if os.path.isfile(base_dir + '/epicyon.css'):
                 css_filename = base_dir + '/epicyon.css'
 
-            instanceTitle = \
+            instance_title = \
                 get_config_param(base_dir, 'instanceTitle')
-            followingListHtml = \
+            following_list_html = \
                 html_header_with_external_style(css_filename,
-                                                instanceTitle, None)
-            for followingAddress in followingList:
-                if followingAddress:
-                    followingListHtml += \
-                        '<h3>@' + followingAddress + '</h3>'
-            followingListHtml += html_footer()
-            msg = followingListHtml
+                                                instance_title, None)
+            for following_address in following_list:
+                if following_address:
+                    following_list_html += \
+                        '<h3>@' + following_address + '</h3>'
+            following_list_html += html_footer()
+            msg = following_list_html
         return msg
     return ''
 
@@ -71,75 +71,75 @@ def html_following_list(css_cache: {}, base_dir: str,
 def html_hashtag_blocked(css_cache: {}, base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
-    blockedHashtagForm = ''
+    blocked_hashtag_form = ''
     css_filename = base_dir + '/epicyon-suspended.css'
     if os.path.isfile(base_dir + '/suspended.css'):
         css_filename = base_dir + '/suspended.css'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    blockedHashtagForm = \
-        html_header_with_external_style(css_filename, instanceTitle, None)
-    blockedHashtagForm += '<div><center>\n'
-    blockedHashtagForm += \
+    blocked_hashtag_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    blocked_hashtag_form += '<div><center>\n'
+    blocked_hashtag_form += \
         '  <p class="screentitle">' + \
         translate['Hashtag Blocked'] + '</p>\n'
-    blockedHashtagForm += \
+    blocked_hashtag_form += \
         '  <p>See <a href="/terms">' + \
         translate['Terms of Service'] + '</a></p>\n'
-    blockedHashtagForm += '</center></div>\n'
-    blockedHashtagForm += html_footer()
-    return blockedHashtagForm
+    blocked_hashtag_form += '</center></div>\n'
+    blocked_hashtag_form += html_footer()
+    return blocked_hashtag_form
 
 
 def header_buttons_front_screen(translate: {},
-                                nickname: str, boxName: str,
+                                nickname: str, box_name: str,
                                 authorized: bool,
                                 icons_as_buttons: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
-    headerStr = ''
+    header_str = ''
     if nickname == 'news':
-        buttonFeatures = 'buttonMobile'
-        buttonNewswire = 'buttonMobile'
-        buttonLinks = 'buttonMobile'
-        if boxName == 'features':
-            buttonFeatures = 'buttonselected'
-        elif boxName == 'newswire':
-            buttonNewswire = 'buttonselected'
-        elif boxName == 'links':
-            buttonLinks = 'buttonselected'
+        button_features = 'buttonMobile'
+        button_newswire = 'buttonMobile'
+        button_links = 'buttonMobile'
+        if box_name == 'features':
+            button_features = 'buttonselected'
+        elif box_name == 'newswire':
+            button_newswire = 'buttonselected'
+        elif box_name == 'links':
+            button_links = 'buttonselected'
 
-        headerStr += \
+        header_str += \
             '        <a href="/">' + \
-            '<button class="' + buttonFeatures + '">' + \
+            '<button class="' + button_features + '">' + \
             '<span>' + translate['Features'] + \
             '</span></button></a>'
         if not authorized:
-            headerStr += \
+            header_str += \
                 '        <a href="/login">' + \
                 '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
                 '</span></button></a>'
         if icons_as_buttons:
-            headerStr += \
+            header_str += \
                 '        <a href="/users/news/newswiremobile">' + \
-                '<button class="' + buttonNewswire + '">' + \
+                '<button class="' + button_newswire + '">' + \
                 '<span>' + translate['Newswire'] + \
                 '</span></button></a>'
-            headerStr += \
+            header_str += \
                 '        <a href="/users/news/linksmobile">' + \
-                '<button class="' + buttonLinks + '">' + \
+                '<button class="' + button_links + '">' + \
                 '<span>' + translate['Links'] + \
                 '</span></button></a>'
         else:
-            headerStr += \
+            header_str += \
                 '        <a href="' + \
                 '/users/news/newswiremobile">' + \
                 '<img loading="lazy" src="/icons' + \
                 '/newswire.png" title="' + translate['Newswire'] + \
                 '" alt="| ' + translate['Newswire'] + '"/></a>\n'
-            headerStr += \
+            header_str += \
                 '        <a href="' + \
                 '/users/news/linksmobile">' + \
                 '<img loading="lazy" src="/icons' + \
@@ -147,27 +147,27 @@ def header_buttons_front_screen(translate: {},
                 '" alt="| ' + translate['Links'] + '"/></a>\n'
     else:
         if not authorized:
-            headerStr += \
+            header_str += \
                 '        <a href="/login">' + \
                 '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
                 '</span></button></a>'
 
-    if headerStr:
-        headerStr = \
+    if header_str:
+        header_str = \
             '\n      <div class="frontPageMobileButtons">\n' + \
-            headerStr + \
+            header_str + \
             '      </div>\n'
-    return headerStr
+    return header_str
 
 
-def get_content_warning_button(postID: str, translate: {},
+def get_content_warning_button(post_id: str, translate: {},
                                content: str) -> str:
     """Returns the markup for a content warning button
     """
     return '       <details><summary class="cw">' + \
         translate['SHOW MORE'] + '</summary>' + \
-        '<div id="' + postID + '">' + content + \
+        '<div id="' + post_id + '">' + content + \
         '</div></details>\n'
 
 
@@ -178,7 +178,7 @@ def _set_actor_property_url(actor_json: {},
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
-    property_nameLower = property_name.lower()
+    property_name_lower = property_name.lower()
 
     # remove any existing value
     property_found = None
@@ -187,7 +187,7 @@ def _set_actor_property_url(actor_json: {},
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith(property_nameLower):
+        if not property_value['name'].lower().startswith(property_name_lower):
             continue
         property_found = property_value
         break
@@ -195,12 +195,12 @@ def _set_actor_property_url(actor_json: {},
         actor_json['attachment'].remove(property_found)
 
     prefixes = get_protocol_prefixes()
-    prefixFound = False
+    prefix_found = False
     for prefix in prefixes:
         if url.startswith(prefix):
-            prefixFound = True
+            prefix_found = True
             break
-    if not prefixFound:
+    if not prefix_found:
         return
     if '.' not in url:
         return
@@ -214,19 +214,19 @@ def _set_actor_property_url(actor_json: {},
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith(property_nameLower):
+        if not property_value['name'].lower().startswith(property_name_lower):
             continue
         if property_value['type'] != 'PropertyValue':
             continue
         property_value['value'] = url
         return
 
-    newAddress = {
+    new_address = {
         "name": property_name,
         "type": "PropertyValue",
         "value": url
     }
-    actor_json['attachment'].append(newAddress)
+    actor_json['attachment'].append(new_address)
 
 
 def set_blog_address(actor_json: {}, blog_address: str) -> None:
@@ -237,18 +237,18 @@ def set_blog_address(actor_json: {}, blog_address: str) -> None:
 
 def update_avatar_image_cache(signing_priv_key_pem: str,
                               session, base_dir: str, http_prefix: str,
-                              actor: str, avatarUrl: str,
-                              person_cache: {}, allowDownloads: bool,
+                              actor: str, avatar_url: str,
+                              person_cache: {}, allow_downloads: bool,
                               force: bool = False, debug: bool = False) -> str:
     """Updates the cached avatar for the given actor
     """
-    if not avatarUrl:
+    if not avatar_url:
         return None
-    actorStr = actor.replace('/', '-')
-    avatarImagePath = base_dir + '/cache/avatars/' + actorStr
+    actor_str = actor.replace('/', '-')
+    avatar_image_path = base_dir + '/cache/avatars/' + actor_str
 
     # try different image types
-    imageFormats = {
+    image_formats = {
         'png': 'png',
         'jpg': 'jpeg',
         'jpeg': 'jpeg',
@@ -257,24 +257,25 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
         'webp': 'webp',
         'avif': 'avif'
     }
-    avatarImageFilename = None
-    for imFormat, mimeType in imageFormats.items():
-        if avatarUrl.endswith('.' + imFormat) or \
-           '.' + imFormat + '?' in avatarUrl:
-            sessionHeaders = {
-                'Accept': 'image/' + mimeType
+    avatar_image_filename = None
+    for im_format, mime_type in image_formats.items():
+        if avatar_url.endswith('.' + im_format) or \
+           '.' + im_format + '?' in avatar_url:
+            session_headers = {
+                'Accept': 'image/' + mime_type
             }
-            avatarImageFilename = avatarImagePath + '.' + imFormat
+            avatar_image_filename = avatar_image_path + '.' + im_format
 
-    if not avatarImageFilename:
+    if not avatar_image_filename:
         return None
 
-    if (not os.path.isfile(avatarImageFilename) or force) and allowDownloads:
+    if (not os.path.isfile(avatar_image_filename) or force) and \
+       allow_downloads:
         try:
             if debug:
-                print('avatar image url: ' + avatarUrl)
-            result = session.get(avatarUrl,
-                                 headers=sessionHeaders,
+                print('avatar image url: ' + avatar_url)
+            result = session.get(avatar_url,
+                                 headers=session_headers,
                                  params=None)
             if result.status_code < 200 or \
                result.status_code > 202:
@@ -282,192 +283,193 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                     print('Avatar image download failed with status ' +
                           str(result.status_code))
                 # remove partial download
-                if os.path.isfile(avatarImageFilename):
+                if os.path.isfile(avatar_image_filename):
                     try:
-                        os.remove(avatarImageFilename)
+                        os.remove(avatar_image_filename)
                     except OSError:
                         print('EX: ' +
                               'update_avatar_image_cache unable to delete ' +
-                              avatarImageFilename)
+                              avatar_image_filename)
             else:
-                with open(avatarImageFilename, 'wb') as f:
-                    f.write(result.content)
+                with open(avatar_image_filename, 'wb') as fp_av:
+                    fp_av.write(result.content)
                     if debug:
                         print('avatar image downloaded for ' + actor)
-                    return avatarImageFilename.replace(base_dir + '/cache', '')
+                    return avatar_image_filename.replace(base_dir + '/cache',
+                                                         '')
         except Exception as ex:
             print('EX: Failed to download avatar image: ' +
-                  str(avatarUrl) + ' ' + str(ex))
+                  str(avatar_url) + ' ' + str(ex))
         prof = 'https://www.w3.org/ns/activitystreams'
         if '/channel/' not in actor or '/accounts/' not in actor:
-            sessionHeaders = {
+            session_headers = {
                 'Accept': 'application/activity+json; profile="' + prof + '"'
             }
         else:
-            sessionHeaders = {
+            session_headers = {
                 'Accept': 'application/ld+json; profile="' + prof + '"'
             }
-        personJson = \
+        person_json = \
             get_json(signing_priv_key_pem, session, actor,
-                     sessionHeaders, None,
+                     session_headers, None,
                      debug, __version__, http_prefix, None)
-        if personJson:
-            if not personJson.get('id'):
+        if person_json:
+            if not person_json.get('id'):
                 return None
-            if not personJson.get('publicKey'):
+            if not person_json.get('publicKey'):
                 return None
-            if not personJson['publicKey'].get('publicKeyPem'):
+            if not person_json['publicKey'].get('publicKeyPem'):
                 return None
-            if personJson['id'] != actor:
+            if person_json['id'] != actor:
                 return None
             if not person_cache.get(actor):
                 return None
             if person_cache[actor]['actor']['publicKey']['publicKeyPem'] != \
-               personJson['publicKey']['publicKeyPem']:
+               person_json['publicKey']['publicKeyPem']:
                 print("ERROR: " +
                       "public keys don't match when downloading actor for " +
                       actor)
                 return None
-            store_person_in_cache(base_dir, actor, personJson, person_cache,
-                                  allowDownloads)
+            store_person_in_cache(base_dir, actor, person_json, person_cache,
+                                  allow_downloads)
             return get_person_avatar_url(base_dir, actor, person_cache,
-                                         allowDownloads)
+                                         allow_downloads)
         return None
-    return avatarImageFilename.replace(base_dir + '/cache', '')
+    return avatar_image_filename.replace(base_dir + '/cache', '')
 
 
 def scheduled_posts_exist(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
-    scheduleIndexFilename = \
+    schedule_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/schedule.index'
-    if not os.path.isfile(scheduleIndexFilename):
+    if not os.path.isfile(schedule_index_filename):
         return False
-    if '#users#' in open(scheduleIndexFilename).read():
+    if '#users#' in open(schedule_index_filename).read():
         return True
     return False
 
 
-def shares_timeline_json(actor: str, pageNumber: int, itemsPerPage: int,
+def shares_timeline_json(actor: str, pageNumber: int, items_per_page: int,
                          base_dir: str, domain: str, nickname: str,
-                         maxSharesPerAccount: int,
+                         max_shares_per_account: int,
                          shared_items_federated_domains: [],
-                         sharesFileType: str) -> ({}, bool):
+                         shares_file_type: str) -> ({}, bool):
     """Get a page on the shared items timeline as json
-    maxSharesPerAccount helps to avoid one person dominating the timeline
+    max_shares_per_account helps to avoid one person dominating the timeline
     by sharing a large number of things
     """
-    allSharesJson = {}
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    all_shares_json = {}
+    for _, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
-            accountDir = base_dir + '/accounts/' + handle
-            sharesFilename = accountDir + '/' + sharesFileType + '.json'
-            if not os.path.isfile(sharesFilename):
+            account_dir = base_dir + '/accounts/' + handle
+            shares_filename = account_dir + '/' + shares_file_type + '.json'
+            if not os.path.isfile(shares_filename):
                 continue
-            sharesJson = load_json(sharesFilename)
-            if not sharesJson:
+            shares_json = load_json(shares_filename)
+            if not shares_json:
                 continue
-            accountNickname = handle.split('@')[0]
+            account_nickname = handle.split('@')[0]
             # Don't include shared items from blocked accounts
-            if accountNickname != nickname:
+            if account_nickname != nickname:
                 if is_blocked(base_dir, nickname, domain,
-                              accountNickname, domain, None):
+                              account_nickname, domain, None):
                     continue
             # actor who owns this share
-            owner = actor.split('/users/')[0] + '/users/' + accountNickname
+            owner = actor.split('/users/')[0] + '/users/' + account_nickname
             ctr = 0
-            for itemID, item in sharesJson.items():
+            for item_id, item in shares_json.items():
                 # assign owner to the item
                 item['actor'] = owner
-                item['shareId'] = itemID
-                allSharesJson[str(item['published'])] = item
+                item['shareId'] = item_id
+                all_shares_json[str(item['published'])] = item
                 ctr += 1
-                if ctr >= maxSharesPerAccount:
+                if ctr >= max_shares_per_account:
                     break
         break
     if shared_items_federated_domains:
-        if sharesFileType == 'shares':
-            catalogsDir = base_dir + '/cache/catalogs'
+        if shares_file_type == 'shares':
+            catalogs_dir = base_dir + '/cache/catalogs'
         else:
-            catalogsDir = base_dir + '/cache/wantedItems'
-        if os.path.isdir(catalogsDir):
-            for subdir, dirs, files in os.walk(catalogsDir):
-                for f in files:
-                    if '#' in f:
+            catalogs_dir = base_dir + '/cache/wantedItems'
+        if os.path.isdir(catalogs_dir):
+            for _, dirs, files in os.walk(catalogs_dir):
+                for fname in files:
+                    if '#' in fname:
                         continue
-                    if not f.endswith('.' + sharesFileType + '.json'):
+                    if not fname.endswith('.' + shares_file_type + '.json'):
                         continue
-                    federatedDomain = f.split('.')[0]
-                    if federatedDomain not in shared_items_federated_domains:
+                    federated_domain = fname.split('.')[0]
+                    if federated_domain not in shared_items_federated_domains:
                         continue
-                    sharesFilename = catalogsDir + '/' + f
-                    sharesJson = load_json(sharesFilename)
-                    if not sharesJson:
+                    shares_filename = catalogs_dir + '/' + fname
+                    shares_json = load_json(shares_filename)
+                    if not shares_json:
                         continue
                     ctr = 0
-                    for itemID, item in sharesJson.items():
+                    for item_id, item in shares_json.items():
                         # assign owner to the item
-                        if '--shareditems--' not in itemID:
+                        if '--shareditems--' not in item_id:
                             continue
-                        shareActor = itemID.split('--shareditems--')[0]
-                        shareActor = shareActor.replace('___', '://')
-                        shareActor = shareActor.replace('--', '/')
-                        shareNickname = get_nickname_from_actor(shareActor)
+                        share_actor = item_id.split('--shareditems--')[0]
+                        share_actor = share_actor.replace('___', '://')
+                        share_actor = share_actor.replace('--', '/')
+                        share_nickname = get_nickname_from_actor(share_actor)
                         if is_blocked(base_dir, nickname, domain,
-                                      shareNickname, federatedDomain, None):
+                                      share_nickname, federated_domain, None):
                             continue
-                        item['actor'] = shareActor
-                        item['shareId'] = itemID
-                        allSharesJson[str(item['published'])] = item
+                        item['actor'] = share_actor
+                        item['shareId'] = item_id
+                        all_shares_json[str(item['published'])] = item
                         ctr += 1
-                        if ctr >= maxSharesPerAccount:
+                        if ctr >= max_shares_per_account:
                             break
                 break
     # sort the shared items in descending order of publication date
-    sharesJson = OrderedDict(sorted(allSharesJson.items(), reverse=True))
-    lastPage = False
-    startIndex = itemsPerPage * pageNumber
-    maxIndex = len(sharesJson.items())
-    if maxIndex < itemsPerPage:
-        lastPage = True
-    if startIndex >= maxIndex - itemsPerPage:
-        lastPage = True
-        startIndex = maxIndex - itemsPerPage
-        if startIndex < 0:
-            startIndex = 0
+    shares_json = OrderedDict(sorted(all_shares_json.items(), reverse=True))
+    last_page = False
+    start_index = items_per_page * pageNumber
+    max_index = len(shares_json.items())
+    if max_index < items_per_page:
+        last_page = True
+    if start_index >= max_index - items_per_page:
+        last_page = True
+        start_index = max_index - items_per_page
+        if start_index < 0:
+            start_index = 0
     ctr = 0
-    resultJson = {}
-    for published, item in sharesJson.items():
-        if ctr >= startIndex + itemsPerPage:
+    result_json = {}
+    for published, item in shares_json.items():
+        if ctr >= start_index + items_per_page:
             break
-        if ctr < startIndex:
+        if ctr < start_index:
             ctr += 1
             continue
-        resultJson[published] = item
+        result_json[published] = item
         ctr += 1
-    return resultJson, lastPage
+    return result_json, last_page
 
 
 def post_contains_public(post_json_object: {}) -> bool:
     """Does the given post contain #Public
     """
-    containsPublic = False
+    contains_public = False
     if not post_json_object['object'].get('to'):
-        return containsPublic
+        return contains_public
 
-    for toAddress in post_json_object['object']['to']:
-        if toAddress.endswith('#Public'):
-            containsPublic = True
+    for to_address in post_json_object['object']['to']:
+        if to_address.endswith('#Public'):
+            contains_public = True
             break
-        if not containsPublic:
+        if not contains_public:
             if post_json_object['object'].get('cc'):
-                for toAddress in post_json_object['object']['cc']:
-                    if toAddress.endswith('#Public'):
-                        containsPublic = True
+                for to_address2 in post_json_object['object']['cc']:
+                    if to_address2.endswith('#Public'):
+                        contains_public = True
                         break
-    return containsPublic
+    return contains_public
 
 
 def _get_image_file(base_dir: str, name: str, directory: str,
@@ -475,70 +477,78 @@ def _get_image_file(base_dir: str, name: str, directory: str,
     """
     returns the filenames for an image with the given name
     """
-    bannerExtensions = get_image_extensions()
+    banner_extensions = get_image_extensions()
     banner_file = ''
     banner_filename = ''
-    for ext in bannerExtensions:
-        banner_fileTest = name + '.' + ext
-        banner_filenameTest = directory + '/' + banner_fileTest
-        if os.path.isfile(banner_filenameTest):
+    for ext in banner_extensions:
+        banner_file_test = name + '.' + ext
+        banner_filename_test = directory + '/' + banner_file_test
+        if os.path.isfile(banner_filename_test):
             banner_file = name + '_' + theme + '.' + ext
-            banner_filename = banner_filenameTest
+            banner_filename = banner_filename_test
             return banner_file, banner_filename
     # if not found then use the default image
     theme = 'default'
     directory = base_dir + '/theme/' + theme
-    for ext in bannerExtensions:
-        banner_fileTest = name + '.' + ext
-        banner_filenameTest = directory + '/' + banner_fileTest
-        if os.path.isfile(banner_filenameTest):
+    for ext in banner_extensions:
+        banner_file_test = name + '.' + ext
+        banner_filename_test = directory + '/' + banner_file_test
+        if os.path.isfile(banner_filename_test):
             banner_file = name + '_' + theme + '.' + ext
-            banner_filename = banner_filenameTest
+            banner_filename = banner_filename_test
             break
     return banner_file, banner_filename
 
 
 def get_banner_file(base_dir: str,
                     nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'banner', accountDir,
+    """Gets the image for the timeline banner
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    return _get_image_file(base_dir, 'banner', account_dir,
                            nickname, domain, theme)
 
 
 def get_search_banner_file(base_dir: str,
                            nickname: str, domain: str,
                            theme: str) -> (str, str):
-    accountDir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'search_banner', accountDir,
+    """Gets the image for the search banner
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    return _get_image_file(base_dir, 'search_banner', account_dir,
                            nickname, domain, theme)
 
 
 def get_left_image_file(base_dir: str,
                         nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'left_col_image', accountDir,
+    """Gets the image for the left column
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    return _get_image_file(base_dir, 'left_col_image', account_dir,
                            nickname, domain, theme)
 
 
 def get_right_image_file(base_dir: str,
                          nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acct_dir(base_dir, nickname, domain)
+    """Gets the image for the right column
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
     return _get_image_file(base_dir, 'right_col_image',
-                           accountDir, nickname, domain, theme)
+                           account_dir, nickname, domain, theme)
 
 
-def html_header_with_external_style(css_filename: str, instanceTitle: str,
+def html_header_with_external_style(css_filename: str, instance_title: str,
                                     metadata: str, lang='en') -> str:
     if metadata is None:
         metadata = ''
-    cssFile = '/' + css_filename.split('/')[-1]
-    htmlStr = \
+    css_file = '/' + css_filename.split('/')[-1]
+    html_str = \
         '<!DOCTYPE html>\n' + \
         '<html lang="' + lang + '">\n' + \
         '  <head>\n' + \
         '    <meta charset="utf-8">\n' + \
         '    <link rel="stylesheet" media="all" ' + \
-        'href="' + cssFile + '">\n' + \
+        'href="' + css_file + '">\n' + \
         '    <link rel="manifest" href="/manifest.json">\n' + \
         '    <link href="/favicon.ico" rel="icon" type="image/x-icon">\n' + \
         '    <meta content="/browserconfig.xml" ' + \
@@ -548,13 +558,13 @@ def html_header_with_external_style(css_filename: str, instanceTitle: str,
         'sizes="180x180">\n' + \
         '    <meta name="theme-color" content="grey">\n' + \
         metadata + \
-        '    <title>' + instanceTitle + '</title>\n' + \
+        '    <title>' + instance_title + '</title>\n' + \
         '  </head>\n' + \
         '  <body>\n'
-    return htmlStr
+    return html_str
 
 
-def html_header_with_person_markup(css_filename: str, instanceTitle: str,
+def html_header_with_person_markup(css_filename: str, instance_title: str,
                                    actor_json: {}, city: str,
                                    content_license_url: str,
                                    lang='en') -> str:
@@ -562,52 +572,51 @@ def html_header_with_person_markup(css_filename: str, instanceTitle: str,
     https://schema.org/Person
     """
     if not actor_json:
-        htmlStr = \
+        html_str = \
             html_header_with_external_style(css_filename,
-                                            instanceTitle, None, lang)
-        return htmlStr
+                                            instance_title, None, lang)
+        return html_str
 
-    cityMarkup = ''
+    city_markup = ''
     if city:
         city = city.lower().title()
-        addComma = ''
-        countryMarkup = ''
+        add_comma = ''
+        country_markup = ''
         if ',' in city:
             country = city.split(',', 1)[1].strip().title()
             city = city.split(',', 1)[0]
-            countryMarkup = \
+            country_markup = \
                 '          "addressCountry": "' + country + '"\n'
-            addComma = ','
-        cityMarkup = \
+            add_comma = ','
+        city_markup = \
             '        "address": {\n' + \
             '          "@type": "PostalAddress",\n' + \
-            '          "addressLocality": "' + city + '"' + addComma + '\n' + \
-            countryMarkup + \
-            '        },\n'
+            '          "addressLocality": "' + city + '"' + \
+            add_comma + '\n' + country_markup + '        },\n'
 
-    skillsMarkup = ''
+    skills_markup = ''
     if actor_json.get('hasOccupation'):
         if isinstance(actor_json['hasOccupation'], list):
-            skillsMarkup = '        "hasOccupation": [\n'
-            firstEntry = True
-            for skillDict in actor_json['hasOccupation']:
-                if skillDict['@type'] == 'Role':
-                    if not firstEntry:
-                        skillsMarkup += ',\n'
-                    sk = skillDict['hasOccupation']
-                    roleName = sk['name']
-                    if not roleName:
-                        roleName = 'member'
+            skills_markup = '        "hasOccupation": [\n'
+            first_entry = True
+            for skill_dict in actor_json['hasOccupation']:
+                if skill_dict['@type'] == 'Role':
+                    if not first_entry:
+                        skills_markup += ',\n'
+                    skl = skill_dict['hasOccupation']
+                    role_name = skl['name']
+                    if not role_name:
+                        role_name = 'member'
                     category = \
-                        sk['occupationalCategory']['codeValue']
-                    categoryUrl = \
+                        skl['occupationalCategory']['codeValue']
+                    category_url = \
                         'https://www.onetonline.org/link/summary/' + category
-                    skillsMarkup += \
+                    skills_markup += \
                         '        {\n' + \
                         '          "@type": "Role",\n' + \
                         '          "hasOccupation": {\n' + \
                         '            "@type": "Occupation",\n' + \
-                        '            "name": "' + roleName + '",\n' + \
+                        '            "name": "' + role_name + '",\n' + \
                         '            "description": ' + \
                         '"Fediverse instance role",\n' + \
                         '            "occupationLocation": {\n' + \
@@ -624,54 +633,54 @@ def html_header_with_person_markup(css_filename: str, instanceTitle: str,
                         '"url": "https://www.onetonline.org/"\n' + \
                         '              },\n' + \
                         '              "codeValue": "' + category + '",\n' + \
-                        '              "url": "' + categoryUrl + '"\n' + \
+                        '              "url": "' + category_url + '"\n' + \
                         '            }\n' + \
                         '          }\n' + \
                         '        }'
-                elif skillDict['@type'] == 'Occupation':
-                    if not firstEntry:
-                        skillsMarkup += ',\n'
-                    ocName = skillDict['name']
-                    if not ocName:
-                        ocName = 'member'
-                    skillsList = skillDict['skills']
-                    skillsListStr = '['
-                    for skillStr in skillsList:
-                        if skillsListStr != '[':
-                            skillsListStr += ', '
-                        skillsListStr += '"' + skillStr + '"'
-                    skillsListStr += ']'
-                    skillsMarkup += \
+                elif skill_dict['@type'] == 'Occupation':
+                    if not first_entry:
+                        skills_markup += ',\n'
+                    oc_name = skill_dict['name']
+                    if not oc_name:
+                        oc_name = 'member'
+                    skills_list = skill_dict['skills']
+                    skills_list_str = '['
+                    for skill_str in skills_list:
+                        if skills_list_str != '[':
+                            skills_list_str += ', '
+                        skills_list_str += '"' + skill_str + '"'
+                    skills_list_str += ']'
+                    skills_markup += \
                         '        {\n' + \
                         '          "@type": "Occupation",\n' + \
-                        '          "name": "' + ocName + '",\n' + \
+                        '          "name": "' + oc_name + '",\n' + \
                         '          "description": ' + \
                         '"Fediverse instance occupation",\n' + \
                         '          "occupationLocation": {\n' + \
                         '            "@type": "City",\n' + \
                         '            "name": "' + city + '"\n' + \
                         '          },\n' + \
-                        '          "skills": ' + skillsListStr + '\n' + \
+                        '          "skills": ' + skills_list_str + '\n' + \
                         '        }'
-                firstEntry = False
-            skillsMarkup += '\n        ],\n'
+                first_entry = False
+            skills_markup += '\n        ],\n'
 
     description = remove_html(actor_json['summary'])
-    nameStr = remove_html(actor_json['name'])
+    name_str = remove_html(actor_json['name'])
     domain_full = actor_json['id'].split('://')[1].split('/')[0]
     handle = actor_json['preferredUsername'] + '@' + domain_full
 
-    personMarkup = \
+    person_markup = \
         '      "about": {\n' + \
         '        "@type" : "Person",\n' + \
-        '        "name": "' + nameStr + '",\n' + \
+        '        "name": "' + name_str + '",\n' + \
         '        "image": "' + actor_json['icon']['url'] + '",\n' + \
         '        "description": "' + description + '",\n' + \
-        cityMarkup + skillsMarkup + \
+        city_markup + skills_markup + \
         '        "url": "' + actor_json['id'] + '"\n' + \
         '      },\n'
 
-    profileMarkup = \
+    profile_markup = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context":"https://schema.org",\n' + \
@@ -679,16 +688,16 @@ def html_header_with_person_markup(css_filename: str, instanceTitle: str,
         '      "mainEntityOfPage": {\n' + \
         '        "@type": "WebPage",\n' + \
         "        \"@id\": \"" + actor_json['id'] + "\"\n" + \
-        '      },\n' + personMarkup + \
+        '      },\n' + person_markup + \
         '      "accountablePerson": {\n' + \
         '        "@type": "Person",\n' + \
-        '        "name": "' + nameStr + '"\n' + \
+        '        "name": "' + name_str + '"\n' + \
         '      },\n' + \
         '      "copyrightHolder": {\n' + \
         '        "@type": "Person",\n' + \
-        '        "name": "' + nameStr + '"\n' + \
+        '        "name": "' + name_str + '"\n' + \
         '      },\n' + \
-        '      "name": "' + nameStr + '",\n' + \
+        '      "name": "' + name_str + '",\n' + \
         '      "image": "' + actor_json['icon']['url'] + '",\n' + \
         '      "description": "' + description + '",\n' + \
         '      "license": "' + content_license_url + '"\n' + \
@@ -696,7 +705,7 @@ def html_header_with_person_markup(css_filename: str, instanceTitle: str,
         '    </script>\n'
 
     description = remove_html(description)
-    ogMetadata = \
+    og_metadata = \
         "    <meta content=\"profile\" property=\"og:type\" />\n" + \
         "    <meta content=\"" + description + \
         "\" name='description'>\n" + \
@@ -704,7 +713,7 @@ def html_header_with_person_markup(css_filename: str, instanceTitle: str,
         "\" property=\"og:url\" />\n" + \
         "    <meta content=\"" + domain_full + \
         "\" property=\"og:site_name\" />\n" + \
-        "    <meta content=\"" + nameStr + " (@" + handle + \
+        "    <meta content=\"" + name_str + " (@" + handle + \
         ")\" property=\"og:title\" />\n" + \
         "    <meta content=\"" + description + \
         "\" property=\"og:description\" />\n" + \
@@ -716,52 +725,52 @@ def html_header_with_person_markup(css_filename: str, instanceTitle: str,
         "    <meta content=\"" + handle + \
         "\" property=\"profile:username\" />\n"
     if actor_json.get('attachment'):
-        ogTags = (
+        og_tags = (
             'email', 'openpgp', 'blog', 'xmpp', 'matrix', 'briar',
             'jami', 'cwtch', 'languages'
         )
-        for attachJson in actor_json['attachment']:
-            if not attachJson.get('name'):
+        for attach_json in actor_json['attachment']:
+            if not attach_json.get('name'):
                 continue
-            if not attachJson.get('value'):
+            if not attach_json.get('value'):
                 continue
-            name = attachJson['name'].lower()
-            value = attachJson['value']
-            for ogTag in ogTags:
-                if name != ogTag:
+            name = attach_json['name'].lower()
+            value = attach_json['value']
+            for og_tag in og_tags:
+                if name != og_tag:
                     continue
-                ogMetadata += \
+                og_metadata += \
                     "    <meta content=\"" + value + \
-                    "\" property=\"og:" + ogTag + "\" />\n"
+                    "\" property=\"og:" + og_tag + "\" />\n"
 
-    htmlStr = \
-        html_header_with_external_style(css_filename, instanceTitle,
-                                        ogMetadata + profileMarkup, lang)
-    return htmlStr
+    html_str = \
+        html_header_with_external_style(css_filename, instance_title,
+                                        og_metadata + profile_markup, lang)
+    return html_str
 
 
-def html_header_with_website_markup(css_filename: str, instanceTitle: str,
+def html_header_with_website_markup(css_filename: str, instance_title: str,
                                     http_prefix: str, domain: str,
                                     system_language: str) -> str:
     """html header which includes website markup
     https://schema.org/WebSite
     """
-    licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
+    license_url = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
 
     # social networking category
-    genreUrl = 'http://vocab.getty.edu/aat/300312270'
+    genre_url = 'http://vocab.getty.edu/aat/300312270'
 
-    websiteMarkup = \
+    website_markup = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "WebSite",\n' + \
-        '      "name": "' + instanceTitle + '",\n' + \
+        '      "name": "' + instance_title + '",\n' + \
         '      "url": "' + http_prefix + '://' + domain + '",\n' + \
-        '      "license": "' + licenseUrl + '",\n' + \
+        '      "license": "' + license_url + '",\n' + \
         '      "inLanguage": "' + system_language + '",\n' + \
         '      "isAccessibleForFree": true,\n' + \
-        '      "genre": "' + genreUrl + '",\n' + \
+        '      "genre": "' + genre_url + '",\n' + \
         '      "accessMode": ["textual", "visual"],\n' + \
         '      "accessModeSufficient": ["textual"],\n' + \
         '      "accessibilityAPI" : ["ARIA"],\n' + \
@@ -777,13 +786,13 @@ def html_header_with_website_markup(css_filename: str, instanceTitle: str,
         '    }\n' + \
         '    </script>\n'
 
-    ogMetadata = \
+    og_metadata = \
         '    <meta content="Epicyon hosted on ' + domain + \
         '" property="og:site_name" />\n' + \
         '    <meta content="' + http_prefix + '://' + domain + \
         '/about" property="og:url" />\n' + \
         '    <meta content="website" property="og:type" />\n' + \
-        '    <meta content="' + instanceTitle + \
+        '    <meta content="' + instance_title + \
         '" property="og:title" />\n' + \
         '    <meta content="' + http_prefix + '://' + domain + \
         '/logo.png" property="og:image" />\n' + \
@@ -791,14 +800,14 @@ def html_header_with_website_markup(css_filename: str, instanceTitle: str,
         '" property="og:locale" />\n' + \
         '    <meta content="summary_large_image" property="twitter:card" />\n'
 
-    htmlStr = \
-        html_header_with_external_style(css_filename, instanceTitle,
-                                        ogMetadata + websiteMarkup,
+    html_str = \
+        html_header_with_external_style(css_filename, instance_title,
+                                        og_metadata + website_markup,
                                         system_language)
-    return htmlStr
+    return html_str
 
 
-def html_header_with_blog_markup(css_filename: str, instanceTitle: str,
+def html_header_with_blog_markup(css_filename: str, instance_title: str,
                                  http_prefix: str, domain: str, nickname: str,
                                  system_language: str,
                                  published: str, modified: str,
@@ -808,13 +817,13 @@ def html_header_with_blog_markup(css_filename: str, instanceTitle: str,
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
-    authorUrl = local_actor_url(http_prefix, nickname, domain)
-    aboutUrl = http_prefix + '://' + domain + '/about.html'
+    author_url = local_actor_url(http_prefix, nickname, domain)
+    about_url = http_prefix + '://' + domain + '/about.html'
 
     # license for content on the site may be different from
     # the software license
 
-    blogMarkup = \
+    blog_markup = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
@@ -825,19 +834,19 @@ def html_header_with_blog_markup(css_filename: str, instanceTitle: str,
         '      "author": {\n' + \
         '        "@type": "Person",\n' + \
         '        "name": "' + nickname + '",\n' + \
-        '        "sameAs": "' + authorUrl + '"\n' + \
+        '        "sameAs": "' + author_url + '"\n' + \
         '      },\n' + \
         '      "publisher": {\n' + \
         '        "@type": "WebSite",\n' + \
-        '        "name": "' + instanceTitle + '",\n' + \
-        '        "sameAs": "' + aboutUrl + '"\n' + \
+        '        "name": "' + instance_title + '",\n' + \
+        '        "sameAs": "' + about_url + '"\n' + \
         '      },\n' + \
         '      "license": "' + content_license_url + '",\n' + \
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \
         '    </script>\n'
 
-    ogMetadata = \
+    og_metadata = \
         '    <meta property="og:locale" content="' + \
         system_language + '" />\n' + \
         '    <meta property="og:type" content="article" />\n' + \
@@ -850,17 +859,17 @@ def html_header_with_blog_markup(css_filename: str, instanceTitle: str,
         '    <meta property="article:modified_time" content="' + \
         modified + '" />\n'
 
-    htmlStr = \
-        html_header_with_external_style(css_filename, instanceTitle,
-                                        ogMetadata + blogMarkup,
+    html_str = \
+        html_header_with_external_style(css_filename, instance_title,
+                                        og_metadata + blog_markup,
                                         system_language)
-    return htmlStr
+    return html_str
 
 
 def html_footer() -> str:
-    htmlStr = '  </body>\n'
-    htmlStr += '</html>\n'
-    return htmlStr
+    html_str = '  </body>\n'
+    html_str += '</html>\n'
+    return html_str
 
 
 def load_individual_post_as_html_from_cache(base_dir: str,
@@ -870,341 +879,342 @@ def load_individual_post_as_html_from_cache(base_dir: str,
     return the html text
     This is much quicker than generating the html from the json object
     """
-    cachedPostFilename = \
+    cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
 
-    postHtml = ''
-    if not cachedPostFilename:
-        return postHtml
+    post_html = ''
+    if not cached_post_filename:
+        return post_html
 
-    if not os.path.isfile(cachedPostFilename):
-        return postHtml
+    if not os.path.isfile(cached_post_filename):
+        return post_html
 
     tries = 0
     while tries < 3:
         try:
-            with open(cachedPostFilename, 'r') as file:
-                postHtml = file.read()
+            with open(cached_post_filename, 'r') as file:
+                post_html = file.read()
                 break
         except Exception as ex:
             print('ERROR: load_individual_post_as_html_from_cache ' +
                   str(tries) + ' ' + str(ex))
             # no sleep
             tries += 1
-    if postHtml:
-        return postHtml
+    if post_html:
+        return post_html
 
 
 def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
                               nickname: str, domain: str,
-                              displayName: str, inProfileName: bool) -> str:
+                              display_name: str, in_profile_name: bool) -> str:
     """Adds emoji icons to display names or CW on individual posts
     """
-    if ':' not in displayName:
-        return displayName
+    if ':' not in display_name:
+        return display_name
 
-    displayName = displayName.replace('<p>', '').replace('</p>', '')
-    emojiTags = {}
-#    print('TAG: displayName before tags: ' + displayName)
-    displayName = \
+    display_name = display_name.replace('<p>', '').replace('</p>', '')
+    emoji_tags = {}
+#    print('TAG: display_name before tags: ' + display_name)
+    display_name = \
         add_html_tags(base_dir, http_prefix,
-                      nickname, domain, displayName, [], emojiTags)
-    displayName = displayName.replace('<p>', '').replace('</p>', '')
-#    print('TAG: displayName after tags: ' + displayName)
+                      nickname, domain, display_name, [], emoji_tags)
+    display_name = display_name.replace('<p>', '').replace('</p>', '')
+#    print('TAG: display_name after tags: ' + display_name)
     # convert the emoji dictionary to a list
-    emojiTagsList = []
-    for tagName, tag in emojiTags.items():
-        emojiTagsList.append(tag)
-#    print('TAG: emoji tags list: ' + str(emojiTagsList))
-    if not inProfileName:
-        displayName = \
+    emoji_tags_list = []
+    for _, tag in emoji_tags.items():
+        emoji_tags_list.append(tag)
+#    print('TAG: emoji tags list: ' + str(emoji_tags_list))
+    if not in_profile_name:
+        display_name = \
             replace_emoji_from_tags(session, base_dir,
-                                    displayName, emojiTagsList, 'post header',
-                                    False)
+                                    display_name, emoji_tags_list,
+                                    'post header', False)
     else:
-        displayName = \
+        display_name = \
             replace_emoji_from_tags(session, base_dir,
-                                    displayName, emojiTagsList, 'profile',
+                                    display_name, emoji_tags_list, 'profile',
                                     False)
-#    print('TAG: displayName after tags 2: ' + displayName)
+#    print('TAG: display_name after tags 2: ' + display_name)
 
     # remove any stray emoji
-    while ':' in displayName:
-        if '://' in displayName:
+    while ':' in display_name:
+        if '://' in display_name:
             break
-        emojiStr = displayName.split(':')[1]
-        prevDisplayName = displayName
-        displayName = displayName.replace(':' + emojiStr + ':', '').strip()
-        if prevDisplayName == displayName:
+        emoji_str = display_name.split(':')[1]
+        prev_display_name = display_name
+        display_name = display_name.replace(':' + emoji_str + ':', '').strip()
+        if prev_display_name == display_name:
             break
-#        print('TAG: displayName after tags 3: ' + displayName)
-#    print('TAG: displayName after tag replacements: ' + displayName)
+#        print('TAG: display_name after tags 3: ' + display_name)
+#    print('TAG: display_name after tag replacements: ' + display_name)
 
-    return displayName
+    return display_name
 
 
-def _is_image_mime_type(mimeType: str) -> bool:
+def _is_image_mime_type(mime_type: str) -> bool:
     """Is the given mime type an image?
     """
-    if mimeType == 'image/svg+xml':
+    if mime_type == 'image/svg+xml':
         return True
-    if not mimeType.startswith('image/'):
+    if not mime_type.startswith('image/'):
         return False
     extensions = get_image_extensions()
-    ext = mimeType.split('/')[1]
+    ext = mime_type.split('/')[1]
     if ext in extensions:
         return True
     return False
 
 
-def _is_video_mime_type(mimeType: str) -> bool:
+def _is_video_mime_type(mime_type: str) -> bool:
     """Is the given mime type a video?
     """
-    if not mimeType.startswith('video/'):
+    if not mime_type.startswith('video/'):
         return False
     extensions = get_video_extensions()
-    ext = mimeType.split('/')[1]
+    ext = mime_type.split('/')[1]
     if ext in extensions:
         return True
     return False
 
 
-def _is_audio_mime_type(mimeType: str) -> bool:
+def _is_audio_mime_type(mime_type: str) -> bool:
     """Is the given mime type an audio file?
     """
-    if mimeType == 'audio/mpeg':
+    if mime_type == 'audio/mpeg':
         return True
-    if not mimeType.startswith('audio/'):
+    if not mime_type.startswith('audio/'):
         return False
     extensions = get_audio_extensions()
-    ext = mimeType.split('/')[1]
+    ext = mime_type.split('/')[1]
     if ext in extensions:
         return True
     return False
 
 
-def _is_attached_image(attachmentFilename: str) -> bool:
+def _is_attached_image(attachment_filename: str) -> bool:
     """Is the given attachment filename an image?
     """
-    if '.' not in attachmentFilename:
+    if '.' not in attachment_filename:
         return False
-    imageExt = (
+    image_ext = (
         'png', 'jpg', 'jpeg', 'webp', 'avif', 'svg', 'gif'
     )
-    ext = attachmentFilename.split('.')[-1]
-    if ext in imageExt:
+    ext = attachment_filename.split('.')[-1]
+    if ext in image_ext:
         return True
     return False
 
 
-def _is_attached_video(attachmentFilename: str) -> bool:
+def _is_attached_video(attachment_filename: str) -> bool:
     """Is the given attachment filename a video?
     """
-    if '.' not in attachmentFilename:
+    if '.' not in attachment_filename:
         return False
-    videoExt = (
+    video_ext = (
         'mp4', 'webm', 'ogv'
     )
-    ext = attachmentFilename.split('.')[-1]
-    if ext in videoExt:
+    ext = attachment_filename.split('.')[-1]
+    if ext in video_ext:
         return True
     return False
 
 
-def get_post_attachments_as_html(post_json_object: {}, boxName: str,
+def get_post_attachments_as_html(post_json_object: {}, box_name: str,
                                  translate: {},
-                                 is_muted: bool, avatarLink: str,
-                                 replyStr: str, announceStr: str, likeStr: str,
-                                 bookmarkStr: str, deleteStr: str,
-                                 muteStr: str) -> (str, str):
+                                 is_muted: bool, avatar_link: str,
+                                 reply_str: str, announce_str: str,
+                                 like_str: str,
+                                 bookmark_str: str, delete_str: str,
+                                 mute_str: str) -> (str, str):
     """Returns a string representing any attachments
     """
-    attachmentStr = ''
-    galleryStr = ''
+    attachment_str = ''
+    gallery_str = ''
     if not post_json_object['object'].get('attachment'):
-        return attachmentStr, galleryStr
+        return attachment_str, gallery_str
 
     if not isinstance(post_json_object['object']['attachment'], list):
-        return attachmentStr, galleryStr
+        return attachment_str, gallery_str
 
-    attachmentCtr = 0
-    attachmentStr = ''
-    mediaStyleAdded = False
+    attachment_ctr = 0
+    attachment_str = ''
+    media_style_added = False
     for attach in post_json_object['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
 
-        mediaType = attach['mediaType']
-        imageDescription = ''
+        media_type = attach['mediaType']
+        image_description = ''
         if attach.get('name'):
-            imageDescription = attach['name'].replace('"', "'")
-        if _is_image_mime_type(mediaType):
-            imageUrl = attach['url']
-            if _is_attached_image(attach['url']) and 'svg' not in mediaType:
-                if not attachmentStr:
-                    attachmentStr += '<div class="media">\n'
-                    mediaStyleAdded = True
+            image_description = attach['name'].replace('"', "'")
+        if _is_image_mime_type(media_type):
+            image_url = attach['url']
+            if _is_attached_image(attach['url']) and 'svg' not in media_type:
+                if not attachment_str:
+                    attachment_str += '<div class="media">\n'
+                    media_style_added = True
 
-                if attachmentCtr > 0:
-                    attachmentStr += '<br>'
-                if boxName == 'tlmedia':
-                    galleryStr += '<div class="gallery">\n'
+                if attachment_ctr > 0:
+                    attachment_str += '<br>'
+                if box_name == 'tlmedia':
+                    gallery_str += '<div class="gallery">\n'
                     if not is_muted:
-                        galleryStr += '  <a href="' + imageUrl + '">\n'
-                        galleryStr += \
+                        gallery_str += '  <a href="' + image_url + '">\n'
+                        gallery_str += \
                             '    <img loading="lazy" src="' + \
-                            imageUrl + '" alt="" title="">\n'
-                        galleryStr += '  </a>\n'
+                            image_url + '" alt="" title="">\n'
+                        gallery_str += '  </a>\n'
                     if post_json_object['object'].get('url'):
-                        imagePostUrl = post_json_object['object']['url']
+                        image_post_url = post_json_object['object']['url']
                     else:
-                        imagePostUrl = post_json_object['object']['id']
-                    if imageDescription and not is_muted:
-                        galleryStr += \
-                            '  <a href="' + imagePostUrl + \
+                        image_post_url = post_json_object['object']['id']
+                    if image_description and not is_muted:
+                        gallery_str += \
+                            '  <a href="' + image_post_url + \
                             '" class="gallerytext"><div ' + \
                             'class="gallerytext">' + \
-                            imageDescription + '</div></a>\n'
+                            image_description + '</div></a>\n'
                     else:
-                        galleryStr += \
+                        gallery_str += \
                             '<label class="transparent">---</label><br>'
-                    galleryStr += '  <div class="mediaicons">\n'
-                    galleryStr += \
-                        '    ' + replyStr+announceStr + likeStr + \
-                        bookmarkStr + deleteStr + muteStr + '\n'
-                    galleryStr += '  </div>\n'
-                    galleryStr += '  <div class="mediaavatar">\n'
-                    galleryStr += '    ' + avatarLink + '\n'
-                    galleryStr += '  </div>\n'
-                    galleryStr += '</div>\n'
+                    gallery_str += '  <div class="mediaicons">\n'
+                    gallery_str += \
+                        '    ' + reply_str + announce_str + like_str + \
+                        bookmark_str + delete_str + mute_str + '\n'
+                    gallery_str += '  </div>\n'
+                    gallery_str += '  <div class="mediaavatar">\n'
+                    gallery_str += '    ' + avatar_link + '\n'
+                    gallery_str += '  </div>\n'
+                    gallery_str += '</div>\n'
 
-                attachmentStr += '<a href="' + imageUrl + '">'
-                attachmentStr += \
-                    '<img loading="lazy" src="' + imageUrl + \
-                    '" alt="' + imageDescription + '" title="' + \
-                    imageDescription + '" class="attachment"></a>\n'
-                attachmentCtr += 1
-        elif _is_video_mime_type(mediaType):
+                attachment_str += '<a href="' + image_url + '">'
+                attachment_str += \
+                    '<img loading="lazy" src="' + image_url + \
+                    '" alt="' + image_description + '" title="' + \
+                    image_description + '" class="attachment"></a>\n'
+                attachment_ctr += 1
+        elif _is_video_mime_type(media_type):
             if _is_attached_video(attach['url']):
                 extension = attach['url'].split('.')[-1]
-                if attachmentCtr > 0:
-                    attachmentStr += '<br>'
-                if boxName == 'tlmedia':
-                    galleryStr += '<div class="gallery">\n'
+                if attachment_ctr > 0:
+                    attachment_str += '<br>'
+                if box_name == 'tlmedia':
+                    gallery_str += '<div class="gallery">\n'
                     if not is_muted:
-                        galleryStr += '  <a href="' + attach['url'] + '">\n'
-                        galleryStr += \
+                        gallery_str += '  <a href="' + attach['url'] + '">\n'
+                        gallery_str += \
                             '    <figure id="videoContainer" ' + \
                             'data-fullscreen="false">\n' + \
                             '    <video id="video" controls ' + \
                             'preload="metadata">\n'
-                        galleryStr += \
+                        gallery_str += \
                             '      <source src="' + attach['url'] + \
-                            '" alt="' + imageDescription + \
-                            '" title="' + imageDescription + \
+                            '" alt="' + image_description + \
+                            '" title="' + image_description + \
                             '" class="attachment" type="video/' + \
                             extension + '">'
                         idx = 'Your browser does not support the video tag.'
-                        galleryStr += translate[idx]
-                        galleryStr += '    </video>\n'
-                        galleryStr += '    </figure>\n'
-                        galleryStr += '  </a>\n'
+                        gallery_str += translate[idx]
+                        gallery_str += '    </video>\n'
+                        gallery_str += '    </figure>\n'
+                        gallery_str += '  </a>\n'
                     if post_json_object['object'].get('url'):
-                        videoPostUrl = post_json_object['object']['url']
+                        video_post_url = post_json_object['object']['url']
                     else:
-                        videoPostUrl = post_json_object['object']['id']
-                    if imageDescription and not is_muted:
-                        galleryStr += \
-                            '  <a href="' + videoPostUrl + \
+                        video_post_url = post_json_object['object']['id']
+                    if image_description and not is_muted:
+                        gallery_str += \
+                            '  <a href="' + video_post_url + \
                             '" class="gallerytext"><div ' + \
                             'class="gallerytext">' + \
-                            imageDescription + '</div></a>\n'
+                            image_description + '</div></a>\n'
                     else:
-                        galleryStr += \
+                        gallery_str += \
                             '<label class="transparent">---</label><br>'
-                    galleryStr += '  <div class="mediaicons">\n'
-                    galleryStr += \
-                        '    ' + replyStr + announceStr + likeStr + \
-                        bookmarkStr + deleteStr + muteStr + '\n'
-                    galleryStr += '  </div>\n'
-                    galleryStr += '  <div class="mediaavatar">\n'
-                    galleryStr += '    ' + avatarLink + '\n'
-                    galleryStr += '  </div>\n'
-                    galleryStr += '</div>\n'
+                    gallery_str += '  <div class="mediaicons">\n'
+                    gallery_str += \
+                        '    ' + reply_str + announce_str + like_str + \
+                        bookmark_str + delete_str + mute_str + '\n'
+                    gallery_str += '  </div>\n'
+                    gallery_str += '  <div class="mediaavatar">\n'
+                    gallery_str += '    ' + avatar_link + '\n'
+                    gallery_str += '  </div>\n'
+                    gallery_str += '</div>\n'
 
-                attachmentStr += \
+                attachment_str += \
                     '<center><figure id="videoContainer" ' + \
                     'data-fullscreen="false">\n' + \
                     '    <video id="video" controls ' + \
                     'preload="metadata">\n'
-                attachmentStr += \
+                attachment_str += \
                     '<source src="' + attach['url'] + '" alt="' + \
-                    imageDescription + '" title="' + imageDescription + \
+                    image_description + '" title="' + image_description + \
                     '" class="attachment" type="video/' + \
                     extension + '">'
-                attachmentStr += \
+                attachment_str += \
                     translate['Your browser does not support the video tag.']
-                attachmentStr += '</video></figure></center>'
-                attachmentCtr += 1
-        elif _is_audio_mime_type(mediaType):
+                attachment_str += '</video></figure></center>'
+                attachment_ctr += 1
+        elif _is_audio_mime_type(media_type):
             extension = '.mp3'
             if attach['url'].endswith('.ogg'):
                 extension = '.ogg'
             if attach['url'].endswith(extension):
-                if attachmentCtr > 0:
-                    attachmentStr += '<br>'
-                if boxName == 'tlmedia':
-                    galleryStr += '<div class="gallery">\n'
+                if attachment_ctr > 0:
+                    attachment_str += '<br>'
+                if box_name == 'tlmedia':
+                    gallery_str += '<div class="gallery">\n'
                     if not is_muted:
-                        galleryStr += '  <a href="' + attach['url'] + '">\n'
-                        galleryStr += '    <audio controls>\n'
-                        galleryStr += \
+                        gallery_str += '  <a href="' + attach['url'] + '">\n'
+                        gallery_str += '    <audio controls>\n'
+                        gallery_str += \
                             '      <source src="' + attach['url'] + \
-                            '" alt="' + imageDescription + \
-                            '" title="' + imageDescription + \
+                            '" alt="' + image_description + \
+                            '" title="' + image_description + \
                             '" class="attachment" type="audio/' + \
                             extension.replace('.', '') + '">'
                         idx = 'Your browser does not support the audio tag.'
-                        galleryStr += translate[idx]
-                        galleryStr += '    </audio>\n'
-                        galleryStr += '  </a>\n'
+                        gallery_str += translate[idx]
+                        gallery_str += '    </audio>\n'
+                        gallery_str += '  </a>\n'
                     if post_json_object['object'].get('url'):
-                        audioPostUrl = post_json_object['object']['url']
+                        audio_post_url = post_json_object['object']['url']
                     else:
-                        audioPostUrl = post_json_object['object']['id']
-                    if imageDescription and not is_muted:
-                        galleryStr += \
-                            '  <a href="' + audioPostUrl + \
+                        audio_post_url = post_json_object['object']['id']
+                    if image_description and not is_muted:
+                        gallery_str += \
+                            '  <a href="' + audio_post_url + \
                             '" class="gallerytext"><div ' + \
                             'class="gallerytext">' + \
-                            imageDescription + '</div></a>\n'
+                            image_description + '</div></a>\n'
                     else:
-                        galleryStr += \
+                        gallery_str += \
                             '<label class="transparent">---</label><br>'
-                    galleryStr += '  <div class="mediaicons">\n'
-                    galleryStr += \
-                        '    ' + replyStr + announceStr + \
-                        likeStr + bookmarkStr + \
-                        deleteStr + muteStr + '\n'
-                    galleryStr += '  </div>\n'
-                    galleryStr += '  <div class="mediaavatar">\n'
-                    galleryStr += '    ' + avatarLink + '\n'
-                    galleryStr += '  </div>\n'
-                    galleryStr += '</div>\n'
+                    gallery_str += '  <div class="mediaicons">\n'
+                    gallery_str += \
+                        '    ' + reply_str + announce_str + \
+                        like_str + bookmark_str + \
+                        delete_str + mute_str + '\n'
+                    gallery_str += '  </div>\n'
+                    gallery_str += '  <div class="mediaavatar">\n'
+                    gallery_str += '    ' + avatar_link + '\n'
+                    gallery_str += '  </div>\n'
+                    gallery_str += '</div>\n'
 
-                attachmentStr += '<center>\n<audio controls>\n'
-                attachmentStr += \
+                attachment_str += '<center>\n<audio controls>\n'
+                attachment_str += \
                     '<source src="' + attach['url'] + '" alt="' + \
-                    imageDescription + '" title="' + imageDescription + \
+                    image_description + '" title="' + image_description + \
                     '" class="attachment" type="audio/' + \
                     extension.replace('.', '') + '">'
-                attachmentStr += \
+                attachment_str += \
                     translate['Your browser does not support the audio tag.']
-                attachmentStr += '</audio>\n</center>\n'
-                attachmentCtr += 1
-    if mediaStyleAdded:
-        attachmentStr += '</div>'
-    return attachmentStr, galleryStr
+                attachment_str += '</audio>\n</center>\n'
+                attachment_ctr += 1
+    if media_style_added:
+        attachment_str += '</div>'
+    return attachment_str, gallery_str
 
 
 def html_post_separator(base_dir: str, column: str) -> str:
@@ -1212,19 +1222,19 @@ def html_post_separator(base_dir: str, column: str) -> str:
     """
     theme = get_config_param(base_dir, 'theme')
     filename = 'separator.png'
-    separatorClass = "postSeparatorImage"
+    separator_class = "postSeparatorImage"
     if column:
-        separatorClass = "postSeparatorImage" + column.title()
+        separator_class = "postSeparatorImage" + column.title()
         filename = 'separator_' + column + '.png'
-    separatorImageFilename = \
+    separator_image_filename = \
         base_dir + '/theme/' + theme + '/icons/' + filename
-    separatorStr = ''
-    if os.path.isfile(separatorImageFilename):
-        separatorStr = \
-            '<div class="' + separatorClass + '"><center>' + \
+    separator_str = ''
+    if os.path.isfile(separator_image_filename):
+        separator_str = \
+            '<div class="' + separator_class + '"><center>' + \
             '<img src="/icons/' + filename + '" ' + \
             'alt="" /></center></div>\n'
-    return separatorStr
+    return separator_str
 
 
 def html_highlight_label(label: str, highlight: bool) -> str:
@@ -1240,72 +1250,72 @@ def html_highlight_label(label: str, highlight: bool) -> str:
 
 def get_avatar_image_url(session,
                          base_dir: str, http_prefix: str,
-                         postActor: str, person_cache: {},
-                         avatarUrl: str, allowDownloads: bool,
+                         post_actor: str, person_cache: {},
+                         avatar_url: str, allow_downloads: bool,
                          signing_priv_key_pem: str) -> str:
     """Returns the avatar image url
     """
     # get the avatar image url for the post actor
-    if not avatarUrl:
-        avatarUrl = \
-            get_person_avatar_url(base_dir, postActor, person_cache,
-                                  allowDownloads)
-        avatarUrl = \
+    if not avatar_url:
+        avatar_url = \
+            get_person_avatar_url(base_dir, post_actor, person_cache,
+                                  allow_downloads)
+        avatar_url = \
             update_avatar_image_cache(signing_priv_key_pem,
                                       session, base_dir, http_prefix,
-                                      postActor, avatarUrl, person_cache,
-                                      allowDownloads)
+                                      post_actor, avatar_url, person_cache,
+                                      allow_downloads)
     else:
         update_avatar_image_cache(signing_priv_key_pem,
                                   session, base_dir, http_prefix,
-                                  postActor, avatarUrl, person_cache,
-                                  allowDownloads)
+                                  post_actor, avatar_url, person_cache,
+                                  allow_downloads)
 
-    if not avatarUrl:
-        avatarUrl = postActor + '/avatar.png'
+    if not avatar_url:
+        avatar_url = post_actor + '/avatar.png'
 
-    return avatarUrl
+    return avatar_url
 
 
-def html_hide_from_screen_reader(htmlStr: str) -> str:
+def html_hide_from_screen_reader(html_str: str) -> str:
     """Returns html which is hidden from screen readers
     """
-    return '<span aria-hidden="true">' + htmlStr + '</span>'
+    return '<span aria-hidden="true">' + html_str + '</span>'
 
 
 def html_keyboard_navigation(banner: str, links: {}, access_keys: {},
-                             subHeading: str = None,
-                             usersPath: str = None, translate: {} = None,
-                             followApprovals: bool = False) -> str:
+                             sub_heading: str = None,
+                             users_path: str = None, translate: {} = None,
+                             follow_approvals: bool = False) -> str:
     """Given a set of links return the html for keyboard navigation
     """
-    htmlStr = '<div class="transparent"><ul>\n'
+    html_str = '<div class="transparent"><ul>\n'
 
     if banner:
-        htmlStr += '<pre aria-label="">\n' + banner + '\n<br><br></pre>\n'
+        html_str += '<pre aria-label="">\n' + banner + '\n<br><br></pre>\n'
 
-    if subHeading:
-        htmlStr += '<strong><label class="transparent">' + \
-            subHeading + '</label></strong><br>\n'
+    if sub_heading:
+        html_str += '<strong><label class="transparent">' + \
+            sub_heading + '</label></strong><br>\n'
 
     # show new follower approvals
-    if usersPath and translate and followApprovals:
-        htmlStr += '<strong><label class="transparent">' + \
-            '<a href="' + usersPath + '/followers#timeline">' + \
+    if users_path and translate and follow_approvals:
+        html_str += '<strong><label class="transparent">' + \
+            '<a href="' + users_path + '/followers#timeline">' + \
             translate['Approve follow requests'] + '</a>' + \
             '</label></strong><br><br>\n'
 
     # show the list of links
     for title, url in links.items():
-        accessKeyStr = ''
+        access_key_str = ''
         if access_keys.get(title):
-            accessKeyStr = 'accesskey="' + access_keys[title] + '"'
+            access_key_str = 'accesskey="' + access_keys[title] + '"'
 
-        htmlStr += '<li><label class="transparent">' + \
-            '<a href="' + str(url) + '" ' + accessKeyStr + '>' + \
+        html_str += '<li><label class="transparent">' + \
+            '<a href="' + str(url) + '" ' + access_key_str + '>' + \
             str(title) + '</a></label></li>\n'
-    htmlStr += '</ul></div>\n'
-    return htmlStr
+    html_str += '</ul></div>\n'
+    return html_str
 
 
 def begin_edit_section(label: str) -> str:
@@ -1328,37 +1338,37 @@ def edit_text_field(label: str, name: str, value: str = "",
     """
     if value is None:
         value = ''
-    placeholderStr = ''
+    placeholder_str = ''
     if placeholder:
-        placeholderStr = ' placeholder="' + placeholder + '"'
-    requiredStr = ''
+        placeholder_str = ' placeholder="' + placeholder + '"'
+    required_str = ''
     if required:
-        requiredStr = ' required'
-    textFieldStr = ''
+        required_str = ' required'
+    text_field_str = ''
     if label:
-        textFieldStr = \
+        text_field_str = \
             '<label class="labels">' + label + '</label><br>\n'
-    textFieldStr += \
+    text_field_str += \
         '      <input type="text" name="' + name + '" value="' + \
-        value + '"' + placeholderStr + requiredStr + '>\n'
-    return textFieldStr
+        value + '"' + placeholder_str + required_str + '>\n'
+    return text_field_str
 
 
 def edit_number_field(label: str, name: str, value: int,
-                      minValue: int, maxValue: int,
+                      min_value: int, max_value: int,
                       placeholder: int) -> str:
     """Returns html for editing an integer number field
     """
     if value is None:
         value = ''
-    placeholderStr = ''
+    placeholder_str = ''
     if placeholder:
-        placeholderStr = ' placeholder="' + str(placeholder) + '"'
+        placeholder_str = ' placeholder="' + str(placeholder) + '"'
     return \
         '<label class="labels">' + label + '</label><br>\n' + \
         '      <input type="number" name="' + name + '" value="' + \
-        str(value) + '"' + placeholderStr + ' ' + \
-        'min="' + str(minValue) + '" max="' + str(maxValue) + '" step="1">\n'
+        str(value) + '"' + placeholder_str + ' ' + \
+        'min="' + str(min_value) + '" max="' + str(max_value) + '" step="1">\n'
 
 
 def edit_currency_field(label: str, name: str, value: str,
@@ -1367,31 +1377,31 @@ def edit_currency_field(label: str, name: str, value: str,
     """
     if value is None:
         value = '0.00'
-    placeholderStr = ''
+    placeholder_str = ''
     if placeholder:
         if placeholder.isdigit():
-            placeholderStr = ' placeholder="' + str(placeholder) + '"'
-    requiredStr = ''
+            placeholder_str = ' placeholder="' + str(placeholder) + '"'
+    required_str = ''
     if required:
-        requiredStr = ' required'
+        required_str = ' required'
     return \
         '<label class="labels">' + label + '</label><br>\n' + \
         '      <input type="text" name="' + name + '" value="' + \
-        str(value) + '"' + placeholderStr + ' ' + \
+        str(value) + '"' + placeholder_str + ' ' + \
         ' pattern="^\\d{1,3}(,\\d{3})*(\\.\\d+)?" data-type="currency"' + \
-        requiredStr + '>\n'
+        required_str + '>\n'
 
 
 def edit_check_box(label: str, name: str, checked: bool) -> str:
     """Returns html for editing a checkbox field
     """
-    checkedStr = ''
+    checked_str = ''
     if checked:
-        checkedStr = ' checked'
+        checked_str = ' checked'
 
     return \
         '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="' + name + '"' + checkedStr + '> ' + label + '<br>\n'
+        'name="' + name + '"' + checked_str + '> ' + label + '<br>\n'
 
 
 def edit_text_area(label: str, name: str, value: str,
@@ -1413,188 +1423,188 @@ def edit_text_area(label: str, name: str, value: str,
     return text
 
 
-def html_search_result_share(base_dir: str, sharedItem: {}, translate: {},
+def html_search_result_share(base_dir: str, shared_item: {}, translate: {},
                              http_prefix: str, domain_full: str,
-                             contactNickname: str, itemID: str,
-                             actor: str, sharesFileType: str,
+                             contact_nickname: str, item_id: str,
+                             actor: str, shares_file_type: str,
                              category: str) -> str:
     """Returns the html for an individual shared item
     """
-    sharedItemsForm = '<div class="container">\n'
-    sharedItemsForm += \
-        '<p class="share-title">' + sharedItem['displayName'] + '</p>\n'
-    if sharedItem.get('imageUrl'):
-        sharedItemsForm += \
-            '<a href="' + sharedItem['imageUrl'] + '">\n'
-        sharedItemsForm += \
-            '<img loading="lazy" src="' + sharedItem['imageUrl'] + \
+    shared_items_form = '<div class="container">\n'
+    shared_items_form += \
+        '<p class="share-title">' + shared_item['displayName'] + '</p>\n'
+    if shared_item.get('imageUrl'):
+        shared_items_form += \
+            '<a href="' + shared_item['imageUrl'] + '">\n'
+        shared_items_form += \
+            '<img loading="lazy" src="' + shared_item['imageUrl'] + \
             '" alt="Item image"></a>\n'
-    sharedItemsForm += '<p>' + sharedItem['summary'] + '</p>\n<p>'
-    if sharedItem.get('itemQty'):
-        if sharedItem['itemQty'] > 1:
-            sharedItemsForm += \
+    shared_items_form += '<p>' + shared_item['summary'] + '</p>\n<p>'
+    if shared_item.get('itemQty'):
+        if shared_item['itemQty'] > 1:
+            shared_items_form += \
                 '<b>' + translate['Quantity'] + \
-                ':</b> ' + str(sharedItem['itemQty']) + '<br>'
-    sharedItemsForm += \
-        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
-    sharedItemsForm += \
+                ':</b> ' + str(shared_item['itemQty']) + '<br>'
+    shared_items_form += \
+        '<b>' + translate['Type'] + ':</b> ' + shared_item['itemType'] + '<br>'
+    shared_items_form += \
         '<b>' + translate['Category'] + ':</b> ' + \
-        sharedItem['category'] + '<br>'
-    if sharedItem.get('location'):
-        sharedItemsForm += \
+        shared_item['category'] + '<br>'
+    if shared_item.get('location'):
+        shared_items_form += \
             '<b>' + translate['Location'] + ':</b> ' + \
-            sharedItem['location'] + '<br>'
-    contactTitleStr = translate['Contact']
-    if sharedItem.get('itemPrice') and \
-       sharedItem.get('itemCurrency'):
-        if is_float(sharedItem['itemPrice']):
-            if float(sharedItem['itemPrice']) > 0:
-                sharedItemsForm += \
+            shared_item['location'] + '<br>'
+    contact_title_str = translate['Contact']
+    if shared_item.get('itemPrice') and \
+       shared_item.get('itemCurrency'):
+        if is_float(shared_item['itemPrice']):
+            if float(shared_item['itemPrice']) > 0:
+                shared_items_form += \
                     ' <b>' + translate['Price'] + \
-                    ':</b> ' + sharedItem['itemPrice'] + \
-                    ' ' + sharedItem['itemCurrency']
-                contactTitleStr = translate['Buy']
-    sharedItemsForm += '</p>\n'
-    contactActor = \
-        local_actor_url(http_prefix, contactNickname, domain_full)
-    buttonStyleStr = 'button'
+                    ':</b> ' + shared_item['itemPrice'] + \
+                    ' ' + shared_item['itemCurrency']
+                contact_title_str = translate['Buy']
+    shared_items_form += '</p>\n'
+    contact_actor = \
+        local_actor_url(http_prefix, contact_nickname, domain_full)
+    button_style_str = 'button'
     if category == 'accommodation':
-        contactTitleStr = translate['Request to stay']
-        buttonStyleStr = 'contactbutton'
+        contact_title_str = translate['Request to stay']
+        button_style_str = 'contactbutton'
 
-    sharedItemsForm += \
+    shared_items_form += \
         '<p>' + \
         '<a href="' + actor + '?replydm=sharedesc:' + \
-        sharedItem['displayName'] + '?mention=' + contactActor + \
+        shared_item['displayName'] + '?mention=' + contact_actor + \
         '?category=' + category + \
-        '"><button class="' + buttonStyleStr + '">' + contactTitleStr + \
+        '"><button class="' + button_style_str + '">' + contact_title_str + \
         '</button></a>\n' + \
-        '<a href="' + contactActor + '"><button class="button">' + \
+        '<a href="' + contact_actor + '"><button class="button">' + \
         translate['Profile'] + '</button></a>\n'
 
     # should the remove button be shown?
-    showRemoveButton = False
+    show_remove_button = False
     nickname = get_nickname_from_actor(actor)
-    if actor.endswith('/users/' + contactNickname):
-        showRemoveButton = True
+    if actor.endswith('/users/' + contact_nickname):
+        show_remove_button = True
     elif is_moderator(base_dir, nickname):
-        showRemoveButton = True
+        show_remove_button = True
     else:
         admin_nickname = get_config_param(base_dir, 'admin')
         if admin_nickname:
             if actor.endswith('/users/' + admin_nickname):
-                showRemoveButton = True
+                show_remove_button = True
 
-    if showRemoveButton:
-        if sharesFileType == 'shares':
-            sharedItemsForm += \
+    if show_remove_button:
+        if shares_file_type == 'shares':
+            shared_items_form += \
                 ' <a href="' + actor + '?rmshare=' + \
-                itemID + '"><button class="button">' + \
+                item_id + '"><button class="button">' + \
                 translate['Remove'] + '</button></a>\n'
         else:
-            sharedItemsForm += \
+            shared_items_form += \
                 ' <a href="' + actor + '?rmwanted=' + \
-                itemID + '"><button class="button">' + \
+                item_id + '"><button class="button">' + \
                 translate['Remove'] + '</button></a>\n'
-    sharedItemsForm += '</p></div>\n'
-    return sharedItemsForm
+    shared_items_form += '</p></div>\n'
+    return shared_items_form
 
 
 def html_show_share(base_dir: str, domain: str, nickname: str,
                     http_prefix: str, domain_full: str,
-                    itemID: str, translate: {},
+                    item_id: str, translate: {},
                     shared_items_federated_domains: [],
                     default_timeline: str, theme: str,
-                    sharesFileType: str, category: str) -> str:
+                    shares_file_type: str, category: str) -> str:
     """Shows an individual shared item after selecting it from the left column
     """
-    sharesJson = None
+    shares_json = None
 
-    shareUrl = itemID.replace('___', '://').replace('--', '/')
-    contactNickname = get_nickname_from_actor(shareUrl)
-    if not contactNickname:
+    share_url = item_id.replace('___', '://').replace('--', '/')
+    contact_nickname = get_nickname_from_actor(share_url)
+    if not contact_nickname:
         return None
 
-    if '://' + domain_full + '/' in shareUrl:
+    if '://' + domain_full + '/' in share_url:
         # shared item on this instance
-        sharesFilename = \
-            acct_dir(base_dir, contactNickname, domain) + '/' + \
-            sharesFileType + '.json'
-        if not os.path.isfile(sharesFilename):
+        shares_filename = \
+            acct_dir(base_dir, contact_nickname, domain) + '/' + \
+            shares_file_type + '.json'
+        if not os.path.isfile(shares_filename):
             return None
-        sharesJson = load_json(sharesFilename)
+        shares_json = load_json(shares_filename)
     else:
         # federated shared item
-        if sharesFileType == 'shares':
-            catalogsDir = base_dir + '/cache/catalogs'
+        if shares_file_type == 'shares':
+            catalogs_dir = base_dir + '/cache/catalogs'
         else:
-            catalogsDir = base_dir + '/cache/wantedItems'
-        if not os.path.isdir(catalogsDir):
+            catalogs_dir = base_dir + '/cache/wantedItems'
+        if not os.path.isdir(catalogs_dir):
             return None
-        for subdir, dirs, files in os.walk(catalogsDir):
-            for f in files:
-                if '#' in f:
+        for _, _, files in os.walk(catalogs_dir):
+            for fname in files:
+                if '#' in fname:
                     continue
-                if not f.endswith('.' + sharesFileType + '.json'):
+                if not fname.endswith('.' + shares_file_type + '.json'):
                     continue
-                federatedDomain = f.split('.')[0]
-                if federatedDomain not in shared_items_federated_domains:
+                federated_domain = fname.split('.')[0]
+                if federated_domain not in shared_items_federated_domains:
                     continue
-                sharesFilename = catalogsDir + '/' + f
-                sharesJson = load_json(sharesFilename)
-                if not sharesJson:
+                shares_filename = catalogs_dir + '/' + fname
+                shares_json = load_json(shares_filename)
+                if not shares_json:
                     continue
-                if sharesJson.get(itemID):
+                if shares_json.get(item_id):
                     break
             break
 
-    if not sharesJson:
+    if not shares_json:
         return None
-    if not sharesJson.get(itemID):
+    if not shares_json.get(item_id):
         return None
-    sharedItem = sharesJson[itemID]
+    shared_item = shares_json[item_id]
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
     # filename of the banner shown at the top
-    banner_file, banner_filename = \
+    banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
 
-    shareStr = \
+    share_str = \
         '<header>\n' + \
         '<a href="/users/' + nickname + '/' + \
         default_timeline + '" title="" alt="">\n'
-    shareStr += '<img loading="lazy" class="timeline-banner" ' + \
+    share_str += '<img loading="lazy" class="timeline-banner" ' + \
         'alt="" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '</header><br>\n'
-    shareStr += \
-        html_search_result_share(base_dir, sharedItem, translate, http_prefix,
-                                 domain_full, contactNickname, itemID,
-                                 actor, sharesFileType, category)
+    share_str += \
+        html_search_result_share(base_dir, shared_item, translate, http_prefix,
+                                 domain_full, contact_nickname, item_id,
+                                 actor, shares_file_type, category)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
 
     return html_header_with_external_style(css_filename,
-                                           instanceTitle, None) + \
-        shareStr + html_footer()
+                                           instance_title, None) + \
+        share_str + html_footer()
 
 
 def set_custom_background(base_dir: str, background: str,
-                          newBackground: str) -> str:
+                          new_background: str) -> str:
     """Sets a custom background
     Returns the extension, if found
     """
     ext = 'jpg'
     if os.path.isfile(base_dir + '/img/' + background + '.' + ext):
-        if not newBackground:
-            newBackground = background
+        if not new_background:
+            new_background = background
         if not os.path.isfile(base_dir + '/accounts/' +
-                              newBackground + '.' + ext):
+                              new_background + '.' + ext):
             copyfile(base_dir + '/img/' + background + '.' + ext,
-                     base_dir + '/accounts/' + newBackground + '.' + ext)
+                     base_dir + '/accounts/' + new_background + '.' + ext)
         return ext
     return None
