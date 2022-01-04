@@ -174,18 +174,19 @@ from shares import get_shared_items_catalog_via_server
 from blocking import load_cw_lists
 from blocking import add_cw_from_lists
 
-testServerGroupRunning = False
-testServerAliceRunning = False
-testServerBobRunning = False
-testServerEveRunning = False
-thrGroup = None
-thrAlice = None
-thrBob = None
-thrEve = None
+TEST_SERVER_GROUP_RUNNING = False
+TEST_SERVER_ALICE_RUNNING = False
+TEST_SERVER_BOB_RUNNING = False
+TEST_SERVER_EVE_RUNNING = False
+
+THR_GROUP = None
+THR_ALICE = None
+THR_BOB = None
+THR_EVE = None
 
 
 def _test_http_signed_get(base_dir: str):
-    print('testHttpSignedGET')
+    print('test_http_signed_get')
     http_prefix = 'https'
     debug = True
 
@@ -193,7 +194,7 @@ def _test_http_signed_get(base_dir: str):
     host = "epicyon.libreserver.org"
     content_length = "0"
     user_agent = "http.rb/4.4.1 (Mastodon/3.4.1; +https://octodon.social/)"
-    dateStr = 'Wed, 01 Sep 2021 16:11:10 GMT'
+    date_str = 'Wed, 01 Sep 2021 16:11:10 GMT'
     accept_encoding = 'gzip'
     accept = \
         'application/activity+json, application/ld+json'
@@ -212,7 +213,7 @@ def _test_http_signed_get(base_dir: str):
         '4HUfLV+qbgYRceOTyZIi50vVqLvt9CTQes' + \
         'KZHG3GrrPfaBuvoUbR4MCM3BUvpB7EzL' + \
         '9F17Y+Ea9mo8zjqzZm8HaZQ=="'
-    publicKeyPem = \
+    public_key_pem = \
         '-----BEGIN PUBLIC KEY-----\n' + \
         'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMII' + \
         'BCgKCAQEA1XT+ov/i4LDYuaXCwh4r\n' + \
@@ -232,23 +233,24 @@ def _test_http_signed_get(base_dir: str):
         "user-agent": user_agent,
         "content-length": content_length,
         "host": host,
-        "date": dateStr,
+        "date": date_str,
         "accept": accept,
         "accept-encoding": accept_encoding,
         "signature": signature
     }
-    GETmethod = True
-    messageBodyDigest = None
-    messageBodyJsonStr = ''
-    noRecencyCheck = True
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               boxpath, GETmethod, messageBodyDigest,
-                               messageBodyJsonStr, debug, noRecencyCheck)
+    getreq_method = True
+    message_body_digest = None
+    message_body_json_str = ''
+    no_recency_check = True
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               boxpath, getreq_method, message_body_digest,
+                               message_body_json_str, debug, no_recency_check)
     # Change a single character and the signature should fail
     headers['date'] = headers['date'].replace(':10', ':11')
-    assert not verify_post_headers(http_prefix, publicKeyPem, headers,
-                                   boxpath, GETmethod, messageBodyDigest,
-                                   messageBodyJsonStr, debug, noRecencyCheck)
+    assert not verify_post_headers(http_prefix, public_key_pem, headers,
+                                   boxpath, getreq_method, message_body_digest,
+                                   message_body_json_str, debug,
+                                   no_recency_check)
 
     path = base_dir + '/.testHttpsigGET'
     if os.path.isdir(path):
@@ -257,52 +259,53 @@ def _test_http_signed_get(base_dir: str):
     os.chdir(path)
 
     nickname = 'testactor'
-    hostDomain = 'someother.instance'
+    host_domain = 'someother.instance'
     domain = 'argumentative.social'
     http_prefix = 'https'
     port = 443
-    withDigest = False
+    with_digest = False
     password = 'SuperSecretPassword'
-    noRecencyCheck = True
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    no_recency_check = True
+    private_key_pem, public_key_pem, _, _ = \
         create_person(path, nickname, domain, port, http_prefix,
                       False, False, password)
-    assert privateKeyPem
-    assert publicKeyPem
-    messageBodyJsonStr = ''
+    assert private_key_pem
+    assert public_key_pem
+    message_body_json_str = ''
 
-    headersDomain = get_full_domain(hostDomain, port)
+    headers_domain = get_full_domain(host_domain, port)
 
-    dateStr = 'Tue, 14 Sep 2021 16:19:00 GMT'
+    date_str = 'Tue, 14 Sep 2021 16:19:00 GMT'
     boxpath = '/inbox'
     accept = 'application/json'
 #    accept = 'application/activity+json'
     headers = {
         'user-agent': 'Epicyon/1.2.0; +https://' + domain + '/',
-        'host': headersDomain,
-        'date': dateStr,
+        'host': headers_domain,
+        'date': date_str,
         'accept': accept,
         'content-length': 0
     }
-    signatureHeader = create_signed_header(dateStr,
-                                           privateKeyPem, nickname,
-                                           domain, port,
-                                           hostDomain, port,
-                                           boxpath, http_prefix, False,
-                                           None, accept)
+    signature_header = \
+        create_signed_header(date_str,
+                             private_key_pem, nickname,
+                             domain, port,
+                             host_domain, port,
+                             boxpath, http_prefix, False,
+                             None, accept)
 
-    headers['signature'] = signatureHeader['signature']
-    GETmethod = not withDigest
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               boxpath, GETmethod, None,
-                               messageBodyJsonStr, debug, noRecencyCheck)
+    headers['signature'] = signature_header['signature']
+    getreq_method = not with_digest
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               boxpath, getreq_method, None,
+                               message_body_json_str, debug, no_recency_check)
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
 
 
 def _test_sign_and_verify() -> None:
-    print('testSignAndVerify')
-    publicKeyPem = \
+    print('test_sign_and_verify')
+    public_key_pem = \
         '-----BEGIN RSA PUBLIC KEY-----\n' + \
         'MIIBCgKCAQEAhAKYdtoeoy8zcAcR874L8' + \
         'cnZxKzAGwd7v36APp7Pv6Q2jdsPBRrw\n' + \
@@ -317,7 +320,7 @@ def _test_sign_and_verify() -> None:
         'PSXSfBDiUGhwOw76WuSSsf1D4b/vLoJ10wIDAQAB\n' + \
         '-----END RSA PUBLIC KEY-----\n'
 
-    privateKeyPem = \
+    private_key_pem = \
         '-----BEGIN RSA PRIVATE KEY-----\n' + \
         'MIIEqAIBAAKCAQEAhAKYdtoeoy8zcAcR8' + \
         '74L8cnZxKzAGwd7v36APp7Pv6Q2jdsP\n' + \
@@ -372,46 +375,48 @@ def _test_sign_and_verify() -> None:
         '-----END RSA PRIVATE KEY-----'
 
     # sign
-    signedHeaderText = \
+    signed_header_text = \
         '(request-target): get /actor\n' + \
         'host: octodon.social\n' + \
         'date: Tue, 14 Sep 2021 16:19:00 GMT\n' + \
         'accept: application/json'
-    headerDigest = get_sha_256(signedHeaderText.encode('ascii'))
-    key = load_pem_private_key(privateKeyPem.encode('utf-8'),
+    header_digest = get_sha_256(signed_header_text.encode('ascii'))
+    key = load_pem_private_key(private_key_pem.encode('utf-8'),
                                None, backend=default_backend())
-    rawSignature = key.sign(headerDigest,
-                            padding.PKCS1v15(),
-                            hazutils.Prehashed(hashes.SHA256()))
-    signature1 = base64.b64encode(rawSignature).decode('ascii')
+    raw_signature = key.sign(header_digest,
+                             padding.PKCS1v15(),
+                             hazutils.Prehashed(hashes.SHA256()))
+    signature1 = base64.b64encode(raw_signature).decode('ascii')
 
     # verify
-    paddingStr = padding.PKCS1v15()
+    padding_str = padding.PKCS1v15()
     alg = hazutils.Prehashed(hashes.SHA256())
-    pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
+    pubkey = load_pem_public_key(public_key_pem.encode('utf-8'),
                                  backend=default_backend())
     signature2 = base64.b64decode(signature1)
-    pubkey.verify(signature2, headerDigest, paddingStr, alg)
+    pubkey.verify(signature2, header_digest, padding_str, alg)
 
 
-def _test_http_sig_new(algorithm: str, digestAlgorithm: str):
-    print('testHttpSigNew')
+def _test_http_sig_new(algorithm: str, digest_algorithm: str):
+    print('test_http_sig_new')
     http_prefix = 'https'
     port = 443
     debug = True
-    messageBodyJson = {"hello": "world"}
-    messageBodyJsonStr = json.dumps(messageBodyJson)
+    message_body_json = {"hello": "world"}
+    message_body_json_str = json.dumps(message_body_json)
     nickname = 'foo'
-    pathStr = "/" + nickname + "?param=value&pet=dog HTTP/1.1"
+    path_str = "/" + nickname + "?param=value&pet=dog HTTP/1.1"
     domain = 'example.com'
-    dateStr = 'Tue, 20 Apr 2021 02:07:55 GMT'
-    digestPrefix = get_digest_prefix(digestAlgorithm)
-    digestStr = digestPrefix + '=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE='
-    bodyDigest = message_content_digest(messageBodyJsonStr, digestAlgorithm)
-    assert bodyDigest in digestStr
-    contentLength = 18
+    date_str = 'Tue, 20 Apr 2021 02:07:55 GMT'
+    digest_prefix = get_digest_prefix(digest_algorithm)
+    digest_str = \
+        digest_prefix + '=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE='
+    body_digest = \
+        message_content_digest(message_body_json_str, digest_algorithm)
+    assert body_digest in digest_str
+    content_length = 18
     content_type = 'application/activity+json'
-    publicKeyPem = \
+    public_key_pem = \
         '-----BEGIN RSA PUBLIC KEY-----\n' + \
         'MIIBCgKCAQEAhAKYdtoeoy8zcAcR874L8' + \
         'cnZxKzAGwd7v36APp7Pv6Q2jdsPBRrw\n' + \
@@ -426,7 +431,7 @@ def _test_http_sig_new(algorithm: str, digestAlgorithm: str):
         'PSXSfBDiUGhwOw76WuSSsf1D4b/vLoJ10wIDAQAB\n' + \
         '-----END RSA PUBLIC KEY-----\n'
 
-    privateKeyPem = \
+    private_key_pem = \
         '-----BEGIN RSA PRIVATE KEY-----\n' + \
         'MIIEqAIBAAKCAQEAhAKYdtoeoy8zcAcR8' + \
         '74L8cnZxKzAGwd7v36APp7Pv6Q2jdsP\n' + \
@@ -481,24 +486,24 @@ def _test_http_sig_new(algorithm: str, digestAlgorithm: str):
         '-----END RSA PRIVATE KEY-----'
     headers = {
         "host": domain,
-        "date": dateStr,
-        "digest": f'{digestPrefix}={bodyDigest}',
+        "date": date_str,
+        "digest": f'{digest_prefix}={body_digest}',
         "content-type": content_type,
-        "content-length": str(contentLength)
+        "content-length": str(content_length)
     }
-    signatureIndexHeader, signatureHeader = \
-        sign_post_headers_new(dateStr, privateKeyPem, nickname,
+    signature_index_header, signature_header = \
+        sign_post_headers_new(date_str, private_key_pem, nickname,
                               domain, port,
                               domain, port,
-                              pathStr, http_prefix, messageBodyJsonStr,
-                              algorithm, digestAlgorithm, debug)
-    print('signatureIndexHeader1: ' + str(signatureIndexHeader))
-    print('signatureHeader1: ' + str(signatureHeader))
-    sigInput = "keyId=\"https://example.com/users/foo#main-key\"; " + \
+                              path_str, http_prefix, message_body_json_str,
+                              algorithm, digest_algorithm, debug)
+    print('signature_index_header1: ' + str(signature_index_header))
+    print('signature_header1: ' + str(signature_header))
+    sig_input = "keyId=\"https://example.com/users/foo#main-key\"; " + \
         "alg=hs2019; created=1618884475; " + \
         "sig1=(@request-target, @created, host, date, digest, " + \
         "content-type, content-length)"
-    assert signatureIndexHeader == sigInput
+    assert signature_index_header == sig_input
     sig = "sig1=:NXAQ7AtDMR2iwhmH1qCwiZw5PVTjOw5+5kSu0Tsx/3gqz0D" + \
         "py7OQbWqFHrNB7MmS4TukX/vDyQOFdElY5yxnEhbgRwKACq0AP4QH9H" + \
         "CiRyCE8UXDdAkY4VUd6jrWjRHKRoqQN7I+Q5tb2Fu5cDfifw/PQc86Z" + \
@@ -506,26 +511,26 @@ def _test_http_sig_new(algorithm: str, digestAlgorithm: str):
         "vp0H2xfbJQjv8FsR/lKiRdaVHqGR2CKrvxvPRPaOsFANp2wzEtiMk3O" + \
         "TrBTYU+Zb53mIspfEeLxsNtcGmBDmQKZ9Pud8f99XGJrP+uDd3zKtnr" + \
         "f3fUnRRqy37yhB7WVwkg==:"
-    assert signatureHeader == sig
+    assert signature_header == sig
 
     debug = True
-    headers['path'] = pathStr
+    headers['path'] = path_str
     headers['signature'] = sig
-    headers['signature-input'] = sigInput
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               pathStr, False, None,
-                               messageBodyJsonStr, debug, True)
+    headers['signature-input'] = sig_input
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               path_str, False, None,
+                               message_body_json_str, debug, True)
 
     # make a deliberate mistake
     debug = False
     headers['signature'] = headers['signature'].replace('V', 'B')
-    assert not verify_post_headers(http_prefix, publicKeyPem, headers,
-                                   pathStr, False, None,
-                                   messageBodyJsonStr, debug, True)
+    assert not verify_post_headers(http_prefix, public_key_pem, headers,
+                                   path_str, False, None,
+                                   message_body_json_str, debug, True)
 
 
-def _test_httpsig_base(withDigest: bool, base_dir: str):
-    print('testHttpsig(' + str(withDigest) + ')')
+def _test_httpsig_base(with_digest: bool, base_dir: str):
+    print('test_httpsig(' + str(with_digest) + ')')
 
     path = base_dir + '/.testHttpsigBase'
     if os.path.isdir(path):
@@ -534,110 +539,113 @@ def _test_httpsig_base(withDigest: bool, base_dir: str):
     os.chdir(path)
 
     algorithm = 'rsa-sha256'
-    digestAlgorithm = 'rsa-sha256'
+    digest_algorithm = 'rsa-sha256'
     content_type = 'application/activity+json'
     nickname = 'socrates'
-    hostDomain = 'someother.instance'
+    host_domain = 'someother.instance'
     domain = 'argumentative.social'
     http_prefix = 'https'
     port = 5576
     password = 'SuperSecretPassword'
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix,
                       False, False, password)
-    assert privateKeyPem
-    if withDigest:
-        messageBodyJson = {
+    assert private_key_pem
+    assert public_key_pem
+    assert person
+    assert wf_endpoint
+    if with_digest:
+        message_body_json = {
             "a key": "a value",
             "another key": "A string",
             "yet another key": "Another string"
         }
-        messageBodyJsonStr = json.dumps(messageBodyJson)
+        message_body_json_str = json.dumps(message_body_json)
     else:
-        messageBodyJsonStr = ''
+        message_body_json_str = ''
 
-    headersDomain = get_full_domain(hostDomain, port)
+    headers_domain = get_full_domain(host_domain, port)
 
-    dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    date_str = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath = '/inbox'
-    if not withDigest:
+    if not with_digest:
         headers = {
-            'host': headersDomain,
-            'date': dateStr,
+            'host': headers_domain,
+            'date': date_str,
             'accept': content_type
         }
-        signatureHeader = \
-            sign_post_headers(dateStr, privateKeyPem, nickname,
+        signature_header = \
+            sign_post_headers(date_str, private_key_pem, nickname,
                               domain, port,
-                              hostDomain, port,
+                              host_domain, port,
                               boxpath, http_prefix, None, content_type,
                               algorithm, None)
     else:
-        digestPrefix = get_digest_prefix(digestAlgorithm)
-        bodyDigest = \
-            message_content_digest(messageBodyJsonStr, digestAlgorithm)
-        contentLength = len(messageBodyJsonStr)
+        digest_prefix = get_digest_prefix(digest_algorithm)
+        body_digest = \
+            message_content_digest(message_body_json_str, digest_algorithm)
+        content_length = len(message_body_json_str)
         headers = {
-            'host': headersDomain,
-            'date': dateStr,
-            'digest': f'{digestPrefix}={bodyDigest}',
+            'host': headers_domain,
+            'date': date_str,
+            'digest': f'{digest_prefix}={body_digest}',
             'content-type': content_type,
-            'content-length': str(contentLength)
+            'content-length': str(content_length)
         }
-        assert get_digest_algorithm_from_headers(headers) == digestAlgorithm
-        signatureHeader = \
-            sign_post_headers(dateStr, privateKeyPem, nickname,
+        assert get_digest_algorithm_from_headers(headers) == digest_algorithm
+        signature_header = \
+            sign_post_headers(date_str, private_key_pem, nickname,
                               domain, port,
-                              hostDomain, port,
-                              boxpath, http_prefix, messageBodyJsonStr,
-                              content_type, algorithm, digestAlgorithm)
+                              host_domain, port,
+                              boxpath, http_prefix, message_body_json_str,
+                              content_type, algorithm, digest_algorithm)
 
-    headers['signature'] = signatureHeader
-    GETmethod = not withDigest
+    headers['signature'] = signature_header
+    getreq_method = not with_digest
     debug = True
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               boxpath, GETmethod, None,
-                               messageBodyJsonStr, debug)
-    if withDigest:
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               boxpath, getreq_method, None,
+                               message_body_json_str, debug)
+    if with_digest:
         # everything correct except for content-length
-        headers['content-length'] = str(contentLength + 2)
-        assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                                   boxpath, GETmethod, None,
-                                   messageBodyJsonStr, False) is False
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               '/parambulator' + boxpath, GETmethod, None,
-                               messageBodyJsonStr, False) is False
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               boxpath, not GETmethod, None,
-                               messageBodyJsonStr, False) is False
-    if not withDigest:
+        headers['content-length'] = str(content_length + 2)
+        assert verify_post_headers(http_prefix, public_key_pem, headers,
+                                   boxpath, getreq_method, None,
+                                   message_body_json_str, False) is False
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               '/parambulator' + boxpath, getreq_method, None,
+                               message_body_json_str, False) is False
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               boxpath, not getreq_method, None,
+                               message_body_json_str, False) is False
+    if not with_digest:
         # fake domain
         headers = {
             'host': 'bogon.domain',
-            'date': dateStr,
+            'date': date_str,
             'content-type': content_type
         }
     else:
         # correct domain but fake message
-        messageBodyJsonStr = \
+        message_body_json_str = \
             '{"a key": "a value", "another key": "Fake GNUs", ' + \
             '"yet another key": "More Fake GNUs"}'
-        contentLength = len(messageBodyJsonStr)
-        digestPrefix = get_digest_prefix(digestAlgorithm)
-        bodyDigest = \
-            message_content_digest(messageBodyJsonStr, digestAlgorithm)
+        content_length = len(message_body_json_str)
+        digest_prefix = get_digest_prefix(digest_algorithm)
+        body_digest = \
+            message_content_digest(message_body_json_str, digest_algorithm)
         headers = {
             'host': domain,
-            'date': dateStr,
-            'digest': f'{digestPrefix}={bodyDigest}',
+            'date': date_str,
+            'digest': f'{digest_prefix}={body_digest}',
             'content-type': content_type,
-            'content-length': str(contentLength)
+            'content-length': str(content_length)
         }
-        assert get_digest_algorithm_from_headers(headers) == digestAlgorithm
-    headers['signature'] = signatureHeader
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               boxpath, not GETmethod, None,
-                               messageBodyJsonStr, False) is False
+        assert get_digest_algorithm_from_headers(headers) == digest_algorithm
+    headers['signature'] = signature_header
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               boxpath, not getreq_method, None,
+                               message_body_json_str, False) is False
 
     os.chdir(base_dir)
     shutil.rmtree(path, ignore_errors=False, onerror=None)
@@ -649,26 +657,26 @@ def _test_httpsig(base_dir: str):
 
 
 def _test_cache():
-    print('testCache')
-    personUrl = "cat@cardboard.box"
-    personJson = {
+    print('test_cache')
+    person_url = "cat@cardboard.box"
+    person_json = {
         "id": 123456,
         "test": "This is a test"
     }
     person_cache = {}
-    store_person_in_cache(None, personUrl, personJson, person_cache, True)
-    result = get_person_from_cache(None, personUrl, person_cache, True)
+    store_person_in_cache(None, person_url, person_json, person_cache, True)
+    result = get_person_from_cache(None, person_url, person_cache, True)
     assert result['id'] == 123456
     assert result['test'] == 'This is a test'
 
 
 def _test_threads_function(param: str):
-    for i in range(10000):
+    for _ in range(10000):
         time.sleep(2)
 
 
 def _test_threads():
-    print('testThreads')
+    print('test_threads')
     thr = \
         thread_with_trace(target=_test_threads_function,
                           args=('test',),
@@ -682,7 +690,7 @@ def _test_threads():
 
 
 def create_server_alice(path: str, domain: str, port: int,
-                        bobAddress: str, federation_list: [],
+                        bob_address: str, federation_list: [],
                         hasFollows: bool, hasPosts: bool,
                         send_threads: []):
     print('Creating test server: Alice on port ' + str(port))
@@ -701,83 +709,87 @@ def create_server_alice(path: str, domain: str, port: int,
     account_max_posts_per_day = 1000
     allow_deletion = True
     low_bandwidth = True
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
                       False, password)
+    assert private_key_pem
+    assert public_key_pem
+    assert person
+    assert wf_endpoint
     delete_all_posts(path, nickname, domain, 'inbox')
     delete_all_posts(path, nickname, domain, 'outbox')
     assert set_skill_level(path, nickname, domain, 'hacking', 90)
     assert set_role(path, nickname, domain, 'guru')
     if hasFollows:
-        follow_person(path, nickname, domain, 'bob', bobAddress,
+        follow_person(path, nickname, domain, 'bob', bob_address,
                       federation_list, False, False)
-        add_follower_of_person(path, nickname, domain, 'bob', bobAddress,
+        add_follower_of_person(path, nickname, domain, 'bob', bob_address,
                                federation_list, False, False)
     if hasPosts:
-        testFollowersOnly = False
-        testSaveToFile = True
+        test_followers_only = False
+        test_save_to_file = True
         client_to_server = False
-        testCommentsEnabled = True
-        testAttachImageFilename = None
-        testMediaType = None
-        testImageDescription = None
-        testCity = 'London, England'
-        testInReplyTo = None
-        testInReplyToAtomUri = None
-        testSubject = None
-        testSchedulePost = False
-        testEventDate = None
-        testEventTime = None
-        testLocation = None
-        testIsArticle = False
-        conversationId = None
+        test_comments_enabled = True
+        test_attach_image_filename = None
+        test_media_type = None
+        test_image_description = None
+        test_city = 'London, England'
+        test_in_reply_to = None
+        test_in_reply_to_atom_uri = None
+        test_subject = None
+        test_schedule_post = False
+        test_event_date = None
+        test_event_time = None
+        test_location = None
+        test_is_article = False
+        conversation_id = None
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
         create_public_post(path, nickname, domain, port, http_prefix,
                            "No wise fish would go anywhere without a porpoise",
-                           testFollowersOnly,
-                           testSaveToFile,
+                           test_followers_only,
+                           test_save_to_file,
                            client_to_server,
-                           testCommentsEnabled,
-                           testAttachImageFilename,
-                           testMediaType,
-                           testImageDescription, testCity,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           test_comments_enabled,
+                           test_attach_image_filename,
+                           test_media_type,
+                           test_image_description, test_city,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Curiouser and curiouser!",
-                           testFollowersOnly,
-                           testSaveToFile,
+                           test_followers_only,
+                           test_save_to_file,
                            client_to_server,
-                           testCommentsEnabled,
-                           testAttachImageFilename,
-                           testMediaType,
-                           testImageDescription, testCity,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           test_comments_enabled,
+                           test_attach_image_filename,
+                           test_media_type,
+                           test_image_description, test_city,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "In the gardens of memory, in the palace " +
                            "of dreams, that is where you and I shall meet",
-                           testFollowersOnly,
-                           testSaveToFile,
+                           test_followers_only,
+                           test_save_to_file,
                            client_to_server,
-                           testCommentsEnabled,
-                           testAttachImageFilename,
-                           testMediaType,
-                           testImageDescription, testCity,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           test_comments_enabled,
+                           test_attach_image_filename,
+                           test_media_type,
+                           test_image_description, test_city,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
-    global testServerAliceRunning
-    testServerAliceRunning = True
+    global TEST_SERVER_ALICE_RUNNING
+    TEST_SERVER_ALICE_RUNNING = True
     max_mentions = 10
     max_emoji = 10
     onion_domain = None
@@ -826,7 +838,7 @@ def create_server_alice(path: str, domain: str, port: int,
 
 
 def create_server_bob(path: str, domain: str, port: int,
-                      aliceAddress: str, federation_list: [],
+                      alice_address: str, federation_list: [],
                       hasFollows: bool, hasPosts: bool,
                       send_threads: []):
     print('Creating test server: Bob on port ' + str(port))
@@ -846,81 +858,85 @@ def create_server_bob(path: str, domain: str, port: int,
     account_max_posts_per_day = 1000
     allow_deletion = True
     low_bandwidth = True
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
                       False, password)
+    assert private_key_pem
+    assert public_key_pem
+    assert person
+    assert wf_endpoint
     delete_all_posts(path, nickname, domain, 'inbox')
     delete_all_posts(path, nickname, domain, 'outbox')
-    if hasFollows and aliceAddress:
+    if hasFollows and alice_address:
         follow_person(path, nickname, domain,
-                      'alice', aliceAddress, federation_list, False, False)
+                      'alice', alice_address, federation_list, False, False)
         add_follower_of_person(path, nickname, domain,
-                               'alice', aliceAddress, federation_list,
+                               'alice', alice_address, federation_list,
                                False, False)
     if hasPosts:
-        testFollowersOnly = False
-        testSaveToFile = True
-        testCommentsEnabled = True
-        testAttachImageFilename = None
-        testImageDescription = None
-        testMediaType = None
-        testCity = 'London, England'
-        testInReplyTo = None
-        testInReplyToAtomUri = None
-        testSubject = None
-        testSchedulePost = False
-        testEventDate = None
-        testEventTime = None
-        testLocation = None
-        testIsArticle = False
-        conversationId = None
+        test_followers_only = False
+        test_save_to_file = True
+        test_comments_enabled = True
+        test_attach_image_filename = None
+        test_image_description = None
+        test_media_type = None
+        test_city = 'London, England'
+        test_in_reply_to = None
+        test_in_reply_to_atom_uri = None
+        test_subject = None
+        test_schedule_post = False
+        test_event_date = None
+        test_event_time = None
+        test_location = None
+        test_is_article = False
+        conversation_id = None
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
         create_public_post(path, nickname, domain, port, http_prefix,
                            "It's your life, live it your way.",
-                           testFollowersOnly,
-                           testSaveToFile,
+                           test_followers_only,
+                           test_save_to_file,
                            client_to_server,
-                           testCommentsEnabled,
-                           testAttachImageFilename,
-                           testMediaType,
-                           testImageDescription, testCity,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           test_comments_enabled,
+                           test_attach_image_filename,
+                           test_media_type,
+                           test_image_description, test_city,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "One of the things I've realised is that " +
                            "I am very simple",
-                           testFollowersOnly,
-                           testSaveToFile,
+                           test_followers_only,
+                           test_save_to_file,
                            client_to_server,
-                           testCommentsEnabled,
-                           testAttachImageFilename,
-                           testMediaType,
-                           testImageDescription, testCity,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           test_comments_enabled,
+                           test_attach_image_filename,
+                           test_media_type,
+                           test_image_description, test_city,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Quantum physics is a bit of a passion of mine",
-                           testFollowersOnly,
-                           testSaveToFile,
+                           test_followers_only,
+                           test_save_to_file,
                            client_to_server,
-                           testCommentsEnabled,
-                           testAttachImageFilename,
-                           testMediaType,
-                           testImageDescription, testCity,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           test_comments_enabled,
+                           test_attach_image_filename,
+                           test_media_type,
+                           test_image_description, test_city,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
-    global testServerBobRunning
-    testServerBobRunning = True
+    global TEST_SERVER_BOB_RUNNING
+    TEST_SERVER_BOB_RUNNING = True
     max_mentions = 10
     max_emoji = 10
     onion_domain = None
@@ -983,13 +999,17 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     password = 'evepass'
     max_replies = 64
     allow_deletion = True
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
                       False, password)
+    assert private_key_pem
+    assert public_key_pem
+    assert person
+    assert wf_endpoint
     delete_all_posts(path, nickname, domain, 'inbox')
     delete_all_posts(path, nickname, domain, 'outbox')
-    global testServerEveRunning
-    testServerEveRunning = True
+    global TEST_SERVER_EVE_RUNNING
+    TEST_SERVER_EVE_RUNNING = True
     max_mentions = 10
     max_emoji = 10
     onion_domain = None
@@ -1055,13 +1075,17 @@ def create_server_group(path: str, domain: str, port: int,
     domain_max_posts_per_day = 1000
     account_max_posts_per_day = 1000
     allow_deletion = True
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    private_key_pem, public_key_pem, person, wf_endpoint = \
         create_group(path, nickname, domain, port, http_prefix, True,
                      password)
+    assert private_key_pem
+    assert public_key_pem
+    assert person
+    assert wf_endpoint
     delete_all_posts(path, nickname, domain, 'inbox')
     delete_all_posts(path, nickname, domain, 'outbox')
-    global testServerGroupRunning
-    testServerGroupRunning = True
+    global TEST_SERVER_GROUP_RUNNING
+    TEST_SERVER_GROUP_RUNNING = True
     max_mentions = 10
     max_emoji = 10
     onion_domain = None
@@ -1113,10 +1137,10 @@ def create_server_group(path: str, domain: str, port: int,
 def test_post_message_between_servers(base_dir: str) -> None:
     print('Testing sending message from one server to the inbox of another')
 
-    global testServerAliceRunning
-    global testServerBobRunning
-    testServerAliceRunning = False
-    testServerBobRunning = False
+    global TEST_SERVER_ALICE_RUNNING
+    global TEST_SERVER_BOB_RUNNING
+    TEST_SERVER_ALICE_RUNNING = False
+    TEST_SERVER_BOB_RUNNING = False
 
     system_language = 'en'
     http_prefix = 'http'
@@ -1128,172 +1152,172 @@ def test_post_message_between_servers(base_dir: str) -> None:
     os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = base_dir + '/.tests/alice'
-    aliceDomain = '127.0.0.50'
-    alicePort = 61935
-    aliceAddress = aliceDomain + ':' + str(alicePort)
+    alice_dir = base_dir + '/.tests/alice'
+    alice_domain = '127.0.0.50'
+    alice_port = 61935
+    alice_address = alice_domain + ':' + str(alice_port)
 
-    bobDir = base_dir + '/.tests/bob'
-    bobDomain = '127.0.0.100'
-    bobPort = 61936
-    federation_list = [bobDomain, aliceDomain]
-    aliceSendThreads = []
-    bobSendThreads = []
-    bobAddress = bobDomain + ':' + str(bobPort)
+    bob_dir = base_dir + '/.tests/bob'
+    bob_domain = '127.0.0.100'
+    bob_port = 61936
+    federation_list = [bob_domain, alice_domain]
+    alice_send_threads = []
+    bob_send_threads = []
+    bob_address = bob_domain + ':' + str(bob_port)
 
-    global thrAlice
-    if thrAlice:
-        while thrAlice.is_alive():
-            thrAlice.stop()
+    global THR_ALICE
+    if THR_ALICE:
+        while THR_ALICE.is_alive():
+            THR_ALICE.stop()
             time.sleep(1)
-        thrAlice.kill()
+        THR_ALICE.kill()
 
-    thrAlice = \
+    THR_ALICE = \
         thread_with_trace(target=create_server_alice,
-                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                                federation_list, False, False,
-                                aliceSendThreads),
+                          args=(alice_dir, alice_domain, alice_port,
+                                bob_address, federation_list, False, False,
+                                alice_send_threads),
                           daemon=True)
 
-    global thrBob
-    if thrBob:
-        while thrBob.is_alive():
-            thrBob.stop()
+    global THR_BOB
+    if THR_BOB:
+        while THR_BOB.is_alive():
+            THR_BOB.stop()
             time.sleep(1)
-        thrBob.kill()
+        THR_BOB.kill()
 
-    thrBob = \
+    THR_BOB = \
         thread_with_trace(target=create_server_bob,
-                          args=(bobDir, bobDomain, bobPort, aliceAddress,
+                          args=(bob_dir, bob_domain, bob_port, alice_address,
                                 federation_list, False, False,
-                                bobSendThreads),
+                                bob_send_threads),
                           daemon=True)
 
-    thrAlice.start()
-    thrBob.start()
-    assert thrAlice.is_alive() is True
-    assert thrBob.is_alive() is True
+    THR_ALICE.start()
+    THR_BOB.start()
+    assert THR_ALICE.is_alive() is True
+    assert THR_BOB.is_alive() is True
 
     # wait for both servers to be running
-    while not (testServerAliceRunning and testServerBobRunning):
+    while not (TEST_SERVER_ALICE_RUNNING and TEST_SERVER_BOB_RUNNING):
         time.sleep(1)
 
     time.sleep(1)
 
     print('\n\n*******************************************************')
     print('Alice sends to Bob')
-    os.chdir(aliceDir)
-    sessionAlice = create_session(proxy_type)
-    inReplyTo = None
-    inReplyToAtomUri = None
+    os.chdir(alice_dir)
+    session_alice = create_session(proxy_type)
+    in_reply_to = None
+    in_reply_to_atom_uri = None
     subject = None
-    alicePostLog = []
-    followersOnly = False
-    saveToFile = True
+    alice_post_log = []
+    followers_only = False
+    save_to_file = True
     client_to_server = False
-    ccUrl = None
-    alicePersonCache = {}
-    aliceCachedWebfingers = {}
-    aliceSharedItemsFederatedDomains = []
-    aliceSharedItemFederationTokens = {}
-    attachedImageFilename = base_dir + '/img/logo.png'
-    testImageWidth, testImageHeight = \
-        get_image_dimensions(attachedImageFilename)
-    assert testImageWidth
-    assert testImageHeight
-    mediaType = get_attachment_media_type(attachedImageFilename)
-    attachedImageDescription = 'Logo'
-    isArticle = False
+    cc_url = None
+    alice_person_cache = {}
+    alice_cached_webfingers = {}
+    alice_shared_items_federated_domains = []
+    alice_shared_item_federation_tokens = {}
+    attached_image_filename = base_dir + '/img/logo.png'
+    test_image_width, test_image_height = \
+        get_image_dimensions(attached_image_filename)
+    assert test_image_width
+    assert test_image_height
+    media_type = get_attachment_media_type(attached_image_filename)
+    attached_image_description = 'Logo'
+    is_article = False
     city = 'London, England'
     # nothing in Alice's outbox
-    outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
-    assert len([name for name in os.listdir(outboxPath)
-                if os.path.isfile(os.path.join(outboxPath, name))]) == 0
+    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    assert len([name for name in os.listdir(outbox_path)
+                if os.path.isfile(os.path.join(outbox_path, name))]) == 0
     low_bandwidth = False
     signing_priv_key_pem = None
-    sendResult = \
+    send_result = \
         send_post(signing_priv_key_pem, __version__,
-                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
-                  'bob', bobDomain, bobPort, ccUrl, http_prefix,
+                  session_alice, alice_dir, 'alice', alice_domain, alice_port,
+                  'bob', bob_domain, bob_port, cc_url, http_prefix,
                   'Why is a mouse when it spins? ' +
                   'यह एक परीक्षण है #sillyquestion',
-                  followersOnly,
-                  saveToFile, client_to_server, True,
-                  attachedImageFilename, mediaType,
-                  attachedImageDescription, city, federation_list,
-                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                  alicePersonCache, isArticle, system_language,
-                  aliceSharedItemsFederatedDomains,
-                  aliceSharedItemFederationTokens, low_bandwidth,
+                  followers_only,
+                  save_to_file, client_to_server, True,
+                  attached_image_filename, media_type,
+                  attached_image_description, city, federation_list,
+                  alice_send_threads, alice_post_log, alice_cached_webfingers,
+                  alice_person_cache, is_article, system_language,
+                  alice_shared_items_federated_domains,
+                  alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url,
-                  inReplyTo, inReplyToAtomUri, subject)
-    print('sendResult: ' + str(sendResult))
+                  in_reply_to, in_reply_to_atom_uri, subject)
+    print('send_result: ' + str(send_result))
 
-    queuePath = bobDir + '/accounts/bob@' + bobDomain + '/queue'
-    inboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
-    mPath = get_media_path()
-    mediaPath = aliceDir + '/' + mPath
-    for i in range(30):
-        if os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(inboxPath)
-                    if os.path.isfile(os.path.join(inboxPath, name))]) > 0:
-                if len([name for name in os.listdir(outboxPath)
-                        if os.path.isfile(os.path.join(outboxPath,
+    queue_path = bob_dir + '/accounts/bob@' + bob_domain + '/queue'
+    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    m_path = get_media_path()
+    media_path = alice_dir + '/' + m_path
+    for _ in range(30):
+        if os.path.isdir(inbox_path):
+            if len([name for name in os.listdir(inbox_path)
+                    if os.path.isfile(os.path.join(inbox_path, name))]) > 0:
+                if len([name for name in os.listdir(outbox_path)
+                        if os.path.isfile(os.path.join(outbox_path,
                                                        name))]) == 1:
-                    if len([name for name in os.listdir(mediaPath)
-                            if os.path.isfile(os.path.join(mediaPath,
+                    if len([name for name in os.listdir(media_path)
+                            if os.path.isfile(os.path.join(media_path,
                                                            name))]) > 0:
-                        if len([name for name in os.listdir(queuePath)
-                                if os.path.isfile(os.path.join(queuePath,
+                        if len([name for name in os.listdir(queue_path)
+                                if os.path.isfile(os.path.join(queue_path,
                                                                name))]) == 0:
                             break
         time.sleep(1)
 
     # check that a news account exists
-    newsActorDir = aliceDir + '/accounts/news@' + aliceDomain
-    print("newsActorDir: " + newsActorDir)
-    assert os.path.isdir(newsActorDir)
-    newsActorFile = newsActorDir + '.json'
-    assert os.path.isfile(newsActorFile)
-    newsActorJson = load_json(newsActorFile)
-    assert newsActorJson
-    assert newsActorJson.get("id")
+    news_actor_dir = alice_dir + '/accounts/news@' + alice_domain
+    print("news_actor_dir: " + news_actor_dir)
+    assert os.path.isdir(news_actor_dir)
+    news_actor_file = news_actor_dir + '.json'
+    assert os.path.isfile(news_actor_file)
+    news_actor_json = load_json(news_actor_file)
+    assert news_actor_json
+    assert news_actor_json.get("id")
     # check the id of the news actor
-    print('News actor Id: ' + newsActorJson["id"])
-    assert (newsActorJson["id"] ==
-            http_prefix + '://' + aliceAddress + '/users/news')
+    print('News actor Id: ' + news_actor_json["id"])
+    assert (news_actor_json["id"] ==
+            http_prefix + '://' + alice_address + '/users/news')
 
     # Image attachment created
-    assert len([name for name in os.listdir(mediaPath)
-                if os.path.isfile(os.path.join(mediaPath, name))]) > 0
+    assert len([name for name in os.listdir(media_path)
+                if os.path.isfile(os.path.join(media_path, name))]) > 0
     # inbox item created
-    assert len([name for name in os.listdir(inboxPath)
-                if os.path.isfile(os.path.join(inboxPath, name))]) == 1
+    assert len([name for name in os.listdir(inbox_path)
+                if os.path.isfile(os.path.join(inbox_path, name))]) == 1
     # queue item removed
-    testval = len([name for name in os.listdir(queuePath)
-                   if os.path.isfile(os.path.join(queuePath, name))])
-    print('queuePath: ' + queuePath + ' '+str(testval))
+    testval = len([name for name in os.listdir(queue_path)
+                   if os.path.isfile(os.path.join(queue_path, name))])
+    print('queue_path: ' + queue_path + ' '+str(testval))
     assert testval == 0
-    assert valid_inbox(bobDir, 'bob', bobDomain)
-    assert valid_inbox_filenames(bobDir, 'bob', bobDomain,
-                                 aliceDomain, alicePort)
+    assert valid_inbox(bob_dir, 'bob', bob_domain)
+    assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
+                                 alice_domain, alice_port)
     print('Check that message received from Alice contains the expected text')
-    for name in os.listdir(inboxPath):
-        filename = os.path.join(inboxPath, name)
+    for name in os.listdir(inbox_path):
+        filename = os.path.join(inbox_path, name)
         assert os.path.isfile(filename)
-        receivedJson = load_json(filename, 0)
-        if receivedJson:
-            pprint(receivedJson['object']['content'])
-        assert receivedJson
+        received_json = load_json(filename, 0)
+        if received_json:
+            pprint(received_json['object']['content'])
+        assert received_json
         assert 'Why is a mouse when it spins?' in \
-            receivedJson['object']['content']
+            received_json['object']['content']
         assert 'Why is a mouse when it spins?' in \
-            receivedJson['object']['contentMap'][system_language]
-        assert 'यह एक परीक्षण है' in receivedJson['object']['content']
+            received_json['object']['contentMap'][system_language]
+        assert 'यह एक परीक्षण है' in received_json['object']['content']
         print('Check that message received from Alice contains an attachment')
-        assert receivedJson['object']['attachment']
-        assert len(receivedJson['object']['attachment']) == 1
-        attached = receivedJson['object']['attachment'][0]
+        assert received_json['object']['attachment']
+        assert len(received_json['object']['attachment']) == 1
+        attached = received_json['object']['attachment'][0]
         pprint(attached)
         assert attached.get('type')
         assert attached.get('url')
@@ -1310,137 +1334,137 @@ def test_post_message_between_servers(base_dir: str) -> None:
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
 
-    aliceDomainStr = aliceDomain + ':' + str(alicePort)
-    add_follower_of_person(bobDir, 'bob', bobDomain, 'alice',
-                           aliceDomainStr, federation_list, False, False)
-    bobDomainStr = bobDomain + ':' + str(bobPort)
-    follow_person(aliceDir, 'alice', aliceDomain, 'bob',
-                  bobDomainStr, federation_list, False, False)
+    alice_domain_str = alice_domain + ':' + str(alice_port)
+    add_follower_of_person(bob_dir, 'bob', bob_domain, 'alice',
+                           alice_domain_str, federation_list, False, False)
+    bob_domain_str = bob_domain + ':' + str(bob_port)
+    follow_person(alice_dir, 'alice', alice_domain, 'bob',
+                  bob_domain_str, federation_list, False, False)
 
-    sessionBob = create_session(proxy_type)
-    bobPostLog = []
-    bobPersonCache = {}
-    bobCachedWebfingers = {}
-    statusNumber = None
-    outboxPostFilename = None
-    outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
-    for name in os.listdir(outboxPath):
+    session_bob = create_session(proxy_type)
+    bob_post_log = []
+    bob_person_cache = {}
+    bob_cached_webfingers = {}
+    status_number = None
+    outbox_post_filename = None
+    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    for name in os.listdir(outbox_path):
         if '#statuses#' in name:
-            statusNumber = \
+            status_number = \
                 int(name.split('#statuses#')[1].replace('.json', ''))
-            outboxPostFilename = outboxPath + '/' + name
-    assert statusNumber > 0
-    assert outboxPostFilename
-    assert like_post({}, sessionBob, bobDir, federation_list,
-                     'bob', bobDomain, bobPort, http_prefix,
-                     'alice', aliceDomain, alicePort, [],
-                     statusNumber, False, bobSendThreads, bobPostLog,
-                     bobPersonCache, bobCachedWebfingers,
+            outbox_post_filename = outbox_path + '/' + name
+    assert status_number > 0
+    assert outbox_post_filename
+    assert like_post({}, session_bob, bob_dir, federation_list,
+                     'bob', bob_domain, bob_port, http_prefix,
+                     'alice', alice_domain, alice_port, [],
+                     status_number, False, bob_send_threads, bob_post_log,
+                     bob_person_cache, bob_cached_webfingers,
                      True, __version__, signing_priv_key_pem)
 
-    for i in range(20):
-        if 'likes' in open(outboxPostFilename).read():
+    for _ in range(20):
+        if 'likes' in open(outbox_post_filename).read():
             break
         time.sleep(1)
 
-    alicePostJson = load_json(outboxPostFilename, 0)
-    if alicePostJson:
-        pprint(alicePostJson)
+    alice_post_json = load_json(outbox_post_filename, 0)
+    if alice_post_json:
+        pprint(alice_post_json)
 
-    assert 'likes' in open(outboxPostFilename).read()
+    assert 'likes' in open(outbox_post_filename).read()
 
     print('\n\n*******************************************************')
     print("Bob reacts to Alice's post")
 
-    assert reaction_post({}, sessionBob, bobDir, federation_list,
-                         'bob', bobDomain, bobPort, http_prefix,
-                         'alice', aliceDomain, alicePort, [],
-                         statusNumber, '😀',
-                         False, bobSendThreads, bobPostLog,
-                         bobPersonCache, bobCachedWebfingers,
+    assert reaction_post({}, session_bob, bob_dir, federation_list,
+                         'bob', bob_domain, bob_port, http_prefix,
+                         'alice', alice_domain, alice_port, [],
+                         status_number, '😀',
+                         False, bob_send_threads, bob_post_log,
+                         bob_person_cache, bob_cached_webfingers,
                          True, __version__, signing_priv_key_pem)
 
     for i in range(20):
-        if 'reactions' in open(outboxPostFilename).read():
+        if 'reactions' in open(outbox_post_filename).read():
             break
         time.sleep(1)
 
-    alicePostJson = load_json(outboxPostFilename, 0)
-    if alicePostJson:
-        pprint(alicePostJson)
+    alice_post_json = load_json(outbox_post_filename, 0)
+    if alice_post_json:
+        pprint(alice_post_json)
 
-    assert 'reactions' in open(outboxPostFilename).read()
+    assert 'reactions' in open(outbox_post_filename).read()
 
     print('\n\n*******************************************************')
     print("Bob repeats Alice's post")
-    objectUrl = \
-        http_prefix + '://' + aliceDomain + ':' + str(alicePort) + \
-        '/users/alice/statuses/' + str(statusNumber)
-    inboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/inbox'
-    outboxPath = bobDir + '/accounts/bob@' + bobDomain + '/outbox'
-    outboxBeforeAnnounceCount = \
-        len([name for name in os.listdir(outboxPath)
-             if os.path.isfile(os.path.join(outboxPath, name))])
-    beforeAnnounceCount = \
-        len([name for name in os.listdir(inboxPath)
-             if os.path.isfile(os.path.join(inboxPath, name))])
-    print('inbox items before announce: ' + str(beforeAnnounceCount))
-    print('outbox items before announce: ' + str(outboxBeforeAnnounceCount))
-    assert outboxBeforeAnnounceCount == 0
-    assert beforeAnnounceCount == 0
-    announce_public(sessionBob, bobDir, federation_list,
-                    'bob', bobDomain, bobPort, http_prefix,
-                    objectUrl,
-                    False, bobSendThreads, bobPostLog,
-                    bobPersonCache, bobCachedWebfingers,
+    object_url = \
+        http_prefix + '://' + alice_domain + ':' + str(alice_port) + \
+        '/users/alice/statuses/' + str(status_number)
+    inbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/inbox'
+    outbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/outbox'
+    outbox_before_announce_count = \
+        len([name for name in os.listdir(outbox_path)
+             if os.path.isfile(os.path.join(outbox_path, name))])
+    before_announce_count = \
+        len([name for name in os.listdir(inbox_path)
+             if os.path.isfile(os.path.join(inbox_path, name))])
+    print('inbox items before announce: ' + str(before_announce_count))
+    print('outbox items before announce: ' + str(outbox_before_announce_count))
+    assert outbox_before_announce_count == 0
+    assert before_announce_count == 0
+    announce_public(session_bob, bob_dir, federation_list,
+                    'bob', bob_domain, bob_port, http_prefix,
+                    object_url,
+                    False, bob_send_threads, bob_post_log,
+                    bob_person_cache, bob_cached_webfingers,
                     True, __version__, signing_priv_key_pem)
-    announceMessageArrived = False
-    outboxMessageArrived = False
+    announce_message_arrived = False
+    outbox_message_arrived = False
     for i in range(10):
         time.sleep(1)
-        if not os.path.isdir(inboxPath):
+        if not os.path.isdir(inbox_path):
             continue
-        if len([name for name in os.listdir(outboxPath)
-                if os.path.isfile(os.path.join(outboxPath, name))]) > 0:
-            outboxMessageArrived = True
+        if len([name for name in os.listdir(outbox_path)
+                if os.path.isfile(os.path.join(outbox_path, name))]) > 0:
+            outbox_message_arrived = True
             print('Announce created by Bob')
-        if len([name for name in os.listdir(inboxPath)
-                if os.path.isfile(os.path.join(inboxPath, name))]) > 0:
-            announceMessageArrived = True
+        if len([name for name in os.listdir(inbox_path)
+                if os.path.isfile(os.path.join(inbox_path, name))]) > 0:
+            announce_message_arrived = True
             print('Announce message sent to Alice!')
-        if announceMessageArrived and outboxMessageArrived:
+        if announce_message_arrived and outbox_message_arrived:
             break
-    afterAnnounceCount = \
-        len([name for name in os.listdir(inboxPath)
-             if os.path.isfile(os.path.join(inboxPath, name))])
-    outboxAfterAnnounceCount = \
-        len([name for name in os.listdir(outboxPath)
-             if os.path.isfile(os.path.join(outboxPath, name))])
-    print('inbox items after announce: ' + str(afterAnnounceCount))
-    print('outbox items after announce: ' + str(outboxAfterAnnounceCount))
-    assert afterAnnounceCount == beforeAnnounceCount+1
-    assert outboxAfterAnnounceCount == outboxBeforeAnnounceCount + 1
+    after_announce_count = \
+        len([name for name in os.listdir(inbox_path)
+             if os.path.isfile(os.path.join(inbox_path, name))])
+    outbox_after_announce_count = \
+        len([name for name in os.listdir(outbox_path)
+             if os.path.isfile(os.path.join(outbox_path, name))])
+    print('inbox items after announce: ' + str(after_announce_count))
+    print('outbox items after announce: ' + str(outbox_after_announce_count))
+    assert after_announce_count == before_announce_count + 1
+    assert outbox_after_announce_count == outbox_before_announce_count + 1
     # stop the servers
-    thrAlice.kill()
-    thrAlice.join()
-    assert thrAlice.is_alive() is False
+    THR_ALICE.kill()
+    THR_ALICE.join()
+    assert THR_ALICE.is_alive() is False
 
-    thrBob.kill()
-    thrBob.join()
-    assert thrBob.is_alive() is False
+    THR_BOB.kill()
+    THR_BOB.join()
+    assert THR_BOB.is_alive() is False
 
     os.chdir(base_dir)
-    shutil.rmtree(aliceDir, ignore_errors=False, onerror=None)
-    shutil.rmtree(bobDir, ignore_errors=False, onerror=None)
+    shutil.rmtree(alice_dir, ignore_errors=False, onerror=None)
+    shutil.rmtree(bob_dir, ignore_errors=False, onerror=None)
 
 
 def test_follow_between_servers(base_dir: str) -> None:
     print('Testing sending a follow request from one server to another')
 
-    global testServerAliceRunning
-    global testServerBobRunning
-    testServerAliceRunning = False
-    testServerBobRunning = False
+    global TEST_SERVER_ALICE_RUNNING
+    global TEST_SERVER_BOB_RUNNING
+    TEST_SERVER_ALICE_RUNNING = False
+    TEST_SERVER_BOB_RUNNING = False
 
     system_language = 'en'
     http_prefix = 'http'
@@ -1453,60 +1477,60 @@ def test_follow_between_servers(base_dir: str) -> None:
     os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = base_dir + '/.tests/alice'
-    aliceDomain = '127.0.0.47'
-    alicePort = 61935
-    aliceSendThreads = []
-    aliceAddress = aliceDomain + ':' + str(alicePort)
+    alice_dir = base_dir + '/.tests/alice'
+    alice_domain = '127.0.0.47'
+    alice_port = 61935
+    alice_send_threads = []
+    alice_address = alice_domain + ':' + str(alice_port)
 
-    bobDir = base_dir + '/.tests/bob'
-    bobDomain = '127.0.0.79'
-    bobPort = 61936
-    bobSendThreads = []
-    bobAddress = bobDomain + ':' + str(bobPort)
+    bob_dir = base_dir + '/.tests/bob'
+    bob_domain = '127.0.0.79'
+    bob_port = 61936
+    bob_send_threads = []
+    bob_address = bob_domain + ':' + str(bob_port)
 
-    global thrAlice
-    if thrAlice:
-        while thrAlice.is_alive():
-            thrAlice.stop()
+    global THR_ALICE
+    if THR_ALICE:
+        while THR_ALICE.is_alive():
+            THR_ALICE.stop()
             time.sleep(1)
-        thrAlice.kill()
+        THR_ALICE.kill()
 
-    thrAlice = \
+    THR_ALICE = \
         thread_with_trace(target=create_server_alice,
-                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                                federation_list, False, False,
-                                aliceSendThreads),
+                          args=(alice_dir, alice_domain, alice_port,
+                                bob_address, federation_list, False, False,
+                                alice_send_threads),
                           daemon=True)
 
-    global thrBob
-    if thrBob:
-        while thrBob.is_alive():
-            thrBob.stop()
+    global THR_BOB
+    if THR_BOB:
+        while THR_BOB.is_alive():
+            THR_BOB.stop()
             time.sleep(1)
-        thrBob.kill()
+        THR_BOB.kill()
 
-    thrBob = \
+    THR_BOB = \
         thread_with_trace(target=create_server_bob,
-                          args=(bobDir, bobDomain, bobPort, aliceAddress,
+                          args=(bob_dir, bob_domain, bob_port, alice_address,
                                 federation_list, False, False,
-                                bobSendThreads),
+                                bob_send_threads),
                           daemon=True)
 
-    thrAlice.start()
-    thrBob.start()
-    assert thrAlice.is_alive() is True
-    assert thrBob.is_alive() is True
+    THR_ALICE.start()
+    THR_BOB.start()
+    assert THR_ALICE.is_alive() is True
+    assert THR_BOB.is_alive() is True
 
     # wait for all servers to be running
     ctr = 0
-    while not (testServerAliceRunning and testServerBobRunning):
+    while not (TEST_SERVER_ALICE_RUNNING and TEST_SERVER_BOB_RUNNING):
         time.sleep(1)
         ctr += 1
         if ctr > 60:
             break
-    print('Alice online: ' + str(testServerAliceRunning))
-    print('Bob online: ' + str(testServerBobRunning))
+    print('Alice online: ' + str(TEST_SERVER_ALICE_RUNNING))
+    print('Bob online: ' + str(TEST_SERVER_BOB_RUNNING))
     assert ctr <= 60
     time.sleep(1)
 
@@ -1514,110 +1538,111 @@ def test_follow_between_servers(base_dir: str) -> None:
 
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
-    os.chdir(aliceDir)
-    sessionAlice = create_session(proxy_type)
-    inReplyTo = None
-    inReplyToAtomUri = None
+    os.chdir(alice_dir)
+    session_alice = create_session(proxy_type)
+    in_reply_to = None
+    in_reply_to_atom_uri = None
     subject = None
-    alicePostLog = []
-    followersOnly = False
-    saveToFile = True
+    alice_post_log = []
+    followers_only = False
+    save_to_file = True
     client_to_server = False
-    ccUrl = None
-    alicePersonCache = {}
-    aliceCachedWebfingers = {}
-    alicePostLog = []
-    bobActor = http_prefix + '://' + bobAddress + '/users/bob'
+    cc_url = None
+    alice_person_cache = {}
+    alice_cached_webfingers = {}
+    alice_post_log = []
+    bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     signing_priv_key_pem = None
-    sendResult = \
-        send_follow_request(sessionAlice, aliceDir,
-                            'alice', aliceDomain, alicePort, http_prefix,
-                            'bob', bobDomain, bobActor,
-                            bobPort, http_prefix,
+    send_result = \
+        send_follow_request(session_alice, alice_dir,
+                            'alice', alice_domain, alice_port, http_prefix,
+                            'bob', bob_domain, bob_actor,
+                            bob_port, http_prefix,
                             client_to_server, federation_list,
-                            aliceSendThreads, alicePostLog,
-                            aliceCachedWebfingers, alicePersonCache,
+                            alice_send_threads, alice_post_log,
+                            alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem)
-    print('sendResult: ' + str(sendResult))
+    print('send_result: ' + str(send_result))
 
-    for t in range(16):
-        if os.path.isfile(bobDir + '/accounts/bob@' +
-                          bobDomain + '/followers.txt'):
-            if os.path.isfile(aliceDir + '/accounts/alice@' +
-                              aliceDomain + '/following.txt'):
-                if os.path.isfile(aliceDir + '/accounts/alice@' +
-                                  aliceDomain + '/followingCalendar.txt'):
+    for _ in range(16):
+        if os.path.isfile(bob_dir + '/accounts/bob@' +
+                          bob_domain + '/followers.txt'):
+            if os.path.isfile(alice_dir + '/accounts/alice@' +
+                              alice_domain + '/following.txt'):
+                if os.path.isfile(alice_dir + '/accounts/alice@' +
+                                  alice_domain + '/followingCalendar.txt'):
                     break
         time.sleep(1)
 
-    assert valid_inbox(bobDir, 'bob', bobDomain)
-    assert valid_inbox_filenames(bobDir, 'bob', bobDomain,
-                                 aliceDomain, alicePort)
-    assert 'alice@' + aliceDomain in open(bobDir + '/accounts/bob@' +
-                                          bobDomain + '/followers.txt').read()
-    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
-                                      aliceDomain + '/following.txt').read()
-    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
-                                      aliceDomain +
-                                      '/followingCalendar.txt').read()
-    assert not is_group_actor(aliceDir, bobActor, alicePersonCache)
-    assert not is_group_account(aliceDir, 'alice', aliceDomain)
+    assert valid_inbox(bob_dir, 'bob', bob_domain)
+    assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
+                                 alice_domain, alice_port)
+    assert 'alice@' + alice_domain in open(bob_dir + '/accounts/bob@' +
+                                           bob_domain +
+                                           '/followers.txt').read()
+    assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
+                                       alice_domain + '/following.txt').read()
+    assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
+                                       alice_domain +
+                                       '/followingCalendar.txt').read()
+    assert not is_group_actor(alice_dir, bob_actor, alice_person_cache)
+    assert not is_group_account(alice_dir, 'alice', alice_domain)
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
-    alicePostLog = []
-    alicePersonCache = {}
-    aliceCachedWebfingers = {}
-    aliceSharedItemsFederatedDomains = []
-    aliceSharedItemFederationTokens = {}
-    alicePostLog = []
-    isArticle = False
+    alice_post_log = []
+    alice_person_cache = {}
+    alice_cached_webfingers = {}
+    alice_shared_items_federated_domains = []
+    alice_shared_item_federation_tokens = {}
+    alice_post_log = []
+    is_article = False
     city = 'London, England'
     low_bandwidth = False
     signing_priv_key_pem = None
-    sendResult = \
+    send_result = \
         send_post(signing_priv_key_pem, __version__,
-                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
-                  'bob', bobDomain, bobPort, ccUrl,
-                  http_prefix, 'Alice message', followersOnly, saveToFile,
+                  session_alice, alice_dir, 'alice', alice_domain, alice_port,
+                  'bob', bob_domain, bob_port, cc_url,
+                  http_prefix, 'Alice message', followers_only, save_to_file,
                   client_to_server, True,
                   None, None, None, city, federation_list,
-                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                  alicePersonCache, isArticle, system_language,
-                  aliceSharedItemsFederatedDomains,
-                  aliceSharedItemFederationTokens, low_bandwidth,
+                  alice_send_threads, alice_post_log, alice_cached_webfingers,
+                  alice_person_cache, is_article, system_language,
+                  alice_shared_items_federated_domains,
+                  alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url,
-                  inReplyTo, inReplyToAtomUri, subject)
-    print('sendResult: ' + str(sendResult))
+                  in_reply_to, in_reply_to_atom_uri, subject)
+    print('send_result: ' + str(send_result))
 
-    queuePath = bobDir + '/accounts/bob@' + bobDomain + '/queue'
-    inboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
-    aliceMessageArrived = False
+    queue_path = bob_dir + '/accounts/bob@' + bob_domain + '/queue'
+    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    alice_message_arrived = False
     for i in range(20):
         time.sleep(1)
-        if os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(inboxPath)
-                    if os.path.isfile(os.path.join(inboxPath, name))]) > 0:
-                aliceMessageArrived = True
+        if os.path.isdir(inbox_path):
+            if len([name for name in os.listdir(inbox_path)
+                    if os.path.isfile(os.path.join(inbox_path, name))]) > 0:
+                alice_message_arrived = True
                 print('Alice message sent to Bob!')
                 break
 
-    assert aliceMessageArrived is True
+    assert alice_message_arrived is True
     print('Message from Alice to Bob succeeded')
 
     # stop the servers
-    thrAlice.kill()
-    thrAlice.join()
-    assert thrAlice.is_alive() is False
+    THR_ALICE.kill()
+    THR_ALICE.join()
+    assert THR_ALICE.is_alive() is False
 
-    thrBob.kill()
-    thrBob.join()
-    assert thrBob.is_alive() is False
+    THR_BOB.kill()
+    THR_BOB.join()
+    assert THR_BOB.is_alive() is False
 
     # queue item removed
     time.sleep(4)
-    assert len([name for name in os.listdir(queuePath)
-                if os.path.isfile(os.path.join(queuePath, name))]) == 0
+    assert len([name for name in os.listdir(queue_path)
+                if os.path.isfile(os.path.join(queue_path, name))]) == 0
 
     os.chdir(base_dir)
     shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -1626,10 +1651,10 @@ def test_follow_between_servers(base_dir: str) -> None:
 def test_shared_items_federation(base_dir: str) -> None:
     print('Testing federation of shared items between Alice and Bob')
 
-    global testServerAliceRunning
-    global testServerBobRunning
-    testServerAliceRunning = False
-    testServerBobRunning = False
+    global TEST_SERVER_ALICE_RUNNING
+    global TEST_SERVER_BOB_RUNNING
+    TEST_SERVER_ALICE_RUNNING = False
+    TEST_SERVER_BOB_RUNNING = False
 
     system_language = 'en'
     http_prefix = 'http'
@@ -1642,388 +1667,392 @@ def test_shared_items_federation(base_dir: str) -> None:
     os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = base_dir + '/.tests/alice'
-    aliceDomain = '127.0.0.74'
-    alicePort = 61917
-    aliceSendThreads = []
-    aliceAddress = aliceDomain + ':' + str(alicePort)
+    alice_dir = base_dir + '/.tests/alice'
+    alice_domain = '127.0.0.74'
+    alice_port = 61917
+    alice_send_threads = []
+    alice_address = alice_domain + ':' + str(alice_port)
 
-    bobDir = base_dir + '/.tests/bob'
-    bobDomain = '127.0.0.81'
-    bobPort = 61983
-    bobSendThreads = []
-    bobAddress = bobDomain + ':' + str(bobPort)
-    bobPassword = 'bobpass'
-    bobCachedWebfingers = {}
-    bobPersonCache = {}
+    bob_dir = base_dir + '/.tests/bob'
+    bob_domain = '127.0.0.81'
+    bob_port = 61983
+    bob_send_threads = []
+    bob_address = bob_domain + ':' + str(bob_port)
+    bob_password = 'bobpass'
+    bob_cached_webfingers = {}
+    bob_person_cache = {}
 
-    global thrAlice
-    if thrAlice:
-        while thrAlice.is_alive():
-            thrAlice.stop()
+    global THR_ALICE
+    if THR_ALICE:
+        while THR_ALICE.is_alive():
+            THR_ALICE.stop()
             time.sleep(1)
-        thrAlice.kill()
+        THR_ALICE.kill()
 
-    thrAlice = \
+    THR_ALICE = \
         thread_with_trace(target=create_server_alice,
-                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                                federation_list, False, False,
-                                aliceSendThreads),
+                          args=(alice_dir, alice_domain, alice_port,
+                                bob_address, federation_list, False, False,
+                                alice_send_threads),
                           daemon=True)
 
-    global thrBob
-    if thrBob:
-        while thrBob.is_alive():
-            thrBob.stop()
+    global THR_BOB
+    if THR_BOB:
+        while THR_BOB.is_alive():
+            THR_BOB.stop()
             time.sleep(1)
-        thrBob.kill()
+        THR_BOB.kill()
 
-    thrBob = \
+    THR_BOB = \
         thread_with_trace(target=create_server_bob,
-                          args=(bobDir, bobDomain, bobPort, aliceAddress,
+                          args=(bob_dir, bob_domain, bob_port, alice_address,
                                 federation_list, False, False,
-                                bobSendThreads),
+                                bob_send_threads),
                           daemon=True)
 
-    thrAlice.start()
-    thrBob.start()
-    assert thrAlice.is_alive() is True
-    assert thrBob.is_alive() is True
+    THR_ALICE.start()
+    THR_BOB.start()
+    assert THR_ALICE.is_alive() is True
+    assert THR_BOB.is_alive() is True
 
     # wait for all servers to be running
     ctr = 0
-    while not (testServerAliceRunning and testServerBobRunning):
+    while not (TEST_SERVER_ALICE_RUNNING and TEST_SERVER_BOB_RUNNING):
         time.sleep(1)
         ctr += 1
         if ctr > 60:
             break
-    print('Alice online: ' + str(testServerAliceRunning))
-    print('Bob online: ' + str(testServerBobRunning))
+    print('Alice online: ' + str(TEST_SERVER_ALICE_RUNNING))
+    print('Bob online: ' + str(TEST_SERVER_BOB_RUNNING))
     assert ctr <= 60
     time.sleep(1)
 
     signing_priv_key_pem = None
-    sessionClient = create_session(proxy_type)
+    session_client = create_session(proxy_type)
 
     # Get Bob's instance actor
     print('\n\n*********************************************************')
     print("Test Bob's instance actor")
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    testHeaders = {
-        'host': bobAddress,
-        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    test_headers = {
+        'host': bob_address,
+        'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
-    bobInstanceActorJson = \
-        get_json(signing_priv_key_pem, sessionClient,
-                 'http://' + bobAddress + '/@actor', testHeaders, {}, True,
+    bob_instance_actor_json = \
+        get_json(signing_priv_key_pem, session_client,
+                 'http://' + bob_address + '/@actor', test_headers, {}, True,
                  __version__, 'http', 'somedomain.or.other', 10, True)
-    assert bobInstanceActorJson
-    pprint(bobInstanceActorJson)
-    assert bobInstanceActorJson['name'] == 'ACTOR'
+    assert bob_instance_actor_json
+    pprint(bob_instance_actor_json)
+    assert bob_instance_actor_json['name'] == 'ACTOR'
 
     # In the beginning all was calm and there were no follows
 
     print('\n\n*********************************************************')
     print("Alice and Bob agree to share items catalogs")
-    assert os.path.isdir(aliceDir)
-    assert os.path.isdir(bobDir)
-    set_config_param(aliceDir, 'sharedItemsFederatedDomains', bobAddress)
-    set_config_param(bobDir, 'sharedItemsFederatedDomains', aliceAddress)
+    assert os.path.isdir(alice_dir)
+    assert os.path.isdir(bob_dir)
+    set_config_param(alice_dir, 'sharedItemsFederatedDomains', bob_address)
+    set_config_param(bob_dir, 'sharedItemsFederatedDomains', alice_address)
 
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
-    os.chdir(aliceDir)
-    sessionAlice = create_session(proxy_type)
-    inReplyTo = None
-    inReplyToAtomUri = None
+    os.chdir(alice_dir)
+    session_alice = create_session(proxy_type)
+    in_reply_to = None
+    in_reply_to_atom_uri = None
     subject = None
-    alicePostLog = []
-    followersOnly = False
-    saveToFile = True
+    alice_post_log = []
+    followers_only = False
+    save_to_file = True
     client_to_server = False
-    ccUrl = None
-    alicePersonCache = {}
-    aliceCachedWebfingers = {}
-    alicePostLog = []
-    bobActor = http_prefix + '://' + bobAddress + '/users/bob'
-    sendResult = \
-        send_follow_request(sessionAlice, aliceDir,
-                            'alice', aliceDomain, alicePort, http_prefix,
-                            'bob', bobDomain, bobActor,
-                            bobPort, http_prefix,
+    cc_url = None
+    alice_person_cache = {}
+    alice_cached_webfingers = {}
+    alice_post_log = []
+    bob_actor = http_prefix + '://' + bob_address + '/users/bob'
+    send_result = \
+        send_follow_request(session_alice, alice_dir,
+                            'alice', alice_domain, alice_port, http_prefix,
+                            'bob', bob_domain, bob_actor,
+                            bob_port, http_prefix,
                             client_to_server, federation_list,
-                            aliceSendThreads, alicePostLog,
-                            aliceCachedWebfingers, alicePersonCache,
+                            alice_send_threads, alice_post_log,
+                            alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem)
-    print('sendResult: ' + str(sendResult))
+    print('send_result: ' + str(send_result))
 
-    for t in range(16):
-        if os.path.isfile(bobDir + '/accounts/bob@' +
-                          bobDomain + '/followers.txt'):
-            if os.path.isfile(aliceDir + '/accounts/alice@' +
-                              aliceDomain + '/following.txt'):
-                if os.path.isfile(aliceDir + '/accounts/alice@' +
-                                  aliceDomain + '/followingCalendar.txt'):
+    for _ in range(16):
+        if os.path.isfile(bob_dir + '/accounts/bob@' +
+                          bob_domain + '/followers.txt'):
+            if os.path.isfile(alice_dir + '/accounts/alice@' +
+                              alice_domain + '/following.txt'):
+                if os.path.isfile(alice_dir + '/accounts/alice@' +
+                                  alice_domain + '/followingCalendar.txt'):
                     break
         time.sleep(1)
 
-    assert valid_inbox(bobDir, 'bob', bobDomain)
-    assert valid_inbox_filenames(bobDir, 'bob', bobDomain,
-                                 aliceDomain, alicePort)
-    assert 'alice@' + aliceDomain in open(bobDir + '/accounts/bob@' +
-                                          bobDomain + '/followers.txt').read()
-    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
-                                      aliceDomain + '/following.txt').read()
-    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
-                                      aliceDomain +
-                                      '/followingCalendar.txt').read()
-    assert not is_group_actor(aliceDir, bobActor, alicePersonCache)
-    assert not is_group_account(bobDir, 'bob', bobDomain)
+    assert valid_inbox(bob_dir, 'bob', bob_domain)
+    assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
+                                 alice_domain, alice_port)
+    assert 'alice@' + alice_domain in open(bob_dir + '/accounts/bob@' +
+                                           bob_domain +
+                                           '/followers.txt').read()
+    assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
+                                       alice_domain + '/following.txt').read()
+    assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
+                                       alice_domain +
+                                       '/followingCalendar.txt').read()
+    assert not is_group_actor(alice_dir, bob_actor, alice_person_cache)
+    assert not is_group_account(bob_dir, 'bob', bob_domain)
 
     print('\n\n*********************************************************')
     print('Bob publishes some shared items')
-    if os.path.isdir(bobDir + '/ontology'):
-        shutil.rmtree(bobDir + '/ontology', ignore_errors=False, onerror=None)
-    os.mkdir(bobDir + '/ontology')
-    copyfile(base_dir + '/img/logo.png', bobDir + '/logo.png')
+    if os.path.isdir(bob_dir + '/ontology'):
+        shutil.rmtree(bob_dir + '/ontology', ignore_errors=False, onerror=None)
+    os.mkdir(bob_dir + '/ontology')
+    copyfile(base_dir + '/img/logo.png', bob_dir + '/logo.png')
     copyfile(base_dir + '/ontology/foodTypes.json',
-             bobDir + '/ontology/foodTypes.json')
+             bob_dir + '/ontology/foodTypes.json')
     copyfile(base_dir + '/ontology/toolTypes.json',
-             bobDir + '/ontology/toolTypes.json')
+             bob_dir + '/ontology/toolTypes.json')
     copyfile(base_dir + '/ontology/clothesTypes.json',
-             bobDir + '/ontology/clothesTypes.json')
+             bob_dir + '/ontology/clothesTypes.json')
     copyfile(base_dir + '/ontology/medicalTypes.json',
-             bobDir + '/ontology/medicalTypes.json')
+             bob_dir + '/ontology/medicalTypes.json')
     copyfile(base_dir + '/ontology/accommodationTypes.json',
-             bobDir + '/ontology/accommodationTypes.json')
-    assert os.path.isfile(bobDir + '/logo.png')
-    assert os.path.isfile(bobDir + '/ontology/foodTypes.json')
-    assert os.path.isfile(bobDir + '/ontology/toolTypes.json')
-    assert os.path.isfile(bobDir + '/ontology/clothesTypes.json')
-    assert os.path.isfile(bobDir + '/ontology/medicalTypes.json')
-    assert os.path.isfile(bobDir + '/ontology/accommodationTypes.json')
-    sharedItemName = 'cheddar'
-    sharedItemDescription = 'Some cheese'
-    sharedItemImageFilename = 'logo.png'
-    sharedItemQty = 1
-    sharedItemType = 'Cheese'
-    sharedItemCategory = 'Food'
-    sharedItemLocation = "Bob's location"
-    sharedItemDuration = "10 days"
-    sharedItemPrice = "1.30"
-    sharedItemCurrency = "EUR"
+             bob_dir + '/ontology/accommodationTypes.json')
+    assert os.path.isfile(bob_dir + '/logo.png')
+    assert os.path.isfile(bob_dir + '/ontology/foodTypes.json')
+    assert os.path.isfile(bob_dir + '/ontology/toolTypes.json')
+    assert os.path.isfile(bob_dir + '/ontology/clothesTypes.json')
+    assert os.path.isfile(bob_dir + '/ontology/medicalTypes.json')
+    assert os.path.isfile(bob_dir + '/ontology/accommodationTypes.json')
+    shared_item_name = 'cheddar'
+    shared_item_description = 'Some cheese'
+    shared_item_image_filename = 'logo.png'
+    shared_item_qty = 1
+    shared_item_type = 'Cheese'
+    shared_item_category = 'Food'
+    shared_item_location = "Bob's location"
+    shared_item_duration = "10 days"
+    shared_item_price = "1.30"
+    shared_item_currency = "EUR"
     signing_priv_key_pem = None
-    sessionBob = create_session(proxy_type)
-    shareJson = \
-        send_share_via_server(bobDir, sessionBob,
-                              'bob', bobPassword,
-                              bobDomain, bobPort,
-                              http_prefix, sharedItemName,
-                              sharedItemDescription, sharedItemImageFilename,
-                              sharedItemQty, sharedItemType,
-                              sharedItemCategory,
-                              sharedItemLocation, sharedItemDuration,
-                              bobCachedWebfingers, bobPersonCache,
+    session_bob = create_session(proxy_type)
+    share_json = \
+        send_share_via_server(bob_dir, session_bob,
+                              'bob', bob_password,
+                              bob_domain, bob_port,
+                              http_prefix, shared_item_name,
+                              shared_item_description,
+                              shared_item_image_filename,
+                              shared_item_qty, shared_item_type,
+                              shared_item_category,
+                              shared_item_location, shared_item_duration,
+                              bob_cached_webfingers, bob_person_cache,
                               True, __version__,
-                              sharedItemPrice, sharedItemCurrency,
+                              shared_item_price, shared_item_currency,
                               signing_priv_key_pem)
-    assert shareJson
-    assert isinstance(shareJson, dict)
-    sharedItemName = 'Epicyon T-shirt'
-    sharedItemDescription = 'A fashionable item'
-    sharedItemImageFilename = 'logo.png'
-    sharedItemQty = 1
-    sharedItemType = 'T-Shirt'
-    sharedItemCategory = 'Clothes'
-    sharedItemLocation = "Bob's location"
-    sharedItemDuration = "5 days"
-    sharedItemPrice = "0"
-    sharedItemCurrency = "EUR"
-    shareJson = \
-        send_share_via_server(bobDir, sessionBob,
-                              'bob', bobPassword,
-                              bobDomain, bobPort,
-                              http_prefix, sharedItemName,
-                              sharedItemDescription, sharedItemImageFilename,
-                              sharedItemQty, sharedItemType,
-                              sharedItemCategory,
-                              sharedItemLocation, sharedItemDuration,
-                              bobCachedWebfingers, bobPersonCache,
+    assert share_json
+    assert isinstance(share_json, dict)
+    shared_item_name = 'Epicyon T-shirt'
+    shared_item_description = 'A fashionable item'
+    shared_item_image_filename = 'logo.png'
+    shared_item_qty = 1
+    shared_item_type = 'T-Shirt'
+    shared_item_category = 'Clothes'
+    shared_item_location = "Bob's location"
+    shared_item_duration = "5 days"
+    shared_item_price = "0"
+    shared_item_currency = "EUR"
+    share_json = \
+        send_share_via_server(bob_dir, session_bob,
+                              'bob', bob_password,
+                              bob_domain, bob_port,
+                              http_prefix, shared_item_name,
+                              shared_item_description,
+                              shared_item_image_filename,
+                              shared_item_qty, shared_item_type,
+                              shared_item_category,
+                              shared_item_location, shared_item_duration,
+                              bob_cached_webfingers, bob_person_cache,
                               True, __version__,
-                              sharedItemPrice, sharedItemCurrency,
+                              shared_item_price, shared_item_currency,
                               signing_priv_key_pem)
-    assert shareJson
-    assert isinstance(shareJson, dict)
-    sharedItemName = 'Soldering iron'
-    sharedItemDescription = 'A soldering iron'
-    sharedItemImageFilename = 'logo.png'
-    sharedItemQty = 1
-    sharedItemType = 'Soldering iron'
-    sharedItemCategory = 'Tools'
-    sharedItemLocation = "Bob's location"
-    sharedItemDuration = "9 days"
-    sharedItemPrice = "10.00"
-    sharedItemCurrency = "EUR"
-    shareJson = \
-        send_share_via_server(bobDir, sessionBob,
-                              'bob', bobPassword,
-                              bobDomain, bobPort,
-                              http_prefix, sharedItemName,
-                              sharedItemDescription, sharedItemImageFilename,
-                              sharedItemQty, sharedItemType,
-                              sharedItemCategory,
-                              sharedItemLocation, sharedItemDuration,
-                              bobCachedWebfingers, bobPersonCache,
+    assert share_json
+    assert isinstance(share_json, dict)
+    shared_item_name = 'Soldering iron'
+    shared_item_description = 'A soldering iron'
+    shared_item_image_filename = 'logo.png'
+    shared_item_qty = 1
+    shared_item_type = 'Soldering iron'
+    shared_item_category = 'Tools'
+    shared_item_location = "Bob's location"
+    shared_item_duration = "9 days"
+    shared_item_price = "10.00"
+    shared_item_currency = "EUR"
+    share_json = \
+        send_share_via_server(bob_dir, session_bob,
+                              'bob', bob_password,
+                              bob_domain, bob_port,
+                              http_prefix, shared_item_name,
+                              shared_item_description,
+                              shared_item_image_filename,
+                              shared_item_qty, shared_item_type,
+                              shared_item_category,
+                              shared_item_location, shared_item_duration,
+                              bob_cached_webfingers, bob_person_cache,
                               True, __version__,
-                              sharedItemPrice, sharedItemCurrency,
+                              shared_item_price, shared_item_currency,
                               signing_priv_key_pem)
-    assert shareJson
-    assert isinstance(shareJson, dict)
+    assert share_json
+    assert isinstance(share_json, dict)
 
     time.sleep(2)
     print('\n\n*********************************************************')
     print('Bob has a shares.json file containing the uploaded items')
 
-    sharesFilename = bobDir + '/accounts/bob@' + bobDomain + '/shares.json'
-    assert os.path.isfile(sharesFilename)
-    sharesJson = load_json(sharesFilename)
-    assert sharesJson
-    pprint(sharesJson)
-    assert len(sharesJson.items()) == 3
-    for itemID, item in sharesJson.items():
+    shares_filename = bob_dir + '/accounts/bob@' + bob_domain + '/shares.json'
+    assert os.path.isfile(shares_filename)
+    shares_json = load_json(shares_filename)
+    assert shares_json
+    pprint(shares_json)
+    assert len(shares_json.items()) == 3
+    for item_id, item in shares_json.items():
         if not item.get('dfcId'):
             pprint(item)
-            print(itemID + ' does not have dfcId field')
+            print(item_id + ' does not have dfcId field')
         assert item.get('dfcId')
 
     print('\n\n*********************************************************')
     print('Bob can read the shared items catalog on his own instance')
     signing_priv_key_pem = None
-    catalogJson = \
-        get_shared_items_catalog_via_server(bobDir, sessionBob,
-                                            'bob', bobPassword,
-                                            bobDomain, bobPort,
+    catalog_json = \
+        get_shared_items_catalog_via_server(bob_dir, session_bob,
+                                            'bob', bob_password,
+                                            bob_domain, bob_port,
                                             http_prefix, True,
                                             signing_priv_key_pem)
-    assert catalogJson
-    pprint(catalogJson)
-    assert 'DFC:supplies' in catalogJson
-    assert len(catalogJson.get('DFC:supplies')) == 3
+    assert catalog_json
+    pprint(catalog_json)
+    assert 'DFC:supplies' in catalog_json
+    assert len(catalog_json.get('DFC:supplies')) == 3
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
-    aliceTokensFilename = \
-        aliceDir + '/accounts/sharedItemsFederationTokens.json'
-    assert os.path.isfile(aliceTokensFilename)
-    aliceSharedItemFederationTokens = load_json(aliceTokensFilename)
-    assert aliceSharedItemFederationTokens
+    alice_tokens_filename = \
+        alice_dir + '/accounts/sharedItemsFederationTokens.json'
+    assert os.path.isfile(alice_tokens_filename)
+    alice_shared_item_federation_tokens = load_json(alice_tokens_filename)
+    assert alice_shared_item_federation_tokens
     print('Alice shared item federation tokens:')
-    pprint(aliceSharedItemFederationTokens)
-    assert len(aliceSharedItemFederationTokens.items()) > 0
-    for hostStr, token in aliceSharedItemFederationTokens.items():
-        assert ':' in hostStr
-    alicePostLog = []
-    alicePersonCache = {}
-    aliceCachedWebfingers = {}
-    aliceSharedItemsFederatedDomains = [bobAddress]
-    alicePostLog = []
-    isArticle = False
+    pprint(alice_shared_item_federation_tokens)
+    assert len(alice_shared_item_federation_tokens.items()) > 0
+    for host_str, token in alice_shared_item_federation_tokens.items():
+        assert ':' in host_str
+    alice_post_log = []
+    alice_person_cache = {}
+    alice_cached_webfingers = {}
+    alice_shared_items_federated_domains = [bob_address]
+    alice_post_log = []
+    is_article = False
     city = 'London, England'
     low_bandwidth = False
     signing_priv_key_pem = None
-    sendResult = \
+    send_result = \
         send_post(signing_priv_key_pem, __version__,
-                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
-                  'bob', bobDomain, bobPort, ccUrl,
-                  http_prefix, 'Alice message', followersOnly, saveToFile,
+                  session_alice, alice_dir, 'alice', alice_domain, alice_port,
+                  'bob', bob_domain, bob_port, cc_url,
+                  http_prefix, 'Alice message', followers_only, save_to_file,
                   client_to_server, True,
                   None, None, None, city, federation_list,
-                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                  alicePersonCache, isArticle, system_language,
-                  aliceSharedItemsFederatedDomains,
-                  aliceSharedItemFederationTokens, low_bandwidth,
+                  alice_send_threads, alice_post_log, alice_cached_webfingers,
+                  alice_person_cache, is_article, system_language,
+                  alice_shared_items_federated_domains,
+                  alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, True,
-                  inReplyTo, inReplyToAtomUri, subject)
-    print('sendResult: ' + str(sendResult))
+                  in_reply_to, in_reply_to_atom_uri, subject)
+    print('send_result: ' + str(send_result))
 
-    queuePath = bobDir + '/accounts/bob@' + bobDomain + '/queue'
-    inboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
-    aliceMessageArrived = False
-    for i in range(20):
+    queue_path = bob_dir + '/accounts/bob@' + bob_domain + '/queue'
+    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    alice_message_arrived = False
+    for _ in range(20):
         time.sleep(1)
-        if os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(inboxPath)
-                    if os.path.isfile(os.path.join(inboxPath, name))]) > 0:
-                aliceMessageArrived = True
+        if os.path.isdir(inbox_path):
+            if len([name for name in os.listdir(inbox_path)
+                    if os.path.isfile(os.path.join(inbox_path, name))]) > 0:
+                alice_message_arrived = True
                 print('Alice message sent to Bob!')
                 break
 
-    assert aliceMessageArrived is True
+    assert alice_message_arrived is True
     print('Message from Alice to Bob succeeded')
 
     print('\n\n*********************************************************')
     print('Check that Alice received the shared items authorization')
     print('token from Bob')
-    aliceTokensFilename = \
-        aliceDir + '/accounts/sharedItemsFederationTokens.json'
-    bobTokensFilename = \
-        bobDir + '/accounts/sharedItemsFederationTokens.json'
-    assert os.path.isfile(aliceTokensFilename)
-    assert os.path.isfile(bobTokensFilename)
-    aliceTokens = load_json(aliceTokensFilename)
-    assert aliceTokens
-    for hostStr, token in aliceTokens.items():
-        assert ':' in hostStr
-    assert aliceTokens.get(aliceAddress)
+    alice_tokens_filename = \
+        alice_dir + '/accounts/sharedItemsFederationTokens.json'
+    bob_tokens_filename = \
+        bob_dir + '/accounts/sharedItemsFederationTokens.json'
+    assert os.path.isfile(alice_tokens_filename)
+    assert os.path.isfile(bob_tokens_filename)
+    alice_tokens = load_json(alice_tokens_filename)
+    assert alice_tokens
+    for host_str, token in alice_tokens.items():
+        assert ':' in host_str
+    assert alice_tokens.get(alice_address)
     print('Alice tokens')
-    pprint(aliceTokens)
-    bobTokens = load_json(bobTokensFilename)
-    assert bobTokens
-    for hostStr, token in bobTokens.items():
-        assert ':' in hostStr
-    assert bobTokens.get(bobAddress)
+    pprint(alice_tokens)
+    bob_tokens = load_json(bob_tokens_filename)
+    assert bob_tokens
+    for host_str, token in bob_tokens.items():
+        assert ':' in host_str
+    assert bob_tokens.get(bob_address)
     print("Check that Bob now has Alice's token")
-    assert bobTokens.get(aliceAddress)
+    assert bob_tokens.get(alice_address)
     print('Bob tokens')
-    pprint(bobTokens)
+    pprint(bob_tokens)
 
     print('\n\n*********************************************************')
     print('Alice can read the federated shared items catalog of Bob')
     headers = {
-        'Origin': aliceAddress,
-        'Authorization': bobTokens[bobAddress],
-        'host': bobAddress,
+        'Origin': alice_address,
+        'Authorization': bob_tokens[bob_address],
+        'host': bob_address,
         'Accept': 'application/json'
     }
-    url = http_prefix + '://' + bobAddress + '/catalog'
+    url = http_prefix + '://' + bob_address + '/catalog'
     signing_priv_key_pem = None
-    catalogJson = get_json(signing_priv_key_pem, sessionAlice, url, headers,
-                           None, True)
-    assert catalogJson
-    pprint(catalogJson)
-    assert 'DFC:supplies' in catalogJson
-    assert len(catalogJson.get('DFC:supplies')) == 3
+    catalog_json = get_json(signing_priv_key_pem, session_alice, url, headers,
+                            None, True)
+    assert catalog_json
+    pprint(catalog_json)
+    assert 'DFC:supplies' in catalog_json
+    assert len(catalog_json.get('DFC:supplies')) == 3
 
     # queue item removed
     ctr = 0
-    while len([name for name in os.listdir(queuePath)
-               if os.path.isfile(os.path.join(queuePath, name))]) > 0:
+    while len([name for name in os.listdir(queue_path)
+               if os.path.isfile(os.path.join(queue_path, name))]) > 0:
         ctr += 1
         if ctr > 10:
             break
         time.sleep(1)
 
-#    assert len([name for name in os.listdir(queuePath)
-#                if os.path.isfile(os.path.join(queuePath, name))]) == 0
+#    assert len([name for name in os.listdir(queue_path)
+#                if os.path.isfile(os.path.join(queue_path, name))]) == 0
 
     # stop the servers
-    thrAlice.kill()
-    thrAlice.join()
-    assert thrAlice.is_alive() is False
+    THR_ALICE.kill()
+    THR_ALICE.join()
+    assert THR_ALICE.is_alive() is False
 
-    thrBob.kill()
-    thrBob.join()
-    assert thrBob.is_alive() is False
+    THR_BOB.kill()
+    THR_BOB.join()
+    assert THR_BOB.is_alive() is False
 
     os.chdir(base_dir)
     shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -2034,13 +2063,13 @@ def test_shared_items_federation(base_dir: str) -> None:
 def test_group_follow(base_dir: str) -> None:
     print('Testing following of a group')
 
-    global testServerAliceRunning
-    global testServerBobRunning
-    global testServerGroupRunning
+    global TEST_SERVER_ALICE_RUNNING
+    global TEST_SERVER_BOB_RUNNING
+    global TEST_SERVER_GROUP_RUNNING
     system_language = 'en'
-    testServerAliceRunning = False
-    testServerBobRunning = False
-    testServerGroupRunning = False
+    TEST_SERVER_ALICE_RUNNING = False
+    TEST_SERVER_BOB_RUNNING = False
+    TEST_SERVER_GROUP_RUNNING = False
 
     # system_language = 'en'
     http_prefix = 'http'
@@ -2053,389 +2082,391 @@ def test_group_follow(base_dir: str) -> None:
     os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = base_dir + '/.tests/alice'
-    aliceDomain = '127.0.0.57'
-    alicePort = 61927
-    aliceSendThreads = []
-    aliceAddress = aliceDomain + ':' + str(alicePort)
+    alice_dir = base_dir + '/.tests/alice'
+    alice_domain = '127.0.0.57'
+    alice_port = 61927
+    alice_send_threads = []
+    alice_address = alice_domain + ':' + str(alice_port)
 
-    bobDir = base_dir + '/.tests/bob'
-    bobDomain = '127.0.0.59'
-    bobPort = 61814
-    bobSendThreads = []
-    # bobAddress = bobDomain + ':' + str(bobPort)
+    bob_dir = base_dir + '/.tests/bob'
+    bob_domain = '127.0.0.59'
+    bob_port = 61814
+    bob_send_threads = []
+    # bob_address = bob_domain + ':' + str(bob_port)
 
-    testgroupDir = base_dir + '/.tests/testgroup'
-    testgroupDomain = '127.0.0.63'
+    testgroup_dir = base_dir + '/.tests/testgroup'
+    testgroup_domain = '127.0.0.63'
     testgroupPort = 61925
     testgroupSendThreads = []
-    testgroupAddress = testgroupDomain + ':' + str(testgroupPort)
+    testgroupAddress = testgroup_domain + ':' + str(testgroupPort)
 
-    global thrAlice
-    if thrAlice:
-        while thrAlice.is_alive():
-            thrAlice.stop()
+    global THR_ALICE
+    if THR_ALICE:
+        while THR_ALICE.is_alive():
+            THR_ALICE.stop()
             time.sleep(1)
-        thrAlice.kill()
+        THR_ALICE.kill()
 
-    thrAlice = \
+    THR_ALICE = \
         thread_with_trace(target=create_server_alice,
-                          args=(aliceDir, aliceDomain, alicePort,
+                          args=(alice_dir, alice_domain, alice_port,
                                 testgroupAddress,
                                 federation_list, False, True,
-                                aliceSendThreads),
+                                alice_send_threads),
                           daemon=True)
 
-    global thrBob
-    if thrBob:
-        while thrBob.is_alive():
-            thrBob.stop()
+    global THR_BOB
+    if THR_BOB:
+        while THR_BOB.is_alive():
+            THR_BOB.stop()
             time.sleep(1)
-        thrBob.kill()
+        THR_BOB.kill()
 
-    thrBob = \
+    THR_BOB = \
         thread_with_trace(target=create_server_bob,
-                          args=(bobDir, bobDomain, bobPort, None,
+                          args=(bob_dir, bob_domain, bob_port, None,
                                 federation_list, False, False,
-                                bobSendThreads),
+                                bob_send_threads),
                           daemon=True)
 
-    global thrGroup
-    if thrGroup:
-        while thrGroup.is_alive():
-            thrGroup.stop()
+    global THR_GROUP
+    if THR_GROUP:
+        while THR_GROUP.is_alive():
+            THR_GROUP.stop()
             time.sleep(1)
-        thrGroup.kill()
+        THR_GROUP.kill()
 
-    thrGroup = \
+    THR_GROUP = \
         thread_with_trace(target=create_server_group,
-                          args=(testgroupDir, testgroupDomain, testgroupPort,
+                          args=(testgroup_dir, testgroup_domain, testgroupPort,
                                 federation_list, False, False,
                                 testgroupSendThreads),
                           daemon=True)
 
-    thrAlice.start()
-    thrBob.start()
-    thrGroup.start()
-    assert thrAlice.is_alive() is True
-    assert thrBob.is_alive() is True
-    assert thrGroup.is_alive() is True
+    THR_ALICE.start()
+    THR_BOB.start()
+    THR_GROUP.start()
+    assert THR_ALICE.is_alive() is True
+    assert THR_BOB.is_alive() is True
+    assert THR_GROUP.is_alive() is True
 
     # wait for all servers to be running
     ctr = 0
-    while not (testServerAliceRunning and
-               testServerBobRunning and
-               testServerGroupRunning):
+    while not (TEST_SERVER_ALICE_RUNNING and
+               TEST_SERVER_BOB_RUNNING and
+               TEST_SERVER_GROUP_RUNNING):
         time.sleep(1)
         ctr += 1
         if ctr > 60:
             break
-    print('Alice online: ' + str(testServerAliceRunning))
-    print('Bob online: ' + str(testServerBobRunning))
-    print('Test Group online: ' + str(testServerGroupRunning))
+    print('Alice online: ' + str(TEST_SERVER_ALICE_RUNNING))
+    print('Bob online: ' + str(TEST_SERVER_BOB_RUNNING))
+    print('Test Group online: ' + str(TEST_SERVER_GROUP_RUNNING))
     assert ctr <= 60
     time.sleep(1)
 
     print('*********************************************************')
     print('Alice has some outbox posts')
-    aliceOutbox = 'http://' + aliceAddress + '/users/alice/outbox'
+    alice_outbox = 'http://' + alice_address + '/users/alice/outbox'
     session = create_session(None)
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
     signing_priv_key_pem = None
-    outboxJson = get_json(signing_priv_key_pem, session, aliceOutbox, asHeader,
-                          None, True, __version__, 'http', None)
-    assert outboxJson
-    pprint(outboxJson)
-    assert outboxJson['type'] == 'OrderedCollection'
-    assert 'first' in outboxJson
-    firstPage = outboxJson['first']
-    assert 'totalItems' in outboxJson
-    print('Alice outbox totalItems: ' + str(outboxJson['totalItems']))
-    assert outboxJson['totalItems'] == 3
+    outbox_json = get_json(signing_priv_key_pem, session, alice_outbox,
+                           as_header, None, True, __version__, 'http', None)
+    assert outbox_json
+    pprint(outbox_json)
+    assert outbox_json['type'] == 'OrderedCollection'
+    assert 'first' in outbox_json
+    first_page = outbox_json['first']
+    assert 'totalItems' in outbox_json
+    print('Alice outbox totalItems: ' + str(outbox_json['totalItems']))
+    assert outbox_json['totalItems'] == 3
 
-    outboxJson = get_json(signing_priv_key_pem, session, firstPage, asHeader,
-                          None, True, __version__, 'http', None)
-    assert outboxJson
-    pprint(outboxJson)
-    assert 'orderedItems' in outboxJson
-    assert outboxJson['type'] == 'OrderedCollectionPage'
+    outbox_json = get_json(signing_priv_key_pem, session,
+                           first_page, as_header,
+                           None, True, __version__, 'http', None)
+    assert outbox_json
+    pprint(outbox_json)
+    assert 'orderedItems' in outbox_json
+    assert outbox_json['type'] == 'OrderedCollectionPage'
     print('Alice outbox orderedItems: ' +
-          str(len(outboxJson['orderedItems'])))
-    assert len(outboxJson['orderedItems']) == 3
+          str(len(outbox_json['orderedItems'])))
+    assert len(outbox_json['orderedItems']) == 3
 
-    queuePath = \
-        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/queue'
+    queue_path = \
+        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + '/queue'
 
     # In the beginning the test group had no followers
 
     print('*********************************************************')
     print('Alice sends a follow request to the test group')
-    os.chdir(aliceDir)
-    sessionAlice = create_session(proxy_type)
-    inReplyTo = None
-    inReplyToAtomUri = None
+    os.chdir(alice_dir)
+    session_alice = create_session(proxy_type)
+    in_reply_to = None
+    in_reply_to_atom_uri = None
     subject = None
-    alicePostLog = []
-    followersOnly = False
-    saveToFile = True
+    alice_post_log = []
+    followers_only = False
+    save_to_file = True
     client_to_server = False
-    ccUrl = None
-    alicePersonCache = {}
-    aliceCachedWebfingers = {}
-    alicePostLog = []
-    # aliceActor = http_prefix + '://' + aliceAddress + '/users/alice'
-    testgroupActor = \
+    cc_url = None
+    alice_person_cache = {}
+    alice_cached_webfingers = {}
+    alice_post_log = []
+    # aliceActor = http_prefix + '://' + alice_address + '/users/alice'
+    testgroup_actor = \
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signing_priv_key_pem = None
-    sendResult = \
-        send_follow_request(sessionAlice, aliceDir,
-                            'alice', aliceDomain, alicePort, http_prefix,
-                            'testgroup', testgroupDomain, testgroupActor,
+    send_result = \
+        send_follow_request(session_alice, alice_dir,
+                            'alice', alice_domain, alice_port, http_prefix,
+                            'testgroup', testgroup_domain, testgroup_actor,
                             testgroupPort, http_prefix,
                             client_to_server, federation_list,
-                            aliceSendThreads, alicePostLog,
-                            aliceCachedWebfingers, alicePersonCache,
+                            alice_send_threads, alice_post_log,
+                            alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem)
-    print('sendResult: ' + str(sendResult))
+    print('send_result: ' + str(send_result))
 
-    aliceFollowingFilename = \
-        aliceDir + '/accounts/alice@' + aliceDomain + '/following.txt'
-    aliceFollowingCalendarFilename = \
-        aliceDir + '/accounts/alice@' + aliceDomain + \
+    alice_following_filename = \
+        alice_dir + '/accounts/alice@' + alice_domain + '/following.txt'
+    alice_following_calendar_filename = \
+        alice_dir + '/accounts/alice@' + alice_domain + \
         '/followingCalendar.txt'
-    testgroupFollowersFilename = \
-        testgroupDir + '/accounts/testgroup@' + testgroupDomain + \
+    testgroup_followers_filename = \
+        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + \
         '/followers.txt'
 
-    for t in range(16):
-        if os.path.isfile(testgroupFollowersFilename):
-            if os.path.isfile(aliceFollowingFilename):
-                if os.path.isfile(aliceFollowingCalendarFilename):
+    for _ in range(16):
+        if os.path.isfile(testgroup_followers_filename):
+            if os.path.isfile(alice_following_filename):
+                if os.path.isfile(alice_following_calendar_filename):
                     break
         time.sleep(1)
 
-    assert valid_inbox(testgroupDir, 'testgroup', testgroupDomain)
-    assert valid_inbox_filenames(testgroupDir, 'testgroup', testgroupDomain,
-                                 aliceDomain, alicePort)
-    assert 'alice@' + aliceDomain in open(testgroupFollowersFilename).read()
-    assert '!alice@' + aliceDomain not in \
-        open(testgroupFollowersFilename).read()
+    assert valid_inbox(testgroup_dir, 'testgroup', testgroup_domain)
+    assert valid_inbox_filenames(testgroup_dir, 'testgroup', testgroup_domain,
+                                 alice_domain, alice_port)
+    assert 'alice@' + alice_domain in open(testgroup_followers_filename).read()
+    assert '!alice@' + alice_domain not in \
+        open(testgroup_followers_filename).read()
 
-    testgroupWebfingerFilename = \
-        testgroupDir + '/wfendpoints/testgroup@' + \
-        testgroupDomain + ':' + str(testgroupPort) + '.json'
-    assert os.path.isfile(testgroupWebfingerFilename)
-    assert 'acct:testgroup@' in open(testgroupWebfingerFilename).read()
+    testgroup_webfinger_filename = \
+        testgroup_dir + '/wfendpoints/testgroup@' + \
+        testgroup_domain + ':' + str(testgroupPort) + '.json'
+    assert os.path.isfile(testgroup_webfinger_filename)
+    assert 'acct:testgroup@' in open(testgroup_webfinger_filename).read()
     print('acct: exists within the webfinger endpoint for testgroup')
 
-    testgroupHandle = 'testgroup@' + testgroupDomain
-    followingStr = ''
-    with open(aliceFollowingFilename, 'r') as fp:
-        followingStr = fp.read()
-        print('Alice following.txt:\n\n' + followingStr)
-    if '!testgroup' not in followingStr:
+    testgroup_handle = 'testgroup@' + testgroup_domain
+    following_str = ''
+    with open(alice_following_filename, 'r') as fp_foll:
+        following_str = fp_foll.read()
+        print('Alice following.txt:\n\n' + following_str)
+    if '!testgroup' not in following_str:
         print('Alice following.txt does not contain !testgroup@' +
-              testgroupDomain + ':' + str(testgroupPort))
-    assert is_group_actor(aliceDir, testgroupActor, alicePersonCache)
-    assert not is_group_account(aliceDir, 'alice', aliceDomain)
-    assert is_group_account(testgroupDir, 'testgroup', testgroupDomain)
-    assert '!testgroup' in followingStr
-    assert testgroupHandle in open(aliceFollowingFilename).read()
-    assert testgroupHandle in open(aliceFollowingCalendarFilename).read()
+              testgroup_domain + ':' + str(testgroupPort))
+    assert is_group_actor(alice_dir, testgroup_actor, alice_person_cache)
+    assert not is_group_account(alice_dir, 'alice', alice_domain)
+    assert is_group_account(testgroup_dir, 'testgroup', testgroup_domain)
+    assert '!testgroup' in following_str
+    assert testgroup_handle in open(alice_following_filename).read()
+    assert testgroup_handle in open(alice_following_calendar_filename).read()
     print('\n\n*********************************************************')
     print('Alice follows the test group')
 
     print('*********************************************************')
     print('Bob sends a follow request to the test group')
-    os.chdir(bobDir)
-    sessionBob = create_session(proxy_type)
-    inReplyTo = None
-    inReplyToAtomUri = None
+    os.chdir(bob_dir)
+    session_bob = create_session(proxy_type)
+    in_reply_to = None
+    in_reply_to_atom_uri = None
     subject = None
-    bobPostLog = []
-    followersOnly = False
-    saveToFile = True
+    bob_post_log = []
+    followers_only = False
+    save_to_file = True
     client_to_server = False
-    ccUrl = None
-    bobPersonCache = {}
-    bobCachedWebfingers = {}
-    bobPostLog = []
-    # bobActor = http_prefix + '://' + bobAddress + '/users/bob'
-    testgroupActor = \
+    cc_url = None
+    bob_person_cache = {}
+    bob_cached_webfingers = {}
+    bob_post_log = []
+    # bob_actor = http_prefix + '://' + bob_address + '/users/bob'
+    testgroup_actor = \
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signing_priv_key_pem = None
-    sendResult = \
-        send_follow_request(sessionBob, bobDir,
-                            'bob', bobDomain, bobPort, http_prefix,
-                            'testgroup', testgroupDomain, testgroupActor,
+    send_result = \
+        send_follow_request(session_bob, bob_dir,
+                            'bob', bob_domain, bob_port, http_prefix,
+                            'testgroup', testgroup_domain, testgroup_actor,
                             testgroupPort, http_prefix,
                             client_to_server, federation_list,
-                            bobSendThreads, bobPostLog,
-                            bobCachedWebfingers, bobPersonCache,
+                            bob_send_threads, bob_post_log,
+                            bob_cached_webfingers, bob_person_cache,
                             True, __version__, signing_priv_key_pem)
-    print('sendResult: ' + str(sendResult))
+    print('send_result: ' + str(send_result))
 
-    bobFollowingFilename = \
-        bobDir + '/accounts/bob@' + bobDomain + '/following.txt'
-    bobFollowingCalendarFilename = \
-        bobDir + '/accounts/bob@' + bobDomain + \
+    bob_following_filename = \
+        bob_dir + '/accounts/bob@' + bob_domain + '/following.txt'
+    bob_following_calendar_filename = \
+        bob_dir + '/accounts/bob@' + bob_domain + \
         '/followingCalendar.txt'
-    testgroupFollowersFilename = \
-        testgroupDir + '/accounts/testgroup@' + testgroupDomain + \
+    testgroup_followers_filename = \
+        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + \
         '/followers.txt'
 
-    for t in range(16):
-        if os.path.isfile(testgroupFollowersFilename):
-            if os.path.isfile(bobFollowingFilename):
-                if os.path.isfile(bobFollowingCalendarFilename):
+    for _ in range(16):
+        if os.path.isfile(testgroup_followers_filename):
+            if os.path.isfile(bob_following_filename):
+                if os.path.isfile(bob_following_calendar_filename):
                     break
         time.sleep(1)
 
-    assert valid_inbox(testgroupDir, 'testgroup', testgroupDomain)
-    assert valid_inbox_filenames(testgroupDir, 'testgroup', testgroupDomain,
-                                 bobDomain, bobPort)
-    assert 'bob@' + bobDomain in open(testgroupFollowersFilename).read()
-    assert '!bob@' + bobDomain not in open(testgroupFollowersFilename).read()
+    assert valid_inbox(testgroup_dir, 'testgroup', testgroup_domain)
+    assert valid_inbox_filenames(testgroup_dir, 'testgroup', testgroup_domain,
+                                 bob_domain, bob_port)
+    assert 'bob@' + bob_domain in open(testgroup_followers_filename).read()
+    assert '!bob@' + bob_domain not in \
+        open(testgroup_followers_filename).read()
 
-    testgroupWebfingerFilename = \
-        testgroupDir + '/wfendpoints/testgroup@' + \
-        testgroupDomain + ':' + str(testgroupPort) + '.json'
-    assert os.path.isfile(testgroupWebfingerFilename)
-    assert 'acct:testgroup@' in open(testgroupWebfingerFilename).read()
+    testgroup_webfinger_filename = \
+        testgroup_dir + '/wfendpoints/testgroup@' + \
+        testgroup_domain + ':' + str(testgroupPort) + '.json'
+    assert os.path.isfile(testgroup_webfinger_filename)
+    assert 'acct:testgroup@' in open(testgroup_webfinger_filename).read()
     print('acct: exists within the webfinger endpoint for testgroup')
 
-    testgroupHandle = 'testgroup@' + testgroupDomain
-    followingStr = ''
-    with open(bobFollowingFilename, 'r') as fp:
-        followingStr = fp.read()
-        print('Bob following.txt:\n\n' + followingStr)
-    if '!testgroup' not in followingStr:
+    testgroup_handle = 'testgroup@' + testgroup_domain
+    following_str = ''
+    with open(bob_following_filename, 'r') as fp_foll:
+        following_str = fp_foll.read()
+        print('Bob following.txt:\n\n' + following_str)
+    if '!testgroup' not in following_str:
         print('Bob following.txt does not contain !testgroup@' +
-              testgroupDomain + ':' + str(testgroupPort))
-    assert is_group_actor(bobDir, testgroupActor, bobPersonCache)
-    assert '!testgroup' in followingStr
-    assert testgroupHandle in open(bobFollowingFilename).read()
-    assert testgroupHandle in open(bobFollowingCalendarFilename).read()
+              testgroup_domain + ':' + str(testgroupPort))
+    assert is_group_actor(bob_dir, testgroup_actor, bob_person_cache)
+    assert '!testgroup' in following_str
+    assert testgroup_handle in open(bob_following_filename).read()
+    assert testgroup_handle in open(bob_following_calendar_filename).read()
     print('Bob follows the test group')
 
     print('\n\n*********************************************************')
     print('Alice posts to the test group')
-    inboxPathBob = \
-        bobDir + '/accounts/bob@' + bobDomain + '/inbox'
-    startPostsBob = \
-        len([name for name in os.listdir(inboxPathBob)
-             if os.path.isfile(os.path.join(inboxPathBob, name))])
-    assert startPostsBob == 0
-    alicePostLog = []
-    alicePersonCache = {}
-    aliceCachedWebfingers = {}
-    aliceSharedItemsFederatedDomains = []
-    aliceSharedItemFederationTokens = {}
-    alicePostLog = []
-    isArticle = False
+    inbox_path_bob = \
+        bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    start_posts_bob = \
+        len([name for name in os.listdir(inbox_path_bob)
+             if os.path.isfile(os.path.join(inbox_path_bob, name))])
+    assert start_posts_bob == 0
+    alice_post_log = []
+    alice_person_cache = {}
+    alice_cached_webfingers = {}
+    alice_shared_items_federated_domains = []
+    alice_shared_item_federation_tokens = {}
+    alice_post_log = []
+    is_article = False
     city = 'London, England'
     low_bandwidth = False
     signing_priv_key_pem = None
 
-    queuePath = \
-        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/queue'
-    inboxPath = \
-        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/inbox'
-    outboxPath = \
-        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/outbox'
-    aliceMessageArrived = False
-    startPostsInbox = \
-        len([name for name in os.listdir(inboxPath)
-             if os.path.isfile(os.path.join(inboxPath, name))])
-    startPostsOutbox = \
-        len([name for name in os.listdir(outboxPath)
-             if os.path.isfile(os.path.join(outboxPath, name))])
+    queue_path = \
+        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + '/queue'
+    inbox_path = \
+        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + '/inbox'
+    outbox_path = \
+        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + '/outbox'
+    alice_message_arrived = False
+    start_posts_inbox = \
+        len([name for name in os.listdir(inbox_path)
+             if os.path.isfile(os.path.join(inbox_path, name))])
+    start_posts_outbox = \
+        len([name for name in os.listdir(outbox_path)
+             if os.path.isfile(os.path.join(outbox_path, name))])
 
-    sendResult = \
+    send_result = \
         send_post(signing_priv_key_pem, __version__,
-                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
-                  'testgroup', testgroupDomain, testgroupPort, ccUrl,
-                  http_prefix, "Alice group message", followersOnly,
-                  saveToFile, client_to_server, True,
+                  session_alice, alice_dir, 'alice', alice_domain, alice_port,
+                  'testgroup', testgroup_domain, testgroupPort, cc_url,
+                  http_prefix, "Alice group message", followers_only,
+                  save_to_file, client_to_server, True,
                   None, None, None, city, federation_list,
-                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                  alicePersonCache, isArticle, system_language,
-                  aliceSharedItemsFederatedDomains,
-                  aliceSharedItemFederationTokens, low_bandwidth,
+                  alice_send_threads, alice_post_log, alice_cached_webfingers,
+                  alice_person_cache, is_article, system_language,
+                  alice_shared_items_federated_domains,
+                  alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url,
-                  inReplyTo, inReplyToAtomUri, subject)
-    print('sendResult: ' + str(sendResult))
+                  in_reply_to, in_reply_to_atom_uri, subject)
+    print('send_result: ' + str(send_result))
 
-    for i in range(20):
+    for _ in range(20):
         time.sleep(1)
-        if os.path.isdir(inboxPath):
-            currPostsInbox = \
-                len([name for name in os.listdir(inboxPath)
-                     if os.path.isfile(os.path.join(inboxPath, name))])
-            currPostsOutbox = \
-                len([name for name in os.listdir(outboxPath)
-                     if os.path.isfile(os.path.join(outboxPath, name))])
-            if currPostsInbox > startPostsInbox and \
-               currPostsOutbox > startPostsOutbox:
-                aliceMessageArrived = True
+        if os.path.isdir(inbox_path):
+            curr_posts_inbox = \
+                len([name for name in os.listdir(inbox_path)
+                     if os.path.isfile(os.path.join(inbox_path, name))])
+            curr_posts_outbox = \
+                len([name for name in os.listdir(outbox_path)
+                     if os.path.isfile(os.path.join(outbox_path, name))])
+            if curr_posts_inbox > start_posts_inbox and \
+               curr_posts_outbox > start_posts_outbox:
+                alice_message_arrived = True
                 print('Alice post sent to test group!')
                 break
 
-    assert aliceMessageArrived is True
+    assert alice_message_arrived is True
     print('\n\n*********************************************************')
     print('Post from Alice to test group succeeded')
 
     print('\n\n*********************************************************')
     print('Check that post was relayed from test group to bob')
 
-    bobMessageArrived = False
-    for i in range(20):
+    bob_message_arrived = False
+    for _ in range(20):
         time.sleep(1)
-        if os.path.isdir(inboxPathBob):
-            currPostsBob = \
-                len([name for name in os.listdir(inboxPathBob)
-                     if os.path.isfile(os.path.join(inboxPathBob, name))])
-            if currPostsBob > startPostsBob:
-                bobMessageArrived = True
+        if os.path.isdir(inbox_path_bob):
+            curr_posts_bob = \
+                len([name for name in os.listdir(inbox_path_bob)
+                     if os.path.isfile(os.path.join(inbox_path_bob, name))])
+            if curr_posts_bob > start_posts_bob:
+                bob_message_arrived = True
                 print('Bob received relayed group post!')
                 break
 
-    assert bobMessageArrived is True
+    assert bob_message_arrived is True
 
     # check that the received post has an id from the group,
     # not from the original sender (alice)
-    groupIdChecked = False
-    for name in os.listdir(inboxPathBob):
-        filename = os.path.join(inboxPathBob, name)
+    group_id_checked = False
+    for name in os.listdir(inbox_path_bob):
+        filename = os.path.join(inbox_path_bob, name)
         if os.path.isfile(filename):
-            receivedJson = load_json(filename)
-            assert receivedJson
-            print('Received group post ' + receivedJson['id'])
-            assert '/testgroup/statuses/' in receivedJson['id']
-            groupIdChecked = True
+            received_json = load_json(filename)
+            assert received_json
+            print('Received group post ' + received_json['id'])
+            assert '/testgroup/statuses/' in received_json['id']
+            group_id_checked = True
             break
-    assert groupIdChecked
+    assert group_id_checked
 
     # stop the servers
-    thrAlice.kill()
-    thrAlice.join()
-    assert thrAlice.is_alive() is False
+    THR_ALICE.kill()
+    THR_ALICE.join()
+    assert THR_ALICE.is_alive() is False
 
-    thrBob.kill()
-    thrBob.join()
-    assert thrBob.is_alive() is False
+    THR_BOB.kill()
+    THR_BOB.join()
+    assert THR_BOB.is_alive() is False
 
-    thrGroup.kill()
-    thrGroup.join()
-    assert thrGroup.is_alive() is False
+    THR_GROUP.kill()
+    THR_GROUP.join()
+    assert THR_GROUP.is_alive() is False
 
     # queue item removed
     time.sleep(4)
-    assert len([name for name in os.listdir(queuePath)
-                if os.path.isfile(os.path.join(queuePath, name))]) == 0
+    assert len([name for name in os.listdir(queue_path)
+                if os.path.isfile(os.path.join(queue_path, name))]) == 0
 
     os.chdir(base_dir)
     shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -2443,15 +2474,15 @@ def test_group_follow(base_dir: str) -> None:
 
 
 def _test_followers_of_person(base_dir: str) -> None:
-    print('testFollowersOfPerson')
-    currDir = base_dir
+    print('test_followers_of_person')
+    curr_dir = base_dir
     nickname = 'mxpop'
     domain = 'diva.domain'
     password = 'birb'
     port = 80
     http_prefix = 'https'
     federation_list = []
-    base_dir = currDir + '/.tests_followersofperson'
+    base_dir = curr_dir + '/.tests_followersofperson'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
@@ -2482,18 +2513,18 @@ def _test_followers_of_person(base_dir: str) -> None:
     follow_person(base_dir, nickname, domain, 'someother', 'randodomain.net',
                   federation_list, False, False)
 
-    followList = get_followers_of_person(base_dir, 'ultrapancake', domain)
-    assert len(followList) == 3
-    assert 'mxpop@' + domain in followList
-    assert 'drokk@' + domain in followList
-    assert 'sausagedog@' + domain in followList
-    os.chdir(currDir)
+    follow_list = get_followers_of_person(base_dir, 'ultrapancake', domain)
+    assert len(follow_list) == 3
+    assert 'mxpop@' + domain in follow_list
+    assert 'drokk@' + domain in follow_list
+    assert 'sausagedog@' + domain in follow_list
+    os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
 def _test_followers_on_domain(base_dir: str) -> None:
-    print('testNoOfFollowersOnDomain')
-    currDir = base_dir
+    print('test_followers_on_domain')
+    curr_dir = base_dir
     nickname = 'mxpop'
     domain = 'diva.domain'
     otherdomain = 'soup.dragon'
@@ -2501,7 +2532,7 @@ def _test_followers_on_domain(base_dir: str) -> None:
     port = 80
     http_prefix = 'https'
     federation_list = []
-    base_dir = currDir + '/.tests_nooffollowersOndomain'
+    base_dir = curr_dir + '/.tests_nooffollowersOndomain'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
@@ -2542,33 +2573,33 @@ def _test_followers_on_domain(base_dir: str) -> None:
                            'maxboardroom', otherdomain,
                            federation_list, False, False)
 
-    followersOnOtherDomain = \
+    followers_on_other_domain = \
         no_of_followers_on_domain(base_dir,
                                   nickname + '@' + domain, otherdomain)
-    assert followersOnOtherDomain == 3
+    assert followers_on_other_domain == 3
 
     unfollower_of_account(base_dir, nickname, domain, 'sausagedog',
                           otherdomain, False, False)
-    followersOnOtherDomain = \
+    followers_on_other_domain = \
         no_of_followers_on_domain(base_dir,
                                   nickname + '@' + domain, otherdomain)
-    assert followersOnOtherDomain == 2
+    assert followers_on_other_domain == 2
 
-    os.chdir(currDir)
+    os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
 def _test_group_followers(base_dir: str) -> None:
     print('test_group_followers')
 
-    currDir = base_dir
+    curr_dir = base_dir
     nickname = 'test735'
     domain = 'mydomain.com'
     password = 'somepass'
     port = 80
     http_prefix = 'https'
     federation_list = []
-    base_dir = currDir + '/.tests_testgroupfollowers'
+    base_dir = curr_dir + '/.tests_testgroupfollowers'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
@@ -2601,20 +2632,20 @@ def _test_group_followers(base_dir: str) -> None:
     assert len(grouped['wild.domain']) == 3
     assert len(grouped['clutterly.domain']) == 1
 
-    os.chdir(currDir)
+    os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
 def _test_follows(base_dir: str) -> None:
-    print('testFollows')
-    currDir = base_dir
+    print('test_follows')
+    curr_dir = base_dir
     nickname = 'test529'
     domain = 'testdomain.com'
     password = 'mypass'
     port = 80
     http_prefix = 'https'
     federation_list = ['wild.com', 'mesh.com']
-    base_dir = currDir + '/.tests_testfollows'
+    base_dir = curr_dir + '/.tests_testfollows'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
@@ -2634,29 +2665,29 @@ def _test_follows(base_dir: str) -> None:
     follow_person(base_dir, nickname, domain, 'giraffe', 'trees.com',
                   federation_list, False, False)
 
-    accountDir = acct_dir(base_dir, nickname, domain)
-    f = open(accountDir + '/following.txt', 'r')
-    domainFound = False
-    for followingDomain in f:
-        testDomain = followingDomain.split('@')[1]
-        testDomain = testDomain.replace('\n', '').replace('\r', '')
-        if testDomain == 'mesh.com':
-            domainFound = True
-        if testDomain not in federation_list:
-            print(testDomain)
-            assert(False)
+    account_dir = acct_dir(base_dir, nickname, domain)
+    with open(account_dir + '/following.txt', 'r') as fp_foll:
+        domain_found = False
+        for following_domain in fp_foll:
+            test_domain = following_domain.split('@')[1]
+            test_domain = test_domain.replace('\n', '').replace('\r', '')
+            if test_domain == 'mesh.com':
+                domain_found = True
+            if test_domain not in federation_list:
+                print(test_domain)
+                assert False
 
-    assert(domainFound)
-    unfollow_account(base_dir, nickname, domain, 'batman', 'mesh.com',
-                     True, False)
+        assert domain_found
+        unfollow_account(base_dir, nickname, domain, 'batman', 'mesh.com',
+                         True, False)
 
-    domainFound = False
-    for followingDomain in f:
-        testDomain = followingDomain.split('@')[1]
-        testDomain = testDomain.replace('\n', '').replace('\r', '')
-        if testDomain == 'mesh.com':
-            domainFound = True
-    assert(domainFound is False)
+        domain_found = False
+        for following_domain in fp_foll:
+            test_domain = following_domain.split('@')[1]
+            test_domain = test_domain.replace('\n', '').replace('\r', '')
+            if test_domain == 'mesh.com':
+                domain_found = True
+        assert domain_found is False
 
     clear_followers(base_dir, nickname, domain)
     add_follower_of_person(base_dir, nickname, domain, 'badger', 'wild.com',
@@ -2672,38 +2703,42 @@ def _test_follows(base_dir: str) -> None:
     add_follower_of_person(base_dir, nickname, domain, 'giraffe', 'trees.com',
                            federation_list, False, False)
 
-    accountDir = acct_dir(base_dir, nickname, domain)
-    f = open(accountDir + '/followers.txt', 'r')
-    for followerDomain in f:
-        testDomain = followerDomain.split('@')[1]
-        testDomain = testDomain.replace('\n', '').replace('\r', '')
-        if testDomain not in federation_list:
-            print(testDomain)
-            assert(False)
+    account_dir = acct_dir(base_dir, nickname, domain)
+    with open(account_dir + '/followers.txt', 'r') as fp_foll:
+        for follower_domain in fp_foll:
+            test_domain = follower_domain.split('@')[1]
+            test_domain = test_domain.replace('\n', '').replace('\r', '')
+            if test_domain not in federation_list:
+                print(test_domain)
+                assert False
 
-    os.chdir(currDir)
+    os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
 def _test_create_person_account(base_dir: str):
-    print('testCreatePerson')
+    print('test_create_person_account')
     system_language = 'en'
-    currDir = base_dir
+    curr_dir = base_dir
     nickname = 'test382'
     domain = 'badgerdomain.com'
     password = 'mypass'
     port = 80
     http_prefix = 'https'
     client_to_server = False
-    base_dir = currDir + '/.tests_createperson'
+    base_dir = curr_dir + '/.tests_createperson'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
     os.chdir(base_dir)
 
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(base_dir, nickname, domain, port,
                       http_prefix, True, False, password)
+    assert private_key_pem
+    assert public_key_pem
+    assert person
+    assert wf_endpoint
     assert os.path.isfile(base_dir + '/accounts/passwords')
     delete_all_posts(base_dir, nickname, domain, 'inbox')
     delete_all_posts(base_dir, nickname, domain, 'outbox')
@@ -2711,56 +2746,56 @@ def _test_create_person_account(base_dir: str):
     set_bio(base_dir, nickname, domain, 'Randomly roaming in your backyard')
     archive_posts_for_person(nickname, domain, base_dir, 'inbox', None, {}, 4)
     archive_posts_for_person(nickname, domain, base_dir, 'outbox', None, {}, 4)
-    testInReplyTo = None
-    testInReplyToAtomUri = None
-    testSubject = None
-    testSchedulePost = False
-    testEventDate = None
-    testEventTime = None
-    testLocation = None
-    testIsArticle = False
+    test_in_reply_to = None
+    test_in_reply_to_atom_uri = None
+    test_subject = None
+    test_schedule_post = False
+    test_event_date = None
+    test_event_time = None
+    test_location = None
+    test_is_article = False
     content = "G'day world!"
-    followersOnly = False
-    saveToFile = True
-    commentsEnabled = True
-    attachImageFilename = None
-    mediaType = None
-    conversationId = None
+    followers_only = False
+    save_to_file = True
+    comments_enabled = True
+    attach_image_filename = None
+    media_type = None
+    conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     create_public_post(base_dir, nickname, domain, port, http_prefix,
-                       content, followersOnly, saveToFile, client_to_server,
-                       commentsEnabled, attachImageFilename, mediaType,
+                       content, followers_only, save_to_file, client_to_server,
+                       comments_enabled, attach_image_filename, media_type,
                        'Not suitable for Vogons', 'London, England',
-                       testInReplyTo, testInReplyToAtomUri,
-                       testSubject, testSchedulePost,
-                       testEventDate, testEventTime, testLocation,
-                       testIsArticle, system_language, conversationId,
+                       test_in_reply_to, test_in_reply_to_atom_uri,
+                       test_subject, test_schedule_post,
+                       test_event_date, test_event_time, test_location,
+                       test_is_article, system_language, conversation_id,
                        low_bandwidth, content_license_url)
 
-    os.chdir(currDir)
+    os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
-def show_test_boxes(name: str, inboxPath: str, outboxPath: str) -> None:
-    inboxPosts = \
-        len([name for name in os.listdir(inboxPath)
-             if os.path.isfile(os.path.join(inboxPath, name))])
-    outboxPosts = \
-        len([name for name in os.listdir(outboxPath)
-             if os.path.isfile(os.path.join(outboxPath, name))])
+def show_test_boxes(name: str, inbox_path: str, outbox_path: str) -> None:
+    inbox_posts = \
+        len([name for name in os.listdir(inbox_path)
+             if os.path.isfile(os.path.join(inbox_path, name))])
+    outbox_posts = \
+        len([name for name in os.listdir(outbox_path)
+             if os.path.isfile(os.path.join(outbox_path, name))])
     print('EVENT: ' + name +
-          ' inbox has ' + str(inboxPosts) + ' posts and ' +
-          str(outboxPosts) + ' outbox posts')
+          ' inbox has ' + str(inbox_posts) + ' posts and ' +
+          str(outbox_posts) + ' outbox posts')
 
 
 def _test_authentication(base_dir: str) -> None:
-    print('testAuthentication')
-    currDir = base_dir
+    print('test_authentication')
+    curr_dir = base_dir
     nickname = 'test8743'
     password = 'SuperSecretPassword12345'
 
-    base_dir = currDir + '/.tests_authentication'
+    base_dir = curr_dir + '/.tests_authentication'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
@@ -2771,37 +2806,37 @@ def _test_authentication(base_dir: str) -> None:
     assert store_basic_credentials(base_dir, 'badnick', 'otherpa:ss') is False
     assert store_basic_credentials(base_dir, nickname, password)
 
-    authHeader = create_basic_auth_header(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
     assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
-                           authHeader, False)
+                           auth_header, False)
     assert authorize_basic(base_dir, '/users/' + nickname,
-                           authHeader, False) is False
+                           auth_header, False) is False
     assert authorize_basic(base_dir, '/users/othernick/inbox',
-                           authHeader, False) is False
+                           auth_header, False) is False
 
-    authHeader = create_basic_auth_header(nickname, password + '1')
+    auth_header = create_basic_auth_header(nickname, password + '1')
     assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
-                           authHeader, False) is False
+                           auth_header, False) is False
 
     password = 'someOtherPassword'
     assert store_basic_credentials(base_dir, nickname, password)
 
-    authHeader = create_basic_auth_header(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
     assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
-                           authHeader, False)
+                           auth_header, False)
 
-    os.chdir(currDir)
+    os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
 def test_client_to_server(base_dir: str):
     print('EVENT: Testing sending a post via c2s')
 
-    global testServerAliceRunning
-    global testServerBobRunning
+    global TEST_SERVER_ALICE_RUNNING
+    global TEST_SERVER_BOB_RUNNING
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
-    testServerAliceRunning = False
-    testServerBobRunning = False
+    TEST_SERVER_ALICE_RUNNING = False
+    TEST_SERVER_BOB_RUNNING = False
 
     system_language = 'en'
     http_prefix = 'http'
@@ -2814,445 +2849,447 @@ def test_client_to_server(base_dir: str):
     os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = base_dir + '/.tests/alice'
-    aliceDomain = '127.0.0.42'
-    alicePort = 61935
-    aliceSendThreads = []
-    aliceAddress = aliceDomain + ':' + str(alicePort)
+    alice_dir = base_dir + '/.tests/alice'
+    alice_domain = '127.0.0.42'
+    alice_port = 61935
+    alice_send_threads = []
+    alice_address = alice_domain + ':' + str(alice_port)
 
-    bobDir = base_dir + '/.tests/bob'
-    bobDomain = '127.0.0.64'
-    bobPort = 61936
-    bobSendThreads = []
-    bobAddress = bobDomain + ':' + str(bobPort)
+    bob_dir = base_dir + '/.tests/bob'
+    bob_domain = '127.0.0.64'
+    bob_port = 61936
+    bob_send_threads = []
+    bob_address = bob_domain + ':' + str(bob_port)
 
-    global thrAlice
-    if thrAlice:
-        while thrAlice.is_alive():
-            thrAlice.stop()
+    global THR_ALICE
+    if THR_ALICE:
+        while THR_ALICE.is_alive():
+            THR_ALICE.stop()
             time.sleep(1)
-        thrAlice.kill()
+        THR_ALICE.kill()
 
-    thrAlice = \
+    THR_ALICE = \
         thread_with_trace(target=create_server_alice,
-                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                                federation_list, False, False,
-                                aliceSendThreads),
+                          args=(alice_dir, alice_domain, alice_port,
+                                bob_address, federation_list, False, False,
+                                alice_send_threads),
                           daemon=True)
 
-    global thrBob
-    if thrBob:
-        while thrBob.is_alive():
-            thrBob.stop()
+    global THR_BOB
+    if THR_BOB:
+        while THR_BOB.is_alive():
+            THR_BOB.stop()
             time.sleep(1)
-        thrBob.kill()
+        THR_BOB.kill()
 
-    thrBob = \
+    THR_BOB = \
         thread_with_trace(target=create_server_bob,
-                          args=(bobDir, bobDomain, bobPort, aliceAddress,
+                          args=(bob_dir, bob_domain, bob_port, alice_address,
                                 federation_list, False, False,
-                                bobSendThreads),
+                                bob_send_threads),
                           daemon=True)
 
-    thrAlice.start()
-    thrBob.start()
-    assert thrAlice.is_alive() is True
-    assert thrBob.is_alive() is True
+    THR_ALICE.start()
+    THR_BOB.start()
+    assert THR_ALICE.is_alive() is True
+    assert THR_BOB.is_alive() is True
 
     # wait for both servers to be running
     ctr = 0
-    while not (testServerAliceRunning and testServerBobRunning):
+    while not (TEST_SERVER_ALICE_RUNNING and TEST_SERVER_BOB_RUNNING):
         time.sleep(1)
         ctr += 1
         if ctr > 60:
             break
-    print('Alice online: ' + str(testServerAliceRunning))
-    print('Bob online: ' + str(testServerBobRunning))
+    print('Alice online: ' + str(TEST_SERVER_ALICE_RUNNING))
+    print('Bob online: ' + str(TEST_SERVER_BOB_RUNNING))
 
     time.sleep(1)
 
     print('\n\n*******************************************************')
     print('EVENT: Alice sends to Bob via c2s')
 
-    sessionAlice = create_session(proxy_type)
-    followersOnly = False
-    attachedImageFilename = base_dir + '/img/logo.png'
-    mediaType = get_attachment_media_type(attachedImageFilename)
-    attachedImageDescription = 'Logo'
+    session_alice = create_session(proxy_type)
+    followers_only = False
+    attached_image_filename = base_dir + '/img/logo.png'
+    media_type = get_attachment_media_type(attached_image_filename)
+    attached_image_description = 'Logo'
     city = 'London, England'
-    isArticle = False
+    is_article = False
     cached_webfingers = {}
     person_cache = {}
     password = 'alicepass'
-    conversationId = None
+    conversation_id = None
 
-    aliceInboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/inbox'
-    aliceOutboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
-    bobInboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
-    bobOutboxPath = bobDir + '/accounts/bob@' + bobDomain + '/outbox'
+    alice_inbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/inbox'
+    alice_outbox_path = \
+        alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    bob_inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    bob_outbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/outbox'
 
-    outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
-    inboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    assert len([name for name in os.listdir(aliceInboxPath)
-                if os.path.isfile(os.path.join(aliceInboxPath, name))]) == 0
-    assert len([name for name in os.listdir(aliceOutboxPath)
-                if os.path.isfile(os.path.join(aliceOutboxPath, name))]) == 0
-    assert len([name for name in os.listdir(bobInboxPath)
-                if os.path.isfile(os.path.join(bobInboxPath, name))]) == 0
-    assert len([name for name in os.listdir(bobOutboxPath)
-                if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 0
+    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    assert len([name for name in os.listdir(alice_inbox_path)
+                if os.path.isfile(os.path.join(alice_inbox_path, name))]) == 0
+    assert len([name for name in os.listdir(alice_outbox_path)
+                if os.path.isfile(os.path.join(alice_outbox_path, name))]) == 0
+    assert len([name for name in os.listdir(bob_inbox_path)
+                if os.path.isfile(os.path.join(bob_inbox_path, name))]) == 0
+    assert len([name for name in os.listdir(bob_outbox_path)
+                if os.path.isfile(os.path.join(bob_outbox_path, name))]) == 0
     print('EVENT: all inboxes and outboxes are empty')
     signing_priv_key_pem = None
-    sendResult = \
+    send_result = \
         send_post_via_server(signing_priv_key_pem, __version__,
-                             aliceDir, sessionAlice, 'alice', password,
-                             aliceDomain, alicePort,
-                             'bob', bobDomain, bobPort, None,
+                             alice_dir, session_alice, 'alice', password,
+                             alice_domain, alice_port,
+                             'bob', bob_domain, bob_port, None,
                              http_prefix, 'Sent from my ActivityPub client',
-                             followersOnly, True,
-                             attachedImageFilename, mediaType,
-                             attachedImageDescription, city,
-                             cached_webfingers, person_cache, isArticle,
+                             followers_only, True,
+                             attached_image_filename, media_type,
+                             attached_image_description, city,
+                             cached_webfingers, person_cache, is_article,
                              system_language, low_bandwidth,
                              content_license_url,
                              True, None, None,
-                             conversationId, None)
-    print('sendResult: ' + str(sendResult))
+                             conversation_id, None)
+    print('send_result: ' + str(send_result))
 
-    for i in range(30):
-        if os.path.isdir(outboxPath):
-            if len([name for name in os.listdir(outboxPath)
-                    if os.path.isfile(os.path.join(outboxPath, name))]) == 1:
+    for _ in range(30):
+        if os.path.isdir(outbox_path):
+            if len([name for name in os.listdir(outbox_path)
+                    if os.path.isfile(os.path.join(outbox_path, name))]) == 1:
                 break
         time.sleep(1)
 
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    assert len([name for name in os.listdir(aliceInboxPath)
-                if os.path.isfile(os.path.join(aliceInboxPath, name))]) == 0
-    assert len([name for name in os.listdir(aliceOutboxPath)
-                if os.path.isfile(os.path.join(aliceOutboxPath, name))]) == 1
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    assert len([name for name in os.listdir(alice_inbox_path)
+                if os.path.isfile(os.path.join(alice_inbox_path, name))]) == 0
+    assert len([name for name in os.listdir(alice_outbox_path)
+                if os.path.isfile(os.path.join(alice_outbox_path, name))]) == 1
     print(">>> c2s post arrived in Alice's outbox\n\n\n")
 
-    for i in range(30):
-        if os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(bobInboxPath)
-                    if os.path.isfile(os.path.join(bobInboxPath, name))]) == 1:
+    for _ in range(30):
+        if os.path.isdir(inbox_path):
+            if len([name for name in os.listdir(bob_inbox_path)
+                    if os.path.isfile(os.path.join(bob_inbox_path,
+                                                   name))]) == 1:
                 break
         time.sleep(1)
 
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    assert len([name for name in os.listdir(bobInboxPath)
-                if os.path.isfile(os.path.join(bobInboxPath, name))]) == 1
-    assert len([name for name in os.listdir(bobOutboxPath)
-                if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 0
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    assert len([name for name in os.listdir(bob_inbox_path)
+                if os.path.isfile(os.path.join(bob_inbox_path, name))]) == 1
+    assert len([name for name in os.listdir(bob_outbox_path)
+                if os.path.isfile(os.path.join(bob_outbox_path, name))]) == 0
 
     print(">>> s2s post arrived in Bob's inbox")
     print("c2s send success\n\n\n")
 
     print('\n\nEVENT: Getting message id for the post')
-    statusNumber = 0
-    outboxPostFilename = None
-    outboxPostId = None
-    for name in os.listdir(outboxPath):
+    status_number = 0
+    outbox_post_filename = None
+    outbox_post_id = None
+    for name in os.listdir(outbox_path):
         if '#statuses#' in name:
-            statusNumber = name.split('#statuses#')[1].replace('.json', '')
-            statusNumber = int(statusNumber.replace('#activity', ''))
-            outboxPostFilename = outboxPath + '/' + name
-            post_json_object = load_json(outboxPostFilename, 0)
+            status_number = name.split('#statuses#')[1].replace('.json', '')
+            status_number = int(status_number.replace('#activity', ''))
+            outbox_post_filename = outbox_path + '/' + name
+            post_json_object = load_json(outbox_post_filename, 0)
             if post_json_object:
-                outboxPostId = remove_id_ending(post_json_object['id'])
-    assert outboxPostId
-    print('message id obtained: ' + outboxPostId)
-    assert valid_inbox(bobDir, 'bob', bobDomain)
-    assert valid_inbox_filenames(bobDir, 'bob', bobDomain,
-                                 aliceDomain, alicePort)
+                outbox_post_id = remove_id_ending(post_json_object['id'])
+    assert outbox_post_id
+    print('message id obtained: ' + outbox_post_id)
+    assert valid_inbox(bob_dir, 'bob', bob_domain)
+    assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
+                                 alice_domain, alice_port)
 
     print('\n\nAlice follows Bob')
     signing_priv_key_pem = None
-    send_follow_requestViaServer(aliceDir, sessionAlice,
+    send_follow_requestViaServer(alice_dir, session_alice,
                                  'alice', password,
-                                 aliceDomain, alicePort,
-                                 'bob', bobDomain, bobPort,
+                                 alice_domain, alice_port,
+                                 'bob', bob_domain, bob_port,
                                  http_prefix,
                                  cached_webfingers, person_cache,
                                  True, __version__, signing_priv_key_pem)
-    alicePetnamesFilename = aliceDir + '/accounts/' + \
-        'alice@' + aliceDomain + '/petnames.txt'
-    aliceFollowingFilename = \
-        aliceDir + '/accounts/alice@' + aliceDomain + '/following.txt'
-    bobFollowersFilename = \
-        bobDir + '/accounts/bob@' + bobDomain + '/followers.txt'
-    for t in range(10):
-        if os.path.isfile(bobFollowersFilename):
-            if 'alice@' + aliceDomain + ':' + str(alicePort) in \
-               open(bobFollowersFilename).read():
-                if os.path.isfile(aliceFollowingFilename) and \
-                   os.path.isfile(alicePetnamesFilename):
-                    if 'bob@' + bobDomain + ':' + str(bobPort) in \
-                       open(aliceFollowingFilename).read():
+    alice_petnames_filename = alice_dir + '/accounts/' + \
+        'alice@' + alice_domain + '/petnames.txt'
+    alice_following_filename = \
+        alice_dir + '/accounts/alice@' + alice_domain + '/following.txt'
+    bob_followers_filename = \
+        bob_dir + '/accounts/bob@' + bob_domain + '/followers.txt'
+    for _ in range(10):
+        if os.path.isfile(bob_followers_filename):
+            if 'alice@' + alice_domain + ':' + str(alice_port) in \
+               open(bob_followers_filename).read():
+                if os.path.isfile(alice_following_filename) and \
+                   os.path.isfile(alice_petnames_filename):
+                    if 'bob@' + bob_domain + ':' + str(bob_port) in \
+                       open(alice_following_filename).read():
                         break
         time.sleep(1)
 
-    assert os.path.isfile(bobFollowersFilename)
-    assert os.path.isfile(aliceFollowingFilename)
-    assert os.path.isfile(alicePetnamesFilename)
-    assert 'bob bob@' + bobDomain in \
-        open(alicePetnamesFilename).read()
-    print('alice@' + aliceDomain + ':' + str(alicePort) + ' in ' +
-          bobFollowersFilename)
-    assert 'alice@' + aliceDomain + ':' + str(alicePort) in \
-        open(bobFollowersFilename).read()
-    print('bob@' + bobDomain + ':' + str(bobPort) + ' in ' +
-          aliceFollowingFilename)
-    assert 'bob@' + bobDomain + ':' + str(bobPort) in \
-        open(aliceFollowingFilename).read()
-    assert valid_inbox(bobDir, 'bob', bobDomain)
-    assert valid_inbox_filenames(bobDir, 'bob', bobDomain,
-                                 aliceDomain, alicePort)
+    assert os.path.isfile(bob_followers_filename)
+    assert os.path.isfile(alice_following_filename)
+    assert os.path.isfile(alice_petnames_filename)
+    assert 'bob bob@' + bob_domain in \
+        open(alice_petnames_filename).read()
+    print('alice@' + alice_domain + ':' + str(alice_port) + ' in ' +
+          bob_followers_filename)
+    assert 'alice@' + alice_domain + ':' + str(alice_port) in \
+        open(bob_followers_filename).read()
+    print('bob@' + bob_domain + ':' + str(bob_port) + ' in ' +
+          alice_following_filename)
+    assert 'bob@' + bob_domain + ':' + str(bob_port) in \
+        open(alice_following_filename).read()
+    assert valid_inbox(bob_dir, 'bob', bob_domain)
+    assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
+                                 alice_domain, alice_port)
 
     print('\n\nEVENT: Bob follows Alice')
-    send_follow_requestViaServer(aliceDir, sessionAlice,
+    send_follow_requestViaServer(alice_dir, session_alice,
                                  'bob', 'bobpass',
-                                 bobDomain, bobPort,
-                                 'alice', aliceDomain, alicePort,
+                                 bob_domain, bob_port,
+                                 'alice', alice_domain, alice_port,
                                  http_prefix,
                                  cached_webfingers, person_cache,
                                  True, __version__, signing_priv_key_pem)
-    for t in range(10):
-        if os.path.isfile(aliceDir + '/accounts/alice@' + aliceDomain +
+    for _ in range(10):
+        if os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
                           '/followers.txt'):
-            if 'bob@' + bobDomain + ':' + str(bobPort) in \
-               open(aliceDir + '/accounts/alice@' + aliceDomain +
+            if 'bob@' + bob_domain + ':' + str(bob_port) in \
+               open(alice_dir + '/accounts/alice@' + alice_domain +
                     '/followers.txt').read():
-                if os.path.isfile(bobDir + '/accounts/bob@' + bobDomain +
+                if os.path.isfile(bob_dir + '/accounts/bob@' + bob_domain +
                                   '/following.txt'):
-                    aliceHandleStr = \
-                        'alice@' + aliceDomain + ':' + str(alicePort)
-                    if aliceHandleStr in \
-                       open(bobDir + '/accounts/bob@' + bobDomain +
+                    alice_handle_str = \
+                        'alice@' + alice_domain + ':' + str(alice_port)
+                    if alice_handle_str in \
+                       open(bob_dir + '/accounts/bob@' + bob_domain +
                             '/following.txt').read():
-                        if os.path.isfile(bobDir + '/accounts/bob@' +
-                                          bobDomain +
+                        if os.path.isfile(bob_dir + '/accounts/bob@' +
+                                          bob_domain +
                                           '/followingCalendar.txt'):
-                            if aliceHandleStr in \
-                               open(bobDir + '/accounts/bob@' + bobDomain +
+                            if alice_handle_str in \
+                               open(bob_dir + '/accounts/bob@' + bob_domain +
                                     '/followingCalendar.txt').read():
                                 break
         time.sleep(1)
 
-    assert os.path.isfile(aliceDir + '/accounts/alice@' + aliceDomain +
+    assert os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
                           '/followers.txt')
-    assert os.path.isfile(bobDir + '/accounts/bob@' + bobDomain +
+    assert os.path.isfile(bob_dir + '/accounts/bob@' + bob_domain +
                           '/following.txt')
-    assert 'bob@' + bobDomain + ':' + str(bobPort) in \
-        open(aliceDir + '/accounts/alice@' + aliceDomain +
+    assert 'bob@' + bob_domain + ':' + str(bob_port) in \
+        open(alice_dir + '/accounts/alice@' + alice_domain +
              '/followers.txt').read()
-    assert 'alice@' + aliceDomain + ':' + str(alicePort) in \
-        open(bobDir + '/accounts/bob@' + bobDomain + '/following.txt').read()
+    assert 'alice@' + alice_domain + ':' + str(alice_port) in \
+        open(bob_dir + '/accounts/bob@' + bob_domain + '/following.txt').read()
 
-    sessionBob = create_session(proxy_type)
+    session_bob = create_session(proxy_type)
     password = 'bobpass'
-    outboxPath = bobDir + '/accounts/bob@' + bobDomain + '/outbox'
-    inboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/inbox'
-    print(str(len([name for name in os.listdir(bobOutboxPath)
-                   if os.path.isfile(os.path.join(bobOutboxPath, name))])))
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    assert len([name for name in os.listdir(bobOutboxPath)
-                if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 1
-    print(str(len([name for name in os.listdir(aliceInboxPath)
-                   if os.path.isfile(os.path.join(aliceInboxPath, name))])))
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    assert len([name for name in os.listdir(aliceInboxPath)
-                if os.path.isfile(os.path.join(aliceInboxPath, name))]) == 0
+    outbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/outbox'
+    inbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/inbox'
+    print(str(len([name for name in os.listdir(bob_outbox_path)
+                   if os.path.isfile(os.path.join(bob_outbox_path, name))])))
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    assert len([name for name in os.listdir(bob_outbox_path)
+                if os.path.isfile(os.path.join(bob_outbox_path, name))]) == 1
+    print(str(len([name for name in os.listdir(alice_inbox_path)
+                   if os.path.isfile(os.path.join(alice_inbox_path, name))])))
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    assert len([name for name in os.listdir(alice_inbox_path)
+                if os.path.isfile(os.path.join(alice_inbox_path, name))]) == 0
     print('\n\nEVENT: Bob likes the post')
-    send_like_via_server(bobDir, sessionBob,
+    send_like_via_server(bob_dir, session_bob,
                          'bob', 'bobpass',
-                         bobDomain, bobPort,
-                         http_prefix, outboxPostId,
+                         bob_domain, bob_port,
+                         http_prefix, outbox_post_id,
                          cached_webfingers, person_cache,
                          True, __version__, signing_priv_key_pem)
-    for i in range(20):
-        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(outboxPath)
-                    if os.path.isfile(os.path.join(outboxPath, name))]) == 2:
-                test = len([name for name in os.listdir(inboxPath)
-                            if os.path.isfile(os.path.join(inboxPath, name))])
+    for _ in range(20):
+        if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
+            if len([name for name in os.listdir(outbox_path)
+                    if os.path.isfile(os.path.join(outbox_path, name))]) == 2:
+                test = len([name for name in os.listdir(inbox_path)
+                            if os.path.isfile(os.path.join(inbox_path, name))])
                 if test == 1:
                     break
         time.sleep(1)
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    bobOutboxPathCtr = \
-        len([name for name in os.listdir(bobOutboxPath)
-             if os.path.isfile(os.path.join(bobOutboxPath, name))])
-    print('bobOutboxPathCtr: ' + str(bobOutboxPathCtr))
-    assert bobOutboxPathCtr == 2
-    aliceInboxPathCtr = \
-        len([name for name in os.listdir(aliceInboxPath)
-             if os.path.isfile(os.path.join(aliceInboxPath, name))])
-    print('aliceInboxPathCtr: ' + str(aliceInboxPathCtr))
-    assert aliceInboxPathCtr == 0
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    bob_outbox_path_ctr = \
+        len([name for name in os.listdir(bob_outbox_path)
+             if os.path.isfile(os.path.join(bob_outbox_path, name))])
+    print('bob_outbox_path_ctr: ' + str(bob_outbox_path_ctr))
+    assert bob_outbox_path_ctr == 2
+    alice_inbox_path_ctr = \
+        len([name for name in os.listdir(alice_inbox_path)
+             if os.path.isfile(os.path.join(alice_inbox_path, name))])
+    print('alice_inbox_path_ctr: ' + str(alice_inbox_path_ctr))
+    assert alice_inbox_path_ctr == 0
     print('EVENT: Post liked')
 
     print('\n\nEVENT: Bob reacts to the post')
-    send_reaction_via_server(bobDir, sessionBob,
+    send_reaction_via_server(bob_dir, session_bob,
                              'bob', 'bobpass',
-                             bobDomain, bobPort,
-                             http_prefix, outboxPostId, '😃',
+                             bob_domain, bob_port,
+                             http_prefix, outbox_post_id, '😃',
                              cached_webfingers, person_cache,
                              True, __version__, signing_priv_key_pem)
-    for i in range(20):
-        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(outboxPath)
-                    if os.path.isfile(os.path.join(outboxPath, name))]) == 3:
-                test = len([name for name in os.listdir(inboxPath)
-                            if os.path.isfile(os.path.join(inboxPath, name))])
+    for _ in range(20):
+        if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
+            if len([name for name in os.listdir(outbox_path)
+                    if os.path.isfile(os.path.join(outbox_path, name))]) == 3:
+                test = len([name for name in os.listdir(inbox_path)
+                            if os.path.isfile(os.path.join(inbox_path, name))])
                 if test == 1:
                     break
         time.sleep(1)
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    bobOutboxPathCtr = \
-        len([name for name in os.listdir(bobOutboxPath)
-             if os.path.isfile(os.path.join(bobOutboxPath, name))])
-    print('bobOutboxPathCtr: ' + str(bobOutboxPathCtr))
-    assert bobOutboxPathCtr == 3
-    aliceInboxPathCtr = \
-        len([name for name in os.listdir(aliceInboxPath)
-             if os.path.isfile(os.path.join(aliceInboxPath, name))])
-    print('aliceInboxPathCtr: ' + str(aliceInboxPathCtr))
-    assert aliceInboxPathCtr == 0
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    bob_outbox_path_ctr = \
+        len([name for name in os.listdir(bob_outbox_path)
+             if os.path.isfile(os.path.join(bob_outbox_path, name))])
+    print('bob_outbox_path_ctr: ' + str(bob_outbox_path_ctr))
+    assert bob_outbox_path_ctr == 3
+    alice_inbox_path_ctr = \
+        len([name for name in os.listdir(alice_inbox_path)
+             if os.path.isfile(os.path.join(alice_inbox_path, name))])
+    print('alice_inbox_path_ctr: ' + str(alice_inbox_path_ctr))
+    assert alice_inbox_path_ctr == 0
     print('EVENT: Post reacted to')
 
-    print(str(len([name for name in os.listdir(outboxPath)
-                   if os.path.isfile(os.path.join(outboxPath, name))])))
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    outboxPathCtr = \
-        len([name for name in os.listdir(outboxPath)
-             if os.path.isfile(os.path.join(outboxPath, name))])
-    print('outboxPathCtr: ' + str(outboxPathCtr))
-    assert outboxPathCtr == 3
-    inboxPathCtr = \
-        len([name for name in os.listdir(inboxPath)
-             if os.path.isfile(os.path.join(inboxPath, name))])
-    print('inboxPathCtr: ' + str(inboxPathCtr))
-    assert inboxPathCtr == 0
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
+    print(str(len([name for name in os.listdir(outbox_path)
+                   if os.path.isfile(os.path.join(outbox_path, name))])))
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    outbox_path_ctr = \
+        len([name for name in os.listdir(outbox_path)
+             if os.path.isfile(os.path.join(outbox_path, name))])
+    print('outbox_path_ctr: ' + str(outbox_path_ctr))
+    assert outbox_path_ctr == 3
+    inbox_path_ctr = \
+        len([name for name in os.listdir(inbox_path)
+             if os.path.isfile(os.path.join(inbox_path, name))])
+    print('inbox_path_ctr: ' + str(inbox_path_ctr))
+    assert inbox_path_ctr == 0
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
     print('\n\nEVENT: Bob repeats the post')
     signing_priv_key_pem = None
-    send_announce_via_server(bobDir, sessionBob, 'bob', password,
-                             bobDomain, bobPort,
-                             http_prefix, outboxPostId,
+    send_announce_via_server(bob_dir, session_bob, 'bob', password,
+                             bob_domain, bob_port,
+                             http_prefix, outbox_post_id,
                              cached_webfingers,
                              person_cache, True, __version__,
                              signing_priv_key_pem)
-    for i in range(20):
-        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(outboxPath)
-                    if os.path.isfile(os.path.join(outboxPath, name))]) == 4:
-                if len([name for name in os.listdir(inboxPath)
-                        if os.path.isfile(os.path.join(inboxPath,
+    for _ in range(20):
+        if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
+            if len([name for name in os.listdir(outbox_path)
+                    if os.path.isfile(os.path.join(outbox_path, name))]) == 4:
+                if len([name for name in os.listdir(inbox_path)
+                        if os.path.isfile(os.path.join(inbox_path,
                                                        name))]) == 2:
                     break
         time.sleep(1)
 
-    show_test_boxes('alice', aliceInboxPath, aliceOutboxPath)
-    show_test_boxes('bob', bobInboxPath, bobOutboxPath)
-    bobOutboxPathCtr = \
-        len([name for name in os.listdir(bobOutboxPath)
-             if os.path.isfile(os.path.join(bobOutboxPath, name))])
-    print('bobOutboxPathCtr: ' + str(bobOutboxPathCtr))
-    assert bobOutboxPathCtr == 5
-    aliceInboxPathCtr = \
-        len([name for name in os.listdir(aliceInboxPath)
-             if os.path.isfile(os.path.join(aliceInboxPath, name))])
-    print('aliceInboxPathCtr: ' + str(aliceInboxPathCtr))
-    assert aliceInboxPathCtr == 1
+    show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
+    show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
+    bob_outbox_path_ctr = \
+        len([name for name in os.listdir(bob_outbox_path)
+             if os.path.isfile(os.path.join(bob_outbox_path, name))])
+    print('bob_outbox_path_ctr: ' + str(bob_outbox_path_ctr))
+    assert bob_outbox_path_ctr == 5
+    alice_inbox_path_ctr = \
+        len([name for name in os.listdir(alice_inbox_path)
+             if os.path.isfile(os.path.join(alice_inbox_path, name))])
+    print('alice_inbox_path_ctr: ' + str(alice_inbox_path_ctr))
+    assert alice_inbox_path_ctr == 1
     print('EVENT: Post repeated')
 
-    inboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
-    outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
-    postsBefore = \
-        len([name for name in os.listdir(inboxPath)
-             if os.path.isfile(os.path.join(inboxPath, name))])
-    print('\n\nEVENT: Alice deletes her post: ' + outboxPostId + ' ' +
-          str(postsBefore))
+    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    posts_before = \
+        len([name for name in os.listdir(inbox_path)
+             if os.path.isfile(os.path.join(inbox_path, name))])
+    print('\n\nEVENT: Alice deletes her post: ' + outbox_post_id + ' ' +
+          str(posts_before))
     password = 'alicepass'
-    send_delete_via_server(aliceDir, sessionAlice, 'alice', password,
-                           aliceDomain, alicePort,
-                           http_prefix, outboxPostId,
+    send_delete_via_server(alice_dir, session_alice, 'alice', password,
+                           alice_domain, alice_port,
+                           http_prefix, outbox_post_id,
                            cached_webfingers, person_cache,
                            True, __version__, signing_priv_key_pem)
-    for i in range(30):
-        if os.path.isdir(inboxPath):
-            test = len([name for name in os.listdir(inboxPath)
-                        if os.path.isfile(os.path.join(inboxPath, name))])
-            if test == postsBefore-1:
+    for _ in range(30):
+        if os.path.isdir(inbox_path):
+            test = len([name for name in os.listdir(inbox_path)
+                        if os.path.isfile(os.path.join(inbox_path, name))])
+            if test == posts_before-1:
                 break
         time.sleep(1)
 
-    test = len([name for name in os.listdir(inboxPath)
-                if os.path.isfile(os.path.join(inboxPath, name))])
-    assert test == postsBefore - 1
+    test = len([name for name in os.listdir(inbox_path)
+                if os.path.isfile(os.path.join(inbox_path, name))])
+    assert test == posts_before - 1
     print(">>> post deleted from Alice's outbox and Bob's inbox")
-    assert valid_inbox(bobDir, 'bob', bobDomain)
-    assert valid_inbox_filenames(bobDir, 'bob', bobDomain,
-                                 aliceDomain, alicePort)
+    assert valid_inbox(bob_dir, 'bob', bob_domain)
+    assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
+                                 alice_domain, alice_port)
 
     print('\n\nEVENT: Alice unfollows Bob')
     password = 'alicepass'
-    send_unfollow_request_via_server(base_dir, sessionAlice,
+    send_unfollow_request_via_server(base_dir, session_alice,
                                      'alice', password,
-                                     aliceDomain, alicePort,
-                                     'bob', bobDomain, bobPort,
+                                     alice_domain, alice_port,
+                                     'bob', bob_domain, bob_port,
                                      http_prefix,
                                      cached_webfingers, person_cache,
                                      True, __version__, signing_priv_key_pem)
-    for t in range(10):
-        if 'alice@' + aliceDomain + ':' + str(alicePort) not in \
-           open(bobFollowersFilename).read():
-            if 'bob@' + bobDomain + ':' + str(bobPort) not in \
-               open(aliceFollowingFilename).read():
+    for _ in range(10):
+        if 'alice@' + alice_domain + ':' + str(alice_port) not in \
+           open(bob_followers_filename).read():
+            if 'bob@' + bob_domain + ':' + str(bob_port) not in \
+               open(alice_following_filename).read():
                 break
         time.sleep(1)
 
-    assert os.path.isfile(bobFollowersFilename)
-    assert os.path.isfile(aliceFollowingFilename)
-    assert 'alice@' + aliceDomain + ':' + str(alicePort) \
-        not in open(bobFollowersFilename).read()
-    assert 'bob@' + bobDomain + ':' + str(bobPort) \
-        not in open(aliceFollowingFilename).read()
-    assert valid_inbox(bobDir, 'bob', bobDomain)
-    assert valid_inbox_filenames(bobDir, 'bob', bobDomain,
-                                 aliceDomain, alicePort)
-    assert valid_inbox(aliceDir, 'alice', aliceDomain)
-    assert valid_inbox_filenames(aliceDir, 'alice', aliceDomain,
-                                 bobDomain, bobPort)
+    assert os.path.isfile(bob_followers_filename)
+    assert os.path.isfile(alice_following_filename)
+    assert 'alice@' + alice_domain + ':' + str(alice_port) \
+        not in open(bob_followers_filename).read()
+    assert 'bob@' + bob_domain + ':' + str(bob_port) \
+        not in open(alice_following_filename).read()
+    assert valid_inbox(bob_dir, 'bob', bob_domain)
+    assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
+                                 alice_domain, alice_port)
+    assert valid_inbox(alice_dir, 'alice', alice_domain)
+    assert valid_inbox_filenames(alice_dir, 'alice', alice_domain,
+                                 bob_domain, bob_port)
 
     # stop the servers
-    thrAlice.kill()
-    thrAlice.join()
-    assert thrAlice.is_alive() is False
+    THR_ALICE.kill()
+    THR_ALICE.join()
+    assert THR_ALICE.is_alive() is False
 
-    thrBob.kill()
-    thrBob.join()
-    assert thrBob.is_alive() is False
+    THR_BOB.kill()
+    THR_BOB.join()
+    assert THR_BOB.is_alive() is False
 
     os.chdir(base_dir)
-    # shutil.rmtree(aliceDir, ignore_errors=False, onerror=None)
-    # shutil.rmtree(bobDir, ignore_errors=False, onerror=None)
+    # shutil.rmtree(alice_dir, ignore_errors=False, onerror=None)
+    # shutil.rmtree(bob_dir, ignore_errors=False, onerror=None)
 
 
 def _test_actor_parsing():
-    print('testActorParsing')
+    print('test_actor_parsing')
     actor = 'https://mydomain:72/users/mynick'
     domain, port = get_domain_from_actor(actor)
     assert domain == 'mydomain'
@@ -3299,9 +3336,9 @@ def _test_actor_parsing():
 
 
 def _test_web_links():
-    print('testWebLinks')
+    print('test_web_links')
 
-    exampleText = \
+    example_text = \
         "<p>Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
@@ -3310,14 +3347,14 @@ def _test_web_links():
         "hashtag\" rel=\"tag\">#<span>turbot</span></a> <a href=\"" + \
         "https://domain.ugh/tags/haddock\" class=\"mention hashtag\"" + \
         " rel=\"tag\">#<span>haddock</span></a></p>"
-    resultText = remove_long_words(exampleText, 40, [])
-    assert resultText == "<p>Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+    result_text = remove_long_words(example_text, 40, [])
+    assert result_text == "<p>Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
         " <a href=\"https://domain.ugh/tags/turbot\" class=\"mention " + \
         "hashtag\" rel=\"tag\">#<span>turbot</span></a> " + \
         "<a href=\"https://domain.ugh/tags/haddock\" " + \
         "class=\"mention hashtag\" rel=\"tag\">#<span>haddock</span></a></p>"
 
-    exampleText = \
+    example_text = \
         '<p><span class=\"h-card\"><a href=\"https://something/@orother' + \
         '\" class=\"u-url mention\">@<span>foo</span></a></span> Some ' + \
         'random text.</p><p>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' + \
@@ -3326,57 +3363,57 @@ def _test_web_links():
         'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' + \
         'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' + \
         'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</p>'
-    resultText = remove_long_words(exampleText, 40, [])
-    assert resultText == \
+    result_text = remove_long_words(example_text, 40, [])
+    assert result_text == \
         '<p><span class="h-card"><a href="https://something/@orother"' + \
         ' class="u-url mention">@<span>foo</span></a></span> ' + \
         'Some random text.</p>'
 
-    exampleText = \
+    example_text = \
         'This post has a web links https://somesite.net\n\nAnd some other text'
-    linkedText = add_web_links(exampleText)
+    linked_text = add_web_links(example_text)
     assert \
         '<a href="https://somesite.net" rel="nofollow noopener noreferrer"' + \
         ' target="_blank"><span class="invisible">https://' + \
-        '</span><span class="ellipsis">somesite.net</span></a' in linkedText
+        '</span><span class="ellipsis">somesite.net</span></a' in linked_text
 
-    exampleText = \
+    example_text = \
         'This post has a very long web link\n\nhttp://' + \
         'cbwebewuvfuftdiudbqd33dddbbyuef23fyug3bfhcyu2fct2' + \
         'cuyqbcbucuwvckiwyfgewfvqejbchevbhwevuevwbqebqekve' + \
         'qvuvjfkf.onion\n\nAnd some other text'
-    linkedText = add_web_links(exampleText)
-    assert 'ellipsis' in linkedText
+    linked_text = add_web_links(example_text)
+    assert 'ellipsis' in linked_text
 
-    exampleText = \
+    example_text = \
         '<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH' + \
         'AHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAH</p>'
-    resultText = remove_long_words(exampleText, 40, [])
-    assert resultText == '<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA</p>'
+    result_text = remove_long_words(example_text, 40, [])
+    assert result_text == '<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA</p>'
 
-    exampleText = \
+    example_text = \
         '<p>Tox address is 88AB9DED6F9FBEF43E105FB72060A2D89F9B93C74' + \
         '4E8C45AB3C5E42C361C837155AFCFD9D448 </p>'
-    resultText = remove_long_words(exampleText, 40, [])
-    assert resultText == exampleText
+    result_text = remove_long_words(example_text, 40, [])
+    assert result_text == example_text
 
-    exampleText = \
+    example_text = \
         'some.incredibly.long.and.annoying.word.which.should.be.removed: ' + \
         'The remaining text'
-    resultText = remove_long_words(exampleText, 40, [])
-    assert resultText == \
+    result_text = remove_long_words(example_text, 40, [])
+    assert result_text == \
         'some.incredibly.long.and.annoying.word.w\n' + \
         'hich.should.be.removed: The remaining text'
 
-    exampleText = \
+    example_text = \
         '<p>Tox address is 88AB9DED6F9FBEF43E105FB72060A2D89F9B93C74' + \
         '4E8C45AB3C5E42C361C837155AFCFD9D448</p>'
-    resultText = remove_long_words(exampleText, 40, [])
-    assert resultText == \
+    result_text = remove_long_words(example_text, 40, [])
+    assert result_text == \
         '<p>Tox address is 88AB9DED6F9FBEF43E105FB72060A2D89F9B93C7\n' + \
         '44E8C45AB3C5E42C361C837155AFCFD9D448</p>'
 
-    exampleText = \
+    example_text = \
         '<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCA' + \
         'BCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCAB' + \
         'CABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABC' + \
@@ -3386,47 +3423,47 @@ def _test_web_links():
         'ABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCA' + \
         'BCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCAB' + \
         'CABCABCABCABCABCABCABCABC</p>'
-    resultText = remove_long_words(exampleText, 40, [])
-    assert resultText == r'<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCA<\p>'
+    result_text = remove_long_words(example_text, 40, [])
+    assert result_text == r'<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCA<\p>'
 
-    exampleText = \
+    example_text = \
         '"the nucleus of mutual-support institutions, habits, and customs ' + \
         'remains alive with the millions; it keeps them together; and ' + \
         'they prefer to cling to their customs, beliefs, and traditions ' + \
         'rather than to accept the teachings of a war of each ' + \
         'against all"\n\n--Peter Kropotkin'
-    testFnStr = add_web_links(exampleText)
-    resultText = remove_long_words(testFnStr, 40, [])
-    assert resultText == exampleText
-    assert 'ellipsis' not in resultText
+    test_fn_str = add_web_links(example_text)
+    result_text = remove_long_words(test_fn_str, 40, [])
+    assert result_text == example_text
+    assert 'ellipsis' not in result_text
 
-    exampleText = \
+    example_text = \
         '<p>ｆｉｌｅｐｏｐｏｕｔ＝' + \
         'ＴｅｍｐｌａｔｅＡｔｔａｃｈｍｅｎｔＲｉｃｈＰｏｐｏｕｔ<<\\p>'
-    resultText = replace_content_duplicates(exampleText)
-    assert resultText == \
+    result_text = replace_content_duplicates(example_text)
+    assert result_text == \
         '<p>ｆｉｌｅｐｏｐｏｕｔ＝' + \
         'ＴｅｍｐｌａｔｅＡｔｔａｃｈｍｅｎｔＲｉｃｈＰｏｐｏｕｔ'
 
-    exampleText = \
+    example_text = \
         '<p>Test1 test2 #YetAnotherExcessivelyLongwindedAndBoringHashtag</p>'
-    testFnStr = add_web_links(exampleText)
-    resultText = remove_long_words(testFnStr, 40, [])
-    assert(resultText ==
+    test_fn_str = add_web_links(example_text)
+    result_text = remove_long_words(test_fn_str, 40, [])
+    assert(result_text ==
            '<p>Test1 test2 '
            '#YetAnotherExcessivelyLongwindedAndBorin\ngHashtag</p>')
 
-    exampleText = \
+    example_text = \
         "<p>Don't remove a p2p link " + \
         "rad:git:hwd1yrerc3mcgn8ga9rho3dqi4w33nep7kxmqezss4topyfgmexihp" + \
         "33xcw</p>"
-    testFnStr = add_web_links(exampleText)
-    resultText = remove_long_words(testFnStr, 40, [])
-    assert resultText == exampleText
+    test_fn_str = add_web_links(example_text)
+    result_text = remove_long_words(test_fn_str, 40, [])
+    assert result_text == example_text
 
 
 def _test_addemoji(base_dir: str):
-    print('testAddEmoji')
+    print('test_addemoji')
     content = "Emoji :lemon: :strawberry: :banana:"
     http_prefix = 'http'
     nickname = 'testuser'
@@ -3434,7 +3471,7 @@ def _test_addemoji(base_dir: str):
     port = 3682
     recipients = []
     hashtags = {}
-    base_dirOriginal = base_dir
+    base_dir_original = base_dir
     path = base_dir + '/.tests'
     if not os.path.isdir(path):
         os.mkdir(path)
@@ -3447,56 +3484,60 @@ def _test_addemoji(base_dir: str):
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
-    copytree(base_dirOriginal + '/emoji', base_dir + '/emoji')
+    copytree(base_dir_original + '/emoji', base_dir + '/emoji')
     os.chdir(base_dir)
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(base_dir, nickname, domain, port,
                       http_prefix, True, False, 'password')
-    contentModified = \
+    assert private_key_pem
+    assert public_key_pem
+    assert person
+    assert wf_endpoint
+    content_modified = \
         add_html_tags(base_dir, http_prefix,
                       nickname, domain, content,
                       recipients, hashtags, True)
-    assert ':lemon:' in contentModified
-    assert contentModified.startswith('<p>')
-    assert contentModified.endswith('</p>')
+    assert ':lemon:' in content_modified
+    assert content_modified.startswith('<p>')
+    assert content_modified.endswith('</p>')
     tags = []
-    for tagName, tag in hashtags.items():
+    for _, tag in hashtags.items():
         tags.append(tag)
-    content = contentModified
-    contentModified = \
+    content = content_modified
+    content_modified = \
         replace_emoji_from_tags(None, base_dir, content, tags, 'content', True)
-    # print('contentModified: ' + contentModified)
-    assert contentModified == '<p>Emoji 🍋 🍓 🍌</p>'
+    # print('content_modified: ' + content_modified)
+    assert content_modified == '<p>Emoji 🍋 🍓 🍌</p>'
 
-    os.chdir(base_dirOriginal)
-    shutil.rmtree(base_dirOriginal + '/.tests',
+    os.chdir(base_dir_original)
+    shutil.rmtree(base_dir_original + '/.tests',
                   ignore_errors=False, onerror=None)
 
 
 def _test_get_status_number():
-    print('testGetStatusNumber')
-    prevStatusNumber = None
-    for i in range(1, 20):
-        statusNumber, published = get_status_number()
-        if prevStatusNumber:
-            assert len(statusNumber) == 18
-            assert int(statusNumber) > prevStatusNumber
-        prevStatusNumber = int(statusNumber)
+    print('test_get_status_number')
+    prev_status_number = None
+    for _ in range(1, 20):
+        status_number, _ = get_status_number()
+        if prev_status_number:
+            assert len(status_number) == 18
+            assert int(status_number) > prev_status_number
+        prev_status_number = int(status_number)
 
 
 def _test_json_string() -> None:
-    print('testJsonString')
+    print('test_json_string')
     filename = '.epicyon_tests_test_json_string.json'
-    messageStr = "Crème brûlée यह एक परीक्षण ह"
-    testJson = {
-        "content": messageStr
+    message_str = "Crème brûlée यह एक परीक्षण ह"
+    test_json = {
+        "content": message_str
     }
-    assert save_json(testJson, filename)
-    receivedJson = load_json(filename, 0)
-    assert receivedJson
-    assert receivedJson['content'] == messageStr
-    encodedStr = json.dumps(testJson, ensure_ascii=False)
-    assert messageStr in encodedStr
+    assert save_json(test_json, filename)
+    received_json = load_json(filename, 0)
+    assert received_json
+    assert received_json['content'] == message_str
+    encoded_str = json.dumps(test_json, ensure_ascii=False)
+    assert message_str in encoded_str
     try:
         os.remove(filename)
     except OSError:
@@ -3504,33 +3545,33 @@ def _test_json_string() -> None:
 
 
 def _test_save_load_json():
-    print('testSaveLoadJson')
-    testJson = {
+    print('test_save_load_json')
+    test_json = {
         "param1": 3,
         "param2": '"Crème brûlée यह एक परीक्षण ह"'
     }
-    testFilename = '.epicyon_tests_test_save_load_json.json'
-    if os.path.isfile(testFilename):
+    test_filename = '.epicyon_tests_test_save_load_json.json'
+    if os.path.isfile(test_filename):
         try:
-            os.remove(testFilename)
+            os.remove(test_filename)
         except OSError:
             pass
-    assert save_json(testJson, testFilename)
-    assert os.path.isfile(testFilename)
-    testLoadJson = load_json(testFilename)
-    assert(testLoadJson)
-    assert testLoadJson.get('param1')
-    assert testLoadJson.get('param2')
-    assert testLoadJson['param1'] == 3
-    assert testLoadJson['param2'] == '"Crème brûlée यह एक परीक्षण ह"'
+    assert save_json(test_json, test_filename)
+    assert os.path.isfile(test_filename)
+    test_load_json = load_json(test_filename)
+    assert test_load_json
+    assert test_load_json.get('param1')
+    assert test_load_json.get('param2')
+    assert test_load_json['param1'] == 3
+    assert test_load_json['param2'] == '"Crème brûlée यह एक परीक्षण ह"'
     try:
-        os.remove(testFilename)
+        os.remove(test_filename)
     except OSError:
         pass
 
 
 def _test_theme():
-    print('testTheme')
+    print('test_theme')
     css = 'somestring --background-value: 24px; --foreground-value: 24px;'
     result = set_cs_sparam(css, 'background-value', '32px')
     assert result == \
@@ -3548,35 +3589,35 @@ def _test_theme():
 
 
 def _test_recent_posts_cache():
-    print('testRecentPostsCache')
+    print('test_recent_posts_cache')
     recent_posts_cache = {}
     max_recent_posts = 3
-    htmlStr = '<html></html>'
+    html_str = '<html></html>'
     for i in range(5):
         post_json_object = {
             "id": "https://somesite.whatever/users/someuser/statuses/" + str(i)
         }
         update_recent_posts_cache(recent_posts_cache, max_recent_posts,
-                                  post_json_object, htmlStr)
+                                  post_json_object, html_str)
     assert len(recent_posts_cache['index']) == max_recent_posts
     assert len(recent_posts_cache['json'].items()) == max_recent_posts
     assert len(recent_posts_cache['html'].items()) == max_recent_posts
 
 
 def _test_remove_txt_formatting():
-    print('testRemoveTextFormatting')
-    testStr = '<p>Text without formatting</p>'
-    resultStr = remove_text_formatting(testStr)
-    assert(resultStr == testStr)
-    testStr = '<p>Text <i>with</i> <h3>formatting</h3></p>'
-    resultStr = remove_text_formatting(testStr)
-    assert(resultStr == '<p>Text with formatting</p>')
+    print('test_remove_txt_formatting')
+    test_str = '<p>Text without formatting</p>'
+    result_str = remove_text_formatting(test_str)
+    assert result_str == test_str
+    test_str = '<p>Text <i>with</i> <h3>formatting</h3></p>'
+    result_str = remove_text_formatting(test_str)
+    assert result_str == '<p>Text with formatting</p>'
 
 
 def _test_jsonld():
-    print("testJsonld")
+    print("test_jsonld")
 
-    jldDocument = {
+    jld_document = {
         "@context": "https://www.w3.org/ns/activitystreams",
         "actor": "https://somesite.net/users/gerbil",
         "description": "My json document",
@@ -3585,8 +3626,8 @@ def _test_jsonld():
             "content": "valid content"
         }
     }
-    # privateKeyPem, publicKeyPem = generate_rsa_key()
-    privateKeyPem = '-----BEGIN RSA PRIVATE KEY-----\n' \
+    # private_key_pem, public_key_pem = generate_rsa_key()
+    private_key_pem = '-----BEGIN RSA PRIVATE KEY-----\n' \
         'MIIEowIBAAKCAQEAod9iHfIn4ugY/2byFrFjUprrFLkkH5bCrjiBq2/MdHFg99IQ\n' \
         '7li2x2mg5fkBMhU5SJIxlN8kiZMFq7JUXSA97Yo4puhVubqTSHihIh6Xn2mTjTgs\n' \
         'zNo9SBbmN3YiyBPTcr0rF4jGWZAduJ8u6i7Eky2QH+UBKyUNRZrcfoVq+7grHUIA\n' \
@@ -3613,7 +3654,7 @@ def _test_jsonld():
         '0SbZPsOpuFUdTiRkSI3w/p1IuM5dPxgCGH9MHqjqogU5QwXr3vLF+a/PFhINkn1x\n' \
         'lozRZjDcF1y6xHfExotPC973UZnKEviq9/FqOsovZpvSQkzAYSZF\n' \
         '-----END RSA PRIVATE KEY-----'
-    publicKeyPem = '-----BEGIN PUBLIC KEY-----\n' \
+    public_key_pem = '-----BEGIN PUBLIC KEY-----\n' \
         'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAod9iHfIn4ugY/2byFrFj\n' \
         'UprrFLkkH5bCrjiBq2/MdHFg99IQ7li2x2mg5fkBMhU5SJIxlN8kiZMFq7JUXSA9\n' \
         '7Yo4puhVubqTSHihIh6Xn2mTjTgszNo9SBbmN3YiyBPTcr0rF4jGWZAduJ8u6i7E\n' \
@@ -3623,22 +3664,22 @@ def _test_jsonld():
         'TwIDAQAB\n' \
         '-----END PUBLIC KEY-----'
 
-    signedDocument = jldDocument.copy()
-    generate_json_signature(signedDocument, privateKeyPem)
-    assert(signedDocument)
-    assert(signedDocument.get('signature'))
-    assert(signedDocument['signature'].get('signatureValue'))
-    assert(signedDocument['signature'].get('type'))
-    assert(len(signedDocument['signature']['signatureValue']) > 50)
-    # print(str(signedDocument['signature']))
-    assert(signedDocument['signature']['type'] == 'RsaSignature2017')
-    assert(verify_json_signature(signedDocument, publicKeyPem))
+    signed_document = jld_document.copy()
+    generate_json_signature(signed_document, private_key_pem)
+    assert signed_document
+    assert signed_document.get('signature')
+    assert signed_document['signature'].get('signatureValue')
+    assert signed_document['signature'].get('type')
+    assert len(signed_document['signature']['signatureValue']) > 50
+    # print str(signed_document['signature'])
+    assert signed_document['signature']['type'] == 'RsaSignature2017'
+    assert verify_json_signature(signed_document, public_key_pem)
 
     # alter the signed document
-    signedDocument['object']['content'] = 'forged content'
-    assert(not verify_json_signature(signedDocument, publicKeyPem))
+    signed_document['object']['content'] = 'forged content'
+    assert not verify_json_signature(signed_document, public_key_pem)
 
-    jldDocument2 = {
+    jld_document2 = {
         "@context": "https://www.w3.org/ns/activitystreams",
         "actor": "https://somesite.net/users/gerbil",
         "description": "Another json document",
@@ -3647,64 +3688,64 @@ def _test_jsonld():
             "content": "More content"
         }
     }
-    signedDocument2 = jldDocument2.copy()
-    generate_json_signature(signedDocument2, privateKeyPem)
-    assert(signedDocument2)
-    assert(signedDocument2.get('signature'))
-    assert(signedDocument2['signature'].get('signatureValue'))
+    signed_document2 = jld_document2.copy()
+    generate_json_signature(signed_document2, private_key_pem)
+    assert signed_document2
+    assert signed_document2.get('signature')
+    assert signed_document2['signature'].get('signatureValue')
     # changed signature on different document
-    if signedDocument['signature']['signatureValue'] == \
-       signedDocument2['signature']['signatureValue']:
+    if signed_document['signature']['signatureValue'] == \
+       signed_document2['signature']['signatureValue']:
         print('json signature has not changed for different documents')
-    assert '.' not in str(signedDocument['signature']['signatureValue'])
-    assert len(str(signedDocument['signature']['signatureValue'])) > 340
-    assert(signedDocument['signature']['signatureValue'] !=
-           signedDocument2['signature']['signatureValue'])
+    assert '.' not in str(signed_document['signature']['signatureValue'])
+    assert len(str(signed_document['signature']['signatureValue'])) > 340
+    assert (signed_document['signature']['signatureValue'] !=
+            signed_document2['signature']['signatureValue'])
 
 
 def _test_site_active():
-    print('testSiteIsActive')
+    print('test_site_is_active')
     timeout = 10
-    assert(site_is_active('https://archive.org', timeout))
-    assert(site_is_active('https://mastodon.social', timeout))
-    assert(not site_is_active('https://notarealwebsite.a.b.c', timeout))
+    assert site_is_active('https://archive.org', timeout)
+    assert site_is_active('https://mastodon.social', timeout)
+    assert not site_is_active('https://notarealwebsite.a.b.c', timeout)
 
 
 def _test_strip_html():
-    print('testRemoveHtml')
-    testStr = 'This string has no html.'
-    assert(remove_html(testStr) == testStr)
-    testStr = 'This string <a href="1234.567">has html</a>.'
-    assert(remove_html(testStr) == 'This string has html.')
-    testStr = '<label>This string has.</label><label>Two labels.</label>'
-    assert(remove_html(testStr) == 'This string has. Two labels.')
-    testStr = '<p>This string has.</p><p>Two paragraphs.</p>'
-    assert(remove_html(testStr) == 'This string has.\n\nTwo paragraphs.')
-    testStr = 'This string has.<br>A new line.'
-    assert(remove_html(testStr) == 'This string has.\nA new line.')
-    testStr = '<p>This string contains a url http://somesite.or.other</p>'
-    assert(remove_html(testStr) ==
-           'This string contains a url http://somesite.or.other')
+    print('test_remove_html')
+    test_str = 'This string has no html.'
+    assert remove_html(test_str) == test_str
+    test_str = 'This string <a href="1234.567">has html</a>.'
+    assert remove_html(test_str) == 'This string has html.'
+    test_str = '<label>This string has.</label><label>Two labels.</label>'
+    assert remove_html(test_str) == 'This string has. Two labels.'
+    test_str = '<p>This string has.</p><p>Two paragraphs.</p>'
+    assert remove_html(test_str) == 'This string has.\n\nTwo paragraphs.'
+    test_str = 'This string has.<br>A new line.'
+    assert remove_html(test_str) == 'This string has.\nA new line.'
+    test_str = '<p>This string contains a url http://somesite.or.other</p>'
+    assert remove_html(test_str) == \
+        'This string contains a url http://somesite.or.other'
 
 
 def _test_danger_css(base_dir: str) -> None:
-    print('testDangerousCSS')
-    for subdir, dirs, files in os.walk(base_dir):
-        for f in files:
-            if not f.endswith('.css'):
+    print('test_dangerous_css')
+    for _, _, files in os.walk(base_dir):
+        for fname in files:
+            if not fname.endswith('.css'):
                 continue
-            assert not dangerous_css(base_dir + '/' + f, False)
+            assert not dangerous_css(base_dir + '/' + fname, False)
         break
 
 
 def _test_danger_svg(base_dir: str) -> None:
     print('testDangerousSVG')
-    svgContent = \
+    svg_content = \
         '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
         '  <circle cx="5" cy="5" r="4" />' + \
         '</svg>'
-    assert not dangerous_svg(svgContent, False)
-    svgContent = \
+    assert not dangerous_svg(svg_content, False)
+    svg_content = \
         '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
         '  <script>' + \
         '  // <![CDATA[' + \
@@ -3723,7 +3764,7 @@ def _test_danger_svg(base_dir: str) -> None:
         '' + \
         '  <circle cx="5" cy="5" r="4" />' + \
         '</svg>'
-    assert dangerous_svg(svgContent, False)
+    assert dangerous_svg(svg_content, False)
 
     assert not scan_themes_for_scripts(base_dir)
 
@@ -3732,85 +3773,85 @@ def _test_danger_markup():
     print('testDangerousMarkup')
     allow_local_network_access = False
     content = '<p>This is a valid message</p>'
-    assert(not dangerous_markup(content, allow_local_network_access))
+    assert not dangerous_markup(content, allow_local_network_access)
 
     content = 'This is a valid message without markup'
-    assert(not dangerous_markup(content, allow_local_network_access))
+    assert not dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script>document.getElementById("concentrated")' + \
         '.innerHTML = "evil";</script></p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '&lt;script&gt;document.getElementById("concentrated")' + \
         '.innerHTML = "evil";&lt;/script&gt;</p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This html contains more than you expected... ' + \
         '<script language="javascript">document.getElementById("abc")' + \
         '.innerHTML = "def";</script></p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script src="https://evilsite/payload.js" /></p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This message embeds an evil frame.' + \
         '<iframe src="somesite"></iframe></p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This message tries to obfuscate an evil frame.' + \
         '<  iframe     src = "somesite"></    iframe  ></p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This message is not necessarily evil, but annoying.' + \
         '<hr><br><br><br><br><br><br><br><hr><hr></p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/index.html">valid link.</a></p>'
-    assert(not dangerous_markup(content, allow_local_network_access))
+    assert not dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/iframe.html">' + \
         'valid link having invalid but harmless name.</a></p>'
-    assert(not dangerous_markup(content, allow_local_network_access))
+    assert not dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This message which <a href="127.0.0.1:8736">' + \
         'tries to access the local network</a></p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>This message which <a href="http://192.168.5.10:7235">' + \
         'tries to access the local network</a></p>'
-    assert(dangerous_markup(content, allow_local_network_access))
+    assert dangerous_markup(content, allow_local_network_access)
 
     content = '<p>127.0.0.1 This message which does not access ' + \
         'the local network</a></p>'
-    assert(not dangerous_markup(content, allow_local_network_access))
+    assert not dangerous_markup(content, allow_local_network_access)
 
 
 def _run_html_replace_quote_marks():
     print('html_replace_quote_marks')
-    testStr = 'The "cat" "sat" on the mat'
-    result = html_replace_quote_marks(testStr)
+    test_str = 'The "cat" "sat" on the mat'
+    result = html_replace_quote_marks(test_str)
     assert result == 'The “cat” “sat” on the mat'
 
-    testStr = 'The cat sat on the mat'
-    result = html_replace_quote_marks(testStr)
+    test_str = 'The cat sat on the mat'
+    result = html_replace_quote_marks(test_str)
     assert result == 'The cat sat on the mat'
 
-    testStr = '"hello"'
-    result = html_replace_quote_marks(testStr)
+    test_str = '"hello"'
+    result = html_replace_quote_marks(test_str)
     assert result == '“hello”'
 
-    testStr = '"hello" <a href="somesite.html">&quot;test&quot; html</a>'
-    result = html_replace_quote_marks(testStr)
+    test_str = '"hello" <a href="somesite.html">&quot;test&quot; html</a>'
+    result = html_replace_quote_marks(test_str)
     assert result == '“hello” <a href="somesite.html">“test” html</a>'
 
 
 def _test_json_post_allows_comment():
-    print('testJsonPostAllowsComments')
+    print('test_jsonPostAllowsComments')
     post_json_object = {
         "id": "123"
     }
@@ -3853,67 +3894,67 @@ def _test_json_post_allows_comment():
 
 def _test_remove_id_ending():
     print('testRemoveIdEnding')
-    testStr = 'https://activitypub.somedomain.net'
-    resultStr = remove_id_ending(testStr)
-    assert resultStr == 'https://activitypub.somedomain.net'
+    test_str = 'https://activitypub.somedomain.net'
+    result_str = remove_id_ending(test_str)
+    assert result_str == 'https://activitypub.somedomain.net'
 
-    testStr = \
+    test_str = \
         'https://activitypub.somedomain.net/users/foo/' + \
         'statuses/34544814814/activity'
-    resultStr = remove_id_ending(testStr)
-    assert resultStr == \
+    result_str = remove_id_ending(test_str)
+    assert result_str == \
         'https://activitypub.somedomain.net/users/foo/statuses/34544814814'
 
-    testStr = \
+    test_str = \
         'https://undo.somedomain.net/users/foo/statuses/34544814814/undo'
-    resultStr = remove_id_ending(testStr)
-    assert resultStr == \
+    result_str = remove_id_ending(test_str)
+    assert result_str == \
         'https://undo.somedomain.net/users/foo/statuses/34544814814'
 
-    testStr = \
+    test_str = \
         'https://event.somedomain.net/users/foo/statuses/34544814814/event'
-    resultStr = remove_id_ending(testStr)
-    assert resultStr == \
+    result_str = remove_id_ending(test_str)
+    assert result_str == \
         'https://event.somedomain.net/users/foo/statuses/34544814814'
 
 
 def _test_valid_content_warning():
     print('testValidContentWarning')
-    resultStr = valid_content_warning('Valid content warning')
-    assert resultStr == 'Valid content warning'
+    result_str = valid_content_warning('Valid content warning')
+    assert result_str == 'Valid content warning'
 
-    resultStr = valid_content_warning('Invalid #content warning')
-    assert resultStr == 'Invalid content warning'
+    result_str = valid_content_warning('Invalid #content warning')
+    assert result_str == 'Invalid content warning'
 
-    resultStr = \
+    result_str = \
         valid_content_warning('Invalid <a href="somesite">content warning</a>')
-    assert resultStr == 'Invalid content warning'
+    assert result_str == 'Invalid content warning'
 
 
 def _test_translations(base_dir: str) -> None:
     print('testTranslations')
-    languagesStr = get_supported_languages(base_dir)
-    assert languagesStr
+    languages_str = get_supported_languages(base_dir)
+    assert languages_str
 
     # load all translations into a dict
-    langDict = {}
-    for lang in languagesStr:
-        langJson = load_json('translations/' + lang + '.json')
-        if not langJson:
+    lang_dict = {}
+    for lang in languages_str:
+        lang_json = load_json('translations/' + lang + '.json')
+        if not lang_json:
             print('Missing language file ' +
                   'translations/' + lang + '.json')
-        assert langJson
-        langDict[lang] = langJson
+        assert lang_json
+        lang_dict[lang] = lang_json
 
     # load english translations
-    translationsJson = load_json('translations/en.json')
+    translations_json = load_json('translations/en.json')
     # test each english string exists in the other language files
-    for englishStr, translatedStr in translationsJson.items():
-        for lang in languagesStr:
-            langJson = langDict[lang]
-            if not langJson.get(englishStr):
-                print(englishStr + ' is missing from ' + lang + '.json')
-            assert langJson.get(englishStr)
+    for english_str, _ in translations_json.items():
+        for lang in languages_str:
+            lang_json = lang_dict[lang]
+            if not lang_json.get(english_str):
+                print(english_str + ' is missing from ' + lang + '.json')
+            assert lang_json.get(english_str)
 
 
 def _test_constant_time_string():
@@ -3926,97 +3967,97 @@ def _test_constant_time_string():
 
     start = time.time()
     test_str = 'nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy'
-    for timingTest in range(itterations):
+    for _ in range(itterations):
         constant_time_string_check(test_str, test_str)
     end = time.time()
-    avTime1 = ((end - start) * 1000000 / itterations)
+    av_time1 = ((end - start) * 1000000 / itterations)
 
     # change a single character and observe timing difference
     start = time.time()
-    for timingTest in range(itterations):
+    for _ in range(itterations):
         constant_time_string_check(test_str, test_str)
     end = time.time()
-    avTime2 = ((end - start) * 1000000 / itterations)
-    time_diffMicroseconds = abs(avTime2 - avTime1)
+    av_time2 = ((end - start) * 1000000 / itterations)
+    time_diff_microseconds = abs(av_time2 - av_time1)
     # time difference should be less than 10uS
-    assert int(time_diffMicroseconds) < 10
+    assert int(time_diff_microseconds) < 10
 
     # change multiple characters and observe timing difference
     start = time.time()
     test_str2 = 'ano1befffbsn7sd3vbluef6qseuqfpqeznjgni9bfgi'
-    for timingTest in range(itterations):
+    for _ in range(itterations):
         constant_time_string_check(test_str, test_str2)
     end = time.time()
-    avTime2 = ((end - start) * 1000000 / itterations)
-    time_diffMicroseconds = abs(avTime2 - avTime1)
+    av_time2 = ((end - start) * 1000000 / itterations)
+    time_diff_microseconds = abs(av_time2 - av_time1)
     # time difference should be less than 10uS
-    assert int(time_diffMicroseconds) < 10
+    assert int(time_diff_microseconds) < 10
 
 
 def _test_replace_email_quote():
     print('testReplaceEmailQuote')
-    testStr = '<p>This content has no quote.</p>'
-    assert html_replace_email_quote(testStr) == testStr
+    test_str = '<p>This content has no quote.</p>'
+    assert html_replace_email_quote(test_str) == test_str
 
-    testStr = '<p>This content has no quote.</p>' + \
+    test_str = '<p>This content has no quote.</p>' + \
         '<p>With multiple</p><p>lines</p>'
-    assert html_replace_email_quote(testStr) == testStr
+    assert html_replace_email_quote(test_str) == test_str
 
-    testStr = '<p>&quot;This is a quoted paragraph.&quot;</p>'
-    assert html_replace_email_quote(testStr) == \
+    test_str = '<p>&quot;This is a quoted paragraph.&quot;</p>'
+    assert html_replace_email_quote(test_str) == \
         '<p><blockquote>This is a quoted paragraph.</blockquote></p>'
 
-    testStr = "<p><span class=\"h-card\">" + \
+    test_str = "<p><span class=\"h-card\">" + \
         "<a href=\"https://somewebsite/@nickname\" " + \
         "class=\"u-url mention\">@<span>nickname</span></a></span> " + \
         "<br />&gt; This is a quote</p><p>Some other text.</p>"
-    expectedStr = "<p><span class=\"h-card\">" + \
+    expected_str = "<p><span class=\"h-card\">" + \
         "<a href=\"https://somewebsite/@nickname\" " + \
         "class=\"u-url mention\">@<span>nickname</span></a></span> " + \
         "<br /><blockquote>This is a quote</blockquote></p>" + \
         "<p>Some other text.</p>"
-    resultStr = html_replace_email_quote(testStr)
-    if resultStr != expectedStr:
-        print('Result: ' + str(resultStr))
-        print('Expect: ' + expectedStr)
-    assert resultStr == expectedStr
+    result_str = html_replace_email_quote(test_str)
+    if result_str != expected_str:
+        print('Result: ' + str(result_str))
+        print('Expect: ' + expected_str)
+    assert result_str == expected_str
 
-    testStr = "<p>Some text:</p><p>&gt; first line-&gt;second line</p>" + \
+    test_str = "<p>Some text:</p><p>&gt; first line-&gt;second line</p>" + \
         "<p>Some question?</p>"
-    expectedStr = "<p>Some text:</p><p><blockquote>first line-<br>" + \
+    expected_str = "<p>Some text:</p><p><blockquote>first line-<br>" + \
         "second line</blockquote></p><p>Some question?</p>"
-    resultStr = html_replace_email_quote(testStr)
-    if resultStr != expectedStr:
-        print('Result: ' + str(resultStr))
-        print('Expect: ' + expectedStr)
-    assert resultStr == expectedStr
+    result_str = html_replace_email_quote(test_str)
+    if result_str != expected_str:
+        print('Result: ' + str(result_str))
+        print('Expect: ' + expected_str)
+    assert result_str == expected_str
 
-    testStr = "<p><span class=\"h-card\">" + \
+    test_str = "<p><span class=\"h-card\">" + \
         "<a href=\"https://somedomain/@somenick\" " + \
         "class=\"u-url mention\">@<span>somenick</span>" + \
         "</a></span> </p><p>&gt; Text1.<br />&gt; <br />" + \
         "&gt; Text2<br />&gt; <br />&gt; Text3<br />" + \
         "&gt;<br />&gt; Text4<br />&gt; <br />&gt; " + \
         "Text5<br />&gt; <br />&gt; Text6</p><p>Text7</p>"
-    expectedStr = "<p><span class=\"h-card\">" + \
+    expected_str = "<p><span class=\"h-card\">" + \
         "<a href=\"https://somedomain/@somenick\" " + \
         "class=\"u-url mention\">@<span>somenick</span></a>" + \
         "</span> </p><p><blockquote> Text1.<br /><br />" + \
         "Text2<br /><br />Text3<br />&gt;<br />Text4<br />" + \
         "<br />Text5<br /><br />Text6</blockquote></p><p>Text7</p>"
-    resultStr = html_replace_email_quote(testStr)
-    if resultStr != expectedStr:
-        print('Result: ' + str(resultStr))
-        print('Expect: ' + expectedStr)
-    assert resultStr == expectedStr
+    result_str = html_replace_email_quote(test_str)
+    if result_str != expected_str:
+        print('Result: ' + str(result_str))
+        print('Expect: ' + expected_str)
+    assert result_str == expected_str
 
 
 def _test_strip_html_tag():
     print('testRemoveHtmlTag')
-    testStr = "<p><img width=\"864\" height=\"486\" " + \
+    test_str = "<p><img width=\"864\" height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
-    resultStr = remove_html_tag(testStr, 'width')
-    assert resultStr == "<p><img height=\"486\" " + \
+    result_str = remove_html_tag(test_str, 'width')
+    assert result_str == "<p><img height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
 
 
@@ -4026,12 +4067,12 @@ def _test_hashtag_rules():
 
     url = 'testsite.com'
     moderated = True
-    conditionsStr = \
+    conditions_str = \
         'contains "Cat" or contains "Corvid" or ' + \
         'contains "Dormouse" or contains "Buzzard"'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == str(['or', ['contains', ['"Cat"']],
                              ['contains', ['"Corvid"']],
                              ['contains', ['"Dormouse"']],
@@ -4039,12 +4080,12 @@ def _test_hashtag_rules():
 
     content = 'This is a test'
     moderated = True
-    conditionsStr = '#foo or #bar'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = '#foo or #bar'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == str(['or', ['#foo'], ['#bar']])
-    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    assert str(tags_in_conditions) == str(['#foo', '#bar'])
     hashtags = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     hashtags = ['#carrot', '#stick']
@@ -4053,12 +4094,12 @@ def _test_hashtag_rules():
     content = 'This is a test'
     url = 'https://testsite.com/something'
     moderated = True
-    conditionsStr = '#foo and from "testsite.com"'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = '#foo and from "testsite.com"'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == str(['and', ['#foo'], ['from', ['"testsite.com"']]])
-    assert str(tagsInConditions) == str(['#foo'])
+    assert str(tags_in_conditions) == str(['#foo'])
     hashtags = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content,
@@ -4066,82 +4107,82 @@ def _test_hashtag_rules():
 
     content = 'This is a test'
     moderated = True
-    conditionsStr = 'contains "is a" and #foo or #bar'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = 'contains "is a" and #foo or #bar'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == \
         str(['and', ['contains', ['"is a"']],
              ['or', ['#foo'], ['#bar']]])
-    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    assert str(tags_in_conditions) == str(['#foo', '#bar'])
     hashtags = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     hashtags = ['#carrot', '#stick']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     moderated = False
-    conditionsStr = 'not moderated and #foo or #bar'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = 'not moderated and #foo or #bar'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == \
         str(['not', ['and', ['moderated'], ['or', ['#foo'], ['#bar']]]])
-    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    assert str(tags_in_conditions) == str(['#foo', '#bar'])
     hashtags = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     hashtags = ['#carrot', '#stick']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     moderated = True
-    conditionsStr = 'moderated and #foo or #bar'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = 'moderated and #foo or #bar'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == \
         str(['and', ['moderated'], ['or', ['#foo'], ['#bar']]])
-    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    assert str(tags_in_conditions) == str(['#foo', '#bar'])
     hashtags = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     hashtags = ['#carrot', '#stick']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
-    conditionsStr = 'x'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = 'x'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert tree is None
-    assert tagsInConditions == []
+    assert tags_in_conditions == []
     hashtags = ['#foo']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
-    conditionsStr = '#x'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = '#x'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == str(['#x'])
-    assert str(tagsInConditions) == str(['#x'])
+    assert str(tags_in_conditions) == str(['#x'])
     hashtags = ['#x']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     hashtags = ['#y', '#z']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
-    conditionsStr = 'not #b'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = 'not #b'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == str(['not', ['#b']])
-    assert str(tagsInConditions) == str(['#b'])
+    assert str(tags_in_conditions) == str(['#b'])
     hashtags = ['#y', '#z']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     hashtags = ['#a', '#b', '#c']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
-    conditionsStr = '#foo or #bar and #a'
-    tagsInConditions = []
-    tree = hashtag_rule_tree(operators, conditionsStr,
-                             tagsInConditions, moderated)
+    conditions_str = '#foo or #bar and #a'
+    tags_in_conditions = []
+    tree = hashtag_rule_tree(operators, conditions_str,
+                             tags_in_conditions, moderated)
     assert str(tree) == str(['and', ['or', ['#foo'], ['#bar']], ['#a']])
-    assert str(tagsInConditions) == str(['#foo', '#bar', '#a'])
+    assert str(tags_in_conditions) == str(['#foo', '#bar', '#a'])
     hashtags = ['#foo', '#bar', '#a']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     hashtags = ['#bar', '#a']
@@ -4154,13 +4195,13 @@ def _test_hashtag_rules():
 
 def _test_newswire_tags():
     print('testNewswireTags')
-    rssDescription = '<img src="https://somesite/someimage.jpg" ' + \
+    rss_description = '<img src="https://somesite/someimage.jpg" ' + \
         'class="misc-stuff" alt="#ExcitingHashtag" ' + \
         'srcset="https://somesite/someimage.jpg" ' + \
         'sizes="(max-width: 864px) 100vw, 864px" />' + \
         'Compelling description with #ExcitingHashtag, which is ' + \
         'being posted in #BoringForum'
-    tags = get_newswire_tags(rssDescription, 10)
+    tags = get_newswire_tags(rss_description, 10)
     assert len(tags) == 2
     assert '#BoringForum' in tags
     assert '#ExcitingHashtag' in tags
@@ -4168,37 +4209,37 @@ def _test_newswire_tags():
 
 def _test_first_paragraph_from_string():
     print('testFirstParagraphFromString')
-    testStr = \
+    test_str = \
         '<p><a href="https://somesite.com/somepath">This is a test</a></p>' + \
         '<p>This is another paragraph</p>'
-    resultStr = first_paragraph_from_string(testStr)
-    if resultStr != 'This is a test':
-        print(resultStr)
-    assert resultStr == 'This is a test'
+    result_str = first_paragraph_from_string(test_str)
+    if result_str != 'This is a test':
+        print(result_str)
+    assert result_str == 'This is a test'
 
-    testStr = 'Testing without html'
-    resultStr = first_paragraph_from_string(testStr)
-    assert resultStr == testStr
+    test_str = 'Testing without html'
+    result_str = first_paragraph_from_string(test_str)
+    assert result_str == test_str
 
 
 def _test_parse_feed_date():
     print('testParseFeedDate')
 
-    pubDate = "2020-12-14T00:08:06+00:00"
-    publishedDate = parse_feed_date(pubDate)
-    assert publishedDate == "2020-12-14 00:08:06+00:00"
+    pub_date = "2020-12-14T00:08:06+00:00"
+    published_date = parse_feed_date(pub_date)
+    assert published_date == "2020-12-14 00:08:06+00:00"
 
-    pubDate = "Tue, 08 Dec 2020 06:24:38 -0600"
-    publishedDate = parse_feed_date(pubDate)
-    assert publishedDate == "2020-12-08 12:24:38+00:00"
+    pub_date = "Tue, 08 Dec 2020 06:24:38 -0600"
+    published_date = parse_feed_date(pub_date)
+    assert published_date == "2020-12-08 12:24:38+00:00"
 
-    pubDate = "2020-08-27T16:12:34+00:00"
-    publishedDate = parse_feed_date(pubDate)
-    assert publishedDate == "2020-08-27 16:12:34+00:00"
+    pub_date = "2020-08-27T16:12:34+00:00"
+    published_date = parse_feed_date(pub_date)
+    assert published_date == "2020-08-27 16:12:34+00:00"
 
-    pubDate = "Sun, 22 Nov 2020 19:51:33 +0100"
-    publishedDate = parse_feed_date(pubDate)
-    assert publishedDate == "2020-11-22 18:51:33+00:00"
+    pub_date = "Sun, 22 Nov 2020 19:51:33 +0100"
+    published_date = parse_feed_date(pub_date)
+    assert published_date == "2020-11-22 18:51:33+00:00"
 
 
 def _test_valid_nick():
@@ -4220,14 +4261,14 @@ def _test_valid_nick():
 
 def _test_guess_tag_category() -> None:
     print('testGuessHashtagCategory')
-    hashtagCategories = {
+    hashtag_categories = {
         "foo": ["swan", "goose"],
         "bar": ["cats", "mouse"]
     }
-    guess = guess_hashtag_category("unspecifiedgoose", hashtagCategories)
+    guess = guess_hashtag_category("unspecifiedgoose", hashtag_categories)
     assert guess == "foo"
 
-    guess = guess_hashtag_category("mastocats", hashtagCategories)
+    guess = guess_hashtag_category("mastocats", hashtag_categories)
     assert guess == "bar"
 
 
@@ -4252,35 +4293,35 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     post_id = \
         http_prefix + '://rat.site/users/ninjarodent/statuses/63746173435'
     content = "@ninjarodent@rat.site This is a test."
-    followersOnly = False
-    saveToFile = False
+    followers_only = False
+    save_to_file = False
     client_to_server = False
-    commentsEnabled = True
-    attachImageFilename = None
-    mediaType = None
-    imageDescription = 'Some description'
+    comments_enabled = True
+    attach_image_filename = None
+    media_type = None
+    image_description = 'Some description'
     city = 'London, England'
-    testInReplyTo = post_id
-    testInReplyToAtomUri = None
-    testSubject = None
-    testSchedulePost = False
-    testEventDate = None
-    testEventTime = None
-    testLocation = None
-    testIsArticle = False
-    conversationId = None
+    test_in_reply_to = post_id
+    test_in_reply_to_atom_uri = None
+    test_subject = None
+    test_schedule_post = False
+    test_event_date = None
+    test_event_time = None
+    test_location = None
+    test_is_article = False
+    conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     reply = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content, followersOnly, saveToFile,
-                           client_to_server, commentsEnabled,
-                           attachImageFilename, mediaType,
-                           imageDescription, city, testInReplyTo,
-                           testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           content, followers_only, save_to_file,
+                           client_to_server, comments_enabled,
+                           attach_image_filename, media_type,
+                           image_description, city, test_in_reply_to,
+                           test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
     # print(str(reply))
     assert reply['object']['content'] == \
@@ -4313,147 +4354,148 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     assert reply['cc'][1] == http_prefix + '://rat.site/users/ninjarodent'
 
 
-def _get_function_call_args(name: str, lines: [], startLineCtr: int) -> []:
+def _get_function_call_args(name: str, lines: [], start_line_ctr: int) -> []:
     """Returns the arguments of a function call given lines
     of source code and a starting line number
     """
-    argsStr = lines[startLineCtr].split(name + '(')[1]
-    if ')' in argsStr:
-        argsStr = argsStr.split(')')[0].replace(' ', '').split(',')
-        return argsStr
-    for lineCtr in range(startLineCtr + 1, len(lines)):
-        if ')' not in lines[lineCtr]:
-            argsStr += lines[lineCtr]
+    args_str = lines[start_line_ctr].split(name + '(')[1]
+    if ')' in args_str:
+        args_str = args_str.split(')')[0].replace(' ', '').split(',')
+        return args_str
+    for line_ctr in range(start_line_ctr + 1, len(lines)):
+        if ')' not in lines[line_ctr]:
+            args_str += lines[line_ctr]
             continue
-        else:
-            argsStr += lines[lineCtr].split(')')[0]
-            break
-    return argsStr.replace('\n', '').replace(' ', '').split(',')
+        args_str += lines[line_ctr].split(')')[0]
+        break
+    return args_str.replace('\n', '').replace(' ', '').split(',')
 
 
-def get_function_calls(name: str, lines: [], startLineCtr: int,
-                       functionProperties: {}) -> []:
+def get_function_calls(name: str, lines: [], start_line_ctr: int,
+                       function_properties: {}) -> []:
     """Returns the functions called by the given one,
     Starting with the given source code at the given line
     """
-    callsFunctions = []
-    functionContentStr = ''
-    for lineCtr in range(startLineCtr + 1, len(lines)):
-        lineStr = lines[lineCtr].strip()
-        if lineStr.startswith('def '):
+    calls_functions = []
+    function_content_str = ''
+    for line_ctr in range(start_line_ctr + 1, len(lines)):
+        line_str = lines[line_ctr].strip()
+        if line_str.startswith('def '):
             break
-        if lineStr.startswith('class '):
+        if line_str.startswith('class '):
             break
-        functionContentStr += lines[lineCtr]
-    for funcName, properties in functionProperties.items():
-        if funcName + '(' in functionContentStr:
-            callsFunctions.append(funcName)
-    return callsFunctions
+        function_content_str += lines[line_ctr]
+    for func_name, _ in function_properties.items():
+        if func_name + '(' in function_content_str:
+            calls_functions.append(func_name)
+    return calls_functions
 
 
-def _function_args_match(callArgs: [], funcArgs: []):
+def _function_args_match(call_args: [], func_args: []):
     """Do the function artuments match the function call arguments
     """
-    if len(callArgs) == len(funcArgs):
+    if len(call_args) == len(func_args):
         return True
 
     # count non-optional arguments
-    callArgsCtr = 0
-    for a in callArgs:
-        if a == 'self':
+    call_args_ctr = 0
+    for arg1 in call_args:
+        if arg1 == 'self':
             continue
-        if '=' not in a or a.startswith("'"):
-            callArgsCtr += 1
+        if '=' not in arg1 or arg1.startswith("'"):
+            call_args_ctr += 1
 
-    funcArgsCtr = 0
-    for a in funcArgs:
-        if a == 'self':
+    func_args_ctr = 0
+    for arg2 in func_args:
+        if arg2 == 'self':
             continue
-        if '=' not in a or a.startswith("'"):
-            funcArgsCtr += 1
+        if '=' not in arg2 or arg2.startswith("'"):
+            func_args_ctr += 1
 
-    return callArgsCtr >= funcArgsCtr
+    return call_args_ctr >= func_args_ctr
 
 
-def _module_in_groups(modName: str, includeGroups: [], modGroups: {}) -> bool:
+def _module_in_groups(mod_name: str, include_groups: [],
+                      mod_groups: {}) -> bool:
     """Is the given module within the included groups list?
     """
-    for groupName in includeGroups:
-        if modName in modGroups[groupName]:
+    for group_name in include_groups:
+        if mod_name in mod_groups[group_name]:
             return True
     return False
 
 
-def _diagram_groups(includeGroups: [],
-                    excludeExtraModules: [],
-                    modules: {}, modGroups: {},
-                    maxModuleCalls: int) -> None:
+def _diagram_groups(include_groups: [],
+                    exclude_extra_modules: [],
+                    modules: {}, mod_groups: {},
+                    max_module_calls: int) -> None:
     """Draws a dot diagram containing only the given module groups
     """
-    callGraphStr = 'digraph EpicyonGroups {\n\n'
-    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
-    callGraphStr += '  node [fontsize=10 fontname="Verdana"];\n\n'
-    excludeModulesFromDiagram = [
+    call_graph_str = 'digraph EpicyonGroups {\n\n'
+    call_graph_str += \
+        '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
+    call_graph_str += '  node [fontsize=10 fontname="Verdana"];\n\n'
+    exclude_modules_from_diagram = [
         'setup', 'tests', '__init__', 'pyjsonld'
     ]
-    excludeModulesFromDiagram += excludeExtraModules
+    exclude_modules_from_diagram += exclude_extra_modules
     # colors of modules nodes
-    for modName, modProperties in modules.items():
-        if modName in excludeModulesFromDiagram:
+    for mod_name, mod_properties in modules.items():
+        if mod_name in exclude_modules_from_diagram:
             continue
-        if not _module_in_groups(modName, includeGroups, modGroups):
+        if not _module_in_groups(mod_name, include_groups, mod_groups):
             continue
-        if not modProperties.get('calls'):
-            callGraphStr += '  "' + modName + \
+        if not mod_properties.get('calls'):
+            call_graph_str += '  "' + mod_name + \
                 '" [fillcolor=yellow style=filled];\n'
             continue
-        if len(modProperties['calls']) <= int(maxModuleCalls / 8):
-            callGraphStr += '  "' + modName + \
+        if len(mod_properties['calls']) <= int(max_module_calls / 8):
+            call_graph_str += '  "' + mod_name + \
                 '" [fillcolor=green style=filled];\n'
-        elif len(modProperties['calls']) < int(maxModuleCalls / 4):
-            callGraphStr += '  "' + modName + \
+        elif len(mod_properties['calls']) < int(max_module_calls / 4):
+            call_graph_str += '  "' + mod_name + \
                 '" [fillcolor=orange style=filled];\n'
         else:
-            callGraphStr += '  "' + modName + \
+            call_graph_str += '  "' + mod_name + \
                 '" [fillcolor=red style=filled];\n'
-    callGraphStr += '\n'
+    call_graph_str += '\n'
     # connections between modules
-    for modName, modProperties in modules.items():
-        if modName in excludeModulesFromDiagram:
+    for mod_name, mod_properties in modules.items():
+        if mod_name in exclude_modules_from_diagram:
             continue
-        if not _module_in_groups(modName, includeGroups, modGroups):
+        if not _module_in_groups(mod_name, include_groups, mod_groups):
             continue
-        if not modProperties.get('calls'):
+        if not mod_properties.get('calls'):
             continue
-        for modCall in modProperties['calls']:
-            if modCall in excludeModulesFromDiagram:
+        for mod_call in mod_properties['calls']:
+            if mod_call in exclude_modules_from_diagram:
                 continue
-            if not _module_in_groups(modCall, includeGroups, modGroups):
+            if not _module_in_groups(mod_call, include_groups, mod_groups):
                 continue
-            callGraphStr += '  "' + modName + '" -> "' + modCall + '";\n'
+            call_graph_str += '  "' + mod_name + '" -> "' + mod_call + '";\n'
     # module groups/clusters
-    clusterCtr = 1
-    for groupName, groupModules in modGroups.items():
-        if groupName not in includeGroups:
+    cluster_ctr = 1
+    for group_name, group_modules in mod_groups.items():
+        if group_name not in include_groups:
             continue
-        callGraphStr += '\n'
-        callGraphStr += \
-            '  subgraph cluster_' + str(clusterCtr) + ' {\n'
-        callGraphStr += '    node [style=filled];\n'
-        for modName in groupModules:
-            if modName not in excludeModulesFromDiagram:
-                callGraphStr += '    ' + modName + ';\n'
-        callGraphStr += '    label = "' + groupName + '";\n'
-        callGraphStr += '    color = blue;\n'
-        callGraphStr += '  }\n'
-        clusterCtr += 1
-    callGraphStr += '\n}\n'
+        call_graph_str += '\n'
+        call_graph_str += \
+            '  subgraph cluster_' + str(cluster_ctr) + ' {\n'
+        call_graph_str += '    node [style=filled];\n'
+        for mod_name in group_modules:
+            if mod_name not in exclude_modules_from_diagram:
+                call_graph_str += '    ' + mod_name + ';\n'
+        call_graph_str += '    label = "' + group_name + '";\n'
+        call_graph_str += '    color = blue;\n'
+        call_graph_str += '  }\n'
+        cluster_ctr += 1
+    call_graph_str += '\n}\n'
     filename = 'epicyon_groups'
-    for groupName in includeGroups:
-        filename += '_' + groupName.replace(' ', '-')
+    for group_name in include_groups:
+        filename += '_' + group_name.replace(' ', '-')
     filename += '.dot'
-    with open(filename, 'w+') as fp:
-        fp.write(callGraphStr)
+    with open(filename, 'w+') as fp_graph:
+        fp_graph.write(call_graph_str)
         print('Graph saved to ' + filename)
         print('Plot using: ' +
               'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
@@ -4463,7 +4505,7 @@ def _diagram_groups(includeGroups: [],
 def _test_post_variable_names():
     print('testPostVariableNames')
 
-    for subdir, dirs, files in os.walk('.'):
+    for _, _, files in os.walk('.'):
         for source_file in files:
             if not source_file.endswith('.py'):
                 continue
@@ -4498,7 +4540,7 @@ def _test_config_param_names():
     print('testConfigParamNames')
 
     fnames = ('get_config_param', 'set_config_param')
-    for subdir, dirs, files in os.walk('.'):
+    for _, _, files in os.walk('.'):
         for source_file in files:
             if not source_file.endswith('.py'):
                 continue
@@ -4546,7 +4588,7 @@ def _test_config_param_names():
 def _test_source_contains_no_tabs():
     print('testSourceContainsNoTabs')
 
-    for subdir, dirs, files in os.walk('.'):
+    for _, _, files in os.walk('.'):
         for source_file in files:
             if not source_file.endswith('.py'):
                 continue
@@ -4611,7 +4653,7 @@ def _test_checkbox_names():
 
 
 def _test_post_field_names(source_file: str, fieldnames: []):
-    print('testPOSTfieldNames')
+    print('test_POST_field_Names')
 
     fnames = []
     for field in fieldnames:
@@ -4680,117 +4722,117 @@ def _test_post_field_names(source_file: str, fieldnames: []):
 
 
 def _test_functions():
-    print('testFunctions')
+    print('test_Functions')
     function = {}
-    functionProperties = {}
+    function_properties = {}
     modules = {}
-    modGroups = {}
-    methodLOC = []
+    mod_groups = {}
+    method_loc = []
 
-    for subdir, dirs, files in os.walk('.'):
-        for sourceFile in files:
-            if not sourceFile.endswith('.py'):
+    for _, _, files in os.walk('.'):
+        for source_file in files:
+            if not source_file.endswith('.py'):
                 continue
-            if sourceFile.startswith('.#'):
+            if source_file.startswith('.#'):
                 continue
-            if sourceFile.startswith('flycheck_'):
+            if source_file.startswith('flycheck_'):
                 continue
-            modName = sourceFile.replace('.py', '')
-            modules[modName] = {
+            mod_name = source_file.replace('.py', '')
+            modules[mod_name] = {
                 'functions': []
             }
-            sourceStr = ''
-            with open(sourceFile, 'r') as f:
-                sourceStr = f.read()
-                modules[modName]['source'] = sourceStr
-            with open(sourceFile, 'r') as f:
-                lines = f.readlines()
-                modules[modName]['lines'] = lines
-                lineCount = 0
-                prevLine = 'start'
-                methodName = ''
+            source_str = ''
+            with open(source_file, 'r') as fp_src:
+                source_str = fp_src.read()
+                modules[mod_name]['source'] = source_str
+            with open(source_file, 'r') as fp_src:
+                lines = fp_src.readlines()
+                modules[mod_name]['lines'] = lines
+                line_count = 0
+                prev_line = 'start'
+                method_name = ''
                 for line in lines:
                     if '__module_group__' in line:
                         if '=' in line:
-                            groupName = line.split('=')[1].strip()
-                            groupName = groupName.replace('"', '')
-                            groupName = groupName.replace("'", '')
-                            modules[modName]['group'] = groupName
-                            if not modGroups.get(groupName):
-                                modGroups[groupName] = [modName]
+                            group_name = line.split('=')[1].strip()
+                            group_name = group_name.replace('"', '')
+                            group_name = group_name.replace("'", '')
+                            modules[mod_name]['group'] = group_name
+                            if not mod_groups.get(group_name):
+                                mod_groups[group_name] = [mod_name]
                             else:
-                                if modName not in modGroups[groupName]:
-                                    modGroups[groupName].append(modName)
+                                if mod_name not in mod_groups[group_name]:
+                                    mod_groups[group_name].append(mod_name)
                     if not line.strip().startswith('def '):
-                        if lineCount > 0:
-                            lineCount += 1
+                        if line_count > 0:
+                            line_count += 1
                         # add LOC count for this function
-                        if len(prevLine.strip()) == 0 and \
+                        if len(prev_line.strip()) == 0 and \
                            len(line.strip()) == 0 and \
-                           lineCount > 2:
-                            lineCount -= 2
-                            if lineCount > 80:
-                                locStr = str(lineCount) + ';' + methodName
-                                if lineCount < 1000:
-                                    locStr = '0' + locStr
-                                if lineCount < 100:
-                                    locStr = '0' + locStr
-                                if lineCount < 10:
-                                    locStr = '0' + locStr
-                                if locStr not in methodLOC:
-                                    methodLOC.append(locStr)
-                                    lineCount = 0
-                        prevLine = line
+                           line_count > 2:
+                            line_count -= 2
+                            if line_count > 80:
+                                loc_str = str(line_count) + ';' + method_name
+                                if line_count < 1000:
+                                    loc_str = '0' + loc_str
+                                if line_count < 100:
+                                    loc_str = '0' + loc_str
+                                if line_count < 10:
+                                    loc_str = '0' + loc_str
+                                if loc_str not in method_loc:
+                                    method_loc.append(loc_str)
+                                    line_count = 0
+                        prev_line = line
                         continue
-                    prevLine = line
-                    lineCount = 1
-                    methodName = line.split('def ', 1)[1].split('(')[0]
-                    methodArgs = \
-                        sourceStr.split('def ' + methodName + '(')[1]
-                    methodArgs = methodArgs.split(')')[0]
-                    methodArgs = methodArgs.replace(' ', '').split(',')
-                    if function.get(modName):
-                        function[modName].append(methodName)
+                    prev_line = line
+                    line_count = 1
+                    method_name = line.split('def ', 1)[1].split('(')[0]
+                    method_args = \
+                        source_str.split('def ' + method_name + '(')[1]
+                    method_args = method_args.split(')')[0]
+                    method_args = method_args.replace(' ', '').split(',')
+                    if function.get(mod_name):
+                        function[mod_name].append(method_name)
                     else:
-                        function[modName] = [methodName]
-                    if methodName not in modules[modName]['functions']:
-                        modules[modName]['functions'].append(methodName)
-                    functionProperties[methodName] = {
-                        "args": methodArgs,
-                        "module": modName,
+                        function[mod_name] = [method_name]
+                    if method_name not in modules[mod_name]['functions']:
+                        modules[mod_name]['functions'].append(method_name)
+                    function_properties[method_name] = {
+                        "args": method_args,
+                        "module": mod_name,
                         "calledInModule": []
                     }
                 # LOC count for the last function
-                if lineCount > 2:
-                    lineCount -= 2
-                    if lineCount > 80:
-                        locStr = str(lineCount) + ';' + methodName
-                        if lineCount < 1000:
-                            locStr = '0' + locStr
-                        if lineCount < 100:
-                            locStr = '0' + locStr
-                        if lineCount < 10:
-                            locStr = '0' + locStr
-                        if locStr not in methodLOC:
-                            methodLOC.append(locStr)
+                if line_count > 2:
+                    line_count -= 2
+                    if line_count > 80:
+                        loc_str = str(line_count) + ';' + method_name
+                        if line_count < 1000:
+                            loc_str = '0' + loc_str
+                        if line_count < 100:
+                            loc_str = '0' + loc_str
+                        if line_count < 10:
+                            loc_str = '0' + loc_str
+                        if loc_str not in method_loc:
+                            method_loc.append(loc_str)
         break
 
     print('LOC counts:')
-    methodLOC.sort()
-    for locStr in methodLOC:
-        print(locStr.split(';')[0] + ' ' + locStr.split(';')[1])
+    method_loc.sort()
+    for loc_str in method_loc:
+        print(loc_str.split(';')[0] + ' ' + loc_str.split(';')[1])
 
-    excludeFuncArgs = [
+    exclude_func_args = [
         'pyjsonld'
     ]
-    excludeFuncs = [
+    exclude_funcs = [
         'link',
         'set',
         'get'
     ]
 
     bad_function_names = []
-    for name, properties in functionProperties.items():
+    for name, properties in function_properties.items():
         if '_' not in name:
             if name.lower() != name:
                 bad_function_names.append(name)
@@ -4821,45 +4863,45 @@ def _test_functions():
         assert False
 
     # which modules is each function used within?
-    for modName, modProperties in modules.items():
-        print('Module: ' + modName + ' ✓')
-        for name, properties in functionProperties.items():
-            lineCtr = 0
-            for line in modules[modName]['lines']:
-                lineStr = line.strip()
-                if lineStr.startswith('def '):
-                    lineCtr += 1
+    for mod_name, _ in modules.items():
+        print('Module: ' + mod_name + ' ✓')
+        for name, properties in function_properties.items():
+            line_ctr = 0
+            for line in modules[mod_name]['lines']:
+                line_str = line.strip()
+                if line_str.startswith('def '):
+                    line_ctr += 1
                     continue
-                if lineStr.startswith('class '):
-                    lineCtr += 1
+                if line_str.startswith('class '):
+                    line_ctr += 1
                     continue
                 if name + '(' in line:
-                    modList = \
-                        functionProperties[name]['calledInModule']
-                    if modName not in modList:
-                        modList.append(modName)
-                    if modName in excludeFuncArgs:
-                        lineCtr += 1
+                    mod_list = \
+                        function_properties[name]['calledInModule']
+                    if mod_name not in mod_list:
+                        mod_list.append(mod_name)
+                    if mod_name in exclude_func_args:
+                        line_ctr += 1
                         continue
-                    if name in excludeFuncs:
-                        lineCtr += 1
+                    if name in exclude_funcs:
+                        line_ctr += 1
                         continue
-                    callArgs = \
+                    call_args = \
                         _get_function_call_args(name,
-                                                modules[modName]['lines'],
-                                                lineCtr)
-                    funcArgs = functionProperties[name]['args']
-                    if not _function_args_match(callArgs, funcArgs):
+                                                modules[mod_name]['lines'],
+                                                line_ctr)
+                    func_args = function_properties[name]['args']
+                    if not _function_args_match(call_args, func_args):
                         print('Call to function ' + name +
                               ' does not match its arguments')
                         print('def args: ' +
-                              str(len(functionProperties[name]['args'])) +
-                              '\n' + str(functionProperties[name]['args']))
-                        print('Call args: ' + str(len(callArgs)) + '\n' +
-                              str(callArgs))
-                        print('module ' + modName + ' line ' + str(lineCtr))
+                              str(len(function_properties[name]['args'])) +
+                              '\n' + str(function_properties[name]['args']))
+                        print('Call args: ' + str(len(call_args)) + '\n' +
+                              str(call_args))
+                        print('module ' + mod_name + ' line ' + str(line_ctr))
                         assert False
-                lineCtr += 1
+                line_ctr += 1
 
     # don't check these functions, because they are procedurally called
     exclusions = [
@@ -4912,28 +4954,28 @@ def _test_functions():
         'fill_headers',
         '_nothing'
     ]
-    excludeImports = [
+    exclude_imports = [
         'link',
         'start'
     ]
-    excludeLocal = [
+    exclude_local = [
         'pyjsonld',
         'daemon',
         'tests'
     ]
-    excludeMods = [
+    exclude_mods = [
         'pyjsonld'
     ]
     # check that functions are called somewhere
-    for name, properties in functionProperties.items():
+    for name, properties in function_properties.items():
         if name.startswith('__'):
             if name.endswith('__'):
                 continue
         if name in exclusions:
             continue
-        if properties['module'] in excludeMods:
+        if properties['module'] in exclude_mods:
             continue
-        isLocalFunction = False
+        is_local_function = False
         if not properties['calledInModule']:
             print('function ' + name +
                   ' in module ' + properties['module'] +
@@ -4941,40 +4983,40 @@ def _test_functions():
         assert properties['calledInModule']
 
         if len(properties['calledInModule']) == 1:
-            modName = properties['calledInModule'][0]
-            if modName not in excludeLocal and \
-               modName == properties['module']:
-                isLocalFunction = True
+            mod_name = properties['calledInModule'][0]
+            if mod_name not in exclude_local and \
+               mod_name == properties['module']:
+                is_local_function = True
                 if not name.startswith('_'):
                     print('Local function ' + name +
-                          ' in ' + modName + '.py does not begin with _')
+                          ' in ' + mod_name + '.py does not begin with _')
                     assert False
 
-        if name not in excludeImports:
-            for modName in properties['calledInModule']:
-                if modName == properties['module']:
+        if name not in exclude_imports:
+            for mod_name in properties['calledInModule']:
+                if mod_name == properties['module']:
                     continue
-                importStr = 'from ' + properties['module'] + ' import ' + name
-                if importStr not in modules[modName]['source']:
-                    print(importStr + ' not found in ' + modName + '.py')
+                import_str = 'from ' + properties['module'] + ' import ' + name
+                if import_str not in modules[mod_name]['source']:
+                    print(import_str + ' not found in ' + mod_name + '.py')
                     assert False
 
-        if not isLocalFunction:
+        if not is_local_function:
             if name.startswith('_'):
-                excludePublic = [
+                exclude_public = [
                     'pyjsonld',
                     'daemon',
                     'tests'
                 ]
-                modName = properties['module']
-                if modName not in excludePublic:
+                mod_name = properties['module']
+                if mod_name not in exclude_public:
                     print('Public function ' + name + ' in ' +
-                          modName + '.py begins with _')
+                          mod_name + '.py begins with _')
                     assert False
         print('Function: ' + name + ' ✓')
 
     print('Constructing function call graph')
-    moduleColors = (
+    module_colors = (
         'red', 'green', 'yellow', 'orange', 'purple', 'cyan',
         'darkgoldenrod3', 'darkolivegreen1', 'darkorange1',
         'darkorchid1', 'darkseagreen', 'darkslategray4',
@@ -4982,66 +5024,66 @@ def _test_functions():
         'goldenrod', 'burlywood2', 'bisque1', 'brown1',
         'chartreuse2', 'cornsilk', 'darksalmon'
     )
-    maxModuleCalls = 1
-    maxFunctionCalls = 1
-    colorCtr = 0
-    for modName, modProperties in modules.items():
-        lineCtr = 0
-        modules[modName]['color'] = moduleColors[colorCtr]
-        colorCtr += 1
-        if colorCtr >= len(moduleColors):
-            colorCtr = 0
-        for line in modules[modName]['lines']:
+    max_module_calls = 1
+    max_function_calls = 1
+    color_ctr = 0
+    for mod_name, _ in modules.items():
+        line_ctr = 0
+        modules[mod_name]['color'] = module_colors[color_ctr]
+        color_ctr += 1
+        if color_ctr >= len(module_colors):
+            color_ctr = 0
+        for line in modules[mod_name]['lines']:
             if line.strip().startswith('def '):
                 name = line.split('def ')[1].split('(')[0]
-                callsList = \
-                    get_function_calls(name, modules[modName]['lines'],
-                                       lineCtr, functionProperties)
-                functionProperties[name]['calls'] = callsList.copy()
-                if len(callsList) > maxFunctionCalls:
-                    maxFunctionCalls = len(callsList)
+                calls_list = \
+                    get_function_calls(name, modules[mod_name]['lines'],
+                                       line_ctr, function_properties)
+                function_properties[name]['calls'] = calls_list.copy()
+                if len(calls_list) > max_function_calls:
+                    max_function_calls = len(calls_list)
                 # keep track of which module calls which other module
-                for fn in callsList:
-                    modCall = functionProperties[fn]['module']
-                    if modCall != modName:
-                        if modules[modName].get('calls'):
-                            if modCall not in modules[modName]['calls']:
-                                modules[modName]['calls'].append(modCall)
-                                if len(modules[modName]['calls']) > \
-                                   maxModuleCalls:
-                                    maxModuleCalls = \
-                                        len(modules[modName]['calls'])
+                for fnc in calls_list:
+                    mod_call = function_properties[fnc]['module']
+                    if mod_call != mod_name:
+                        if modules[mod_name].get('calls'):
+                            if mod_call not in modules[mod_name]['calls']:
+                                modules[mod_name]['calls'].append(mod_call)
+                                if len(modules[mod_name]['calls']) > \
+                                   max_module_calls:
+                                    max_module_calls = \
+                                        len(modules[mod_name]['calls'])
                         else:
-                            modules[modName]['calls'] = [modCall]
-            lineCtr += 1
+                            modules[mod_name]['calls'] = [mod_call]
+            line_ctr += 1
 
     _diagram_groups(['Commandline Interface', 'ActivityPub'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Commandline Interface', 'Core'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Timeline', 'Core'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Web Interface', 'Core'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Web Interface Columns', 'Core'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Core'], [],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['ActivityPub'], [],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['ActivityPub', 'Core'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['ActivityPub', 'Security'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Core', 'Security'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Timeline', 'Security'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Web Interface', 'Accessibility'],
                     ['utils', 'webapp_utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
     _diagram_groups(['Core', 'Accessibility'], ['utils'],
-                    modules, modGroups, maxModuleCalls)
+                    modules, mod_groups, max_module_calls)
 
 
 def _test_links_within_post(base_dir: str) -> None:
@@ -5052,36 +5094,36 @@ def _test_links_within_post(base_dir: str) -> None:
     http_prefix = 'https'
     content = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
-    followersOnly = False
-    saveToFile = False
+    followers_only = False
+    save_to_file = False
     client_to_server = False
-    commentsEnabled = True
-    attachImageFilename = None
-    mediaType = None
-    imageDescription = None
+    comments_enabled = True
+    attach_image_filename = None
+    media_type = None
+    image_description = None
     city = 'London, England'
-    testInReplyTo = None
-    testInReplyToAtomUri = None
-    testSubject = None
-    testSchedulePost = False
-    testEventDate = None
-    testEventTime = None
-    testLocation = None
-    testIsArticle = False
-    conversationId = None
+    test_in_reply_to = None
+    test_in_reply_to_atom_uri = None
+    test_subject = None
+    test_schedule_post = False
+    test_event_date = None
+    test_event_time = None
+    test_location = None
+    test_is_article = False
+    conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content, followersOnly, saveToFile,
-                           client_to_server, commentsEnabled,
-                           attachImageFilename, mediaType,
-                           imageDescription, city,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           content, followers_only, save_to_file,
+                           client_to_server, comments_enabled,
+                           attach_image_filename, media_type,
+                           image_description, city,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
 
     assert post_json_object['object']['content'] == \
@@ -5115,10 +5157,10 @@ def _test_links_within_post(base_dir: str) -> None:
                            False, True,
                            None, None,
                            False, None,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
     assert post_json_object['object']['content'] == content
     assert post_json_object['object']['contentMap'][system_language] == content
@@ -5127,9 +5169,9 @@ def _test_links_within_post(base_dir: str) -> None:
 def _test_mastoapi():
     print('testMastoApi')
     nickname = 'ThisIsATestNickname'
-    mastoId = get_masto_api_v1id_from_nickname(nickname)
-    assert(mastoId)
-    nickname2 = get_nickname_from_masto_api_v1id(mastoId)
+    masto_id = get_masto_api_v1id_from_nickname(nickname)
+    assert masto_id
+    nickname2 = get_nickname_from_masto_api_v1id(masto_id)
     if nickname2 != nickname:
         print(nickname + ' != ' + nickname2)
     assert nickname2 == nickname
@@ -5137,29 +5179,29 @@ def _test_mastoapi():
 
 def _test_domain_handling():
     print('testDomainHandling')
-    testDomain = 'localhost'
-    assert decoded_host(testDomain) == testDomain
-    testDomain = '127.0.0.1:60'
-    assert decoded_host(testDomain) == testDomain
-    testDomain = '192.168.5.153'
-    assert decoded_host(testDomain) == testDomain
-    testDomain = 'xn--espaa-rta.icom.museum'
-    assert decoded_host(testDomain) == "españa.icom.museum"
+    test_domain = 'localhost'
+    assert decoded_host(test_domain) == test_domain
+    test_domain = '127.0.0.1:60'
+    assert decoded_host(test_domain) == test_domain
+    test_domain = '192.168.5.153'
+    assert decoded_host(test_domain) == test_domain
+    test_domain = 'xn--espaa-rta.icom.museum'
+    assert decoded_host(test_domain) == "españa.icom.museum"
 
 
 def _test_prepare_html_post_nick():
     print('testPrepareHtmlPostNickname')
-    postHtml = '<a class="imageAnchor" href="/users/bob?replyfollowers='
-    postHtml += '<a class="imageAnchor" href="/users/bob?repeatprivate='
-    result = prepare_html_post_nickname('alice', postHtml)
-    assert result == postHtml.replace('/bob?', '/alice?')
+    post_html = '<a class="imageAnchor" href="/users/bob?replyfollowers='
+    post_html += '<a class="imageAnchor" href="/users/bob?repeatprivate='
+    result = prepare_html_post_nickname('alice', post_html)
+    assert result == post_html.replace('/bob?', '/alice?')
 
-    postHtml = '<a class="imageAnchor" href="/users/bob?replyfollowers='
-    postHtml += '<a class="imageAnchor" href="/users/bob;repeatprivate='
-    expectedHtml = '<a class="imageAnchor" href="/users/alice?replyfollowers='
-    expectedHtml += '<a class="imageAnchor" href="/users/bob;repeatprivate='
-    result = prepare_html_post_nickname('alice', postHtml)
-    assert result == expectedHtml
+    post_html = '<a class="imageAnchor" href="/users/bob?replyfollowers='
+    post_html += '<a class="imageAnchor" href="/users/bob;repeatprivate='
+    expected_html = '<a class="imageAnchor" href="/users/alice?replyfollowers='
+    expected_html += '<a class="imageAnchor" href="/users/bob;repeatprivate='
+    result = prepare_html_post_nickname('alice', post_html)
+    assert result == expected_html
 
 
 def _test_valid_hash_tag():
@@ -5227,7 +5269,7 @@ def _test_markdown_to_html():
 def _test_extract_text_fields_from_post():
     print('testExtractTextFieldsInPOST')
     boundary = '-----------------------------116202748023898664511855843036'
-    formData = '-----------------------------116202748023898664511855' + \
+    form_data = '-----------------------------116202748023898664511855' + \
         '843036\r\nContent-Disposition: form-data; name="submitPost"' + \
         '\r\n\r\nSubmit\r\n-----------------------------116202748023' + \
         '898664511855843036\r\nContent-Disposition: form-data; name=' + \
@@ -5250,7 +5292,7 @@ def _test_extract_text_fields_from_post():
         'application/octet-stream\r\n\r\n\r\n----------------------' + \
         '-------116202748023898664511855843036--\r\n'
     debug = False
-    fields = extract_text_fields_in_post(None, boundary, debug, formData)
+    fields = extract_text_fields_in_post(None, boundary, debug, form_data)
     assert fields['submitPost'] == 'Submit'
     assert fields['subject'] == ''
     assert fields['commentsEnabled'] == 'on'
@@ -5270,10 +5312,11 @@ def _test_speaker_replace_link():
         'not run more than one snowflake in the same ' + \
         'network.https://support.torproject.org/censorship/' + \
         'how-to-help-running-snowflake/'
-    detectedLinks = []
-    result = speaker_replace_links(text, {'Linked': 'Web link'}, detectedLinks)
-    assert len(detectedLinks) == 1
-    assert detectedLinks[0] == \
+    detected_links = []
+    result = \
+        speaker_replace_links(text, {'Linked': 'Web link'}, detected_links)
+    assert len(detected_links) == 1
+    assert detected_links[0] == \
         'https://support.torproject.org/censorship/' + \
         'how-to-help-running-snowflake/'
     assert 'Web link support.torproject.org' in result
@@ -5281,30 +5324,30 @@ def _test_speaker_replace_link():
 
 def _test_camel_case_split():
     print('testCamelCaseSplit')
-    testStr = 'ThisIsCamelCase'
-    assert camel_case_split(testStr) == 'This Is Camel Case'
+    test_str = 'ThisIsCamelCase'
+    assert camel_case_split(test_str) == 'This Is Camel Case'
 
-    testStr = 'Notcamelcase test'
-    assert camel_case_split(testStr) == 'Notcamelcase test'
+    test_str = 'Notcamelcase test'
+    assert camel_case_split(test_str) == 'Notcamelcase test'
 
 
 def _test_emoji_images():
     print('testEmojiImages')
-    emojiFilename = 'emoji/default_emoji.json'
-    assert os.path.isfile(emojiFilename)
-    emojiJson = load_json(emojiFilename)
-    assert emojiJson
-    for emojiName, emojiImage in emojiJson.items():
-        emojiImageFilename = 'emoji/' + emojiImage + '.png'
-        if not os.path.isfile(emojiImageFilename):
-            print('Missing emoji image ' + emojiName + ' ' +
-                  emojiImage + '.png')
-        assert os.path.isfile(emojiImageFilename)
+    emoji_filename = 'emoji/default_emoji.json'
+    assert os.path.isfile(emoji_filename)
+    emoji_json = load_json(emoji_filename)
+    assert emoji_json
+    for emoji_name, emoji_image in emoji_json.items():
+        emoji_image_filename = 'emoji/' + emoji_image + '.png'
+        if not os.path.isfile(emoji_image_filename):
+            print('Missing emoji image ' + emoji_name + ' ' +
+                  emoji_image + '.png')
+        assert os.path.isfile(emoji_image_filename)
 
 
 def _test_extract_pgp_public_key():
     print('testExtractPGPPublicKey')
-    pubKey = \
+    pub_key = \
         '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' + \
         'mDMEWZBueBYJKwYBBAHaRw8BAQdAKx1t6wL0RTuU6/' + \
         'IBjngMbVJJ3Wg/3UW73/PV\n' + \
@@ -5325,19 +5368,19 @@ def _test_extract_pgp_public_key():
         'fnaZ2Wi050483Sj2RmQRpb99Dod7rVZTDtCqXk0J\n' + \
         '=gv5G\n' + \
         '-----END PGP PUBLIC KEY BLOCK-----'
-    testStr = "Some introduction\n\n" + pubKey + "\n\nSome message."
-    assert contains_pgp_public_key(testStr)
+    test_str = "Some introduction\n\n" + pub_key + "\n\nSome message."
+    assert contains_pgp_public_key(test_str)
     assert not contains_pgp_public_key('String without a pgp key')
-    result = extract_pgp_public_key(testStr)
+    result = extract_pgp_public_key(test_str)
     assert result
-    assert result == pubKey
+    assert result == pub_key
 
 
 def test_update_actor(base_dir: str):
     print('Testing update of actor properties')
 
-    global testServerAliceRunning
-    testServerAliceRunning = False
+    global TEST_SERVER_ALICE_RUNNING
+    TEST_SERVER_ALICE_RUNNING = False
 
     http_prefix = 'http'
     proxy_type = None
@@ -5349,51 +5392,53 @@ def test_update_actor(base_dir: str):
     os.mkdir(base_dir + '/.tests')
 
     # create the server
-    aliceDir = base_dir + '/.tests/alice'
-    aliceDomain = '127.0.0.11'
-    alicePort = 61792
-    aliceSendThreads = []
-    bobAddress = '127.0.0.84:6384'
+    alice_dir = base_dir + '/.tests/alice'
+    alice_domain = '127.0.0.11'
+    alice_port = 61792
+    alice_send_threads = []
+    bob_address = '127.0.0.84:6384'
 
-    global thrAlice
-    if thrAlice:
-        while thrAlice.is_alive():
-            thrAlice.stop()
+    global THR_ALICE
+    if THR_ALICE:
+        while THR_ALICE.is_alive():
+            THR_ALICE.stop()
             time.sleep(1)
-        thrAlice.kill()
+        THR_ALICE.kill()
 
-    thrAlice = \
+    THR_ALICE = \
         thread_with_trace(target=create_server_alice,
-                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                          args=(alice_dir, alice_domain,
+                                alice_port, bob_address,
                                 federation_list, False, False,
-                                aliceSendThreads),
+                                alice_send_threads),
                           daemon=True)
 
-    thrAlice.start()
-    assert thrAlice.is_alive() is True
+    THR_ALICE.start()
+    assert THR_ALICE.is_alive() is True
 
     # wait for server to be running
     ctr = 0
-    while not testServerAliceRunning:
+    while not TEST_SERVER_ALICE_RUNNING:
         time.sleep(1)
         ctr += 1
         if ctr > 60:
             break
-    print('Alice online: ' + str(testServerAliceRunning))
+    print('Alice online: ' + str(TEST_SERVER_ALICE_RUNNING))
 
     print('\n\n*******************************************************')
     print('Alice updates her PGP key')
 
-    sessionAlice = create_session(proxy_type)
+    session_alice = create_session(proxy_type)
     cached_webfingers = {}
     person_cache = {}
     password = 'alicepass'
-    outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
-    actorFilename = aliceDir + '/accounts/' + 'alice@' + aliceDomain + '.json'
-    assert os.path.isfile(actorFilename)
-    assert len([name for name in os.listdir(outboxPath)
-                if os.path.isfile(os.path.join(outboxPath, name))]) == 0
-    pubKey = \
+    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    actor_filename = \
+        alice_dir + '/accounts/' + 'alice@' + alice_domain + '.json'
+    assert os.path.isfile(actor_filename)
+    assert len([name for name in os.listdir(outbox_path)
+                if os.path.isfile(os.path.join(outbox_path, name))]) == 0
+    pub_key = \
         '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' + \
         'mDMEWZBueBYJKwYBBAHaRw8BAQdAKx1t6wL0RTuU6/' + \
         'IBjngMbVJJ3Wg/3UW73/PV\n' + \
@@ -5415,19 +5460,19 @@ def test_update_actor(base_dir: str):
         '=gv5G\n' + \
         '-----END PGP PUBLIC KEY BLOCK-----'
     signing_priv_key_pem = None
-    actorUpdate = \
-        pgp_public_key_upload(aliceDir, sessionAlice,
+    actor_update = \
+        pgp_public_key_upload(alice_dir, session_alice,
                               'alice', password,
-                              aliceDomain, alicePort,
+                              alice_domain, alice_port,
                               http_prefix,
                               cached_webfingers, person_cache,
-                              True, pubKey, signing_priv_key_pem)
-    print('actor update result: ' + str(actorUpdate))
-    assert actorUpdate
+                              True, pub_key, signing_priv_key_pem)
+    print('actor update result: ' + str(actor_update))
+    assert actor_update
 
     # load alice actor
-    print('Loading actor: ' + actorFilename)
-    actor_json = load_json(actorFilename)
+    print('Loading actor: ' + actor_filename)
+    actor_json = load_json(actor_filename)
     assert actor_json
     if len(actor_json['attachment']) == 0:
         print("actor_json['attachment'] has no contents")
@@ -5436,14 +5481,14 @@ def test_update_actor(base_dir: str):
     for property_value in actor_json['attachment']:
         if property_value['name'] == 'PGP':
             print('PGP property set within attachment')
-            assert pubKey in property_value['value']
+            assert pub_key in property_value['value']
             property_found = True
     assert property_found
 
     # stop the server
-    thrAlice.kill()
-    thrAlice.join()
-    assert thrAlice.is_alive() is False
+    THR_ALICE.kill()
+    THR_ALICE.join()
+    assert THR_ALICE.is_alive() is False
 
     os.chdir(base_dir)
     if os.path.isdir(base_dir + '/.tests'):
@@ -5485,7 +5530,7 @@ def _test_remove_interactions() -> None:
 
 def _test_spoofed_geolocation() -> None:
     print('testSpoofGeolocation')
-    nogoLine = \
+    nogo_line = \
         'NEW YORK, USA: 73.951W,40.879,  73.974W,40.83,  ' + \
         '74.029W,40.756,  74.038W,40.713,  74.056W,40.713,  ' + \
         '74.127W,40.647,  74.038W,40.629,  73.995W,40.667,  ' + \
@@ -5494,11 +5539,11 @@ def _test_spoofed_geolocation() -> None:
         '73.937W,40.793,  73.946W,40.782,  73.977W,40.738,  ' + \
         '73.98W,40.713,  74.012W,40.705,  74.006W,40.752,  ' + \
         '73.955W,40.824'
-    polygon = parse_nogo_string(nogoLine)
+    polygon = parse_nogo_string(nogo_line)
     assert len(polygon) > 0
     assert polygon[0][1] == -73.951
     assert polygon[0][0] == 40.879
-    citiesList = [
+    cities_list = [
         'NEW YORK, USA:40.7127281:W74.0060152:784',
         'LOS ANGELES, USA:34.0536909:W118.242766:1214',
         'SAN FRANCISCO, USA:37.74594738515095:W122.44299445520019:121',
@@ -5509,114 +5554,114 @@ def _test_spoofed_geolocation() -> None:
         'LONDON, ENGLAND:51.5073219:W0.1276474:1738',
         'SEATTLE, USA:47.59840153253106:W122.31143714060059:217'
     ]
-    testSquare = [
+    test_square = [
         [[0.03, 0.01], [0.02, 10], [10.01, 10.02], [10.03, 0.02]]
     ]
-    assert point_in_nogo(testSquare, 5, 5)
-    assert point_in_nogo(testSquare, 2, 3)
-    assert not point_in_nogo(testSquare, 20, 5)
-    assert not point_in_nogo(testSquare, 11, 6)
-    assert not point_in_nogo(testSquare, 5, -5)
-    assert not point_in_nogo(testSquare, 5, 11)
-    assert not point_in_nogo(testSquare, -5, -5)
-    assert not point_in_nogo(testSquare, -5, 5)
-    nogoList = []
+    assert point_in_nogo(test_square, 5, 5)
+    assert point_in_nogo(test_square, 2, 3)
+    assert not point_in_nogo(test_square, 20, 5)
+    assert not point_in_nogo(test_square, 11, 6)
+    assert not point_in_nogo(test_square, 5, -5)
+    assert not point_in_nogo(test_square, 5, 11)
+    assert not point_in_nogo(test_square, -5, -5)
+    assert not point_in_nogo(test_square, -5, 5)
+    nogo_list = []
     curr_time = datetime.datetime.utcnow()
-    decoySeed = 7634681
-    cityRadius = 0.1
+    decoy_seed = 7634681
+    city_radius = 0.1
     coords = spoof_geolocation('', 'los angeles', curr_time,
-                               decoySeed, citiesList, nogoList)
-    assert coords[0] >= 34.0536909 - cityRadius
-    assert coords[0] <= 34.0536909 + cityRadius
-    assert coords[1] >= 118.242766 - cityRadius
-    assert coords[1] <= 118.242766 + cityRadius
+                               decoy_seed, cities_list, nogo_list)
+    assert coords[0] >= 34.0536909 - city_radius
+    assert coords[0] <= 34.0536909 + city_radius
+    assert coords[1] >= 118.242766 - city_radius
+    assert coords[1] <= 118.242766 + city_radius
     assert coords[2] == 'N'
     assert coords[3] == 'W'
     assert len(coords[4]) > 4
     assert len(coords[5]) > 4
     assert coords[6] > 0
-    nogoList = []
+    nogo_list = []
     coords = spoof_geolocation('', 'unknown', curr_time,
-                               decoySeed, citiesList, nogoList)
-    assert coords[0] >= 51.8744 - cityRadius
-    assert coords[0] <= 51.8744 + cityRadius
-    assert coords[1] >= 0.368333 - cityRadius
-    assert coords[1] <= 0.368333 + cityRadius
+                               decoy_seed, cities_list, nogo_list)
+    assert coords[0] >= 51.8744 - city_radius
+    assert coords[0] <= 51.8744 + city_radius
+    assert coords[1] >= 0.368333 - city_radius
+    assert coords[1] <= 0.368333 + city_radius
     assert coords[2] == 'N'
     assert coords[3] == 'W'
     assert len(coords[4]) == 0
     assert len(coords[5]) == 0
     assert coords[6] == 0
-    kmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    kmlStr += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
-    kmlStr += '<Document>\n'
-    nogoLine2 = \
+    kml_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    kml_str += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+    kml_str += '<Document>\n'
+    nogo_line2 = \
         'NEW YORK, USA: 74.115W,40.663,  74.065W,40.602,  ' + \
         '74.118W,40.555,  74.047W,40.516,  73.882W,40.547,  ' + \
         '73.909W,40.618,  73.978W,40.579,  74.009W,40.602,  ' + \
         '74.033W,40.61,  74.039W,40.623,  74.032W,40.641,  ' + \
         '73.996W,40.665'
-    polygon2 = parse_nogo_string(nogoLine2)
-    nogoList = [polygon, polygon2]
+    polygon2 = parse_nogo_string(nogo_line2)
+    nogo_list = [polygon, polygon2]
     for i in range(1000):
-        dayNumber = randint(10, 30)
+        day_number = randint(10, 30)
         hour = randint(1, 23)
-        hourStr = str(hour)
+        hour_str = str(hour)
         if hour < 10:
-            hourStr = '0' + hourStr
-        dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
-        curr_time = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+            hour_str = '0' + hour_str
+        date_time_str = "2021-05-" + str(day_number) + " " + hour_str + ":14"
+        curr_time = datetime.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
         coords = spoof_geolocation('', 'new york, usa', curr_time,
-                                   decoySeed, citiesList, nogoList)
+                                   decoy_seed, cities_list, nogo_list)
         longitude = coords[1]
         if coords[3] == 'W':
             longitude = -coords[1]
-        kmlStr += '<Placemark id="' + str(i) + '">\n'
-        kmlStr += '  <name>' + str(i) + '</name>\n'
-        kmlStr += '  <Point>\n'
-        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+        kml_str += '<Placemark id="' + str(i) + '">\n'
+        kml_str += '  <name>' + str(i) + '</name>\n'
+        kml_str += '  <Point>\n'
+        kml_str += '    <coordinates>' + str(longitude) + ',' + \
             str(coords[0]) + ',0</coordinates>\n'
-        kmlStr += '  </Point>\n'
-        kmlStr += '</Placemark>\n'
+        kml_str += '  </Point>\n'
+        kml_str += '</Placemark>\n'
 
-    nogoLine = \
+    nogo_line = \
         'LONDON, ENGLAND: 0.23888E,51.459,  0.1216E,51.5,  ' + \
         '0.016E,51.479,  0.097W,51.502,  0.126W,51.482,  ' + \
         '0.196W,51.457,  0.292W,51.465,  0.309W,51.49,  ' + \
         '0.226W,51.495,  0.198W,51.47,  0.174W,51.488,  ' + \
         '0.136W,51.489,  0.1189W,51.515,  0.038E,51.513,  ' + \
         '0.0692E,51.51,  0.12833E,51.526,  0.3289E,51.475'
-    polygon = parse_nogo_string(nogoLine)
-    nogoLine2 = \
+    polygon = parse_nogo_string(nogo_line)
+    nogo_line2 = \
         'LONDON, ENGLAND: 0.054W,51.535,  0.044W,51.53,  ' + \
         '0.008W,51.55,  0.0429W,51.57,  0.038W,51.6,  ' + \
         '0.0209W,51.603,  0.032W,51.613,  0.00191E,51.66,  ' + \
         '0.024W,51.666,  0.0313W,51.659,  0.0639W,51.579,  ' + \
         '0.059W,51.568,  0.0329W,51.552'
-    polygon2 = parse_nogo_string(nogoLine2)
-    nogoList = [polygon, polygon2]
+    polygon2 = parse_nogo_string(nogo_line2)
+    nogo_list = [polygon, polygon2]
     for i in range(1000):
-        dayNumber = randint(10, 30)
+        day_number = randint(10, 30)
         hour = randint(1, 23)
-        hourStr = str(hour)
+        hour_str = str(hour)
         if hour < 10:
-            hourStr = '0' + hourStr
-        dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
-        curr_time = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+            hour_str = '0' + hour_str
+        date_time_str = "2021-05-" + str(day_number) + " " + hour_str + ":14"
+        curr_time = datetime.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
         coords = spoof_geolocation('', 'london, england', curr_time,
-                                   decoySeed, citiesList, nogoList)
+                                   decoy_seed, cities_list, nogo_list)
         longitude = coords[1]
         if coords[3] == 'W':
             longitude = -coords[1]
-        kmlStr += '<Placemark id="' + str(i) + '">\n'
-        kmlStr += '  <name>' + str(i) + '</name>\n'
-        kmlStr += '  <Point>\n'
-        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+        kml_str += '<Placemark id="' + str(i) + '">\n'
+        kml_str += '  <name>' + str(i) + '</name>\n'
+        kml_str += '  <Point>\n'
+        kml_str += '    <coordinates>' + str(longitude) + ',' + \
             str(coords[0]) + ',0</coordinates>\n'
-        kmlStr += '  </Point>\n'
-        kmlStr += '</Placemark>\n'
+        kml_str += '  </Point>\n'
+        kml_str += '</Placemark>\n'
 
-    nogoLine = \
+    nogo_line = \
         'SAN FRANCISCO, USA: 121.988W,37.408,  121.924W,37.452,  ' + \
         '121.951W,37.498,  121.992W,37.505,  122.056W,37.54,  ' + \
         '122.077W,37.578,  122.098W,37.618,  122.131W,37.637,  ' + \
@@ -5630,8 +5675,8 @@ def _test_spoofed_geolocation() -> None:
         '122.181W,37.482,  122.134W,37.48,  122.128W,37.471,  ' + \
         '122.122W,37.448,  122.095W,37.428,  122.07W,37.413,  ' + \
         '122.036W,37.402,  122.035W,37.421'
-    polygon = parse_nogo_string(nogoLine)
-    nogoLine2 = \
+    polygon = parse_nogo_string(nogo_line)
+    nogo_line2 = \
         'SAN FRANCISCO, USA: 122.446W,37.794,  122.511W,37.778,  ' + \
         '122.51W,37.771,  122.454W,37.775,  122.452W,37.766,  ' + \
         '122.510W,37.763,  122.506W,37.735,  122.498W,37.733,  ' + \
@@ -5643,30 +5688,30 @@ def _test_spoofed_geolocation() -> None:
         '122.383W,37.561,  122.335W,37.509,  122.655W,37.48,  ' + \
         '122.67W,37.9,  122.272W,37.93,  122.294W,37.801,  ' + \
         '122.448W,37.804'
-    polygon2 = parse_nogo_string(nogoLine2)
-    nogoList = [polygon, polygon2]
+    polygon2 = parse_nogo_string(nogo_line2)
+    nogo_list = [polygon, polygon2]
     for i in range(1000):
-        dayNumber = randint(10, 30)
+        day_number = randint(10, 30)
         hour = randint(1, 23)
-        hourStr = str(hour)
+        hour_str = str(hour)
         if hour < 10:
-            hourStr = '0' + hourStr
-        dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
-        curr_time = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+            hour_str = '0' + hour_str
+        date_time_str = "2021-05-" + str(day_number) + " " + hour_str + ":14"
+        curr_time = datetime.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
         coords = spoof_geolocation('', 'SAN FRANCISCO, USA', curr_time,
-                                   decoySeed, citiesList, nogoList)
+                                   decoy_seed, cities_list, nogo_list)
         longitude = coords[1]
         if coords[3] == 'W':
             longitude = -coords[1]
-        kmlStr += '<Placemark id="' + str(i) + '">\n'
-        kmlStr += '  <name>' + str(i) + '</name>\n'
-        kmlStr += '  <Point>\n'
-        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+        kml_str += '<Placemark id="' + str(i) + '">\n'
+        kml_str += '  <name>' + str(i) + '</name>\n'
+        kml_str += '  <Point>\n'
+        kml_str += '    <coordinates>' + str(longitude) + ',' + \
             str(coords[0]) + ',0</coordinates>\n'
-        kmlStr += '  </Point>\n'
-        kmlStr += '</Placemark>\n'
+        kml_str += '  </Point>\n'
+        kml_str += '</Placemark>\n'
 
-    nogoLine = \
+    nogo_line = \
         'SEATTLE, USA: 122.247W,47.918,  122.39W,47.802,  ' + \
         '122.389W,47.769,  122.377W,47.758,  122.371W,47.726,  ' + \
         '122.379W,47.706,  122.4W,47.696,  122.405W,47.673,  ' + \
@@ -5677,8 +5722,8 @@ def _test_spoofed_geolocation() -> None:
         '122.365W,47.459,  122.33W,47.406,  122.323W,47.392,  ' + \
         '122.321W,47.346,  122.441W,47.302,  122.696W,47.085,  ' + \
         '122.926W,47.066,  122.929W,48.383'
-    polygon = parse_nogo_string(nogoLine)
-    nogoLine2 = \
+    polygon = parse_nogo_string(nogo_line)
+    nogo_line2 = \
         'SEATTLE, USA: 122.267W,47.758,  122.29W,47.471,  ' + \
         '122.272W,47.693,  122.256W,47.672,  122.278W,47.652,  ' + \
         '122.29W,47.583,  122.262W,47.548,  122.265W,47.52,  ' + \
@@ -5686,44 +5731,44 @@ def _test_spoofed_geolocation() -> None:
         '122.173W,47.58,  122.22W,47.617,  122.238W,47.617,  ' + \
         '122.239W,47.637,  122.2W,47.644,  122.207W,47.703,  ' + \
         '122.22W,47.705,  122.231W,47.699,  122.255W,47.751'
-    polygon2 = parse_nogo_string(nogoLine2)
-    nogoLine3 = \
+    polygon2 = parse_nogo_string(nogo_line2)
+    nogo_line3 = \
         'SEATTLE, USA: 122.347W,47.675,  122.344W,47.681,  ' + \
         '122.337W,47.685,  122.324W,47.679,  122.331W,47.677,  ' + \
         '122.34W,47.669,  122.34W,47.664,  122.348W,47.665'
-    polygon3 = parse_nogo_string(nogoLine3)
-    nogoLine4 = \
+    polygon3 = parse_nogo_string(nogo_line3)
+    nogo_line4 = \
         'SEATTLE, USA: 122.423W,47.669,  122.345W,47.641,  ' + \
         '122.34W,47.625,  122.327W,47.626,  122.274W,47.64,  ' + \
         '122.268W,47.654,  122.327W,47.654,  122.336W,47.647,  ' + \
         '122.429W,47.684'
-    polygon4 = parse_nogo_string(nogoLine4)
-    nogoList = [polygon, polygon2, polygon3, polygon4]
+    polygon4 = parse_nogo_string(nogo_line4)
+    nogo_list = [polygon, polygon2, polygon3, polygon4]
     for i in range(1000):
-        dayNumber = randint(10, 30)
+        day_number = randint(10, 30)
         hour = randint(1, 23)
-        hourStr = str(hour)
+        hour_str = str(hour)
         if hour < 10:
-            hourStr = '0' + hourStr
-        dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
-        curr_time = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+            hour_str = '0' + hour_str
+        date_time_str = "2021-05-" + str(day_number) + " " + hour_str + ":14"
+        curr_time = datetime.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
         coords = spoof_geolocation('', 'SEATTLE, USA', curr_time,
-                                   decoySeed, citiesList, nogoList)
+                                   decoy_seed, cities_list, nogo_list)
         longitude = coords[1]
         if coords[3] == 'W':
             longitude = -coords[1]
-        kmlStr += '<Placemark id="' + str(i) + '">\n'
-        kmlStr += '  <name>' + str(i) + '</name>\n'
-        kmlStr += '  <Point>\n'
-        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+        kml_str += '<Placemark id="' + str(i) + '">\n'
+        kml_str += '  <name>' + str(i) + '</name>\n'
+        kml_str += '  <Point>\n'
+        kml_str += '    <coordinates>' + str(longitude) + ',' + \
             str(coords[0]) + ',0</coordinates>\n'
-        kmlStr += '  </Point>\n'
-        kmlStr += '</Placemark>\n'
+        kml_str += '  </Point>\n'
+        kml_str += '</Placemark>\n'
 
-    kmlStr += '</Document>\n'
-    kmlStr += '</kml>'
-    with open('unittest_decoy.kml', 'w+') as kmlFile:
-        kmlFile.write(kmlStr)
+    kml_str += '</Document>\n'
+    kml_str += '</kml>'
+    with open('unittest_decoy.kml', 'w+') as kmlfile:
+        kmlfile.write(kml_str)
 
 
 def _test_skills() -> None:
@@ -5741,11 +5786,11 @@ def _test_skills() -> None:
             }
         ]
     }
-    skillsDict = {
+    skills_dict = {
         'bakery': 40,
         'gardening': 70
     }
-    set_skills_from_dict(actor_json, skillsDict)
+    set_skills_from_dict(actor_json, skills_dict)
     assert actor_has_skill(actor_json, 'bakery')
     assert actor_has_skill(actor_json, 'gardening')
     assert actor_skill_value(actor_json, 'bakery') == 40
@@ -5767,8 +5812,8 @@ def _test_roles() -> None:
             }
         ]
     }
-    testRolesList = ["admin", "moderator"]
-    set_rolesFromList(actor_json, testRolesList)
+    test_roles_list = ["admin", "moderator"]
+    set_rolesFromList(actor_json, test_roles_list)
     assert actor_has_role(actor_json, "admin")
     assert actor_has_role(actor_json, "moderator")
     assert not actor_has_role(actor_json, "editor")
@@ -5778,12 +5823,12 @@ def _test_roles() -> None:
 
 def _test_useragent_domain() -> None:
     print('testUserAgentDomain')
-    userAgent = \
+    user_agent = \
         'http.rb/4.4.1 (Mastodon/9.10.11; +https://mastodon.something/)'
-    assert user_agent_domain(userAgent, False) == 'mastodon.something'
-    userAgent = \
+    assert user_agent_domain(user_agent, False) == 'mastodon.something'
+    user_agent = \
         'Mozilla/70.0 (X11; Linux x86_64; rv:1.0) Gecko/20450101 Firefox/1.0'
-    assert user_agent_domain(userAgent, False) is None
+    assert user_agent_domain(user_agent, False) is None
 
 
 def _test_switch_word(base_dir: str) -> None:
@@ -5810,13 +5855,13 @@ def _test_switch_word(base_dir: str) -> None:
 
 def _test_word_lengths_limit() -> None:
     print('testLimitWordLengths')
-    maxWordLength = 13
+    max_word_length = 13
     text = "This is a test"
-    result = limit_word_lengths(text, maxWordLength)
+    result = limit_word_lengths(text, max_word_length)
     assert result == text
 
     text = "This is an exceptionallylongword test"
-    result = limit_word_lengths(text, maxWordLength)
+    result = limit_word_lengths(text, max_word_length)
     assert result == "This is an exceptionally test"
 
 
@@ -5872,8 +5917,8 @@ def _test_set_actor_language():
     assert 'en' in lang_list
     assert 'fr' in lang_list
     assert 'es' in lang_list
-    languagesStr = get_actor_languages(actor_json)
-    assert languagesStr == 'en / es / fr'
+    languages_str = get_actor_languages(actor_json)
+    assert languages_str == 'en / es / fr'
 
 
 def _test_get_links_from_content():
@@ -5894,9 +5939,9 @@ def _test_get_links_from_content():
     assert links.get('another')
     assert links['another'] == link2
 
-    contentPlain = '<p>' + remove_html(content) + '</p>'
-    assert '>@linked</a>' not in contentPlain
-    content = add_links_to_content(contentPlain, links)
+    content_plain = '<p>' + remove_html(content) + '</p>'
+    assert '>@linked</a>' not in content_plain
+    content = add_links_to_content(content_plain, links)
     assert '>@linked</a>' in content
 
 
@@ -5904,53 +5949,54 @@ def _test_authorized_shared_items():
     print('testAuthorizeSharedItems')
     shared_items_fed_domains = \
         ['dog.domain', 'cat.domain', 'birb.domain']
-    tokensJson = \
+    tokens_json = \
         generate_shared_item_federation_tokens(shared_items_fed_domains, None)
-    tokensJson = \
+    tokens_json = \
         create_shared_item_federation_token(None, 'cat.domain',
-                                            False, tokensJson)
-    assert tokensJson
-    assert not tokensJson.get('dog.domain')
-    assert tokensJson.get('cat.domain')
-    assert not tokensJson.get('birb.domain')
-    assert len(tokensJson['dog.domain']) == 0
-    assert len(tokensJson['cat.domain']) >= 64
-    assert len(tokensJson['birb.domain']) == 0
+                                            False, tokens_json)
+    assert tokens_json
+    assert not tokens_json.get('dog.domain')
+    assert tokens_json.get('cat.domain')
+    assert not tokens_json.get('birb.domain')
+    assert len(tokens_json['dog.domain']) == 0
+    assert len(tokens_json['cat.domain']) >= 64
+    assert len(tokens_json['birb.domain']) == 0
     assert not authorize_shared_items(shared_items_fed_domains, None,
                                       'birb.domain',
                                       'cat.domain', 'M' * 86,
-                                      False, tokensJson)
+                                      False, tokens_json)
     assert authorize_shared_items(shared_items_fed_domains, None,
                                   'birb.domain',
-                                  'cat.domain', tokensJson['cat.domain'],
-                                  False, tokensJson)
-    tokensJson = \
+                                  'cat.domain', tokens_json['cat.domain'],
+                                  False, tokens_json)
+    tokens_json = \
         update_shared_item_federation_token(None,
                                             'dog.domain', 'testToken',
-                                            True, tokensJson)
-    assert tokensJson['dog.domain'] == 'testToken'
+                                            True, tokens_json)
+    assert tokens_json['dog.domain'] == 'testToken'
 
     # the shared item federation list changes
     shared_items_federated_domains = \
         ['possum.domain', 'cat.domain', 'birb.domain']
-    tokensJson = merge_shared_item_tokens(None, '',
-                                          shared_items_federated_domains,
-                                          tokensJson)
-    assert 'dog.domain' not in tokensJson
-    assert 'cat.domain' in tokensJson
-    assert len(tokensJson['cat.domain']) >= 64
-    assert 'birb.domain' in tokensJson
-    assert 'possum.domain' in tokensJson
-    assert len(tokensJson['birb.domain']) == 0
-    assert len(tokensJson['possum.domain']) == 0
+    tokens_json = \
+        merge_shared_item_tokens(None, '',
+                                 shared_items_federated_domains,
+                                 tokens_json)
+    assert 'dog.domain' not in tokens_json
+    assert 'cat.domain' in tokens_json
+    assert len(tokens_json['cat.domain']) >= 64
+    assert 'birb.domain' in tokens_json
+    assert 'possum.domain' in tokens_json
+    assert len(tokens_json['birb.domain']) == 0
+    assert len(tokens_json['possum.domain']) == 0
 
 
 def _test_date_conversions() -> None:
     print('testDateConversions')
-    dateStr = "2021-05-16T14:37:41Z"
-    dateSec = date_string_to_seconds(dateStr)
-    dateStr2 = date_seconds_to_string(dateSec)
-    assert dateStr == dateStr2
+    date_str = "2021-05-16T14:37:41Z"
+    date_sec = date_string_to_seconds(date_str)
+    date_str2 = date_seconds_to_string(date_sec)
+    assert date_str == date_str2
 
 
 def _test_valid_password():
@@ -5976,59 +6022,61 @@ def _test_get_price_from_string() -> None:
 
 
 def _translate_ontology(base_dir: str) -> None:
+    print('test_translate_ontology')
     return
-    ontologyTypes = get_category_types(base_dir)
+    ontology_types = get_category_types(base_dir)
     url = 'https://translate.astian.org'
-    apiKey = None
-    ltLangList = libretranslate_languages(url, apiKey)
+    api_key = None
+    lt_lang_list = libretranslate_languages(url, api_key)
 
-    languagesStr = get_supported_languages(base_dir)
-    assert languagesStr
+    languages_str = get_supported_languages(base_dir)
+    assert languages_str
 
-    for oType in ontologyTypes:
+    for otype in ontology_types:
         changed = False
-        filename = base_dir + '/ontology/' + oType + 'Types.json'
+        filename = base_dir + '/ontology/' + otype + 'Types.json'
         if not os.path.isfile(filename):
             continue
-        ontologyJson = load_json(filename)
-        if not ontologyJson:
+        ontology_json = load_json(filename)
+        if not ontology_json:
             continue
         index = -1
-        for item in ontologyJson['@graph']:
+        for item in ontology_json['@graph']:
             index += 1
             if "rdfs:label" not in item:
                 continue
-            englishStr = None
-            languagesFound = []
+            english_str = None
+            languages_found = []
             for label in item["rdfs:label"]:
                 if '@language' not in label:
                     continue
-                languagesFound.append(label['@language'])
+                languages_found.append(label['@language'])
                 if '@value' not in label:
                     continue
                 if label['@language'] == 'en':
-                    englishStr = label['@value']
-            if not englishStr:
+                    english_str = label['@value']
+            if not english_str:
                 continue
-            for lang in languagesStr:
-                if lang not in languagesFound:
-                    translatedStr = None
-                    if url and lang in ltLangList:
-                        translatedStr = \
-                            libretranslate(url, englishStr, 'en', lang, apiKey)
-                    if not translatedStr:
-                        translatedStr = englishStr
+            for lang in languages_str:
+                if lang not in languages_found:
+                    translated_str = None
+                    if url and lang in lt_lang_list:
+                        translated_str = \
+                            libretranslate(url, english_str,
+                                           'en', lang, api_key)
+                    if not translated_str:
+                        translated_str = english_str
                     else:
-                        translatedStr = translatedStr.replace('<p>', '')
-                        translatedStr = translatedStr.replace('</p>', '')
-                    ontologyJson['@graph'][index]["rdfs:label"].append({
-                        "@value": translatedStr,
+                        translated_str = translated_str.replace('<p>', '')
+                        translated_str = translated_str.replace('</p>', '')
+                    ontology_json['@graph'][index]["rdfs:label"].append({
+                        "@value": translated_str,
                         "@language": lang
                     })
                     changed = True
         if not changed:
             continue
-        save_json(ontologyJson, filename + '.new')
+        save_json(ontology_json, filename + '.new')
 
 
 def _test_can_replyto(base_dir: str) -> None:
@@ -6040,56 +6088,56 @@ def _test_can_replyto(base_dir: str) -> None:
     http_prefix = 'https'
     content = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
-    followersOnly = False
-    saveToFile = False
+    followers_only = False
+    save_to_file = False
     client_to_server = False
-    commentsEnabled = True
-    attachImageFilename = None
-    mediaType = None
-    imageDescription = None
+    comments_enabled = True
+    attach_image_filename = None
+    media_type = None
+    image_description = None
     city = 'London, England'
-    testInReplyTo = None
-    testInReplyToAtomUri = None
-    testSubject = None
-    testSchedulePost = False
-    testEventDate = None
-    testEventTime = None
-    testLocation = None
-    testIsArticle = False
-    conversationId = None
+    test_in_reply_to = None
+    test_in_reply_to_atom_uri = None
+    test_subject = None
+    test_schedule_post = False
+    test_event_date = None
+    test_event_time = None
+    test_location = None
+    test_is_article = False
+    conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content, followersOnly, saveToFile,
-                           client_to_server, commentsEnabled,
-                           attachImageFilename, mediaType,
-                           imageDescription, city,
-                           testInReplyTo, testInReplyToAtomUri,
-                           testSubject, testSchedulePost,
-                           testEventDate, testEventTime, testLocation,
-                           testIsArticle, system_language, conversationId,
+                           content, followers_only, save_to_file,
+                           client_to_server, comments_enabled,
+                           attach_image_filename, media_type,
+                           image_description, city,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url)
     # set the date on the post
-    currDateStr = "2021-09-08T20:45:00Z"
-    post_json_object['published'] = currDateStr
-    post_json_object['object']['published'] = currDateStr
+    curr_date_str = "2021-09-08T20:45:00Z"
+    post_json_object['published'] = curr_date_str
+    post_json_object['object']['published'] = curr_date_str
 
     # test a post within the reply interval
-    postUrl = post_json_object['object']['id']
-    replyIntervalHours = 2
-    currDateStr = "2021-09-08T21:32:10Z"
+    post_url = post_json_object['object']['id']
+    reply_interval_hours = 2
+    curr_date_str = "2021-09-08T21:32:10Z"
     assert can_reply_to(base_dir, nickname, domain,
-                        postUrl, replyIntervalHours,
-                        currDateStr,
+                        post_url, reply_interval_hours,
+                        curr_date_str,
                         post_json_object)
 
     # test a post outside of the reply interval
-    currDateStr = "2021-09-09T09:24:47Z"
+    curr_date_str = "2021-09-09T09:24:47Z"
     assert not can_reply_to(base_dir, nickname, domain,
-                            postUrl, replyIntervalHours,
-                            currDateStr,
+                            post_url, reply_interval_hours,
+                            curr_date_str,
                             post_json_object)
 
 
@@ -6098,25 +6146,25 @@ def _test_seconds_between_publish() -> None:
     published1 = "2021-10-14T09:39:27Z"
     published2 = "2021-10-14T09:41:28Z"
 
-    secondsElapsed = seconds_between_published(published1, published2)
-    assert secondsElapsed == 121
+    seconds_elapsed = seconds_between_published(published1, published2)
+    assert seconds_elapsed == 121
     # invalid date
     published2 = "2021-10-14N09:41:28Z"
-    secondsElapsed = seconds_between_published(published1, published2)
-    assert secondsElapsed == -1
+    seconds_elapsed = seconds_between_published(published1, published2)
+    assert seconds_elapsed == -1
 
 
 def _test_word_similarity() -> None:
     print('testWordsSimilarity')
-    minWords = 10
+    min_words = 10
     content1 = "This is the same"
     content2 = "This is the same"
-    assert words_similarity(content1, content2, minWords) == 100
+    assert words_similarity(content1, content2, min_words) == 100
     content1 = "This is our world now... " + \
         "the world of the electron and the switch, the beauty of the baud"
     content2 = "This is our world now. " + \
         "The world of the electron and the webkit, the beauty of the baud"
-    similarity = words_similarity(content1, content2, minWords)
+    similarity = words_similarity(content1, content2, min_words)
     assert similarity > 70
     content1 = "<p>We&apos;re growing! </p><p>A new denizen " + \
         "is frequenting HackBucket. You probably know him already " + \
@@ -6126,7 +6174,7 @@ def _test_word_similarity() -> None:
         "is frequenting HackBucket. You probably know them already " + \
         "from their epic typos - but let&apos;s not spoil too much " + \
         "\ud83d\udd2e</p>"
-    similarity = words_similarity(content1, content2, minWords)
+    similarity = words_similarity(content1, content2, min_words)
     assert similarity > 80
 
 
@@ -6181,9 +6229,9 @@ def _test_valid_emoji_content() -> None:
     assert valid_emoji_content('😄')
 
 
-def _test_httpsig_base_new(withDigest: bool, base_dir: str,
-                           algorithm: str, digestAlgorithm: str) -> None:
-    print('testHttpsigNew(' + str(withDigest) + ')')
+def _test_httpsig_base_new(with_digest: bool, base_dir: str,
+                           algorithm: str, digest_algorithm: str) -> None:
+    print('testHttpsigNew(' + str(with_digest) + ')')
 
     debug = True
     path = base_dir + '/.testHttpsigBaseNew'
@@ -6194,113 +6242,112 @@ def _test_httpsig_base_new(withDigest: bool, base_dir: str,
 
     content_type = 'application/activity+json'
     nickname = 'socrates'
-    hostDomain = 'someother.instance'
+    host_domain = 'someother.instance'
     domain = 'argumentative.social'
     http_prefix = 'https'
     port = 5576
     password = 'SuperSecretPassword'
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+    private_key_pem, public_key_pem, _, _ = \
         create_person(path, nickname, domain, port, http_prefix,
                       False, False, password)
-    assert privateKeyPem
-    if withDigest:
-        messageBodyJson = {
+    assert private_key_pem
+    if with_digest:
+        message_body_json = {
             "a key": "a value",
             "another key": "A string",
             "yet another key": "Another string"
         }
-        messageBodyJsonStr = json.dumps(messageBodyJson)
+        message_body_json_str = json.dumps(message_body_json)
     else:
-        messageBodyJsonStr = ''
+        message_body_json_str = ''
 
-    headersDomain = get_full_domain(hostDomain, port)
+    headers_domain = get_full_domain(host_domain, port)
 
-    dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    date_str = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath = '/inbox'
-    if not withDigest:
+    if not with_digest:
         headers = {
-            'host': headersDomain,
-            'date': dateStr,
+            'host': headers_domain,
+            'date': date_str,
             'accept': content_type
         }
-        signatureIndexHeader, signatureHeader = \
-            sign_post_headers_new(dateStr, privateKeyPem, nickname,
+        signature_index_header, signature_header = \
+            sign_post_headers_new(date_str, private_key_pem, nickname,
                                   domain, port,
-                                  hostDomain, port,
-                                  boxpath, http_prefix, messageBodyJsonStr,
-                                  algorithm, digestAlgorithm, debug)
+                                  host_domain, port,
+                                  boxpath, http_prefix, message_body_json_str,
+                                  algorithm, digest_algorithm, debug)
     else:
-        digestPrefix = get_digest_prefix(digestAlgorithm)
-        bodyDigest = \
-            message_content_digest(messageBodyJsonStr, digestAlgorithm)
-        contentLength = len(messageBodyJsonStr)
+        digest_prefix = get_digest_prefix(digest_algorithm)
+        body_digest = \
+            message_content_digest(message_body_json_str, digest_algorithm)
+        content_length = len(message_body_json_str)
         headers = {
-            'host': headersDomain,
-            'date': dateStr,
-            'digest': f'{digestPrefix}={bodyDigest}',
+            'host': headers_domain,
+            'date': date_str,
+            'digest': f'{digest_prefix}={body_digest}',
             'content-type': content_type,
-            'content-length': str(contentLength)
+            'content-length': str(content_length)
         }
-        assert get_digest_algorithm_from_headers(headers) == digestAlgorithm
-        signatureIndexHeader, signatureHeader = \
-            sign_post_headers_new(dateStr, privateKeyPem, nickname,
-                                  domain, port,
-                                  hostDomain, port,
-                                  boxpath, http_prefix, messageBodyJsonStr,
-                                  algorithm, digestAlgorithm, debug)
+        assert get_digest_algorithm_from_headers(headers) == digest_algorithm
+        signature_index_header, signature_header = \
+            sign_post_headers_new(date_str, private_key_pem, nickname,
+                                  domain, port, host_domain, port,
+                                  boxpath, http_prefix, message_body_json_str,
+                                  algorithm, digest_algorithm, debug)
 
-    headers['signature'] = signatureHeader
-    headers['signature-input'] = signatureIndexHeader
+    headers['signature'] = signature_header
+    headers['signature-input'] = signature_index_header
     print('headers: ' + str(headers))
 
-    GETmethod = not withDigest
+    getreq_method = not with_digest
     debug = True
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               boxpath, GETmethod, None,
-                               messageBodyJsonStr, debug)
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               boxpath, getreq_method, None,
+                               message_body_json_str, debug)
     debug = False
-    if withDigest:
+    if with_digest:
         # everything correct except for content-length
-        headers['content-length'] = str(contentLength + 2)
-        assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                                   boxpath, GETmethod, None,
-                                   messageBodyJsonStr, debug) is False
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               '/parambulator' + boxpath, GETmethod, None,
-                               messageBodyJsonStr, debug) is False
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               boxpath, not GETmethod, None,
-                               messageBodyJsonStr, debug) is False
-    if not withDigest:
+        headers['content-length'] = str(content_length + 2)
+        assert verify_post_headers(http_prefix, public_key_pem, headers,
+                                   boxpath, getreq_method, None,
+                                   message_body_json_str, debug) is False
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               '/parambulator' + boxpath, getreq_method, None,
+                               message_body_json_str, debug) is False
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               boxpath, not getreq_method, None,
+                               message_body_json_str, debug) is False
+    if not with_digest:
         # fake domain
         headers = {
             'host': 'bogon.domain',
-            'date': dateStr,
+            'date': date_str,
             'content-type': content_type
         }
     else:
         # correct domain but fake message
-        messageBodyJsonStr = \
+        message_body_json_str = \
             '{"a key": "a value", "another key": "Fake GNUs", ' + \
             '"yet another key": "More Fake GNUs"}'
-        contentLength = len(messageBodyJsonStr)
-        digestPrefix = get_digest_prefix(digestAlgorithm)
-        bodyDigest = \
-            message_content_digest(messageBodyJsonStr, digestAlgorithm)
+        content_length = len(message_body_json_str)
+        digest_prefix = get_digest_prefix(digest_algorithm)
+        body_digest = \
+            message_content_digest(message_body_json_str, digest_algorithm)
         headers = {
             'host': domain,
-            'date': dateStr,
-            'digest': f'{digestPrefix}={bodyDigest}',
+            'date': date_str,
+            'digest': f'{digest_prefix}={body_digest}',
             'content-type': content_type,
-            'content-length': str(contentLength)
+            'content-length': str(content_length)
         }
-        assert get_digest_algorithm_from_headers(headers) == digestAlgorithm
-    headers['signature'] = signatureHeader
-    headers['signature-input'] = signatureIndexHeader
+        assert get_digest_algorithm_from_headers(headers) == digest_algorithm
+    headers['signature'] = signature_header
+    headers['signature-input'] = signature_index_header
     pprint(headers)
-    assert verify_post_headers(http_prefix, publicKeyPem, headers,
-                               boxpath, not GETmethod, None,
-                               messageBodyJsonStr, False) is False
+    assert verify_post_headers(http_prefix, public_key_pem, headers,
+                               boxpath, not getreq_method, None,
+                               message_body_json_str, False) is False
 
     os.chdir(base_dir)
     shutil.rmtree(path, ignore_errors=False, onerror=None)
@@ -6308,14 +6355,14 @@ def _test_httpsig_base_new(withDigest: bool, base_dir: str,
 
 def _test_get_actor_from_in_reply_to() -> None:
     print('testGetActorFromInReplyTo')
-    inReplyTo = \
+    in_reply_to = \
         'https://fosstodon.org/users/bashrc/statuses/107400700612621140'
-    replyActor = get_actor_from_in_reply_to(inReplyTo)
-    assert replyActor == 'https://fosstodon.org/users/bashrc'
+    reply_actor = get_actor_from_in_reply_to(in_reply_to)
+    assert reply_actor == 'https://fosstodon.org/users/bashrc'
 
-    inReplyTo = 'https://fosstodon.org/activity/107400700612621140'
-    replyActor = get_actor_from_in_reply_to(inReplyTo)
-    assert replyActor is None
+    in_reply_to = 'https://fosstodon.org/activity/107400700612621140'
+    reply_actor = get_actor_from_in_reply_to(in_reply_to)
+    assert reply_actor is None
 
 
 def run_all_tests():
