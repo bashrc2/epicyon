@@ -509,6 +509,13 @@ def download_image_any_mime_type(session, url: str,
                                  timeout_sec: int, debug: bool):
     """http GET for an image with any mime type
     """
+    # check that this looks like a url
+    if '://' not in url:
+        if debug:
+            print('WARN: download_image_any_mime_type, ' +
+                  url + ' does not look like a url')
+        return None, None
+
     mime_type = None
     content_type = None
     result = None
