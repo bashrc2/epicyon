@@ -441,12 +441,27 @@ def post_image(session, attach_image_filename: str, federation_list: [],
     return None
 
 
+def _looks_like_url(url: str) -> bool:
+    """Does the given string look like a url
+    """
+    if not url:
+        return False
+    if '.' not in url:
+        return False
+    if '://' not in url:
+        return False
+    return True
+
+
 def download_image(session, base_dir: str, url: str,
                    image_filename: str, debug: bool,
                    force: bool = False) -> bool:
     """Downloads an image with an expected mime type
     """
-    if not url:
+    if not _looks_like_url(url):
+        if debug:
+            print('WARN: download_image, ' +
+                  url + ' does not look like a url')
         return None
 
     # try different image types
@@ -510,7 +525,7 @@ def download_image_any_mime_type(session, url: str,
     """http GET for an image with any mime type
     """
     # check that this looks like a url
-    if '://' not in url:
+    if not _looks_like_url(url):
         if debug:
             print('WARN: download_image_any_mime_type, ' +
                   url + ' does not look like a url')
