@@ -941,9 +941,8 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
     domain_full = get_full_domain(domain, port)
 
     max_feed_length = 10
-    hashtag_feed = \
-        rss2tag_header(hashtag, http_prefix, domain_full)
-    for index in range(len(lines)):
+    hashtag_feed = rss2tag_header(hashtag, http_prefix, domain_full)
+    for index, _ in enumerate(lines):
         post_id = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:
             nickname = get_nickname_from_actor(post_id)

@@ -290,7 +290,7 @@ def update_blocked_cache(base_dir: str,
         with open(global_blocking_filename, 'r') as fp_blocked:
             blocked_lines = fp_blocked.readlines()
             # remove newlines
-            for index in range(len(blocked_lines)):
+            for index, _ in enumerate(blocked_lines):
                 blocked_lines[index] = blocked_lines[index].replace('\n', '')
             # update the cache
             blocked_cache.clear()

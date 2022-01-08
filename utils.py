@@ -559,7 +559,7 @@ def get_followers_list(base_dir: str,
 
     with open(filename, 'r') as foll_file:
         lines = foll_file.readlines()
-        for i in range(len(lines)):
+        for i, _ in enumerate(lines):
             lines[i] = lines[i].strip()
         return lines
     return []
@@ -2126,7 +2126,7 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
 
     if '+' in search_str:
         search_words = search_str.split('+')
-        for index in range(len(search_words)):
+        for index, _ in enumerate(search_words):
             search_words[index] = search_words[index].strip()
         print('SEARCH: ' + str(search_words))
     else:
@@ -2178,7 +2178,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
 
     if '+' in search_str:
         search_words = search_str.split('+')
-        for index in range(len(search_words)):
+        for index, _ in enumerate(search_words):
             search_words[index] = search_words[index].strip()
         print('SEARCH: ' + str(search_words))
     else:
@@ -2811,7 +2811,7 @@ def set_occupation_name(actor_json: {}, name: str) -> bool:
         return False
     if not isinstance(actor_json['hasOccupation'], list):
         return False
-    for index in range(len(actor_json['hasOccupation'])):
+    for index, _ in enumerate(actor_json['hasOccupation']):
         occupation_item = actor_json['hasOccupation'][index]
         if not isinstance(occupation_item, dict):
             continue
@@ -2831,7 +2831,7 @@ def set_occupation_skills_list(actor_json: {}, skills_list: []) -> bool:
         return False
     if not isinstance(actor_json['hasOccupation'], list):
         return False
-    for index in range(len(actor_json['hasOccupation'])):
+    for index, _ in enumerate(actor_json['hasOccupation']):
         occupation_item = actor_json['hasOccupation'][index]
         if not isinstance(occupation_item, dict):
             continue

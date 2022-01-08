@@ -143,7 +143,7 @@ def _person_receive_update_outbox(recent_posts_cache: {},
             if 'attachment' not in actor_json:
                 continue
             found = False
-            for attach_idx in range(len(actor_json['attachment'])):
+            for attach_idx, _ in enumerate(actor_json['attachment']):
                 if actor_json['attachment'][attach_idx]['type'] != \
                    'PropertyValue':
                     continue
