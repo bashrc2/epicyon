@@ -381,6 +381,8 @@ def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
 
 def xml_podcast_to_dict(xml_str: str) -> {}:
     """podcasting extensions for RSS feeds
+    See https://github.com/Podcastindex-org/podcast-namespace/
+    blob/main/docs/1.0.md
     """
     if 'podcastindex.org/namespace/1.0' not in xml_str:
         return {}
@@ -392,7 +394,8 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
         "persons": [],
         "soundbites": [],
         "transcripts": [],
-        "valueRecipients": []
+        "valueRecipients": [],
+        "trailers": []
     }
 
     pod_lines = xml_str.split('<podcast:')
@@ -414,7 +417,8 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
         pod_fields = (
             'url', 'geo', 'osm', 'type', 'method', 'group',
             'owner', 'srcset', 'img', 'role', 'address', 'suggested',
-            'startTime', 'duration', 'href', 'name'
+            'startTime', 'duration', 'href', 'name', 'pubdate',
+            'length', 'season'
         )
         pod_entry = {}
         for pod_field in pod_fields:
