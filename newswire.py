@@ -418,7 +418,7 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
             'url', 'geo', 'osm', 'type', 'method', 'group',
             'owner', 'srcset', 'img', 'role', 'address', 'suggested',
             'startTime', 'duration', 'href', 'name', 'pubdate',
-            'length', 'season'
+            'length', 'season', 'email'
         )
         pod_entry = {}
         for pod_field in pod_fields:
