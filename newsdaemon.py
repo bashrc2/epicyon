@@ -627,6 +627,10 @@ def _convert_rs_sto_activity_pub(base_dir: str, http_prefix: str,
             '<br><a href="' + post_url + '">' + \
             translate['Read more...'] + '</a>'
 
+#        podcast_properties = None
+#        if len(item) > 8:
+#            podcast_properties = item[8]
+
         followers_only = False
         # NOTE: the id when the post is created will not be
         # consistent (it's based on the current time, not the

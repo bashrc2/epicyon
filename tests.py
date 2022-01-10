@@ -150,6 +150,7 @@ from linked_data_sig import generate_json_signature
 from linked_data_sig import verify_json_signature
 from newsdaemon import hashtag_rule_tree
 from newsdaemon import hashtag_rule_resolve
+from newswire import xml_podcast_to_dict
 from newswire import get_newswire_tags
 from newswire import parse_feed_date
 from newswire import limit_word_lengths
@@ -6354,7 +6355,7 @@ def _test_httpsig_base_new(with_digest: bool, base_dir: str,
 
 
 def _test_get_actor_from_in_reply_to() -> None:
-    print('testGetActorFromInReplyTo')
+    print('test_get_actor_from_in_reply_to')
     in_reply_to = \
         'https://fosstodon.org/users/bashrc/statuses/107400700612621140'
     reply_actor = get_actor_from_in_reply_to(in_reply_to)
@@ -6363,6 +6364,85 @@ def _test_get_actor_from_in_reply_to() -> None:
     in_reply_to = 'https://fosstodon.org/activity/107400700612621140'
     reply_actor = get_actor_from_in_reply_to(in_reply_to)
     assert reply_actor is None
+
+
+def _test_xml_podcast_dict() -> None:
+    print('test_xml_podcast_dict')
+    xml_str = \
+        '<?xml version="1.0" encoding="UTF-8" ?>\n' + \
+        '<rss version="2.0" xmlns:podcast="' + \
+        'https://podcastindex.org/namespace/1.0">\n' + \
+        '<podcast:episode>5</podcast:episode>\n' + \
+        '<podcast:chapters ' + \
+        'url="https://whoframed.rodger/ep1_chapters.json" ' + \
+        'type="application/json"/>\n' + \
+        '<podcast:funding ' + \
+        'url="https://whoframed.rodger/donate">' + \
+        'Support the show</podcast:funding>\n' + \
+        '<podcast:images ' + \
+        'srcset="https://whoframed.rodger/images/ep1/' + \
+        'pci_avatar-massive.jpg 1500w, ' + \
+        'https://whoframed.rodger/images/ep1/pci_avatar-middle.jpg 600w, ' + \
+        'https://whoframed.rodger/images/ep1/pci_avatar-small.jpg 300w, ' + \
+        'https://whoframed.rodger/images/ep1/' + \
+        'pci_avatar-microfiche.jpg 50w" />\n' + \
+        '<podcast:location geo="geo:57.4272,34.63763" osm="R472152">' + \
+        'Nowheresville</podcast:location>\n' + \
+        '<podcast:locked owner="podcastowner@whoframed.rodger">yes' + \
+        '</podcast:locked>\n' + \
+        '<podcast:person group="visuals" role="cover art designer" ' + \
+        'href="https://whoframed.rodger/artist/rodgetrabbit">' + \
+        'Rodger Rabbit</podcast:person>\n' + \
+        '<podcast:person href="https://whoframed.rodger" ' + \
+        'img="http://whoframed.rodger/images/rr.jpg">Rodger Rabbit' + \
+        '</podcast:person>\n' + \
+        '<podcast:person href="https://whoframed.rodger" ' + \
+        'img="http://whoframed.rodger/images/jr.jpg">' + \
+        'Jessica Rabbit</podcast:person>\n' + \
+        '<podcast:person role="guest" ' + \
+        'href="https://whoframed.rodger/blog/bettyboop/" ' + \
+        'img="http://whoframed.rodger/images/bb.jpg">' + \
+        'Betty Boop</podcast:person>\n' + \
+        '<podcast:person role="guest" ' + \
+        'href="https://goodto.talk/bobhoskins/" ' + \
+        'img="https://goodto.talk/images/bhosk.jpg">' + \
+        'Bob Hoskins</podcast:person>\n' + \
+        '<podcast:season name="Podcasting 2.0">1</podcast:season>\n' + \
+        '<podcast:soundbite startTime="15.27" duration="8.0" />\n' + \
+        '<podcast:soundbite startTime="21.34" duration="32.0" />\n' + \
+        '<podcast:transcript ' + \
+        'url="https://whoframed.rodger/ep1/transcript.txt" ' + \
+        'type="text/plain" />\n' + \
+        '<podcast:transcript ' + \
+        'url="https://whoframed.rodger/ep2/transcript.txt" ' + \
+        'type="text/plain" />\n' + \
+        '<podcast:transcript ' + \
+        'url="https://whoframed.rodger/ep3/transcript.txt" ' + \
+        'type="text/plain" />\n' + \
+        '<podcast:value type="donate" method="keysend" ' + \
+        'suggested="2.95">\n' + \
+        '  <podcast:valueRecipient name="hosting company" ' + \
+        'type="node" address="someaddress1" split="1" />\n' + \
+        '  <podcast:valueRecipient name="podcaster" type="node" ' + \
+        'address="someaddress2" split="99" />\n' + \
+        '</podcast:value>\n' + \
+        '</rss>'
+    podcast_properties = xml_podcast_to_dict(xml_str)
+    assert podcast_properties
+    # pprint(podcast_properties)
+    assert podcast_properties.get('valueRecipients')
+    assert podcast_properties.get('persons')
+    assert podcast_properties.get('soundbites')
+    assert podcast_properties.get('locations')
+    assert podcast_properties.get('transcripts')
+    assert podcast_properties.get('episode')
+    assert podcast_properties.get('funding')
+    assert int(podcast_properties['episode']) == 5
+    assert podcast_properties['funding']['text'] == "Support the show"
+    assert len(podcast_properties['transcripts']) == 3
+    assert len(podcast_properties['valueRecipients']) == 2
+    assert len(podcast_properties['persons']) == 5
+    assert len(podcast_properties['locations']) == 1
 
 
 def run_all_tests():
@@ -6381,6 +6461,7 @@ def run_all_tests():
                             'message_json', 'liked_post_json'])
     _test_checkbox_names()
     _test_functions()
+    _test_xml_podcast_dict()
     _test_get_actor_from_in_reply_to()
     _test_valid_emoji_content()
     _test_add_cw_lists(base_dir)
