@@ -263,6 +263,15 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 '<img loading="lazy" src="' + favicon_url + '" ' + \
                 'alt="" ' + _get_broken_fav_substitute() + '/>'
         moderated_item = item[5]
+        link_url = url
+
+        # is this a podcast episode?
+        if len(item) > 8:
+            # change the link url to a podcast episode screen
+            podcast_properties = item[8]
+            if podcast_properties.get('persons'):
+                link_url = '?podepisode=' + date_str
+
         html_str += separator_str
         if moderated_item and 'vote:' + nickname in item[2]:
             total_votes_str = ''
@@ -275,7 +284,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             title = remove_long_words(item[0], 16, []).replace('\n', '<br>')
             title = limit_repeated_words(title, 6)
             html_str += '<p class="newswireItemVotedOn">' + \
-                '<a href="' + url + '" target="_blank" ' + \
+                '<a href="' + link_url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
                 '<span class="newswireItemVotedOn">' + \
                 favicon_link + title + '</span></a>' + total_votes_str
@@ -305,7 +314,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             title = limit_repeated_words(title, 6)
             if moderator and moderated_item:
                 html_str += '<p class="newswireItemModerated">' + \
-                    '<a href="' + url + '" target="_blank" ' + \
+                    '<a href="' + link_url + '" target="_blank" ' + \
                     'rel="nofollow noopener noreferrer">' + \
                     favicon_link + title + '</a>' + total_votes_str
                 html_str += ' ' + date_shown
@@ -318,7 +327,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 html_str += '</p>\n'
             else:
                 html_str += '<p class="newswireItem">' + \
-                    '<a href="' + url + '" target="_blank" ' + \
+                    '<a href="' + link_url + '" target="_blank" ' + \
                     'rel="nofollow noopener noreferrer">' + \
                     favicon_link + title + '</a>' + total_votes_str
                 html_str += ' <span class="newswireDate">'
