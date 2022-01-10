@@ -517,7 +517,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(xml_str)
+                podcast_properties = xml_podcast_to_dict(rss_item)
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
@@ -607,7 +607,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(xml_str)
+                podcast_properties = xml_podcast_to_dict(rss_item)
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
@@ -685,7 +685,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(xml_str)
+                podcast_properties = xml_podcast_to_dict(atom_item)
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
@@ -903,24 +903,24 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                                      max_posts_per_source,
                                      max_feed_item_size_kb,
                                      session, debug)
-    elif 'rss version="2.0"' in xml_str:
+    if 'rss version="2.0"' in xml_str:
         return _xml2str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
                                 max_categories_feedItem_size_kb,
                                 session, debug)
-    elif '<?xml version="1.0"' in xml_str:
+    if '<?xml version="1.0"' in xml_str:
         return _xml1str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
                                 max_categories_feedItem_size_kb,
                                 session, debug)
-    elif 'xmlns="http://www.w3.org/2005/Atom"' in xml_str:
+    if 'xmlns="http://www.w3.org/2005/Atom"' in xml_str:
         return _atom_feed_to_dict(base_dir, domain,
                                   xml_str, moderated, mirrored,
                                   max_posts_per_source, max_feed_item_size_kb,
                                   session, debug)
-    elif 'https://jsonfeed.org/version/1' in xml_str:
+    if 'https://jsonfeed.org/version/1' in xml_str:
         return _json_feed_v1to_dict(base_dir, domain,
                                     xml_str, moderated, mirrored,
                                     max_posts_per_source,
