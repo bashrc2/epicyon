@@ -269,9 +269,11 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
         if len(item) > 8:
             # change the link url to a podcast episode screen
             podcast_properties = item[8]
-            if podcast_properties.get('persons') and \
-               podcast_properties.get('image'):
-                link_url = '/users/' + nickname + '/?podepisode=' + date_str
+            if podcast_properties:
+                if podcast_properties.get('persons') and \
+                   podcast_properties.get('image'):
+                    link_url = \
+                        '/users/' + nickname + '/?podepisode=' + date_str
 
         html_str += separator_str
         if moderated_item and 'vote:' + nickname in item[2]:
