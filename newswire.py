@@ -445,6 +445,26 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
             podcast_properties[pod_key] = pod_entry
         ctr += 1
 
+    # get the image for the podcast, if it exists
+    episode_image_tags = ['<itunes:image']
+    for image_tag in episode_image_tags:
+        if image_tag not in xml_str:
+            continue
+        episode_image = xml_str.split(image_tag)[1]
+        if 'href="' in episode_image:
+            episode_image = episode_image.split('href="')[1]
+            if '"' in episode_image:
+                episode_image = episode_image.split('"')[0]
+                podcast_properties['image'] = episode_image
+                break
+        else:
+            if '>' in episode_image:
+                episode_image = episode_image.split('>')[1]
+                if '<' in episode_image:
+                    episode_image = episode_image.split('<')[0]
+                    if '://' in episode_image and '.' in episode_image:
+                        podcast_properties['image'] = episode_image
+                        break
     return podcast_properties
 
 
@@ -487,9 +507,11 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             continue
         if '</pubDate>' not in rss_item:
             continue
+
         title = rss_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         title = remove_html(title)
+
         description = ''
         if '<description>' in rss_item and '</description>' in rss_item:
             description = rss_item.split('<description>')[1]
@@ -500,11 +522,13 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = rss_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
+
         link = rss_item.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
         item_domain = link.split('://')[1]
+
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
         if is_blocked_domain(base_dir, item_domain):

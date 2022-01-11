@@ -6439,6 +6439,8 @@ def _test_xml_podcast_dict() -> None:
     assert podcast_properties.get('funding')
     assert int(podcast_properties['episode']) == 5
     assert podcast_properties['funding']['text'] == "Support the show"
+    assert podcast_properties['funding']['url'] == \
+        "https://whoframed.rodger/donate"
     assert len(podcast_properties['transcripts']) == 3
     assert len(podcast_properties['valueRecipients']) == 2
     assert len(podcast_properties['persons']) == 5

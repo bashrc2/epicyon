@@ -156,6 +156,7 @@ from blog import html_blog_page
 from blog import html_blog_post
 from blog import html_edit_blog
 from blog import get_blog_address
+from webapp_podcast import html_podcast_episode
 from webapp_theme_designer import html_theme_designer
 from webapp_minimalbutton import set_minimal
 from webapp_minimalbutton import is_minimal
@@ -14061,6 +14062,34 @@ class PubServer(BaseHTTPRequestHandler):
                                       None, calling_domain, False)
                     self._write(msg)
             return
+
+        # show a podcast episode
+        if authorized and users_in_path and html_getreq and \
+           '?podepisode=' in self.path:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            episode_timestamp = self.path.split('?podepisode=')[1]
+            if self.server.newswire.get(episode_timestamp):
+                pod_episode = self.server.newswire[episode_timestamp]
+                html_str = \
+                    html_podcast_episode(self.server.css_cache,
+                                         self.server.translate,
+                                         self.server.base_dir,
+                                         nickname,
+                                         self.server.domain,
+                                         pod_episode,
+                                         self.server.themeName,
+                                         self.server.default_timeline,
+                                         self.server.text_mode_banner,
+                                         self.server.access_keys)
+                if html_str:
+                    msg = html_str.encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/html', msglen,
+                                      None, calling_domain, False)
+                    self._write(msg)
+                    return
 
         # redirect to the welcome screen
         if html_getreq and authorized and users_in_path and \
