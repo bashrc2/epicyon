@@ -523,14 +523,30 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = rss_item.split('<link>')[1]
-        link = link.split('</link>')[0]
-        if '://' not in link:
-            continue
-        item_domain = link.split('://')[1]
+        link = None
+        if '<enclosure ' in rss_item:
+            # get link from audio or video enclosure
+            enclosure = rss_item.split('<enclosure ')[1]
+            if '>' in enclosure:
+                enclosure = enclosure.split('>')[0]
+                if 'url="' in enclosure and \
+                   ('"audio/' in enclosure or '"video/' in enclosure):
+                    link_str = enclosure.split('url="')[1]
+                    if '"' in link_str:
+                        link_str = link_str.split('"')[0]
+                        if '://' in link_str:
+                            link = link_str
 
+        if not link:
+            link = rss_item.split('<link>')[1]
+            link = link.split('</link>')[0]
+            if '://' not in link:
+                continue
+
+        item_domain = link.split('://')[1]
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
+
         if is_blocked_domain(base_dir, item_domain):
             continue
         pub_date = rss_item.split('<pubDate>')[1]
@@ -614,13 +630,31 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = rss_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
-        link = rss_item.split('<link>')[1]
-        link = link.split('</link>')[0]
-        if '://' not in link:
-            continue
+
+        link = None
+        if '<enclosure ' in rss_item:
+            # get link from audio or video enclosure
+            enclosure = rss_item.split('<enclosure ')[1]
+            if '>' in enclosure:
+                enclosure = enclosure.split('>')[0]
+                if 'url="' in enclosure and \
+                   ('"audio/' in enclosure or '"video/' in enclosure):
+                    link_str = enclosure.split('url="')[1]
+                    if '"' in link_str:
+                        link_str = link_str.split('"')[0]
+                        if '://' in link_str:
+                            link = link_str
+
+        if not link:
+            link = rss_item.split('<link>')[1]
+            link = link.split('</link>')[0]
+            if '://' not in link:
+                continue
+
         item_domain = link.split('://')[1]
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
+
         if is_blocked_domain(base_dir, item_domain):
             continue
         pub_date = rss_item.split('<dc:date>')[1]
@@ -692,13 +726,31 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = atom_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
-        link = atom_item.split('<link>')[1]
-        link = link.split('</link>')[0]
-        if '://' not in link:
-            continue
+
+        link = None
+        if '<enclosure ' in atom_item:
+            # get link from audio or video enclosure
+            enclosure = atom_item.split('<enclosure ')[1]
+            if '>' in enclosure:
+                enclosure = enclosure.split('>')[0]
+                if 'url="' in enclosure and \
+                   ('"audio/' in enclosure or '"video/' in enclosure):
+                    link_str = enclosure.split('url="')[1]
+                    if '"' in link_str:
+                        link_str = link_str.split('"')[0]
+                        if '://' in link_str:
+                            link = link_str
+
+        if not link:
+            link = atom_item.split('<link>')[1]
+            link = link.split('</link>')[0]
+            if '://' not in link:
+                continue
+
         item_domain = link.split('://')[1]
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
+
         if is_blocked_domain(base_dir, item_domain):
             continue
         pub_date = atom_item.split('<updated>')[1]
