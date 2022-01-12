@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
 import os
+import urllib.parse
 from shutil import copyfile
 from utils import get_config_param
 from utils import remove_html
@@ -154,8 +155,10 @@ def html_podcast_episode(css_cache: {}, translate: {},
     else:
         podcast_str += '  <img loading="lazy" src="' + image_url + \
             '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
+    podcast_str += '  </center>\n'
     podcast_str += '  </div>\n'
 
+    podcast_str += '  <center>\n'
     audio_extension = None
     if path_is_audio(link_url):
         if '.mp3' in link_url:
@@ -175,19 +178,20 @@ def html_podcast_episode(css_cache: {}, translate: {},
 
         # podcast player widget
         podcast_str += \
-            '<audio controls>\n' + \
-            '<source src="' + link_url + '" type="audio/' + \
+            '  <audio controls>\n' + \
+            '    <source src="' + link_url + '" type="audio/' + \
             audio_extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
-            '</audio>\n'
+            '\n  </audio>\n'
 
-    podcast_title = remove_html(newswire_item[0])
+    podcast_title = remove_html(urllib.parse.unquote_plus(newswire_item[0]))
     if podcast_title:
         podcast_str += \
             '<p><label class="podcast-title">"' + podcast_title + \
             '</label></p>\n'
     if newswire_item[4]:
-        podcast_description = remove_html(newswire_item[4])
+        podcast_description = \
+            remove_html(urllib.parse.unquote_plus(newswire_item[4]))
         if podcast_description:
             podcast_str += '<p>' + podcast_description + '</p>\n'
 
