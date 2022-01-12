@@ -107,7 +107,7 @@ def _get_theme_files() -> []:
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
             'options.css', 'search.css', 'links.css',
-            'welcome.css', 'graph.css')
+            'welcome.css', 'graph.css', 'podcast.css')
 
 
 def is_news_theme_name(base_dir: str, theme_name: str) -> bool:
