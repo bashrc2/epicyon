@@ -468,6 +468,31 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
     return podcast_properties
 
 
+def _get_link_from_rss_item(rss_item: str) -> str:
+    """Extracts rss link from rss item string
+    """
+    link = None
+    if '<enclosure ' in rss_item:
+        # get link from audio or video enclosure
+        enclosure = rss_item.split('<enclosure ')[1]
+        if '>' in enclosure:
+            enclosure = enclosure.split('>')[0]
+            if 'url="' in enclosure and \
+               ('"audio/' in enclosure or '"video/' in enclosure):
+                link_str = enclosure.split('url="')[1]
+                if '"' in link_str:
+                    link_str = link_str.split('"')[0]
+                    if '://' in link_str:
+                        link = link_str
+
+    if not link:
+        link = rss_item.split('<link>')[1]
+        link = link.split('</link>')[0]
+        if '://' not in link:
+            return None
+    return link
+
+
 def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                      moderated: bool, mirrored: bool,
                      max_posts_per_source: int,
@@ -523,25 +548,9 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = None
-        if '<enclosure ' in rss_item:
-            # get link from audio or video enclosure
-            enclosure = rss_item.split('<enclosure ')[1]
-            if '>' in enclosure:
-                enclosure = enclosure.split('>')[0]
-                if 'url="' in enclosure and \
-                   ('"audio/' in enclosure or '"video/' in enclosure):
-                    link_str = enclosure.split('url="')[1]
-                    if '"' in link_str:
-                        link_str = link_str.split('"')[0]
-                        if '://' in link_str:
-                            link = link_str
-
+        link = _get_link_from_rss_item(rss_item)
         if not link:
-            link = rss_item.split('<link>')[1]
-            link = link.split('</link>')[0]
-            if '://' not in link:
-                continue
+            continue
 
         item_domain = link.split('://')[1]
         if '/' in item_domain:
@@ -631,25 +640,9 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = None
-        if '<enclosure ' in rss_item:
-            # get link from audio or video enclosure
-            enclosure = rss_item.split('<enclosure ')[1]
-            if '>' in enclosure:
-                enclosure = enclosure.split('>')[0]
-                if 'url="' in enclosure and \
-                   ('"audio/' in enclosure or '"video/' in enclosure):
-                    link_str = enclosure.split('url="')[1]
-                    if '"' in link_str:
-                        link_str = link_str.split('"')[0]
-                        if '://' in link_str:
-                            link = link_str
-
+        link = _get_link_from_rss_item(rss_item)
         if not link:
-            link = rss_item.split('<link>')[1]
-            link = link.split('</link>')[0]
-            if '://' not in link:
-                continue
+            continue
 
         item_domain = link.split('://')[1]
         if '/' in item_domain:
@@ -727,25 +720,9 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = None
-        if '<enclosure ' in atom_item:
-            # get link from audio or video enclosure
-            enclosure = atom_item.split('<enclosure ')[1]
-            if '>' in enclosure:
-                enclosure = enclosure.split('>')[0]
-                if 'url="' in enclosure and \
-                   ('"audio/' in enclosure or '"video/' in enclosure):
-                    link_str = enclosure.split('url="')[1]
-                    if '"' in link_str:
-                        link_str = link_str.split('"')[0]
-                        if '://' in link_str:
-                            link = link_str
-
+        link = _get_link_from_rss_item(atom_item)
         if not link:
-            link = atom_item.split('<link>')[1]
-            link = link.split('</link>')[0]
-            if '://' not in link:
-                continue
+            continue
 
         item_domain = link.split('://')[1]
         if '/' in item_domain:
