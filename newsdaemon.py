@@ -538,21 +538,21 @@ def _create_news_mirror(base_dir: str, domain: str,
     return True
 
 
-def _convert_rs_sto_activity_pub(base_dir: str, http_prefix: str,
-                                 domain: str, port: int,
-                                 newswire: {},
-                                 translate: {},
-                                 recent_posts_cache: {},
-                                 max_recent_posts: int,
-                                 session, cached_webfingers: {},
-                                 person_cache: {},
-                                 federation_list: [],
-                                 send_threads: [], post_log: [],
-                                 max_mirrored_articles: int,
-                                 allow_local_network_access: bool,
-                                 system_language: str,
-                                 low_bandwidth: bool,
-                                 content_license_url: str) -> None:
+def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
+                                domain: str, port: int,
+                                newswire: {},
+                                translate: {},
+                                recent_posts_cache: {},
+                                max_recent_posts: int,
+                                session, cached_webfingers: {},
+                                person_cache: {},
+                                federation_list: [],
+                                send_threads: [], post_log: [],
+                                max_mirrored_articles: int,
+                                allow_local_network_access: bool,
+                                system_language: str,
+                                low_bandwidth: bool,
+                                content_license_url: str) -> None:
     """Converts rss items in a newswire into posts
     """
     if not newswire:
@@ -755,7 +755,7 @@ def _convert_rs_sto_activity_pub(base_dir: str, http_prefix: str,
                         try:
                             os.remove(filename + '.arrived')
                         except OSError:
-                            print('EX: _convert_rs_sto_activity_pub ' +
+                            print('EX: _convert_rss_to_activitypub ' +
                                   'unable to delete ' + filename + '.arrived')
 
                 # setting the url here links to the activitypub object
@@ -833,22 +833,22 @@ def run_newswire_daemon(base_dir: str, httpd,
             print('No new newswire')
 
         print('Converting newswire to activitypub format')
-        _convert_rs_sto_activity_pub(base_dir,
-                                     http_prefix, domain, port,
-                                     new_newswire, translate,
-                                     httpd.recent_posts_cache,
-                                     httpd.max_recent_posts,
-                                     httpd.session,
-                                     httpd.cached_webfingers,
-                                     httpd.person_cache,
-                                     httpd.federation_list,
-                                     httpd.send_threads,
-                                     httpd.postLog,
-                                     httpd.max_mirrored_articles,
-                                     httpd.allow_local_network_access,
-                                     httpd.system_language,
-                                     httpd.low_bandwidth,
-                                     httpd.content_license_url)
+        _convert_rss_to_activitypub(base_dir,
+                                    http_prefix, domain, port,
+                                    new_newswire, translate,
+                                    httpd.recent_posts_cache,
+                                    httpd.max_recent_posts,
+                                    httpd.session,
+                                    httpd.cached_webfingers,
+                                    httpd.person_cache,
+                                    httpd.federation_list,
+                                    httpd.send_threads,
+                                    httpd.postLog,
+                                    httpd.max_mirrored_articles,
+                                    httpd.allow_local_network_access,
+                                    httpd.system_language,
+                                    httpd.low_bandwidth,
+                                    httpd.content_license_url)
         print('Newswire feed converted to ActivityPub')
 
         if httpd.max_news_posts > 0:
