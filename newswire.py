@@ -578,8 +578,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 if post_ctr >= max_posts_per_source:
                     break
     if post_ctr > 0:
-        print('Added ' + str(post_ctr) +
-              ' rss 2.0 feed items to newswire')
+        print('Added ' + str(post_ctr) + ' rss 2.0 feed items to newswire')
     return result
 
 
@@ -670,8 +669,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 if post_ctr >= max_posts_per_source:
                     break
     if post_ctr > 0:
-        print('Added ' + str(post_ctr) +
-              ' rss 1.0 feed items to newswire')
+        print('Added ' + str(post_ctr) + ' rss 1.0 feed items to newswire')
     return result
 
 
@@ -750,8 +748,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 if post_ctr >= max_posts_per_source:
                     break
     if post_ctr > 0:
-        print('Added ' + str(post_ctr) +
-              ' atom feed items to newswire')
+        print('Added ' + str(post_ctr) + ' atom feed items to newswire')
     return result
 
 
