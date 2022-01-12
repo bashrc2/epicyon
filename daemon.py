@@ -14081,7 +14081,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          nickname,
                                          self.server.domain,
                                          pod_episode,
-                                         self.server.themeName,
+                                         self.server.theme_name,
                                          self.server.default_timeline,
                                          self.server.text_mode_banner,
                                          self.server.access_keys)
