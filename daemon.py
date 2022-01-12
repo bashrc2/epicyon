@@ -14069,7 +14069,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-            episode_timestamp = self.path.split('?podepisode=')[1]
+            episode_timestamp = self.path.split('?podepisode=')[1].strip()
+            episode_timestamp = episode_timestamp.replace('__', ' ')
             if self.server.newswire.get(episode_timestamp):
                 pod_episode = self.server.newswire[episode_timestamp]
                 html_str = \

@@ -272,8 +272,9 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             if podcast_properties:
                 if podcast_properties.get('persons') and \
                    podcast_properties.get('image'):
+                    episode_id = date_str.replace(' ', '__')
                     link_url = \
-                        '/users/' + nickname + '/?podepisode=' + date_str
+                        '/users/' + nickname + '/?podepisode=' + episode_id
 
         html_str += separator_str
         if moderated_item and 'vote:' + nickname in item[2]:
