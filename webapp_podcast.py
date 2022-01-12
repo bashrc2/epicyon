@@ -185,10 +185,10 @@ def html_podcast_episode(css_cache: {}, translate: {},
             translate['Your browser does not support the audio element.'] + \
             '\n  </audio>\n'
 
-    podcast_title = newswire_item[0].replace('"', '')
     podcast_title = \
-        remove_html(html.unescape(urllib.parse.unquote_plus(podcast_title)))
+        remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
     if podcast_title:
+        podcast_title = podcast_title.replace('"', '')
         podcast_str += \
             '<p><label class="podcast-title">"' + podcast_title + \
             '</label></p>\n'
