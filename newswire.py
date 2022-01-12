@@ -203,7 +203,8 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
                              description: str, moderated: bool,
                              mirrored: bool,
                              tags: [],
-                             max_tags: int, session, debug: bool) -> None:
+                             max_tags: int, session, debug: bool,
+                             podcast_properties: {}) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
@@ -246,7 +247,8 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
         description,
         moderated,
         post_tags,
-        mirrored
+        mirrored,
+        podcast_properties
     ]
 
 
@@ -382,6 +384,138 @@ def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
                                      False, force)
 
 
+def xml_podcast_to_dict(xml_str: str) -> {}:
+    """podcasting extensions for RSS feeds
+    See https://github.com/Podcastindex-org/podcast-namespace/
+    blob/main/docs/1.0.md
+    """
+    if '<podcast:' not in xml_str:
+        if '<itunes:' not in xml_str:
+            return {}
+
+    podcast_properties = {
+        "locations": [],
+        "persons": [],
+        "soundbites": [],
+        "transcripts": [],
+        "valueRecipients": [],
+        "trailers": []
+    }
+
+    pod_lines = xml_str.split('<podcast:')
+    ctr = 0
+    for pod_line in pod_lines:
+        if ctr == 0 or '>' not in pod_line:
+            ctr += 1
+            continue
+        if ' ' not in pod_line.split('>')[0]:
+            pod_key = pod_line.split('>')[0].strip()
+            pod_val = pod_line.split('>', 1)[1].strip()
+            if '<' in pod_val:
+                pod_val = pod_val.split('<')[0]
+            podcast_properties[pod_key] = pod_val
+            ctr += 1
+            continue
+        pod_key = pod_line.split(' ')[0]
+
+        pod_fields = (
+            'url', 'geo', 'osm', 'type', 'method', 'group',
+            'owner', 'srcset', 'img', 'role', 'address', 'suggested',
+            'startTime', 'duration', 'href', 'name', 'pubdate',
+            'length', 'season', 'email'
+        )
+        pod_entry = {}
+        for pod_field in pod_fields:
+            if pod_field + '="' not in pod_line:
+                continue
+            pod_str = pod_line.split(pod_field + '="')[1]
+            if '"' not in pod_str:
+                continue
+            pod_val = pod_str.split('"')[0]
+            pod_entry[pod_field] = pod_val
+
+        pod_text = pod_line.split('>')[1]
+        if '<' in pod_text:
+            pod_text = pod_text.split('<')[0].strip()
+            if pod_text:
+                pod_entry['text'] = pod_text
+
+        if pod_key + 's' in podcast_properties:
+            if isinstance(podcast_properties[pod_key + 's'], list):
+                podcast_properties[pod_key + 's'].append(pod_entry)
+            else:
+                podcast_properties[pod_key] = pod_entry
+        else:
+            podcast_properties[pod_key] = pod_entry
+        ctr += 1
+
+    # get the image for the podcast, if it exists
+    podcast_episode_image = None
+    episode_image_tags = ['<itunes:image']
+    for image_tag in episode_image_tags:
+        if image_tag not in xml_str:
+            continue
+        episode_image = xml_str.split(image_tag)[1]
+        if 'href="' in episode_image:
+            episode_image = episode_image.split('href="')[1]
+            if '"' in episode_image:
+                episode_image = episode_image.split('"')[0]
+                podcast_episode_image = episode_image
+                break
+        else:
+            if '>' in episode_image:
+                episode_image = episode_image.split('>')[1]
+                if '<' in episode_image:
+                    episode_image = episode_image.split('<')[0]
+                    if '://' in episode_image and '.' in episode_image:
+                        podcast_episode_image = episode_image
+                        break
+
+    if podcast_episode_image:
+        podcast_properties['image'] = podcast_episode_image
+
+        if '<itunes:explicit>Y' in xml_str or \
+           '<itunes:explicit>T' in xml_str or \
+           '<itunes:explicit>1' in xml_str:
+            podcast_properties['explicit'] = True
+        else:
+            podcast_properties['explicit'] = False
+    else:
+        if '<podcast:' not in xml_str:
+            return {}
+
+    return podcast_properties
+
+
+def get_link_from_rss_item(rss_item: str) -> (str, str):
+    """Extracts rss link from rss item string
+    """
+    mime_type = None
+
+    if '<enclosure ' in rss_item:
+        # get link from audio or video enclosure
+        enclosure = rss_item.split('<enclosure ')[1]
+        if '>' in enclosure:
+            enclosure = enclosure.split('>')[0]
+            if ' type="' in enclosure:
+                mime_type = enclosure.split(' type="')[1]
+                if '"' in mime_type:
+                    mime_type = mime_type.split('"')[0]
+            if 'url="' in enclosure and \
+               ('"audio/' in enclosure or '"video/' in enclosure):
+                link_str = enclosure.split('url="')[1]
+                if '"' in link_str:
+                    link = link_str.split('"')[0]
+                    if '://' in link:
+                        return link, mime_type
+
+    link = rss_item.split('<link>')[1]
+    link = link.split('</link>')[0]
+    if '://' not in link:
+        return None, None
+    return link, mime_type
+
+
 def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                      moderated: bool, mirrored: bool,
                      max_posts_per_source: int,
@@ -421,9 +555,11 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             continue
         if '</pubDate>' not in rss_item:
             continue
+
         title = rss_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         title = remove_html(title)
+
         description = ''
         if '<description>' in rss_item and '</description>' in rss_item:
             description = rss_item.split('<description>')[1]
@@ -434,13 +570,15 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = rss_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
-        link = rss_item.split('<link>')[1]
-        link = link.split('</link>')[0]
-        if '://' not in link:
+
+        link, link_mime_type = get_link_from_rss_item(rss_item)
+        if not link:
             continue
+
         item_domain = link.split('://')[1]
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
+
         if is_blocked_domain(base_dir, item_domain):
             continue
         pub_date = rss_item.split('<pubDate>')[1]
@@ -451,18 +589,21 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
+                podcast_properties = xml_podcast_to_dict(rss_item)
+                if podcast_properties:
+                    podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated,
-                                         mirrored, [], 32, session, debug)
+                                         mirrored, [], 32, session, debug,
+                                         podcast_properties)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
     if post_ctr > 0:
-        print('Added ' + str(post_ctr) +
-              ' rss 2.0 feed items to newswire')
+        print('Added ' + str(post_ctr) + ' rss 2.0 feed items to newswire')
     return result
 
 
@@ -522,13 +663,15 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = rss_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
-        link = rss_item.split('<link>')[1]
-        link = link.split('</link>')[0]
-        if '://' not in link:
+
+        link, link_mime_type = get_link_from_rss_item(rss_item)
+        if not link:
             continue
+
         item_domain = link.split('://')[1]
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
+
         if is_blocked_domain(base_dir, item_domain):
             continue
         pub_date = rss_item.split('<dc:date>')[1]
@@ -539,18 +682,21 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
+                podcast_properties = xml_podcast_to_dict(rss_item)
+                if podcast_properties:
+                    podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated,
-                                         mirrored, [], 32, session, debug)
+                                         mirrored, [], 32, session, debug,
+                                         podcast_properties)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
     if post_ctr > 0:
-        print('Added ' + str(post_ctr) +
-              ' rss 1.0 feed items to newswire')
+        print('Added ' + str(post_ctr) + ' rss 1.0 feed items to newswire')
     return result
 
 
@@ -598,13 +744,15 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = atom_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
-        link = atom_item.split('<link>')[1]
-        link = link.split('</link>')[0]
-        if '://' not in link:
+
+        link, link_mime_type = get_link_from_rss_item(atom_item)
+        if not link:
             continue
+
         item_domain = link.split('://')[1]
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
+
         if is_blocked_domain(base_dir, item_domain):
             continue
         pub_date = atom_item.split('<updated>')[1]
@@ -615,18 +763,21 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
+                podcast_properties = xml_podcast_to_dict(atom_item)
+                if podcast_properties:
+                    podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated,
-                                         mirrored, [], 32, session, debug)
+                                         mirrored, [], 32, session, debug,
+                                         podcast_properties)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
     if post_ctr > 0:
-        print('Added ' + str(post_ctr) +
-              ' atom feed items to newswire')
+        print('Added ' + str(post_ctr) + ' atom feed items to newswire')
     return result
 
 
@@ -732,7 +883,8 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated,
-                                         mirrored, [], 32, session, debug)
+                                         mirrored, [], 32, session, debug,
+                                         None)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -805,7 +957,8 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated, mirrored,
-                                         [], 32, session, debug)
+                                         [], 32, session, debug,
+                                         None)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -829,24 +982,24 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                                      max_posts_per_source,
                                      max_feed_item_size_kb,
                                      session, debug)
-    elif 'rss version="2.0"' in xml_str:
+    if 'rss version="2.0"' in xml_str:
         return _xml2str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
                                 max_categories_feedItem_size_kb,
                                 session, debug)
-    elif '<?xml version="1.0"' in xml_str:
+    if '<?xml version="1.0"' in xml_str:
         return _xml1str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
                                 max_categories_feedItem_size_kb,
                                 session, debug)
-    elif 'xmlns="http://www.w3.org/2005/Atom"' in xml_str:
+    if 'xmlns="http://www.w3.org/2005/Atom"' in xml_str:
         return _atom_feed_to_dict(base_dir, domain,
                                   xml_str, moderated, mirrored,
                                   max_posts_per_source, max_feed_item_size_kb,
                                   session, debug)
-    elif 'https://jsonfeed.org/version/1' in xml_str:
+    if 'https://jsonfeed.org/version/1' in xml_str:
         return _json_feed_v1to_dict(base_dir, domain,
                                     xml_str, moderated, mirrored,
                                     max_posts_per_source,
@@ -1082,7 +1235,8 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                                              votes, full_post_filename,
                                              description, moderated, False,
                                              tags_from_post,
-                                             max_tags, session, debug)
+                                             max_tags, session, debug,
+                                             None)
 
             ctr += 1
             if ctr >= max_blogs_per_account:

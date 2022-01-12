@@ -503,7 +503,7 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
             follows = fp_foll.readlines()
             if len(follows) > 0:
                 follow_requests_exist = True
-                for i in range(len(follows)):
+                for i, _ in enumerate(follows):
                     follows[i] = follows[i].strip()
                 follow_requests_list = follows
     post_dm = False

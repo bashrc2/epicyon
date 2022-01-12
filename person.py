@@ -797,7 +797,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
         update_actor = True
     else:
         # add location if it is missing
-        for index in range(len(person_json['hasOccupation'])):
+        for index, _ in enumerate(person_json['hasOccupation']):
             oc_item = person_json['hasOccupation'][index]
             if oc_item.get('hasOccupation'):
                 oc_item = oc_item['hasOccupation']

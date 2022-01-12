@@ -163,7 +163,7 @@ def _set_actor_role(actor_json: {}, role_name: str) -> bool:
     if not category:
         return False
 
-    for index in range(len(actor_json['hasOccupation'])):
+    for index, _ in enumerate(actor_json['hasOccupation']):
         occupation_item = actor_json['hasOccupation'][index]
         if not isinstance(occupation_item, dict):
             continue
