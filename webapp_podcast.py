@@ -9,6 +9,7 @@ __module_group__ = "Web Interface Columns"
 
 import os
 import html
+import urllib.parse
 from shutil import copyfile
 from utils import get_config_param
 from utils import remove_html
@@ -184,14 +185,16 @@ def html_podcast_episode(css_cache: {}, translate: {},
             translate['Your browser does not support the audio element.'] + \
             '\n  </audio>\n'
 
-    podcast_title = remove_html(html.unescape(newswire_item[0]))
+    podcast_title = \
+        remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
     if podcast_title:
         podcast_str += \
             '<p><label class="podcast-title">"' + podcast_title + \
             '</label></p>\n'
     if newswire_item[4]:
         podcast_description = \
-            remove_html(html.unescape(newswire_item[4]))
+            html.unescape(urllib.parse.unquote_plus(newswire_item[4]))
+        podcast_description = remove_html(podcast_description)
         if podcast_description:
             podcast_str += '<p>' + podcast_description + '</p>\n'
 
