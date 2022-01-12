@@ -384,10 +384,9 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
     See https://github.com/Podcastindex-org/podcast-namespace/
     blob/main/docs/1.0.md
     """
-    if 'podcastindex.org/namespace/1.0' not in xml_str:
-        return {}
     if '<podcast:' not in xml_str:
-        return {}
+        if '<itunes:' not in xml_str:
+            return {}
 
     podcast_properties = {
         "locations": [],
@@ -446,6 +445,7 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
         ctr += 1
 
     # get the image for the podcast, if it exists
+    podcast_episode_image = None
     episode_image_tags = ['<itunes:image']
     for image_tag in episode_image_tags:
         if image_tag not in xml_str:
@@ -455,7 +455,7 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
             episode_image = episode_image.split('href="')[1]
             if '"' in episode_image:
                 episode_image = episode_image.split('"')[0]
-                podcast_properties['image'] = episode_image
+                podcast_episode_image = episode_image
                 break
         else:
             if '>' in episode_image:
@@ -463,8 +463,22 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
                 if '<' in episode_image:
                     episode_image = episode_image.split('<')[0]
                     if '://' in episode_image and '.' in episode_image:
-                        podcast_properties['image'] = episode_image
+                        podcast_episode_image = episode_image
                         break
+
+    if podcast_episode_image:
+        podcast_properties['image'] = podcast_episode_image
+
+        if '<itunes:explicit>Y' in xml_str or \
+           '<itunes:explicit>T' in xml_str or \
+           '<itunes:explicit>1' in xml_str:
+            podcast_properties['explicit'] = True
+        else:
+            podcast_properties['explicit'] = False
+    else:
+        if '<podcast:' not in xml_str:
+            return {}
+
     return podcast_properties
 
 

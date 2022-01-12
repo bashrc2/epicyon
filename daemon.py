@@ -14071,6 +14071,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
             episode_timestamp = self.path.split('?podepisode=')[1].strip()
             episode_timestamp = episode_timestamp.replace('__', ' ')
+            episode_timestamp = episode_timestamp.replace('aa', ':')
             if self.server.newswire.get(episode_timestamp):
                 pod_episode = self.server.newswire[episode_timestamp]
                 html_str = \
