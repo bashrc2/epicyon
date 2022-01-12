@@ -185,8 +185,9 @@ def html_podcast_episode(css_cache: {}, translate: {},
             translate['Your browser does not support the audio element.'] + \
             '\n  </audio>\n'
 
+    podcast_title = newswire_item[0].replace('"', '')
     podcast_title = \
-        remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
+        remove_html(html.unescape(urllib.parse.unquote_plus(podcast_title)))
     if podcast_title:
         podcast_str += \
             '<p><label class="podcast-title">"' + podcast_title + \
@@ -196,6 +197,9 @@ def html_podcast_episode(css_cache: {}, translate: {},
             html.unescape(urllib.parse.unquote_plus(newswire_item[4]))
         podcast_description = remove_html(podcast_description)
         if podcast_description:
+            remove_chars = ('Œ', 'â€', 'ğŸ', '�')
+            for remchar in remove_chars:
+                podcast_description = podcast_description.replace(remchar, '')
             podcast_str += '<p>' + podcast_description + '</p>\n'
 
     # donate button
