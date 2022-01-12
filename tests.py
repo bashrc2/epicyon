@@ -6460,9 +6460,11 @@ def _test_get_link_from_rss_item() -> None:
         'play/46054222/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net' + \
         '%2Fstaging%2F2022-0-12%2F7352f28c-a928-ea7a-65ae-' + \
         'ccb5edffbac1.mp3" length="67247880" type="audio/mpeg"/>'
-    link = get_link_from_rss_item(rss_item)
+    link, mime_type = get_link_from_rss_item(rss_item)
     assert link
     assert link.endswith('.mp3')
+    assert mime_type
+    assert mime_type == 'audio/mpeg'
 
     rss_item = \
         '<link>' + \
@@ -6470,9 +6472,10 @@ def _test_get_link_from_rss_item() -> None:
         'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
         '</link>' + \
         '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>'
-    link = get_link_from_rss_item(rss_item)
+    link, mime_type = get_link_from_rss_item(rss_item)
     assert link
     assert link.startswith('https://anchor.fm')
+    assert not mime_type
 
 
 def run_all_tests():

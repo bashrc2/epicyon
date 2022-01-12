@@ -482,27 +482,33 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
     return podcast_properties
 
 
-def get_link_from_rss_item(rss_item: str) -> str:
+def get_link_from_rss_item(rss_item: str) -> (str, str):
     """Extracts rss link from rss item string
     """
+    mime_type = None
+
     if '<enclosure ' in rss_item:
         # get link from audio or video enclosure
         enclosure = rss_item.split('<enclosure ')[1]
         if '>' in enclosure:
             enclosure = enclosure.split('>')[0]
+            if ' type="' in enclosure:
+                mime_type = enclosure.split(' type="')[1]
+                if '"' in mime_type:
+                    mime_type = mime_type.split('"')[0]
             if 'url="' in enclosure and \
                ('"audio/' in enclosure or '"video/' in enclosure):
                 link_str = enclosure.split('url="')[1]
                 if '"' in link_str:
                     link = link_str.split('"')[0]
                     if '://' in link:
-                        return link
+                        return link, mime_type
 
     link = rss_item.split('<link>')[1]
     link = link.split('</link>')[0]
     if '://' not in link:
-        return None
-    return link
+        return None, None
+    return link, mime_type
 
 
 def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
@@ -560,7 +566,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = get_link_from_rss_item(rss_item)
+        link, link_mime_type = get_link_from_rss_item(rss_item)
         if not link:
             continue
 
@@ -579,6 +585,8 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 post_filename = ''
                 votes_status = []
                 podcast_properties = xml_podcast_to_dict(rss_item)
+                if podcast_properties:
+                    podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
@@ -651,7 +659,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = get_link_from_rss_item(rss_item)
+        link, link_mime_type = get_link_from_rss_item(rss_item)
         if not link:
             continue
 
@@ -670,6 +678,8 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 post_filename = ''
                 votes_status = []
                 podcast_properties = xml_podcast_to_dict(rss_item)
+                if podcast_properties:
+                    podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
@@ -730,7 +740,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = get_link_from_rss_item(atom_item)
+        link, link_mime_type = get_link_from_rss_item(atom_item)
         if not link:
             continue
 
@@ -749,6 +759,8 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 post_filename = ''
                 votes_status = []
                 podcast_properties = xml_podcast_to_dict(atom_item)
+                if podcast_properties:
+                    podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,

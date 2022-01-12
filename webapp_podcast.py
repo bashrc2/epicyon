@@ -156,13 +156,20 @@ def html_podcast_episode(css_cache: {}, translate: {},
             '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
     podcast_str += '  </div>\n'
 
+    audio_extension = None
     if path_is_audio(link_url):
         if '.mp3' in link_url:
-            extension = 'mp3'
+            audio_extension = 'mpeg'
         else:
-            extension = 'ogg'
-
-        podcast_str += _html_podcast_soundbites(link_url, extension,
+            audio_extension = 'ogg'
+    else:
+        if podcast_properties.get('linkMimeType'):
+            if 'audio' in podcast_properties['linkMimeType']:
+                audio_extension = \
+                    podcast_properties['linkMimeType'].split('/')[1]
+    # show widgets for soundbites
+    if audio_extension:
+        podcast_str += _html_podcast_soundbites(link_url, audio_extension,
                                                 podcast_properties,
                                                 translate)
 
@@ -170,7 +177,7 @@ def html_podcast_episode(css_cache: {}, translate: {},
         podcast_str += \
             '<audio controls>\n' + \
             '<source src="' + link_url + '" type="audio/' + \
-            extension.replace('.', '') + '">' + \
+            audio_extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
             '</audio>\n'
 
