@@ -468,7 +468,7 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
     return podcast_properties
 
 
-def _get_link_from_rss_item(rss_item: str) -> str:
+def get_link_from_rss_item(rss_item: str) -> str:
     """Extracts rss link from rss item string
     """
     if '<enclosure ' in rss_item:
@@ -546,7 +546,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = _get_link_from_rss_item(rss_item)
+        link = get_link_from_rss_item(rss_item)
         if not link:
             continue
 
@@ -637,7 +637,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = _get_link_from_rss_item(rss_item)
+        link = get_link_from_rss_item(rss_item)
         if not link:
             continue
 
@@ -716,7 +716,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link = _get_link_from_rss_item(atom_item)
+        link = get_link_from_rss_item(atom_item)
         if not link:
             continue
 

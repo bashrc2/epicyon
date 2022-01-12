@@ -150,6 +150,7 @@ from linked_data_sig import generate_json_signature
 from linked_data_sig import verify_json_signature
 from newsdaemon import hashtag_rule_tree
 from newsdaemon import hashtag_rule_resolve
+from newswire import get_link_from_rss_item
 from newswire import xml_podcast_to_dict
 from newswire import get_newswire_tags
 from newswire import parse_feed_date
@@ -6447,6 +6448,33 @@ def _test_xml_podcast_dict() -> None:
     assert len(podcast_properties['locations']) == 1
 
 
+def _test_get_link_from_rss_item() -> None:
+    print('test_get_link_from_rssitem')
+    rss_item = \
+        '<link>' + \
+        'https://anchor.fm/creativecommons/episodes/' + \
+        'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
+        '</link>' + \
+        '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>' + \
+        '<enclosure url="https://anchor.fm/s/4d70d828/podcast/' + \
+        'play/46054222/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net' + \
+        '%2Fstaging%2F2022-0-12%2F7352f28c-a928-ea7a-65ae-' + \
+        'ccb5edffbac1.mp3" length="67247880" type="audio/mpeg"/>'
+    link = get_link_from_rss_item(rss_item)
+    assert link
+    assert link.endswith('.mp3')
+
+    rss_item = \
+        '<link>' + \
+        'https://anchor.fm/creativecommons/episodes/' + \
+        'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
+        '</link>' + \
+        '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>'
+    link = get_link_from_rss_item(rss_item)
+    assert link
+    assert link.startswith('https://anchor.fm')
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -6463,6 +6491,7 @@ def run_all_tests():
                             'message_json', 'liked_post_json'])
     _test_checkbox_names()
     _test_functions()
+    _test_get_link_from_rss_item()
     _test_xml_podcast_dict()
     _test_get_actor_from_in_reply_to()
     _test_valid_emoji_content()
