@@ -471,7 +471,6 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
 def _get_link_from_rss_item(rss_item: str) -> str:
     """Extracts rss link from rss item string
     """
-    link = None
     if '<enclosure ' in rss_item:
         # get link from audio or video enclosure
         enclosure = rss_item.split('<enclosure ')[1]
@@ -481,15 +480,14 @@ def _get_link_from_rss_item(rss_item: str) -> str:
                ('"audio/' in enclosure or '"video/' in enclosure):
                 link_str = enclosure.split('url="')[1]
                 if '"' in link_str:
-                    link_str = link_str.split('"')[0]
-                    if '://' in link_str:
-                        link = link_str
+                    link = link_str.split('"')[0]
+                    if '://' in link:
+                        return link
 
-    if not link:
-        link = rss_item.split('<link>')[1]
-        link = link.split('</link>')[0]
-        if '://' not in link:
-            return None
+    link = rss_item.split('<link>')[1]
+    link = link.split('</link>')[0]
+    if '://' not in link:
+        return None
     return link
 
 
