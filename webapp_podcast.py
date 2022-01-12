@@ -188,9 +188,8 @@ def html_podcast_episode(css_cache: {}, translate: {},
     podcast_title = \
         remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
     if podcast_title:
-        podcast_title = podcast_title.replace('"', '')
         podcast_str += \
-            '<p><label class="podcast-title">"' + podcast_title + \
+            '<p><label class="podcast-title">' + podcast_title + \
             '</label></p>\n'
     if newswire_item[4]:
         podcast_description = \
