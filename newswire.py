@@ -397,28 +397,36 @@ def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
                 continue
             item_str = xml_str
 
-        episode_category = item_str.split(category_tag)[1]
-        if 'text="' in episode_category:
-            episode_category = episode_category.split('text="')[1]
-            if '"' in episode_category:
-                episode_category = episode_category.split('"')[0]
-                episode_category = episode_category.lower().replace(' ', '')
-                episode_category = episode_category.replace('#', '')
-                if episode_category not in podcast_categories:
-                    if valid_hash_tag(episode_category):
-                        podcast_categories.append('#' + episode_category)
-            continue
+        category_list = item_str.split(category_tag)
+        first_category = True
+        for category_item in category_list:
+            if first_category:
+                first_category = False
+                continue
 
-        if '>' in episode_category:
-            episode_category = episode_category.split('>')[1]
-            if '<' in episode_category:
-                episode_category = episode_category.split('<')[0]
-                episode_category = \
-                    episode_category.lower().replace(' ', '')
-                episode_category = episode_category.replace('#', '')
-                if episode_category not in podcast_categories:
-                    if valid_hash_tag(episode_category):
-                        podcast_categories.append('#' + episode_category)
+            episode_category = category_item
+            if 'text="' in episode_category:
+                episode_category = episode_category.split('text="')[1]
+                if '"' in episode_category:
+                    episode_category = episode_category.split('"')[0]
+                    episode_category = \
+                        episode_category.lower().replace(' ', '')
+                    episode_category = episode_category.replace('#', '')
+                    if episode_category not in podcast_categories:
+                        if valid_hash_tag(episode_category):
+                            podcast_categories.append('#' + episode_category)
+                continue
+
+            if '>' in episode_category:
+                episode_category = episode_category.split('>')[1]
+                if '<' in episode_category:
+                    episode_category = episode_category.split('<')[0]
+                    episode_category = \
+                        episode_category.lower().replace(' ', '')
+                    episode_category = episode_category.replace('#', '')
+                    if episode_category not in podcast_categories:
+                        if valid_hash_tag(episode_category):
+                            podcast_categories.append('#' + episode_category)
 
     return podcast_categories
 
