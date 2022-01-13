@@ -532,7 +532,10 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
     rss_items = xml_str.split('<item>')
     post_ctr = 0
     max_bytes = max_feed_item_size_kb * 1024
+    first_item = True
     for rss_item in rss_items:
+        if first_item:
+            continue
         if not rss_item:
             continue
         if len(rss_item) > max_bytes:
@@ -625,7 +628,10 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
     rss_items = xml_str.split(item_str)
     post_ctr = 0
     max_bytes = max_feed_item_size_kb * 1024
+    first_item = True
     for rss_item in rss_items:
+        if first_item:
+            continue
         if not rss_item:
             continue
         if len(rss_item) > max_bytes:
@@ -708,7 +714,10 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
     atom_items = xml_str.split('<entry>')
     post_ctr = 0
     max_bytes = max_feed_item_size_kb * 1024
+    first_item = True
     for atom_item in atom_items:
+        if first_item:
+            continue
         if not atom_item:
             continue
         if len(atom_item) > max_bytes:
