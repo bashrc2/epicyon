@@ -384,6 +384,45 @@ def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
                                      False, force)
 
 
+def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
+    """ get podcast categories if they exist. These can be turned into hashtags
+    """
+    podcast_categories = []
+    episode_category_tags = ['<itunes:category', '<category']
+
+    for category_tag in episode_category_tags:
+        item_str = xml_item
+        if category_tag not in xml_item:
+            if category_tag not in xml_str:
+                continue
+            item_str = xml_str
+
+        episode_category = item_str.split(category_tag)[1]
+        if 'text="' in episode_category:
+            episode_category = episode_category.split('text="')[1]
+            if '"' in episode_category:
+                episode_category = episode_category.split('"')[0]
+                episode_category = episode_category.lower().replace(' ', '')
+                episode_category = episode_category.replace('#', '')
+                if episode_category not in podcast_categories:
+                    if valid_hash_tag(episode_category):
+                        podcast_categories.append('#' + episode_category)
+            continue
+
+        if '>' in episode_category:
+            episode_category = episode_category.split('>')[1]
+            if '<' in episode_category:
+                episode_category = episode_category.split('<')[0]
+                episode_category = \
+                    episode_category.lower().replace(' ', '')
+                episode_category = episode_category.replace('#', '')
+                if episode_category not in podcast_categories:
+                    if valid_hash_tag(episode_category):
+                        podcast_categories.append('#' + episode_category)
+
+    return podcast_categories
+
+
 def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
     """podcasting extensions for RSS feeds
     See https://github.com/Podcastindex-org/podcast-namespace/
@@ -476,38 +515,7 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
                         break
 
     # get categories if they exist. These can be turned into hashtags
-    podcast_categories = []
-    episode_category_tags = ['<itunes:category', '<category']
-    for category_tag in episode_category_tags:
-        item_str = xml_item
-        if category_tag not in xml_item:
-            if category_tag not in xml_str:
-                continue
-            item_str = xml_str
-
-        episode_category = item_str.split(category_tag)[1]
-        if 'text="' in episode_category:
-            episode_category = episode_category.split('text="')[1]
-            if '"' in episode_category:
-                episode_category = episode_category.split('"')[0]
-                episode_category = episode_category.lower().replace(' ', '')
-                episode_category = episode_category.replace('#', '')
-                if episode_category not in podcast_categories:
-                    if valid_hash_tag(episode_category):
-                        podcast_categories.append('#' + episode_category)
-                continue
-        else:
-            if '>' in episode_category:
-                episode_category = episode_category.split('>')[1]
-                if '<' in episode_category:
-                    episode_category = episode_category.split('<')[0]
-                    episode_category = \
-                        episode_category.lower().replace(' ', '')
-                    episode_category = episode_category.replace('#', '')
-                    if episode_category not in podcast_categories:
-                        if valid_hash_tag(episode_category):
-                            podcast_categories.append('#' + episode_category)
-                    continue
+    podcast_categories = _get_podcast_categories(xml_item, xml_str)
 
     if podcast_episode_image:
         podcast_properties['image'] = podcast_episode_image
