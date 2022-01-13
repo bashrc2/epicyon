@@ -184,6 +184,20 @@ def html_podcast_episode(css_cache: {}, translate: {},
             audio_extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
             '\n  </audio>\n'
+    elif podcast_properties.get('linkMimeType'):
+        if 'video' in podcast_properties['linkMimeType']:
+            video_extension = \
+                podcast_properties['linkMimeType'].split('/')[1]
+            video_msg = 'Your browser does not support the video element.'
+            podcast_str += \
+                '<center><figure id="videoContainer" ' + \
+                'data-fullscreen="false">\n' + \
+                '    <video id="video" controls ' + \
+                'preload="metadata">\n' + \
+                '<source src="' + link_url + '" type="video/' + \
+                video_extension.replace('.', '') + '">\n' + \
+                translate[video_msg] + \
+                '</video>\n</figure>\n</center>\n'
 
     podcast_title = \
         remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
