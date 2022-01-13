@@ -221,6 +221,14 @@ def html_podcast_episode(css_cache: {}, translate: {},
                 '"><button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
 
+    if podcast_properties['categories']:
+        podcast_str += '<p>'
+        tags_str = ''
+        for tag in podcast_properties['categories']:
+            tag_link = '/users/' + nickname + '/tags/' + tag.replace('#', '')
+            tags_str += '<a href="' + tag_link + '">' + tag + '</a> '
+        podcast_str += tags_str.strip() + '</p>\n'
+
     podcast_str += _html_podcast_performers(podcast_properties)
 
     podcast_str += '  </center>\n'
