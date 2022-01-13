@@ -567,10 +567,20 @@ def get_link_from_rss_item(rss_item: str) -> (str, str):
                     if '://' in link:
                         return link, mime_type
 
-    link = rss_item.split('<link>')[1]
-    link = link.split('</link>')[0]
-    if '://' not in link:
-        return None, None
+    if '<link>' in rss_item and '</link>' in rss_item:
+        link = rss_item.split('<link>')[1]
+        link = link.split('</link>')[0]
+        if '://' not in link:
+            return None, None
+    elif '<link ' in rss_item:
+        link_str = rss_item.split('<link ')[1]
+        if '>' in link_str:
+            link_str = link_str.split('>')[0]
+            if 'href="' in link_str:
+                link_str = link_str.split('href="')[1]
+                if '"' in link_str:
+                    link = link_str.split('"')[0]
+
     return link, mime_type
 
 
@@ -609,9 +619,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             continue
         if '</title>' not in rss_item:
             continue
-        if '<link>' not in rss_item:
-            continue
-        if '</link>' not in rss_item:
+        if '<link' not in rss_item:
             continue
         if '<pubDate>' not in rss_item:
             continue
@@ -708,9 +716,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
             continue
         if '</title>' not in rss_item:
             continue
-        if '<link>' not in rss_item:
-            continue
-        if '</link>' not in rss_item:
+        if '<link' not in rss_item:
             continue
         if '<dc:date>' not in rss_item:
             continue
@@ -793,9 +799,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
             continue
         if '</title>' not in atom_item:
             continue
-        if '<link>' not in atom_item:
-            continue
-        if '</link>' not in atom_item:
+        if '<link' not in atom_item:
             continue
         if '<updated>' not in atom_item:
             continue
