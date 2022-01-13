@@ -227,7 +227,8 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
     post_tags = get_newswire_tags(all_text, max_tags)
 
     if podcast_properties.get('explicit'):
-        post_tags.append('#NSFW')
+        if '#NSFW' not in post_tags:
+            post_tags.append('#NSFW')
 
     # Include tags from podcast categories
     if podcast_properties:
