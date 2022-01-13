@@ -226,6 +226,10 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
     # extract hashtags from the text of the feed post
     post_tags = get_newswire_tags(all_text, max_tags)
 
+    # Include tags from podcast categories
+    if podcast_properties:
+        post_tags += podcast_properties['categories']
+
     # combine the tags into a single list
     for tag in tags:
         if tag in post_tags:
@@ -489,7 +493,7 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
                 episode_category = episode_category.lower().replace(' ', '')
                 if episode_category not in podcast_categories:
                     if valid_hash_tag(episode_category):
-                        podcast_categories.append(episode_category)
+                        podcast_categories.append('#' + episode_category)
                 continue
         else:
             if '>' in episode_category:
@@ -500,7 +504,7 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
                         episode_category.lower().replace(' ', '')
                     if episode_category not in podcast_categories:
                         if valid_hash_tag(episode_category):
-                            podcast_categories.append(episode_category)
+                            podcast_categories.append('#' + episode_category)
                     continue
 
     if podcast_episode_image:
