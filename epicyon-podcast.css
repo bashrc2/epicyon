@@ -71,6 +71,10 @@ body, html {
     image-rendering: var(--rendering);
 }
 
+audio {
+    width: 90%;
+}
+
 a, u {
     color: var(--options-fg-color);
 }
