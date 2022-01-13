@@ -23,6 +23,8 @@ from webapp_utils import html_keyboard_navigation
 def _html_podcast_performers(podcast_properties: {}) -> str:
     """Returns html for performers of a podcast
     """
+    if not podcast_properties:
+        return ''
     if not podcast_properties.get('persons'):
         return ''
 
@@ -72,6 +74,8 @@ def _html_podcast_soundbites(link_url: str, extension: str,
                              translate: {}) -> str:
     """Returns html for podcast soundbites
     """
+    if not podcast_properties:
+        return ''
     if not podcast_properties.get('soundbites'):
         return ''
 

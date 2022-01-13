@@ -226,12 +226,12 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
     # extract hashtags from the text of the feed post
     post_tags = get_newswire_tags(all_text, max_tags)
 
-    if podcast_properties.get('explicit'):
-        if '#NSFW' not in post_tags:
-            post_tags.append('#NSFW')
-
     # Include tags from podcast categories
     if podcast_properties:
+        if podcast_properties.get('explicit'):
+            if '#NSFW' not in post_tags:
+                post_tags.append('#NSFW')
+
         post_tags += podcast_properties['categories']
 
     # combine the tags into a single list
