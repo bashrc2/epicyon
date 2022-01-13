@@ -18,6 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import valid_hash_tag
 from utils import dangerous_svg
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
@@ -470,8 +471,41 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
                         podcast_episode_image = episode_image
                         break
 
+    # get categories if they exist. These can be turned into hashtags
+    podcast_categories = []
+    episode_category_tags = ['<itunes:category', '<category']
+    for category_tag in episode_category_tags:
+        item_str = xml_item
+        if category_tag not in xml_item:
+            if category_tag not in xml_str:
+                continue
+            item_str = xml_str
+
+        episode_category = item_str.split(category_tag)[1]
+        if 'text="' in episode_category:
+            episode_category = episode_category.split('text="')[1]
+            if '"' in episode_category:
+                episode_category = episode_category.split('"')[0]
+                episode_category = episode_category.lower().replace(' ', '')
+                if episode_category not in podcast_categories:
+                    if valid_hash_tag(episode_category):
+                        podcast_categories.append(episode_category)
+                continue
+        else:
+            if '>' in episode_category:
+                episode_category = episode_category.split('>')[1]
+                if '<' in episode_category:
+                    episode_category = episode_category.split('<')[0]
+                    episode_category = \
+                        episode_category.lower().replace(' ', '')
+                    if episode_category not in podcast_categories:
+                        if valid_hash_tag(episode_category):
+                            podcast_categories.append(episode_category)
+                    continue
+
     if podcast_episode_image:
         podcast_properties['image'] = podcast_episode_image
+        podcast_properties['categories'] = podcast_categories
 
         if '<itunes:explicit>Y' in xml_item or \
            '<itunes:explicit>T' in xml_item or \

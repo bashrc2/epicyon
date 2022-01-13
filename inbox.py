@@ -61,6 +61,7 @@ from utils import undo_reaction_collection_entry
 from utils import has_group_type
 from utils import local_actor_url
 from utils import has_object_stringType
+from utils import valid_hash_tag
 from categories import get_hashtag_categories
 from categories import set_hashtag_category
 from httpsig import get_digest_algorithm_from_headers
@@ -119,7 +120,6 @@ from announce import is_self_announce
 from announce import create_announce
 from notifyOnPost import notify_when_person_posts
 from conversation import update_conversation
-from content import valid_hash_tag
 from webapp_hashtagswarm import html_hash_tag_swarm
 from person import valid_sending_actor
 

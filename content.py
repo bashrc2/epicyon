@@ -11,9 +11,9 @@ import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
+from utils import valid_hash_tag
 from utils import dangerous_svg
 from utils import remove_domain_port
-from utils import is_valid_language
 from utils import get_image_extensions
 from utils import load_json
 from utils import save_json
@@ -32,17 +32,6 @@ from session import download_image
 MUSIC_SITES = ('soundcloud.com', 'bandcamp.com')
 
 MAX_LINK_LENGTH = 40
-
-VALID_HASHTAG_CHARS = \
-    set('0123456789' +
-        'abcdefghijklmnopqrstuvwxyz' +
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
-        '¡¿ÄäÀàÁáÂâÃãÅåǍǎĄąĂăÆæĀā' +
-        'ÇçĆćĈĉČčĎđĐďðÈèÉéÊêËëĚěĘęĖėĒē' +
-        'ĜĝĢģĞğĤĥÌìÍíÎîÏïıĪīĮįĴĵĶķ' +
-        'ĹĺĻļŁłĽľĿŀÑñŃńŇňŅņÖöÒòÓóÔôÕõŐőØøŒœ' +
-        'ŔŕŘřẞßŚśŜŝŞşŠšȘșŤťŢţÞþȚțÜüÙùÚúÛûŰűŨũŲųŮůŪū' +
-        'ŴŵÝýŸÿŶŷŹźŽžŻż')
 
 REMOVE_MARKUP = (
     'b', 'i', 'ul', 'ol', 'li', 'em', 'strong',
@@ -495,19 +484,6 @@ def add_web_links(content: str) -> str:
     content = content.replace(' --linebreak-- ', '<br>')
 
     return content
-
-
-def valid_hash_tag(hashtag: str) -> bool:
-    """Returns true if the give hashtag contains valid characters
-    """
-    # long hashtags are not valid
-    if len(hashtag) >= 32:
-        return False
-    if set(hashtag).issubset(VALID_HASHTAG_CHARS):
-        return True
-    if is_valid_language(hashtag):
-        return True
-    return False
 
 
 def _add_hash_tags(word_str: str, http_prefix: str, domain: str,
