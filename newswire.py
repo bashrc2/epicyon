@@ -379,13 +379,13 @@ def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
                                      False, force)
 
 
-def xml_podcast_to_dict(xml_str: str) -> {}:
+def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
     """podcasting extensions for RSS feeds
     See https://github.com/Podcastindex-org/podcast-namespace/
     blob/main/docs/1.0.md
     """
-    if '<podcast:' not in xml_str:
-        if '<itunes:' not in xml_str:
+    if '<podcast:' not in xml_item:
+        if '<itunes:' not in xml_item:
             return {}
 
     podcast_properties = {
@@ -397,7 +397,7 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
         "trailers": []
     }
 
-    pod_lines = xml_str.split('<podcast:')
+    pod_lines = xml_item.split('<podcast:')
     ctr = 0
     for pod_line in pod_lines:
         if ctr == 0 or '>' not in pod_line:
@@ -448,9 +448,13 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
     podcast_episode_image = None
     episode_image_tags = ['<itunes:image']
     for image_tag in episode_image_tags:
-        if image_tag not in xml_str:
-            continue
-        episode_image = xml_str.split(image_tag)[1]
+        item_str = xml_item
+        if image_tag not in xml_item:
+            if image_tag not in xml_str:
+                continue
+            item_str = xml_str
+
+        episode_image = item_str.split(image_tag)[1]
         if 'href="' in episode_image:
             episode_image = episode_image.split('href="')[1]
             if '"' in episode_image:
@@ -469,14 +473,14 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
     if podcast_episode_image:
         podcast_properties['image'] = podcast_episode_image
 
-        if '<itunes:explicit>Y' in xml_str or \
-           '<itunes:explicit>T' in xml_str or \
-           '<itunes:explicit>1' in xml_str:
+        if '<itunes:explicit>Y' in xml_item or \
+           '<itunes:explicit>T' in xml_item or \
+           '<itunes:explicit>1' in xml_item:
             podcast_properties['explicit'] = True
         else:
             podcast_properties['explicit'] = False
     else:
-        if '<podcast:' not in xml_str:
+        if '<podcast:' not in xml_item:
             return {}
 
     return podcast_properties
@@ -588,7 +592,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(rss_item)
+                podcast_properties = xml_podcast_to_dict(rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
@@ -685,7 +689,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(rss_item)
+                podcast_properties = xml_podcast_to_dict(rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
@@ -770,7 +774,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(atom_item)
+                podcast_properties = xml_podcast_to_dict(atom_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
