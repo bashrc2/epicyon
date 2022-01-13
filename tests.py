@@ -6477,6 +6477,16 @@ def _test_get_link_from_rss_item() -> None:
     assert link.startswith('https://anchor.fm')
     assert not mime_type
 
+    rss_item = \
+        '<link href="' + \
+        'https://test.link/creativecommons/episodes/' + \
+        'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
+        '"/>' + \
+        '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>'
+    link, mime_type = get_link_from_rss_item(rss_item)
+    assert link
+    assert link.startswith('https://test.link/creativecommons')
+
 
 def run_all_tests():
     base_dir = os.getcwd()

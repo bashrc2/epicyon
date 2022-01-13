@@ -223,6 +223,10 @@ body, html {
     image-rendering: var(--rendering);
 }
 
+audio {
+    width: 100%;
+}
+
 video {
     width: 100%;
 }
