@@ -189,11 +189,12 @@ def html_podcast_episode(css_cache: {}, translate: {},
             video_mime_type = podcast_properties['linkMimeType']
             video_msg = 'Your browser does not support the video element.'
             podcast_str += \
-                '<figure id="videoContainer" data-fullscreen="false">\n' + \
+                '  <figure id="videoContainer" ' + \
+                'data-fullscreen="false">\n' + \
                 '    <video id="video" controls preload="metadata">\n' + \
                 '<source src="' + link_url + '" ' + \
-                'type="' + video_mime_type + '">\n' + \
-                translate[video_msg] + '</video>\n</figure>\n'
+                'type="' + video_mime_type + '">' + \
+                translate[video_msg] + '</video>\n  </figure>\n'
 
     podcast_title = \
         remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
