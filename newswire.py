@@ -983,7 +983,11 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
     atom_items = xml_str.split('<entry>')
     post_ctr = 0
     max_bytes = max_feed_item_size_kb * 1024
+    first_entry = True
     for atom_item in atom_items:
+        if first_entry:
+            first_entry = False
+            continue
         if not atom_item:
             continue
         if not atom_item.strip():
