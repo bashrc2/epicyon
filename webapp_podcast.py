@@ -184,6 +184,17 @@ def html_podcast_episode(css_cache: {}, translate: {},
             audio_extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
             '\n  </audio>\n'
+    elif podcast_properties.get('linkMimeType'):
+        if 'video' in podcast_properties['linkMimeType']:
+            video_mime_type = podcast_properties['linkMimeType']
+            video_msg = 'Your browser does not support the video element.'
+            podcast_str += \
+                '  <figure id="videoContainer" ' + \
+                'data-fullscreen="false">\n' + \
+                '    <video id="video" controls preload="metadata">\n' + \
+                '<source src="' + link_url + '" ' + \
+                'type="' + video_mime_type + '">' + \
+                translate[video_msg] + '</video>\n  </figure>\n'
 
     podcast_title = \
         remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
@@ -209,6 +220,14 @@ def html_podcast_episode(css_cache: {}, translate: {},
                 '<p><a href="' + donate_url + \
                 '"><button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
+
+    if podcast_properties['categories']:
+        podcast_str += '<p>'
+        tags_str = ''
+        for tag in podcast_properties['categories']:
+            tag_link = '/users/' + nickname + '/tags/' + tag.replace('#', '')
+            tags_str += '<a href="' + tag_link + '">' + tag + '</a> '
+        podcast_str += tags_str.strip() + '</p>\n'
 
     podcast_str += _html_podcast_performers(podcast_properties)
 

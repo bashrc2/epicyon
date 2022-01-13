@@ -20,6 +20,17 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from followingCalendar import add_person_to_calendar
 
+VALID_HASHTAG_CHARS = \
+    set('0123456789' +
+        'abcdefghijklmnopqrstuvwxyz' +
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+        '¡¿ÄäÀàÁáÂâÃãÅåǍǎĄąĂăÆæĀā' +
+        'ÇçĆćĈĉČčĎđĐďðÈèÉéÊêËëĚěĘęĖėĒē' +
+        'ĜĝĢģĞğĤĥÌìÍíÎîÏïıĪīĮįĴĵĶķ' +
+        'ĹĺĻļŁłĽľĿŀÑñŃńŇňŅņÖöÒòÓóÔôÕõŐőØøŒœ' +
+        'ŔŕŘřẞßŚśŜŝŞşŠšȘșŤťŢţÞþȚțÜüÙùÚúÛûŰűŨũŲųŮůŪū' +
+        'ŴŵÝýŸÿŶŷŹźŽžŻż')
+
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
@@ -1798,7 +1809,7 @@ def delete_post(base_dir: str, http_prefix: str,
                   str(post_filename))
 
 
-def is_valid_language(text: str) -> bool:
+def _is_valid_language(text: str) -> bool:
     """Returns true if the given text contains a valid
     natural language string
     """
@@ -1900,7 +1911,7 @@ def valid_nickname(domain: str, nickname: str) -> bool:
         return False
     if len(nickname) > 30:
         return False
-    if not is_valid_language(nickname):
+    if not _is_valid_language(nickname):
         return False
     forbidden_chars = ('.', ' ', '/', '?', ':', ';', '@', '#', '!')
     for char in forbidden_chars:
@@ -3288,3 +3299,16 @@ def get_fav_filename_from_url(base_dir: str, favicon_url: str) -> str:
     if '/favicon.' in favicon_url:
         favicon_url = favicon_url.replace('/favicon.', '.')
     return base_dir + '/favicons/' + favicon_url.replace('/', '-')
+
+
+def valid_hash_tag(hashtag: str) -> bool:
+    """Returns true if the give hashtag contains valid characters
+    """
+    # long hashtags are not valid
+    if len(hashtag) >= 32:
+        return False
+    if set(hashtag).issubset(VALID_HASHTAG_CHARS):
+        return True
+    if _is_valid_language(hashtag):
+        return True
+    return False

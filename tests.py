@@ -82,6 +82,7 @@ from utils import copytree
 from utils import load_json
 from utils import save_json
 from utils import get_status_number
+from utils import valid_hash_tag
 from utils import get_followers_of_person
 from utils import remove_html
 from utils import dangerous_markup
@@ -132,7 +133,6 @@ from content import get_price_from_string
 from content import limit_repeated_words
 from content import switch_words
 from content import extract_text_fields_in_post
-from content import valid_hash_tag
 from content import html_replace_email_quote
 from content import html_replace_quote_marks
 from content import dangerous_css
@@ -6428,7 +6428,7 @@ def _test_xml_podcast_dict() -> None:
         'address="someaddress2" split="99" />\n' + \
         '</podcast:value>\n' + \
         '</rss>'
-    podcast_properties = xml_podcast_to_dict(xml_str)
+    podcast_properties = xml_podcast_to_dict(xml_str, xml_str)
     assert podcast_properties
     # pprint(podcast_properties)
     assert podcast_properties.get('valueRecipients')

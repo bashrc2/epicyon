@@ -18,6 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import valid_hash_tag
 from utils import dangerous_svg
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
@@ -225,6 +226,10 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
     # extract hashtags from the text of the feed post
     post_tags = get_newswire_tags(all_text, max_tags)
 
+    # Include tags from podcast categories
+    if podcast_properties:
+        post_tags += podcast_properties['categories']
+
     # combine the tags into a single list
     for tag in tags:
         if tag in post_tags:
@@ -384,13 +389,59 @@ def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
                                      False, force)
 
 
-def xml_podcast_to_dict(xml_str: str) -> {}:
+def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
+    """ get podcast categories if they exist. These can be turned into hashtags
+    """
+    podcast_categories = []
+    episode_category_tags = ['<itunes:category', '<category']
+
+    for category_tag in episode_category_tags:
+        item_str = xml_item
+        if category_tag not in xml_item:
+            if category_tag not in xml_str:
+                continue
+            item_str = xml_str
+
+        category_list = item_str.split(category_tag)
+        first_category = True
+        for episode_category in category_list:
+            if first_category:
+                first_category = False
+                continue
+
+            if 'text="' in episode_category:
+                episode_category = episode_category.split('text="')[1]
+                if '"' in episode_category:
+                    episode_category = episode_category.split('"')[0]
+                    episode_category = \
+                        episode_category.lower().replace(' ', '')
+                    episode_category = episode_category.replace('#', '')
+                    if episode_category not in podcast_categories:
+                        if valid_hash_tag(episode_category):
+                            podcast_categories.append('#' + episode_category)
+                continue
+
+            if '>' in episode_category:
+                episode_category = episode_category.split('>')[1]
+                if '<' in episode_category:
+                    episode_category = episode_category.split('<')[0]
+                    episode_category = \
+                        episode_category.lower().replace(' ', '')
+                    episode_category = episode_category.replace('#', '')
+                    if episode_category not in podcast_categories:
+                        if valid_hash_tag(episode_category):
+                            podcast_categories.append('#' + episode_category)
+
+    return podcast_categories
+
+
+def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
     """podcasting extensions for RSS feeds
     See https://github.com/Podcastindex-org/podcast-namespace/
     blob/main/docs/1.0.md
     """
-    if '<podcast:' not in xml_str:
-        if '<itunes:' not in xml_str:
+    if '<podcast:' not in xml_item:
+        if '<itunes:' not in xml_item:
             return {}
 
     podcast_properties = {
@@ -402,7 +453,7 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
         "trailers": []
     }
 
-    pod_lines = xml_str.split('<podcast:')
+    pod_lines = xml_item.split('<podcast:')
     ctr = 0
     for pod_line in pod_lines:
         if ctr == 0 or '>' not in pod_line:
@@ -453,9 +504,13 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
     podcast_episode_image = None
     episode_image_tags = ['<itunes:image']
     for image_tag in episode_image_tags:
-        if image_tag not in xml_str:
-            continue
-        episode_image = xml_str.split(image_tag)[1]
+        item_str = xml_item
+        if image_tag not in xml_item:
+            if image_tag not in xml_str:
+                continue
+            item_str = xml_str
+
+        episode_image = item_str.split(image_tag)[1]
         if 'href="' in episode_image:
             episode_image = episode_image.split('href="')[1]
             if '"' in episode_image:
@@ -471,17 +526,21 @@ def xml_podcast_to_dict(xml_str: str) -> {}:
                         podcast_episode_image = episode_image
                         break
 
+    # get categories if they exist. These can be turned into hashtags
+    podcast_categories = _get_podcast_categories(xml_item, xml_str)
+
     if podcast_episode_image:
         podcast_properties['image'] = podcast_episode_image
+        podcast_properties['categories'] = podcast_categories
 
-        if '<itunes:explicit>Y' in xml_str or \
-           '<itunes:explicit>T' in xml_str or \
-           '<itunes:explicit>1' in xml_str:
+        if '<itunes:explicit>Y' in xml_item or \
+           '<itunes:explicit>T' in xml_item or \
+           '<itunes:explicit>1' in xml_item:
             podcast_properties['explicit'] = True
         else:
             podcast_properties['explicit'] = False
     else:
-        if '<podcast:' not in xml_str:
+        if '<podcast:' not in xml_item:
             return {}
 
     return podcast_properties
@@ -537,7 +596,11 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
     rss_items = xml_str.split('<item>')
     post_ctr = 0
     max_bytes = max_feed_item_size_kb * 1024
+    first_item = True
     for rss_item in rss_items:
+        if first_item:
+            first_item = False
+            continue
         if not rss_item:
             continue
         if len(rss_item) > max_bytes:
@@ -589,7 +652,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(rss_item)
+                podcast_properties = xml_podcast_to_dict(rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
@@ -630,7 +693,11 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
     rss_items = xml_str.split(item_str)
     post_ctr = 0
     max_bytes = max_feed_item_size_kb * 1024
+    first_item = True
     for rss_item in rss_items:
+        if first_item:
+            first_item = False
+            continue
         if not rss_item:
             continue
         if len(rss_item) > max_bytes:
@@ -682,7 +749,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(rss_item)
+                podcast_properties = xml_podcast_to_dict(rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
@@ -713,7 +780,11 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
     atom_items = xml_str.split('<entry>')
     post_ctr = 0
     max_bytes = max_feed_item_size_kb * 1024
+    first_item = True
     for atom_item in atom_items:
+        if first_item:
+            first_item = False
+            continue
         if not atom_item:
             continue
         if len(atom_item) > max_bytes:
@@ -763,7 +834,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(atom_item)
+                podcast_properties = xml_podcast_to_dict(atom_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,

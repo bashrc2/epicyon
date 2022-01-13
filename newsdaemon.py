@@ -24,7 +24,7 @@ from newswire import get_dict_from_newswire
 # from posts import send_signed_json
 from posts import create_news_post
 from posts import archive_posts_for_person
-from content import valid_hash_tag
+from utils import valid_hash_tag
 from utils import get_base_content_from_post
 from utils import remove_html
 from utils import get_full_domain
