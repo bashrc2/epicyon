@@ -491,6 +491,7 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
             if '"' in episode_category:
                 episode_category = episode_category.split('"')[0]
                 episode_category = episode_category.lower().replace(' ', '')
+                episode_category = episode_category.replace('#', '')
                 if episode_category not in podcast_categories:
                     if valid_hash_tag(episode_category):
                         podcast_categories.append('#' + episode_category)
@@ -502,6 +503,7 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
                     episode_category = episode_category.split('<')[0]
                     episode_category = \
                         episode_category.lower().replace(' ', '')
+                    episode_category = episode_category.replace('#', '')
                     if episode_category not in podcast_categories:
                         if valid_hash_tag(episode_category):
                             podcast_categories.append('#' + episode_category)
