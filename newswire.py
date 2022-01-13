@@ -535,6 +535,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
     first_item = True
     for rss_item in rss_items:
         if first_item:
+            first_item = False
             continue
         if not rss_item:
             continue
@@ -631,6 +632,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
     first_item = True
     for rss_item in rss_items:
         if first_item:
+            first_item = False
             continue
         if not rss_item:
             continue
@@ -717,6 +719,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
     first_item = True
     for atom_item in atom_items:
         if first_item:
+            first_item = False
             continue
         if not atom_item:
             continue
