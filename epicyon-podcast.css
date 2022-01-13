@@ -75,6 +75,10 @@ audio {
     width: 90%;
 }
 
+video {
+    width: 90%;
+}
+
 a, u {
     color: var(--options-fg-color);
 }
