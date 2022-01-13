@@ -399,12 +399,11 @@ def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
 
         category_list = item_str.split(category_tag)
         first_category = True
-        for category_item in category_list:
+        for episode_category in category_list:
             if first_category:
                 first_category = False
                 continue
 
-            episode_category = category_item
             if 'text="' in episode_category:
                 episode_category = episode_category.split('text="')[1]
                 if '"' in episode_category:
