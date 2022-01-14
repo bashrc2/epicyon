@@ -510,6 +510,9 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
             item_str = xml_str
 
         episode_image = item_str.split(image_tag)[1]
+        if image_tag + ' ' in item_str and '>' in episode_image:
+            episode_image = episode_image.split('>')[0]
+
         if 'href="' in episode_image:
             episode_image = episode_image.split('href="')[1]
             if '"' in episode_image:
