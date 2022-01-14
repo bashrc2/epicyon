@@ -501,7 +501,7 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
 
     # get the image for the podcast, if it exists
     podcast_episode_image = None
-    episode_image_tags = ['<itunes:image']
+    episode_image_tags = ['<itunes:image', '<media:thumbnail']
     for image_tag in episode_image_tags:
         item_str = xml_item
         if image_tag not in xml_item:
@@ -512,6 +512,12 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
         episode_image = item_str.split(image_tag)[1]
         if 'href="' in episode_image:
             episode_image = episode_image.split('href="')[1]
+            if '"' in episode_image:
+                episode_image = episode_image.split('"')[0]
+                podcast_episode_image = episode_image
+                break
+        elif 'url="' in episode_image:
+            episode_image = episode_image.split('url="')[1]
             if '"' in episode_image:
                 episode_image = episode_image.split('"')[0]
                 podcast_episode_image = episode_image
@@ -1019,9 +1025,15 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
             description = atom_item.split('<summary>')[1]
             description = description.split('</summary>')[0]
             description = remove_html(description)
-        link = atom_item.split('<yt:videoId>')[1]
-        link = link.split('</yt:videoId>')[0]
-        link = 'https://www.youtube.com/watch?v=' + link.strip()
+
+        link, link_mime_type = get_link_from_rss_item(atom_item)
+        if not link:
+            link = atom_item.split('<yt:videoId>')[1]
+            link = link.split('</yt:videoId>')[0]
+            link = 'https://www.youtube.com/watch?v=' + link.strip()
+        if not link:
+            continue
+
         pub_date = atom_item.split('<published>')[1]
         pub_date = pub_date.split('</published>')[0]
 
@@ -1030,13 +1042,16 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
+                podcast_properties = xml_podcast_to_dict(atom_item, xml_str)
+                if podcast_properties:
+                    podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated, mirrored,
                                          [], 32, session, debug,
-                                         None)
+                                         podcast_properties)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
