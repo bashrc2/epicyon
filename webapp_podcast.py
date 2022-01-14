@@ -199,7 +199,7 @@ def html_podcast_episode(css_cache: {}, translate: {},
                 url = url.split('?utm_')[0]
             podcast_str += \
                 "  <iframe loading=\"lazy\" src=\"" + \
-                url + "\" width=\"80%\" height=\"80vw\" " + \
+                url + "\" width=\"80%\" height=\"50%\" " + \
                 "frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
                 "allowfullscreen>\n  </iframe>\n"
         elif 'video' in podcast_properties['linkMimeType']:
