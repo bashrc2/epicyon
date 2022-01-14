@@ -1029,7 +1029,7 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
             description = description.split('</summary>')[0]
             description = remove_html(description)
 
-        link, link_mime_type = get_link_from_rss_item(atom_item)
+        link, _ = get_link_from_rss_item(atom_item)
         if not link:
             link = atom_item.split('<yt:videoId>')[1]
             link = link.split('</yt:videoId>')[0]
@@ -1047,7 +1047,7 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
                 votes_status = []
                 podcast_properties = xml_podcast_to_dict(atom_item, xml_str)
                 if podcast_properties:
-                    podcast_properties['linkMimeType'] = link_mime_type
+                    podcast_properties['linkMimeType'] = 'video/youtube'
                 _add_newswire_dict_entry(base_dir, domain,
                                          result, pub_date_str,
                                          title, link,

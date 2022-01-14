@@ -190,7 +190,14 @@ def html_podcast_episode(css_cache: {}, translate: {},
             translate['Your browser does not support the audio element.'] + \
             '\n  </audio>\n'
     elif podcast_properties.get('linkMimeType'):
-        if 'video' in podcast_properties['linkMimeType']:
+        if '/youtube' in podcast_properties['linkMimeType'] or \
+           '/vimeo' in podcast_properties['linkMimeType']:
+            podcast_str += \
+                "  <iframe loading=\"lazy\" src=\"" + \
+                link_url + "\" width=\"90%\" " + \
+                "frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
+                "allowfullscreen>\n  </iframe>\n"
+        elif 'video' in podcast_properties['linkMimeType']:
             video_mime_type = podcast_properties['linkMimeType']
             video_msg = 'Your browser does not support the video element.'
             podcast_str += \
