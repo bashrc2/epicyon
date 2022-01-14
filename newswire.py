@@ -441,7 +441,8 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
     """
     if '<podcast:' not in xml_item:
         if '<itunes:' not in xml_item:
-            return {}
+            if '<media:thumbnail' not in xml_item:
+                return {}
 
     podcast_properties = {
         "locations": [],
@@ -525,14 +526,13 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
                 episode_image = episode_image.split('"')[0]
                 podcast_episode_image = episode_image
                 break
-        else:
-            if '>' in episode_image:
-                episode_image = episode_image.split('>')[1]
-                if '<' in episode_image:
-                    episode_image = episode_image.split('<')[0]
-                    if '://' in episode_image and '.' in episode_image:
-                        podcast_episode_image = episode_image
-                        break
+        elif '>' in episode_image:
+            episode_image = episode_image.split('>')[1]
+            if '<' in episode_image:
+                episode_image = episode_image.split('<')[0]
+                if '://' in episode_image and '.' in episode_image:
+                    podcast_episode_image = episode_image
+                    break
 
     # get categories if they exist. These can be turned into hashtags
     podcast_categories = _get_podcast_categories(xml_item, xml_str)
