@@ -495,7 +495,7 @@ def safe_web_text(arbitrary_html: str) -> str:
     if not safe_text:
         return ''
     # remove any spurious characters found in podcast descriptions
-    remove_chars = ('Œ', 'â€', 'ğŸ', '�', ']]')
+    remove_chars = ('Œ', 'â€', 'ğŸ', '�', ']]', '__')
     for remchar in remove_chars:
         safe_text = safe_text.replace(remchar, '')
     # recreate any url links safely
