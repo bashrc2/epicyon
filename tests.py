@@ -128,6 +128,7 @@ from inbox import json_post_allows_comments
 from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from categories import guess_hashtag_category
+from content import safe_web_text
 from content import words_similarity
 from content import get_price_from_string
 from content import limit_repeated_words
@@ -6488,6 +6489,30 @@ def _test_get_link_from_rss_item() -> None:
     assert link.startswith('https://test.link/creativecommons')
 
 
+def _test_safe_webtext() -> None:
+    print('test_safe_webtext')
+    web_text = '<p>Some text including a link https://some.site/some-path</p>'
+    expected_text = 'Some text including a link ' + \
+        '<a href="https://some.site/some-path"'
+    safe_text = safe_web_text(web_text)
+    if expected_text not in safe_text:
+        print('Original html: ' + web_text)
+        print('Expected html: ' + expected_text)
+        print('Actual html: ' + safe_text)
+    assert expected_text in safe_text
+    assert '<p>' not in safe_text
+    assert '</p>' not in safe_text
+
+    web_text = 'Some text with <script>some script</script>'
+    expected_text = 'Some text with some script'
+    safe_text = safe_web_text(web_text)
+    if expected_text != safe_text:
+        print('Original html: ' + web_text)
+        print('Expected html: ' + expected_text)
+        print('Actual html: ' + safe_text)
+    assert expected_text == safe_text
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -6504,6 +6529,7 @@ def run_all_tests():
                             'message_json', 'liked_post_json'])
     _test_checkbox_names()
     _test_functions()
+    _test_safe_webtext()
     _test_get_link_from_rss_item()
     _test_xml_podcast_dict()
     _test_get_actor_from_in_reply_to()

@@ -14,7 +14,7 @@ from shutil import copyfile
 from utils import get_config_param
 from utils import remove_html
 from media import path_is_audio
-from content import add_web_links
+from content import safe_web_text
 from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -210,15 +210,8 @@ def html_podcast_episode(css_cache: {}, translate: {},
     if newswire_item[4]:
         podcast_description = \
             html.unescape(urllib.parse.unquote_plus(newswire_item[4]))
-        # Why remove html? Potentially podcast descriptions could contain
-        # arbitrary html with attack scripts, etc
-        podcast_description = remove_html(podcast_description)
+        podcast_description = safe_web_text(podcast_description)
         if podcast_description:
-            remove_chars = ('Œ', 'â€', 'ğŸ', '�', ']]')
-            for remchar in remove_chars:
-                podcast_description = podcast_description.replace(remchar, '')
-            # recreate any url links safely
-            podcast_description = add_web_links(podcast_description)
             podcast_str += '<p>' + podcast_description + '</p>\n'
 
     # donate button

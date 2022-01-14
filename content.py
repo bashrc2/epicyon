@@ -486,6 +486,22 @@ def add_web_links(content: str) -> str:
     return content
 
 
+def safe_web_text(arbitrary_html: str) -> str:
+    """Turns arbitrary html into something safe.
+    So if the arbitrary html contains attack scripts those will be removed
+    """
+    # first remove the markup, so that we have something safe
+    safe_text = remove_html(arbitrary_html)
+    if not safe_text:
+        return ''
+    # remove any spurious characters found in podcast descriptions
+    remove_chars = ('Œ', 'â€', 'ğŸ', '�', ']]')
+    for remchar in remove_chars:
+        safe_text = safe_text.replace(remchar, '')
+    # recreate any url links safely
+    return add_web_links(safe_text)
+
+
 def _add_hash_tags(word_str: str, http_prefix: str, domain: str,
                    replace_hashtags: {}, post_hashtags: {}) -> bool:
     """Detects hashtags and adds them to the replacements dict
