@@ -999,20 +999,20 @@ def send_follow_requestViaServer(base_dir: str, session,
 
     # get the actor inbox for the To handle
     origin_domain = from_domain
-    (inboxUrl, _, _, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem, origin_domain,
-                                      base_dir, session, wf_request,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      from_nickname,
-                                      from_domain, post_to_box, 52025)
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem, origin_domain,
+                            base_dir, session, wf_request,
+                            person_cache,
+                            project_version, http_prefix,
+                            from_nickname,
+                            from_domain, post_to_box, 52025)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
             print('DEBUG: follow request no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: follow request no actor was found for ' + handle)
         return 4
@@ -1026,10 +1026,10 @@ def send_follow_requestViaServer(base_dir: str, session,
     }
     post_result = \
         post_json(http_prefix, from_domain_full,
-                  session, new_follow_json, [], inboxUrl, headers, 3, True)
+                  session, new_follow_json, [], inbox_url, headers, 3, True)
     if not post_result:
         if debug:
-            print('DEBUG: POST follow request failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST follow request failed for c2s to ' + inbox_url)
         return 5
 
     if debug:
@@ -1095,22 +1095,22 @@ def send_unfollow_request_via_server(base_dir: str, session,
 
     # get the actor inbox for the To handle
     origin_domain = from_domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      origin_domain,
-                                      base_dir, session,
-                                      wf_request, person_cache,
-                                      project_version, http_prefix,
-                                      from_nickname,
-                                      from_domain, post_to_box,
-                                      76536)
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem,
+                            origin_domain,
+                            base_dir, session,
+                            wf_request, person_cache,
+                            project_version, http_prefix,
+                            from_nickname,
+                            from_domain, post_to_box,
+                            76536)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
             print('DEBUG: unfollow no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: unfollow no actor was found for ' + handle)
         return 4
@@ -1124,10 +1124,10 @@ def send_unfollow_request_via_server(base_dir: str, session,
     }
     post_result = \
         post_json(http_prefix, from_domain_full,
-                  session, unfollow_json, [], inboxUrl, headers, 3, True)
+                  session, unfollow_json, [], inbox_url, headers, 3, True)
     if not post_result:
         if debug:
-            print('DEBUG: POST unfollow failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST unfollow failed for c2s to ' + inbox_url)
         return 5
 
     if debug:

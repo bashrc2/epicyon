@@ -39,8 +39,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('>vimeo.com/')[1]
         if '<' in url:
             url = url.split('<')[0]
-            content = \
-                content + "<center>\n<iframe loading=\"lazy\" " + \
+            content += \
+                "<center>\n<iframe loading=\"lazy\" " + \
                 "src=\"https://player.vimeo.com/video/" + \
                 url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
@@ -57,8 +57,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 url = url.split('&')[0]
             if '?utm_' in url:
                 url = url.split('?utm_')[0]
-            content = \
-                content + "<center>\n<iframe loading=\"lazy\" src=\"" + \
+            content += \
+                "<center>\n<iframe loading=\"lazy\" src=\"" + \
                 video_site + url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
@@ -88,8 +88,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     url = url.split('&')[0]
                 if '?utm_' in url:
                     url = url.split('?utm_')[0]
-                content = \
-                    content + "<center>\n<iframe loading=\"lazy\" src=\"" + \
+                content += \
+                    "<center>\n<iframe loading=\"lazy\" src=\"" + \
                     video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
@@ -103,8 +103,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             url = url.split('"')[0]
             if not url.endswith('/oembed'):
                 url = url + '/oembed'
-            content = \
-                content + "<center>\n<iframe loading=\"lazy\" src=\"" + \
+            content += \
+                "<center>\n<iframe loading=\"lazy\" src=\"" + \
                 video_site + url + "\" width=\"" + \
                 str(width) + "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"fullscreen\" " + \
@@ -153,8 +153,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             if '"' not in url:
                 continue
             url = url.split('"')[0].replace('/watch/', '/embed/')
-            content = \
-                content + "<center>\n<iframe loading=\"lazy\" " + \
+            content += \
+                "<center>\n<iframe loading=\"lazy\" " + \
                 "sandbox=\"allow-same-origin " + \
                 "allow-scripts\" src=\"https://" + \
                 site + url + "\" width=\"" + str(width) + \

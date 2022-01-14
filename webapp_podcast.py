@@ -14,6 +14,7 @@ from shutil import copyfile
 from utils import get_config_param
 from utils import remove_html
 from media import path_is_audio
+from content import safe_web_text
 from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -189,7 +190,18 @@ def html_podcast_episode(css_cache: {}, translate: {},
             translate['Your browser does not support the audio element.'] + \
             '\n  </audio>\n'
     elif podcast_properties.get('linkMimeType'):
-        if 'video' in podcast_properties['linkMimeType']:
+        if '/youtube' in podcast_properties['linkMimeType']:
+            url = link_url.replace('/watch?v=', '/embed/')
+            if '&' in url:
+                url = url.split('&')[0]
+            if '?utm_' in url:
+                url = url.split('?utm_')[0]
+            podcast_str += \
+                "  <iframe loading=\"lazy\" src=\"" + \
+                url + "\" width=\"400\" height=\"300\" " + \
+                "frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
+                "allowfullscreen>\n  </iframe>\n"
+        elif 'video' in podcast_properties['linkMimeType']:
             video_mime_type = podcast_properties['linkMimeType']
             video_msg = 'Your browser does not support the video element.'
             podcast_str += \
@@ -209,11 +221,8 @@ def html_podcast_episode(css_cache: {}, translate: {},
     if newswire_item[4]:
         podcast_description = \
             html.unescape(urllib.parse.unquote_plus(newswire_item[4]))
-        podcast_description = remove_html(podcast_description)
+        podcast_description = safe_web_text(podcast_description)
         if podcast_description:
-            remove_chars = ('Œ', 'â€', 'ğŸ', '�')
-            for remchar in remove_chars:
-                podcast_description = podcast_description.replace(remchar, '')
             podcast_str += '<p>' + podcast_description + '</p>\n'
 
     # donate button
