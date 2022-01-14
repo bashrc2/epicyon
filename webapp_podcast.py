@@ -191,7 +191,6 @@ def html_podcast_episode(css_cache: {}, translate: {},
             '\n  </audio>\n'
     elif podcast_properties.get('linkMimeType'):
         if '/youtube' in podcast_properties['linkMimeType']:
-            video_site = 'https://www.youtube.com'
             url = link_url.replace('/watch?v=', '/embed/')
             if '&' in url:
                 url = url.split('&')[0]
