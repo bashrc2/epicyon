@@ -211,7 +211,7 @@ def html_podcast_episode(css_cache: {}, translate: {},
             html.unescape(urllib.parse.unquote_plus(newswire_item[4]))
         podcast_description = remove_html(podcast_description)
         if podcast_description:
-            remove_chars = ('Œ', 'â€', 'ğŸ', '�')
+            remove_chars = ('Œ', 'â€', 'ğŸ', '�', ']]')
             for remchar in remove_chars:
                 podcast_description = podcast_description.replace(remchar, '')
             podcast_str += '<p>' + podcast_description + '</p>\n'
