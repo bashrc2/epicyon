@@ -6834,7 +6834,10 @@ class PubServer(BaseHTTPRequestHandler):
                    getreq_start_time) -> None:
         """Returns a font
         """
-        font_str = path.split('/fonts/')[1]
+        if self.server.dyslexic_font:
+            font_str = 'OpenDyslexic-Regular.woff2'
+        else:
+            font_str = path.split('/fonts/')[1]
         if font_str.endswith('.otf') or \
            font_str.endswith('.ttf') or \
            font_str.endswith('.woff') or \
@@ -18627,7 +18630,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(content_license_url: str,
+def run_daemon(dyslexic_font: bool,
+               content_license_url: str,
                lists_enabled: str,
                default_reply_interval_hrs: int,
                low_bandwidth: bool,
@@ -18717,6 +18721,8 @@ def run_daemon(content_license_url: str,
     assert not scan_themes_for_scripts(base_dir)
 
     httpd.post_to_nickname = None
+
+    httpd.dyslexic_font = dyslexic_font
 
     # license for content of the instance
     if not content_license_url:

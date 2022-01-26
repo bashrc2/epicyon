@@ -813,8 +813,10 @@ def create_server_alice(path: str, domain: str, port: int,
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    dyslexic_font = False
     print('Server running: Alice')
-    run_daemon(content_license_url,
+    run_daemon(dyslexic_font,
+               content_license_url,
                lists_enabled, default_reply_interval_hrs,
                low_bandwidth, max_like_count,
                shared_items_federated_domains,
@@ -960,8 +962,10 @@ def create_server_bob(path: str, domain: str, port: int,
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    dyslexic_font = False
     print('Server running: Bob')
-    run_daemon(content_license_url,
+    run_daemon(dyslexic_font,
+               content_license_url,
                lists_enabled, default_reply_interval_hrs,
                low_bandwidth, max_like_count,
                shared_items_federated_domains,
@@ -1034,8 +1038,10 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    dyslexic_font = False
     print('Server running: Eve')
-    run_daemon(content_license_url,
+    run_daemon(dyslexic_font,
+               content_license_url,
                lists_enabled, default_reply_interval_hrs,
                low_bandwidth, max_like_count,
                shared_items_federated_domains,
@@ -1110,8 +1116,10 @@ def create_server_group(path: str, domain: str, port: int,
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    dyslexic_font = False
     print('Server running: Group')
-    run_daemon(content_license_url,
+    run_daemon(dyslexic_font,
+               content_license_url,
                lists_enabled, default_reply_interval_hrs,
                low_bandwidth, max_like_count,
                shared_items_federated_domains,
