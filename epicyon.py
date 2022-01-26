@@ -381,6 +381,11 @@ parser.add_argument("--broch_mode",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable broch mode")
+parser.add_argument("--dyslexic_font",
+                    dest='dyslexic_font',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Use dyslexic font")
 parser.add_argument("--nodeinfoaccounts",
                     dest='show_node_info_accounts',
                     type=str2bool, nargs='?',
@@ -3120,10 +3125,13 @@ verify_all_signatures = \
 if verify_all_signatures is not None:
     args.verify_all_signatures = bool(verify_all_signatures)
 
-broch_mode = \
-    get_config_param(base_dir, 'brochMode')
+broch_mode = get_config_param(base_dir, 'brochMode')
 if broch_mode is not None:
     args.broch_mode = bool(broch_mode)
+
+dyslexic_font = get_config_param(base_dir, 'dyslexicFont')
+if dyslexic_font is not None:
+    args.dyslexic_font = bool(dyslexic_font)
 
 log_login_failures = \
     get_config_param(base_dir, 'logLoginFailures')
@@ -3188,7 +3196,8 @@ if twitter_domain:
         args.twitter_replacement_domain = twitter_domain
 
 if set_theme(base_dir, theme_name, domain,
-             args.allow_local_network_access, args.language):
+             args.allow_local_network_access, args.language,
+             args.dyslexic_font):
     print('Theme set to ' + theme_name)
 
 # whether new registrations are open or closed
@@ -3217,7 +3226,8 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    run_daemon(content_license_url,
+    run_daemon(args.dyslexic_font,
+               content_license_url,
                lists_enabled,
                args.default_reply_interval_hrs,
                args.low_bandwidth, args.max_like_count,

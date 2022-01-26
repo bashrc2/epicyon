@@ -269,7 +269,7 @@ def _remove_theme(base_dir: str):
                   base_dir + '/' + filename)
 
 
-def set_cs_sparam(css: str, param: str, value: str) -> str:
+def set_css_param(css: str, param: str, value: str) -> str:
     """Sets a CSS parameter to a given value
     """
     # is this just a simple string replacement?
@@ -380,7 +380,7 @@ def _set_theme_from_dict(base_dir: str, name: str,
                     else:
                         _set_publish_button_at_top(base_dir, False)
                     continue
-                css = set_cs_sparam(css, param_name, param_value)
+                css = set_css_param(css, param_name, param_value)
             filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
@@ -457,6 +457,27 @@ def disable_grayscale(base_dir: str) -> None:
                   grayscale_filename)
 
 
+def _set_dyslexic_font(base_dir: str) -> bool:
+    """sets the dyslexic font if needed
+    """
+    theme_files = _get_theme_files()
+    for filename in theme_files:
+        template_filename = base_dir + '/' + filename
+        if not os.path.isfile(template_filename):
+            continue
+        with open(template_filename, 'r') as cssfile:
+            css = cssfile.read()
+            css = \
+                set_css_param(css, "*src",
+                              "url('./fonts/OpenDyslexic-Regular.woff2" +
+                              "') format('woff2')")
+            css = set_css_param(css, "*font-family", "'OpenDyslexic'")
+            filename = base_dir + '/' + filename
+            with open(filename, 'w+') as cssfile:
+                cssfile.write(css)
+    return False
+
+
 def _set_custom_font(base_dir: str):
     """Uses a dictionary to set a theme
     """
@@ -484,12 +505,12 @@ def _set_custom_font(base_dir: str):
         with open(template_filename, 'r') as cssfile:
             css = cssfile.read()
             css = \
-                set_cs_sparam(css, "*src",
+                set_css_param(css, "*src",
                               "url('./fonts/custom." +
                               custom_font_ext +
                               "') format('" +
                               custom_font_type + "')")
-            css = set_cs_sparam(css, "*font-family", "'CustomFont'")
+            css = set_css_param(css, "*font-family", "'CustomFont'")
             filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
@@ -498,11 +519,13 @@ def _set_custom_font(base_dir: str):
 def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
                             theme_params: {},
                             allow_local_network_access: bool,
-                            system_language: str):
+                            system_language: str,
+                            dyslexic_font: bool):
     custom_theme_filename = base_dir + '/accounts/theme.json'
     save_json(theme_params, custom_theme_filename)
     set_theme(base_dir, theme_name, domain,
-              allow_local_network_access, system_language)
+              allow_local_network_access, system_language,
+              dyslexic_font)
 
 
 def reset_theme_designer_settings(base_dir: str, theme_name: str, domain: str,
@@ -819,7 +842,8 @@ def _set_clear_cache_flag(base_dir: str) -> None:
 
 
 def set_theme(base_dir: str, name: str, domain: str,
-              allow_local_network_access: bool, system_language: str) -> bool:
+              allow_local_network_access: bool, system_language: str,
+              dyslexic_font: bool) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
@@ -862,7 +886,10 @@ def set_theme(base_dir: str, name: str, domain: str,
         _read_variables_file(base_dir, name, variables_file,
                              allow_local_network_access)
 
-    _set_custom_font(base_dir)
+    if dyslexic_font:
+        _set_dyslexic_font(base_dir)
+    else:
+        _set_custom_font(base_dir)
 
     # set the news avatar
     news_avatar_theme_filename = \

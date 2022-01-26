@@ -2152,7 +2152,8 @@ class PubServer(BaseHTTPRequestHandler):
                              debug: bool, access_keys: {},
                              default_timeline: str, theme_name: str,
                              allow_local_network_access: bool,
-                             system_language: str) -> None:
+                             system_language: str,
+                             dyslexic_font: bool) -> None:
         """Receive POST from webapp_theme_designer
         """
         users_path = '/users/' + nickname
@@ -2191,7 +2192,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               allow_local_network_access,
                                               system_language)
                 set_theme(base_dir, theme_name, domain,
-                          allow_local_network_access, system_language)
+                          allow_local_network_access, system_language,
+                          dyslexic_font)
 
             if calling_domain.endswith('.onion') and onion_domain:
                 origin_path_str = \
@@ -2240,7 +2242,7 @@ class PubServer(BaseHTTPRequestHandler):
         set_theme_from_designer(base_dir, theme_name, domain,
                                 theme_designer_params,
                                 allow_local_network_access,
-                                system_language)
+                                system_language, dyslexic_font)
 
         # set boolean values
         if 'rss-icon-at-top' in theme_designer_params:
@@ -5066,7 +5068,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.theme_name = fields['themeDropdown']
                             set_theme(base_dir, self.server.theme_name, domain,
                                       allow_local_network_access,
-                                      system_language)
+                                      system_language,
+                                      self.server.dyslexic_font)
                             self.server.text_mode_banner = \
                                 get_text_mode_banner(self.server.base_dir)
                             self.server.iconsCache = {}
@@ -6002,7 +6005,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allow_local_network_access
                                 set_theme(base_dir, curr_theme, domain,
                                           allow_local_network_access,
-                                          system_language)
+                                          system_language,
+                                          self.server.dyslexic_font)
                                 self.server.text_mode_banner = \
                                     get_text_mode_banner(base_dir)
                                 self.server.iconsCache = {}
@@ -6252,6 +6256,24 @@ class PubServer(BaseHTTPRequestHandler):
                             enable_grayscale(base_dir)
                         else:
                             disable_grayscale(base_dir)
+
+                    # dyslexic font
+                    if path.startswith('/users/' + admin_nickname + '/') or \
+                       is_artist(base_dir, nickname):
+                        dyslexic_font = False
+                        if fields.get('dyslexicFont'):
+                            if fields['dyslexicFont'] == 'on':
+                                dyslexic_font = True
+                        if dyslexic_font != self.server.dyslexic_font:
+                            self.server.dyslexic_font = dyslexic_font
+                            set_config_param(base_dir, 'dyslexicFont',
+                                             self.server.dyslexic_font)
+                            set_theme(base_dir,
+                                      self.server.theme_name,
+                                      self.server.domain,
+                                      self.server.allow_local_network_access,
+                                      self.server.system_language,
+                                      self.server.dyslexic_font)
 
                     # low bandwidth images checkbox
                     if path.startswith('/users/' + admin_nickname + '/') or \
@@ -18137,7 +18159,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.default_timeline,
                                           self.server.theme_name,
                                           allow_local_network_access,
-                                          self.server.system_language)
+                                          self.server.system_language,
+                                          self.server.dyslexic_font)
                 self.server.postreq_busy = False
                 return
 
@@ -18627,7 +18650,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(content_license_url: str,
+def run_daemon(dyslexic_font: bool,
+               content_license_url: str,
                lists_enabled: str,
                default_reply_interval_hrs: int,
                low_bandwidth: bool,
@@ -18717,6 +18741,8 @@ def run_daemon(content_license_url: str,
     assert not scan_themes_for_scripts(base_dir)
 
     httpd.post_to_nickname = None
+
+    httpd.dyslexic_font = dyslexic_font
 
     # license for content of the instance
     if not content_license_url:
