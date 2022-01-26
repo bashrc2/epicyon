@@ -6260,6 +6260,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('dyslexicFont'):
                             if fields['dyslexicFont'] == 'on':
                                 self.server.dyslexic_font = True
+                        set_config_param(base_dir, 'dyslexicFont',
+                                         self.server.dyslexic_font)
 
                     # low bandwidth images checkbox
                     if path.startswith('/users/' + admin_nickname + '/') or \
