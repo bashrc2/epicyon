@@ -145,7 +145,7 @@ from content import replace_content_duplicates
 from content import remove_text_formatting
 from content import remove_html_tag
 from theme import update_default_themes_list
-from theme import set_cs_sparam
+from theme import set_css_param
 from theme import scan_themes_for_scripts
 from linked_data_sig import generate_json_signature
 from linked_data_sig import verify_json_signature
@@ -3584,18 +3584,18 @@ def _test_save_load_json():
 def _test_theme():
     print('test_theme')
     css = 'somestring --background-value: 24px; --foreground-value: 24px;'
-    result = set_cs_sparam(css, 'background-value', '32px')
+    result = set_css_param(css, 'background-value', '32px')
     assert result == \
         'somestring --background-value: 32px; --foreground-value: 24px;'
     css = \
         'somestring --background-value: 24px; --foreground-value: 24px; ' + \
         '--background-value: 24px;'
-    result = set_cs_sparam(css, 'background-value', '32px')
+    result = set_css_param(css, 'background-value', '32px')
     assert result == \
         'somestring --background-value: 32px; --foreground-value: 24px; ' + \
         '--background-value: 32px;'
     css = '--background-value: 24px; --foreground-value: 24px;'
-    result = set_cs_sparam(css, 'background-value', '32px')
+    result = set_css_param(css, 'background-value', '32px')
     assert result == '--background-value: 32px; --foreground-value: 24px;'
 
 

@@ -3196,7 +3196,8 @@ if twitter_domain:
         args.twitter_replacement_domain = twitter_domain
 
 if set_theme(base_dir, theme_name, domain,
-             args.allow_local_network_access, args.language):
+             args.allow_local_network_access, args.language,
+             args.dyslexic_font):
     print('Theme set to ' + theme_name)
 
 # whether new registrations are open or closed
