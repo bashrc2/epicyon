@@ -1239,6 +1239,10 @@ def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
     grayscale = _grayscale_enabled(base_dir)
     themes_dropdown += \
         edit_check_box(translate['Grayscale'], 'grayscale', grayscale)
+    dyslexic_font = get_config_param(base_dir, 'dyslexicFont')
+    themes_dropdown += \
+        edit_check_box(translate['Dyslexic font'], 'dyslexicFont',
+                       dyslexic_font)
     themes_dropdown += '  <select id="themeDropdown" ' + \
         'name="themeDropdown" class="theme">'
     for theme_name in themes:

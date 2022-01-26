@@ -6253,6 +6253,14 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             disable_grayscale(base_dir)
 
+                    # dyslexic font
+                    if path.startswith('/users/' + admin_nickname + '/') or \
+                       is_artist(base_dir, nickname):
+                        self.server.dyslexic_font = False
+                        if fields.get('dyslexicFont'):
+                            if fields['dyslexicFont'] == 'on':
+                                self.server.dyslexic_font = True
+
                     # low bandwidth images checkbox
                     if path.startswith('/users/' + admin_nickname + '/') or \
                        is_artist(base_dir, nickname):
