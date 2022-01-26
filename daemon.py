@@ -6844,10 +6844,17 @@ class PubServer(BaseHTTPRequestHandler):
                    getreq_start_time) -> None:
         """Returns a font
         """
+        font_str = path.split('/fonts/')[1]
         if self.server.dyslexic_font:
-            font_str = 'OpenDyslexic-Regular.woff2'
-        else:
-            font_str = path.split('/fonts/')[1]
+            if font_str.endswith('.otf'):
+                font_str = 'OpenDyslexic-Regular.otf'
+            elif font_str.endswith('.ttf'):
+                font_str = 'OpenDyslexic-Regular.ttf'
+            elif font_str.endswith('.woff'):
+                font_str = 'OpenDyslexic-Regular.woff'
+            else:
+                font_str = 'OpenDyslexic-Regular.woff2'
+
         if font_str.endswith('.otf') or \
            font_str.endswith('.ttf') or \
            font_str.endswith('.woff') or \
