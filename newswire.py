@@ -10,6 +10,7 @@ __module_group__ = "Web Interface Columns"
 import os
 import json
 import requests
+import random
 from socket import error as SocketError
 import errno
 from datetime import datetime
@@ -268,10 +269,21 @@ def _valid_feed_date(pub_date: str, debug: bool = False) -> bool:
     return valid_post_date(post_date, 90, debug)
 
 
-def parse_feed_date(pub_date: str) -> str:
+def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
     """Returns a UTC date string based on the given date string
     This tries a number of formats to see which work
     """
+
+    if ':00:00' in pub_date:
+        # If this was published exactly on the hour then assign a
+        # random minute and second to make this item relatively unique
+        randgen = random.Random(unique_string_identifier)
+        rand_min = randgen.randint(0, 59)
+        rand_sec = randgen.randint(0, 59)
+        replace_time_str = \
+            ':' + str(rand_min).zfill(2) + ':' + str(rand_sec).zfill(2)
+        pub_date = pub_date.replace(':00:00', replace_time_str)
+
     formats = ("%a, %d %b %Y %H:%M:%S %z",
                "%a, %d %b %Y %H:%M:%S Z",
                "%a, %d %b %Y %H:%M:%S GMT",
@@ -668,7 +680,8 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
         pub_date = rss_item.split('<pubDate>')[1]
         pub_date = pub_date.split('</pubDate>')[0]
 
-        pub_date_str = parse_feed_date(pub_date)
+        unique_string_identifier = title + ' ' + link
+        pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
         if pub_date_str:
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
@@ -763,7 +776,8 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
         pub_date = rss_item.split('<dc:date>')[1]
         pub_date = pub_date.split('</dc:date>')[0]
 
-        pub_date_str = parse_feed_date(pub_date)
+        unique_string_identifier = title + ' ' + link
+        pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
         if pub_date_str:
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
@@ -846,7 +860,8 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
         pub_date = atom_item.split('<updated>')[1]
         pub_date = pub_date.split('</updated>')[0]
 
-        pub_date_str = parse_feed_date(pub_date)
+        unique_string_identifier = title + ' ' + link
+        pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
         if pub_date_str:
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
@@ -961,7 +976,8 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
                 continue
             pub_date = json_feed_item['date_modified']
 
-        pub_date_str = parse_feed_date(pub_date)
+        unique_string_identifier = title + ' ' + link
+        pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
         if pub_date_str:
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
@@ -1045,7 +1061,8 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
         pub_date = atom_item.split('<published>')[1]
         pub_date = pub_date.split('</published>')[0]
 
-        pub_date_str = parse_feed_date(pub_date)
+        unique_string_identifier = title + ' ' + link
+        pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
         if pub_date_str:
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
