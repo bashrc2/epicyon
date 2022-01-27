@@ -4233,24 +4233,31 @@ def _test_first_paragraph_from_string():
     assert result_str == test_str
 
 
-def _test_parse_feed_date():
+def _test_parse_newswire_feed_date():
     print('test_parse_feed_date')
 
+    unique_string_identifier = 'some string abcd'
+
     pub_date = "2020-12-14T00:08:06+00:00"
-    published_date = parse_feed_date(pub_date)
+    published_date = parse_feed_date(pub_date, unique_string_identifier)
     assert published_date == "2020-12-14 00:08:06+00:00"
 
     pub_date = "Tue, 08 Dec 2020 06:24:38 -0600"
-    published_date = parse_feed_date(pub_date)
+    published_date = parse_feed_date(pub_date, unique_string_identifier)
     assert published_date == "2020-12-08 12:24:38+00:00"
 
     pub_date = "2020-08-27T16:12:34+00:00"
-    published_date = parse_feed_date(pub_date)
+    published_date = parse_feed_date(pub_date, unique_string_identifier)
     assert published_date == "2020-08-27 16:12:34+00:00"
 
     pub_date = "Sun, 22 Nov 2020 19:51:33 +0100"
-    published_date = parse_feed_date(pub_date)
+    published_date = parse_feed_date(pub_date, unique_string_identifier)
     assert published_date == "2020-11-22 18:51:33+00:00"
+
+    pub_date = "Sun, 22 Nov 2020 00:00:00 +0000"
+    published_date = parse_feed_date(pub_date, unique_string_identifier)
+    assert published_date != "2020-11-22 00:00:00+00:00"
+    assert "2020-11-22 00:" in published_date
 
 
 def _test_valid_nick():
@@ -6576,7 +6583,7 @@ def run_all_tests():
     _test_mentioned_people(base_dir)
     _test_guess_tag_category()
     _test_valid_nick()
-    _test_parse_feed_date()
+    _test_parse_newswire_feed_date()
     _test_first_paragraph_from_string()
     _test_newswire_tags()
     _test_hashtag_rules()
