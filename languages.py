@@ -33,6 +33,20 @@ def get_actor_languages(actor_json: {}) -> str:
     return languages_str
 
 
+def get_understood_languages(base_dir: str, http_prefix: str,
+                             nickname: str, domain_full: str,
+                             person_cache: {}) -> []:
+    """Returns a list of understood languages for the given account
+    """
+    person_url = local_actor_url(http_prefix, nickname, domain_full)
+    actor_json = \
+        get_person_from_cache(base_dir, person_url, person_cache, False)
+    if not actor_json:
+        print('WARN: unable to load actor to obtain languages ' + person_url)
+        return []
+    return get_actor_languages_list(actor_json)
+
+
 def set_actor_languages(base_dir: str, actor_json: {},
                         languages_str: str) -> None:
     """Sets the languages used by the given actor
