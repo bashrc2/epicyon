@@ -89,32 +89,43 @@ def get_actor_languages_list(actor_json: {}) -> []:
 
 
 def get_content_from_post(post_json_object: {}, system_language: str,
-                          languages_understood: []) -> str:
+                          languages_understood: [],
+                          contentType: str = "content") -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """
     this_post_json = post_json_object
     if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
-    if not this_post_json.get('content'):
+    if not this_post_json.get(contentType):
         return ''
     content = ''
-    if this_post_json.get('contentMap'):
-        if isinstance(this_post_json['contentMap'], dict):
-            if this_post_json['contentMap'].get(system_language):
-                sys_lang = this_post_json['contentMap'][system_language]
+    mapDict = contentType + 'Map'
+    if this_post_json.get(mapDict):
+        if isinstance(this_post_json[mapDict], dict):
+            if this_post_json[mapDict].get(system_language):
+                sys_lang = this_post_json[mapDict][system_language]
                 if isinstance(sys_lang, str):
-                    return this_post_json['contentMap'][system_language]
+                    return this_post_json[mapDict][system_language]
             else:
-                # is there a contentMap entry for one of
+                # is there a contentMap/summaryMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
-                    if this_post_json['contentMap'].get(lang):
-                        return this_post_json['contentMap'][lang]
+                    if this_post_json[mapDict].get(lang):
+                        return this_post_json[mapDict][lang]
     else:
-        if isinstance(this_post_json['content'], str):
-            content = this_post_json['content']
+        if isinstance(this_post_json[contentType], str):
+            content = this_post_json[contentType]
     return content
+
+
+def get_summary_from_post(post_json_object: {}, system_language: str,
+                          languages_understood: []) -> str:
+    """Returns the summary from the post in the given language
+    including searching for a matching entry within summaryMap
+    """
+    return get_content_from_post(post_json_object, system_language,
+                                 languages_understood, "summary")
 
 
 def get_base_content_from_post(post_json_object: {},
