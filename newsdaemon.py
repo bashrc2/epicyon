@@ -641,6 +641,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         image_description = None
         city = 'London, England'
         conversation_id = None
+        languages_understood = [system_language]
         blog = create_news_post(base_dir,
                                 domain, port, http_prefix,
                                 rss_description,
@@ -649,7 +650,8 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 image_description, city,
                                 rss_title, system_language,
                                 conversation_id, low_bandwidth,
-                                content_license_url)
+                                content_license_url,
+                                languages_understood)
         if not blog:
             continue
 

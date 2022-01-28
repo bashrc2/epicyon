@@ -418,6 +418,7 @@ def _desktop_reply_to_post(session, post_id: str,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, subject: str,
                            screenreader: str, system_language: str,
+                           languages_understood: [],
                            espeak, conversation_id: str,
                            low_bandwidth: bool,
                            content_license_url: str,
@@ -474,8 +475,8 @@ def _desktop_reply_to_post(session, post_id: str,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,
-                            system_language, low_bandwidth,
-                            content_license_url,
+                            system_language, languages_understood,
+                            low_bandwidth, content_license_url,
                             debug, post_id, post_id,
                             conversation_id, subject) == 0:
         say_str = 'Reply sent'
@@ -490,6 +491,7 @@ def _desktop_new_post(session,
                       cached_webfingers: {}, person_cache: {},
                       debug: bool,
                       screenreader: str, system_language: str,
+                      languages_understood: [],
                       espeak, low_bandwidth: bool,
                       content_license_url: str,
                       signing_priv_key_pem: str) -> None:
@@ -542,8 +544,8 @@ def _desktop_new_post(session,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,
-                            system_language, low_bandwidth,
-                            content_license_url,
+                            system_language, languages_understood,
+                            low_bandwidth, content_license_url,
                             debug, None, None,
                             conversation_id, subject) == 0:
         say_str = 'Post sent'
@@ -1137,6 +1139,7 @@ def _desktop_new_dm(session, to_handle: str,
                     cached_webfingers: {}, person_cache: {},
                     debug: bool,
                     screenreader: str, system_language: str,
+                    languages_understood: [],
                     espeak, low_bandwidth: bool,
                     content_license_url: str,
                     signing_priv_key_pem: str) -> None:
@@ -1154,23 +1157,25 @@ def _desktop_new_dm(session, to_handle: str,
 
     for handle in handles_list:
         handle = handle.strip()
-        _desktop_new_d_mbase(session, handle,
+        _desktop_new_dm_base(session, handle,
                              base_dir, nickname, password,
                              domain, port, http_prefix,
                              cached_webfingers, person_cache,
                              debug,
                              screenreader, system_language,
+                             languages_understood,
                              espeak, low_bandwidth,
                              content_license_url,
                              signing_priv_key_pem)
 
 
-def _desktop_new_d_mbase(session, to_handle: str,
+def _desktop_new_dm_base(session, to_handle: str,
                          base_dir: str, nickname: str, password: str,
                          domain: str, port: int, http_prefix: str,
                          cached_webfingers: {}, person_cache: {},
                          debug: bool,
                          screenreader: str, system_language: str,
+                         languages_understood: [],
                          espeak, low_bandwidth: bool,
                          content_license_url: str,
                          signing_priv_key_pem: str) -> None:
@@ -1265,8 +1270,8 @@ def _desktop_new_d_mbase(session, to_handle: str,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,
-                            system_language, low_bandwidth,
-                            content_license_url,
+                            system_language, languages_understood,
+                            low_bandwidth, content_license_url,
                             debug, None, None,
                             conversation_id, subject) == 0:
         say_str = 'Direct message sent'
@@ -1344,6 +1349,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     blocked_cache = {}
+    languages_understood = [system_language]
 
     indent = '   '
     if show_new_posts:
@@ -1748,6 +1754,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                cached_webfingers, person_cache,
                                                debug, subject,
                                                screenreader, system_language,
+                                               languages_understood,
                                                espeak, conversation_id,
                                                low_bandwidth,
                                                content_license_url,
@@ -1785,6 +1792,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                         cached_webfingers, person_cache,
                                         debug,
                                         screenreader, system_language,
+                                        languages_understood,
                                         espeak, low_bandwidth,
                                         content_license_url,
                                         signing_priv_key_pem)
@@ -1797,6 +1805,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       cached_webfingers, person_cache,
                                       debug,
                                       screenreader, system_language,
+                                      languages_understood,
                                       espeak, low_bandwidth,
                                       content_license_url,
                                       signing_priv_key_pem)

@@ -2825,7 +2825,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                translate: {}, debug: bool,
                last_bounce_message: [], system_language: str,
                signing_priv_key_pem: str,
-               content_license_url: str) -> bool:
+               content_license_url: str,
+               languages_understood: []) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2886,7 +2887,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                                    event_date, event_time, location,
                                    system_language, conversation_id,
                                    low_bandwidth,
-                                   content_license_url)
+                                   content_license_url,
+                                   languages_understood)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sending_handle)
         return False
@@ -2913,7 +2915,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                  last_bounce_message: [],
                  handle: str, system_language: str,
                  signing_priv_key_pem: str,
-                 content_license_url: str) -> bool:
+                 content_license_url: str,
+                 languages_understood: []) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -2994,7 +2997,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                                        last_bounce_message,
                                        system_language,
                                        signing_priv_key_pem,
-                                       content_license_url)
+                                       content_license_url,
+                                       languages_understood)
                 return False
 
     # dm index will be updated
@@ -3233,7 +3237,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                          signing_priv_key_pem: str,
                          default_reply_interval_hrs: int,
                          cw_lists: {}, lists_enabled: str,
-                         content_license_url: str) -> bool:
+                         content_license_url: str,
+                         languages_understood: []) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = key_id
@@ -3516,7 +3521,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                                     last_bounce_message,
                                     handle, system_language,
                                     signing_priv_key_pem,
-                                    content_license_url):
+                                    content_license_url,
+                                    languages_understood):
                     return False
 
             # get the actor being replied to
@@ -4530,6 +4536,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
         for handle, _ in recipients_dict.items():
             destination = \
                 queue_json['destination'].replace(inbox_handle, handle)
+            languages_understood = [system_language]
             _inbox_after_initial(recent_posts_cache,
                                  max_recent_posts,
                                  session, key_id, handle,
@@ -4558,7 +4565,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                  signing_priv_key_pem,
                                  default_reply_interval_hrs,
                                  cw_lists, lists_enabled,
-                                 content_license_url)
+                                 content_license_url,
+                                 languages_understood)
             if debug:
                 pprint(queue_json['post'])
                 print('Queue: Queue post accepted')
