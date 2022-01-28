@@ -28,6 +28,7 @@ from utils import remove_html
 from utils import get_actor_languages_list
 from utils import get_base_content_from_post
 from utils import get_content_from_post
+from utils import get_summary_from_post
 from utils import has_object_dict
 from utils import update_announce_collection
 from utils import is_pgp_encrypted
@@ -1852,6 +1853,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if translate.get(sensitive_str):
                 sensitive_str = translate[sensitive_str]
             post_json_object['object']['summary'] = sensitive_str
+            post_json_object['object']['summaryMap'] = {
+                system_language: sensitive_str
+            }
 
     # add an extra line if there is a content warning,
     # for better vertical spacing on mobile
@@ -1860,6 +1864,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     if not post_json_object['object'].get('summary'):
         post_json_object['object']['summary'] = ''
+        post_json_object['object']['summaryMap'] = {
+            system_language: ''
+        }
 
     if post_json_object['object'].get('cipherText'):
         post_json_object['object']['content'] = \
@@ -1883,10 +1890,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not content_str:
             return ''
 
+    summary_str = get_summary_from_post(post_json_object, system_language,
+                                        languages_understood)
     is_patch = is_git_patch(base_dir, nickname, domain,
                             post_json_object['object']['type'],
-                            post_json_object['object']['summary'],
-                            content_str)
+                            summary_str, content_str)
 
     _log_post_timing(enable_timing_log, post_start_time, '16')
 
@@ -1921,12 +1929,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
     else:
         post_id = 'post' + str(create_password(8))
         content_str = ''
-        if post_json_object['object'].get('summary'):
-            cw_str = str(post_json_object['object']['summary'])
+        if summary_str:
             cw_str = \
                 add_emoji_to_display_name(session, base_dir, http_prefix,
                                           nickname, domain,
-                                          cw_str, False)
+                                          summary_str, False)
             content_str += \
                 '<label class="cw">' + cw_str + '</label>\n '
             if is_moderation_post:

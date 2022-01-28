@@ -1323,6 +1323,7 @@ if args.message:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    languages_understood = [args.language]
     print('Sending post to ' + args.sendto)
 
     send_post_via_server(signing_priv_key_pem, __version__,
@@ -1333,7 +1334,8 @@ if args.message:
                          args.commentsEnabled, attach, media_type,
                          attached_image_description, city,
                          cached_webfingers, person_cache, is_article,
-                         args.language, args.low_bandwidth,
+                         args.language, languages_understood,
+                         args.low_bandwidth,
                          args.content_license_url, args.debug,
                          reply_to, reply_to, args.conversationId, subject)
     for i in range(10):
@@ -2886,6 +2888,7 @@ if args.testdata:
     test_is_article = False
     conversation_id = None
     low_bandwidth = False
+    languages_understood = [args.language]
 
     create_public_post(base_dir, nickname, domain, port, http_prefix,
                        "like this is totally just a #test man",
@@ -2899,7 +2902,8 @@ if args.testdata:
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, args.language, conversation_id,
-                       low_bandwidth, args.content_license_url)
+                       low_bandwidth, args.content_license_url,
+                       languages_understood)
     create_public_post(base_dir, nickname, domain, port, http_prefix,
                        "Zoiks!!!",
                        test_followers_only,
@@ -2912,7 +2916,8 @@ if args.testdata:
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, args.language, conversation_id,
-                       low_bandwidth, args.content_license_url)
+                       low_bandwidth, args.content_license_url,
+                       languages_understood)
     create_public_post(base_dir, nickname, domain, port, http_prefix,
                        "Hey scoob we need like a hundred more #milkshakes",
                        test_followers_only,
@@ -2925,7 +2930,8 @@ if args.testdata:
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, args.language, conversation_id,
-                       low_bandwidth, args.content_license_url)
+                       low_bandwidth, args.content_license_url,
+                       languages_understood)
     create_public_post(base_dir, nickname, domain, port, http_prefix,
                        "Getting kinda spooky around here",
                        test_followers_only,
@@ -2938,7 +2944,8 @@ if args.testdata:
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, args.language, conversation_id,
-                       low_bandwidth, args.content_license_url)
+                       low_bandwidth, args.content_license_url,
+                       languages_understood)
     create_public_post(base_dir, nickname, domain, port, http_prefix,
                        "And they would have gotten away with it too" +
                        "if it wasn't for those pesky hackers",
@@ -2952,7 +2959,8 @@ if args.testdata:
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, args.language, conversation_id,
-                       low_bandwidth, args.content_license_url)
+                       low_bandwidth, args.content_license_url,
+                       languages_understood)
     create_public_post(base_dir, nickname, domain, port, http_prefix,
                        "man these centralized sites are like the worst!",
                        test_followers_only,
@@ -2965,7 +2973,8 @@ if args.testdata:
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, args.language, conversation_id,
-                       low_bandwidth, args.content_license_url)
+                       low_bandwidth, args.content_license_url,
+                       languages_understood)
     create_public_post(base_dir, nickname, domain, port, http_prefix,
                        "another mystery solved #test",
                        test_followers_only,
@@ -2978,7 +2987,8 @@ if args.testdata:
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, args.language, conversation_id,
-                       low_bandwidth, args.content_license_url)
+                       low_bandwidth, args.content_license_url,
+                       languages_understood)
     create_public_post(base_dir, nickname, domain, port, http_prefix,
                        "let's go bowling",
                        test_followers_only,
@@ -2991,7 +3001,8 @@ if args.testdata:
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, args.language, conversation_id,
-                       low_bandwidth, args.content_license_url)
+                       low_bandwidth, args.content_license_url,
+                       languages_understood)
     domain_full = domain + ':' + str(port)
     clear_follows(base_dir, nickname, domain)
     follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,

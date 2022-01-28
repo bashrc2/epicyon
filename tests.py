@@ -703,6 +703,7 @@ def create_server_alice(path: str, domain: str, port: int,
     os.chdir(path)
     shared_items_federated_domains = []
     system_language = 'en'
+    languages_understood = [system_language]
     nickname = 'alice'
     http_prefix = 'http'
     proxy_type = None
@@ -760,7 +761,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Curiouser and curiouser!",
                            test_followers_only,
@@ -774,7 +776,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "In the gardens of memory, in the palace " +
                            "of dreams, that is where you and I shall meet",
@@ -789,7 +792,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_ALICE_RUNNING
     TEST_SERVER_ALICE_RUNNING = True
@@ -853,6 +857,7 @@ def create_server_bob(path: str, domain: str, port: int,
     os.chdir(path)
     shared_items_federated_domains = []
     system_language = 'en'
+    languages_understood = [system_language]
     nickname = 'bob'
     http_prefix = 'http'
     proxy_type = None
@@ -909,7 +914,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "One of the things I've realised is that " +
                            "I am very simple",
@@ -924,7 +930,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Quantum physics is a bit of a passion of mine",
                            test_followers_only,
@@ -938,7 +945,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_BOB_RUNNING
     TEST_SERVER_BOB_RUNNING = True
@@ -1154,6 +1162,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     TEST_SERVER_BOB_RUNNING = False
 
     system_language = 'en'
+    languages_understood = [system_language]
     http_prefix = 'http'
     proxy_type = None
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
@@ -1258,6 +1267,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   attached_image_description, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
+                  languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url,
@@ -1478,6 +1488,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     TEST_SERVER_BOB_RUNNING = False
 
     system_language = 'en'
+    languages_understood = [system_language]
     http_prefix = 'http'
     proxy_type = None
     federation_list = []
@@ -1620,6 +1631,7 @@ def test_follow_between_servers(base_dir: str) -> None:
                   None, None, None, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
+                  languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url,
@@ -1668,6 +1680,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     TEST_SERVER_BOB_RUNNING = False
 
     system_language = 'en'
+    languages_understood = [system_language]
     http_prefix = 'http'
     proxy_type = None
     federation_list = []
@@ -1980,6 +1993,7 @@ def test_shared_items_federation(base_dir: str) -> None:
                   None, None, None, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
+                  languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, True,
@@ -2078,6 +2092,7 @@ def test_group_follow(base_dir: str) -> None:
     global TEST_SERVER_BOB_RUNNING
     global TEST_SERVER_GROUP_RUNNING
     system_language = 'en'
+    languages_understood = [system_language]
     TEST_SERVER_ALICE_RUNNING = False
     TEST_SERVER_BOB_RUNNING = False
     TEST_SERVER_GROUP_RUNNING = False
@@ -2405,6 +2420,7 @@ def test_group_follow(base_dir: str) -> None:
                   None, None, None, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
+                  languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url,
@@ -2730,6 +2746,7 @@ def _test_follows(base_dir: str) -> None:
 def _test_create_person_account(base_dir: str):
     print('test_create_person_account')
     system_language = 'en'
+    languages_understood = [system_language]
     curr_dir = base_dir
     nickname = 'test382'
     domain = 'badgerdomain.com'
@@ -2782,7 +2799,8 @@ def _test_create_person_account(base_dir: str):
                        test_subject, test_schedule_post,
                        test_event_date, test_event_time, test_location,
                        test_is_article, system_language, conversation_id,
-                       low_bandwidth, content_license_url)
+                       low_bandwidth, content_license_url,
+                       languages_understood)
 
     os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2850,6 +2868,7 @@ def test_client_to_server(base_dir: str):
     TEST_SERVER_BOB_RUNNING = False
 
     system_language = 'en'
+    languages_understood = [system_language]
     http_prefix = 'http'
     proxy_type = None
     federation_list = []
@@ -2962,8 +2981,8 @@ def test_client_to_server(base_dir: str):
                              attached_image_filename, media_type,
                              attached_image_description, city,
                              cached_webfingers, person_cache, is_article,
-                             system_language, low_bandwidth,
-                             content_license_url,
+                             system_language, languages_understood,
+                             low_bandwidth, content_license_url,
                              True, None, None,
                              conversation_id, None)
     print('send_result: ' + str(send_result))
@@ -4303,6 +4322,7 @@ def _test_mentioned_people(base_dir: str) -> None:
 
 def _test_reply_to_public_post(base_dir: str) -> None:
     system_language = 'en'
+    languages_understood = [system_language]
     nickname = 'test7492362'
     domain = 'other.site'
     port = 443
@@ -4339,7 +4359,8 @@ def _test_reply_to_public_post(base_dir: str) -> None:
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -5106,6 +5127,7 @@ def _test_functions():
 def _test_links_within_post(base_dir: str) -> None:
     print('test_links_within_post')
     system_language = 'en'
+    languages_understood = [system_language]
     nickname = 'test27636'
     domain = 'rando.site'
     port = 443
@@ -5142,7 +5164,8 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
 
     assert post_json_object['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
@@ -5179,7 +5202,8 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
     assert post_json_object['object']['content'] == content
     assert post_json_object['object']['contentMap'][system_language] == content
 
@@ -6100,6 +6124,7 @@ def _translate_ontology(base_dir: str) -> None:
 def _test_can_replyto(base_dir: str) -> None:
     print('test_can_reply_to')
     system_language = 'en'
+    languages_understood = [system_language]
     nickname = 'test27637'
     domain = 'rando.site'
     port = 443
@@ -6136,7 +6161,8 @@ def _test_can_replyto(base_dir: str) -> None:
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time, test_location,
                            test_is_article, system_language, conversation_id,
-                           low_bandwidth, content_license_url)
+                           low_bandwidth, content_license_url,
+                           languages_understood)
     # set the date on the post
     curr_date_str = "2021-09-08T20:45:00Z"
     post_json_object['published'] = curr_date_str

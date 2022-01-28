@@ -242,6 +242,7 @@ from categories import set_hashtag_category
 from categories import update_hashtag_categories
 from languages import get_actor_languages
 from languages import set_actor_languages
+from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from utils import undo_reaction_collection_entry
@@ -499,6 +500,12 @@ class PubServer(BaseHTTPRequestHandler):
         city = get_spoofed_city(self.server.city,
                                 self.server.base_dir,
                                 nickname, self.server.domain)
+        languages_understood = \
+            get_understood_languages(self.server.base_dir,
+                                     self.server.http_prefix,
+                                     nickname,
+                                     self.server.domain_full,
+                                     self.server.person_cache)
 
         message_json = \
             create_public_post(self.server.base_dir,
@@ -519,7 +526,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.system_language,
                                conversation_id,
                                self.server.low_bandwidth,
-                               self.server.content_license_url)
+                               self.server.content_license_url,
+                               languages_understood)
         if message_json:
             # name field contains the answer
             message_json['object']['name'] = answer
@@ -16811,6 +16819,14 @@ class PubServer(BaseHTTPRequestHandler):
                 conversation_id = None
                 if fields.get('conversationId'):
                     conversation_id = fields['conversationId']
+
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
+
                 message_json = \
                     create_public_post(self.server.base_dir,
                                        nickname,
@@ -16831,7 +16847,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.system_language,
                                        conversation_id,
                                        self.server.low_bandwidth,
-                                       self.server.content_license_url)
+                                       self.server.content_license_url,
+                                       languages_understood)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -16898,6 +16915,12 @@ class PubServer(BaseHTTPRequestHandler):
                 conversation_id = None
                 if fields.get('conversationId'):
                     conversation_id = fields['conversationId']
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
                 message_json = \
                     create_blog_post(self.server.base_dir, nickname,
                                      self.server.domain, self.server.port,
@@ -16917,7 +16940,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.system_language,
                                      conversation_id,
                                      self.server.low_bandwidth,
-                                     self.server.content_license_url)
+                                     self.server.content_license_url,
+                                     languages_understood)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -17049,6 +17073,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('conversationId'):
                     conversation_id = fields['conversationId']
 
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
+
                 message_json = \
                     create_unlisted_post(self.server.base_dir,
                                          nickname,
@@ -17070,7 +17101,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.system_language,
                                          conversation_id,
                                          self.server.low_bandwidth,
-                                         self.server.content_license_url)
+                                         self.server.content_license_url,
+                                         languages_understood)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -17100,6 +17132,12 @@ class PubServer(BaseHTTPRequestHandler):
                     conversation_id = fields['conversationId']
 
                 mentions_message = mentions_str + fields['message']
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
                 message_json = \
                     create_followers_only_post(self.server.base_dir,
                                                nickname,
@@ -17123,7 +17161,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.system_language,
                                                conversation_id,
                                                self.server.low_bandwidth,
-                                               self.server.content_license_url)
+                                               self.server.content_license_url,
+                                               languages_understood)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -17156,6 +17195,13 @@ class PubServer(BaseHTTPRequestHandler):
                         conversation_id = fields['conversationId']
                     content_license_url = self.server.content_license_url
 
+                    languages_understood = \
+                        get_understood_languages(self.server.base_dir,
+                                                 self.server.http_prefix,
+                                                 nickname,
+                                                 self.server.domain_full,
+                                                 self.server.person_cache)
+
                     message_json = \
                         create_direct_message_post(self.server.base_dir,
                                                    nickname,
@@ -17183,7 +17229,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                    self.server.system_language,
                                                    conversation_id,
                                                    self.server.low_bandwidth,
-                                                   content_license_url)
+                                                   content_license_url,
+                                                   languages_understood)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -17217,6 +17264,12 @@ class PubServer(BaseHTTPRequestHandler):
                 comments_enabled = False
                 conversation_id = None
                 mentions_message = mentions_str + fields['message']
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
                 message_json = \
                     create_direct_message_post(self.server.base_dir,
                                                nickname,
@@ -17239,7 +17292,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.system_language,
                                                conversation_id,
                                                self.server.low_bandwidth,
-                                               self.server.content_license_url)
+                                               self.server.content_license_url,
+                                               languages_understood)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -17262,6 +17316,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
                 message_json = \
                     create_report_post(self.server.base_dir,
                                        nickname,
@@ -17275,7 +17335,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug, fields['subject'],
                                        self.server.system_language,
                                        self.server.low_bandwidth,
-                                       self.server.content_license_url)
+                                       self.server.content_license_url,
+                                       languages_understood)
                 if message_json:
                     if self._post_to_outbox(message_json,
                                             self.server.project_version,
@@ -17300,6 +17361,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         nickname,
                                         self.server.domain)
                 int_duration = int(fields['duration'])
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
                 message_json = \
                     create_question_post(self.server.base_dir,
                                          nickname,
@@ -17316,7 +17383,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          int_duration,
                                          self.server.system_language,
                                          self.server.low_bandwidth,
-                                         self.server.content_license_url)
+                                         self.server.content_license_url,
+                                         languages_understood)
                 if message_json:
                     if self.server.debug:
                         print('DEBUG: new Question')
