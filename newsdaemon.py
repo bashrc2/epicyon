@@ -791,6 +791,7 @@ def run_newswire_daemon(base_dir: str, httpd,
     newswire_state_filename = base_dir + '/accounts/.newswirestate.json'
     refresh_filename = base_dir + '/accounts/.refresh_newswire'
 
+    print('Starting newswire daemon')
     # initial sleep to allow the system to start up
     time.sleep(50)
     while True:
