@@ -1122,9 +1122,6 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
             'conversation': conversation_id,
             'type': post_object_type,
             'summary': summary,
-            'summaryMap': {
-                system_language: summary
-            },
             'inReplyTo': in_reply_to,
             'published': published,
             'url': new_post_url,
@@ -1191,9 +1188,6 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         'conversation': conversation_id,
         'type': post_object_type,
         'summary': summary,
-        'summaryMap': {
-            system_language: summary
-        },
         'inReplyTo': in_reply_to,
         'published': published,
         'url': new_post_url,
@@ -1728,9 +1722,6 @@ def get_pinned_post_as_json(base_dir: str, http_prefix: str,
                 'replies': {},
                 'sensitive': False,
                 'summary': None,
-                'summaryMap': {
-                    system_language: None
-                },
                 'tag': [],
                 'to': ['https://www.w3.org/ns/activitystreams#Public'],
                 'type': 'Note',
@@ -2427,7 +2418,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
             generate_json_signature(signed_post_json_object, private_key_pem)
             post_json_object = signed_post_json_object
         except Exception as ex:
-            print('WARN: failed to JSON-LD sign post, ' + str(ex))
+            print('WARN: send_post failed to JSON-LD sign post, ' + str(ex))
+            pprint(signed_post_json_object)
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
@@ -2806,7 +2798,9 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
             generate_json_signature(signed_post_json_object, private_key_pem)
             post_json_object = signed_post_json_object
         except BaseException as ex:
-            print('WARN: failed to JSON-LD sign post, ' + str(ex))
+            print('WARN: send_signed_json failed to JSON-LD sign post, ' +
+                  str(ex))
+            pprint(signed_post_json_object)
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest

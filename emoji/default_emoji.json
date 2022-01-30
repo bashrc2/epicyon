@@ -773,5 +773,7 @@
     "kde": "kde",
     "ohno": "ohno",
     "lavabit": "lavabit",
-    "libreoffice": "libreoffice"
+    "libreoffice": "libreoffice",
+    "xmpp": "xmpp",
+    "jabber": "xmpp"
 }

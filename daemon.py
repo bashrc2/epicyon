@@ -245,6 +245,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import local_network_host
 from utils import undo_reaction_collection_entry
 from utils import get_new_post_endpoints
 from utils import has_actor
@@ -365,6 +366,7 @@ from fitnessFunctions import fitness_performance
 from fitnessFunctions import fitness_thread
 from fitnessFunctions import sorted_watch_points
 from fitnessFunctions import html_watch_points_graph
+from siteactive import site_is_active
 import os
 
 
@@ -1131,9 +1133,47 @@ class PubServer(BaseHTTPRequestHandler):
                                   project_version, custom_emoji,
                                   show_node_info_accounts)
 
-    def _nodeinfo(self, ua_str: str, calling_domain: str) -> bool:
+    def _nodeinfo(self, ua_str: str, calling_domain: str,
+                  httpPrefix: str, calling_site_timeout: int,
+                  debug: bool) -> bool:
+        if self.path.startswith('/nodeinfo/1.0'):
+            self._400()
+            return True
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
+        if calling_domain == self.server.domain_full:
+            self._400()
+            return True
+        if self.server.nodeinfo_is_active:
+            print('nodeinfo is busy')
+            self._503()
+            return True
+        self.server.nodeinfo_is_active = True
+        # is this a real website making the call ?
+        if not debug and not self.server.unit_test:
+            # Does calling_domain look like a domain?
+            if ' ' in calling_domain or \
+               ';' in calling_domain or \
+               '.' not in calling_domain:
+                print('nodeinfo calling domain does not look like a domain ' +
+                      calling_domain)
+                self._400()
+                self.server.nodeinfo_is_active = False
+                return True
+            if not self.server.allow_local_network_access:
+                if local_network_host(calling_domain):
+                    print('nodeinfo calling domain is from the ' +
+                          'local network ' + calling_domain)
+                    self._400()
+                    self.server.nodeinfo_is_active = False
+                    return True
+            if not site_is_active(httpPrefix + '://' + calling_domain,
+                                  calling_site_timeout):
+                print('nodeinfo calling domain is not active ' +
+                      calling_domain)
+                self._400()
+                self.server.nodeinfo_is_active = False
+                return True
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
         self._update_known_crawlers(ua_str)
@@ -1176,8 +1216,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   None, calling_domain, True)
             self._write(msg)
             print('nodeinfo sent to ' + calling_domain)
+            self.server.nodeinfo_is_active = False
             return True
         self._404()
+        self.server.nodeinfo_is_active = False
         return True
 
     def _webfinger(self, calling_domain: str) -> bool:
@@ -13507,7 +13549,8 @@ class PubServer(BaseHTTPRequestHandler):
         # Since fediverse crawlers are quite active,
         # make returning info to them high priority
         # get nodeinfo endpoint
-        if self._nodeinfo(ua_str, calling_domain):
+        if self._nodeinfo(ua_str, calling_domain,
+                          self.server.http_prefix, 5, self.server.debug):
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -18809,6 +18852,8 @@ def run_daemon(dyslexic_font: bool,
     assert not scan_themes_for_scripts(base_dir)
 
     httpd.post_to_nickname = None
+
+    httpd.nodeinfo_is_active = False
 
     httpd.dyslexic_font = dyslexic_font
 
