@@ -1134,6 +1134,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   show_node_info_accounts)
 
     def _nodeinfo(self, ua_str: str, calling_domain: str,
+                  referer_domain: str,
                   httpPrefix: str, calling_site_timeout: int,
                   debug: bool) -> bool:
         if self.path.startswith('/nodeinfo/1.0'):
@@ -1141,7 +1142,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
-        if calling_domain == self.server.domain_full:
+        if referer_domain == self.server.domain_full:
             self._400()
             return True
         if self.server.nodeinfo_is_active:
@@ -1152,25 +1153,25 @@ class PubServer(BaseHTTPRequestHandler):
         # is this a real website making the call ?
         if not debug and not self.server.unit_test:
             # Does calling_domain look like a domain?
-            if ' ' in calling_domain or \
-               ';' in calling_domain or \
-               '.' not in calling_domain:
-                print('nodeinfo calling domain does not look like a domain ' +
-                      calling_domain)
+            if ' ' in referer_domain or \
+               ';' in referer_domain or \
+               '.' not in referer_domain:
+                print('nodeinfo referer domain does not look like a domain ' +
+                      referer_domain)
                 self._400()
                 self.server.nodeinfo_is_active = False
                 return True
             if not self.server.allow_local_network_access:
-                if local_network_host(calling_domain):
-                    print('nodeinfo calling domain is from the ' +
-                          'local network ' + calling_domain)
+                if local_network_host(referer_domain):
+                    print('nodeinfo referer domain is from the ' +
+                          'local network ' + referer_domain)
                     self._400()
                     self.server.nodeinfo_is_active = False
                     return True
-            if not site_is_active(httpPrefix + '://' + calling_domain,
+            if not site_is_active(httpPrefix + '://' + referer_domain,
                                   calling_site_timeout):
-                print('nodeinfo calling domain is not active ' +
-                      calling_domain)
+                print('nodeinfo referer domain is not active ' +
+                      referer_domain)
                 self._400()
                 self.server.nodeinfo_is_active = False
                 return True
@@ -13549,7 +13550,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Since fediverse crawlers are quite active,
         # make returning info to them high priority
         # get nodeinfo endpoint
-        if self._nodeinfo(ua_str, calling_domain,
+        if self._nodeinfo(ua_str, calling_domain, referer_domain,
                           self.server.http_prefix, 5, self.server.debug):
             return
 
