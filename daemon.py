@@ -1134,6 +1134,9 @@ class PubServer(BaseHTTPRequestHandler):
     def _nodeinfo(self, ua_str: str, calling_domain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
+        if calling_domain == self.server.domain_full:
+            self._404()
+            return True
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
         self._update_known_crawlers(ua_str)
