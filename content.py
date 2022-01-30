@@ -946,10 +946,9 @@ def add_html_tags(base_dir: str, http_prefix: str,
                             emojis_combined = False
                         if not emojis_combined:
                             # combine emoji dicts one by one
-                            for emoji_name, emoji_item in \
-                                custom_emoji_dict.items():
-                                if not emoji_dict.get(emoji_name):
-                                    emoji_dict[emoji_name] = emoji_item
+                            for ename, eitem in custom_emoji_dict.items():
+                                if not emoji_dict.get(ename):
+                                    emoji_dict[ename] = eitem
 
 #                print('TAG: looking up emoji for :' + word_str2 + ':')
                 _add_emoji(base_dir, ':' + word_str2 + ':', http_prefix,
