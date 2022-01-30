@@ -1142,6 +1142,10 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
+        if not referer_domain:
+            if not debug and not self.server.unit_test:
+                self._400()
+                return True
         if referer_domain == self.server.domain_full:
             self._400()
             return True
@@ -1151,7 +1155,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         self.server.nodeinfo_is_active = True
         # is this a real website making the call ?
-        if not debug and not self.server.unit_test:
+        if not debug and not self.server.unit_test and referer_domain:
             # Does calling_domain look like a domain?
             if ' ' in referer_domain or \
                ';' in referer_domain or \
