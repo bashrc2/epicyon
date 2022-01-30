@@ -1142,7 +1142,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if calling_domain == self.server.domain_full:
-            self._404()
+            self._400()
             return True
         if self.server.nodeinfo_is_active:
             print('nodeinfo is busy')
