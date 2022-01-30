@@ -1122,9 +1122,6 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
             'conversation': conversation_id,
             'type': post_object_type,
             'summary': summary,
-            'summaryMap': {
-                system_language: summary
-            },
             'inReplyTo': in_reply_to,
             'published': published,
             'url': new_post_url,
@@ -1191,9 +1188,6 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         'conversation': conversation_id,
         'type': post_object_type,
         'summary': summary,
-        'summaryMap': {
-            system_language: summary
-        },
         'inReplyTo': in_reply_to,
         'published': published,
         'url': new_post_url,
@@ -1728,9 +1722,6 @@ def get_pinned_post_as_json(base_dir: str, http_prefix: str,
                 'replies': {},
                 'sensitive': False,
                 'summary': None,
-                'summaryMap': {
-                    system_language: None
-                },
                 'tag': [],
                 'to': ['https://www.w3.org/ns/activitystreams#Public'],
                 'type': 'Note',
