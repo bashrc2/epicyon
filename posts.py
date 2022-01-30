@@ -2427,7 +2427,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
             generate_json_signature(signed_post_json_object, private_key_pem)
             post_json_object = signed_post_json_object
         except Exception as ex:
-            print('WARN: failed to JSON-LD sign post, ' + str(ex))
+            print('WARN: send_post failed to JSON-LD sign post, ' + str(ex))
+            pprint(signed_post_json_object)
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
@@ -2806,7 +2807,9 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
             generate_json_signature(signed_post_json_object, private_key_pem)
             post_json_object = signed_post_json_object
         except BaseException as ex:
-            print('WARN: failed to JSON-LD sign post, ' + str(ex))
+            print('WARN: send_signed_json failed to JSON-LD sign post, ' +
+                  str(ex))
+            pprint(signed_post_json_object)
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
