@@ -179,7 +179,7 @@ def get_sha_512(msg: str):
     return digest.finalize()
 
 
-def _local_network_host(host: str) -> bool:
+def local_network_host(host: str) -> bool:
     """Returns true if the given host is on the local network
     """
     if host.startswith('localhost') or \
@@ -196,7 +196,7 @@ def decoded_host(host: str) -> str:
     """
     if ':' not in host:
         # eg. mydomain:8000
-        if not _local_network_host(host):
+        if not local_network_host(host):
             if not host.endswith('.onion'):
                 if not host.endswith('.i2p'):
                     return idna.decode(host)
