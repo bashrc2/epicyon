@@ -939,7 +939,10 @@ def add_html_tags(base_dir: str, http_prefix: str,
                     custom_emoji_dict = \
                         load_json(base_dir + '/emojicustom/emoji.json')
                     if custom_emoji_dict:
-                        emoji_dict = dict(emoji_dict, **custom_emoji_dict)
+                        try:
+                            emoji_dict = dict(emoji_dict, **custom_emoji_dict)
+                        except BaseException:
+                            pass
 
 #                print('TAG: looking up emoji for :' + word_str2 + ':')
                 _add_emoji(base_dir, ':' + word_str2 + ':', http_prefix,
