@@ -1220,7 +1220,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/ld+json', msglen,
                                   None, calling_domain, True)
             self._write(msg)
-            print('nodeinfo sent to ' + calling_domain)
+            print('nodeinfo sent to ' + referer_domain)
             self.server.nodeinfo_is_active = False
             return True
         self._404()
