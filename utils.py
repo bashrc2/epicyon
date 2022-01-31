@@ -2891,9 +2891,9 @@ def user_agent_domain(user_agent: str, debug: bool) -> str:
     """If the User-Agent string contains a domain
     then return it
     """
-    if '+http' not in user_agent:
+    if 'http' not in user_agent:
         return None
-    agent_domain = user_agent.split('+http')[1].strip()
+    agent_domain = user_agent.split('http')[1].strip()
     if '://' in agent_domain:
         agent_domain = agent_domain.split('://')[1]
     if '/' in agent_domain:
