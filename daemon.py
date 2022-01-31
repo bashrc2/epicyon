@@ -13478,14 +13478,14 @@ class PubServer(BaseHTTPRequestHandler):
                 elif '"' in referer_domain:
                     referer_domain = referer_domain.split('"')[0]
         elif ua_str:
-            if '+https://' in ua_str:
-                referer_domain = ua_str.split('+https://')[1]
+            if 'https://' in ua_str:
+                referer_domain = ua_str.split('https://')[1]
                 if '/' in referer_domain:
                     referer_domain = referer_domain.split('/')[0]
                 elif ')' in referer_domain:
                     referer_domain = referer_domain.split(')')[0]
-            elif '+http://' in ua_str:
-                referer_domain = ua_str.split('+http://')[1]
+            elif 'http://' in ua_str:
+                referer_domain = ua_str.split('http://')[1]
                 if '/' in referer_domain:
                     referer_domain = referer_domain.split('/')[0]
                 elif ')' in referer_domain:
