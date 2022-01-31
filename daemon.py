@@ -1144,9 +1144,11 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if not referer_domain:
             if not debug and not self.server.unit_test:
+                print('nodeinfo request has no referer domain ' + ua_str)
                 self._400()
                 return True
         if referer_domain == self.server.domain_full:
+            print('nodeinfo request from self')
             self._400()
             return True
         if self.server.nodeinfo_is_active:
