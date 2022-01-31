@@ -1153,7 +1153,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
             return True
         if self.server.nodeinfo_is_active:
-            print('nodeinfo is busy')
+            print('nodeinfo is busy during request from ' + referer_domain)
             self._503()
             return True
         self.server.nodeinfo_is_active = True
