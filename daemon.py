@@ -1153,7 +1153,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
             return True
         if self.server.nodeinfo_is_active:
-            print('nodeinfo is busy')
+            print('nodeinfo is busy during request from ' + referer_domain)
             self._503()
             return True
         self.server.nodeinfo_is_active = True
@@ -1175,10 +1175,19 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     self.server.nodeinfo_is_active = False
                     return True
-            if not site_is_active(httpPrefix + '://' + referer_domain,
-                                  calling_site_timeout):
-                print('nodeinfo referer domain is not active ' +
-                      referer_domain)
+
+            referer_url = httpPrefix + '://' + referer_domain
+            if referer_domain + '/' in ua_str:
+                referer_url = referer_url + ua_str.split(referer_domain)[1]
+                if ' ' in referer_url:
+                    referer_url = referer_url.split(' ')[0]
+                if ';' in referer_url:
+                    referer_url = referer_url.split(';')[0]
+                if ')' in referer_url:
+                    referer_url = referer_url.split(')')[0]
+            if not site_is_active(referer_url, calling_site_timeout):
+                print('nodeinfo referer url is not active ' +
+                      referer_url)
                 self._400()
                 self.server.nodeinfo_is_active = False
                 return True
