@@ -3323,3 +3323,22 @@ def valid_hash_tag(hashtag: str) -> bool:
     if _is_valid_language(hashtag):
         return True
     return False
+
+
+def get_domain_from_url_in_string(text: str) -> str:
+    """Returns the domain from within a string if it exists
+    """
+    domain_str = ''
+    if 'https://' in text:
+        domain_str = text.split('https://')[1]
+        if '/' in domain_str:
+            domain_str = domain_str.split('/')[0]
+        elif ')' in domain_str:
+            domain_str = domain_str.split(')')[0]
+    elif 'http://' in text:
+        domain_str = text.split('http://')[1]
+        if '/' in domain_str:
+            domain_str = domain_str.split('/')[0]
+        elif ')' in domain_str:
+            domain_str = domain_str.split(')')[0]
+    return domain_str
