@@ -1175,10 +1175,20 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     self.server.nodeinfo_is_active = False
                     return True
-            if not site_is_active(httpPrefix + '://' + referer_domain,
+
+            referer_url = referer_domain
+            if referer_domain + '/' in ua_str:
+                referer_url = ua_str.split(referer_domain)[1]
+                if ' ' in referer_url:
+                    referer_url = referer_url.split(' ')[0]
+                if ';' in referer_url:
+                    referer_url = referer_url.split(';')[0]
+                if ')' in referer_url:
+                    referer_url = referer_url.split(')')[0]
+            if not site_is_active(httpPrefix + '://' + referer_url,
                                   calling_site_timeout):
-                print('nodeinfo referer domain is not active ' +
-                      referer_domain)
+                print('nodeinfo referer url is not active ' +
+                      referer_url)
                 self._400()
                 self.server.nodeinfo_is_active = False
                 return True
