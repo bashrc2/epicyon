@@ -1,7 +1,7 @@
 __filename__ = "session.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -210,7 +210,7 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
 
 def get_json(signing_priv_key_pem: str,
              session, url: str, headers: {}, params: {}, debug: bool,
-             version: str = '1.2.0', http_prefix: str = 'https',
+             version: str = '1.3.0', http_prefix: str = 'https',
              domain: str = 'testdomain',
              timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
@@ -248,7 +248,7 @@ def get_json(signing_priv_key_pem: str,
 
 def download_html(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
-                  version: str = '1.2.0', http_prefix: str = 'https',
+                  version: str = '1.3.0', http_prefix: str = 'https',
                   domain: str = 'testdomain',
                   timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):

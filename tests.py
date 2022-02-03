@@ -1,7 +1,7 @@
 __filename__ = "tests.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -283,7 +283,7 @@ def _test_http_signed_get(base_dir: str):
     accept = 'application/json'
 #    accept = 'application/activity+json'
     headers = {
-        'user-agent': 'Epicyon/1.2.0; +https://' + domain + '/',
+        'user-agent': 'Epicyon/1.3.0; +https://' + domain + '/',
         'host': headers_domain,
         'date': date_str,
         'accept': accept,
