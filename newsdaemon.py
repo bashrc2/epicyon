@@ -54,8 +54,8 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
                         feeds_file.seek(0, 0)
                         feeds_file.write(post_id + '\n' + content)
                         print('DEBUG: feeds post added to index')
-            except Exception as ex:
-                print('WARN: Failed to write entry to feeds posts index ' +
+            except BaseException as ex:
+                print('EX: Failed to write entry to feeds posts index ' +
                       index_filename + ' ' + str(ex))
     else:
         try:
