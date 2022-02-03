@@ -775,6 +775,11 @@
         color: white;
     }
 
+    .subheader {
+        font-size: 16px;
+        color: white;
+    }
+
     .releaseheader {
         font-size: 30px;
 	font-weight: bold;
@@ -1173,358 +1178,45 @@
 
   </style>
   <head>
-    <title>Epicyon ActivityPub server</title>
+    <title>Epicyon ActivityPub server release version 1.3.0</title>
   </head>
   <body>
     <div class="timeline-banner"></div>
     <center>
       <br>
-      <table style="margin:1% 0%;width:90%" border="0">
-        <tr>
-          <th><a href="epicyon.tar.gz"><span class="headerlink">Download</span></a></th>
-          <th><a href="#install"><span class="headerlink">Install</span></a></th>
-          <th><a href="https://gitlab.com/bashrc2/epicyon"><span class="headerlink">Repo</span></a></th>
-          <th><a href="https://www.patreon.com/freedombone"><span class="headerlink">Donate</span></a></th>
-        </tr>
-      </table>
-      <p class="matrix">Matrix room: <b>#epicyon:matrix.libreserver.org<br>gemini://libreserver.org/epicyon</b></p>
-      <p class="releaseheader"><a href="v1_3_0.html">New release: 1.3.0</a></p>
-      <p class="intro">
-        Epicyon is an <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPL</a> licensed <a href="https://www.w3.org/TR/activitypub/">ActivityPub protocol</a> compliant <a href="https://en.wikipedia.org/wiki/Fediverse">federated social network</a> server suitable for hosting a small number of accounts on low power systems requiring minimal maintenance, such as single board computers. It's the ActivityPub equivalent of an email server, storing posts as human readable JSON on file, rather than in a database. It also uses only a small amount of RAM.
-      <p>
-      <p class="siteheader">An Internet of People, Not Corporate Agendas</p>
-      <p class="intro">
-        Epicyon is written in Python with a HTML+CSS web interface and uses <i>no javascript</i> which makes display in a web browser very lightweight. It can run as a <a href="https://en.wikipedia.org/wiki/Progressive_web_application">Progressive Web App</a> on mobile. <i>Just say "no"</i> to boring social media sites packed with generic adverts and zombified corporate influencers.
-      </p>
-
-      <table style="margin:0% 0%;width:100%" border="0">
-        <tr>
-          <th><a href="img/screenshot_purple.jpg"><img width="90%" src="img/screenshot_purple.jpg" alt="Purple theme timeline screenshot" /></a></th>
-          <th><a href="img/screenshot_profile.jpg"><img width="90%" src="img/screenshot_profile.jpg" alt="Starlight theme profile page" /></a></th>
-        </tr>
-        <tr>
-          <th><a href="img/screenshot_rc3.jpg"><img width="120%" src="img/screenshot_rc3.jpg" alt="various screenshots" /></a></th>
-          <th><img width="50%" src="img/mobile.jpg" alt="mobile screenshot" /></th>
-        </tr>
-        <tr>
-          <th><img width="90%" src="img/screenshot_login.jpg" alt="login screen" /></th>
-          <th><img width="90%" src="img/screenshot_emojisearch.jpg" alt="emoji search" /></th>
-        </tr>
-      </table>
-
-      <p class="intro">
-        Emojis, hashtags, photos, video and audio attachments, instance and account level blocking controls, moderation functions and reports are all supported. Build the community you want and avoid the stuff you don't. No ads. No blockchains or other Silicon Valley garbage.
-      </p>
-
-      <p class="siteheader">Community not Audience</p>
-      <p class="intro">
-        Corporate social media gives you an audience, with reach, celebrity, spectacle, lack of control, professional influencers, anxiety, alienation and competition. It's designed for fast growth regardless of social consequences. Epicyon is designed for community, in which you have voice, agency, discussions and comradery. The community approach is the better way to build a habitable internet for the long term.
-      </p>
-
-      <p class="siteheader">Message Scopes</p>
-      <p class="intro">
-        Define the scope of your messages to reach the right people.
-      </p>
-      <img width="60%" src="img/messagescope.jpg" />
-
-      <p class="siteheader">Scheduled Posts</p>
-      <p class="intro">
-        Schedule posts to be published at some time in the future. This can be useful for reminding yourself to do things (send your future self a direct message) or for creating a series of posts promoting some event, such as a festival or wedding.
-      </p>
-
-      <p class="siteheader">Text Search</p>
-      <p class="intro">
-        Want to be reminded about what you said about a topic a month ago? The search screen allows you to do full text search <i>on your own posts</i>. Search on other posts can be done via the use of hashtags.
-      </p>
-
-      <p class="siteheader">Federated Blogging</p>
-      <img width="10%" src="img/icons/rss.png" alt="RSS 2.0"/>
-      <p class="intro">
-        You don't need a separate blog system. Blog posts can be added and edited, and are federated as ActivityPub articles. They also have RSS version 2.0 feeds. People can comment on blog posts, but unlike other systems the moderation settings apply just the same as they do for any other fediverse post arriving at your server. This makes blog spam much easier to keep control over. You can subscribe to other people's blogs and they will appear in the right hand newswire column.
-      </p>
-
-      <p class="siteheader">International and Customizable</p>
-      <p class="intro">
-        Epicyon supports many languages. Translations and emoji can easily be added. Alter the logo, backgrounds, terms of service and style to create a unique personality for your instance. Choose from a few different themes, or make a new one.
-      </p>
-      <img width="100%" src="img/screenshot_light.jpg" alt="light theme timeline screenshot"/>
-
-      <p class="siteheader">Calendar Events</p>
-      <p class="intro">
-        When creating a new post you can optionally also add a date, time and place. This will show up on the calendars of your followers, and makes organizing meetups or other community events simple. You can use message scopes to set up public events or private ones. To create reminders you can send yourself a DM with an event and it will appear on only your calendar.
-      </p>
-      <img width="70%" src="img/calendar.jpg" alt="calendar screenshot"/>
-
-      <p class="siteheader">Noone Left Behind</p>
-      <p class="intro">
-        Epicyon's absence of javascript makes it much more usable in shell based web browsers such as <a href="https://en.wikipedia.org/wiki/Lynx_%28web_browser%29">Lynx</a>. As new web systems are deployed we should not be leaving anyone with minority use cases behind.
-      </p>
-      <img width="70%" src="img/screenshot_lynx.jpg" alt="lynx screenshot"/>
-      <img width="100%" src="img/desktop_client.jpg" alt="C2S desktop client screenshot"/>
-
-      <p class="siteheader">Media Timeline</p>
-      <p class="intro">
-        Some posts contain images and some don't. The media timeline enables you to view all your pet photos in one place.
-      </p>
-      <img width="100%" src="img/screenshot_media.jpg" alt="media timeline screenshot"/>
-      <img width="70%" src="img/screenshot_media3.jpg" alt="media timeline screenshot"/>
-      <p class="intro">
-        If you want your instance to be primarily about posting and interacting with media then you can also enable the <b>media instance</b> option.
-      </p>
-      <p class="siteheader">Genuine Sharing Economy</p>
-      <p class="intro">
-        Barter and gift physical items or services with other people on your instance. Search for shared items which you might want or post items you no longer have a use for. Promote ride shares or available accomodation without any unnecessary companies in the middle. Pool resources between trusted friends to build solidarity and have fun.
-      </p>
-      <img width="70%" src="img/screenshot_shares.jpg" />
-      <p class="siteheader">Promote Your Skills and Build Teams</p>
-      <p class="intro">
-        Define a set of skills in your profile and search for other people who have the skills you need. Organize teams who can get things done!
-      </p>
-      <table style="margin:1% 10%;width:90%" border="0">
-        <tr>
-          <th><img width="90%" src="img/skills.jpg" /></th>
-          <th><img width="90%" src="img/skillssearch.jpg" /></th>
-        </tr>
-      </table>
-      <p class="siteheader">Bookmarks</p>
-      <p class="intro">
-        Want to remember a particular link or reply to something later? Bookmark your favorite posts and view them on the <i>Saves</i> timeline.
-      </p>
-      <img width="70%" src="img/screenshot_bookmarks.jpg" />
-
-      <p class="siteheader">Hashtags</p>
-      <p class="intro">
-        Stay informed about the topics which people that you follow are highlighting. On the search screen there is a hashtag swarm.
-      </p>
-      <img width="70%" src="img/screenshot_tagswarm.jpg" />
-
-      <p class="siteheader">News integration</p>
-      <p class="intro">
-        Want to read the news from an RSS feed, or run your own Independent Media Center producing news and federating it through the network? Both of those are possible. The newswire gives you the capability of collectively moderating news as it arrives, and publishing your own articles. The administrator can assign moderator and editor roles to other users on an instance. Organize your community to overcome the limitations of corporate media.
-      </p>
-
-      <p id="install" class="siteheader">Install</p>
+      <p class="siteheader">Epicyon release version 1.3.0</p>
+      <p class="siteheader">"Norfolk Terrier"</p>
+      <p class="subheader">3rd Feb 2022</p>
     </center>
-    <p class="intro">You will need python version 3.7 or later.</p>
-    <p class="intro">On a Debian based system:</p>
-    <div class="shell">
-      <p>sudo apt install -y tor python3-socks imagemagick python3-setuptools python3-cryptography python3-dateutil python3-idna python3-requests python3-flake8 python3-django-timezone-field python3-pyqrcode python3-png python3-bandit libimage-exiftool-perl certbot nginx wget</p>
-    </div>
-
-    <p class="intro">
-      The following instructions install Epicyon to the <b>/opt</b> directory. It's not essential that it be installed there, and it could be in any other preferred directory.
-    </p>
-
-    <p class="intro">
-      Clone the repo, or if you downloaded the tarball then extract it into the <b>/opt</b> directory.
-    </p>
-    <div class="shell">
-      <p>cd /opt</p>
-      <p>git clone https://gitlab.com/bashrc2/epicyon</p>
-    </div>
-
-    <p class="intro">
-      Create a user for the server to run as:
-    </p>
-    <div class="shell">
-      <p>sudo su</p>
-      <p>adduser --system --home=/opt/epicyon --group epicyon</p>
-      <p>chown -R epicyon:epicyon /opt/epicyon</p>
-    </div>
-
-    <p class="intro">
-      Link news mirrors:
-    </p>
-    <div class="shell">
-      <p>mkdir /var/www/YOUR_DOMAIN</p>
-      <p>mkdir -p /opt/epicyon/accounts/newsmirror</p>
-      <p>ln -s /opt/epicyon/accounts/newsmirror /var/www/YOUR_DOMAIN/newsmirror</p>
-    </div>
-
-    <p class="intro">
-      Create a daemon:
-    </p>
-    <div class="shell">
-      <p>nano /etc/systemd/system/epicyon.service</p>
-    </div>
-    <p class="intro">
-      Paste the following:
-    </p>
-    <div class="shell">
-      [Unit]<br>
-      Description=epicyon<br>
-      After=syslog.target<br>
-      After=network.target<br>
-      <br>
-      [Service]<br>
-      Type=simple<br>
-      User=epicyon<br>
-      Group=epicyon<br>
-      WorkingDirectory=/opt/epicyon<br>
-      ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug --logLoginFailures<br>
-      Environment=USER=epicyon<br>
-      Environment=PYTHONUNBUFFERED=true<br>
-      Restart=always<br>
-      StandardError=syslog<br>
-      CPUQuota=80%<br>
-      <br>
-      [Install]<br>
-      WantedBy=multi-user.target
-    </div>
-    <p class="intro">
-      Activate the daemon:
-    </p>
-    <div class="shell">
-      systemctl enable epicyon<br>
-      systemctl start epicyon
-    </div>
-    <p class="intro">
-      Create a web server configuration:
-    </p>
-    <div class="shell">
-      nano /etc/nginx/sites-available/YOUR_DOMAIN
-    </div>
-    <p class="intro">
-      And paste the following:
-    </p>
-    <div class="shell">
-      server {<br>
-        listen 80;<br>
-        listen [::]:80;<br>
-        server_name YOUR_DOMAIN;<br>
-        access_log /dev/null;<br>
-        error_log /dev/null;<br>
-        client_max_body_size 31m;<br>
-        client_body_buffer_size 128k;<br>
-        <br>
-        limit_conn conn_limit_per_ip 10;<br>
-        limit_req zone=req_limit_per_ip burst=10 nodelay;<br>
-        <br>
-        index index.html;<br>
-        rewrite ^ https://$server_name$request_uri? permanent;<br>
-      }<br>
-      <br>
-      server {<br>
-        listen 443 ssl;<br>
-        server_name YOUR_DOMAIN;<br>
-        <br>
-        gzip on;<br>
-        gzip_disable "msie6";<br>
-        gzip_vary on;<br>
-        gzip_proxied any;<br>
-        gzip_min_length 1024;<br>
-        gzip_comp_level 6;<br>
-        gzip_buffers 16 8k;<br>
-        gzip_http_version 1.1;<br>
-        gzip_types text/plain text/css application/json application/ld+json application/javascript text/xml application/xml application/rdf+xml application/xml+rss text/javascript;<br>
-        <br>
-        ssl_stapling off;<br>
-        ssl_stapling_verify off;<br>
-        ssl on;<br>
-        ssl_certificate /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem;<br>
-        ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;<br>
-        #ssl_dhparam /etc/ssl/certs/YOUR_DOMAIN.dhparam;<br>
-        <br>
-        ssl_protocols TLSv1.2 TLSv1.3;<br>
-        ssl_ciphers HIGH:!MEDIUM:!LOW:!aNULL:!NULL:!SHA;<br>
-        ssl_prefer_server_ciphers on;<br>
-        ssl_session_cache shared:SSL:10m;<br>
-        ssl_session_tickets off;<br>
-        <br>
-        add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline'; style-src https: 'unsafe-inline'";<br>
-        add_header X-Frame-Options DENY;<br>
-        add_header X-Content-Type-Options nosniff;<br>
-        add_header X-XSS-Protection "1; mode=block";<br>
-        add_header X-Download-Options noopen;<br>
-        add_header X-Permitted-Cross-Domain-Policies none;<br>
-        add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload" always;<br>
-        <br>
-        access_log /dev/null;<br>
-        error_log /dev/null;<br>
-        <br>
-        index index.html;<br>
-        <br>
-        location /newsmirror {<br>
-          root /var/www/YOUR_DOMAIN;<br>
-          try_files $uri =404;<br>
-        }<br>
-        <br>
-        keepalive_timeout 70;<br>
-        sendfile on;<br>
-        <br>
-        location / {<br>
-        proxy_http_version 1.1;<br>
-        client_max_body_size 31M;<br>
-        proxy_set_header Host $http_host;<br>
-        proxy_set_header X-Real-IP $remote_addr;<br>
-        proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;<br>
-        proxy_set_header X-Forward-Proto http;<br>
-        proxy_set_header X-Nginx-Proxy true;<br>
-        proxy_temp_file_write_size 64k;<br>
-        proxy_connect_timeout 10080s;<br>
-        proxy_send_timeout 10080;<br>
-        proxy_read_timeout 10080;<br>
-        proxy_buffer_size 64k;<br>
-        proxy_buffers 16 32k;<br>
-        proxy_busy_buffers_size 64k;<br>
-        proxy_redirect off;<br>
-        proxy_request_buffering off;<br>
-        proxy_buffering off;<br>
-        proxy_pass http://localhost:7156;<br>
-        tcp_nodelay on;<br>
-        }<br>
-      }
-    </div>
-
-    <p class="intro">
-      Enable the site:
-    </p>
-    <div class="shell">
-      ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/<br>
-    </div>
-
-    <p class="intro">
-      Forward port 443 from your internet router to your server. If you have dynamic DNS make sure its configured. Add a TLS certificate:
-    </p>
-    <div class="shell">
-      certbot certonly -n --server https://acme-v02.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
-    </div>
-    <p class="intro">
-      Restart your web server:
-    </p>
-    <div class="shell">
-      systemctl restart nginx
-    </div>
-    <p class="intro">
-      If you need to use <a href="https://www.fail2ban.org">fail2ban</a> then failed login attempts can be found in <b>accounts/loginfailures.log</b>.
-    </p>
-    <p class="intro">
-      If you are using the <a href="https://caddyserver.com">Caddy web server</a> then see <a href="https://code.libreserver.org/bashrc/epicyon/raw/main/caddy.example.conf">caddy.example.conf</a>
-    </p>
-    <p class="intro">
-      Now you can navigate to your domain and register an account. The first account becomes the administrator.
-    </p>
-
-    <center>
-      <p id="install" class="siteheader">Installing on Onion or i2p domains</p>
-      <p class="intro">
-        If you don't have access to the clearnet, or prefer not to use it, then it's possible to run an Epicyon instance easily from your laptop. There are scripts within the <i>deploy</i> directory which can be used to install an instance on a Debian or Arch/Parabola operating system. With some modification of package names they could be also used with other distros.
-      </p>
-      <p class="intro">
-Please be aware that such installations will not federate with ordinary fediverse instances on the clearnet, unless those instances have been specially modified to do so. But onion instances will federate with other onion instances and i2p instances with other i2p instances.
-      </p>
-
-      <p id="upgrade" class="siteheader">Upgrade</p>
-    </center>
-    <p class="intro">
-      To subsequently upgrade:
-    </p>
-    <div class="shell">
-      cd /opt/epicyon<br>
-      git pull<br>
-      chown -R epicyon:epicyon *<br>
-      systemctl restart epicyon
-    </div>
+    <p class="intro">Over the last year <a href="https://libreserver.org/epicyon">Epicyon</a> has seen some major improvements, such as keyboard navigation, much faster cryptography and federated shared items. So it has been an unusually busy year for the project and I expect that future development is going to become less hectic and more incremental.</p>
+    <p class="intro">Like a Norfolk Terrier, the fediverse continues to be a lively and more friendly companion than the <a href="https://en.wikipedia.org/wiki/Hedorah">smog monster</a> which the big commercial social networks have turned into. Even if it doesn't take over the world or isn't to everyone's taste, being able to run your own small social network sites the way you want to and on low cost hardware is a victory.</p>
+    <p class="intro">Epicyon is not intended to compete with Mastodon, and there are no public Epicyon instances to try. This is expected to be a self-hosted system for instances with ten user accounts or less. Don't scale up, scale out horizontally, like the rhizome.</p>
+    <p class="intro">Some of the changes since the previous version are:
+	<ul>
+	   <li>Switched from pycryptodome to python3-cryptography, with 20X speed increase</li>
+	   <li>Bug fixes to RSS feed parsing in the newswire</li>
+	   <li>Improved support for podcasts, including the <a href="https://github.com/Podcastindex-org/podcast-namespace">podcast namespace</a></li>
+	   <li>Dyslexic font option</li>
+	   <li>Instance metadata improvements</li>
+	   <li>Exceeded 10K commits (if that means anything)</li>
+	   <li>Configurable keyboard navigation</li>
+	   <li>Emoji reactions 😄</li>
+	   <li>Support for tiny screen size on very small phones</li>
+	   <li>Improved support for groups</li>
+	   <li>Federation of shared items</li>
+	   <li>Shared items ontology, based on the <a href="https://www.datafoodconsortium.org/en/our-standard">Data Food Consortium</a></li>
+	   <li>Accommodation as a shared item category</li>
+	   <li>Mute button mutes the whole conversation</li>
+	   <li>Reply screen shows the post being replied to</li>
+	   <li>Onboarding screens</li>
+	   <li>Code architecture graphs</li>
+	   <li>Occupation field within profile</li>
+	   <li>DM bounce messages</li>
+	   <li>Broch mode dogpiling defense</li>
+	   <li>Support for authenticated fetch</li>
+	 </ul> 
+    <p>
+    <p class="intro">Epicyon can be downloaded as <a href="epicyon.tar.gz">a gzipped file</a>, or you can get the latest version from the <a href="https://gitlab.com/bashrc2/epicyon">git repo</a>. For installation instructions see <a href="index.html">the main page</a>. To upgrade an existing instance, make sure that you have the python3-cryptography package installed then do a git pull, chown and restart the daemon. <i>Upgrades to web systems do not need to be a huge drama</i>.</p>
   </body>
   <footer>
     <p>By: Bob Mottram <a href="mailto:bob@libreserver.org">bob@libreserver.org</a></p>

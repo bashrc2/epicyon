@@ -1,7 +1,7 @@
 __filename__ = "desktop_client.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -176,7 +176,7 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
                     read_file.seek(0, 0)
                     read_file.write(post_id + content)
         except Exception as ex:
-            print('WARN: Failed to mark post as read' + str(ex))
+            print('EX: Failed to mark post as read' + str(ex))
     else:
         with open(read_posts_filename, 'w+') as read_file:
             read_file.write(post_id + '\n')

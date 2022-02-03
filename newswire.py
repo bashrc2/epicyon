@@ -1,7 +1,7 @@
 __filename__ = "newswire.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -1218,7 +1218,7 @@ def get_rs_sfrom_dict(base_dir: str, newswire: {},
             published = published_with_offset.strftime("%Y-%m-%dT%H:%M:%SZ")
         try:
             pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-        except Exception as ex:
+        except BaseException as ex:
             print('WARN: Unable to convert date ' + published + ' ' + str(ex))
             continue
         rss_str += \

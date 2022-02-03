@@ -1,7 +1,7 @@
 __filename__ = "session.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -23,17 +23,17 @@ def create_session(proxy_type: str):
     try:
         session = requests.session()
     except requests.exceptions.RequestException as ex:
-        print('WARN: requests error during create_session ' + str(ex))
+        print('EX: requests error during create_session ' + str(ex))
         return None
     except SocketError as ex:
         if ex.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during create_session ' +
+            print('EX: connection was reset during create_session ' +
                   str(ex))
         else:
-            print('WARN: socket error during create_session ' + str(ex))
+            print('EX: socket error during create_session ' + str(ex))
         return None
     except ValueError as ex:
-        print('WARN: error during create_session ' + str(ex))
+        print('EX: error during create_session ' + str(ex))
         return None
     if not session:
         return None
@@ -114,7 +114,7 @@ def _get_json_request(session, url: str, domain_full: str, session_headers: {},
         if session_headers2.get('Authorization'):
             session_headers2['Authorization'] = 'REDACTED'
         if debug and not quiet:
-            print('ERROR: get_json failed, url: ' + str(url) + ', ' +
+            print('EX: get_json failed, url: ' + str(url) + ', ' +
                   'headers: ' + str(session_headers2) + ', ' +
                   'params: ' + str(session_params) + ', ' + str(ex))
     except ValueError as ex:
@@ -122,13 +122,13 @@ def _get_json_request(session, url: str, domain_full: str, session_headers: {},
         if session_headers2.get('Authorization'):
             session_headers2['Authorization'] = 'REDACTED'
         if debug and not quiet:
-            print('ERROR: get_json failed, url: ' + str(url) + ', ' +
+            print('EX: get_json failed, url: ' + str(url) + ', ' +
                   'headers: ' + str(session_headers2) + ', ' +
                   'params: ' + str(session_params) + ', ' + str(ex))
     except SocketError as ex:
         if not quiet:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: get_json failed, ' +
+                print('EX: get_json failed, ' +
                       'connection was reset during get_json ' + str(ex))
     return None
 
@@ -210,7 +210,7 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
 
 def get_json(signing_priv_key_pem: str,
              session, url: str, headers: {}, params: {}, debug: bool,
-             version: str = '1.2.0', http_prefix: str = 'https',
+             version: str = '1.3.0', http_prefix: str = 'https',
              domain: str = 'testdomain',
              timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
@@ -248,7 +248,7 @@ def get_json(signing_priv_key_pem: str,
 
 def download_html(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
-                  version: str = '1.2.0', http_prefix: str = 'https',
+                  version: str = '1.3.0', http_prefix: str = 'https',
                   domain: str = 'testdomain',
                   timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
@@ -310,23 +310,23 @@ def post_json(http_prefix: str, domain_full: str,
                          headers=headers, timeout=timeout_sec)
     except requests.Timeout as ex:
         if not quiet:
-            print('ERROR: post_json timeout ' + inbox_url + ' ' +
+            print('EX: post_json timeout ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers))
             print(ex)
         return ''
     except requests.exceptions.RequestException as ex:
         if not quiet:
-            print('ERROR: post_json requests failed ' + inbox_url + ' ' +
+            print('EX: post_json requests failed ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers) +
                   ' ' + str(ex))
         return None
     except SocketError as ex:
         if not quiet and ex.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during post_json')
+            print('EX: connection was reset during post_json')
         return None
     except ValueError as ex:
         if not quiet:
-            print('ERROR: post_json failed ' + inbox_url + ' ' +
+            print('EX: post_json failed ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers) +
                   ' ' + str(ex))
         return None
@@ -360,18 +360,18 @@ def post_json_string(session, post_jsonStr: str,
                          headers=headers, timeout=timeout_sec)
     except requests.exceptions.RequestException as ex:
         if not quiet:
-            print('WARN: error during post_json_string requests ' + str(ex))
+            print('EX: error during post_json_string requests ' + str(ex))
         return None, None, 0
     except SocketError as ex:
         if not quiet and ex.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during post_json_string')
+            print('EX: connection was reset during post_json_string')
         if not quiet:
-            print('ERROR: post_json_string failed ' + inbox_url + ' ' +
+            print('EX: post_json_string failed ' + inbox_url + ' ' +
                   post_jsonStr + ' ' + str(headers))
         return None, None, 0
     except ValueError as ex:
         if not quiet:
-            print('WARN: error during post_json_string ' + str(ex))
+            print('EX: error during post_json_string ' + str(ex))
         return None, None, 0
     if post_result.status_code < 200 or post_result.status_code > 202:
         if post_result.status_code >= 400 and \
@@ -425,16 +425,16 @@ def post_image(session, attach_image_filename: str, federation_list: [],
             post_result = session.post(url=inbox_url, data=media_binary,
                                        headers=headers)
         except requests.exceptions.RequestException as ex:
-            print('WARN: error during post_image requests ' + str(ex))
+            print('EX: error during post_image requests ' + str(ex))
             return None
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: connection was reset during post_image')
+                print('EX: connection was reset during post_image')
             print('ERROR: post_image failed ' + inbox_url + ' ' +
                   str(headers) + ' ' + str(ex))
             return None
         except ValueError as ex:
-            print('WARN: error during post_image ' + str(ex))
+            print('EX: error during post_image ' + str(ex))
             return None
         if post_result:
             return post_result.text
@@ -540,16 +540,16 @@ def download_image_any_mime_type(session, url: str,
     try:
         result = session.get(url, headers=session_headers, timeout=timeout_sec)
     except requests.exceptions.RequestException as ex:
-        print('ERROR: download_image_any_mime_type failed: ' +
+        print('EX: download_image_any_mime_type failed1: ' +
               str(url) + ', ' + str(ex))
         return None, None
     except ValueError as ex:
-        print('ERROR: download_image_any_mime_type failed: ' +
+        print('EX: download_image_any_mime_type failed2: ' +
               str(url) + ', ' + str(ex))
         return None, None
     except SocketError as ex:
         if ex.errno == errno.ECONNRESET:
-            print('WARN: download_image_any_mime_type failed, ' +
+            print('EX: download_image_any_mime_type failed, ' +
                   'connection was reset ' + str(ex))
         return None, None
 

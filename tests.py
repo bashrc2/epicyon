@@ -1,7 +1,7 @@
 __filename__ = "tests.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -283,7 +283,7 @@ def _test_http_signed_get(base_dir: str):
     accept = 'application/json'
 #    accept = 'application/activity+json'
     headers = {
-        'user-agent': 'Epicyon/1.2.0; +https://' + domain + '/',
+        'user-agent': 'Epicyon/1.3.0; +https://' + domain + '/',
         'host': headers_domain,
         'date': date_str,
         'accept': accept,
@@ -5867,7 +5867,10 @@ def _test_useragent_domain() -> None:
     print('test_user_agent_domain')
     user_agent = \
         'http.rb/4.4.1 (Mastodon/9.10.11; +https://mastodon.something/)'
-    assert user_agent_domain(user_agent, False) == 'mastodon.something'
+    agent_domain = user_agent_domain(user_agent, False)
+    if agent_domain != 'mastodon.something':
+        print(agent_domain)
+    assert agent_domain == 'mastodon.something'
     user_agent = \
         'Mozilla/70.0 (X11; Linux x86_64; rv:1.0) Gecko/20450101 Firefox/1.0'
     assert user_agent_domain(user_agent, False) is None
