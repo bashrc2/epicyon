@@ -2891,11 +2891,13 @@ def user_agent_domain(user_agent: str, debug: bool) -> str:
     """If the User-Agent string contains a domain
     then return it
     """
-    if 'http' not in user_agent:
+    if 'https://' not in user_agent and 'http://' not in user_agent:
         return None
-    agent_domain = user_agent.split('http')[1].strip()
-    if '://' in agent_domain:
-        agent_domain = agent_domain.split('://')[1]
+    agent_domain = ''
+    if 'https://' in user_agent:
+        agent_domain = user_agent.split('https://')[1].strip()
+    else:
+        agent_domain = user_agent.split('http://')[1].strip()
     if '/' in agent_domain:
         agent_domain = agent_domain.split('/')[0]
     if ')' in agent_domain:
@@ -3323,22 +3325,3 @@ def valid_hash_tag(hashtag: str) -> bool:
     if _is_valid_language(hashtag):
         return True
     return False
-
-
-def get_domain_from_url_in_string(text: str) -> str:
-    """Returns the domain from within a string if it exists
-    """
-    domain_str = ''
-    if 'https://' in text:
-        domain_str = text.split('https://')[1]
-        if '/' in domain_str:
-            domain_str = domain_str.split('/')[0]
-        elif ')' in domain_str:
-            domain_str = domain_str.split(')')[0]
-    elif 'http://' in text:
-        domain_str = text.split('http://')[1]
-        if '/' in domain_str:
-            domain_str = domain_str.split('/')[0]
-        elif ')' in domain_str:
-            domain_str = domain_str.split(')')[0]
-    return domain_str

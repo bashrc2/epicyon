@@ -5867,7 +5867,10 @@ def _test_useragent_domain() -> None:
     print('test_user_agent_domain')
     user_agent = \
         'http.rb/4.4.1 (Mastodon/9.10.11; +https://mastodon.something/)'
-    assert user_agent_domain(user_agent, False) == 'mastodon.something'
+    agent_domain = user_agent_domain(user_agent, False)
+    if agent_domain != 'mastodon.something':
+        print(agent_domain)
+    assert agent_domain == 'mastodon.something'
     user_agent = \
         'Mozilla/70.0 (X11; Linux x86_64; rv:1.0) Gecko/20450101 Firefox/1.0'
     assert user_agent_domain(user_agent, False) is None
