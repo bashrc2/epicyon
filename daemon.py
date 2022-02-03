@@ -1025,10 +1025,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             except BrokenPipeError as ex:
                 if self.server.debug:
-                    print('ERROR: _write error ' + str(tries) + ' ' + str(ex))
+                    print('EX: _write error ' + str(tries) + ' ' + str(ex))
                 break
-            except Exception as ex:
-                print('ERROR: _write error ' + str(tries) + ' ' + str(ex))
+            except BaseException as ex:
+                print('EX: _write error ' + str(tries) + ' ' + str(ex))
                 time.sleep(0.5)
             tries += 1
         return False
@@ -1732,16 +1732,16 @@ class PubServer(BaseHTTPRequestHandler):
             login_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST login read ' +
+                print('EX: POST login read ' +
                       'connection reset by peer')
             else:
-                print('WARN: POST login read socket error')
+                print('EX: POST login read socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST login read failed, ' + str(ex))
+            print('EX: POST login read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
@@ -1925,16 +1925,16 @@ class PubServer(BaseHTTPRequestHandler):
             moderation_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST moderation_params connection was reset')
+                print('EX: POST moderation_params connection was reset')
             else:
-                print('WARN: POST moderation_params ' +
+                print('EX: POST moderation_params ' +
                       'rfile.read socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST moderation_params rfile.read failed, ' +
+            print('EX: POST moderation_params rfile.read failed, ' +
                   str(ex))
             self.send_response(400)
             self.end_headers()
@@ -2140,16 +2140,16 @@ class PubServer(BaseHTTPRequestHandler):
             access_keys_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST access_keys_params ' +
+                print('EX: POST access_keys_params ' +
                       'connection reset by peer')
             else:
-                print('WARN: POST access_keys_params socket error')
+                print('EX: POST access_keys_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST access_keys_params rfile.read failed, ' +
+            print('EX: POST access_keys_params rfile.read failed, ' +
                   str(ex))
             self.send_response(400)
             self.end_headers()
@@ -2233,16 +2233,16 @@ class PubServer(BaseHTTPRequestHandler):
             theme_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST theme_params ' +
+                print('EX: POST theme_params ' +
                       'connection reset by peer')
             else:
-                print('WARN: POST theme_params socket error')
+                print('EX: POST theme_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST theme_params rfile.read failed, ' + str(ex))
+            print('EX: POST theme_params rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
@@ -2383,16 +2383,16 @@ class PubServer(BaseHTTPRequestHandler):
             options_confirm_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST options_confirm_params ' +
+                print('EX: POST options_confirm_params ' +
                       'connection reset by peer')
             else:
-                print('WARN: POST options_confirm_params socket error')
+                print('EX: POST options_confirm_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: ' +
+            print('EX: ' +
                   'POST options_confirm_params rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
@@ -2996,16 +2996,16 @@ class PubServer(BaseHTTPRequestHandler):
             follow_confirm_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST follow_confirm_params ' +
+                print('EX: POST follow_confirm_params ' +
                       'connection was reset')
             else:
-                print('WARN: POST follow_confirm_params socket error')
+                print('EX: POST follow_confirm_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST follow_confirm_params rfile.read failed, ' +
+            print('EX: POST follow_confirm_params rfile.read failed, ' +
                   str(ex))
             self.send_response(400)
             self.end_headers()
@@ -3085,16 +3085,16 @@ class PubServer(BaseHTTPRequestHandler):
             follow_confirm_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST follow_confirm_params ' +
+                print('EX: POST follow_confirm_params ' +
                       'connection was reset')
             else:
-                print('WARN: POST follow_confirm_params socket error')
+                print('EX: POST follow_confirm_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST follow_confirm_params rfile.read failed, ' +
+            print('EX: POST follow_confirm_params rfile.read failed, ' +
                   str(ex))
             self.send_response(400)
             self.end_headers()
@@ -3185,16 +3185,16 @@ class PubServer(BaseHTTPRequestHandler):
             block_confirm_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST block_confirm_params ' +
+                print('EX: POST block_confirm_params ' +
                       'connection was reset')
             else:
-                print('WARN: POST block_confirm_params socket error')
+                print('EX: POST block_confirm_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST block_confirm_params rfile.read failed, ' +
+            print('EX: POST block_confirm_params rfile.read failed, ' +
                   str(ex))
             self.send_response(400)
             self.end_headers()
@@ -3273,16 +3273,16 @@ class PubServer(BaseHTTPRequestHandler):
             block_confirm_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST block_confirm_params ' +
+                print('EX: POST block_confirm_params ' +
                       'connection was reset')
             else:
-                print('WARN: POST block_confirm_params socket error')
+                print('EX: POST block_confirm_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST block_confirm_params rfile.read failed, ' +
+            print('EX: POST block_confirm_params rfile.read failed, ' +
                   str(ex))
             self.send_response(400)
             self.end_headers()
@@ -3357,15 +3357,15 @@ class PubServer(BaseHTTPRequestHandler):
             search_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST search_params connection was reset')
+                print('EX: POST search_params connection was reset')
             else:
-                print('WARN: POST search_params socket error')
+                print('EX: POST search_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST search_params rfile.read failed, ' + str(ex))
+            print('EX: POST search_params rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
@@ -3816,15 +3816,15 @@ class PubServer(BaseHTTPRequestHandler):
             question_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST question_params connection was reset')
+                print('EX: POST question_params connection was reset')
             else:
-                print('WARN: POST question_params socket error')
+                print('EX: POST question_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST question_params rfile.read failed, ' + str(ex))
+            print('EX: POST question_params rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
@@ -3894,16 +3894,16 @@ class PubServer(BaseHTTPRequestHandler):
             media_bytes = self.rfile.read(length)
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST media_bytes ' +
+                print('EX: POST media_bytes ' +
                       'connection reset by peer')
             else:
-                print('WARN: POST media_bytes socket error')
+                print('EX: POST media_bytes socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST media_bytes rfile.read failed, ' + str(ex))
+            print('EX: POST media_bytes rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
@@ -3942,16 +3942,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST remove_share_confirm_params ' +
+                print('EX: POST remove_share_confirm_params ' +
                       'connection was reset')
             else:
-                print('WARN: POST remove_share_confirm_params socket error')
+                print('EX: POST remove_share_confirm_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST remove_share_confirm_params ' +
+            print('EX: POST remove_share_confirm_params ' +
                   'rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
@@ -4010,16 +4010,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST remove_share_confirm_params ' +
+                print('EX: POST remove_share_confirm_params ' +
                       'connection was reset')
             else:
-                print('WARN: POST remove_share_confirm_params socket error')
+                print('EX: POST remove_share_confirm_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST remove_share_confirm_params ' +
+            print('EX: POST remove_share_confirm_params ' +
                   'rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
@@ -4081,16 +4081,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST remove_post_confirm_params ' +
+                print('EX: POST remove_post_confirm_params ' +
                       'connection was reset')
             else:
-                print('WARN: POST remove_post_confirm_params socket error')
+                print('EX: POST remove_post_confirm_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST remove_post_confirm_params ' +
+            print('EX: POST remove_post_confirm_params ' +
                   'rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
@@ -4206,17 +4206,17 @@ class PubServer(BaseHTTPRequestHandler):
                 post_bytes = self.rfile.read(length)
             except SocketError as ex:
                 if ex.errno == errno.ECONNRESET:
-                    print('WARN: connection was reset while ' +
+                    print('EX: connection was reset while ' +
                           'reading bytes from http form POST')
                 else:
-                    print('WARN: error while reading bytes ' +
+                    print('EX: error while reading bytes ' +
                           'from http form POST')
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
                 return
             except ValueError as ex:
-                print('ERROR: failed to read bytes for POST, ' + str(ex))
+                print('EX: failed to read bytes for POST, ' + str(ex))
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
@@ -4367,17 +4367,17 @@ class PubServer(BaseHTTPRequestHandler):
                 post_bytes = self.rfile.read(length)
             except SocketError as ex:
                 if ex.errno == errno.ECONNRESET:
-                    print('WARN: connection was reset while ' +
+                    print('EX: connection was reset while ' +
                           'reading bytes from http form POST')
                 else:
-                    print('WARN: error while reading bytes ' +
+                    print('EX: error while reading bytes ' +
                           'from http form POST')
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
                 return
             except ValueError as ex:
-                print('ERROR: failed to read bytes for POST, ' + str(ex))
+                print('EX: failed to read bytes for POST, ' + str(ex))
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
@@ -4451,17 +4451,17 @@ class PubServer(BaseHTTPRequestHandler):
                 post_bytes = self.rfile.read(length)
             except SocketError as ex:
                 if ex.errno == errno.ECONNRESET:
-                    print('WARN: connection was reset while ' +
+                    print('EX: connection was reset while ' +
                           'reading bytes from http form POST')
                 else:
-                    print('WARN: error while reading bytes ' +
+                    print('EX: error while reading bytes ' +
                           'from http form POST')
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
                 return
             except ValueError as ex:
-                print('ERROR: failed to read bytes for POST, ' + str(ex))
+                print('EX: failed to read bytes for POST, ' + str(ex))
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
@@ -4606,18 +4606,18 @@ class PubServer(BaseHTTPRequestHandler):
                 post_bytes = self.rfile.read(length)
             except SocketError as ex:
                 if ex.errno == errno.ECONNRESET:
-                    print('WARN: connection was reset while ' +
+                    print('EX: connection was reset while ' +
                           'reading bytes from http form ' +
                           'citation screen POST')
                 else:
-                    print('WARN: error while reading bytes ' +
+                    print('EX: error while reading bytes ' +
                           'from http form citations screen POST')
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
                 return
             except ValueError as ex:
-                print('ERROR: failed to read bytes for ' +
+                print('EX: failed to read bytes for ' +
                       'citations screen POST, ' + str(ex))
                 self.send_response(400)
                 self.end_headers()
@@ -4706,17 +4706,17 @@ class PubServer(BaseHTTPRequestHandler):
                 post_bytes = self.rfile.read(length)
             except SocketError as ex:
                 if ex.errno == errno.ECONNRESET:
-                    print('WARN: connection was reset while ' +
+                    print('EX: connection was reset while ' +
                           'reading bytes from http form POST')
                 else:
-                    print('WARN: error while reading bytes ' +
+                    print('EX: error while reading bytes ' +
                           'from http form POST')
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
                 return
             except ValueError as ex:
-                print('ERROR: failed to read bytes for POST, ' + str(ex))
+                print('EX: failed to read bytes for POST, ' + str(ex))
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
@@ -4766,8 +4766,8 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             save_json(self.server.newswire,
                                       newswire_state_filename)
-                        except Exception as ex:
-                            print('ERROR: saving newswire state, ' + str(ex))
+                        except BaseException as ex:
+                            print('EX: saving newswire state, ' + str(ex))
 
                     # remove any previous cached news posts
                     news_id = \
@@ -4831,17 +4831,17 @@ class PubServer(BaseHTTPRequestHandler):
                 post_bytes = self.rfile.read(length)
             except SocketError as ex:
                 if ex.errno == errno.ECONNRESET:
-                    print('WARN: connection was reset while ' +
+                    print('EX: connection was reset while ' +
                           'reading bytes from http form POST')
                 else:
-                    print('WARN: error while reading bytes ' +
+                    print('EX: error while reading bytes ' +
                           'from http form POST')
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
                 return
             except ValueError as ex:
-                print('ERROR: failed to read bytes for POST, ' + str(ex))
+                print('EX: failed to read bytes for POST, ' + str(ex))
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
@@ -8113,8 +8113,8 @@ class PubServer(BaseHTTPRequestHandler):
                         base_dir + '/accounts/.newswirestate.json'
                     try:
                         save_json(newswire, newswire_state_filename)
-                    except Exception as ex:
-                        print('ERROR: saving newswire state, ' + str(ex))
+                    except BaseException as ex:
+                        print('EX: saving newswire state, ' + str(ex))
                     if filename:
                         save_json(newswire_item[votes_index],
                                   filename + '.votes')
@@ -8168,8 +8168,8 @@ class PubServer(BaseHTTPRequestHandler):
                         base_dir + '/accounts/.newswirestate.json'
                     try:
                         save_json(newswire, newswire_state_filename)
-                    except Exception as ex:
-                        print('ERROR: saving newswire state, ' + str(ex))
+                    except BaseException as ex:
+                        print('EX: saving newswire state, ' + str(ex))
                     if filename:
                         save_json(newswire_item[votes_index],
                                   filename + '.votes')
@@ -12702,8 +12702,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.css_cache)
                     if css:
                         break
-                except Exception as ex:
-                    print('ERROR: _get_style_sheet ' +
+                except BaseException as ex:
+                    print('EX: _get_style_sheet ' +
                           str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
@@ -12742,8 +12742,8 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(qr_filename, 'rb') as av_file:
                         media_binary = av_file.read()
                         break
-                except Exception as ex:
-                    print('ERROR: _show_q_rcode ' + str(tries) + ' ' + str(ex))
+                except BaseException as ex:
+                    print('EX: _show_q_rcode ' + str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
             if media_binary:
@@ -12786,8 +12786,8 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(banner_filename, 'rb') as av_file:
                         media_binary = av_file.read()
                         break
-                except Exception as ex:
-                    print('ERROR: _search_screen_banner ' +
+                except BaseException as ex:
+                    print('EX: _search_screen_banner ' +
                           str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
@@ -12831,8 +12831,8 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(banner_filename, 'rb') as av_file:
                         media_binary = av_file.read()
                         break
-                except Exception as ex:
-                    print('ERROR: _column_image ' + str(tries) + ' ' + str(ex))
+                except BaseException as ex:
+                    print('EX: _column_image ' + str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
             if media_binary:
@@ -12875,8 +12875,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 with open(bg_filename, 'rb') as av_file:
                                     bg_binary = av_file.read()
                                     break
-                            except Exception as ex:
-                                print('ERROR: _show_background_image ' +
+                            except BaseException as ex:
+                                print('EX: _show_background_image ' +
                                       str(tries) + ' ' + str(ex))
                                 time.sleep(1)
                                 tries += 1
@@ -12921,8 +12921,8 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(bg_filename, 'rb') as av_file:
                             bg_binary = av_file.read()
                             break
-                    except Exception as ex:
-                        print('ERROR: _show_default_profile_background ' +
+                    except BaseException as ex:
+                        print('EX: _show_default_profile_background ' +
                               str(tries) + ' ' + str(ex))
                         time.sleep(1)
                         tries += 1
@@ -14855,8 +14855,8 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(media_filename, 'rb') as av_file:
                             media_binary = av_file.read()
                             break
-                    except Exception as ex:
-                        print('ERROR: manifest logo ' +
+                    except BaseException as ex:
+                        print('EX: manifest logo ' +
                               str(tries) + ' ' + str(ex))
                         time.sleep(1)
                         tries += 1
@@ -14897,8 +14897,8 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(screen_filename, 'rb') as av_file:
                             media_binary = av_file.read()
                             break
-                    except Exception as ex:
-                        print('ERROR: manifest screenshot ' +
+                    except BaseException as ex:
+                        print('EX: manifest screenshot ' +
                               str(tries) + ' ' + str(ex))
                         time.sleep(1)
                         tries += 1
@@ -14939,8 +14939,8 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(icon_filename, 'rb') as av_file:
                             media_binary = av_file.read()
                             break
-                    except Exception as ex:
-                        print('ERROR: login screen image ' +
+                    except BaseException as ex:
+                        print('EX: login screen image ' +
                               str(tries) + ' ' + str(ex))
                         time.sleep(1)
                         tries += 1
@@ -17603,7 +17603,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('WARN: POST post_bytes socket error')
                     return None
                 except ValueError as ex:
-                    print('ERROR: POST post_bytes rfile.read failed, ' +
+                    print('EX: POST post_bytes rfile.read failed, ' +
                           str(ex))
                     return None
 
@@ -17646,7 +17646,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: handle POST message_bytes socket error')
             return {}
         except ValueError as ex:
-            print('ERROR: handle POST message_bytes rfile.read failed ' +
+            print('EX: handle POST message_bytes rfile.read failed ' +
                   str(ex))
             return {}
 
@@ -17689,7 +17689,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: POST message_bytes socket error')
             return {}
         except ValueError as ex:
-            print('ERROR: POST message_bytes rfile.read failed, ' + str(ex))
+            print('EX: POST message_bytes rfile.read failed, ' + str(ex))
             return {}
 
         len_message = len(message_bytes)
@@ -18469,16 +18469,16 @@ class PubServer(BaseHTTPRequestHandler):
                         unknown_post = self.rfile.read(length).decode('utf-8')
                     except SocketError as ex:
                         if ex.errno == errno.ECONNRESET:
-                            print('WARN: POST unknown_post ' +
+                            print('EX: POST unknown_post ' +
                                   'connection reset by peer')
                         else:
-                            print('WARN: POST unknown_post socket error')
+                            print('EX: POST unknown_post socket error')
                         self.send_response(400)
                         self.end_headers()
                         self.server.postreq_busy = False
                         return
                     except ValueError as ex:
-                        print('ERROR: POST unknown_post rfile.read failed, ' +
+                        print('EX: POST unknown_post rfile.read failed, ' +
                               str(ex))
                         self.send_response(400)
                         self.end_headers()
@@ -18525,7 +18525,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST message_bytes rfile.read failed, ' + str(ex))
+            print('EX: POST message_bytes rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
@@ -18755,7 +18755,7 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
                 try:
                     with open(token_filename, 'r') as fp_tok:
                         token = fp_tok.read()
-                except Exception as ex:
+                except BaseException as ex:
                     print('WARN: Unable to read token for ' +
                           nickname + ' ' + str(ex))
                 if not token:
@@ -18842,13 +18842,13 @@ def run_daemon(dyslexic_font: bool,
 
     try:
         httpd = EpicyonServer(server_address, pub_handler)
-    except Exception as ex:
-        if ex.errno == 98:
-            print('ERROR: HTTP server address is already in use. ' +
+    except SocketError as ex:
+        if ex.errno == errno.ECONNREFUSED:
+            print('EX: HTTP server address is already in use. ' +
                   str(server_address))
             return False
 
-        print('ERROR: HTTP server failed to start. ' + str(ex))
+        print('EX: HTTP server failed to start. ' + str(ex))
         print('server_address: ' + str(server_address))
         return False
 
