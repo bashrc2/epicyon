@@ -1093,7 +1093,7 @@ class PubServer(BaseHTTPRequestHandler):
                ';' in referer_domain or \
                '.' not in referer_domain:
                 print('mastodon api ' +
-                      'referer domain does not look like a domain ' +
+                      'referer does not look like a domain ' +
                       referer_domain)
                 self._400()
                 self.server.masto_api_is_active = False
