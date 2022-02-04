@@ -1062,7 +1062,8 @@ class PubServer(BaseHTTPRequestHandler):
                       custom_emoji: [],
                       show_node_info_accounts: bool,
                       referer_domain: str,
-                      debug: bool) -> bool:
+                      debug: bool,
+                      calling_site_timeout: int) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -1105,6 +1106,22 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     self.server.masto_api_is_active = False
                     return True
+
+            referer_url = http_prefix + '://' + referer_domain
+            if referer_domain + '/' in ua_str:
+                referer_url = referer_url + ua_str.split(referer_domain)[1]
+                if ' ' in referer_url:
+                    referer_url = referer_url.split(' ')[0]
+                if ';' in referer_url:
+                    referer_url = referer_url.split(';')[0]
+                if ')' in referer_url:
+                    referer_url = referer_url.split(')')[0]
+            if not site_is_active(referer_url, calling_site_timeout):
+                print('nodeinfomastodon api referer url is not active ' +
+                      referer_url)
+                self._400()
+                self.server.masto_api_is_active = False
+                return True
 
         print('mastodon api v1: ' + path)
         print('mastodon api v1: authorized ' + str(authorized))
@@ -1175,11 +1192,11 @@ class PubServer(BaseHTTPRequestHandler):
                                   translate, registration, system_language,
                                   project_version, custom_emoji,
                                   show_node_info_accounts,
-                                  referer_domain, debug)
+                                  referer_domain, debug, 5)
 
     def _nodeinfo(self, ua_str: str, calling_domain: str,
                   referer_domain: str,
-                  httpPrefix: str, calling_site_timeout: int,
+                  http_prefix: str, calling_site_timeout: int,
                   debug: bool) -> bool:
         if self.path.startswith('/nodeinfo/1.0'):
             self._400()
@@ -1219,7 +1236,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.nodeinfo_is_active = False
                     return True
 
-            referer_url = httpPrefix + '://' + referer_domain
+            referer_url = http_prefix + '://' + referer_domain
             if referer_domain + '/' in ua_str:
                 referer_url = referer_url + ua_str.split(referer_domain)[1]
                 if ' ' in referer_url:
