@@ -718,6 +718,8 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
     """
+    if '/Actor@' in filename:
+        filename = filename.replace('/Actor@', '/inbox@')
     json_object = None
     tries = 0
     while tries < 5:
