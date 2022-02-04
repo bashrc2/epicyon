@@ -1117,7 +1117,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if ')' in referer_url:
                     referer_url = referer_url.split(')')[0]
             if not site_is_active(referer_url, calling_site_timeout):
-                print('nodeinfomastodon api referer url is not active ' +
+                print('mastodon api referer url is not active ' +
                       referer_url)
                 self._400()
                 self.server.masto_api_is_active = False
