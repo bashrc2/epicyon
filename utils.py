@@ -695,6 +695,8 @@ def save_json(json_object: {}, filename: str) -> bool:
 def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
+    if '/Actor@' in filename:
+        filename = filename.replace('/Actor@', '/inbox@')
     json_object = None
     tries = 0
     while tries < max_tries:
