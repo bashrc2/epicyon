@@ -366,7 +366,7 @@ from fitnessFunctions import fitness_performance
 from fitnessFunctions import fitness_thread
 from fitnessFunctions import sorted_watch_points
 from fitnessFunctions import html_watch_points_graph
-from siteactive import site_is_active
+from siteactive import referer_is_active
 import os
 
 
@@ -1106,19 +1106,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     self.server.masto_api_is_active = False
                     return True
-
-            referer_url = http_prefix + '://' + referer_domain
-            if referer_domain + '/' in ua_str:
-                referer_url = referer_url + ua_str.split(referer_domain)[1]
-                if ' ' in referer_url:
-                    referer_url = referer_url.split(' ')[0]
-                if ';' in referer_url:
-                    referer_url = referer_url.split(';')[0]
-                if ')' in referer_url:
-                    referer_url = referer_url.split(')')[0]
-            if not site_is_active(referer_url, calling_site_timeout):
+            if not referer_is_active(http_prefix,
+                                     referer_domain, ua_str,
+                                     calling_site_timeout):
                 print('mastodon api referer url is not active ' +
-                      referer_url)
+                      referer_domain)
                 self._400()
                 self.server.masto_api_is_active = False
                 return True
@@ -1236,18 +1228,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.nodeinfo_is_active = False
                     return True
 
-            referer_url = http_prefix + '://' + referer_domain
-            if referer_domain + '/' in ua_str:
-                referer_url = referer_url + ua_str.split(referer_domain)[1]
-                if ' ' in referer_url:
-                    referer_url = referer_url.split(' ')[0]
-                if ';' in referer_url:
-                    referer_url = referer_url.split(';')[0]
-                if ')' in referer_url:
-                    referer_url = referer_url.split(')')[0]
-            if not site_is_active(referer_url, calling_site_timeout):
+            if not referer_is_active(http_prefix,
+                                     referer_domain, ua_str,
+                                     calling_site_timeout):
                 print('nodeinfo referer url is not active ' +
-                      referer_url)
+                      referer_domain)
                 self._400()
                 self.server.nodeinfo_is_active = False
                 return True

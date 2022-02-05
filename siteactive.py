@@ -120,3 +120,18 @@ def site_is_active(url: str, timeout: int) -> bool:
     except BaseException:
         print('EX: site_is_active ' + str(loc))
     return False
+
+
+def referer_is_active(http_prefix: str,
+                      referer_domain: str, ua_str: str,
+                      calling_site_timeout: int) -> bool:
+    """Returns true if the given referer is an active website
+    """
+    referer_url = http_prefix + '://' + referer_domain
+    if referer_domain + '/' in ua_str:
+        referer_url = referer_url + ua_str.split(referer_domain)[1]
+        ending_chars = (' ', ';', ')')
+        for end_ch in ending_chars:
+            if end_ch in referer_url:
+                referer_url = referer_url.split(end_ch)[0]
+    return site_is_active(referer_url, calling_site_timeout)
