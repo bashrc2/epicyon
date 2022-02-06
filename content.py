@@ -1085,6 +1085,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
     extension_list = {
         'png': 'image/png',
         'jpeg': 'image/jpeg',
+        'jxl': 'image/jxl',
         'gif': 'image/gif',
         'svg': 'image/svg+xml',
         'webp': 'image/webp',

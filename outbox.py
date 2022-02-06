@@ -302,6 +302,7 @@ def post_message_to_outbox(session, translate: {},
 
                 extensions = {
                     "jpeg": "jpg",
+                    "jxl": "jxl",
                     "gif": "gif",
                     "svg": "svg",
                     "webp": "webp",

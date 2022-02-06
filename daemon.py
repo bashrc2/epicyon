@@ -6861,6 +6861,9 @@ class PubServer(BaseHTTPRequestHandler):
             if 'image/avif' in self.headers['Accept']:
                 fav_type = 'image/avif'
                 fav_filename = fav_filename.split('.')[0] + '.avif'
+            if 'image/jxl' in self.headers['Accept']:
+                fav_type = 'image/jxl'
+                fav_filename = fav_filename.split('.')[0] + '.jxl'
         if not self.server.theme_name:
             self.theme_name = get_config_param(base_dir, 'theme')
         if not self.server.theme_name:
@@ -6875,6 +6878,8 @@ class PubServer(BaseHTTPRequestHandler):
                     fav_filename = fav_filename.replace('.webp', '.ico')
                 elif fav_filename.endswith('.avif'):
                     fav_filename = fav_filename.replace('.avif', '.ico')
+                elif fav_filename.endswith('.jxl'):
+                    fav_filename = fav_filename.replace('.jxl', '.ico')
         if not os.path.isfile(favicon_filename):
             # default favicon
             favicon_filename = \
