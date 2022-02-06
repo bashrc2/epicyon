@@ -183,6 +183,7 @@ def meta_data_instance(showAccounts: bool,
             'media_attachments': {
                 'supported_mime_types': [
                     'image/jpeg',
+                    'image/jxl',
                     'image/png',
                     'image/gif',
                     'image/webp',

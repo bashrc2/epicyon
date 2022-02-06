@@ -401,7 +401,7 @@ def post_image(session, attach_image_filename: str, federation_list: [],
         return None
 
     if not is_image_file(attach_image_filename):
-        print('Image must be png, jpg, webp, avif, gif or svg')
+        print('Image must be png, jpg, jxl, webp, avif, gif or svg')
         return None
     if not os.path.isfile(attach_image_filename):
         print('Image not found: ' + attach_image_filename)
@@ -415,6 +415,8 @@ def post_image(session, attach_image_filename: str, federation_list: [],
         content_type = 'image/webp'
     elif attach_image_filename.endswith('.avif'):
         content_type = 'image/avif'
+    elif attach_image_filename.endswith('.jxl'):
+        content_type = 'image/jxl'
     elif attach_image_filename.endswith('.svg'):
         content_type = 'image/svg+xml'
     headers['Content-type'] = content_type
@@ -469,6 +471,7 @@ def download_image(session, base_dir: str, url: str,
         'png': 'png',
         'jpg': 'jpeg',
         'jpeg': 'jpeg',
+        'jxl': 'jxl',
         'gif': 'gif',
         'svg': 'svg+xml',
         'webp': 'webp',
@@ -575,6 +578,7 @@ def download_image_any_mime_type(session, url: str,
         'ico': 'x-icon',
         'png': 'png',
         'jpg': 'jpeg',
+        'jxl': 'jxl',
         'jpeg': 'jpeg',
         'gif': 'gif',
         'svg': 'svg+xml',

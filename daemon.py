@@ -366,7 +366,7 @@ from fitnessFunctions import fitness_performance
 from fitnessFunctions import fitness_thread
 from fitnessFunctions import sorted_watch_points
 from fitnessFunctions import html_watch_points_graph
-from siteactive import site_is_active
+from siteactive import referer_is_active
 import os
 
 
@@ -1060,16 +1060,65 @@ class PubServer(BaseHTTPRequestHandler):
                       system_language: str,
                       project_version: str,
                       custom_emoji: [],
-                      show_node_info_accounts: bool) -> bool:
+                      show_node_info_accounts: bool,
+                      referer_domain: str,
+                      debug: bool,
+                      calling_site_timeout: int) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
         """
         if not path.startswith('/api/v1/'):
             return False
+
+        if not referer_domain:
+            if not debug and not self.server.unit_test:
+                print('mastodon api request has no referer domain ' +
+                      str(ua_str))
+                self._400()
+                return True
+        if referer_domain == self.server.domain_full:
+            print('mastodon api request from self')
+            self._400()
+            return True
+        if self.server.masto_api_is_active:
+            print('mastodon api is busy during request from ' +
+                  referer_domain)
+            self._503()
+            return True
+        self.server.masto_api_is_active = True
+        # is this a real website making the call ?
+        if not debug and not self.server.unit_test and referer_domain:
+            # Does calling_domain look like a domain?
+            if ' ' in referer_domain or \
+               ';' in referer_domain or \
+               '.' not in referer_domain:
+                print('mastodon api ' +
+                      'referer does not look like a domain ' +
+                      referer_domain)
+                self._400()
+                self.server.masto_api_is_active = False
+                return True
+            if not self.server.allow_local_network_access:
+                if local_network_host(referer_domain):
+                    print('mastodon api referer domain is from the ' +
+                          'local network ' + referer_domain)
+                    self._400()
+                    self.server.masto_api_is_active = False
+                    return True
+            if not referer_is_active(http_prefix,
+                                     referer_domain, ua_str,
+                                     calling_site_timeout):
+                print('mastodon api referer url is not active ' +
+                      referer_domain)
+                self._400()
+                self.server.masto_api_is_active = False
+                return True
+
         print('mastodon api v1: ' + path)
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
+        print('mastodon api v1: referer ' + referer_domain)
         self._update_known_crawlers(ua_str)
 
         broch_mode = broch_mode_is_active(base_dir)
@@ -1108,10 +1157,12 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             if send_json_str:
                 print(send_json_str)
+            self.server.masto_api_is_active = False
             return True
 
         # no api endpoints were matched
         self._404()
+        self.server.masto_api_is_active = False
         return True
 
     def _masto_api(self, path: str, calling_domain: str,
@@ -1125,17 +1176,19 @@ class PubServer(BaseHTTPRequestHandler):
                    system_language: str,
                    project_version: str,
                    custom_emoji: [],
-                   show_node_info_accounts: bool) -> bool:
+                   show_node_info_accounts: bool,
+                   referer_domain: str, debug: bool) -> bool:
         return self._masto_api_v1(path, calling_domain, ua_str, authorized,
                                   http_prefix, base_dir, nickname, domain,
                                   domain_full, onion_domain, i2p_domain,
                                   translate, registration, system_language,
                                   project_version, custom_emoji,
-                                  show_node_info_accounts)
+                                  show_node_info_accounts,
+                                  referer_domain, debug, 5)
 
     def _nodeinfo(self, ua_str: str, calling_domain: str,
                   referer_domain: str,
-                  httpPrefix: str, calling_site_timeout: int,
+                  http_prefix: str, calling_site_timeout: int,
                   debug: bool) -> bool:
         if self.path.startswith('/nodeinfo/1.0'):
             self._400()
@@ -1175,18 +1228,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.nodeinfo_is_active = False
                     return True
 
-            referer_url = httpPrefix + '://' + referer_domain
-            if referer_domain + '/' in ua_str:
-                referer_url = referer_url + ua_str.split(referer_domain)[1]
-                if ' ' in referer_url:
-                    referer_url = referer_url.split(' ')[0]
-                if ';' in referer_url:
-                    referer_url = referer_url.split(';')[0]
-                if ')' in referer_url:
-                    referer_url = referer_url.split(')')[0]
-            if not site_is_active(referer_url, calling_site_timeout):
+            if not referer_is_active(http_prefix,
+                                     referer_domain, ua_str,
+                                     calling_site_timeout):
                 print('nodeinfo referer url is not active ' +
-                      referer_url)
+                      referer_domain)
                 self._400()
                 self.server.nodeinfo_is_active = False
                 return True
@@ -6815,6 +6861,9 @@ class PubServer(BaseHTTPRequestHandler):
             if 'image/avif' in self.headers['Accept']:
                 fav_type = 'image/avif'
                 fav_filename = fav_filename.split('.')[0] + '.avif'
+            if 'image/jxl' in self.headers['Accept']:
+                fav_type = 'image/jxl'
+                fav_filename = fav_filename.split('.')[0] + '.jxl'
         if not self.server.theme_name:
             self.theme_name = get_config_param(base_dir, 'theme')
         if not self.server.theme_name:
@@ -6829,6 +6878,8 @@ class PubServer(BaseHTTPRequestHandler):
                     fav_filename = fav_filename.replace('.webp', '.ico')
                 elif fav_filename.endswith('.avif'):
                     fav_filename = fav_filename.replace('.avif', '.ico')
+                elif fav_filename.endswith('.jxl'):
+                    fav_filename = fav_filename.replace('.jxl', '.ico')
         if not os.path.isfile(favicon_filename):
             # default favicon
             favicon_filename = \
@@ -13910,7 +13961,9 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.system_language,
                            self.server.project_version,
                            self.server.custom_emoji,
-                           self.server.show_node_info_accounts):
+                           self.server.show_node_info_accounts,
+                           referer_domain,
+                           self.server.debug):
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -18857,6 +18910,7 @@ def run_daemon(dyslexic_font: bool,
     httpd.post_to_nickname = None
 
     httpd.nodeinfo_is_active = False
+    httpd.masto_api_is_active = False
 
     httpd.dyslexic_font = dyslexic_font
 

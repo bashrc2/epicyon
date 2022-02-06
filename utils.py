@@ -375,7 +375,7 @@ def get_audio_extensions() -> []:
 def get_image_extensions() -> []:
     """Returns a list of the possible image file extensions
     """
-    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico')
+    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico', 'jxl')
 
 
 def get_image_mime_type(image_filename: str) -> str:
@@ -384,6 +384,7 @@ def get_image_mime_type(image_filename: str) -> str:
     extensions_to_mime = {
         'png': 'png',
         'jpg': 'jpeg',
+        'jxl': 'jxl',
         'gif': 'gif',
         'avif': 'avif',
         'svg': 'svg+xml',
@@ -402,6 +403,7 @@ def get_image_extension_from_mime_type(content_type: str) -> str:
     image_media = {
         'png': 'png',
         'jpeg': 'jpg',
+        'jxl': 'jxl',
         'gif': 'gif',
         'svg+xml': 'svg',
         'webp': 'webp',
@@ -695,6 +697,8 @@ def save_json(json_object: {}, filename: str) -> bool:
 def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
+    if '/Actor@' in filename:
+        filename = filename.replace('/Actor@', '/inbox@')
     json_object = None
     tries = 0
     while tries < max_tries:
@@ -716,6 +720,8 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
     """
+    if '/Actor@' in filename:
+        filename = filename.replace('/Actor@', '/inbox@')
     json_object = None
     tries = 0
     while tries < 5:
@@ -2531,6 +2537,7 @@ def media_file_mime_type(filename: str) -> str:
         'json': 'application/json',
         'png': 'image/png',
         'jpg': 'image/jpeg',
+        'jxl': 'image/jxl',
         'jpeg': 'image/jpeg',
         'gif': 'image/gif',
         'svg': 'image/svg+xml',

@@ -251,6 +251,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
     image_formats = {
         'png': 'png',
         'jpg': 'jpeg',
+        'jxl': 'jxl',
         'jpeg': 'jpeg',
         'gif': 'gif',
         'svg': 'svg+xml',
@@ -998,7 +999,7 @@ def _is_attached_image(attachment_filename: str) -> bool:
     if '.' not in attachment_filename:
         return False
     image_ext = (
-        'png', 'jpg', 'jpeg', 'webp', 'avif', 'svg', 'gif'
+        'png', 'jpg', 'jpeg', 'webp', 'avif', 'svg', 'gif', 'jxl'
     )
     ext = attachment_filename.split('.')[-1]
     if ext in image_ext:
