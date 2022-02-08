@@ -2661,12 +2661,13 @@ def is_dm(post_json_object: {}) -> bool:
         return False
     if not has_object_dict(post_json_object):
         return False
-    if post_json_object['object']['type'] != 'Note' and \
-       post_json_object['object']['type'] != 'Page' and \
-       post_json_object['object']['type'] != 'Patch' and \
-       post_json_object['object']['type'] != 'EncryptedMessage' and \
-       post_json_object['object']['type'] != 'Article':
-        return False
+    if post_json_object['object']['type'] != 'ChatMessage':
+        if post_json_object['object']['type'] != 'Note' and \
+           post_json_object['object']['type'] != 'Page' and \
+           post_json_object['object']['type'] != 'Patch' and \
+           post_json_object['object']['type'] != 'EncryptedMessage' and \
+           post_json_object['object']['type'] != 'Article':
+            return False
     if post_json_object['object'].get('moderationStatus'):
         return False
     fields = ('to', 'cc')
@@ -2693,6 +2694,7 @@ def is_reply(post_json_object: {}, actor: str) -> bool:
     if post_json_object['object']['type'] != 'Note' and \
        post_json_object['object']['type'] != 'Page' and \
        post_json_object['object']['type'] != 'EncryptedMessage' and \
+       post_json_object['object']['type'] != 'ChatMessage' and \
        post_json_object['object']['type'] != 'Article':
         return False
     if post_json_object['object'].get('inReplyTo'):
