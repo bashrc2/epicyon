@@ -2838,6 +2838,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             custom_submit_text = get_config_param(base_dir, 'customSubmitText')
             conversation_id = None
+            reply_is_chat = False
             msg = html_new_post(self.server.css_cache,
                                 False, self.server.translate,
                                 base_dir,
@@ -2872,7 +2873,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                self.server.default_timeline).encode('utf-8')
+                                self.server.default_timeline,
+                                reply_is_chat).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -2973,6 +2975,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             custom_submit_text = get_config_param(base_dir, 'customSubmitText')
             conversation_id = None
+            reply_is_chat = False
             msg = html_new_post(self.server.css_cache,
                                 False, self.server.translate,
                                 base_dir,
@@ -3006,7 +3009,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                self.server.default_timeline).encode('utf-8')
+                                self.server.default_timeline,
+                                reply_is_chat).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -13188,6 +13192,7 @@ class PubServer(BaseHTTPRequestHandler):
                        media_instance: bool, translate: {},
                        base_dir: str, http_prefix: str,
                        in_reply_to_url: str, reply_to_list: [],
+                       reply_is_chat: bool,
                        share_description: str, reply_page_number: int,
                        reply_category: str,
                        domain: str, domain_full: str,
@@ -13214,7 +13219,7 @@ class PubServer(BaseHTTPRequestHandler):
                           str(reply_interval_hours) + ' hours')
                     self._403()
                     return True
-                elif self.server.debug:
+                if self.server.debug:
                     print('Reply is within time interval: ' +
                           str(reply_interval_hours) + ' hours')
 
@@ -13267,7 +13272,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                self.server.default_timeline).encode('utf-8')
+                                self.server.default_timeline,
+                                reply_is_chat).encode('utf-8')
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
                 self._404()
@@ -15932,10 +15938,12 @@ class PubServer(BaseHTTPRequestHandler):
 
             # replying as a direct message,
             # for moderation posts or the dm timeline
+            reply_is_chat = False
             if '?replydm=' in self.path or '?replychat=' in self.path:
                 reply_type = 'replydm'
                 if '?replychat=' in self.path:
                     reply_type = 'replychat'
+                    reply_is_chat = True
                 in_reply_to_url = self.path.split('?' + reply_type + '=')[1]
                 in_reply_to_url = urllib.parse.unquote_plus(in_reply_to_url)
                 if '?' in in_reply_to_url:
@@ -16071,6 +16079,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.base_dir,
                                    self.server.http_prefix,
                                    in_reply_to_url, reply_to_list,
+                                   reply_is_chat,
                                    share_description, reply_page_number,
                                    reply_category,
                                    self.server.domain,
@@ -16919,6 +16928,7 @@ class PubServer(BaseHTTPRequestHandler):
                 city = get_spoofed_city(self.server.city,
                                         self.server.base_dir,
                                         nickname, self.server.domain)
+
                 conversation_id = None
                 if fields.get('conversationId'):
                     conversation_id = fields['conversationId']
@@ -17305,6 +17315,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.domain_full,
                                                  self.server.person_cache)
 
+                    reply_is_chat = False
+                    if fields.get('replychatmsg'):
+                        reply_is_chat = fields['replychatmsg']
+
                     message_json = \
                         create_direct_message_post(self.server.base_dir,
                                                    nickname,
@@ -17333,7 +17347,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                    conversation_id,
                                                    self.server.low_bandwidth,
                                                    content_license_url,
-                                                   languages_understood)
+                                                   languages_understood,
+                                                   reply_is_chat)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -17396,7 +17411,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                conversation_id,
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
-                                               languages_understood)
+                                               languages_understood,
+                                               False)
                 if message_json:
                     if fields['schedulePost']:
                         return 1

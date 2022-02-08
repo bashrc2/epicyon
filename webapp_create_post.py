@@ -210,7 +210,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                   system_language: str,
                   max_like_count: int, signing_priv_key_pem: str,
                   cw_lists: {}, lists_enabled: str,
-                  boxName: str) -> str:
+                  boxName: str,
+                  reply_is_chat: bool) -> str:
     """New post screen
     """
     reply_str = ''
@@ -691,7 +692,10 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         dropdown_new_blog_suffix += '?replyto=' + inReplyTo
         dropdown_unlisted_suffix += '?replyto=' + inReplyTo
         dropdown_followers_suffix += '?replyfollowers=' + inReplyTo
-        dropdown_dm_suffix += '?replydm=' + inReplyTo
+        if reply_is_chat:
+            dropdown_dm_suffix += '?replychat=' + inReplyTo
+        else:
+            dropdown_dm_suffix += '?replydm=' + inReplyTo
     for mentioned_actor in mentions:
         dropdown_new_post_suffix += '?mention=' + mentioned_actor
         dropdown_new_blog_suffix += '?mention=' + mentioned_actor
@@ -732,6 +736,9 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + \
         path + '?' + endpoint + '?page=' + str(page_number) + '">\n'
+    if reply_is_chat:
+        new_post_form += \
+            '    <input type="hidden" name="replychatmsg" value="yes">\n'
     if conversationId:
         new_post_form += \
             '    <input type="hidden" name="conversationId" value="' + \

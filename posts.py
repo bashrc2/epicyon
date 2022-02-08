@@ -2113,7 +2113,8 @@ def create_direct_message_post(base_dir: str,
                                location: str, system_language: str,
                                conversation_id: str, low_bandwidth: bool,
                                content_license_url: str,
-                               languages_understood: []) -> {}:
+                               languages_understood: [],
+                               dm_is_chat: bool) -> {}:
     """Direct Message post
     """
     content = resolve_petnames(base_dir, nickname, domain, content)
@@ -2144,6 +2145,8 @@ def create_direct_message_post(base_dir: str,
     message_json['object']['to'] = message_json['to']
     message_json['cc'] = []
     message_json['object']['cc'] = []
+    if dm_is_chat:
+        message_json['object']['type'] = 'ChatMessage'
     if schedule_post:
         post_id = remove_id_ending(message_json['object']['id'])
         save_post_to_box(base_dir, http_prefix, post_id,
