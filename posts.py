@@ -484,9 +484,9 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
             this_item = item['object']
         # check that this is a public post
         # #Public should appear in the "to" list
-        itemIsNote = False
+        item_is_note = False
         if item['type'] == 'Note' or item['type'] == 'Page':
-            itemIsNote = True
+            item_is_note = True
 
         if isinstance(this_item, dict):
             if this_item.get('to'):
@@ -497,7 +497,7 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
                         break
                 if not is_public:
                     return False
-        elif isinstance(this_item, str) or itemIsNote:
+        elif isinstance(this_item, str) or item_is_note:
             if item.get('to'):
                 is_public = False
                 for recipient in item['to']:
@@ -2113,7 +2113,8 @@ def create_direct_message_post(base_dir: str,
                                location: str, system_language: str,
                                conversation_id: str, low_bandwidth: bool,
                                content_license_url: str,
-                               languages_understood: []) -> {}:
+                               languages_understood: [],
+                               dm_is_chat: bool) -> {}:
     """Direct Message post
     """
     content = resolve_petnames(base_dir, nickname, domain, content)
@@ -2144,6 +2145,8 @@ def create_direct_message_post(base_dir: str,
     message_json['object']['to'] = message_json['to']
     message_json['cc'] = []
     message_json['object']['cc'] = []
+    if dm_is_chat:
+        message_json['object']['type'] = 'ChatMessage'
     if schedule_post:
         post_id = remove_id_ending(message_json['object']['id'])
         save_post_to_box(base_dir, http_prefix, post_id,
@@ -3561,6 +3564,7 @@ def is_image_media(session, base_dir: str, http_prefix: str,
     if post_json_object['object']['type'] != 'Note' and \
        post_json_object['object']['type'] != 'Page' and \
        post_json_object['object']['type'] != 'Event' and \
+       post_json_object['object']['type'] != 'ChatMessage' and \
        post_json_object['object']['type'] != 'Article':
         return False
     if not post_json_object['object'].get('attachment'):
@@ -3583,6 +3587,7 @@ def _add_post_string_to_timeline(post_str: str, boxname: str,
     # must be a recognized ActivityPub type
     if ('"Note"' in post_str or
         '"EncryptedMessage"' in post_str or
+        '"ChatMessage"' in post_str or
         '"Event"' in post_str or
         '"Article"' in post_str or
         '"Patch"' in post_str or

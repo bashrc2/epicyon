@@ -408,7 +408,7 @@ def post_message_to_outbox(session, translate: {},
         # The following activity types get added to the index files
         indexed_activities = (
             'Create', 'Question', 'Note', 'EncryptedMessage', 'Article',
-            'Patch', 'Announce'
+            'Patch', 'Announce', 'ChatMessage'
         )
         if message_json['type'] in indexed_activities:
             indexes = [outbox_name, "inbox"]

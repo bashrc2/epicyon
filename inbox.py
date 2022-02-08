@@ -2826,7 +2826,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                last_bounce_message: [], system_language: str,
                signing_priv_key_pem: str,
                content_license_url: str,
-               languages_understood: []) -> bool:
+               languages_understood: [],
+               bounce_is_chat: bool) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2888,7 +2889,7 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                                    system_language, conversation_id,
                                    low_bandwidth,
                                    content_license_url,
-                                   languages_understood)
+                                   languages_understood, bounce_is_chat)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sending_handle)
         return False
@@ -2984,6 +2985,10 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                         if not obj.get('inReplyTo'):
                             bounced_id = \
                                 remove_id_ending(post_json_object['id'])
+                            bounce_chat = False
+                            if obj.get('type'):
+                                if obj['type'] == 'ChatMessage':
+                                    bounce_chat = True
                             _bounce_dm(bounced_id,
                                        session, http_prefix,
                                        base_dir,
@@ -2998,7 +3003,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                                        system_language,
                                        signing_priv_key_pem,
                                        content_license_url,
-                                       languages_understood)
+                                       languages_understood,
+                                       bounce_chat)
                 return False
 
     # dm index will be updated

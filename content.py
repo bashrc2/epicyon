@@ -48,7 +48,7 @@ INVALID_CONTENT_STRINGS = (
     'graph', 'showshare', 'category', 'showwanted',
     'rmshare', 'rmwanted', 'repeatprivate',
     'unrepeatprivate', 'replyto',
-    'replyfollowers', 'replydm', 'editblogpost',
+    'replyfollowers', 'replydm', 'replychat', 'editblogpost',
     'handle', 'blockdomain'
 )
 
