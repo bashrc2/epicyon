@@ -2654,6 +2654,19 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
         reject_file.write('\n')
 
 
+def is_chat_message(post_json_object: {}) -> bool:
+    """Returns true if the given post is a chat message
+    Note that is_dm should be checked before calling this
+    """
+    if post_json_object['type'] != 'Create':
+        return False
+    if not has_object_dict(post_json_object):
+        return False
+    if post_json_object['object']['type'] != 'ChatMessage':
+        return False
+    return True
+
+
 def is_dm(post_json_object: {}) -> bool:
     """Returns true if the given post is a DM
     """

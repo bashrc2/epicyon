@@ -33,6 +33,7 @@ from utils import has_object_dict
 from utils import update_announce_collection
 from utils import is_pgp_encrypted
 from utils import is_dm
+from utils import is_chat_message
 from utils import reject_post_id
 from utils import is_recent_post
 from utils import get_config_param
@@ -445,10 +446,13 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
             '" title="' + reply_to_this_post_str + '">\n'
     else:
         if is_dm(post_json_object):
+            reply_type = 'replydm'
+            if is_chat_message(post_json_object):
+                reply_type = 'replychat'
             reply_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
-                '?replydm=' + reply_to_link + \
+                '?' + reply_type + '=' + reply_to_link + \
                 '?actor=' + post_json_object['actor'] + \
                 conversation_str + \
                 '" title="' + reply_to_this_post_str + '">\n'

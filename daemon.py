@@ -15932,8 +15932,11 @@ class PubServer(BaseHTTPRequestHandler):
 
             # replying as a direct message,
             # for moderation posts or the dm timeline
-            if '?replydm=' in self.path:
-                in_reply_to_url = self.path.split('?replydm=')[1]
+            if '?replydm=' in self.path or '?replychat=' in self.path:
+                reply_type = 'replydm'
+                if '?replychat=' in self.path:
+                    reply_type = 'replychat'
+                in_reply_to_url = self.path.split('?' + reply_type + '=')[1]
                 in_reply_to_url = urllib.parse.unquote_plus(in_reply_to_url)
                 if '?' in in_reply_to_url:
                     # multiple parameters
@@ -15970,9 +15973,10 @@ class PubServer(BaseHTTPRequestHandler):
                         share_description = \
                             share_description.replace('_', ' ')
 
-                self.path = self.path.split('?replydm=')[0] + '/newdm'
+                self.path = \
+                    self.path.split('?' + reply_type + '=')[0] + '/newdm'
                 if self.server.debug:
-                    print('DEBUG: replydm path ' + self.path)
+                    print('DEBUG: ' + reply_type + ' path ' + self.path)
 
             # Edit a blog post
             if authorized and \
