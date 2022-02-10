@@ -1367,7 +1367,9 @@ def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:
     # for each of the accounts
     for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            if '@' in account and not account.startswith('inbox@'):
+            if '@' in account and \
+               not account.startswith('inbox@') and \
+               not account.startswith('Actor@'):
                 following_filename = \
                     os.path.join(subdir, account) + '/following.txt'
                 if debug:

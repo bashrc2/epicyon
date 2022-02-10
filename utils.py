@@ -605,6 +605,7 @@ def get_followers_of_person(base_dir: str,
             filename = os.path.join(subdir, account) + '/' + follow_file
             if account == handle or \
                account.startswith('inbox@') or \
+               account.startswith('Actor@') or \
                account.startswith('news@'):
                 continue
             if not os.path.isfile(filename):
@@ -1336,7 +1337,7 @@ def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
         for acct in dirs:
             if '@' not in acct:
                 continue
-            if acct.startswith('inbox@'):
+            if acct.startswith('inbox@') or acct.startswith('Actor@'):
                 continue
             cache_dir = os.path.join(base_dir + '/accounts', acct)
             post_filename = cache_dir + filename
@@ -2893,7 +2894,7 @@ def is_account_dir(dir_name: str) -> bool:
     """
     if '@' not in dir_name:
         return False
-    if 'inbox@' in dir_name or 'news@' in dir_name:
+    if 'inbox@' in dir_name or 'news@' in dir_name or 'Actor@' in dir_name:
         return False
     return True
 
