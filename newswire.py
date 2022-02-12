@@ -451,6 +451,8 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
     """podcasting extensions for RSS feeds
     See https://github.com/Podcastindex-org/podcast-namespace/
     blob/main/docs/1.0.md
+    https://github.com/Podcastindex-org/podcast-namespace/
+    blob/main/proposal-docs/social/social.md#socialinteract-element
     """
     if '<podcast:' not in xml_item:
         if '<itunes:' not in xml_item:
