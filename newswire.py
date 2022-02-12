@@ -514,7 +514,9 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
                 podcast_properties[pod_key + 's'].append(pod_entry)
                 appended = True
         if not appended:
-            podcast_properties[pod_key] = pod_entry
+            # if there are repeated keys then only use the first one
+            if not podcast_properties.get(pod_key):
+                podcast_properties[pod_key] = pod_entry
         ctr += 1
 
     # get the image for the podcast, if it exists
