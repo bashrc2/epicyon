@@ -463,7 +463,8 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
         "soundbites": [],
         "transcripts": [],
         "valueRecipients": [],
-        "trailers": []
+        "trailers": [],
+        "socialInteract": []
     }
 
     pod_lines = xml_item.split('<podcast:')
@@ -486,7 +487,8 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
             'url', 'geo', 'osm', 'type', 'method', 'group',
             'owner', 'srcset', 'img', 'role', 'address', 'suggested',
             'startTime', 'duration', 'href', 'name', 'pubdate',
-            'length', 'season', 'email'
+            'length', 'season', 'email', 'platform', 'protocol',
+            'accountId', 'priority'
         )
         pod_entry = {}
         for pod_field in pod_fields:
