@@ -21,6 +21,31 @@ from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
 
 
+def _html_podcast_social_interactions(podcast_properties: {},
+                                      translate: {},
+                                      nickname: str) -> str:
+    """Returns html for social interactions with a podcast
+    """
+    if not podcast_properties:
+        return ''
+    if not podcast_properties.get('socialInteract'):
+        return ''
+    if not podcast_properties['socialInteract'].get('text'):
+        return ''
+    post_url = podcast_properties['socialInteract']['text']
+    podcast_str = \
+        '<center>\n' + \
+        '  <a href="/users/' + nickname + \
+        '?replyto=' + post_url + '" target="_blank" ' + \
+        'rel="nofollow noopener noreferrer">💬 ' + \
+        translate['Leave a comment'] + '</a>\n' + \
+        '  <a href="' + post_url + '" target="_blank" ' + \
+        'rel="nofollow noopener noreferrer">' + \
+        translate['View comments'] + '</a>\n' + \
+        '</center>\n'
+    return podcast_str
+
+
 def _html_podcast_performers(podcast_properties: {}) -> str:
     """Returns html for performers of a podcast
     """
@@ -243,6 +268,9 @@ def html_podcast_episode(css_cache: {}, translate: {},
         podcast_str += tags_str.strip() + '</p>\n'
 
     podcast_str += _html_podcast_performers(podcast_properties)
+    podcast_str += \
+        _html_podcast_social_interactions(podcast_properties, translate,
+                                          nickname)
 
     podcast_str += '  </center>\n'
     podcast_str += '</div>\n'

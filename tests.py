@@ -6412,7 +6412,7 @@ def _test_get_actor_from_in_reply_to() -> None:
     assert reply_actor is None
 
 
-def _test_xml_podcast_dict() -> None:
+def _test_xml_podcast_dict(base_dir: str) -> None:
     print('test_xml_podcast_dict')
     xml_str = \
         '<?xml version="1.0" encoding="UTF-8" ?>\n' + \
@@ -6473,7 +6473,7 @@ def _test_xml_podcast_dict() -> None:
         'address="someaddress2" split="99" />\n' + \
         '</podcast:value>\n' + \
         '</rss>'
-    podcast_properties = xml_podcast_to_dict(xml_str, xml_str)
+    podcast_properties = xml_podcast_to_dict(base_dir, xml_str, xml_str)
     assert podcast_properties
     # pprint(podcast_properties)
     assert podcast_properties.get('valueRecipients')
@@ -6575,7 +6575,7 @@ def run_all_tests():
     _test_functions()
     _test_safe_webtext()
     _test_get_link_from_rss_item()
-    _test_xml_podcast_dict()
+    _test_xml_podcast_dict(base_dir)
     _test_get_actor_from_in_reply_to()
     _test_valid_emoji_content()
     _test_add_cw_lists(base_dir)
