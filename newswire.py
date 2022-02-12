@@ -508,12 +508,12 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
             if pod_text:
                 pod_entry['text'] = pod_text
 
+        appended = False
         if pod_key + 's' in podcast_properties:
             if isinstance(podcast_properties[pod_key + 's'], list):
                 podcast_properties[pod_key + 's'].append(pod_entry)
-            else:
-                podcast_properties[pod_key] = pod_entry
-        else:
+                appended = True
+        if not appended:
             podcast_properties[pod_key] = pod_entry
         ctr += 1
 
