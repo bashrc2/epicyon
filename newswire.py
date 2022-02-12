@@ -19,6 +19,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import get_domain_from_actor
 from utils import valid_hash_tag
 from utils import dangerous_svg
 from utils import get_fav_filename_from_url
@@ -452,10 +453,35 @@ def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
     return podcast_categories
 
 
-def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
+def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
+    """Is the given podcast namespace entry valid?
+    https://github.com/Podcastindex-org/podcast-namespace/
+    blob/main/proposal-docs/social/social.md#socialinteract-element
+    """
+    if key == 'socialInteract':
+        if not entry.get('protocol'):
+            return False
+        if not entry.get('text'):
+            return False
+        if entry['protocol'].tolower() != 'activitypub':
+            return False
+        post_url = entry['text']
+        if '://' not in post_url:
+            return False
+        post_domain, post_port = get_domain_from_actor(post_url)
+        if not post_domain:
+            return False
+        if is_blocked_domain(base_dir, post_domain):
+            return False
+    return True
+
+
+def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
     """podcasting extensions for RSS feeds
     See https://github.com/Podcastindex-org/podcast-namespace/
     blob/main/docs/1.0.md
+    https://github.com/Podcastindex-org/podcast-namespace/
+    blob/main/proposal-docs/social/social.md#socialinteract-element
     """
     if '<podcast:' not in xml_item:
         if '<itunes:' not in xml_item:
@@ -468,7 +494,8 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
         "soundbites": [],
         "transcripts": [],
         "valueRecipients": [],
-        "trailers": []
+        "trailers": [],
+        "socialInteract": []
     }
 
     pod_lines = xml_item.split('<podcast:')
@@ -491,7 +518,8 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
             'url', 'geo', 'osm', 'type', 'method', 'group',
             'owner', 'srcset', 'img', 'role', 'address', 'suggested',
             'startTime', 'duration', 'href', 'name', 'pubdate',
-            'length', 'season', 'email'
+            'length', 'season', 'email', 'platform', 'protocol',
+            'accountId', 'priority'
         )
         pod_entry = {}
         for pod_field in pod_fields:
@@ -509,13 +537,16 @@ def xml_podcast_to_dict(xml_item: str, xml_str: str) -> {}:
             if pod_text:
                 pod_entry['text'] = pod_text
 
+        appended = False
         if pod_key + 's' in podcast_properties:
             if isinstance(podcast_properties[pod_key + 's'], list):
                 podcast_properties[pod_key + 's'].append(pod_entry)
-            else:
-                podcast_properties[pod_key] = pod_entry
-        else:
-            podcast_properties[pod_key] = pod_entry
+                appended = True
+        if not appended:
+            # if there are repeated keys then only use the first one
+            if not podcast_properties.get(pod_key):
+                if _valid_podcast_entry(base_dir, pod_key, pod_entry):
+                    podcast_properties[pod_key] = pod_entry
         ctr += 1
 
     # get the image for the podcast, if it exists
@@ -687,7 +718,8 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(rss_item, xml_str)
+                podcast_properties = \
+                    xml_podcast_to_dict(base_dir, rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
@@ -783,7 +815,8 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(rss_item, xml_str)
+                podcast_properties = \
+                    xml_podcast_to_dict(base_dir, rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
@@ -867,7 +900,8 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(atom_item, xml_str)
+                podcast_properties = \
+                    xml_podcast_to_dict(base_dir, atom_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
                 _add_newswire_dict_entry(base_dir, domain,
@@ -1068,7 +1102,8 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                podcast_properties = xml_podcast_to_dict(atom_item, xml_str)
+                podcast_properties = \
+                    xml_podcast_to_dict(base_dir, atom_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = 'video/youtube'
                 _add_newswire_dict_entry(base_dir, domain,
