@@ -787,7 +787,7 @@ def is_evil(domain: str) -> bool:
     evil_emporium = (
         'nazi', 'extremis', 'extreemis', 'gendercritic',
         'kiwifarm', 'illegal', 'raplst', 'rapist',
-        'antivax', 'plandemic'
+        'rapl.st', 'rapi.st', 'antivax', 'plandemic', 'terror'
     )
     for hostile_str in evil_emporium:
         if hostile_str in domain:
