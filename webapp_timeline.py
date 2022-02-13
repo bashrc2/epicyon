@@ -474,6 +474,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
         with open(calendar_file, 'r') as calfile:
             calendar_path = calfile.read().replace('##sent##', '')
             calendar_path = calendar_path.replace('\n', '').replace('\r', '')
+            if '/calendar' not in calendar_path:
+                calendar_path = '/calendar'
 
     # should the DM button be highlighted?
     new_dm = False
