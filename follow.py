@@ -177,6 +177,8 @@ def is_following_actor(base_dir: str,
     following_file = base_dir + '/accounts/' + handle + '/following.txt'
     if not os.path.isfile(following_file):
         return False
+    if actor.startswith('@'):
+        actor = actor[1:]
     if actor.lower() in open(following_file).read().lower():
         return True
     following_nickname = get_nickname_from_actor(actor)
