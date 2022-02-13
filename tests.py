@@ -2782,7 +2782,6 @@ def _test_create_person_account(base_dir: str):
     test_event_time = None
     test_location = None
     test_is_article = False
-    content = "G'day world!"
     followers_only = False
     save_to_file = True
     comments_enabled = True
@@ -2791,16 +2790,27 @@ def _test_create_person_account(base_dir: str):
     conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
-    create_public_post(base_dir, nickname, domain, port, http_prefix,
-                       content, followers_only, save_to_file, client_to_server,
-                       comments_enabled, attach_image_filename, media_type,
-                       'Not suitable for Vogons', 'London, England',
-                       test_in_reply_to, test_in_reply_to_atom_uri,
-                       test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
-                       test_is_article, system_language, conversation_id,
-                       low_bandwidth, content_license_url,
-                       languages_understood)
+    content = \
+        "If your \"independent organization\" is government funded...\n\n" + \
+        "(yawn)\n\n...then it's not really independent.\n\n" + \
+        "Politicians will threaten to withdraw funding if you do " + \
+        "anything which challenges middle class sensibilities or incomes."
+    test_post_json = \
+        create_public_post(base_dir, nickname, domain, port, http_prefix,
+                           content, followers_only, save_to_file,
+                           client_to_server,
+                           comments_enabled, attach_image_filename, media_type,
+                           'Not suitable for Vogons', 'London, England',
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
+                           low_bandwidth, content_license_url,
+                           languages_understood)
+    assert test_post_json
+    assert test_post_json.get('object')
+    assert test_post_json['object']['content']
+    assert '(yawn)' in test_post_json['object']['content']
 
     os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
