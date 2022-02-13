@@ -33,11 +33,17 @@ def _html_podcast_social_interactions(podcast_properties: {},
     if not podcast_properties['socialInteract'].get('text'):
         return ''
     episode_post_url = podcast_properties['socialInteract']['text']
+    actor_str = ''
+    if podcast_properties['socialInteract'].get('accountId'):
+        actor_handle = podcast_properties['socialInteract']['accountId']
+        if actor_handle.startswith('@'):
+            actor_handle = actor_handle[1:]
+        actor_str = '?actor=' + actor_handle
 
     podcast_str = \
         '<center>\n' + \
         '  <a href="/users/' + nickname + \
-        '?replyto=' + episode_post_url + '" target="_blank" ' + \
+        '?replyto=' + episode_post_url + actor_str + '" target="_blank" ' + \
         'rel="nofollow noopener noreferrer">💬 ' + \
         translate['Leave a comment'] + '</a>\n' + \
         '  <a href="' + episode_post_url + '" target="_blank" ' + \
