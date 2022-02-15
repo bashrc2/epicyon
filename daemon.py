@@ -1189,11 +1189,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _show_vcard(self, base_dir: str, path: str, calling_domain: str,
                     referer_domain: str, domain: str, debug: bool) -> bool:
+        """Returns a vcard for the given account
+        """
         if not self._has_accept(calling_domain):
             return False
-        if 'text/vcard' not in self.headers['Accept']:
+        accept_str = self.headers['Accept']
+        if 'text/vcard' not in accept_str:
             return False
-        if 'application/' in self.headers['Accept']:
+        if 'application/' in accept_str:
             return False
         if not path.startswith('/users/'):
             self._400()
