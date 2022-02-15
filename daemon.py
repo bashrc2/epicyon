@@ -1196,16 +1196,20 @@ class PubServer(BaseHTTPRequestHandler):
         accept_str = self.headers['Accept']
         if 'text/vcard' not in accept_str:
             return False
+        print('vcard 1')
         if 'application/' in accept_str:
             return False
+        print('vcard 2')
         if not path.startswith('/users/'):
             self._400()
             return True
+        print('vcard 3')
         nickname = path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if '?' in nickname:
             nickname = nickname.split('?')[0]
+        print('vcard 4')
         if self.server.vcard_is_active:
             print('vcard is busy during request from ' + str(referer_domain))
             self._503()
