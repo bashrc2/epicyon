@@ -18,6 +18,7 @@ from utils import get_full_domain
 from utils import get_status_number
 from utils import local_actor_url
 from utils import replace_users_with_at
+from utils import remove_html
 from webfinger import webfinger_handle
 from posts import get_person_box
 from auth import create_basic_auth_header
@@ -641,7 +642,7 @@ def actor_to_vcard(actor: {}) -> str:
     blog_address = get_blog_address(actor)
     if blog_address:
         vcard_str += 'URL:blog:' + blog_address + '\n'
-    vcard_str += 'NOTE:' + actor['summary'] + '\n'
+    vcard_str += 'NOTE:' + remove_html(actor['summary']) + '\n'
     if actor['icon']['url']:
         vcard_str += 'PHOTO:' + actor['icon']['url'] + '\n'
     pgp_key = get_pgp_pub_key(actor)
