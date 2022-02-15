@@ -453,6 +453,14 @@ def _get_profile_header(base_dir: str, http_prefix: str,
         '        <p>' + profile_description_short + '</p>\n' + login_button
     if pinned_content:
         html_str += pinned_content.replace('<p>', '<p>📎', 1)
+
+    # show vcard download link
+    html_str += \
+        '    <a href="/users/' + nickname + '.vcf" ' + \
+        'download="contact_' + nickname + '@' + domain_full + '.vcf">' + \
+        '<img class="vcard" src="/icons/vcard.png" ' + \
+        'title="vCard" alt="vCard" /></a>\n'
+
     html_str += \
         '      </figcaption>\n' + \
         '    </figure>\n\n'
