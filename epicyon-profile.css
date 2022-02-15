@@ -1077,7 +1077,7 @@ div.container {
         font-size: var(--font-size);
         color: var(--title-color);
     }
-    .vcard img {
+    .profileHeader img.vcard {
         width: var(--vcard-icon-size);
         float: right;
     }
@@ -1844,7 +1844,7 @@ div.container {
     blockquote {
         font-size: var(--quote-font-size-mobile);
     }
-    .vcard img {
+    .profileHeader img.vcard {
         width: var(--vcard-icon-size-mobile);
         float: right;
     }
@@ -2583,7 +2583,7 @@ div.container {
     blockquote {
         font-size: var(--quote-font-size-tiny);
     }
-    .vcard img {
+    .profileHeader img.vcard {
         width: var(--vcard-icon-size-tiny);
         float: right;
     }
