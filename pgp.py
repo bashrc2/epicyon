@@ -676,3 +676,4 @@ def actor_to_vcard(actor: {}) -> str:
                 vcard_str += \
                     'ADR:;;;' + city_name + ';;;\n'
     vcard_str += 'END:VCARD\n'
+    return vcard_str
