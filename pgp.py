@@ -663,6 +663,8 @@ def actor_to_vcard(actor: {}) -> str:
         vcard_str += 'IMPP:matrix:' + matrix_address + '\n'
     briar_address = get_briar_address(actor)
     if briar_address:
+        if briar_address.startswith('briar:'):
+            briar_address = briar_address.split('briar:')[1]
         vcard_str += 'IMPP:briar:' + briar_address + '\n'
     cwtch_address = get_cwtch_address(actor)
     if cwtch_address:
