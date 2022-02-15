@@ -195,8 +195,8 @@
     --voteresult-width-mobile: 80%;
     --voteresult-width-tiny: 40%;
     --vcard-icon-size: 32px;
-    --vcard-icon-size-mobile: 32px;
-    --vcard-icon-size-tiny: 32px;
+    --vcard-icon-size-mobile: 80px;
+    --vcard-icon-size-tiny: 80px;
 }
 
 @font-face {
