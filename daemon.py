@@ -1208,8 +1208,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._503()
             return True
         self.server.vcard_is_active = True
-        if self.server.debug:
-            print('DEBUG: vcard ' + path)
+        print('vcard actor ' + actor_filename)
         actor_json = None
         actor_filename = \
             acct_dir(base_dir, nickname, domain) + '.json'
