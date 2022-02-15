@@ -1196,20 +1196,16 @@ class PubServer(BaseHTTPRequestHandler):
         accept_str = self.headers['Accept']
         if 'text/vcard' not in accept_str:
             return False
-        print('vcard 1')
         if 'application/' in accept_str:
             return False
-        print('vcard 2 ' + path)
         if not path.startswith('/users/'):
             self._400()
             return True
-        print('vcard 3 ' + path)
         nickname = path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if '?' in nickname:
             nickname = nickname.split('?')[0]
-        print('vcard 4 ' + nickname)
         if self.server.vcard_is_active:
             print('vcard is busy during request from ' + str(referer_domain))
             self._503()
@@ -1218,11 +1214,10 @@ class PubServer(BaseHTTPRequestHandler):
         actor_json = None
         actor_filename = \
             acct_dir(base_dir, nickname, domain) + '.json'
-        print('vcard actor ' + actor_filename)
         if os.path.isfile(actor_filename):
             actor_json = load_json(actor_filename)
         if not actor_json:
-            print('vcard actor not found ' + actor_filename)
+            print('WARN: vcard actor not found ' + actor_filename)
             self._404()
             self.server.vcard_is_active = False
             return True
@@ -1236,7 +1231,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('vcard sent to ' + str(referer_domain))
             self.server.vcard_is_active = False
             return True
-        print('vcard string not returned')
+        print('WARN: vcard string not returned')
         self._404()
         self.server.vcard_is_active = False
         return True
