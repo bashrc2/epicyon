@@ -1193,7 +1193,11 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if not self._has_accept(calling_domain):
             return False
-        accept_str = self.headers['Accept']
+        if path.endswith('.vcf'):
+            path = path.split('.vcf')[0]
+            accept_str = 'text/vcard'
+        else:
+            accept_str = self.headers['Accept']
         if 'text/vcard' not in accept_str:
             return False
         if 'application/' in accept_str:
