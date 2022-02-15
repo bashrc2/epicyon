@@ -394,7 +394,6 @@ a:focus {
     color: #ffffff;
     text-align: var(--profile-text-align);
     line-height: 1.4em;
-    background-color: #141414;
 }
 
 .profileHeader .title {
@@ -1080,7 +1079,6 @@ div.container {
     .profileHeader img.vcard {
         width: var(--vcard-icon-size);
         float: right;
-	background-color: var(--main-bg-color);
     }
     .followText {
         font-size: var(--follow-text-size1);
@@ -1848,7 +1846,6 @@ div.container {
     .profileHeader img.vcard {
         width: var(--vcard-icon-size-mobile);
         float: right;
-	background-color: var(--main-bg-color);
     }
     .accountsTable {
         width: 100%;
@@ -2588,7 +2585,6 @@ div.container {
     .profileHeader img.vcard {
         width: var(--vcard-icon-size-tiny);
         float: right;
-	background-color: var(--main-bg-color);
     }
     .accountsTable {
         width: 100%;
