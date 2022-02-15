@@ -647,7 +647,7 @@ def actor_to_vcard(actor: {}) -> str:
     pgp_key = get_pgp_pub_key(actor)
     if pgp_key:
         vcard_str += 'KEY:data:application/pgp-keys;base64,' + \
-            base64.b64encode(pgp_key).decode('utf-8') + '\n'
+            base64.b64encode(pgp_key.encode('utf-8')).decode('utf-8') + '\n'
     email_address = get_email_address(actor)
     if email_address:
         vcard_str += 'EMAIL;TYPE=internet:' + email_address + '\n'
