@@ -1187,8 +1187,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   show_node_info_accounts,
                                   referer_domain, debug, 5)
 
-    def _get_vcard(self, base_dir: str, path: str, calling_domain: str,
-                   referer_domain: str, domain: str, debug: bool) -> bool:
+    def _show_vcard(self, base_dir: str, path: str, calling_domain: str,
+                    referer_domain: str, domain: str, debug: bool) -> bool:
         if not self._has_accept(calling_domain):
             return False
         if 'text/vcard' not in self.headers['Accept']:
@@ -13653,9 +13653,9 @@ class PubServer(BaseHTTPRequestHandler):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', 'start', self.server.debug)
 
-        if self._get_vcard(self.server.base_dir,
-                           self.path, calling_domain, referer_domain,
-                           self.server.domain, self.server.debug):
+        if self._show_vcard(self.server.base_dir,
+                            self.path, calling_domain, referer_domain,
+                            self.server.domain, self.server.debug):
             return
 
         # Since fediverse crawlers are quite active,

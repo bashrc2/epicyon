@@ -246,6 +246,78 @@ def get_json(signing_priv_key_pem: str,
                              None, quiet, debug, True)
 
 
+def get_vcard(session, url: str, params: {}, debug: bool,
+              version: str = '1.3.0', http_prefix: str = 'https',
+              domain: str = 'testdomain',
+              timeout_sec: int = 20, quiet: bool = False) -> {}:
+    if not isinstance(url, str):
+        if debug and not quiet:
+            print('url: ' + str(url))
+            print('ERROR: get_vcard failed, url should be a string')
+        return None
+    headers = {
+        'Accept': 'text/vcard'
+    }
+    session_params = {}
+    session_headers = {}
+    if headers:
+        session_headers = headers
+    if params:
+        session_params = params
+    session_headers['User-Agent'] = 'Epicyon/' + version
+    if domain:
+        session_headers['User-Agent'] += \
+            '; +' + http_prefix + '://' + domain + '/'
+    if not session:
+        if not quiet:
+            print('WARN: get_vcard failed, no session specified for get_vcard')
+        return None
+
+    if debug:
+        HTTPConnection.debuglevel = 1
+
+    try:
+        result = session.get(url, headers=session_headers,
+                             params=session_params, timeout=timeout_sec)
+        if result.status_code != 200:
+            if result.status_code == 401:
+                print("WARN: get_vcard " + url + ' rejected by secure mode')
+            elif result.status_code == 403:
+                print('WARN: get_vcard Forbidden url: ' + url)
+            elif result.status_code == 404:
+                print('WARN: get_vcard Not Found url: ' + url)
+            elif result.status_code == 410:
+                print('WARN: get_vcard no longer available url: ' + url)
+            else:
+                print('WARN: get_vcard url: ' + url +
+                      ' failed with error code ' +
+                      str(result.status_code) +
+                      ' headers: ' + str(session_headers))
+        return result.content
+    except requests.exceptions.RequestException as ex:
+        session_headers2 = session_headers.copy()
+        if session_headers2.get('Authorization'):
+            session_headers2['Authorization'] = 'REDACTED'
+        if debug and not quiet:
+            print('EX: get_vcard failed, url: ' + str(url) + ', ' +
+                  'headers: ' + str(session_headers2) + ', ' +
+                  'params: ' + str(session_params) + ', ' + str(ex))
+    except ValueError as ex:
+        session_headers2 = session_headers.copy()
+        if session_headers2.get('Authorization'):
+            session_headers2['Authorization'] = 'REDACTED'
+        if debug and not quiet:
+            print('EX: get_vcard failed, url: ' + str(url) + ', ' +
+                  'headers: ' + str(session_headers2) + ', ' +
+                  'params: ' + str(session_params) + ', ' + str(ex))
+    except SocketError as ex:
+        if not quiet:
+            if ex.errno == errno.ECONNRESET:
+                print('EX: get_vcard failed, ' +
+                      'connection was reset during get_vcard ' + str(ex))
+    return None
+
+
 def download_html(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
                   version: str = '1.3.0', http_prefix: str = 'https',
