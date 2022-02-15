@@ -43,6 +43,7 @@ from posts import get_user_url
 from posts import check_domains
 from session import create_session
 from session import get_json
+from session import get_vcard
 from session import download_html
 from newswire import get_rss
 from filters import add_filter
@@ -288,6 +289,8 @@ parser.add_argument('--socnet', dest='socnet', type=str,
 parser.add_argument('--postsraw', dest='postsraw', type=str,
                     default=None,
                     help='Show raw json of posts for the given handle')
+parser.add_argument('--vcard', dest='vcard', type=str, default=None,
+                    help='Show the vcard for a given activitypub actor url')
 parser.add_argument('--json', dest='json', type=str, default=None,
                     help='Show the json for a given activitypub url')
 parser.add_argument('--htmlpost', dest='htmlpost', type=str, default=None,
@@ -965,6 +968,19 @@ if args.json:
                          None, debug, __version__, http_prefix, domain)
     if test_json:
         pprint(test_json)
+    sys.exit()
+
+if args.vcard:
+    session = create_session(None)
+    if not args.domain:
+        args.domain = get_config_param(base_dir, 'domain')
+    domain = ''
+    if args.domain:
+        domain = args.domain
+    test_vcard = get_vcard(session, args.vcard,
+                           None, debug, __version__, http_prefix, domain)
+    if test_vcard:
+        print(test_vcard)
     sys.exit()
 
 if args.htmlpost:

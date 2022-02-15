@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import os
+import base64
 import subprocess
 from pathlib import Path
 from person import get_actor_json
@@ -17,10 +18,17 @@ from utils import get_full_domain
 from utils import get_status_number
 from utils import local_actor_url
 from utils import replace_users_with_at
+from utils import remove_html
 from webfinger import webfinger_handle
 from posts import get_person_box
 from auth import create_basic_auth_header
 from session import post_json
+from xmpp import get_xmpp_address
+from jami import get_jami_address
+from matrix import get_matrix_address
+from briar import get_briar_address
+from cwtch import get_cwtch_address
+from blog import get_blog_address
 
 
 def get_email_address(actor_json: {}) -> str:
@@ -335,35 +343,6 @@ def _pgp_encrypt(content: str, recipient_pub_key: str) -> str:
     return encrypt_result
 
 
-def _get_pgp_public_key_from_actor(signing_priv_key_pem: str,
-                                   domain: str, handle: str,
-                                   actor_json: {} = None) -> str:
-    """Searches tags on the actor to see if there is any PGP
-    public key specified
-    """
-    if not actor_json:
-        actor_json, _ = \
-            get_actor_json(domain, handle, False, False, False, True,
-                           signing_priv_key_pem, None)
-    if not actor_json:
-        return None
-    if not actor_json.get('attachment'):
-        return None
-    if not isinstance(actor_json['attachment'], list):
-        return None
-    # search through the tags on the actor
-    for tag in actor_json['attachment']:
-        if not isinstance(tag, dict):
-            continue
-        if not tag.get('value'):
-            continue
-        if not isinstance(tag['value'], str):
-            continue
-        if contains_pgp_public_key(tag['value']):
-            return tag['value']
-    return None
-
-
 def has_local_pg_pkey() -> bool:
     """Returns true if there is a local .gnupg directory
     """
@@ -451,6 +430,35 @@ def pgp_local_public_key() -> str:
     if not result:
         return None
     return extract_pgp_public_key(result.decode('utf-8'))
+
+
+def _get_pgp_public_key_from_actor(signing_priv_key_pem: str,
+                                   domain: str, handle: str,
+                                   actor_json: {} = None) -> str:
+    """Searches tags on the actor to see if there is any PGP
+    public key specified
+    """
+    if not actor_json:
+        actor_json, _ = \
+            get_actor_json(domain, handle, False, False, False, True,
+                           signing_priv_key_pem, None)
+    if not actor_json:
+        return None
+    if not actor_json.get('attachment'):
+        return None
+    if not isinstance(actor_json['attachment'], list):
+        return None
+    # search through the tags on the actor
+    for tag in actor_json['attachment']:
+        if not isinstance(tag, dict):
+            continue
+        if not tag.get('value'):
+            continue
+        if not isinstance(tag['value'], str):
+            continue
+        if contains_pgp_public_key(tag['value']):
+            return tag['value']
+    return None
 
 
 def pgp_public_key_upload(base_dir: str, session,
@@ -620,3 +628,57 @@ def pgp_public_key_upload(base_dir: str, session,
         print('DEBUG: c2s POST pgp actor update success')
 
     return actor_update
+
+
+def actor_to_vcard(actor: {}) -> str:
+    """Returns a vcard for a given actor
+    """
+    vcard_str = 'BEGIN:VCARD\n'
+    vcard_str += 'VERSION:4.0\n'
+    vcard_str += 'REV:' + actor['published'] + '\n'
+    vcard_str += 'FN:' + actor['name'] + '\n'
+    vcard_str += 'N:' + actor['preferredUsername'] + '\n'
+    vcard_str += 'URL:' + actor['url'] + '\n'
+    blog_address = get_blog_address(actor)
+    if blog_address:
+        vcard_str += 'URL:blog:' + blog_address + '\n'
+    vcard_str += 'NOTE:' + remove_html(actor['summary']) + '\n'
+    if actor['icon']['url']:
+        vcard_str += 'PHOTO:' + actor['icon']['url'] + '\n'
+    pgp_key = get_pgp_pub_key(actor)
+    if pgp_key:
+        vcard_str += 'KEY:data:application/pgp-keys;base64,' + \
+            base64.b64encode(pgp_key.encode('utf-8')).decode('utf-8') + '\n'
+    email_address = get_email_address(actor)
+    if email_address:
+        vcard_str += 'EMAIL;TYPE=internet:' + email_address + '\n'
+    xmpp_address = get_xmpp_address(actor)
+    if xmpp_address:
+        vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
+    jami_address = get_jami_address(actor)
+    if jami_address:
+        vcard_str += 'IMPP:jami:' + jami_address + '\n'
+    matrix_address = get_matrix_address(actor)
+    if matrix_address:
+        vcard_str += 'IMPP:matrix:' + matrix_address + '\n'
+    briar_address = get_briar_address(actor)
+    if briar_address:
+        if briar_address.startswith('briar://'):
+            briar_address = briar_address.split('briar://')[1]
+        vcard_str += 'IMPP:briar:' + briar_address + '\n'
+    cwtch_address = get_cwtch_address(actor)
+    if cwtch_address:
+        vcard_str += 'IMPP:cwtch:' + cwtch_address + '\n'
+    if actor.get('hasOccupation'):
+        if len(actor['hasOccupation']) > 0:
+            if actor['hasOccupation'][0].get('name'):
+                vcard_str += \
+                    'ROLE:' + \
+                    actor['hasOccupation'][0]['name'] + '\n'
+            if actor['hasOccupation'][0].get('occupationLocation'):
+                city_name = \
+                    actor['hasOccupation'][0]['occupationLocation']['name']
+                vcard_str += \
+                    'ADR:;;;' + city_name + ';;;\n'
+    vcard_str += 'END:VCARD\n'
+    return vcard_str

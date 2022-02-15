@@ -31,6 +31,7 @@ from metadata import meta_data_node_info
 from metadata import metadata_custom_emoji
 from enigma import get_enigma_pub_key
 from enigma import set_enigma_pub_key
+from pgp import actor_to_vcard
 from pgp import get_email_address
 from pgp import set_email_address
 from pgp import get_pgp_pub_key
@@ -1185,6 +1186,59 @@ class PubServer(BaseHTTPRequestHandler):
                                   project_version, custom_emoji,
                                   show_node_info_accounts,
                                   referer_domain, debug, 5)
+
+    def _show_vcard(self, base_dir: str, path: str, calling_domain: str,
+                    referer_domain: str, domain: str, debug: bool) -> bool:
+        """Returns a vcard for the given account
+        """
+        if not self._has_accept(calling_domain):
+            return False
+        if path.endswith('.vcf'):
+            path = path.split('.vcf')[0]
+            accept_str = 'text/vcard'
+        else:
+            accept_str = self.headers['Accept']
+        if 'text/vcard' not in accept_str:
+            return False
+        if 'application/' in accept_str:
+            return False
+        if not path.startswith('/users/'):
+            self._400()
+            return True
+        nickname = path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if '?' in nickname:
+            nickname = nickname.split('?')[0]
+        if self.server.vcard_is_active:
+            print('vcard is busy during request from ' + str(referer_domain))
+            self._503()
+            return True
+        self.server.vcard_is_active = True
+        actor_json = None
+        actor_filename = \
+            acct_dir(base_dir, nickname, domain) + '.json'
+        if os.path.isfile(actor_filename):
+            actor_json = load_json(actor_filename)
+        if not actor_json:
+            print('WARN: vcard actor not found ' + actor_filename)
+            self._404()
+            self.server.vcard_is_active = False
+            return True
+        vcard_str = actor_to_vcard(actor_json)
+        if vcard_str:
+            msg = vcard_str.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/vcard; charset=utf-8', msglen,
+                              None, calling_domain, True)
+            self._write(msg)
+            print('vcard sent to ' + str(referer_domain))
+            self.server.vcard_is_active = False
+            return True
+        print('WARN: vcard string not returned')
+        self._404()
+        self.server.vcard_is_active = False
+        return True
 
     def _nodeinfo(self, ua_str: str, calling_domain: str,
                   referer_domain: str,
@@ -13606,6 +13660,11 @@ class PubServer(BaseHTTPRequestHandler):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', 'start', self.server.debug)
 
+        if self._show_vcard(self.server.base_dir,
+                            self.path, calling_domain, referer_domain,
+                            self.server.domain, self.server.debug):
+            return
+
         # Since fediverse crawlers are quite active,
         # make returning info to them high priority
         # get nodeinfo endpoint
@@ -18930,6 +18989,7 @@ def run_daemon(dyslexic_font: bool,
     httpd.post_to_nickname = None
 
     httpd.nodeinfo_is_active = False
+    httpd.vcard_is_active = False
     httpd.masto_api_is_active = False
 
     httpd.dyslexic_font = dyslexic_font

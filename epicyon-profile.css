@@ -194,6 +194,9 @@
     --voteresult-width: 80%;
     --voteresult-width-mobile: 80%;
     --voteresult-width-tiny: 40%;
+    --vcard-icon-size: 32px;
+    --vcard-icon-size-mobile: 80px;
+    --vcard-icon-size-tiny: 80px;
 }
 
 @font-face {
@@ -391,7 +394,6 @@ a:focus {
     color: #ffffff;
     text-align: var(--profile-text-align);
     line-height: 1.4em;
-    background-color: #141414;
 }
 
 .profileHeader .title {
@@ -1073,6 +1075,10 @@ div.container {
         font-family:   var(--header-font);
         font-size: var(--font-size);
         color: var(--title-color);
+    }
+    .profileHeader img.vcard {
+        width: var(--vcard-icon-size);
+        float: right;
     }
     .followText {
         font-size: var(--follow-text-size1);
@@ -1837,6 +1843,10 @@ div.container {
     blockquote {
         font-size: var(--quote-font-size-mobile);
     }
+    .profileHeader img.vcard {
+        width: var(--vcard-icon-size-mobile);
+        float: right;
+    }
     .accountsTable {
         width: 100%;
         border: 0;
@@ -2571,6 +2581,10 @@ div.container {
     }
     blockquote {
         font-size: var(--quote-font-size-tiny);
+    }
+    .profileHeader img.vcard {
+        width: var(--vcard-icon-size-tiny);
+        float: right;
     }
     .accountsTable {
         width: 100%;
