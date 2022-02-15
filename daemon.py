@@ -1225,7 +1225,7 @@ class PubServer(BaseHTTPRequestHandler):
         if vcard_str:
             msg = vcard_str.encode('utf-8')
             msglen = len(msg)
-            self._set_headers('text/vcard', msglen,
+            self._set_headers('text/vcard; charset=utf-8', msglen,
                               None, calling_domain, True)
             self._write(msg)
             print('vcard sent to ' + str(referer_domain))
