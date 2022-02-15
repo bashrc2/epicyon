@@ -293,7 +293,7 @@ def get_vcard(session, url: str, params: {}, debug: bool,
                       ' failed with error code ' +
                       str(result.status_code) +
                       ' headers: ' + str(session_headers))
-        return result.content
+        return result.content.decode('utf-8')
     except requests.exceptions.RequestException as ex:
         session_headers2 = session_headers.copy()
         if session_headers2.get('Authorization'):
