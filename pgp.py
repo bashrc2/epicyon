@@ -636,7 +636,7 @@ def actor_to_vcard(actor: {}) -> str:
     vcard_str = 'BEGIN:VCARD\n'
     vcard_str += 'VERSION:4.0\n'
     vcard_str += 'REV:' + actor['published'] + '\n'
-    vcard_str += 'FN:' + actor['name'] + '\n'
+    vcard_str += 'FN:' + remove_html(actor['name']) + '\n'
     vcard_str += 'NICKNAME:' + actor['preferredUsername'] + '\n'
     vcard_str += 'URL:' + actor['url'] + '\n'
     blog_address = get_blog_address(actor)
@@ -690,7 +690,8 @@ def actor_to_vcard_xml(actor: {}) -> str:
     vcard_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
     vcard_str += '<vcards xmlns="urn:ietf:params:xml:ns:vcard-4.0">\n'
     vcard_str += '  <vcard>\n'
-    vcard_str += '    <fn><text>' + actor['name'] + '</text></fn>\n'
+    vcard_str += '    <fn><text>' + \
+        remove_html(actor['name']) + '</text></fn>\n'
     vcard_str += '    <nickname><text>' + \
         actor['preferredUsername'] + '</text></nickname>\n'
     vcard_str += '    <note><text>' + \
