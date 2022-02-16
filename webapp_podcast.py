@@ -34,8 +34,14 @@ def _html_podcast_social_interactions(podcast_properties: {},
         return ''
     episode_post_url = podcast_properties['socialInteract']['text']
     actor_str = ''
+    podcast_account_id = None
     if podcast_properties['socialInteract'].get('accountId'):
-        actor_handle = podcast_properties['socialInteract']['accountId']
+        podcast_account_id = podcast_properties['socialInteract']['accountId']
+    elif podcast_properties['socialInteract'].get('podcastAccountUrl'):
+        podcast_account_id = \
+            podcast_properties['socialInteract']['podcastAccountUrl']
+    if podcast_account_id:
+        actor_handle = podcast_account_id
         if actor_handle.startswith('@'):
             actor_handle = actor_handle[1:]
         actor_str = '?actor=' + actor_handle

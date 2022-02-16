@@ -652,25 +652,25 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     email_address = get_email_address(actor)
     if email_address:
         vcard_str += 'EMAIL;TYPE=internet:' + email_address + '\n'
-    vcard_str += 'IMPP;TYPE=fediverse:' + \
+    vcard_str += 'IMPP:fediverse:' + \
         actor['preferredUsername'] + '@' + domain + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
-        vcard_str += 'IMPP;TYPE=xmpp:' + xmpp_address + '\n'
+        vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
     jami_address = get_jami_address(actor)
     if jami_address:
-        vcard_str += 'IMPP;TYPE=jami:' + jami_address + '\n'
+        vcard_str += 'IMPP:jami:' + jami_address + '\n'
     matrix_address = get_matrix_address(actor)
     if matrix_address:
-        vcard_str += 'IMPP;TYPE=matrix:' + matrix_address + '\n'
+        vcard_str += 'IMPP:matrix:' + matrix_address + '\n'
     briar_address = get_briar_address(actor)
     if briar_address:
         if briar_address.startswith('briar://'):
             briar_address = briar_address.split('briar://')[1]
-        vcard_str += 'IMPP;TYPE=briar:' + briar_address + '\n'
+        vcard_str += 'IMPP:briar:' + briar_address + '\n'
     cwtch_address = get_cwtch_address(actor)
     if cwtch_address:
-        vcard_str += 'IMPP;TYPE=cwtch:' + cwtch_address + '\n'
+        vcard_str += 'IMPP:cwtch:' + cwtch_address + '\n'
     if actor.get('hasOccupation'):
         if len(actor['hasOccupation']) > 0:
             if actor['hasOccupation'][0].get('name'):
