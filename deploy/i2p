@@ -329,7 +329,7 @@ echo "Creating nginx virtual host for http://${I2P_DOMAIN}"
   echo '    gzip            on;';
   echo '    gzip_min_length 1000;';
   echo '    gzip_proxied    expired no-cache no-store private auth;';
-  echo '    gzip_types      text/plain application/xml;';
+  echo '    gzip_types      gzip_types text/plain text/css text/vcard text/vcard+xml application/json application/ld+json application/javascript text/xml application/xml application/rdf+xml application/xml+rss text/javascript;';
   echo '';
   echo '    add_header X-Content-Type-Options nosniff;';
   echo '    add_header X-XSS-Protection "1; mode=block";';
