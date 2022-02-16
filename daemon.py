@@ -1199,9 +1199,8 @@ class PubServer(BaseHTTPRequestHandler):
             accept_str = 'text/vcard'
         else:
             accept_str = self.headers['Accept']
-        if 'text/vcard' not in accept_str:
-            return False
-        if 'application/' in accept_str:
+        if 'text/vcard' not in accept_str and \
+           'application/vcard+xml' not in accept_str:
             return False
         if path.startswith('/@'):
             path = path.replace('/@', '/users/', 1)
@@ -1228,9 +1227,9 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             self.server.vcard_is_active = False
             return True
-        if 'vcard+xml' in accept_str:
+        if 'application/vcard+xml' in accept_str:
             vcard_str = actor_to_vcard_xml(actor_json, domain)
-            header_type = 'text/vcard+xml; charset=utf-8'
+            header_type = 'application/vcard+xml; charset=utf-8'
         else:
             vcard_str = actor_to_vcard(actor_json, domain)
             header_type = 'text/vcard; charset=utf-8'
