@@ -32,6 +32,7 @@ from metadata import metadata_custom_emoji
 from enigma import get_enigma_pub_key
 from enigma import set_enigma_pub_key
 from pgp import actor_to_vcard
+from pgp import actor_to_vcard_xml
 from pgp import get_email_address
 from pgp import set_email_address
 from pgp import get_pgp_pub_key
@@ -1202,6 +1203,8 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if 'application/' in accept_str:
             return False
+        if path.startswith('/@'):
+            path = path.replace('/@', '/users/', 1)
         if not path.startswith('/users/'):
             self._400()
             return True
@@ -1225,11 +1228,16 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             self.server.vcard_is_active = False
             return True
-        vcard_str = actor_to_vcard(actor_json)
+        if 'vcard+xml' in accept_str:
+            vcard_str = actor_to_vcard_xml(actor_json, domain)
+            header_type = 'text/vcard+xml; charset=utf-8'
+        else:
+            vcard_str = actor_to_vcard(actor_json, domain)
+            header_type = 'text/vcard; charset=utf-8'
         if vcard_str:
             msg = vcard_str.encode('utf-8')
             msglen = len(msg)
-            self._set_headers('text/vcard; charset=utf-8', msglen,
+            self._set_headers(header_type, msglen,
                               None, calling_domain, True)
             self._write(msg)
             print('vcard sent to ' + str(referer_domain))
