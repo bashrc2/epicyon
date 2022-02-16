@@ -172,6 +172,11 @@ def create_webfinger_endpoint(nickname: str, domain: str, port: int,
                 "type": "text/html"
             },
             {
+                "href": profile_page_href,
+                "rel": "http://webfinger.net/rel/profile-page",
+                "type": "text/vcard"
+            },
+            {
                 "href": person_id,
                 "rel": "self",
                 "type": "application/activity+json"
@@ -280,7 +285,7 @@ def webfinger_lookup(path: str, base_dir: str,
     return wf_json
 
 
-def _webfinger_updateAvatar(wf_json: {}, actor_json: {}) -> bool:
+def _webfinger_update_avatar(wf_json: {}, actor_json: {}) -> bool:
     """Updates the avatar image link
     """
     found = False
@@ -303,6 +308,20 @@ def _webfinger_updateAvatar(wf_json: {}, actor_json: {}) -> bool:
         "href": avatar_url,
         "rel": "http://webfinger.net/rel/avatar",
         "type": media_type
+    })
+    return True
+
+
+def _webfinger_update_vcard(wf_json: {}, actor_json: {}) -> bool:
+    """Updates the vcard link
+    """
+    for link in wf_json['links']:
+        if link['type'] == 'text/vcard':
+            return False
+    wf_json['links'].append({
+        "href": actor_json['url'],
+        "rel": "http://webfinger.net/rel/profile-page",
+        "type": "text/vcard"
     })
     return True
 
@@ -412,7 +431,10 @@ def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
         wf_json['aliases'].remove(full_alias)
         changed = True
 
-    if _webfinger_updateAvatar(wf_json, actor_json):
+    if _webfinger_update_avatar(wf_json, actor_json):
+        changed = True
+
+    if _webfinger_update_vcard(wf_json, actor_json):
         changed = True
 
     if _webfinger_add_blog_link(wf_json, actor_json):
