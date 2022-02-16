@@ -993,7 +993,7 @@ if args.xmlvcard:
     domain = ''
     if args.domain:
         domain = args.domain
-    test_vcard = get_vcard(True, session, args.vcard,
+    test_vcard = get_vcard(True, session, args.xmlvcard,
                            None, debug, __version__, http_prefix, domain)
     if test_vcard:
         print(test_vcard)

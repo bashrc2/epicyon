@@ -260,9 +260,7 @@ def get_vcard(xml_format: bool,
         'Accept': 'text/vcard'
     }
     if xml_format:
-        headers = {
-            'Accept': 'text/vcard+xml'
-        }
+        headers['Accept'] = 'text/vcard+xml'
     session_params = {}
     session_headers = {}
     if headers:
