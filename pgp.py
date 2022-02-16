@@ -693,7 +693,8 @@ def actor_to_vcard_xml(actor: {}) -> str:
     vcard_str += '    <fn><text>' + actor['name'] + '</text></fn>\n'
     vcard_str += '    <nickname><text>' + \
         actor['preferredUsername'] + '</text></nickname>\n'
-    vcard_str += '    <note><text>' + actor['summary'] + '</text></note>\n'
+    vcard_str += '    <note><text>' + \
+        remove_html(actor['summary']) + '</text></note>\n'
     email_address = get_email_address(actor)
     if email_address:
         vcard_str += '    <email><text>' + email_address + '</text></email>\n'
