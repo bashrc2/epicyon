@@ -514,7 +514,8 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
             'owner', 'srcset', 'img', 'role', 'address', 'suggested',
             'startTime', 'duration', 'href', 'name', 'pubdate',
             'length', 'season', 'email', 'platform', 'protocol',
-            'accountId', 'priority'
+            'accountId', 'priority', 'podcastAccountId',
+            'podcastAccountUrl'
         )
         pod_entry = {}
         for pod_field in pod_fields:
