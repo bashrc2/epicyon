@@ -1229,10 +1229,10 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.vcard_is_active = False
             return True
         if 'vcard+xml' in accept_str:
-            vcard_str = actor_to_vcard_xml(actor_json)
+            vcard_str = actor_to_vcard_xml(actor_json, domain)
             header_type = 'text/vcard+xml; charset=utf-8'
         else:
-            vcard_str = actor_to_vcard(actor_json)
+            vcard_str = actor_to_vcard(actor_json, domain)
             header_type = 'text/vcard; charset=utf-8'
         if vcard_str:
             msg = vcard_str.encode('utf-8')

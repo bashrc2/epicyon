@@ -630,7 +630,7 @@ def pgp_public_key_upload(base_dir: str, session,
     return actor_update
 
 
-def actor_to_vcard(actor: {}) -> str:
+def actor_to_vcard(actor: {}, domain: str) -> str:
     """Returns a vcard for a given actor
     """
     vcard_str = 'BEGIN:VCARD\n'
@@ -638,10 +638,10 @@ def actor_to_vcard(actor: {}) -> str:
     vcard_str += 'REV:' + actor['published'] + '\n'
     vcard_str += 'FN:' + remove_html(actor['name']) + '\n'
     vcard_str += 'NICKNAME:' + actor['preferredUsername'] + '\n'
-    vcard_str += 'URL:profile:' + actor['url'] + '\n'
+    vcard_str += 'URL;TYPE=profile:' + actor['url'] + '\n'
     blog_address = get_blog_address(actor)
     if blog_address:
-        vcard_str += 'URL:blog:' + blog_address + '\n'
+        vcard_str += 'URL;TYPE=blog:' + blog_address + '\n'
     vcard_str += 'NOTE:' + remove_html(actor['summary']) + '\n'
     if actor['icon']['url']:
         vcard_str += 'PHOTO:' + actor['icon']['url'] + '\n'
@@ -652,23 +652,25 @@ def actor_to_vcard(actor: {}) -> str:
     email_address = get_email_address(actor)
     if email_address:
         vcard_str += 'EMAIL;TYPE=internet:' + email_address + '\n'
+    vcard_str += 'IMPP;TYPE=fediverse:' + \
+        actor['preferredUsername'] + '@' + domain + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
-        vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
+        vcard_str += 'IMPP;TYPE=xmpp:' + xmpp_address + '\n'
     jami_address = get_jami_address(actor)
     if jami_address:
-        vcard_str += 'IMPP:jami:' + jami_address + '\n'
+        vcard_str += 'IMPP;TYPE=jami:' + jami_address + '\n'
     matrix_address = get_matrix_address(actor)
     if matrix_address:
-        vcard_str += 'IMPP:matrix:' + matrix_address + '\n'
+        vcard_str += 'IMPP;TYPE=matrix:' + matrix_address + '\n'
     briar_address = get_briar_address(actor)
     if briar_address:
         if briar_address.startswith('briar://'):
             briar_address = briar_address.split('briar://')[1]
-        vcard_str += 'IMPP:briar:' + briar_address + '\n'
+        vcard_str += 'IMPP;TYPE=briar:' + briar_address + '\n'
     cwtch_address = get_cwtch_address(actor)
     if cwtch_address:
-        vcard_str += 'IMPP:cwtch:' + cwtch_address + '\n'
+        vcard_str += 'IMPP;TYPE=cwtch:' + cwtch_address + '\n'
     if actor.get('hasOccupation'):
         if len(actor['hasOccupation']) > 0:
             if actor['hasOccupation'][0].get('name'):
@@ -684,7 +686,7 @@ def actor_to_vcard(actor: {}) -> str:
     return vcard_str
 
 
-def actor_to_vcard_xml(actor: {}) -> str:
+def actor_to_vcard_xml(actor: {}, domain: str) -> str:
     """Returns a xml formatted vcard for a given actor
     """
     vcard_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -699,6 +701,10 @@ def actor_to_vcard_xml(actor: {}) -> str:
     email_address = get_email_address(actor)
     if email_address:
         vcard_str += '    <email><text>' + email_address + '</text></email>\n'
+    vcard_str += '    <impp>' + \
+        '<parameters><type><text>fediverse</text></type></parameters>' + \
+        '<text>' + actor['preferredUsername'] + '@' + domain + \
+        '</text></impp>\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += '    <impp>' + \

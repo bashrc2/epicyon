@@ -291,7 +291,7 @@ parser.add_argument('--postsraw', dest='postsraw', type=str,
                     help='Show raw json of posts for the given handle')
 parser.add_argument('--vcard', dest='vcard', type=str, default=None,
                     help='Show the vcard for a given activitypub actor url')
-parser.add_argument('--vcardxml', dest='vcardxml', type=str, default=None,
+parser.add_argument('--xmlvcard', dest='xmlvcard', type=str, default=None,
                     help='Show the xml vcard for a given ' +
                     'activitypub actor url')
 parser.add_argument('--json', dest='json', type=str, default=None,
@@ -986,7 +986,7 @@ if args.vcard:
         print(test_vcard)
     sys.exit()
 
-if args.vcardxml:
+if args.xmlvcard:
     session = create_session(None)
     if not args.domain:
         args.domain = get_config_param(base_dir, 'domain')
