@@ -638,7 +638,7 @@ def actor_to_vcard(actor: {}) -> str:
     vcard_str += 'REV:' + actor['published'] + '\n'
     vcard_str += 'FN:' + remove_html(actor['name']) + '\n'
     vcard_str += 'NICKNAME:' + actor['preferredUsername'] + '\n'
-    vcard_str += 'URL:' + actor['url'] + '\n'
+    vcard_str += 'URL:profile:' + actor['url'] + '\n'
     blog_address = get_blog_address(actor)
     if blog_address:
         vcard_str += 'URL:blog:' + blog_address + '\n'
