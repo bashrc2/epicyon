@@ -1202,6 +1202,8 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if 'application/' in accept_str:
             return False
+        if path.startswith('/@'):
+            path = path.replace('/@', '/users/', 1)
         if not path.startswith('/users/'):
             self._400()
             return True
