@@ -246,7 +246,8 @@ def get_json(signing_priv_key_pem: str,
                              None, quiet, debug, True)
 
 
-def get_vcard(session, url: str, params: {}, debug: bool,
+def get_vcard(xml_format: bool,
+              session, url: str, params: {}, debug: bool,
               version: str = '1.3.0', http_prefix: str = 'https',
               domain: str = 'testdomain',
               timeout_sec: int = 20, quiet: bool = False) -> {}:
@@ -258,6 +259,10 @@ def get_vcard(session, url: str, params: {}, debug: bool,
     headers = {
         'Accept': 'text/vcard'
     }
+    if xml_format:
+        headers = {
+            'Accept': 'text/vcard+xml'
+        }
     session_params = {}
     session_headers = {}
     if headers:

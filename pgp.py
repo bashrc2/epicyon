@@ -637,7 +637,7 @@ def actor_to_vcard(actor: {}) -> str:
     vcard_str += 'VERSION:4.0\n'
     vcard_str += 'REV:' + actor['published'] + '\n'
     vcard_str += 'FN:' + actor['name'] + '\n'
-    vcard_str += 'N:' + actor['preferredUsername'] + '\n'
+    vcard_str += 'NICKNAME:' + actor['preferredUsername'] + '\n'
     vcard_str += 'URL:' + actor['url'] + '\n'
     blog_address = get_blog_address(actor)
     if blog_address:
@@ -681,4 +681,82 @@ def actor_to_vcard(actor: {}) -> str:
                 vcard_str += \
                     'ADR:;;;' + city_name + ';;;\n'
     vcard_str += 'END:VCARD\n'
+    return vcard_str
+
+
+def actor_to_vcard_xml(actor: {}) -> str:
+    """Returns a xml formatted vcard for a given actor
+    """
+    vcard_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    vcard_str += '<vcards xmlns="urn:ietf:params:xml:ns:vcard-4.0">\n'
+    vcard_str += '  <vcard>\n'
+    vcard_str += '    <fn><text>' + actor['name'] + '</text></fn>\n'
+    vcard_str += '    <nickname><text>' + \
+        actor['preferredUsername'] + '</text></nickname>\n'
+    vcard_str += '    <note><text>' + actor['summary'] + '</text></note>\n'
+    email_address = get_email_address(actor)
+    if email_address:
+        vcard_str += '    <email><text>' + email_address + '</text></email>\n'
+    xmpp_address = get_xmpp_address(actor)
+    if xmpp_address:
+        vcard_str += '    <impp>' + \
+            '<parameters><type><text>xmpp</text></type></parameters>' + \
+            '<text>' + xmpp_address + '</text></impp>\n'
+    jami_address = get_jami_address(actor)
+    if jami_address:
+        vcard_str += '    <impp>' + \
+            '<parameters><type><text>jami</text></type></parameters>' + \
+            '<text>' + jami_address + '</text></impp>\n'
+    matrix_address = get_matrix_address(actor)
+    if matrix_address:
+        vcard_str += '    <impp>' + \
+            '<parameters><type><text>matrix</text></type></parameters>' + \
+            '<text>' + matrix_address + '</text></impp>\n'
+    briar_address = get_briar_address(actor)
+    if briar_address:
+        vcard_str += '    <impp>' + \
+            '<parameters><type><text>briar</text></type></parameters>' + \
+            '<uri>' + briar_address + '</uri></impp>\n'
+    cwtch_address = get_cwtch_address(actor)
+    if cwtch_address:
+        vcard_str += '    <impp>' + \
+            '<parameters><type><text>cwtch</text></type></parameters>' + \
+            '<text>' + cwtch_address + '</text></impp>\n'
+    vcard_str += '    <url>' + \
+        '<parameters><type><text>profile</text></type></parameters>' + \
+        '<uri>' + actor['url'] + '</uri></url>\n'
+    blog_address = get_blog_address(actor)
+    if blog_address:
+        vcard_str += '    <url>' + \
+            '<parameters><type><text>blog</text></type></parameters>' + \
+            '<uri>' + blog_address + '</uri></url>\n'
+    vcard_str += '    <rev>' + actor['published'] + '</rev>\n'
+    if actor['icon']['url']:
+        vcard_str += \
+            '    <photo><uri>' + actor['icon']['url'] + '</uri></photo>\n'
+    pgp_key = get_pgp_pub_key(actor)
+    if pgp_key:
+        pgp_key_encoded = \
+            base64.b64encode(pgp_key.encode('utf-8')).decode('utf-8')
+        vcard_str += \
+            '    <key>' + \
+            '<parameters>' + \
+            '<type><text>data</text></type>' + \
+            '<mediatype>application/pgp-keys;base64</mediatype>' + \
+            '</parameters>' + \
+            '<text>' + pgp_key_encoded + '</text></key>\n'
+    if actor.get('hasOccupation'):
+        if len(actor['hasOccupation']) > 0:
+            if actor['hasOccupation'][0].get('name'):
+                vcard_str += \
+                    '    <role><text>' + \
+                    actor['hasOccupation'][0]['name'] + '</text></role>\n'
+            if actor['hasOccupation'][0].get('occupationLocation'):
+                city_name = \
+                    actor['hasOccupation'][0]['occupationLocation']['name']
+                vcard_str += \
+                    '    <adr><locality>' + city_name + '</locality></adr>\n'
+
+    vcard_str += '  </vcard>\n'
+    vcard_str += '</vcards>\n'
     return vcard_str
