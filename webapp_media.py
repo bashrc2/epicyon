@@ -74,6 +74,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 url = url.split('&')[0]
             if '?utm_' in url:
                 url = url.split('?utm_')[0]
+            video_site = 'https://www.youtube.com/'
             content += \
                 "<center>\n<iframe loading=\"lazy\" src=\"" + \
                 video_site + url + "\" width=\"" + str(width) + \
