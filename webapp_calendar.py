@@ -248,7 +248,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
 
     # icalendar download link
     calendar_str += \
-        '    <a href="/users/' + path + '?ical=true" ' + \
+        '    <a href="' + path + '?ical=true" ' + \
         'download="icalendar.ics">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
@@ -497,7 +497,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
     calendar_icon_str = \
-        '    <a href="/users/' + path + '?ical=true" ' + \
+        '    <a href="' + path + '?ical=true" ' + \
         'download="icalendar.ics">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
