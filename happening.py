@@ -385,16 +385,21 @@ def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
                                 day_number: int, person_cache: {}) -> str:
     """Returns today's events in icalendar format
     """
+    day_events = None
     events = \
         get_todays_events(base_dir, nickname, domain,
                           year, month_number, day_number)
+    if events:
+        if events.get(str(day_number)):
+            day_events = events[str(day_number)]
+
     ical_str = \
         'BEGIN:VCALENDAR\n' + \
         'PRODID:-//Fediverse//NONSGML Epicyon//EN\n' + \
         'VERSION:2.0\n'
-    if not events:
+    if not day_events:
         print('icalendar daily: ' + str(year) + '-' + str(month_number) +
-              '-' + str(day_number) + ' ' + str(events))
+              '-' + str(day_number) + ' ' + str(day_events))
         ical_str += 'END:VCALENDAR\n'
         return ical_str
 
