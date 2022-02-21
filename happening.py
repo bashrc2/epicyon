@@ -426,6 +426,7 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
         ical_str += 'END:VCALENDAR\n'
         return ical_str
 
+    print('icalendar month: ' + str(events))
     for day_of_month in range(1, 32):
         if not events.get(str(day_of_month)):
             continue
