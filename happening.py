@@ -270,6 +270,7 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
     """Returns a day's events in icalendar format
     """
     ical_str = ''
+    print('icalendar: ' + str(day_events))
     for event_post in day_events:
         event_description = None
         event_place = None
