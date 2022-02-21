@@ -259,7 +259,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     body {
         font-size: var(--font-size-calendar);
     }
-    img ical {
+    body img.ical {
         width: var(--ical-icon-size);
         float: right;
     }
@@ -283,7 +283,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     body {
         font-size: var(--font-size-calendar-mobile);
     }
-    img ical {
+    body img.ical {
         width: var(--ical-icon-size-mobile);
         float: right;
     }
@@ -307,7 +307,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     body {
         font-size: var(--font-size-calendar-tiny);
     }
-    img ical {
+    body img.ical {
         width: var(--ical-icon-size-tiny);
         float: right;
     }
