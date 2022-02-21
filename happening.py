@@ -623,6 +623,11 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
                     if int(event_time.strftime("%Y")) == year and \
                        int(event_time.strftime("%m")) == month_number:
                         day_of_month = str(int(event_time.strftime("%d")))
+                        if '#statuses#' in post_id:
+                            tag['post_id'] = post_id.split('#statuses#')[1]
+                            tag['id'] = post_id.replace('#', '/')
+                            tag['sender'] = post_id.split('#statuses#')[0]
+                            tag['sender'] = tag['sender'].replace('#', '/')
                         post_event.append(tag)
                 else:
                     # tag is a place
