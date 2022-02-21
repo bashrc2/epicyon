@@ -289,7 +289,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                             day_number = int(num_str)
                     elif part.split('=')[0] == 'ical':
                         bool_str = part.split('=')[1]
-                        if bool_str.tolower().startswith('t'):
+                        if bool_str.lower().startswith('t'):
                             icalendar = True
             first = False
         actor = actor.split('?')[0]
@@ -494,8 +494,14 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '<a href="' + cal_actor + '/newreminder">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
+    calendar_icon_str += \
+        '    <a href="/users/' + path + '?ical=true" ' + \
+        'download="icalendar.ics">' + \
+        '<img class="ical" src="/icons/ical.png" ' + \
+        'title="iCalendar" alt="iCalendar" /></a>\n'
+
     cal_str = \
         header_str + screen_reader_cal + calendar_str + \
-        new_event_str + html_footer()
+        new_event_str + calendar_icon_str + html_footer()
 
     return cal_str
