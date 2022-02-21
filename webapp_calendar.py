@@ -243,6 +243,9 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                     event_place + '</span></td>' + \
                     delete_button_str + '</tr>\n'
 
+    calendar_str += '</tbody>\n'
+    calendar_str += '</table></main>\n'
+
     # icalendar download link
     calendar_str += \
         '    <a href="/users/' + path + '?ical=true" ' + \
@@ -250,8 +253,6 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
 
-    calendar_str += '</tbody>\n'
-    calendar_str += '</table></main>\n'
     calendar_str += html_footer()
 
     return calendar_str
