@@ -178,7 +178,7 @@ def _is_happening_post(post_json_object: {}) -> bool:
 
 def get_todays_events(base_dir: str, nickname: str, domain: str,
                       curr_year: int, curr_month_number: int,
-                      currDayOfMonth: int) -> {}:
+                      curr_day_of_month: int) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
@@ -191,10 +191,10 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
         month_number = now.month
     else:
         month_number = curr_month_number
-    if not currDayOfMonth:
+    if not curr_day_of_month:
         day_number = now.day
     else:
-        day_number = currDayOfMonth
+        day_number = curr_day_of_month
 
     calendar_filename = \
         acct_dir(base_dir, nickname, domain) + \

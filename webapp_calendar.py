@@ -267,9 +267,11 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     """
     domain = remove_domain_port(domain_full)
 
-    month_number = 0
+    default_year = 1970
+    default_month = 0
+    month_number = default_month
     day_number = None
-    year = 1970
+    year = default_year
     actor = http_prefix + '://' + domain_full + path.replace('/calendar', '')
     if '?' in actor:
         first = True
@@ -296,7 +298,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         actor = actor.split('?')[0]
 
     curr_date = datetime.now()
-    if year == 1970 and month_number == 0:
+    if year == default_year and month_number == default_month:
         year = curr_date.year
         month_number = curr_date.month
 
@@ -318,7 +320,6 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                                                year, month_number,
                                                day_number,
                                                person_cache)
-
         day_events = None
         events = \
             get_todays_events(base_dir, nickname, domain,
