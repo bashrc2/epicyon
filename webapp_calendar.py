@@ -319,7 +319,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                                                nickname, domain,
                                                year, month_number,
                                                day_number,
-                                               person_cache)
+                                               person_cache,
+                                               http_prefix)
         day_events = None
         events = \
             get_todays_events(base_dir, nickname, domain,
@@ -335,7 +336,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
 
     if icalendar:
         return get_month_events_icalendar(base_dir, nickname, domain,
-                                          year, month_number, person_cache)
+                                          year, month_number, person_cache,
+                                          http_prefix)
 
     events = \
         get_calendar_events(base_dir, nickname, domain, year, month_number)

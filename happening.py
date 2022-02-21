@@ -274,7 +274,8 @@ def _ical_date_string(date_str: str) -> str:
 
 
 def _icalendar_day(base_dir: str, nickname: str, domain: str,
-                   day_events: [], person_cache: {}) -> str:
+                   day_events: [], person_cache: {},
+                   http_prefix: str) -> str:
     """Returns a day's events in icalendar format
     """
     ical_str = ''
@@ -292,13 +293,17 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
         for evnt in event_post:
             if evnt['type'] == 'Event':
                 if evnt.get('post_id'):
-                    post_id = evnt['post_id']
+                    post_id = \
+                         http_prefix + '://' + domain + \
+                         '/users/' + nickname + '/statuses/' + evnt['post_id']
                 if evnt.get('startTime'):
                     event_start = \
                         datetime.strptime(evnt['startTime'],
                                           "%Y-%m-%dT%H:%M:%S%z")
-                    evnt_end = event_start + timedelta(hours=1)
-                    event_end = evnt_end.strftime("%Y-%m-%dT%H:%M:%S%z")
+                if evnt.get('endTime'):
+                    event_end = \
+                        datetime.strptime(evnt['startTime'],
+                                          "%Y-%m-%dT%H:%M:%S%z")
                 if 'public' in evnt:
                     if evnt['public'] is True:
                         event_is_public = True
@@ -323,7 +328,7 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
               str(event_start) + ' ' + str(event_description) + ' ' +
               str(sender_actor))
 
-        if not post_id or not event_start or \
+        if not post_id or not event_start or not event_end or \
            not event_description or not sender_actor:
             continue
 
@@ -350,7 +355,8 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
 
         event_start = \
             _ical_date_string(event_start.strftime("%Y-%m-%dT%H:%M:%SZ"))
-        event_end = _ical_date_string(event_end)
+        event_end = \
+            _ical_date_string(event_end.strftime("%Y-%m-%dT%H:%M:%SZ"))
 
         ical_str += \
             'BEGIN:VEVENT\n' + \
@@ -390,7 +396,8 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
 
 def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
                                 year: int, month_number: int,
-                                day_number: int, person_cache: {}) -> str:
+                                day_number: int, person_cache: {},
+                                http_prefix: str) -> str:
     """Returns today's events in icalendar format
     """
     day_events = None
@@ -413,7 +420,8 @@ def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
         return ical_str
 
     ical_str += \
-        _icalendar_day(base_dir, nickname, domain, day_events, person_cache)
+        _icalendar_day(base_dir, nickname, domain, day_events, person_cache,
+                       http_prefix)
 
     ical_str += 'END:VCALENDAR\n'
     return ical_str
@@ -422,7 +430,8 @@ def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
 def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
                                year: int,
                                month_number: int,
-                               person_cache: {}) -> str:
+                               person_cache: {},
+                               http_prefix: str) -> str:
     """Returns today's events in icalendar format
     """
     month_events = \
@@ -444,7 +453,8 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
         day_events = month_events[str(day_of_month)]
         ical_str += \
             _icalendar_day(base_dir, nickname, domain,
-                           day_events, person_cache)
+                           day_events, person_cache,
+                           http_prefix)
 
     ical_str += 'END:VCALENDAR\n'
     return ical_str
