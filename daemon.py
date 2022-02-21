@@ -679,6 +679,16 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
+    def _request_icalendar(self) -> bool:
+        """Should an icalendar response be given?
+        """
+        if not self.headers.get('Accept'):
+            return False
+        accept_str = self.headers['Accept']
+        if 'text/calendar' in accept_str:
+            return True
+        return False
+
     def _signed_ge_tkey_id(self) -> str:
         """Returns the actor from the signed GET key_id
         """
@@ -14056,9 +14066,12 @@ class PubServer(BaseHTTPRequestHandler):
 
         # is this a html request?
         html_getreq = False
+        icalendar_getreq = False
         if self._has_accept(calling_domain):
             if self._request_http():
                 html_getreq = True
+            elif self._request_icalendar():
+                icalendar_getreq = True
         else:
             if self.headers.get('Connection'):
                 # https://developer.mozilla.org/en-US/
@@ -15532,7 +15545,7 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', 'search screen shown done',
                             self.server.debug)
 
-        # Show the calendar for a user
+        # Show the html calendar for a user
         if html_getreq and users_in_path:
             if '/calendar' in self.path:
                 nickname = self.path.split('/users/')[1]
@@ -15551,13 +15564,52 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.http_prefix,
                                     self.server.domain_full,
                                     self.server.text_mode_banner,
-                                    access_keys).encode('utf-8')
+                                    access_keys,
+                                    False).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, calling_domain,
-                                  False)
+                if 'ical=true' in self.path:
+                    self._set_headers('text/calendar',
+                                      msglen, cookie, calling_domain,
+                                      False)
+                else:
+                    self._set_headers('text/html',
+                                      msglen, cookie, calling_domain,
+                                      False)
                 self._write(msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', 'calendar shown',
+                                    self.server.debug)
+                self.server.getreq_busy = False
+                return
+
+        # Show the icalendar for a user
+        if icalendar_getreq and users_in_path:
+            if '/calendar' in self.path:
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                access_keys = self.server.access_keys
+                if self.server.key_shortcuts.get(nickname):
+                    access_keys = self.server.key_shortcuts[nickname]
+
+                # show the calendar screen
+                msg = html_calendar(self.server.person_cache,
+                                    self.server.css_cache,
+                                    self.server.translate,
+                                    self.server.base_dir, self.path,
+                                    self.server.http_prefix,
+                                    self.server.domain_full,
+                                    self.server.text_mode_banner,
+                                    access_keys,
+                                    True).encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('text/calendar',
+                                  msglen, cookie, calling_domain,
+                                  False)
+                self._write(msg)
+                fitness_performance(getreq_start_time, self.server.fitness,
+                                    '_GET', 'icalendar shown',
                                     self.server.debug)
                 self.server.getreq_busy = False
                 return

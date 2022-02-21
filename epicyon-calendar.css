@@ -32,6 +32,9 @@
     --calendar-header-font-style: italic;
     --main-link-color-hover: blue;
     --rendering: normal;
+    --ical-icon-size: 32px;
+    --ical-icon-size-mobile: 80px;
+    --ical-icon-size-tiny: 80px;
 }
 
 @font-face {
@@ -256,6 +259,10 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     body {
         font-size: var(--font-size-calendar);
     }
+    body img.ical {
+        width: var(--ical-icon-size);
+        float: right;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -276,6 +283,10 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     body {
         font-size: var(--font-size-calendar-mobile);
     }
+    body img.ical {
+        width: var(--ical-icon-size-mobile);
+        float: right;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -295,5 +306,9 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     }
     body {
         font-size: var(--font-size-calendar-tiny);
+    }
+    body img.ical {
+        width: var(--ical-icon-size-tiny);
+        float: right;
     }
 }

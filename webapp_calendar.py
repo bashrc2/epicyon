@@ -24,6 +24,8 @@ from utils import local_actor_url
 from utils import replace_users_with_at
 from happening import get_todays_events
 from happening import get_calendar_events
+from happening import get_todays_events_icalendar
+from happening import get_month_events_icalendar
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -243,6 +245,14 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
 
     calendar_str += '</tbody>\n'
     calendar_str += '</table></main>\n'
+
+    # icalendar download link
+    calendar_str += \
+        '    <a href="' + path + '?ical=true" ' + \
+        'download="icalendar.ics">' + \
+        '<img class="ical" src="/icons/ical.png" ' + \
+        'title="iCalendar" alt="iCalendar" /></a>\n'
+
     calendar_str += html_footer()
 
     return calendar_str
@@ -251,14 +261,17 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
 def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                   base_dir: str, path: str,
                   http_prefix: str, domain_full: str,
-                  text_mode_banner: str, access_keys: {}) -> str:
+                  text_mode_banner: str, access_keys: {},
+                  icalendar: bool) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
 
-    month_number = 0
+    default_year = 1970
+    default_month = 0
+    month_number = default_month
     day_number = None
-    year = 1970
+    year = default_year
     actor = http_prefix + '://' + domain_full + path.replace('/calendar', '')
     if '?' in actor:
         first = True
@@ -277,11 +290,15 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                         num_str = part.split('=')[1]
                         if num_str.isdigit():
                             day_number = int(num_str)
+                    elif part.split('=')[0] == 'ical':
+                        bool_str = part.split('=')[1]
+                        if bool_str.lower().startswith('t'):
+                            icalendar = True
             first = False
         actor = actor.split('?')[0]
 
     curr_date = datetime.now()
-    if year == 1970 and month_number == 0:
+    if year == default_year and month_number == default_month:
         year = curr_date.year
         month_number = curr_date.month
 
@@ -297,6 +314,13 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     month_name = translate[months[month_number - 1]]
 
     if day_number:
+        if icalendar:
+            return get_todays_events_icalendar(base_dir,
+                                               nickname, domain,
+                                               year, month_number,
+                                               day_number,
+                                               person_cache,
+                                               http_prefix)
         day_events = None
         events = \
             get_todays_events(base_dir, nickname, domain,
@@ -309,6 +333,11 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                                   year, month_number, day_number,
                                   nickname, domain, day_events,
                                   month_name, actor)
+
+    if icalendar:
+        return get_month_events_icalendar(base_dir, nickname, domain,
+                                          year, month_number, person_cache,
+                                          http_prefix)
 
     events = \
         get_calendar_events(base_dir, nickname, domain, year, month_number)
@@ -469,8 +498,14 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '<a href="' + cal_actor + '/newreminder">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
+    calendar_icon_str = \
+        '    <a href="' + path + '?ical=true" ' + \
+        'download="icalendar.ics">' + \
+        '<img class="ical" src="/icons/ical.png" ' + \
+        'title="iCalendar" alt="iCalendar" /></a>\n'
+
     cal_str = \
         header_str + screen_reader_cal + calendar_str + \
-        new_event_str + html_footer()
+        new_event_str + calendar_icon_str + html_footer()
 
     return cal_str
