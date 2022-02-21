@@ -403,12 +403,6 @@ def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
         ical_str += 'END:VCALENDAR\n'
         return ical_str
 
-    if not events.get(str(day_number)):
-        ical_str += 'END:VCALENDAR\n'
-        return ical_str
-
-    day_events = events[str(day_number)]
-
     ical_str += \
         _icalendar_day(base_dir, nickname, domain, day_events, person_cache)
 
@@ -422,22 +416,24 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
                                person_cache: {}) -> str:
     """Returns today's events in icalendar format
     """
+    month_events = None
     events = \
         get_calendar_events(base_dir, nickname, domain, year,
                             month_number)
+
     ical_str = \
         'BEGIN:VCALENDAR\n' + \
         'PRODID:-//Fediverse//NONSGML Epicyon//EN\n' + \
         'VERSION:2.0\n'
-    if not events:
+    if not month_events:
         ical_str += 'END:VCALENDAR\n'
         return ical_str
 
-    print('icalendar month: ' + str(events))
+    print('icalendar month: ' + str(month_events))
     for day_of_month in range(1, 32):
-        if not events.get(str(day_of_month)):
+        if not month_events.get(str(day_of_month)):
             continue
-        day_events = events[str(day_of_month)]
+        day_events = month_events[str(day_of_month)]
         ical_str += \
             _icalendar_day(base_dir, nickname, domain,
                            day_events, person_cache)
