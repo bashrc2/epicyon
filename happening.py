@@ -265,6 +265,14 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
     return events
 
 
+def _ical_date_string(date_str: str) -> str:
+    """Returns an icalendar formatted date
+    """
+    date_str = date_str.replace('-', '')
+    date_str = date_str.replace(':', '')
+    return date_str.replace(' ', '')
+
+
 def _icalendar_day(base_dir: str, nickname: str, domain: str,
                    day_events: [], person_cache: {}) -> str:
     """Returns a day's events in icalendar format
@@ -288,11 +296,9 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
                 if evnt.get('startTime'):
                     event_start = \
                         datetime.strptime(evnt['startTime'],
-                                          "%Y%m%dT%H%M%S%Z")
-                    evnt_end = evnt['startTime'] + timedelta(hours=1)
-                    event_end = \
-                        datetime.strptime(evnt_end,
-                                          "%Y%m%dT%H%M%S%Z")
+                                          "%Y-%m-%dT%H:%M:%S%z")
+                    evnt_end = event_start + timedelta(hours=1)
+                    event_end = evnt_end.strftime("%Y-%m-%dT%H:%M:%S%z")
                 if 'public' in evnt:
                     if evnt['public'] is True:
                         event_is_public = True
@@ -339,10 +345,12 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
             continue
         if not isinstance(post_json_object['object']['published'], str):
             continue
-        published = post_json_object['object']['published']
-        published = published.replace('-', '')
-        published = published.replace(':', '')
-        published = published.replace(' ', '')
+        published = \
+            _ical_date_string(post_json_object['object']['published'])
+
+        event_start = \
+            _ical_date_string(event_start.strftime("%Y-%m-%dT%H:%M:%SZ"))
+        event_end = _ical_date_string(event_end)
 
         ical_str += \
             'BEGIN:VEVENT\n' + \
@@ -417,8 +425,7 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
                                person_cache: {}) -> str:
     """Returns today's events in icalendar format
     """
-    month_events = None
-    events = \
+    month_events = \
         get_calendar_events(base_dir, nickname, domain, year,
                             month_number)
 
