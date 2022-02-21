@@ -15567,9 +15567,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     access_keys,
                                     False).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html',
-                                  msglen, cookie, calling_domain,
-                                  False)
+                if 'ical=true' in self.path:
+                    self._set_headers('text/calendar',
+                                      msglen, cookie, calling_domain,
+                                      False)
+                else:
+                    self._set_headers('text/html',
+                                      msglen, cookie, calling_domain,
+                                      False)
                 self._write(msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', 'calendar shown',
