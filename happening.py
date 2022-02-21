@@ -415,8 +415,8 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
                             curr_month_number)
     ical_str = \
         'BEGIN:VCALENDAR\n' + \
-        'PRODID:-//Fediverse//NONSGML Epicyon//EN' + \
-        'VERSION:2.0'
+        'PRODID:-//Fediverse//NONSGML Epicyon//EN\n' + \
+        'VERSION:2.0\n'
     if not events:
         ical_str += 'END:VCALENDAR\n'
         return ical_str
