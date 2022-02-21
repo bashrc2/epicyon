@@ -240,6 +240,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                             # link to the id so that the event can be
                             # easily deleted
                             tag['post_id'] = post_id.split('#statuses#')[1]
+                            tag['id'] = post_id
                             tag['sender'] = post_id.split('#statuses#')[0]
                             tag['sender'] = tag['sender'].replace('#', '/')
                             tag['public'] = public_event
@@ -292,10 +293,8 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
 
         for evnt in event_post:
             if evnt['type'] == 'Event':
-                if evnt.get('post_id'):
-                    post_id = \
-                         http_prefix + '://' + domain + \
-                         '/users/' + nickname + '/statuses/' + evnt['post_id']
+                if evnt.get('id'):
+                    post_id = evnt['id']
                 if evnt.get('startTime'):
                     event_start = \
                         datetime.strptime(evnt['startTime'],
