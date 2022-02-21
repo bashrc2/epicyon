@@ -317,7 +317,7 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
                         if disp_name:
                             sender_name = \
                                 '<a href="' + sender_actor + '">' + \
-                                disp_name + '</a>: '
+                                disp_name + '</a>'
                 if evnt.get('name'):
                     event_description = evnt['name'].strip()
             elif evnt['type'] == 'Place':
