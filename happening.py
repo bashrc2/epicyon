@@ -240,7 +240,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                             # link to the id so that the event can be
                             # easily deleted
                             tag['post_id'] = post_id.split('#statuses#')[1]
-                            tag['id'] = post_id
+                            tag['id'] = post_id.replace('#', '/')
                             tag['sender'] = post_id.split('#statuses#')[0]
                             tag['sender'] = tag['sender'].replace('#', '/')
                             tag['public'] = public_event
