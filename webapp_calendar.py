@@ -24,6 +24,8 @@ from utils import local_actor_url
 from utils import replace_users_with_at
 from happening import get_todays_events
 from happening import get_calendar_events
+from happening import get_todays_events_icalendar
+from happening import get_month_events_icalendar
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -241,6 +243,13 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                     event_place + '</span></td>' + \
                     delete_button_str + '</tr>\n'
 
+    # icalendar download link
+    calendar_str += \
+        '    <a href="/users/' + path + '?ical=true" ' + \
+        'download="icalendar.ics">' + \
+        '<img class="ical" src="/icons/ical.png" ' + \
+        'title="iCalendar" alt="iCalendar" /></a>\n'
+
     calendar_str += '</tbody>\n'
     calendar_str += '</table></main>\n'
     calendar_str += html_footer()
@@ -251,7 +260,8 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
 def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                   base_dir: str, path: str,
                   http_prefix: str, domain_full: str,
-                  text_mode_banner: str, access_keys: {}) -> str:
+                  text_mode_banner: str, access_keys: {},
+                  icalendar: bool) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -277,6 +287,10 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                         num_str = part.split('=')[1]
                         if num_str.isdigit():
                             day_number = int(num_str)
+                    elif part.split('=')[0] == 'ical':
+                        bool_str = part.split('=')[1]
+                        if bool_str.tolower().startswith('t'):
+                            icalendar = True
             first = False
         actor = actor.split('?')[0]
 
@@ -297,6 +311,13 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     month_name = translate[months[month_number - 1]]
 
     if day_number:
+        if icalendar:
+            return get_todays_events_icalendar(base_dir,
+                                               nickname, domain,
+                                               year, month_number,
+                                               day_number,
+                                               person_cache)
+
         day_events = None
         events = \
             get_todays_events(base_dir, nickname, domain,
@@ -309,6 +330,10 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                                   year, month_number, day_number,
                                   nickname, domain, day_events,
                                   month_name, actor)
+
+    if icalendar:
+        return get_month_events_icalendar(base_dir, nickname, domain,
+                                          year, month_number, person_cache)
 
     events = \
         get_calendar_events(base_dir, nickname, domain, year, month_number)

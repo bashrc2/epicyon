@@ -18,6 +18,8 @@ from utils import save_json
 from utils import locate_post
 from utils import has_object_dict
 from utils import acct_dir
+from utils import remove_html
+from utils import get_display_name
 
 
 def _valid_uuid(test_uuid: str, version: int):
@@ -175,20 +177,20 @@ def _is_happening_post(post_json_object: {}) -> bool:
 
 
 def get_todays_events(base_dir: str, nickname: str, domain: str,
-                      currYear: int, currMonthNumber: int,
+                      curr_year: int, curr_month_number: int,
                       currDayOfMonth: int) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
     now = datetime.now()
-    if not currYear:
+    if not curr_year:
         year = now.year
     else:
-        year = currYear
-    if not currMonthNumber:
+        year = curr_year
+    if not curr_month_number:
         month_number = now.month
     else:
-        month_number = currMonthNumber
+        month_number = curr_month_number
     if not currDayOfMonth:
         day_number = now.day
     else:
@@ -263,13 +265,181 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
     return events
 
 
+def _icalendar_day(base_dir: str, nickname: str, domain: str,
+                   day_events: [], person_cache: {}) -> str:
+    """Returns a day's events in icalendar format
+    """
+    ical_str = ''
+    for event_post in day_events:
+        event_description = None
+        event_place = None
+        post_id = None
+        sender_name = ''
+        sender_actor = None
+        event_is_public = False
+        event_start = None
+        event_end = None
+
+        for evnt in event_post:
+            if evnt['type'] == 'Event':
+                if evnt.get('post_id'):
+                    post_id = evnt['post_id']
+                if evnt.get('startTime'):
+                    event_start = \
+                        datetime.strptime(evnt['startTime'],
+                                          "%Y%m%dT%H%M%S%Z")
+                    evnt_end = evnt['startTime'] + timedelta(hours=1)
+                    event_end = \
+                        datetime.strptime(evnt_end,
+                                          "%Y%m%dT%H%M%S%Z")
+                if 'public' in evnt:
+                    if evnt['public'] is True:
+                        event_is_public = True
+                if evnt.get('sender'):
+                    # get display name from sending actor
+                    if evnt.get('sender'):
+                        sender_actor = evnt['sender']
+                        disp_name = \
+                            get_display_name(base_dir, sender_actor,
+                                             person_cache)
+                        if disp_name:
+                            sender_name = \
+                                '<a href="' + sender_actor + '">' + \
+                                disp_name + '</a>: '
+                if evnt.get('name'):
+                    event_description = evnt['name'].strip()
+            elif evnt['type'] == 'Place':
+                if evnt.get('name'):
+                    event_place = evnt['name']
+
+        if not post_id or not event_start or \
+           not event_description or not sender_actor:
+            continue
+
+        # find the corresponding post
+        post_filename = locate_post(base_dir, nickname, domain, post_id)
+        if not post_filename:
+            continue
+
+        post_json_object = load_json(post_filename)
+        if not post_json_object:
+            continue
+
+        # get the published date from the post
+        if not post_json_object.get('object'):
+            continue
+        if not isinstance(post_json_object['object'], dict):
+            continue
+        if not post_json_object['object'].get('published'):
+            continue
+        if not isinstance(post_json_object['object']['published'], str):
+            continue
+        published = post_json_object['object']['published']
+        published = published.replace('-', '')
+        published = published.replace(':', '')
+        published = published.replace(' ', '')
+
+        ical_str += \
+            'BEGIN:VEVENT\n' + \
+            'DTSTAMP:' + published + '\n' + \
+            'UID:' + post_id + '\n' + \
+            'DTSTART:' + event_start + '\n' + \
+            'DTEND:' + event_end + '\n' + \
+            'STATUS:CONFIRMED\n'
+        descr = remove_html(event_description)
+        if len(descr) < 255:
+            ical_str += \
+                'SUMMARY:' + descr + '\n'
+        else:
+            ical_str += \
+                'SUMMARY:' + descr[255:] + '\n'
+            ical_str += \
+                'DESCRIPTION:' + descr + '\n'
+        if event_is_public:
+            ical_str += \
+                'CATEGORIES:APPOINTMENT,PUBLIC\n'
+        else:
+            ical_str += \
+                'CATEGORIES:APPOINTMENT\n'
+        if sender_name:
+            ical_str += \
+                'ORGANIZER;CN=' + remove_html(sender_name) + ':' + \
+                sender_actor + '\n'
+        else:
+            ical_str += \
+                'ORGANIZER:' + sender_actor + '\n'
+        if event_place:
+            ical_str += \
+                'LOCATION:' + remove_html(event_place) + '\n'
+        ical_str += 'END:VEVENT\n'
+    return ical_str
+
+
+def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
+                                year: int, month_number: int,
+                                day_number: int, person_cache: {}) -> str:
+    """Returns today's events in icalendar format
+    """
+    events = \
+        get_todays_events(base_dir, nickname, domain,
+                          year, month_number, day_number)
+    ical_str = \
+        'BEGIN:VCALENDAR\n' + \
+        'PRODID:-//Fediverse//NONSGML Epicyon//EN' + \
+        'VERSION:2.0'
+    if not events:
+        ical_str += 'END:VCALENDAR\n'
+        return ical_str
+
+    if not events.get(str(day_number)):
+        ical_str += 'END:VCALENDAR\n'
+        return ical_str
+
+    day_events = events[str(day_number)]
+
+    ical_str += \
+        _icalendar_day(base_dir, nickname, domain, day_events, person_cache)
+
+    ical_str += 'END:VCALENDAR\n'
+    return ical_str
+
+
+def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
+                               curr_year: int,
+                               curr_month_number: int,
+                               person_cache: {}) -> str:
+    """Returns today's events in icalendar format
+    """
+    events = \
+        get_calendar_events(base_dir, nickname, domain, curr_year,
+                            curr_month_number)
+    ical_str = \
+        'BEGIN:VCALENDAR\n' + \
+        'PRODID:-//Fediverse//NONSGML Epicyon//EN' + \
+        'VERSION:2.0'
+    if not events:
+        ical_str += 'END:VCALENDAR\n'
+        return ical_str
+
+    for day_number in range(1, 32):
+        if not events.get(str(day_number)):
+            continue
+        day_events = events[str(day_number)]
+        ical_str += \
+            _icalendar_day(base_dir, nickname, domain, day_events,
+                           person_cache)
+
+    ical_str += 'END:VCALENDAR\n'
+    return ical_str
+
+
 def day_events_check(base_dir: str, nickname: str, domain: str,
-                     currDate) -> bool:
+                     curr_date) -> bool:
     """Are there calendar events for the given date?
     """
-    year = currDate.year
-    month_number = currDate.month
-    day_number = currDate.day
+    year = curr_date.year
+    month_number = curr_date.month
+    day_number = curr_date.day
 
     calendar_filename = \
         acct_dir(base_dir, nickname, domain) + \
