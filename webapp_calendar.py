@@ -494,7 +494,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '<a href="' + cal_actor + '/newreminder">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
-    calendar_icon_str += \
+    calendar_icon_str = \
         '    <a href="/users/' + path + '?ical=true" ' + \
         'download="icalendar.ics">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
