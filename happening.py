@@ -392,6 +392,7 @@ def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
         'BEGIN:VCALENDAR\n' + \
         'PRODID:-//Fediverse//NONSGML Epicyon//EN\n' + \
         'VERSION:2.0\n'
+    print('icalendar daily: ' + str(events))
     if not events:
         ical_str += 'END:VCALENDAR\n'
         return ical_str
