@@ -1524,9 +1524,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.outbox_thread_index[account_outbox_thread_name] = index
 
         # remove any existing thread from the current index in the buffer
-        if self.server.outboxThread.get(account_outbox_thread_name):
-            acct = account_outbox_thread_name
-            if self.server.outboxThread[acct].get(index):
+        acct = account_outbox_thread_name
+        if self.server.outboxThread.get(acct):
+            if len(self.server.outboxThread[acct]) > index:
                 try:
                     if self.server.outboxThread[acct][index].is_alive():
                         self.server.outboxThread[acct][index].kill()
