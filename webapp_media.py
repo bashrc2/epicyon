@@ -176,8 +176,13 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             if '/c/' in url:
                 # don't try to embed peertube channel page
                 continue
-            url = url.replace('/w/', '/embed/')
+            if '/w/' in url:
+                if '/videos/' not in url:
+                    url = url.replace('/w/', '/videos/embed/')
+                else:
+                    url = url.replace('/w/', '/embed/')
             url = url.replace('/watch/', '/embed/')
+
             content += \
                 "<center>\n<iframe loading=\"lazy\" " + \
                 "sandbox=\"allow-same-origin " + \
