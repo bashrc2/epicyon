@@ -170,7 +170,9 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             url = content.split(site_str)[1]
             if '"' not in url:
                 continue
-            url = url.split('"')[0].replace('/watch/', '/embed/')
+            url = url.split('"')[0]
+            url = url.replace('/w/', '/embed/')
+            url = url.replace('/watch/', '/embed/')
             content += \
                 "<center>\n<iframe loading=\"lazy\" " + \
                 "sandbox=\"allow-same-origin " + \
