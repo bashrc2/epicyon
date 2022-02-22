@@ -49,6 +49,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             return content
 
     video_site = 'https://www.youtube.com'
+    if 'https://m.youtube.com' in content:
+        content = content.replace('https://m.youtube.com', video_site)
     if '"' + video_site in content:
         url = content.split('"' + video_site)[1]
         if '"' in url:
