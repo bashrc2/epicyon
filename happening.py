@@ -206,9 +206,26 @@ def _is_happening_post(post_json_object: {}) -> bool:
     return True
 
 
+def _event_text_match(content: str, text_match: str) -> bool:
+    """Returns true of the content matches the search text
+    """
+    if not text_match:
+        return True
+    if '+' not in text_match:
+        if text_match.strip().lower() in content.lower():
+            return True
+    else:
+        match_list = text_match.split('+')
+        for possible_match in match_list:
+            if possible_match.strip().lower() in content.lower():
+                return True
+    return False
+
+
 def get_todays_events(base_dir: str, nickname: str, domain: str,
                       curr_year: int, curr_month_number: int,
-                      curr_day_of_month: int) -> {}:
+                      curr_day_of_month: int,
+                      text_match: str) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
@@ -246,6 +263,12 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
             post_json_object = load_json(post_filename)
             if not _is_happening_post(post_json_object):
                 continue
+
+            if post_json_object.get('object'):
+                if post_json_object['object'].get('content'):
+                    content = post_json_object['object']['content']
+                    if not _event_text_match(content, text_match):
+                        continue
 
             public_event = is_public_post(post_json_object)
 
@@ -438,13 +461,15 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
 def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
                                 year: int, month_number: int,
                                 day_number: int, person_cache: {},
-                                http_prefix: str) -> str:
+                                http_prefix: str,
+                                text_match: str) -> str:
     """Returns today's events in icalendar format
     """
     day_events = None
     events = \
         get_todays_events(base_dir, nickname, domain,
-                          year, month_number, day_number)
+                          year, month_number, day_number,
+                          text_match)
     if events:
         if events.get(str(day_number)):
             day_events = events[str(day_number)]
@@ -472,12 +497,13 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
                                year: int,
                                month_number: int,
                                person_cache: {},
-                               http_prefix: str) -> str:
+                               http_prefix: str,
+                               text_match: str) -> str:
     """Returns today's events in icalendar format
     """
     month_events = \
         get_calendar_events(base_dir, nickname, domain, year,
-                            month_number)
+                            month_number, text_match)
 
     ical_str = \
         'BEGIN:VCALENDAR\n' + \
@@ -622,7 +648,8 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
 
 
 def get_calendar_events(base_dir: str, nickname: str, domain: str,
-                        year: int, month_number: int) -> {}:
+                        year: int, month_number: int,
+                        text_match: str) -> {}:
     """Retrieves calendar events
     Returns a dictionary indexed by day number of lists containing
     Event and Place activities
@@ -646,8 +673,16 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
                 continue
 
             post_json_object = load_json(post_filename)
+            if not post_json_object:
+                continue
             if not _is_happening_post(post_json_object):
                 continue
+
+            if post_json_object.get('object'):
+                if post_json_object['object'].get('content'):
+                    content = post_json_object['object']['content']
+                    if not _event_text_match(content, text_match):
+                        continue
 
             post_event = []
             day_of_month = None
@@ -1008,6 +1043,16 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                 query_end_time_str = end_time_str.split('"')[1]
                 query_end_time = _dav_date_from_string(query_end_time_str)
 
+    text_match = ''
+    if ':text-match' in xml_str_lower:
+        match_str = xml_str_lower.split(':text-match')[1]
+        if '>' in match_str and '<' in match_str:
+            text_match = match_str.split('>')[1]
+            if '<' in text_match:
+                text_match = text_match.split('<')[0]
+            else:
+                text_match = ''
+
     ical_events = None
     etag = None
     events_href = ''
@@ -1035,28 +1080,31 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                                 search_date.year,
                                                 search_date.month,
                                                 search_date.day, person_cache,
-                                                http_prefix)
+                                                http_prefix, text_match)
                 events_href = \
                     http_prefix + '://' + domain_full + '/users/' + \
                     nickname + '/calendar?year=' + \
                     str(search_date.year) + '?month=' + \
                     str(search_date.month) + '?day=' + str(search_date.day)
                 if ical_events:
-                    etag = md5(ical_events).hexdigest()
-                    responses = \
-                        '    <d:response>\n' + \
-                        '        <d:href>' + events_href + '</d:href>\n' + \
-                        '        <d:propstat>\n' + \
-                        '            <d:prop>\n' + \
-                        '                <d:getetag>"' + \
-                        etag + '"</d:getetag>\n' + \
-                        '                <c:calendar-data>' + ical_events + \
-                        '                </c:calendar-data>\n' + \
-                        '            </d:prop>\n' + \
-                        '            <d:status>HTTP/1.1 200 OK' + \
-                        '</d:status>\n' + \
-                        '        </d:propstat>\n' + \
-                        '    </d:response>\n'
+                    if 'VEVENT' in ical_events:
+                        etag = md5(ical_events).hexdigest()
+                        responses = \
+                            '    <d:response>\n' + \
+                            '        <d:href>' + events_href + \
+                            '</d:href>\n' + \
+                            '        <d:propstat>\n' + \
+                            '            <d:prop>\n' + \
+                            '                <d:getetag>"' + \
+                            etag + '"</d:getetag>\n' + \
+                            '                <c:calendar-data>' + \
+                            ical_events + \
+                            '                </c:calendar-data>\n' + \
+                            '            </d:prop>\n' + \
+                            '            <d:status>HTTP/1.1 200 OK' + \
+                            '</d:status>\n' + \
+                            '        </d:propstat>\n' + \
+                            '    </d:response>\n'
             elif query_start_day == 1 and query_start_day >= 28:
                 # calendar for a month
                 ical_events = \
@@ -1064,28 +1112,32 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                                query_start_year,
                                                query_start_month,
                                                person_cache,
-                                               http_prefix)
+                                               http_prefix,
+                                               text_match)
                 events_href = \
                     http_prefix + '://' + domain_full + '/users/' + \
                     nickname + '/calendar?year=' + \
                     str(query_start_year) + '?month=' + \
                     str(query_start_month)
                 if ical_events:
-                    etag = md5(ical_events).hexdigest()
-                    responses = \
-                        '    <d:response>\n' + \
-                        '        <d:href>' + events_href + '</d:href>\n' + \
-                        '        <d:propstat>\n' + \
-                        '            <d:prop>\n' + \
-                        '                <d:getetag>"' + \
-                        etag + '"</d:getetag>\n' + \
-                        '                <c:calendar-data>' + ical_events + \
-                        '                </c:calendar-data>\n' + \
-                        '            </d:prop>\n' + \
-                        '            <d:status>HTTP/1.1 200 OK' + \
-                        '</d:status>\n' + \
-                        '        </d:propstat>\n' + \
-                        '    </d:response>\n'
+                    if 'VEVENT' in ical_events:
+                        etag = md5(ical_events).hexdigest()
+                        responses = \
+                            '    <d:response>\n' + \
+                            '        <d:href>' + events_href + \
+                            '</d:href>\n' + \
+                            '        <d:propstat>\n' + \
+                            '            <d:prop>\n' + \
+                            '                <d:getetag>"' + \
+                            etag + '"</d:getetag>\n' + \
+                            '                <c:calendar-data>' + \
+                            ical_events + \
+                            '                </c:calendar-data>\n' + \
+                            '            </d:prop>\n' + \
+                            '            <d:status>HTTP/1.1 200 OK' + \
+                            '</d:status>\n' + \
+                            '        </d:propstat>\n' + \
+                            '    </d:response>\n'
         if not responses:
             all_events = ''
             for year in range(query_start_year, query_end_year+1):
@@ -1107,30 +1159,32 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                                    nickname, domain,
                                                    year, month,
                                                    person_cache,
-                                                   http_prefix)
+                                                   http_prefix,
+                                                   text_match)
                     events_href = \
                         http_prefix + '://' + domain_full + '/users/' + \
                         nickname + '/calendar?year=' + \
                         str(year) + '?month=' + \
                         str(month)
                     if ical_events:
-                        all_events += ical_events
-                        responses += \
-                            '    <d:response>\n' + \
-                            '        <d:href>' + events_href + \
-                            '</d:href>\n' + \
-                            '        <d:propstat>\n' + \
-                            '            <d:prop>\n' + \
-                            '                <d:getetag>"' + \
-                            etag + '"</d:getetag>\n' + \
-                            '                <c:calendar-data>' + \
-                            ical_events + \
-                            '                </c:calendar-data>\n' + \
-                            '            </d:prop>\n' + \
-                            '            <d:status>HTTP/1.1 200 OK' + \
-                            '</d:status>\n' + \
-                            '        </d:propstat>\n' + \
-                            '    </d:response>\n'
+                        if 'VEVENT' in ical_events:
+                            all_events += ical_events
+                            responses += \
+                                '    <d:response>\n' + \
+                                '        <d:href>' + events_href + \
+                                '</d:href>\n' + \
+                                '        <d:propstat>\n' + \
+                                '            <d:prop>\n' + \
+                                '                <d:getetag>"' + \
+                                etag + '"</d:getetag>\n' + \
+                                '                <c:calendar-data>' + \
+                                ical_events + \
+                                '                </c:calendar-data>\n' + \
+                                '            </d:prop>\n' + \
+                                '            <d:status>HTTP/1.1 200 OK' + \
+                                '</d:status>\n' + \
+                                '        </d:propstat>\n' + \
+                                '    </d:response>\n'
             etag = md5(all_events).hexdigest()
 
     # today's calendar events
@@ -1139,26 +1193,28 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
             get_todays_events_icalendar(base_dir, nickname, domain,
                                         search_date.year, search_date.month,
                                         search_date.day, person_cache,
-                                        http_prefix)
+                                        http_prefix, text_match)
         events_href = \
             http_prefix + '://' + domain_full + '/users/' + \
             nickname + '/calendar?year=' + \
             str(search_date.year) + '?month=' + \
             str(search_date.month) + '?day=' + str(search_date.day)
         if ical_events:
-            etag = md5(ical_events).hexdigest()
-            responses = \
-                '    <d:response>\n' + \
-                '        <d:href>' + events_href + '</d:href>\n' + \
-                '        <d:propstat>\n' + \
-                '            <d:prop>\n' + \
-                '                <d:getetag>"' + etag + '"</d:getetag>\n' + \
-                '                <c:calendar-data>' + ical_events + \
-                '                </c:calendar-data>\n' + \
-                '            </d:prop>\n' + \
-                '            <d:status>HTTP/1.1 200 OK</d:status>\n' + \
-                '        </d:propstat>\n' + \
-                '    </d:response>\n'
+            if 'VEVENT' in ical_events:
+                etag = md5(ical_events).hexdigest()
+                responses = \
+                    '    <d:response>\n' + \
+                    '        <d:href>' + events_href + '</d:href>\n' + \
+                    '        <d:propstat>\n' + \
+                    '            <d:prop>\n' + \
+                    '                <d:getetag>"' + etag + \
+                    '"</d:getetag>\n' + \
+                    '                <c:calendar-data>' + ical_events + \
+                    '                </c:calendar-data>\n' + \
+                    '            </d:prop>\n' + \
+                    '            <d:status>HTTP/1.1 200 OK</d:status>\n' + \
+                    '        </d:propstat>\n' + \
+                    '    </d:response>\n'
 
     if not ical_events or not etag:
         return None
