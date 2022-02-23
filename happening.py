@@ -20,6 +20,10 @@ from utils import has_object_dict
 from utils import acct_dir
 from utils import remove_html
 from utils import get_display_name
+from utils import delete_post
+from utils import get_status_number
+from filters import is_filtered
+from context import get_individual_post_context
 
 
 def _valid_uuid(test_uuid: str, version: int):
@@ -274,6 +278,14 @@ def _ical_date_string(date_str: str) -> str:
     return date_str.replace(' ', '')
 
 
+def _dav_encode_token(year: int, month_number: int,
+                      message_id: str) -> str:
+    """Returns a token corresponding to a calendar event
+    """
+    return str(year) + '_' + str(month_number) + '_' + \
+        message_id.replace('/', '--').replace('#', '--')
+
+
 def _icalendar_day(base_dir: str, nickname: str, domain: str,
                    day_events: [], person_cache: {},
                    http_prefix: str) -> str:
@@ -357,10 +369,14 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
         event_end = \
             _ical_date_string(event_end.strftime("%Y-%m-%dT%H:%M:%SZ"))
 
+        token_year = int(event_start.split('-')[0])
+        token_month_number = int(event_start.split('-')[1])
+        uid = _dav_encode_token(token_year, token_month_number, post_id)
+
         ical_str += \
             'BEGIN:VEVENT\n' + \
             'DTSTAMP:' + published + '\n' + \
-            'UID:' + post_id + '\n' + \
+            'UID:' + uid + '\n' + \
             'DTSTART:' + event_start + '\n' + \
             'DTEND:' + event_end + '\n' + \
             'STATUS:CONFIRMED\n'
@@ -677,3 +693,319 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
                     fp_cal.write(line)
     except OSError:
         print('EX: unable to write ' + calendar_filename)
+
+
+def _dav_decode_token(token: str) -> (int, int, str):
+    """Decodes a token corresponding to a calendar event
+    """
+    if '_' not in token or '--' not in token:
+        return None, None, None
+    token_sections = token.split('_')
+    if len(token_sections) != 3:
+        return None, None, None
+    if not token_sections[0].isdigit():
+        return None, None, None
+    if not token_sections[1].isdigit():
+        return None, None, None
+    token_year = int(token_sections[0])
+    token_month_number = int(token_sections[1])
+    token_post_id = token_sections[2].replace('--', '/')
+    return token_year, token_month_number, token_post_id
+
+
+def dav_propfind_response(base_dir: str, nickname: str, domain: str,
+                          depth: int, xml_str: str) -> str:
+    """Returns the response to caldav PROPFIND
+    """
+    if '<d:propfind' not in xml_str or \
+       '</d:propfind>' not in xml_str:
+        return None
+    response_str = \
+        '<d:multistatus xmlns:d="DAV:" ' + \
+        'xmlns:cs="http://calendarserver.org/ns/">\n' + \
+        '    <d:response>\n' + \
+        '        <d:href>/calendars/' + nickname + '/</d:href>\n' + \
+        '        <d:propstat>\n' + \
+        '            <d:prop>\n' + \
+        '                <d:displayname />\n' + \
+        '                <cs:getctag />\n' + \
+        '            </d:prop>\n' + \
+        '            <d:status>HTTP/1.1 200 OK</d:status>\n' + \
+        '        </d:propstat>\n' + \
+        '    </d:response>\n' + \
+        '</d:multistatus>'
+    return response_str
+
+
+def _dav_store_event(base_dir: str, nickname: str, domain: str,
+                     event_list: [], http_prefix: str,
+                     system_language: str) -> bool:
+    """Stores a calendar event obtained via caldav PUT
+    """
+    event_str = str(event_list)
+    if 'DTSTAMP:' not in event_str or \
+       'DTSTART:' not in event_str or \
+       'DTEND:' not in event_str:
+        return False
+    if 'STATUS:' not in event_str and 'DESCRIPTION:' not in event_str:
+        return False
+
+    timestamp = None
+    start_time = None
+    end_time = None
+    description = None
+    for line in event_list:
+        if line.startswith('DTSTAMP:'):
+            timestamp = line.split(':', 1)[1]
+        elif line.startswith('DTSTART:'):
+            start_time = line.split(':', 1)[1]
+        elif line.startswith('DTEND:'):
+            end_time = line.split(':', 1)[1]
+        elif line.startswith('SUMMARY:') or line.startswith('DESCRIPTION:'):
+            description = line.split(':', 1)[1]
+        elif line.startswith('LOCATION:'):
+            location = line.split(':', 1)[1]
+
+    if not timestamp or \
+       not start_time or \
+       not end_time or \
+       not description:
+        return False
+    if len(timestamp) < 15:
+        return False
+    if len(start_time) < 15:
+        return False
+    if len(end_time) < 15:
+        return False
+
+    # check that the description is valid
+    if is_filtered(base_dir, nickname, domain, description):
+        return False
+
+    # convert to the expected time format
+    timestamp_year = timestamp[:4]
+    timestamp_month = timestamp[4:][:2]
+    timestamp_day = timestamp[6:][:2]
+    timestamp_hour = timestamp[9:][:2]
+    timestamp_min = timestamp[11:][:2]
+    timestamp_sec = timestamp[13:][:2]
+
+    if not timestamp_year.isdigit() or \
+       not timestamp_month.isdigit() or \
+       not timestamp_day.isdigit() or \
+       not timestamp_hour.isdigit() or \
+       not timestamp_min.isdigit() or \
+       not timestamp_sec.isdigit():
+        return False
+    if int(timestamp_year) < 2020 or int(timestamp_year) > 2100:
+        return False
+    published = \
+        timestamp_year + '-' + timestamp_month + '-' + timestamp_day + 'T' + \
+        timestamp_hour + ':' + timestamp_min + ':' + timestamp_sec + 'Z'
+
+    start_time_year = start_time[:4]
+    start_time_month = start_time[4:][:2]
+    start_time_day = start_time[6:][:2]
+    start_time_hour = start_time[9:][:2]
+    start_time_min = start_time[11:][:2]
+    start_time_sec = start_time[13:][:2]
+
+    if not start_time_year.isdigit() or \
+       not start_time_month.isdigit() or \
+       not start_time_day.isdigit() or \
+       not start_time_hour.isdigit() or \
+       not start_time_min.isdigit() or \
+       not start_time_sec.isdigit():
+        return False
+    if int(start_time_year) < 2020 or int(start_time_year) > 2100:
+        return False
+    start_time = \
+        start_time_year + '-' + start_time_month + '-' + \
+        start_time_day + 'T' + \
+        start_time_hour + ':' + start_time_min + ':' + start_time_sec + 'Z'
+
+    end_time_year = end_time[:4]
+    end_time_month = end_time[4:][:2]
+    end_time_day = end_time[6:][:2]
+    end_time_hour = end_time[9:][:2]
+    end_time_min = end_time[11:][:2]
+    end_time_sec = end_time[13:][:2]
+
+    if not end_time_year.isdigit() or \
+       not end_time_month.isdigit() or \
+       not end_time_day.isdigit() or \
+       not end_time_hour.isdigit() or \
+       not end_time_min.isdigit() or \
+       not end_time_sec.isdigit():
+        return False
+    if int(end_time_year) < 2020 or int(end_time_year) > 2100:
+        return False
+    end_time = \
+        end_time_year + '-' + end_time_month + '-' + end_time_day + 'T' + \
+        end_time_hour + ':' + end_time_min + ':' + end_time_sec + 'Z'
+
+    post_id = ''
+    post_context = get_individual_post_context()
+    # create the status number from DTSTAMP
+    status_number, published = get_status_number(published)
+    # get the post id
+    actor = http_prefix + "://" + domain + "/users/" + nickname
+    actor2 = http_prefix + "://" + domain + "/@" + nickname
+    post_id = actor + "/statuses/" + status_number
+
+    next_str = post_id + "/replies?only_other_accounts=true&page=true"
+    content = \
+        '<p><span class=\"h-card\"><a href=\"' + actor2 + \
+        '\" class=\"u-url mention\">@<span>' + nickname + \
+        '</span></a></span>' + remove_html(description) + '</p>'
+    event_json = {
+        "@context": post_context,
+        "id": post_id + "/activity",
+        "type": "Create",
+        "actor": actor,
+        "published": published,
+        "to": [actor],
+        "cc": [],
+        "object": {
+            "id": post_id,
+            "conversation": post_id,
+            "type": "Note",
+            "summary": None,
+            "inReplyTo": None,
+            "published": published,
+            "url": actor + "/" + status_number,
+            "attributedTo": actor,
+            "to": [actor],
+            "cc": [],
+            "sensitive": False,
+            "atomUri": post_id,
+            "inReplyToAtomUri": None,
+            "commentsEnabled": False,
+            "rejectReplies": True,
+            "mediaType": "text/html",
+            "content": content,
+            "contentMap": {
+                system_language: content
+            },
+            "attachment": [],
+            "tag": [
+                {
+                    "href": actor2,
+                    "name": "@" + nickname + "@" + domain,
+                    "type": "Mention"
+                },
+                {
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    "type": "Event",
+                    "name": content,
+                    "startTime": start_time,
+                    "endTime": end_time
+                }
+            ],
+            "replies": {
+                "id": post_id + "/replies",
+                "type": "Collection",
+                "first": {
+                    "type": "CollectionPage",
+                    "next": next_str,
+                    "partOf": post_id + "/replies",
+                    "items": []
+                }
+            }
+        }
+    }
+    if location:
+        event_json['object']['tag'].append({
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "type": "Place",
+            "name": location
+        })
+    handle = nickname + '@' + domain
+    outbox_dir = base_dir + '/accounts/' + handle + '/outbox'
+    if not os.path.isdir(outbox_dir):
+        return False
+    filename = outbox_dir + '/' + post_id.replace('/', '#') + '.json'
+    save_json(event_json, filename)
+    save_event_post(base_dir, handle, post_id, event_json)
+
+    return True
+
+
+def dav_put_response(base_dir: str, nickname: str, domain: str,
+                     depth: int, xml_str: str, http_prefix: str,
+                     system_language: str) -> str:
+    """Returns the response to caldav PUT
+    """
+    if '\n' not in xml_str:
+        return None
+    if 'BEGIN:VCALENDAR' not in xml_str or \
+       'END:VCALENDAR' not in xml_str:
+        return None
+    if 'BEGIN:VEVENT' not in xml_str or \
+       'END:VEVENT' not in xml_str:
+        return None
+
+    stored_count = 0
+    reading_event = False
+    lines_list = xml_str.split('\n')
+    event_list = []
+    for line in lines_list:
+        line = line.strip()
+        if not reading_event:
+            if line == 'BEGIN:VEVENT':
+                reading_event = True
+                event_list = []
+        else:
+            if line == 'END:VEVENT':
+                if event_list:
+                    _dav_store_event(base_dir, nickname, domain,
+                                     event_list, http_prefix,
+                                     system_language)
+                    stored_count += 1
+                reading_event = False
+            else:
+                event_list.append(line)
+    if stored_count == 0:
+        return None
+    return 'Ok'
+
+
+def dav_report_response(base_dir: str, nickname: str, domain: str,
+                        depth: int, xml_str: str) -> str:
+    """Returns the response to caldav REPORT
+    """
+    if '<c:calendar-query' not in xml_str or \
+       '</c:calendar-query>' not in xml_str:
+        if '<c:calendar-multiget' not in xml_str or \
+           '</c:calendar-multiget>' not in xml_str:
+            return None
+    # TODO
+    return None
+
+
+def dav_delete_response(base_dir: str, nickname: str, domain: str,
+                        depth: int, path: str,
+                        http_prefix: str, debug: bool,
+                        recent_posts_cache: {}) -> str:
+    """Returns the response to caldav DELETE
+    """
+    token = path.split('/calendars/' + nickname + '/')[1]
+    token_year, token_month_number, token_post_id = \
+        _dav_decode_token(token)
+    if not token_year:
+        return None
+    post_filename = locate_post(base_dir, nickname, domain, token_post_id)
+    if not post_filename:
+        print('Calendar post not found ' + token_post_id)
+        return None
+    post_json_object = load_json(post_filename)
+    if not _is_happening_post(post_json_object):
+        print(token_post_id + ' is not a calendar post')
+        return None
+    remove_calendar_event(base_dir, nickname, domain,
+                          token_year, token_month_number,
+                          token_post_id)
+    delete_post(base_dir, http_prefix,
+                nickname, domain, post_filename,
+                debug, recent_posts_cache)
+    return 'Ok'
