@@ -949,7 +949,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _http_return_code(self, http_code: int, http_description: str,
-                          long_description: str) -> None:
+                          long_description: str, etag: str) -> None:
         msg = \
             '<html><head><title>' + str(http_code) + '</title></head>' \
             '<body bgcolor="linen" text="black">' \
@@ -965,6 +965,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         msg_len_str = str(len(msg))
         self.send_header('Content-Length', msg_len_str)
+        if etag:
+            self.send_header('ETag', etag)
         self.end_headers()
         if not self._write(msg):
             print('Error when showing ' + str(http_code))
@@ -973,71 +975,77 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.translate:
             ok_str = self.server.translate['This is nothing ' +
                                            'less than an utter triumph']
-            self._http_return_code(200, self.server.translate['Ok'], ok_str)
+            self._http_return_code(200, self.server.translate['Ok'],
+                                   ok_str, None)
         else:
             self._http_return_code(200, 'Ok',
                                    'This is nothing less ' +
-                                   'than an utter triumph')
+                                   'than an utter triumph', None)
 
-    def _201(self) -> None:
+    def _201(self, etag: str) -> None:
         if self.server.translate:
-            ok_str = self.server.translate['Done']
+            done_str = self.server.translate['It is done']
             self._http_return_code(201,
-                                   self.server.translate['Created'], ok_str)
+                                   self.server.translate['Created'], done_str,
+                                   etag)
         else:
-            self._http_return_code(201, 'Created',
-                                   'Done')
+            self._http_return_code(201, 'Created', 'It is done', etag)
 
     def _207(self) -> None:
         if self.server.translate:
             multi_str = self.server.translate['Lots of things']
             self._http_return_code(207,
                                    self.server.translate['Multi Status'],
-                                   multi_str)
+                                   multi_str, None)
         else:
             self._http_return_code(207, 'Multi Status',
-                                   'Lots of things')
+                                   'Lots of things', None)
 
     def _403(self) -> None:
         if self.server.translate:
             self._http_return_code(403, self.server.translate['Forbidden'],
-                                   self.server.translate["You're not allowed"])
+                                   self.server.translate["You're not allowed"],
+                                   None)
         else:
             self._http_return_code(403, 'Forbidden',
-                                   "You're not allowed")
+                                   "You're not allowed", None)
 
     def _404(self) -> None:
         if self.server.translate:
             self._http_return_code(404, self.server.translate['Not Found'],
                                    self.server.translate['These are not the ' +
                                                          'droids you are ' +
-                                                         'looking for'])
+                                                         'looking for'],
+                                   None)
         else:
             self._http_return_code(404, 'Not Found',
                                    'These are not the ' +
                                    'droids you are ' +
-                                   'looking for')
+                                   'looking for', None)
 
     def _304(self) -> None:
         if self.server.translate:
             self._http_return_code(304, self.server.translate['Not changed'],
                                    self.server.translate['The contents of ' +
                                                          'your local cache ' +
-                                                         'are up to date'])
+                                                         'are up to date'],
+                                   None)
         else:
             self._http_return_code(304, 'Not changed',
                                    'The contents of ' +
                                    'your local cache ' +
-                                   'are up to date')
+                                   'are up to date',
+                                   None)
 
     def _400(self) -> None:
         if self.server.translate:
             self._http_return_code(400, self.server.translate['Bad Request'],
                                    self.server.translate['Better luck ' +
-                                                         'next time'])
+                                                         'next time'],
+                                   None)
         else:
             self._http_return_code(400, 'Bad Request',
-                                   'Better luck next time')
+                                   'Better luck next time', None)
 
     def _503(self) -> None:
         if self.server.translate:
@@ -1045,11 +1053,11 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.translate['The server is busy. ' +
                                       'Please try again later']
             self._http_return_code(503, self.server.translate['Unavailable'],
-                                   busy_str)
+                                   busy_str, None)
         else:
             self._http_return_code(503, 'Unavailable',
                                    'The server is busy. Please try again ' +
-                                   'later')
+                                   'later', None)
 
     def _write(self, msg) -> bool:
         tries = 0
@@ -16926,6 +16934,9 @@ class PubServer(BaseHTTPRequestHandler):
             return
         if response_str == 'Not modified':
             return self._304()
+        elif response_str.startswith('ETag:') and endpoint_type == 'put':
+            response_etag = response_str.split('ETag:', 1)[1]
+            self._201(response_etag)
         elif response_str != 'Ok':
             message_xml = response_str.encode('utf-8')
             message_xml_len = len(message_xml)
@@ -16935,10 +16946,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(message_xml)
             if 'multistatus' in response_str:
                 return self._207()
-        if endpoint_type == 'put':
-            self._201()
-        else:
-            self._200()
+        self._200()
 
     def do_PROPFIND(self):
         self._dav_handler('propfind')

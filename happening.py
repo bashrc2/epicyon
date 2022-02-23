@@ -968,7 +968,7 @@ def dav_put_response(base_dir: str, nickname: str, domain: str,
                 event_list.append(line)
     if stored_count == 0:
         return None
-    return 'Ok'
+    return 'ETag:' + md5(xml_str).hexdigest()
 
 
 def dav_report_response(base_dir: str, nickname: str, domain: str,
