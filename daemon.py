@@ -16906,7 +16906,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  nickname, self.server.domain,
                                  depth, propfind_xml,
                                  self.server.http_prefix,
-                                 self.server.system_language)
+                                 self.server.system_language,
+                                 self.server.recent_dav_etags)
         elif endpoint_type == 'report':
             curr_etag = None
             if self.headers.get('ETag'):
@@ -16920,6 +16921,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.person_cache,
                                     self.server.http_prefix,
                                     curr_etag,
+                                    self.server.recent_dav_etags,
                                     self.server.domain_full)
         elif endpoint_type == 'delete':
             response_str = \
@@ -16933,7 +16935,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         if response_str == 'Not modified':
-            return self._304()
+            if endpoint_type == 'put':
+                return self._200()
+            else:
+                return self._304()
         elif response_str.startswith('ETag:') and endpoint_type == 'put':
             response_etag = response_str.split('ETag:', 1)[1]
             self._201(response_etag)
@@ -19281,6 +19286,9 @@ def run_daemon(dyslexic_font: bool,
     # how many hours after a post was publushed can a reply be made
     default_reply_interval_hrs = 9999999
     httpd.default_reply_interval_hrs = default_reply_interval_hrs
+
+    # recent caldav etags for each account
+    httpd.recent_dav_etags = {}
 
     httpd.key_shortcuts = {}
     load_access_keys_for_accounts(base_dir, httpd.key_shortcuts,
