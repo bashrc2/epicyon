@@ -341,6 +341,10 @@ from schedule import run_post_schedule_watchdog
 from schedule import remove_scheduled_posts
 from outbox import post_message_to_outbox
 from happening import remove_calendar_event
+from happening import dav_propfind_response
+from happening import dav_put_response
+from happening import dav_report_response
+from happening import dav_delete_response
 from bookmarks import bookmark_post
 from bookmarks import undo_bookmark_post
 from petnames import set_pet_name
@@ -974,6 +978,25 @@ class PubServer(BaseHTTPRequestHandler):
             self._http_return_code(200, 'Ok',
                                    'This is nothing less ' +
                                    'than an utter triumph')
+
+    def _201(self) -> None:
+        if self.server.translate:
+            ok_str = self.server.translate['Done']
+            self._http_return_code(201,
+                                   self.server.translate['Created'], ok_str)
+        else:
+            self._http_return_code(201, 'Created',
+                                   'Done')
+
+    def _207(self) -> None:
+        if self.server.translate:
+            multi_str = self.server.translate['Lots of things']
+            self._http_return_code(207,
+                                   self.server.translate['Multi Status'],
+                                   multi_str)
+        else:
+            self._http_return_code(207, 'Multi Status',
+                                   'Lots of things')
 
     def _403(self) -> None:
         if self.server.translate:
@@ -16800,6 +16823,134 @@ class PubServer(BaseHTTPRequestHandler):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', 'end benchmarks',
                             self.server.debug)
+
+    def _dav_handler(self, endpoint_type: str):
+        calling_domain = self.server.domain_full
+        if not self._has_accept(calling_domain):
+            self._400()
+            return
+        accept_str = self.headers['Accept']
+        if 'application/xml' not in accept_str:
+            self._400()
+            return
+        if not self.headers.get('Content-length'):
+            print(endpoint_type.upper() + ' has no content-length')
+            self._400()
+            return
+        length = int(self.headers['Content-length'])
+        if length > self.server.max_post_length:
+            print(endpoint_type.upper() +
+                  ' request size too large ' + self.path)
+            self._400()
+            return
+        if not self.path.startswith('/calendars/'):
+            print(endpoint_type.upper() + ' without /calendars ' + self.path)
+            self._404()
+            return
+        if not self._is_authorized():
+            print('PROPFIND Not authorized')
+            self._403()
+            return
+        nickname = self.path.split('/calendars/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if not nickname:
+            print(endpoint_type.upper() + ' no nickname ' + self.path)
+            self._400()
+            return
+        if not os.path.isdir(self.server.base_dir + '/accounts/' +
+                             nickname + '@' + self.server.domain):
+            print(endpoint_type.upper() +
+                  ' for non-existent account ' + self.path)
+            self._404()
+            return
+        propfind_bytes = None
+        try:
+            propfind_bytes = self.rfile.read(length)
+        except SocketError as ex:
+            if ex.errno == errno.ECONNRESET:
+                print('EX: PROPFIND connection reset by peer')
+            else:
+                print('EX: PROPFIND socket error')
+            self._400()
+            return
+        except ValueError as ex:
+            print('EX: ' + endpoint_type.upper() +
+                  ' rfile.read failed, ' + str(ex))
+            self._400()
+            return
+        if not propfind_bytes:
+            self._404()
+            return
+        depth = 0
+        if self.headers.get('Depth'):
+            depth = self.headers['Depth']
+        propfind_xml = propfind_bytes.decode('utf-8')
+        response_str = None
+        if endpoint_type == 'propfind':
+            response_str = \
+                dav_propfind_response(self.server.base_dir,
+                                      nickname, self.server.domain,
+                                      depth, propfind_xml)
+        elif endpoint_type == 'put':
+            response_str = \
+                dav_put_response(self.server.base_dir,
+                                 nickname, self.server.domain,
+                                 depth, propfind_xml,
+                                 self.server.http_prefix,
+                                 self.server.system_language)
+        elif endpoint_type == 'report':
+            curr_etag = None
+            if self.headers.get('ETag'):
+                curr_etag = self.headers['ETag']
+            elif self.headers.get('Etag'):
+                curr_etag = self.headers['Etag']
+            response_str = \
+                dav_report_response(self.server.base_dir,
+                                    nickname, self.server.domain,
+                                    depth, propfind_xml,
+                                    self.server.person_cache,
+                                    self.server.http_prefix,
+                                    curr_etag,
+                                    self.server.domain_full)
+        elif endpoint_type == 'delete':
+            response_str = \
+                dav_delete_response(self.server.base_dir,
+                                    nickname, self.server.domain,
+                                    depth, self.path,
+                                    self.server.http_prefix,
+                                    self.server.debug,
+                                    self.server.recent_posts_cache)
+        if not response_str:
+            self._404()
+            return
+        if response_str == 'Not modified':
+            return self._304()
+        elif response_str != 'Ok':
+            message_xml = response_str.encode('utf-8')
+            message_xml_len = len(message_xml)
+            self._set_headers('application/xml; charset=utf-8',
+                              message_xml_len,
+                              None, calling_domain, False)
+            self._write(message_xml)
+            if 'multistatus' in response_str:
+                return self._207()
+        if endpoint_type == 'put':
+            self._201()
+        else:
+            self._200()
+
+    def do_PROPFIND(self):
+        self._dav_handler('propfind')
+
+    def do_PUT(self):
+        self._dav_handler('put')
+
+    def do_REPORT(self):
+        self._dav_handler('report')
+
+    def do_DELETE(self):
+        self._dav_handler('delete')
 
     def do_HEAD(self):
         calling_domain = self.server.domain_full

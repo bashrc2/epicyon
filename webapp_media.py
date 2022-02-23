@@ -121,8 +121,13 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('"' + video_site)[1]
         if '"' in url:
             url = url.split('"')[0]
+            video_site_settings = ''
+            if '#' in url:
+                video_site_settings = '#' + url.split('#', 1)[1]
+                url = url.split('#')[0]
             if not url.endswith('/oembed'):
                 url = url + '/oembed'
+            url += video_site_settings
             content += \
                 "<center>\n<iframe loading=\"lazy\" src=\"" + \
                 video_site + url + "\" width=\"" + \
