@@ -370,7 +370,7 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
             _ical_date_string(event_end.strftime("%Y-%m-%dT%H:%M:%SZ"))
 
         token_year = int(event_start[:4])
-        token_month_number = int(event_starttimestamp[4:][:2])
+        token_month_number = int(event_start[4:][:2])
         uid = _dav_encode_token(token_year, token_month_number, post_id)
 
         ical_str += \
