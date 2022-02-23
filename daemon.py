@@ -979,6 +979,15 @@ class PubServer(BaseHTTPRequestHandler):
                                    'This is nothing less ' +
                                    'than an utter triumph')
 
+    def _201(self) -> None:
+        if self.server.translate:
+            ok_str = self.server.translate['Done']
+            self._http_return_code(201,
+                                   self.server.translate['Created'], ok_str)
+        else:
+            self._http_return_code(201, 'Created',
+                                   'Done')
+
     def _207(self) -> None:
         if self.server.translate:
             multi_str = self.server.translate['Lots of things']
@@ -16879,19 +16888,31 @@ class PubServer(BaseHTTPRequestHandler):
         propfind_xml = propfind_bytes.decode('utf-8')
         response_str = None
         if endpoint_type == 'propfind':
-            response_str = dav_propfind_response(self.server.base_dir,
-                                                 nickname, self.server.domain,
-                                                 depth, propfind_xml)
+            response_str = \
+                dav_propfind_response(self.server.base_dir,
+                                      nickname, self.server.domain,
+                                      depth, propfind_xml)
         elif endpoint_type == 'put':
-            response_str = dav_put_response(self.server.base_dir,
-                                            nickname, self.server.domain,
-                                            depth, propfind_xml,
-                                            self.server.http_prefix,
-                                            self.server.system_language)
+            response_str = \
+                dav_put_response(self.server.base_dir,
+                                 nickname, self.server.domain,
+                                 depth, propfind_xml,
+                                 self.server.http_prefix,
+                                 self.server.system_language)
         elif endpoint_type == 'report':
-            response_str = dav_report_response(self.server.base_dir,
-                                               nickname, self.server.domain,
-                                               depth, propfind_xml)
+            curr_etag = None
+            if self.headers.get('ETag'):
+                curr_etag = self.headers['ETag']
+            elif self.headers.get('Etag'):
+                curr_etag = self.headers['Etag']
+            response_str = \
+                dav_report_response(self.server.base_dir,
+                                    nickname, self.server.domain,
+                                    depth, propfind_xml,
+                                    self.server.person_cache,
+                                    self.server.http_prefix,
+                                    curr_etag,
+                                    self.server.domain_full)
         elif endpoint_type == 'delete':
             response_str = \
                 dav_delete_response(self.server.base_dir,
@@ -16903,7 +16924,9 @@ class PubServer(BaseHTTPRequestHandler):
         if not response_str:
             self._404()
             return
-        if response_str != 'Ok':
+        if response_str == 'Not modified':
+            return self._304()
+        elif response_str != 'Ok':
             message_xml = response_str.encode('utf-8')
             message_xml_len = len(message_xml)
             self._set_headers('application/xml; charset=utf-8',
@@ -16912,7 +16935,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(message_xml)
             if 'multistatus' in response_str:
                 return self._207()
-        self._200()
+        if endpoint_type == 'put':
+            self._201()
+        else:
+            self._200()
 
     def do_PROPFIND(self):
         self._dav_handler('propfind')

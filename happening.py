@@ -9,6 +9,7 @@ __module_group__ = "Core"
 
 import os
 from uuid import UUID
+from hashlib import md5
 from datetime import datetime
 from datetime import timedelta
 
@@ -971,7 +972,10 @@ def dav_put_response(base_dir: str, nickname: str, domain: str,
 
 
 def dav_report_response(base_dir: str, nickname: str, domain: str,
-                        depth: int, xml_str: str) -> str:
+                        depth: int, xml_str: str,
+                        person_cache: {}, http_prefix: str,
+                        curr_etag: str,
+                        domain_full: str) -> str:
     """Returns the response to caldav REPORT
     """
     if '<c:calendar-query' not in xml_str or \
@@ -979,8 +983,43 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
         if '<c:calendar-multiget' not in xml_str or \
            '</c:calendar-multiget>' not in xml_str:
             return None
-    # TODO
-    return None
+    # today's calendar events
+    now = datetime.now()
+    ical_events = \
+        get_todays_events_icalendar(base_dir, nickname, domain,
+                                    now.year, now.month,
+                                    now.day, person_cache,
+                                    http_prefix)
+    if not ical_events:
+        return None
+    if 'VEVENT' not in ical_events:
+        return None
+
+    etag = md5(ical_events).hexdigest()
+    if etag == curr_etag:
+        return "Not modified"
+    events_href = \
+        http_prefix + '://' + domain_full + '/users/' + \
+        nickname + '/calendar?year=' + \
+        str(now.year) + '?month=' + str(now.month) + '?day=' + str(now.day)
+    response_str = \
+        '<d:multistatus xmlns:d="DAV:" ' + \
+        'xmlns:cs="http://calendarserver.org/ns/">\n' + \
+        '    <d:response>\n' + \
+        '        <d:href>' + events_href + '</d:href>\n' + \
+        '        <d:propstat>\n' + \
+        '            <d:prop>\n' + \
+        '                <d:getetag>"' + etag + '"</d:getetag>\n' + \
+        '                <c:calendar-data>' + ical_events + \
+        '                </c:calendar-data>\n' + \
+        '            </d:prop>\n' + \
+        '            <d:status>HTTP/1.1 200 OK</d:status>\n' + \
+        '        </d:propstat>\n' + \
+        '    </d:response>\n' + \
+        '    <d:response>\n' + \
+        '</d:multistatus>'
+
+    return response_str
 
 
 def dav_delete_response(base_dir: str, nickname: str, domain: str,
