@@ -119,6 +119,17 @@ def str2bool(value_str) -> bool:
 
 search_date = datetime.datetime.now()
 parser = argparse.ArgumentParser(description='ActivityPub Server')
+parser.add_argument('--eventDate', type=str,
+                    default=None,
+                    help='Date for an event when sending a c2s post' +
+                    ' YYYY-MM-DD')
+parser.add_argument('--eventTime', type=str,
+                    default=None,
+                    help='Time for an event when sending a c2s post' +
+                    ' HH:MM')
+parser.add_argument('--eventLocation', type=str,
+                    default=None,
+                    help='Location for an event when sending a c2s post')
 parser.add_argument('--content_license_url', type=str,
                     default='https://creativecommons.org/licenses/by/4.0',
                     help='Url of the license used for the instance content')
@@ -1310,6 +1321,16 @@ if args.message:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
+    if args.eventDate:
+        if '-' not in args.eventDate or len(args.eventDate) != 10:
+            print('Event date format should be YYYY-MM-DD')
+            sys.exit()
+
+    if args.eventTime:
+        if ':' not in args.eventTime or len(args.eventTime) != 5:
+            print('Event time format should be HH:MM')
+            sys.exit()
+
     if not args.password:
         args.password = getpass.getpass('Password: ')
         if not args.password:
@@ -1370,8 +1391,8 @@ if args.message:
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     languages_understood = [args.language]
+    
     print('Sending post to ' + args.sendto)
-
     send_post_via_server(signing_priv_key_pem, __version__,
                          base_dir, session, args.nickname, args.password,
                          domain, port,
@@ -1382,7 +1403,9 @@ if args.message:
                          cached_webfingers, person_cache, is_article,
                          args.language, languages_understood,
                          args.low_bandwidth,
-                         args.content_license_url, args.debug,
+                         args.content_license_url,
+                         args.eventDate, args.eventTime, args.eventLocation,
+                         args.debug,
                          reply_to, reply_to, args.conversationId, subject)
     for i in range(10):
         # TODO detect send success/fail

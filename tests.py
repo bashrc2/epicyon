@@ -2981,6 +2981,12 @@ def test_client_to_server(base_dir: str):
                 if os.path.isfile(os.path.join(bob_outbox_path, name))]) == 0
     print('EVENT: all inboxes and outboxes are empty')
     signing_priv_key_pem = None
+    test_date = datetime.datetime.now()
+    event_date = \
+        str(test_date.year) + '-' + str(test_date.month) + '-' + \
+        str(test_date.day)
+    event_time = '11:45'
+    location = "Kinshasa"
     send_result = \
         send_post_via_server(signing_priv_key_pem, __version__,
                              alice_dir, session_alice, 'alice', password,
@@ -2993,6 +2999,7 @@ def test_client_to_server(base_dir: str):
                              cached_webfingers, person_cache, is_article,
                              system_language, languages_understood,
                              low_bandwidth, content_license_url,
+                             event_date, event_time, location,
                              True, None, None,
                              conversation_id, None)
     print('send_result: ' + str(send_result))
