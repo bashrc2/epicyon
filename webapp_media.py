@@ -53,7 +53,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         content = content.replace('https://m.youtube.com', video_site)
     if '"' + video_site in content:
         url = content.split('"' + video_site)[1]
-        if '"' in url:
+        if '"' in url and '/channel/' not in url:
             url = url.split('"')[0].replace('/watch?v=', '/embed/')
             if '&' in url:
                 url = url.split('&')[0]
@@ -70,7 +70,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
     video_site = 'https://youtu.be/'
     if '"' + video_site in content:
         url = content.split('"' + video_site)[1]
-        if '"' in url:
+        if '"' in url and '/channel/' not in url:
             url = 'embed/' + url.split('"')[0]
             if '&' in url:
                 url = url.split('&')[0]
