@@ -102,12 +102,13 @@ def _get_json_request(session, url: str, domain_full: str, session_headers: {},
             elif result.status_code == 410:
                 print('WARN: get_json no longer available url: ' + url)
             else:
-                if session_headers.get('Authorization'):
-                    session_headers['Authorization'] = 'REDACTED'
+                session_headers2 = session_headers.copy()
+                if session_headers2.get('Authorization'):
+                    session_headers2['Authorization'] = 'REDACTED'
                 print('WARN: get_json url: ' + url +
                       ' failed with error code ' +
                       str(result.status_code) +
-                      ' headers: ' + str(session_headers))
+                      ' headers: ' + str(session_headers2))
         if return_json:
             return result.json()
         return result.content
@@ -294,10 +295,13 @@ def get_vcard(xml_format: bool,
             elif result.status_code == 410:
                 print('WARN: get_vcard no longer available url: ' + url)
             else:
+                session_headers2 = session_headers.copy()
+                if session_headers2.get('Authorization'):
+                    session_headers2['Authorization'] = 'REDACTED'
                 print('WARN: get_vcard url: ' + url +
                       ' failed with error code ' +
                       str(result.status_code) +
-                      ' headers: ' + str(session_headers))
+                      ' headers: ' + str(session_headers2))
         return result.content.decode('utf-8')
     except requests.exceptions.RequestException as ex:
         session_headers2 = session_headers.copy()
@@ -718,12 +722,13 @@ def get_method(method_name: str, xml_str: str,
             elif result.status_code == 410:
                 print('WARN: get_method no longer available url: ' + url)
             else:
-                if session_headers.get('Authorization'):
-                    session_headers['Authorization'] = 'REDACTED'
+                session_headers2 = session_headers.copy()
+                if session_headers2.get('Authorization'):
+                    session_headers2['Authorization'] = 'REDACTED'
                 print('WARN: get_method url: ' + url +
                       ' failed with error code ' +
                       str(result.status_code) +
-                      ' headers: ' + str(session_headers))
+                      ' headers: ' + str(session_headers2))
         return result.content.decode('utf-8')
     except requests.exceptions.RequestException as ex:
         session_headers2 = session_headers.copy()
