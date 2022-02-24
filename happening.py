@@ -1075,9 +1075,9 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
             if query_start_day == query_end_day:
                 # calendar for one day
                 search_date = \
-                    datetime.datetime(year=query_start_year,
-                                      month=query_start_month,
-                                      day=query_start_day)
+                    datetime(year=query_start_year,
+                             month=query_start_month,
+                             day=query_start_day)
                 ical_events = \
                     get_todays_events_icalendar(base_dir, nickname, domain,
                                                 search_date.year,
@@ -1303,7 +1303,53 @@ def dav_month_via_server(session, http_prefix: str,
         '      <c:time-range start="' + str(year) + month_str + \
         '01T000000Z"\n' + \
         '                    end="' + str(year) + month_str + \
-        '31T000000Z"/>\n' + \
+        '31T235959Z"/>\n' + \
+        '      </c:comp-filter>\n' + \
+        '    </c:comp-filter>\n' + \
+        '  </c:filter>\n' + \
+        '</c:calendar-query>'
+    result = \
+        get_method("REPORT", xml_str, session, url, params, headers, debug)
+    return result
+
+
+def dav_day_via_server(session, http_prefix: str,
+                       nickname: str, domain: str, port: int,
+                       debug: bool,
+                       year: int, month: int, day: int,
+                       password: str) -> str:
+    """Gets the icalendar for a day via caldav
+    """
+    auth_header = create_basic_auth_header(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/xml',
+        'Authorization': auth_header
+    }
+    domain_full = get_full_domain(domain, port)
+    params = {}
+    url = http_prefix + '://' + domain_full + '/calendars/' + nickname
+    month_str = str(month)
+    if month < 10:
+        month_str = '0' + month_str
+    day_str = str(day)
+    if day < 10:
+        day_str = '0' + day_str
+    xml_str = \
+        '<?xml version="1.0" encoding="utf-8" ?>\n' + \
+        '<c:calendar-query xmlns:d="DAV:"\n' + \
+        '                  xmlns:c="urn:ietf:params:xml:ns:caldav">\n' + \
+        '  <d:prop>\n' + \
+        '    <d:getetag/>\n' + \
+        '  </d:prop>\n' + \
+        '  <c:filter>\n' + \
+        '    <c:comp-filter name="VCALENDAR">\n' + \
+        '      <c:comp-filter name="VEVENT">\n' + \
+        '      <c:time-range start="' + str(year) + month_str + \
+        day_str + 'T000000Z"\n' + \
+        '                    end="' + str(year) + month_str + \
+        day_str + 'T235959Z"/>\n' + \
         '      </c:comp-filter>\n' + \
         '    </c:comp-filter>\n' + \
         '  </c:filter>\n' + \

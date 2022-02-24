@@ -103,6 +103,7 @@ from socnet import instances_graph
 from migrate import migrate_accounts
 from desktop_client import run_desktop_client
 from happening import dav_month_via_server
+from happening import dav_day_via_server
 
 
 def str2bool(value_str) -> bool:
@@ -192,6 +193,9 @@ parser.add_argument('--year', dest='year', type=int,
 parser.add_argument('--month', dest='month', type=int,
                     default=search_date.month,
                     help='Month for calendar query')
+parser.add_argument('--day', dest='day', type=int,
+                    default=None,
+                    help='Day for calendar query')
 parser.add_argument('--postsPerSource',
                     dest='max_newswire_postsPerSource', type=int,
                     default=4,
@@ -1443,12 +1447,20 @@ if args.dav:
     elif args.gnunet:
         proxy_type = 'gnunet'
     session = create_session(proxy_type)
-    result = \
-        dav_month_via_server(session, http_prefix,
-                             args.nickname, args.domain, args.port,
-                             args.debug,
-                             args.year, args.month,
-                             args.password)
+    if args.day:
+        result = \
+            dav_day_via_server(session, http_prefix,
+                               args.nickname, args.domain, args.port,
+                               args.debug,
+                               args.year, args.month, args.day,
+                               args.password)
+    else:
+        result = \
+            dav_month_via_server(session, http_prefix,
+                                 args.nickname, args.domain, args.port,
+                                 args.debug,
+                                 args.year, args.month,
+                                 args.password)
     if result:
         print(str(result))
     sys.exit()
