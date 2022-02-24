@@ -3203,7 +3203,7 @@ def test_client_to_server(base_dir: str):
                            test_date.day, 'wrongpass')
     assert 'VCALENDAR' not in str(result)
     assert 'VEVENT' not in str(result)
-    
+
     print('\n\nEVENT: Bob likes the post')
     send_like_via_server(bob_dir, session_bob,
                          'bob', 'bobpass',
