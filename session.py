@@ -667,7 +667,7 @@ def download_image_any_mime_type(session, url: str,
 
 
 def get_method(method_name: str, xml_str: str,
-               session, url: str, params: {}, debug: bool,
+               session, url: str, params: {}, headers: {}, debug: bool,
                version: str = '1.3.0', http_prefix: str = 'https',
                domain: str = 'testdomain',
                timeout_sec: int = 20, quiet: bool = False) -> {}:
@@ -679,9 +679,10 @@ def get_method(method_name: str, xml_str: str,
             print('url: ' + str(url))
             print('ERROR: get_method failed, url should be a string')
         return None
-    headers = {
-        'Accept': 'application/xml'
-    }
+    if not headers:
+        headers = {
+            'Accept': 'application/xml'
+        }
     session_params = {}
     session_headers = {}
     if headers:
@@ -694,7 +695,8 @@ def get_method(method_name: str, xml_str: str,
             '; +' + http_prefix + '://' + domain + '/'
     if not session:
         if not quiet:
-            print('WARN: get_method failed, no session specified for get_vcard')
+            print('WARN: get_method failed, ' +
+                  'no session specified for get_vcard')
         return None
 
     if debug:
