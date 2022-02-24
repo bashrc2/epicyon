@@ -1391,7 +1391,7 @@ if args.message:
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     languages_understood = [args.language]
-    
+
     print('Sending post to ' + args.sendto)
     send_post_via_server(signing_priv_key_pem, __version__,
                          base_dir, session, args.nickname, args.password,

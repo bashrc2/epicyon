@@ -2946,6 +2946,13 @@ def test_client_to_server(base_dir: str):
 
     time.sleep(1)
 
+    # set bob to be following the calendar of alice
+    print('Bob follows the calendar of Alice')
+    following_cal_path = \
+        bob_dir + '/accounts/bob@' + bob_domain + '/followingCalendar.txt'
+    with open(following_cal_path, 'w+') as fp:
+        fp.write('alice@' + alice_domain + '\n')
+
     print('\n\n*******************************************************')
     print('EVENT: Alice sends to Bob via c2s')
 
@@ -3035,6 +3042,17 @@ def test_client_to_server(base_dir: str):
                 if os.path.isfile(os.path.join(bob_outbox_path, name))]) == 0
 
     print(">>> s2s post arrived in Bob's inbox")
+
+    calendar_path = bob_dir + '/accounts/bob@' + bob_domain + '/calendar'
+    if not os.path.isdir(calendar_path):
+        print('Missing calendar path: ' + calendar_path)
+    assert os.path.isdir(calendar_path)
+    assert os.path.isdir(calendar_path + '/' + str(test_date.year))
+    assert os.path.isfile(calendar_path + '/' + str(test_date.year) + '/' +
+                          str(test_date.month) + '.txt')
+    print(">>> calendar entry created for s2s post which arrived at " +
+          "Bob's inbox")
+
     print("c2s send success\n\n\n")
 
     print('\n\nEVENT: Getting message id for the post')
