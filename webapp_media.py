@@ -54,36 +54,40 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
     if '"' + video_site in content:
         url = content.split('"' + video_site)[1]
         if '"' in url:
-            url = url.split('"')[0].replace('/watch?v=', '/embed/')
-            if '&' in url:
-                url = url.split('&')[0]
-            if '?utm_' in url:
-                url = url.split('?utm_')[0]
-            content += \
-                "<center>\n<iframe loading=\"lazy\" src=\"" + \
-                video_site + url + "\" width=\"" + str(width) + \
-                "\" height=\"" + str(height) + \
-                "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
-                "allowfullscreen></iframe>\n</center>\n"
-            return content
+            url = url.split('"')[0]
+            if '/channel/' not in url:
+                url = url.replace('/watch?v=', '/embed/')
+                if '&' in url:
+                    url = url.split('&')[0]
+                if '?utm_' in url:
+                    url = url.split('?utm_')[0]
+                content += \
+                    "<center>\n<iframe loading=\"lazy\" src=\"" + \
+                    video_site + url + "\" width=\"" + str(width) + \
+                    "\" height=\"" + str(height) + \
+                    "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
+                    "allowfullscreen></iframe>\n</center>\n"
+                return content
 
     video_site = 'https://youtu.be/'
     if '"' + video_site in content:
         url = content.split('"' + video_site)[1]
         if '"' in url:
-            url = 'embed/' + url.split('"')[0]
-            if '&' in url:
-                url = url.split('&')[0]
-            if '?utm_' in url:
-                url = url.split('?utm_')[0]
-            video_site = 'https://www.youtube.com/'
-            content += \
-                "<center>\n<iframe loading=\"lazy\" src=\"" + \
-                video_site + url + "\" width=\"" + str(width) + \
-                "\" height=\"" + str(height) + \
-                "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
-                "allowfullscreen></iframe>\n</center>\n"
-            return content
+            url = url.split('"')[0]
+            if '/channel/' not in url:
+                url = 'embed/' + url
+                if '&' in url:
+                    url = url.split('&')[0]
+                if '?utm_' in url:
+                    url = url.split('?utm_')[0]
+                video_site = 'https://www.youtube.com/'
+                content += \
+                    "<center>\n<iframe loading=\"lazy\" src=\"" + \
+                    video_site + url + "\" width=\"" + str(width) + \
+                    "\" height=\"" + str(height) + \
+                    "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
+                    "allowfullscreen></iframe>\n</center>\n"
+                return content
 
     invidious_sites = (
         'https://invidious.snopyta.org',

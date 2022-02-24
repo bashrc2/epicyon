@@ -13,6 +13,7 @@ import sys
 import time
 import argparse
 import getpass
+import datetime
 from person import get_actor_json
 from person import create_person
 from person import create_group
@@ -101,6 +102,8 @@ from announce import send_announce_via_server
 from socnet import instances_graph
 from migrate import migrate_accounts
 from desktop_client import run_desktop_client
+from happening import dav_month_via_server
+from happening import dav_day_via_server
 
 
 def str2bool(value_str) -> bool:
@@ -115,7 +118,19 @@ def str2bool(value_str) -> bool:
     raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
+search_date = datetime.datetime.now()
 parser = argparse.ArgumentParser(description='ActivityPub Server')
+parser.add_argument('--eventDate', type=str,
+                    default=None,
+                    help='Date for an event when sending a c2s post' +
+                    ' YYYY-MM-DD')
+parser.add_argument('--eventTime', type=str,
+                    default=None,
+                    help='Time for an event when sending a c2s post' +
+                    ' HH:MM')
+parser.add_argument('--eventLocation', type=str,
+                    default=None,
+                    help='Location for an event when sending a c2s post')
 parser.add_argument('--content_license_url', type=str,
                     default='https://creativecommons.org/licenses/by/4.0',
                     help='Url of the license used for the instance content')
@@ -172,6 +187,15 @@ parser.add_argument('--i2p_domain', dest='i2p_domain', type=str,
 parser.add_argument('-p', '--port', dest='port', type=int,
                     default=None,
                     help='Port number to run on')
+parser.add_argument('--year', dest='year', type=int,
+                    default=search_date.year,
+                    help='Year for calendar query')
+parser.add_argument('--month', dest='month', type=int,
+                    default=search_date.month,
+                    help='Month for calendar query')
+parser.add_argument('--day', dest='day', type=int,
+                    default=None,
+                    help='Day for calendar query')
 parser.add_argument('--postsPerSource',
                     dest='max_newswire_postsPerSource', type=int,
                     default=4,
@@ -329,6 +353,11 @@ parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Enable replies to a post")
+parser.add_argument("--dav",
+                    dest='dav',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Caldav")
 parser.add_argument("--show_publish_as_icon",
                     dest='show_publish_as_icon',
                     type=str2bool, nargs='?',
@@ -1296,6 +1325,16 @@ if args.message:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
+    if args.eventDate:
+        if '-' not in args.eventDate or len(args.eventDate) != 10:
+            print('Event date format should be YYYY-MM-DD')
+            sys.exit()
+
+    if args.eventTime:
+        if ':' not in args.eventTime or len(args.eventTime) != 5:
+            print('Event time format should be HH:MM')
+            sys.exit()
+
     if not args.password:
         args.password = getpass.getpass('Password: ')
         if not args.password:
@@ -1356,8 +1395,8 @@ if args.message:
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     languages_understood = [args.language]
-    print('Sending post to ' + args.sendto)
 
+    print('Sending post to ' + args.sendto)
     send_post_via_server(signing_priv_key_pem, __version__,
                          base_dir, session, args.nickname, args.password,
                          domain, port,
@@ -1368,11 +1407,62 @@ if args.message:
                          cached_webfingers, person_cache, is_article,
                          args.language, languages_understood,
                          args.low_bandwidth,
-                         args.content_license_url, args.debug,
+                         args.content_license_url,
+                         args.eventDate, args.eventTime, args.eventLocation,
+                         args.debug,
                          reply_to, reply_to, args.conversationId, subject)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
+    sys.exit()
+
+if args.dav:
+    if not args.nickname:
+        print('Please specify a nickname with --nickname')
+        sys.exit()
+    if not args.domain:
+        print('Please specify a domain with --domain')
+        sys.exit()
+    if not args.year:
+        print('Please specify a year with --year')
+        sys.exit()
+    if not args.month:
+        print('Please specify a month with --month')
+        sys.exit()
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+    proxy_type = None
+    if args.tor or domain.endswith('.onion'):
+        proxy_type = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxy_type = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxy_type = 'gnunet'
+    session = create_session(proxy_type)
+    if args.day:
+        result = \
+            dav_day_via_server(session, http_prefix,
+                               args.nickname, args.domain, args.port,
+                               args.debug,
+                               args.year, args.month, args.day,
+                               args.password)
+    else:
+        result = \
+            dav_month_via_server(session, http_prefix,
+                                 args.nickname, args.domain, args.port,
+                                 args.debug,
+                                 args.year, args.month,
+                                 args.password)
+    if result:
+        print(str(result))
     sys.exit()
 
 if args.announce:

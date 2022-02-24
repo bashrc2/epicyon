@@ -267,6 +267,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     """
     domain = remove_domain_port(domain_full)
 
+    text_match = ''
     default_year = 1970
     default_month = 0
     month_number = default_month
@@ -320,11 +321,13 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                                                year, month_number,
                                                day_number,
                                                person_cache,
-                                               http_prefix)
+                                               http_prefix,
+                                               text_match)
         day_events = None
         events = \
             get_todays_events(base_dir, nickname, domain,
-                              year, month_number, day_number)
+                              year, month_number, day_number,
+                              text_match)
         if events:
             if events.get(str(day_number)):
                 day_events = events[str(day_number)]
@@ -337,10 +340,11 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     if icalendar:
         return get_month_events_icalendar(base_dir, nickname, domain,
                                           year, month_number, person_cache,
-                                          http_prefix)
+                                          http_prefix, text_match)
 
     events = \
-        get_calendar_events(base_dir, nickname, domain, year, month_number)
+        get_calendar_events(base_dir, nickname, domain, year, month_number,
+                            text_match)
 
     prev_year = year
     prev_month_number = month_number - 1

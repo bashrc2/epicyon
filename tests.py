@@ -176,6 +176,9 @@ from shares import send_share_via_server
 from shares import get_shared_items_catalog_via_server
 from blocking import load_cw_lists
 from blocking import add_cw_from_lists
+from happening import dav_month_via_server
+from happening import dav_day_via_server
+
 
 TEST_SERVER_GROUP_RUNNING = False
 TEST_SERVER_ALICE_RUNNING = False
@@ -2946,6 +2949,13 @@ def test_client_to_server(base_dir: str):
 
     time.sleep(1)
 
+    # set bob to be following the calendar of alice
+    print('Bob follows the calendar of Alice')
+    following_cal_path = \
+        bob_dir + '/accounts/bob@' + bob_domain + '/followingCalendar.txt'
+    with open(following_cal_path, 'w+') as fp:
+        fp.write('alice@' + alice_domain + '\n')
+
     print('\n\n*******************************************************')
     print('EVENT: Alice sends to Bob via c2s')
 
@@ -2981,6 +2991,12 @@ def test_client_to_server(base_dir: str):
                 if os.path.isfile(os.path.join(bob_outbox_path, name))]) == 0
     print('EVENT: all inboxes and outboxes are empty')
     signing_priv_key_pem = None
+    test_date = datetime.datetime.now()
+    event_date = \
+        str(test_date.year) + '-' + str(test_date.month) + '-' + \
+        str(test_date.day)
+    event_time = '11:45'
+    location = "Kinshasa"
     send_result = \
         send_post_via_server(signing_priv_key_pem, __version__,
                              alice_dir, session_alice, 'alice', password,
@@ -2993,6 +3009,7 @@ def test_client_to_server(base_dir: str):
                              cached_webfingers, person_cache, is_article,
                              system_language, languages_understood,
                              low_bandwidth, content_license_url,
+                             event_date, event_time, location,
                              True, None, None,
                              conversation_id, None)
     print('send_result: ' + str(send_result))
@@ -3028,6 +3045,17 @@ def test_client_to_server(base_dir: str):
                 if os.path.isfile(os.path.join(bob_outbox_path, name))]) == 0
 
     print(">>> s2s post arrived in Bob's inbox")
+
+    calendar_path = bob_dir + '/accounts/bob@' + bob_domain + '/calendar'
+    if not os.path.isdir(calendar_path):
+        print('Missing calendar path: ' + calendar_path)
+    assert os.path.isdir(calendar_path)
+    assert os.path.isdir(calendar_path + '/' + str(test_date.year))
+    assert os.path.isfile(calendar_path + '/' + str(test_date.year) + '/' +
+                          str(test_date.month) + '.txt')
+    print(">>> calendar entry created for s2s post which arrived at " +
+          "Bob's inbox")
+
     print("c2s send success\n\n\n")
 
     print('\n\nEVENT: Getting message id for the post')
@@ -3147,6 +3175,35 @@ def test_client_to_server(base_dir: str):
     show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
     assert len([name for name in os.listdir(alice_inbox_path)
                 if os.path.isfile(os.path.join(alice_inbox_path, name))]) == 0
+
+    print('\n\nEVENT: Bob checks his calendar via caldav')
+    # test caldav result for a month
+    result = \
+        dav_month_via_server(session_bob, http_prefix,
+                             'bob', bob_domain, bob_port, True,
+                             test_date.year, test_date.month,
+                             'bobpass')
+    print('response: ' + str(result))
+    assert 'VCALENDAR' in str(result)
+    assert 'VEVENT' in str(result)
+    # test caldav result for a day
+    result = \
+        dav_day_via_server(session_bob, http_prefix,
+                           'bob', bob_domain, bob_port, True,
+                           test_date.year, test_date.month,
+                           test_date.day, 'bobpass')
+    print('response: ' + str(result))
+    assert 'VCALENDAR' in str(result)
+    assert 'VEVENT' in str(result)
+    # test for incorrect caldav login
+    result = \
+        dav_day_via_server(session_bob, http_prefix,
+                           'bob', bob_domain, bob_port, True,
+                           test_date.year, test_date.month,
+                           test_date.day, 'wrongpass')
+    assert 'VCALENDAR' not in str(result)
+    assert 'VEVENT' not in str(result)
+
     print('\n\nEVENT: Bob likes the post')
     send_like_via_server(bob_dir, session_bob,
                          'bob', 'bobpass',

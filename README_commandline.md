@@ -372,3 +372,19 @@ To remove a shared item:
 ``` bash
 python3 epicyon.py --undoItemName "spanner" --nickname [yournick] --domain [yourdomain] --password [c2s password]
 ```
+
+## Calendar
+
+The calendar for each account can be accessed via CalDav (RFC4791). This makes it easy to integrate the social calendar into other applications. For example, to obtain events for a month:
+
+```bash
+python3 epicyon.py --dav --nickname [yournick] --domain [yourdomain] --year [year] --month [month number]
+```
+
+You will be prompted for your login password, or you can use the **--password** option. You can also use the **--day** option to obtain events for a particular day.
+
+The CalDav endpoint for an account is:
+
+```bash
+yourdomain/calendars/yournick
+```
