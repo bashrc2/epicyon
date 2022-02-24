@@ -316,8 +316,9 @@ def _webfinger_update_vcard(wf_json: {}, actor_json: {}) -> bool:
     """Updates the vcard link
     """
     for link in wf_json['links']:
-        if link['type'] == 'text/vcard':
-            return False
+        if link.get('type'):
+            if link['type'] == 'text/vcard':
+                return False
     wf_json['links'].append({
         "href": actor_json['url'],
         "rel": "http://webfinger.net/rel/profile-page",
