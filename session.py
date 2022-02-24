@@ -664,3 +664,80 @@ def download_image_any_mime_type(session, url: str,
         if 'image/' + m_type in content_type:
             mime_type = 'image/' + m_type
     return result.content, mime_type
+
+
+def get_method(method_name: str, xml_str: str,
+               session, url: str, params: {}, debug: bool,
+               version: str = '1.3.0', http_prefix: str = 'https',
+               domain: str = 'testdomain',
+               timeout_sec: int = 20, quiet: bool = False) -> {}:
+    if method_name not in ("REPORT", "PUT", "PROPFIND"):
+        print("Unrecognized method: " + method_name)
+        return None
+    if not isinstance(url, str):
+        if debug and not quiet:
+            print('url: ' + str(url))
+            print('ERROR: get_method failed, url should be a string')
+        return None
+    headers = {
+        'Accept': 'application/xml'
+    }
+    session_params = {}
+    session_headers = {}
+    if headers:
+        session_headers = headers
+    if params:
+        session_params = params
+    session_headers['User-Agent'] = 'Epicyon/' + version
+    if domain:
+        session_headers['User-Agent'] += \
+            '; +' + http_prefix + '://' + domain + '/'
+    if not session:
+        if not quiet:
+            print('WARN: get_method failed, no session specified for get_vcard')
+        return None
+
+    if debug:
+        HTTPConnection.debuglevel = 1
+
+    try:
+        result = session.request(method_name, url, headers=session_headers,
+                                 data=xml_str,
+                                 params=session_params, timeout=timeout_sec)
+        if result.status_code != 200 and result.status_code != 207:
+            if result.status_code == 401:
+                print("WARN: get_method " + url + ' rejected by secure mode')
+            elif result.status_code == 403:
+                print('WARN: get_method Forbidden url: ' + url)
+            elif result.status_code == 404:
+                print('WARN: get_method Not Found url: ' + url)
+            elif result.status_code == 410:
+                print('WARN: get_method no longer available url: ' + url)
+            else:
+                print('WARN: get_method url: ' + url +
+                      ' failed with error code ' +
+                      str(result.status_code) +
+                      ' headers: ' + str(session_headers))
+        return result.content.decode('utf-8')
+    except requests.exceptions.RequestException as ex:
+        session_headers2 = session_headers.copy()
+        if session_headers2.get('Authorization'):
+            session_headers2['Authorization'] = 'REDACTED'
+        if debug and not quiet:
+            print('EX: get_method failed, url: ' + str(url) + ', ' +
+                  'headers: ' + str(session_headers2) + ', ' +
+                  'params: ' + str(session_params) + ', ' + str(ex))
+    except ValueError as ex:
+        session_headers2 = session_headers.copy()
+        if session_headers2.get('Authorization'):
+            session_headers2['Authorization'] = 'REDACTED'
+        if debug and not quiet:
+            print('EX: get_method failed, url: ' + str(url) + ', ' +
+                  'headers: ' + str(session_headers2) + ', ' +
+                  'params: ' + str(session_params) + ', ' + str(ex))
+    except SocketError as ex:
+        if not quiet:
+            if ex.errno == errno.ECONNRESET:
+                print('EX: get_method failed, ' +
+                      'connection was reset during get_vcard ' + str(ex))
+    return None

@@ -23,8 +23,11 @@ from utils import remove_html
 from utils import get_display_name
 from utils import delete_post
 from utils import get_status_number
+from utils import get_full_domain
 from filters import is_filtered
 from context import get_individual_post_context
+from session import get_method
+from auth import create_basic_auth_header
 
 
 def _dav_date_from_string(timestamp: str) -> str:
@@ -1259,3 +1262,45 @@ def dav_delete_response(base_dir: str, nickname: str, domain: str,
                 nickname, domain, post_filename,
                 debug, recent_posts_cache)
     return 'Ok'
+
+
+def dav_month_via_server(session, http_prefix: str,
+                         nickname: str, domain: str, port: int,
+                         debug: bool,
+                         year: int, month: int,
+                         password: str) -> str:
+    """Gets the icalendar for a month via caldav
+    """
+    auth_header = create_basic_auth_header(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/xml',
+        'Authorization': auth_header
+    }
+    domain_full = get_full_domain(domain, port)
+    params = {}
+    url = http_prefix + '://' + domain_full + '/calendars/' + nickname
+    month_str = str(month)
+    if month < 10:
+        month_str = '0' + month_str
+    xml_str = \
+        '<?xml version="1.0" encoding="utf-8" ?>\n' + \
+        '<c:calendar-query xmlns:d="DAV:"\n' + \
+        '                  xmlns:c="urn:ietf:params:xml:ns:caldav">\n' + \
+        '  <d:prop>\n' + \
+        '    <d:getetag/>\n' + \
+        '  </d:prop>\n' + \
+        '  <c:filter>\n' + \
+        '    <c:comp-filter name="VCALENDAR">\n' + \
+        '      <c:comp-filter name="VEVENT">\n' + \
+        '      <c:time-range start="' + str(year) + month_str + \
+        '01T000000Z"\n' + \
+        '                    end="' + str(year) + month_str + \
+        '31T000000Z"/>\n' + \
+        '      </c:comp-filter>\n' + \
+        '    </c:comp-filter>\n' + \
+        '  </c:filter>\n' + \
+        '</c:calendar-query>'
+    result = get_method("REPORT", xml_str, session, url, params, debug)
+    return result

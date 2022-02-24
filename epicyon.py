@@ -13,6 +13,7 @@ import sys
 import time
 import argparse
 import getpass
+import datetime
 from person import get_actor_json
 from person import create_person
 from person import create_group
@@ -101,6 +102,7 @@ from announce import send_announce_via_server
 from socnet import instances_graph
 from migrate import migrate_accounts
 from desktop_client import run_desktop_client
+from happening import dav_month_via_server
 
 
 def str2bool(value_str) -> bool:
@@ -115,6 +117,7 @@ def str2bool(value_str) -> bool:
     raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
+search_date = datetime.datetime.now()
 parser = argparse.ArgumentParser(description='ActivityPub Server')
 parser.add_argument('--content_license_url', type=str,
                     default='https://creativecommons.org/licenses/by/4.0',
@@ -172,6 +175,12 @@ parser.add_argument('--i2p_domain', dest='i2p_domain', type=str,
 parser.add_argument('-p', '--port', dest='port', type=int,
                     default=None,
                     help='Port number to run on')
+parser.add_argument('--year', dest='year', type=int,
+                    default=search_date.year,
+                    help='Year for calendar query')
+parser.add_argument('--month', dest='month', type=int,
+                    default=search_date.month,
+                    help='Month for calendar query')
 parser.add_argument('--postsPerSource',
                     dest='max_newswire_postsPerSource', type=int,
                     default=4,
@@ -329,6 +338,11 @@ parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Enable replies to a post")
+parser.add_argument("--dav",
+                    dest='dav',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Caldav")
 parser.add_argument("--show_publish_as_icon",
                     dest='show_publish_as_icon',
                     type=str2bool, nargs='?',
@@ -1373,6 +1387,47 @@ if args.message:
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
+    sys.exit()
+
+if args.dav:
+    if not args.nickname:
+        print('Please specify a nickname with --nickname')
+        sys.exit()
+    if not args.domain:
+        print('Please specify a domain with --domain')
+        sys.exit()
+    if not args.year:
+        print('Please specify a year with --year')
+        sys.exit()
+    if not args.month:
+        print('Please specify a month with --month')
+        sys.exit()
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+    proxy_type = None
+    if args.tor or domain.endswith('.onion'):
+        proxy_type = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxy_type = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxy_type = 'gnunet'
+    session = create_session(proxy_type)
+    result = \
+        dav_month_via_server(session, http_prefix,
+                             args.nickname, args.domain, args.port,
+                             args.debug,
+                             args.year, args.month,
+                             args.password)
+    if result:
+        print(str(result))
     sys.exit()
 
 if args.announce:

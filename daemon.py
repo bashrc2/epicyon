@@ -16856,7 +16856,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         if not self._is_authorized():
-            print('PROPFIND Not authorized')
+            print(endpoint_type.upper() + ' not authorized')
             self._403()
             return
         nickname = self.path.split('/calendars/')[1]
@@ -16877,9 +16877,10 @@ class PubServer(BaseHTTPRequestHandler):
             propfind_bytes = self.rfile.read(length)
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('EX: PROPFIND connection reset by peer')
+                print('EX: ' + endpoint_type.upper() +
+                      ' connection reset by peer')
             else:
-                print('EX: PROPFIND socket error')
+                print('EX: ' + endpoint_type.upper() + ' socket error')
             self._400()
             return
         except ValueError as ex:
