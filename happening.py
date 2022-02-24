@@ -975,7 +975,7 @@ def dav_put_response(base_dir: str, nickname: str, domain: str,
        'END:VEVENT' not in xml_str:
         return None
 
-    etag = md5(xml_str).hexdigest()
+    etag = md5(xml_str.encode('utf-8')).hexdigest()
     if recent_dav_etags.get(nickname):
         if etag in recent_dav_etags[nickname]:
             return 'Not modified'
@@ -1091,7 +1091,8 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                     str(search_date.month) + '?day=' + str(search_date.day)
                 if ical_events:
                     if 'VEVENT' in ical_events:
-                        etag = md5(ical_events).hexdigest()
+                        ical_events_encoded = ical_events.encode('utf-8')
+                        etag = md5(ical_events_encoded).hexdigest()
                         responses = \
                             '    <d:response>\n' + \
                             '        <d:href>' + events_href + \
@@ -1124,7 +1125,8 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                     str(query_start_month)
                 if ical_events:
                     if 'VEVENT' in ical_events:
-                        etag = md5(ical_events).hexdigest()
+                        ical_events_encoded = ical_events.encode('utf-8')
+                        etag = md5(ical_events_encoded).hexdigest()
                         responses = \
                             '    <d:response>\n' + \
                             '        <d:href>' + events_href + \
@@ -1172,6 +1174,8 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                     if ical_events:
                         if 'VEVENT' in ical_events:
                             all_events += ical_events
+                            ical_events_encoded = ical_events.encode('utf-8')
+                            local_etag = md5(ical_events_encoded).hexdigest()
                             responses += \
                                 '    <d:response>\n' + \
                                 '        <d:href>' + events_href + \
@@ -1179,7 +1183,7 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                 '        <d:propstat>\n' + \
                                 '            <d:prop>\n' + \
                                 '                <d:getetag>"' + \
-                                etag + '"</d:getetag>\n' + \
+                                local_etag + '"</d:getetag>\n' + \
                                 '                <c:calendar-data>' + \
                                 ical_events + \
                                 '                </c:calendar-data>\n' + \
@@ -1188,7 +1192,8 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                 '</d:status>\n' + \
                                 '        </d:propstat>\n' + \
                                 '    </d:response>\n'
-            etag = md5(all_events).hexdigest()
+            ical_events_encoded = all_events.encode('utf-8')
+            etag = md5(ical_events_encoded).hexdigest()
 
     # today's calendar events
     if not ical_events:
@@ -1204,7 +1209,8 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
             str(search_date.month) + '?day=' + str(search_date.day)
         if ical_events:
             if 'VEVENT' in ical_events:
-                etag = md5(ical_events).hexdigest()
+                ical_events_encoded = ical_events.encode('utf-8')
+                etag = md5(ical_events_encoded).hexdigest()
                 responses = \
                     '    <d:response>\n' + \
                     '        <d:href>' + events_href + '</d:href>\n' + \

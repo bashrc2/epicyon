@@ -16832,13 +16832,15 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', 'end benchmarks',
                             self.server.debug)
 
-    def _dav_handler(self, endpoint_type: str):
+    def _dav_handler(self, endpoint_type: str, debug: bool):
         calling_domain = self.server.domain_full
         if not self._has_accept(calling_domain):
             self._400()
             return
         accept_str = self.headers['Accept']
         if 'application/xml' not in accept_str:
+            if debug:
+                print(endpoint_type.upper() + ' is not of xml type')
             self._400()
             return
         if not self.headers.get('Content-length'):
@@ -16855,6 +16857,8 @@ class PubServer(BaseHTTPRequestHandler):
             print(endpoint_type.upper() + ' without /calendars ' + self.path)
             self._404()
             return
+        if debug:
+            print(endpoint_type.upper() + ' checking authorization')
         if not self._is_authorized():
             print(endpoint_type.upper() + ' not authorized')
             self._403()
@@ -16955,16 +16959,16 @@ class PubServer(BaseHTTPRequestHandler):
         self._200()
 
     def do_PROPFIND(self):
-        self._dav_handler('propfind')
+        self._dav_handler('propfind', self.server.debug)
 
     def do_PUT(self):
-        self._dav_handler('put')
+        self._dav_handler('put', self.server.debug)
 
     def do_REPORT(self):
-        self._dav_handler('report')
+        self._dav_handler('report', self.server.debug)
 
     def do_DELETE(self):
-        self._dav_handler('delete')
+        self._dav_handler('delete', self.server.debug)
 
     def do_HEAD(self):
         calling_domain = self.server.domain_full

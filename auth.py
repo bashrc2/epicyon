@@ -94,16 +94,25 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
                   'contain a space character')
         return False
     if not has_users_path(path):
-        if debug:
-            print('DEBUG: basic auth - ' +
-                  'path for Authorization does not contain a user')
-        return False
-    path_users_section = path.split('/users/')[1]
-    if '/' not in path_users_section:
-        if debug:
-            print('DEBUG: basic auth - this is not a users endpoint')
-        return False
-    nickname_from_path = path_users_section.split('/')[0]
+        if not path.startswith('/calendars/'):
+            if debug:
+                print('DEBUG: basic auth - ' +
+                      'path for Authorization does not contain a user')
+            return False
+    if path.startswith('/calendars/'):
+        path_users_section = path.split('/calendars/')[1]
+        nickname_from_path = path_users_section
+        if '/' in nickname_from_path:
+            nickname_from_path = nickname_from_path.split('/')[0]
+        if '?' in nickname_from_path:
+            nickname_from_path = nickname_from_path.split('?')[0]
+    else:
+        path_users_section = path.split('/users/')[1]
+        if '/' not in path_users_section:
+            if debug:
+                print('DEBUG: basic auth - this is not a users endpoint')
+            return False
+        nickname_from_path = path_users_section.split('/')[0]
     if is_system_account(nickname_from_path):
         print('basic auth - attempted login using system account ' +
               nickname_from_path + ' in path')

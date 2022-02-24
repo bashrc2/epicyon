@@ -176,6 +176,8 @@ from shares import send_share_via_server
 from shares import get_shared_items_catalog_via_server
 from blocking import load_cw_lists
 from blocking import add_cw_from_lists
+from happening import dav_month_via_server
+
 
 TEST_SERVER_GROUP_RUNNING = False
 TEST_SERVER_ALICE_RUNNING = False
@@ -3172,6 +3174,22 @@ def test_client_to_server(base_dir: str):
     show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
     assert len([name for name in os.listdir(alice_inbox_path)
                 if os.path.isfile(os.path.join(alice_inbox_path, name))]) == 0
+
+    print('\n\nEVENT: Bob checks his calendar via caldav')
+    if os.path.isfile(bob_dir + '/basic_auth_fail.txt'):
+        os.remove(bob_dir + '/basic_auth_fail.txt')
+    result = \
+        dav_month_via_server(session_bob, http_prefix,
+                             'bob', bob_domain, bob_port, True,
+                             test_date.year, test_date.month,
+                             'bobpass')
+    print('response: ' + str(result))
+    if os.path.isfile(bob_dir + '/basic_auth_fail.txt'):
+        with open(bob_dir + '/basic_auth_fail.txt', 'r') as fp_fail:
+            print(fp_fail.read())
+    assert 'VCALENDAR' in str(result)
+    assert 'VEVENT' in str(result)
+
     print('\n\nEVENT: Bob likes the post')
     send_like_via_server(bob_dir, session_bob,
                          'bob', 'bobpass',

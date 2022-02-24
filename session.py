@@ -689,6 +689,8 @@ def get_method(method_name: str, xml_str: str,
         headers = {
             'Accept': 'application/xml'
         }
+    else:
+        headers['Accept'] = 'application/xml'
     session_params = {}
     session_headers = {}
     if headers:
