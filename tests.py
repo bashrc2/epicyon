@@ -3177,6 +3177,7 @@ def test_client_to_server(base_dir: str):
                 if os.path.isfile(os.path.join(alice_inbox_path, name))]) == 0
 
     print('\n\nEVENT: Bob checks his calendar via caldav')
+    # test caldav result for a month
     result = \
         dav_month_via_server(session_bob, http_prefix,
                              'bob', bob_domain, bob_port, True,
@@ -3185,6 +3186,7 @@ def test_client_to_server(base_dir: str):
     print('response: ' + str(result))
     assert 'VCALENDAR' in str(result)
     assert 'VEVENT' in str(result)
+    # test caldav result for a day
     result = \
         dav_day_via_server(session_bob, http_prefix,
                            'bob', bob_domain, bob_port, True,
@@ -3193,7 +3195,15 @@ def test_client_to_server(base_dir: str):
     print('response: ' + str(result))
     assert 'VCALENDAR' in str(result)
     assert 'VEVENT' in str(result)
-
+    # test for incorrect caldav login
+    result = \
+        dav_day_via_server(session_bob, http_prefix,
+                           'bob', bob_domain, bob_port, True,
+                           test_date.year, test_date.month,
+                           test_date.day, 'wrongpass')
+    assert 'VCALENDAR' not in str(result)
+    assert 'VEVENT' not in str(result)
+    
     print('\n\nEVENT: Bob likes the post')
     send_like_via_server(bob_dir, session_bob,
                          'bob', 'bobpass',
