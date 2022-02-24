@@ -102,6 +102,8 @@ def _get_json_request(session, url: str, domain_full: str, session_headers: {},
             elif result.status_code == 410:
                 print('WARN: get_json no longer available url: ' + url)
             else:
+                if session_headers.get('Authorization'):
+                    session_headers['Authorization'] = 'REDACTED'
                 print('WARN: get_json url: ' + url +
                       ' failed with error code ' +
                       str(result.status_code) +
@@ -716,6 +718,8 @@ def get_method(method_name: str, xml_str: str,
             elif result.status_code == 410:
                 print('WARN: get_method no longer available url: ' + url)
             else:
+                if session_headers.get('Authorization'):
+                    session_headers['Authorization'] = 'REDACTED'
                 print('WARN: get_method url: ' + url +
                       ' failed with error code ' +
                       str(result.status_code) +
