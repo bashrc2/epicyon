@@ -15,6 +15,7 @@ import datetime
 import json
 import idna
 import locale
+from dateutil import tz
 from pprint import pprint
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -3350,3 +3351,54 @@ def valid_hash_tag(hashtag: str) -> bool:
     if _is_valid_language(hashtag):
         return True
     return False
+
+
+def convert_published_to_local_timezone(published, timezone: str) -> str:
+    """Converts a post published time into local time
+    """
+    from_zone = tz.gettz('UTC')
+    if timezone:
+        to_zone = tz.gettz(timezone)
+    else:
+        to_zone = tz.tzlocal()
+
+    utc = published.replace(tzinfo=from_zone)
+    local_time = utc.astimezone(to_zone)
+    return local_time
+
+
+def load_account_timezones(base_dir: str) -> {}:
+    """Returns a dictionary containing the preferred timezone for each account
+    """
+    account_timezone = {}
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if acct.startswith('inbox@') or acct.startswith('Actor@'):
+                continue
+            acct_dir = os.path.join(base_dir + '/accounts', acct)
+            tz_filename = acct_dir + '/timezone.txt'
+            if not os.path.isfile(tz_filename):
+                continue
+            timezone = None
+            with open(tz_filename, 'r') as fp_timezone:
+                timezone = fp_timezone.read().strip()
+            if timezone:
+                nickname = acct.split('@')[0]
+                account_timezone[nickname] = timezone
+        break
+    return account_timezone
+
+
+def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
+    """Returns the timezone for the given account
+    """
+    tz_filename = \
+        base_dir + '/accounts/' + nickname + '@' + domain + '/timezone.txt'
+    if not os.path.isfile(tz_filename):
+        return None
+    timezone = None
+    with open(tz_filename, 'r') as fp_timezone:
+        timezone = fp_timezone.read().strip()
+    return timezone

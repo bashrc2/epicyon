@@ -23,6 +23,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import convert_published_to_local_timezone
 from utils import remove_hash_from_post_id
 from utils import remove_html
 from utils import get_actor_languages_list
@@ -841,7 +842,8 @@ def _get_delete_icon_html(nickname: str, domain_full: str,
 
 
 def _get_published_date_str(post_json_object: {},
-                            show_published_date_only: bool) -> str:
+                            show_published_date_only: bool,
+                            timezone: str) -> str:
     """Return the html for the published date on a post
     """
     published_str = ''
@@ -862,6 +864,11 @@ def _get_published_date_str(post_json_object: {},
         published_str = \
             published_str.replace('T', ' ').split('.')[0]
         datetime_object = parse(published_str)
+
+    # convert to local time
+    datetime_object = \
+        convert_published_to_local_timezone(datetime_object, timezone)
+
     if not show_published_date_only:
         published_str = datetime_object.strftime("%a %b %d, %H:%M")
     else:
@@ -1366,7 +1373,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             store_to_cache: bool,
                             use_cache_only: bool,
                             cw_lists: {},
-                            lists_enabled: str) -> str:
+                            lists_enabled: str,
+                            timezone: str) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -1803,7 +1811,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      bookmark_str, delete_str, mute_str)
 
     published_str = \
-        _get_published_date_str(post_json_object, show_published_date_only)
+        _get_published_date_str(post_json_object, show_published_date_only,
+                                timezone)
 
     _log_post_timing(enable_timing_log, post_start_time, '15')
 
@@ -2038,7 +2047,8 @@ def html_individual_post(css_cache: {},
                          allow_local_network_access: bool,
                          theme_name: str, system_language: str,
                          max_like_count: int, signing_priv_key_pem: str,
-                         cw_lists: {}, lists_enabled: str) -> str:
+                         cw_lists: {}, lists_enabled: str,
+                         timezone: str) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2104,7 +2114,7 @@ def html_individual_post(css_cache: {},
                                 allow_local_network_access, theme_name,
                                 system_language, max_like_count,
                                 False, authorized, False, False, False, False,
-                                cw_lists, lists_enabled)
+                                cw_lists, lists_enabled, timezone)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2139,7 +2149,8 @@ def html_individual_post(css_cache: {},
                                             max_like_count,
                                             False, authorized,
                                             False, False, False, False,
-                                            cw_lists, lists_enabled) + post_str
+                                            cw_lists, lists_enabled,
+                                            timezone) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2176,7 +2187,8 @@ def html_individual_post(css_cache: {},
                                             max_like_count,
                                             False, authorized,
                                             False, False, False, False,
-                                            cw_lists, lists_enabled)
+                                            cw_lists, lists_enabled,
+                                            timezone)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2203,7 +2215,8 @@ def html_post_replies(css_cache: {},
                       theme_name: str, system_language: str,
                       max_like_count: int,
                       signing_priv_key_pem: str, cw_lists: {},
-                      lists_enabled: str) -> str:
+                      lists_enabled: str,
+                      timezone: str) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -2228,7 +2241,8 @@ def html_post_replies(css_cache: {},
                                         max_like_count,
                                         False, False, False, False,
                                         False, False,
-                                        cw_lists, lists_enabled)
+                                        cw_lists, lists_enabled,
+                                        timezone)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2257,7 +2271,8 @@ def html_emoji_reaction_picker(css_cache: {},
                                theme_name: str, system_language: str,
                                max_like_count: int, signing_priv_key_pem: str,
                                cw_lists: {}, lists_enabled: str,
-                               box_name: str, page_number: int) -> str:
+                               box_name: str, page_number: int,
+                               timezone: str) -> str:
     """Returns the emoji picker screen
     """
     reacted_to_post_str = \
@@ -2280,7 +2295,7 @@ def html_emoji_reaction_picker(css_cache: {},
                                 theme_name, system_language,
                                 max_like_count,
                                 False, False, False, False, False, False,
-                                cw_lists, lists_enabled)
+                                cw_lists, lists_enabled, timezone)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

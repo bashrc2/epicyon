@@ -17,6 +17,7 @@ from utils import load_json
 from utils import get_config_param
 from utils import get_alt_path
 from utils import acct_dir
+from utils import get_account_timezone
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -64,6 +65,7 @@ def html_confirm_delete(css_cache: {},
         get_config_param(base_dir, 'instanceTitle')
     delete_post_str = \
         html_header_with_external_style(css_filename, instance_title, None)
+    timezone = get_account_timezone(base_dir, nickname, domain)
     delete_post_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache, max_recent_posts,
@@ -79,7 +81,7 @@ def html_confirm_delete(css_cache: {},
                                 peertube_instances, allow_local_network_access,
                                 theme_name, system_language, max_like_count,
                                 False, False, False, False, False, False,
-                                cw_lists, lists_enabled)
+                                cw_lists, lists_enabled, timezone)
     delete_post_str += '<center>'
     delete_post_str += \
         '  <p class="followText">' + \

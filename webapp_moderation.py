@@ -54,7 +54,8 @@ def html_moderation(css_cache: {}, default_timeline: str,
                     max_like_count: int,
                     shared_items_federated_domains: [],
                     signing_priv_key_pem: str,
-                    cw_lists: {}, lists_enabled: str) -> str:
+                    cw_lists: {}, lists_enabled: str,
+                    timezone: str) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -79,7 +80,8 @@ def html_moderation(css_cache: {}, default_timeline: str,
                          peertube_instances, allow_local_network_access,
                          text_mode_banner, access_keys, system_language,
                          max_like_count, shared_items_federated_domains,
-                         signing_priv_key_pem, cw_lists, lists_enabled)
+                         signing_priv_key_pem, cw_lists, lists_enabled,
+                         timezone)
 
 
 def html_account_info(css_cache: {}, translate: {},

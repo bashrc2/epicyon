@@ -142,7 +142,8 @@ def html_profile_after_search(css_cache: {},
                               system_language: str,
                               max_like_count: int,
                               signing_priv_key_pem: str,
-                              cw_lists: {}, lists_enabled: str) -> str:
+                              cw_lists: {}, lists_enabled: str,
+                              timezone: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -354,7 +355,8 @@ def html_profile_after_search(css_cache: {},
                                         max_like_count,
                                         False, False, False,
                                         False, False, False,
-                                        cw_lists, lists_enabled)
+                                        cw_lists, lists_enabled,
+                                        timezone)
             i += 1
             if i >= 8:
                 break
@@ -576,7 +578,8 @@ def html_profile(signing_priv_key_pem: str,
                  extraJson: {}, page_number: int,
                  max_items_per_page: int,
                  cw_lists: {}, lists_enabled: str,
-                 content_license_url: str) -> str:
+                 content_license_url: str,
+                 timezone: str) -> str:
     """Show the profile page as html
     """
     nickname = profile_json['preferredUsername']
@@ -986,7 +989,8 @@ def html_profile(signing_priv_key_pem: str,
                                 theme, system_language,
                                 max_like_count,
                                 signing_priv_key_pem,
-                                cw_lists, lists_enabled) + license_str
+                                cw_lists, lists_enabled,
+                                timezone) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1059,7 +1063,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         theme_name: str, system_language: str,
                         max_like_count: int,
                         signing_priv_key_pem: str,
-                        cw_lists: {}, lists_enabled: str) -> str:
+                        cw_lists: {}, lists_enabled: str,
+                        timezone: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1107,7 +1112,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             max_like_count,
                                             False, False, False,
                                             True, False, False,
-                                            cw_lists, lists_enabled)
+                                            cw_lists, lists_enabled,
+                                            timezone)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1
