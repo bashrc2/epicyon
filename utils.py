@@ -78,6 +78,8 @@ def get_actor_languages_list(actor_json: {}) -> []:
                 lang_list_temp = lang_str.split('+')
             elif ' ' in lang_str:
                 lang_list_temp = lang_str.split(' ')
+            else:
+                return [lang_str]
             lang_list = []
             for lang in lang_list_temp:
                 lang = lang.strip()
