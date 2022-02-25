@@ -123,10 +123,18 @@ def masto_api_v1_response(path: str, calling_domain: str,
             original_path = path
             if '/followers?' in path or \
                '/following?' in path or \
+               '/streaming/' in path or \
                '/search?' in path or \
                '/relationships?' in path or \
                '/statuses?' in path:
                 path = path.split('?')[0]
+            if '/streaming/' in path:
+                streaming_msg = \
+                    "Error: Streaming API not implemented on this instance"
+                send_json = {
+                    "error": streaming_msg
+                }
+                send_json_str = 'masto API streaming response'
             if path.endswith('/followers'):
                 send_json = []
                 send_json_str = \
