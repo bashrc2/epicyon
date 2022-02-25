@@ -263,7 +263,8 @@ parser.add_argument('--twitterdomain', dest='twitter_replacement_domain',
                     help='Domain used to replace twitter.com')
 parser.add_argument('--language', dest='language',
                     type=str, default=None,
-                    help='Language code, eg. en/fr/de/es')
+                    help='Specify a single language code, ' +
+                    'eg. "en" or "fr" or "de"')
 parser.add_argument('-a', '--addaccount', dest='addaccount',
                     type=str, default=None,
                     help='Adds a new account')
