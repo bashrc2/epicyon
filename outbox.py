@@ -16,6 +16,7 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from utils import get_account_timezone
 from utils import has_object_stringType
 from utils import get_base_content_from_post
 from utils import has_object_dict
@@ -454,6 +455,9 @@ def post_message_to_outbox(session, translate: {},
                     manually_approve_followers = \
                         follower_approval_active(base_dir,
                                                  post_to_nickname, domain)
+                    timezone = \
+                        get_account_timezone(base_dir,
+                                             post_to_nickname, domain)
                     individual_post_as_html(signing_priv_key_pem,
                                             False, recent_posts_cache,
                                             max_recent_posts,
@@ -477,7 +481,8 @@ def post_message_to_outbox(session, translate: {},
                                             show_individual_post_icons,
                                             manually_approve_followers,
                                             False, True, use_cache_only,
-                                            cw_lists, lists_enabled)
+                                            cw_lists, lists_enabled,
+                                            timezone)
 
     if outbox_announce(recent_posts_cache,
                        base_dir, message_json, debug):

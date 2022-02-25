@@ -17,6 +17,7 @@ from utils import get_config_param
 from utils import acct_dir
 from utils import get_currencies
 from utils import get_category_types
+from utils import get_account_timezone
 from webapp_utils import get_banner_file
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -259,6 +260,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                         'target="_blank">' + \
                         translate['this post'] + '</a></p>\n'
                     if post_json_object:
+                        timezone = \
+                            get_account_timezone(base_dir, nickname, domain)
                         new_post_text += \
                             individual_post_as_html(signing_priv_key_pem,
                                                     True, recent_posts_cache,
@@ -282,7 +285,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                                                     max_like_count,
                                                     False, False, False,
                                                     False, False, False,
-                                                    cw_lists, lists_enabled)
+                                                    cw_lists, lists_enabled,
+                                                    timezone)
 
                 reply_str = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'

@@ -51,8 +51,11 @@ def set_actor_languages(base_dir: str, actor_json: {},
                         languages_str: str) -> None:
     """Sets the languages used by the given actor
     """
-    separator = ','
-    if '/' in languages_str:
+    languages_str = languages_str.strip()
+    separator = None
+    if ',' in languages_str:
+        separator = ','
+    elif '/' in languages_str:
         separator = '/'
     elif ',' in languages_str:
         separator = ','
@@ -62,7 +65,10 @@ def set_actor_languages(base_dir: str, actor_json: {},
         separator = '+'
     elif ' ' in languages_str:
         separator = ' '
-    lang_list = languages_str.lower().split(separator)
+    if separator:
+        lang_list = languages_str.lower().split(separator)
+    else:
+        lang_list = [languages_str.lower()]
     lang_list2 = ''
     for lang in lang_list:
         lang = lang.strip()

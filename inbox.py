@@ -17,6 +17,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import get_account_timezone
 from utils import domain_permitted
 from utils import is_group_account
 from utils import is_system_account
@@ -294,7 +295,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     max_like_count: int,
                                     signing_priv_key_pem: str,
                                     cw_lists: {},
-                                    lists_enabled: str) -> None:
+                                    lists_enabled: str,
+                                    timezone: str) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -319,7 +321,7 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             peertube_instances, allow_local_network_access,
                             theme_name, system_language, max_like_count,
                             not_dm, True, True, False, True, False,
-                            cw_lists, lists_enabled)
+                            cw_lists, lists_enabled, timezone)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -1100,6 +1102,7 @@ def _receive_like(recent_posts_cache: {},
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(liked_post_json)
+            timezone = get_account_timezone(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1118,7 +1121,7 @@ def _receive_like(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled)
+                                    lists_enabled, timezone)
     return True
 
 
@@ -1213,6 +1216,7 @@ def _receive_undo_like(recent_posts_cache: {},
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(liked_post_json)
+            timezone = get_account_timezone(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1231,7 +1235,7 @@ def _receive_undo_like(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled)
+                                    lists_enabled, timezone)
     return True
 
 
@@ -1362,6 +1366,7 @@ def _receive_reaction(recent_posts_cache: {},
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(reaction_post_json)
+            timezone = get_account_timezone(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1381,7 +1386,7 @@ def _receive_reaction(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled)
+                                    lists_enabled, timezone)
     return True
 
 
@@ -1495,6 +1500,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(reaction_post_json)
+            timezone = get_account_timezone(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1514,7 +1520,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled)
+                                    lists_enabled, timezone)
     return True
 
 
@@ -1606,6 +1612,7 @@ def _receive_bookmark(recent_posts_cache: {},
         manually_approve_followers = \
             follower_approval_active(base_dir, nickname, domain)
         not_dm = not is_dm(bookmarked_post_json)
+        timezone = get_account_timezone(base_dir, nickname, domain)
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache, max_recent_posts,
                                 translate, page_number, base_dir,
@@ -1624,7 +1631,7 @@ def _receive_bookmark(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists,
-                                lists_enabled)
+                                lists_enabled, timezone)
     return True
 
 
@@ -1720,6 +1727,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
         manually_approve_followers = \
             follower_approval_active(base_dir, nickname, domain)
         not_dm = not is_dm(bookmarked_post_json)
+        timezone = get_account_timezone(base_dir, nickname, domain)
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache, max_recent_posts,
                                 translate, page_number, base_dir,
@@ -1737,7 +1745,8 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                                 max_like_count, not_dm,
                                 show_individual_post_icons,
                                 manually_approve_followers,
-                                False, True, False, cw_lists, lists_enabled)
+                                False, True, False, cw_lists, lists_enabled,
+                                timezone)
     return True
 
 
@@ -1926,6 +1935,7 @@ def _receive_announce(recent_posts_cache: {},
     not_dm = True
     if debug:
         print('Generating html for announce ' + message_json['id'])
+    timezone = get_account_timezone(base_dir, nickname, domain)
     announce_html = \
         individual_post_as_html(signing_priv_key_pem, True,
                                 recent_posts_cache, max_recent_posts,
@@ -1945,7 +1955,7 @@ def _receive_announce(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists,
-                                lists_enabled)
+                                lists_enabled, timezone)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -3060,6 +3070,7 @@ def _receive_question_vote(base_dir: str, nickname: str, domain: str,
     manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     not_dm = not is_dm(question_json)
+    timezone = get_account_timezone(base_dir, nickname, domain)
     individual_post_as_html(signing_priv_key_pem, False,
                             recent_posts_cache, max_recent_posts,
                             translate, page_number, base_dir,
@@ -3078,7 +3089,7 @@ def _receive_question_vote(base_dir: str, nickname: str, domain: str,
                             show_individual_post_icons,
                             manually_approve_followers,
                             False, True, False, cw_lists,
-                            lists_enabled)
+                            lists_enabled, timezone)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,
@@ -3600,6 +3611,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                         handle_name = handle.split('@')[0]
                         allow_local_net_access = allow_local_network_access
                         show_pub_date_only = show_published_date_only
+                        timezone = get_account_timezone(base_dir,
+                                                        handle_name, domain)
                         _inbox_store_post_to_html_cache(recent_posts_cache,
                                                         max_recent_posts,
                                                         translate, base_dir,
@@ -3620,7 +3633,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                                                         max_like_count,
                                                         signing_priv_key_pem,
                                                         cw_lists,
-                                                        lists_enabled)
+                                                        lists_enabled,
+                                                        timezone)
                         if debug:
                             time_diff = \
                                 str(int((time.time() - html_cache_start_time) *
@@ -4542,7 +4556,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
         for handle, _ in recipients_dict.items():
             destination = \
                 queue_json['destination'].replace(inbox_handle, handle)
-            languages_understood = [system_language]
+            languages_understood = []
             _inbox_after_initial(recent_posts_cache,
                                  max_recent_posts,
                                  session, key_id, handle,

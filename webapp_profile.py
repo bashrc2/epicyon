@@ -29,6 +29,7 @@ from utils import acct_dir
 from utils import get_supported_languages
 from utils import local_actor_url
 from utils import get_reply_interval_hours
+from utils import get_account_timezone
 from languages import get_actor_languages
 from skills import get_skills
 from theme import get_themes_list
@@ -142,7 +143,8 @@ def html_profile_after_search(css_cache: {},
                               system_language: str,
                               max_like_count: int,
                               signing_priv_key_pem: str,
-                              cw_lists: {}, lists_enabled: str) -> str:
+                              cw_lists: {}, lists_enabled: str,
+                              timezone: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -354,7 +356,8 @@ def html_profile_after_search(css_cache: {},
                                         max_like_count,
                                         False, False, False,
                                         False, False, False,
-                                        cw_lists, lists_enabled)
+                                        cw_lists, lists_enabled,
+                                        timezone)
             i += 1
             if i >= 8:
                 break
@@ -576,7 +579,8 @@ def html_profile(signing_priv_key_pem: str,
                  extraJson: {}, page_number: int,
                  max_items_per_page: int,
                  cw_lists: {}, lists_enabled: str,
-                 content_license_url: str) -> str:
+                 content_license_url: str,
+                 timezone: str) -> str:
     """Show the profile page as html
     """
     nickname = profile_json['preferredUsername']
@@ -986,7 +990,8 @@ def html_profile(signing_priv_key_pem: str,
                                 theme, system_language,
                                 max_like_count,
                                 signing_priv_key_pem,
-                                cw_lists, lists_enabled) + license_str
+                                cw_lists, lists_enabled,
+                                timezone) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1059,7 +1064,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         theme_name: str, system_language: str,
                         max_like_count: int,
                         signing_priv_key_pem: str,
-                        cw_lists: {}, lists_enabled: str) -> str:
+                        cw_lists: {}, lists_enabled: str,
+                        timezone: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1107,7 +1113,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             max_like_count,
                                             False, False, False,
                                             True, False, False,
-                                            cw_lists, lists_enabled)
+                                            cw_lists, lists_enabled,
+                                            timezone)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1
@@ -2015,7 +2022,8 @@ def _get_supported_languagesSorted(base_dir: str) -> str:
 def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
                             moved_to: str, donate_url: str, website_url: str,
                             blog_address: str, actor_json: {},
-                            translate: {}) -> str:
+                            translate: {},
+                            nickname: str, domain: str) -> str:
     """main info on edit profile screen
     """
     image_formats = get_image_formats()
@@ -2077,6 +2085,11 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
     edit_profile_form += \
         edit_text_field(translate['Languages'], 'showLanguages',
                         show_languages, languages_list_str)
+
+    timezone = get_account_timezone(base_dir, nickname, domain)
+    edit_profile_form += \
+        edit_text_field(translate['Time Zone'], 'timeZone',
+                        timezone, 'Europe/London')
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -2296,7 +2309,8 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
     edit_profile_form += \
         _html_edit_profile_main(base_dir, display_nickname, bio_str,
                                 moved_to, donate_url, website_url,
-                                blog_address, actor_json, translate)
+                                blog_address, actor_json, translate,
+                                nickname, domain)
 
     # Option checkboxes
     edit_profile_form += \

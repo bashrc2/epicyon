@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_requestViaServer
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import convert_published_to_local_timezone
 from utils import convert_to_snake_case
 from utils import get_sha_256
 from utils import dangerous_svg
@@ -6628,6 +6629,26 @@ def _test_safe_webtext() -> None:
     assert expected_text == safe_text
 
 
+def _test_published_to_local_timezone() -> None:
+    print('published_to_local_timezone')
+    published_str = '2022-02-25T20:15:00Z'
+    timezone = 'Europe/Berlin'
+    published = \
+        datetime.datetime.strptime(published_str, "%Y-%m-%dT%H:%M:%SZ")
+    datetime_object = \
+        convert_published_to_local_timezone(published, timezone)
+    local_time_str = datetime_object.strftime("%a %b %d, %H:%M")
+    assert local_time_str == 'Fri Feb 25, 21:15'
+
+    timezone = 'Asia/Seoul'
+    published = \
+        datetime.datetime.strptime(published_str, "%Y-%m-%dT%H:%M:%SZ")
+    datetime_object = \
+        convert_published_to_local_timezone(published, timezone)
+    local_time_str = datetime_object.strftime("%a %b %d, %H:%M")
+    assert local_time_str == 'Sat Feb 26, 05:15'
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -6644,6 +6665,7 @@ def run_all_tests():
                             'message_json', 'liked_post_json'])
     _test_checkbox_names()
     _test_functions()
+    _test_published_to_local_timezone()
     _test_safe_webtext()
     _test_get_link_from_rss_item()
     _test_xml_podcast_dict(base_dir)

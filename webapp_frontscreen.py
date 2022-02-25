@@ -11,6 +11,7 @@ import os
 from utils import is_system_account
 from utils import get_domain_from_actor
 from utils import get_config_param
+from utils import get_account_timezone
 from person import person_box_json
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -63,6 +64,7 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
             break
         for item in outbox_feed['orderedItems']:
             if item['type'] == 'Create':
+                timezone = get_account_timezone(base_dir, nickname, domain)
                 post_str = \
                     individual_post_as_html(signing_priv_key_pem,
                                             True, recent_posts_cache,
@@ -84,7 +86,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             max_like_count,
                                             False, False, False,
                                             True, False, False,
-                                            cw_lists, lists_enabled)
+                                            cw_lists, lists_enabled,
+                                            timezone)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1
