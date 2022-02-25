@@ -3891,8 +3891,12 @@ def _create_box_indexed(recent_posts_cache: {},
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + post_url)
                     else:
-                        print('WARN: Unable to locate post ' + post_url +
-                              ' nickname ' + nickname)
+                        if timeline_nickname == 'news':
+                            print('WARN: Unable to locate news post ' +
+                                  post_url + ' nickname ' + nickname)
+                        else:
+                            print('WARN: Unable to locate post ' + post_url +
+                                  ' nickname ' + nickname)
 
     if total_posts_count < 3:
         print('Posts added to json timeline ' + boxname + ': ' +
