@@ -15,7 +15,7 @@ import datetime
 import json
 import idna
 import locale
-from dateutil import tz
+from dateutil.tz import tz
 from pprint import pprint
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -3358,9 +3358,12 @@ def convert_published_to_local_timezone(published, timezone: str) -> str:
     """
     from_zone = tz.gettz('UTC')
     if timezone:
-        to_zone = tz.gettz(timezone)
-    else:
-        to_zone = tz.tzlocal()
+        try:
+            to_zone = tz.gettz(timezone)
+        except BaseException:
+            pass
+    if not timezone:
+        return published
 
     utc = published.replace(tzinfo=from_zone)
     local_time = utc.astimezone(to_zone)
