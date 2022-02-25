@@ -1829,8 +1829,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('AUTH: epicyon cookie ' +
                       'authorization failed, header=' +
                       self.headers['Cookie'].replace('epicyon=', '') +
-                      ' token_str=' + token_str + ' tokens=' +
-                      str(self.server.tokens_lookup))
+                      ' token_str=' + token_str)
                 return False
             print('AUTH: Header cookie was not authorized')
             return False
