@@ -4542,7 +4542,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
         for handle, _ in recipients_dict.items():
             destination = \
                 queue_json['destination'].replace(inbox_handle, handle)
-            languages_understood = [system_language]
+            languages_understood = []
             _inbox_after_initial(recent_posts_cache,
                                  max_recent_posts,
                                  session, key_id, handle,

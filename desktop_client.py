@@ -1362,7 +1362,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     blocked_cache = {}
-    languages_understood = [system_language]
+    languages_understood = []
 
     indent = '   '
     if show_new_posts:
