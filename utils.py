@@ -3402,3 +3402,14 @@ def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
     with open(tz_filename, 'r') as fp_timezone:
         timezone = fp_timezone.read().strip()
     return timezone
+
+
+def set_account_timezone(base_dir: str, nickname: str, domain: str,
+                         timezone: str) -> None:
+    """Sets the timezone for the given account
+    """
+    tz_filename = \
+        base_dir + '/accounts/' + nickname + '@' + domain + '/timezone.txt'
+    timezone = timezone.strip()
+    with open(tz_filename, 'w+') as fp_timezone:
+        fp_timezone.write(timezone)

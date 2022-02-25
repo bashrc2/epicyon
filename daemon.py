@@ -247,6 +247,8 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import get_account_timezone
+from utils import set_account_timezone
 from utils import load_account_timezones
 from utils import local_network_host
 from utils import undo_reaction_collection_entry
@@ -5623,6 +5625,24 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if current_show_languages:
                             set_actor_languages(base_dir, actor_json, '')
+                            actor_changed = True
+
+                    # change time zone
+                    timezone = \
+                        get_account_timezone(base_dir, nickname, domain)
+                    if fields.get('timeZone'):
+                        if fields['timeZone'] != timezone:
+                            set_account_timezone(base_dir,
+                                                 nickname, domain,
+                                                 fields['timeZone'])
+                            self.server.account_timezone[nickname] = \
+                                fields['timeZone']
+                            actor_changed = True
+                    else:
+                        if timezone:
+                            set_account_timezone(base_dir,
+                                                 nickname, domain, '')
+                            del self.server.account_timezone[nickname]
                             actor_changed = True
 
                     # change tox address

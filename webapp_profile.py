@@ -29,6 +29,7 @@ from utils import acct_dir
 from utils import get_supported_languages
 from utils import local_actor_url
 from utils import get_reply_interval_hours
+from utils import get_account_timezone
 from languages import get_actor_languages
 from skills import get_skills
 from theme import get_themes_list
@@ -2021,7 +2022,8 @@ def _get_supported_languagesSorted(base_dir: str) -> str:
 def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
                             moved_to: str, donate_url: str, website_url: str,
                             blog_address: str, actor_json: {},
-                            translate: {}) -> str:
+                            translate: {},
+                            nickname: str, domain: str) -> str:
     """main info on edit profile screen
     """
     image_formats = get_image_formats()
@@ -2083,6 +2085,11 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
     edit_profile_form += \
         edit_text_field(translate['Languages'], 'showLanguages',
                         show_languages, languages_list_str)
+
+    timezone = get_account_timezone(base_dir, nickname, domain)
+    edit_profile_form += \
+        edit_text_field(translate['Time Zone'], 'timeZone',
+                        timezone, 'Europe/London')
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -2302,7 +2309,8 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
     edit_profile_form += \
         _html_edit_profile_main(base_dir, display_nickname, bio_str,
                                 moved_to, donate_url, website_url,
-                                blog_address, actor_json, translate)
+                                blog_address, actor_json, translate,
+                                nickname, domain)
 
     # Option checkboxes
     edit_profile_form += \
