@@ -852,6 +852,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self.send_header('X-AP-Instance-ID', self.server.instance_id)
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
+        self.send_header('User-Agent',
+                         'Epicyon/' + __version__ +
+                         '; +' + self.server.http_prefix + '://' +
+                         self.server.domain_full + '/')
         if cookie:
             cookie_str = cookie
             if 'HttpOnly;' not in cookie_str:
