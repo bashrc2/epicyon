@@ -1118,7 +1118,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         if not referer_domain:
-            if not debug and not self.server.unit_test:
+            if not (debug and self.server.unit_test):
                 print('mastodon api request has no referer domain ' +
                       str(ua_str))
                 self._400()

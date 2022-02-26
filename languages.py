@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-import os
 import json
 from urllib import request, parse
 from utils import get_actor_languages_list
@@ -49,22 +48,15 @@ def get_understood_languages(base_dir: str, http_prefix: str,
 
 def set_actor_languages(base_dir: str, actor_json: {},
                         languages_str: str) -> None:
-    """Sets the languages used by the given actor
+    """Sets the languages understood by the given actor
     """
     languages_str = languages_str.strip()
     separator = None
-    if ',' in languages_str:
-        separator = ','
-    elif '/' in languages_str:
-        separator = '/'
-    elif ',' in languages_str:
-        separator = ','
-    elif ';' in languages_str:
-        separator = ';'
-    elif '+' in languages_str:
-        separator = '+'
-    elif ' ' in languages_str:
-        separator = ' '
+    possible_separators = (',', '/', ';', '+', ' ')
+    for poss in possible_separators:
+        if poss in languages_str:
+            separator = poss
+            break
     if separator:
         lang_list = languages_str.lower().split(separator)
     else:
@@ -72,18 +64,11 @@ def set_actor_languages(base_dir: str, actor_json: {},
     lang_list2 = ''
     for lang in lang_list:
         lang = lang.strip()
-        if base_dir:
-            language_filename = base_dir + '/translations/' + lang + '.json'
-            if os.path.isfile(language_filename):
-                if lang_list2:
-                    lang_list2 += ', ' + lang.strip()
-                else:
-                    lang_list2 += lang.strip()
+        if lang_list2:
+            if ' ' + lang not in lang_list2:
+                lang_list2 += ', ' + lang
         else:
-            if lang_list2:
-                lang_list2 += ', ' + lang.strip()
-            else:
-                lang_list2 += lang.strip()
+            lang_list2 += lang
 
     # remove any existing value
     property_found = None
