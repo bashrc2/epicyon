@@ -78,6 +78,8 @@ def webfinger_handle(session, handle: str, http_prefix: str,
     wf_domain = remove_domain_port(domain)
 
     wf_handle = nickname + '@' + wf_domain
+    if debug:
+        print('Parsed webfinger handle: ' + handle + ' -> ' + wf_handle)
     wfg = get_webfinger_from_cache(wf_handle, cached_webfingers)
     if wfg:
         if debug:
@@ -95,7 +97,7 @@ def webfinger_handle(session, handle: str, http_prefix: str,
             get_json(signing_priv_key_pem, session, url, hdr, par,
                      debug, project_version, http_prefix, from_domain)
     except Exception as ex:
-        print('ERROR: webfinger_handle ' + str(ex))
+        print('ERROR: webfinger_handle ' + wf_handle + ' ' + str(ex))
         return None
 
     if result:
@@ -104,6 +106,8 @@ def webfinger_handle(session, handle: str, http_prefix: str,
         if debug:
             print("WARN: Unable to webfinger " + url + ' ' +
                   'nickname: ' + str(nickname) + ' ' +
+                  'handle: ' + str(handle) + ' ' +
+                  'wf_handle: ' + str(wf_handle) + ' ' +
                   'domain: ' + str(wf_domain) + ' ' +
                   'headers: ' + str(hdr) + ' ' +
                   'params: ' + str(par))
