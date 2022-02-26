@@ -14068,9 +14068,10 @@ class PubServer(BaseHTTPRequestHandler):
         authorized = self._is_authorized()
         if self.server.debug:
             if authorized:
-                print('GET Authorization granted')
+                print('GET Authorization granted ' + self.path)
             else:
-                print('GET Not authorized')
+                print('GET Not authorized ' + self.path + ' ' +
+                      str(self.headers))
 
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', 'isAuthorized',
