@@ -6746,5 +6746,5 @@ def run_all_tests():
     _test_followers_on_domain(base_dir)
     _test_follows(base_dir)
     _test_group_followers(base_dir)
-    time.sleep(2)    
+    time.sleep(2)
     print('Tests succeeded\n')
