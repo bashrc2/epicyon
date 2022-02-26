@@ -1523,8 +1523,13 @@ def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
     person_url = None
     wf_request = None
 
-    if '://' in original_actor and \
-       original_actor.lower().endswith('/actor'):
+    original_actor_lower = original_actor.lower()
+    ends_with_instance_actor = False
+    if original_actor_lower.endswith('/actor') or \
+       original_actor_lower.endswith('/instance.actor'):
+        ends_with_instance_actor = True
+
+    if '://' in original_actor and ends_with_instance_actor:
         if debug:
             print(original_actor + ' is an instance actor')
         person_url = original_actor

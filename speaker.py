@@ -348,7 +348,7 @@ def _speaker_endpoint_ssml(display_name: str, summary: str,
         '</speak>\n'
 
 
-def get_ssm_lbox(base_dir: str, path: str,
+def get_ssml_box(base_dir: str, path: str,
                  domain: str,
                  system_language: str,
                  instance_title: str,

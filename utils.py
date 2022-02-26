@@ -1887,7 +1887,7 @@ def _get_reserved_words() -> str:
             'tlblogs', 'tlfeatures',
             'moderation', 'moderationaction',
             'activity', 'undo', 'pinned',
-            'actor', 'Actor',
+            'actor', 'Actor', 'instance.actor',
             'reply', 'replies', 'question', 'like',
             'likes', 'users', 'statuses', 'tags',
             'accounts', 'headers',

@@ -369,7 +369,7 @@ from filters import add_global_filter
 from filters import remove_global_filter
 from context import has_valid_context
 from context import get_individual_post_context
-from speaker import get_ssm_lbox
+from speaker import get_ssml_box
 from city import get_spoofed_city
 from fitnessFunctions import fitness_performance
 from fitnessFunctions import fitness_thread
@@ -696,7 +696,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _signed_ge_tkey_id(self) -> str:
+    def _signed_get_key_id(self) -> str:
         """Returns the actor from the signed GET key_id
         """
         signature = None
@@ -744,7 +744,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.secure_mode and not force:
             return True
 
-        key_id = self._signed_ge_tkey_id()
+        key_id = self._signed_get_key_id()
         if not key_id:
             if self.server.debug:
                 print('AUTH: secure mode, ' +
@@ -852,6 +852,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self.send_header('X-AP-Instance-ID', self.server.instance_id)
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
+        self.send_header('User-Agent',
+                         'Epicyon/' + __version__ +
+                         '; +' + self.server.http_prefix + '://' +
+                         self.server.domain_full + '/')
         if cookie:
             cookie_str = cookie
             if 'HttpOnly;' not in cookie_str:
@@ -12823,6 +12827,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.fitness,
                                 '_GET', '_show_person_profile',
                                 self.server.debug)
+            if self.server.debug:
+                print('DEBUG: html actor sent')
         else:
             if self._secure_mode():
                 accept_str = self.headers['Accept']
@@ -12843,6 +12849,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.fitness,
                                     '_GET', '_show_person_profile json',
                                     self.server.debug)
+                if self.server.debug:
+                    print('DEBUG: json actor sent')
             else:
                 self._404()
         return True
@@ -13986,6 +13994,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # instance actor
         if self.path == '/actor' or \
+           self.path == '/users/instance.actor' or \
            self.path == '/users/actor' or \
            self.path == '/Actor' or \
            self.path == '/users/Actor':
@@ -14067,9 +14076,10 @@ class PubServer(BaseHTTPRequestHandler):
         authorized = self._is_authorized()
         if self.server.debug:
             if authorized:
-                print('GET Authorization granted')
+                print('GET Authorization granted ' + self.path)
             else:
-                print('GET Not authorized')
+                print('GET Not authorized ' + self.path + ' ' +
+                      str(self.headers))
 
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', 'isAuthorized',
@@ -14500,7 +14510,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.debug)
             else:
                 xml_str = \
-                    get_ssm_lbox(self.server.base_dir,
+                    get_ssml_box(self.server.base_dir,
                                  self.path, self.server.domain,
                                  self.server.system_language,
                                  self.server.instanceTitle,
