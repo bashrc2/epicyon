@@ -12825,7 +12825,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.debug)
             if self.server.debug:
                 print('DEBUG: html actor sent with headers: ' +
-                      (self.headers))
+                      str(self.headers))
         else:
             if self._secure_mode():
                 accept_str = self.headers['Accept']
@@ -12848,7 +12848,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug)
                 if self.server.debug:
                     print('DEBUG: json actor sent with headers: ' +
-                          (self.headers))
+                          str(self.headers))
             else:
                 self._404()
         return True
