@@ -13986,6 +13986,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # instance actor
         if self.path == '/actor' or \
+           self.path == '/users/instance.actor' or \
            self.path == '/users/actor' or \
            self.path == '/Actor' or \
            self.path == '/users/Actor':

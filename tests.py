@@ -3047,6 +3047,8 @@ def test_client_to_server(base_dir: str):
 
     print(">>> s2s post arrived in Bob's inbox")
 
+    time.sleep(2)
+
     calendar_path = bob_dir + '/accounts/bob@' + bob_domain + '/calendar'
     if not os.path.isdir(calendar_path):
         print('Missing calendar path: ' + calendar_path)
@@ -6744,4 +6746,5 @@ def run_all_tests():
     _test_followers_on_domain(base_dir)
     _test_follows(base_dir)
     _test_group_followers(base_dir)
+    time.sleep(2)    
     print('Tests succeeded\n')

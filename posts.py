@@ -2759,7 +2759,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     print("to_person_id: " + str(to_person_id))
     print("shared_inbox_url: " + str(shared_inbox_url))
     if inbox_url:
-        if inbox_url.endswith('/actor/inbox'):
+        if inbox_url.endswith('/actor/inbox') or \
+           inbox_url.endswith('/instance.actor/inbox'):
             inbox_url = shared_inbox_url
 
     if not inbox_url:
