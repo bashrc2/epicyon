@@ -696,7 +696,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _signed_ge_tkey_id(self) -> str:
+    def _signed_get_key_id(self) -> str:
         """Returns the actor from the signed GET key_id
         """
         signature = None
@@ -744,7 +744,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.secure_mode and not force:
             return True
 
-        key_id = self._signed_ge_tkey_id()
+        key_id = self._signed_get_key_id()
         if not key_id:
             if self.server.debug:
                 print('AUTH: secure mode, ' +
