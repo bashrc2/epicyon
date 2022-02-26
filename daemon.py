@@ -12828,8 +12828,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_GET', '_show_person_profile',
                                 self.server.debug)
             if self.server.debug:
-                print('DEBUG: html actor sent with headers: ' +
-                      str(self.headers))
+                print('DEBUG: html actor sent')
         else:
             if self._secure_mode():
                 accept_str = self.headers['Accept']
@@ -12851,8 +12850,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_show_person_profile json',
                                     self.server.debug)
                 if self.server.debug:
-                    print('DEBUG: json actor sent with headers: ' +
-                          str(self.headers))
+                    print('DEBUG: json actor sent')
             else:
                 self._404()
         return True
