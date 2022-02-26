@@ -73,9 +73,9 @@ def set_actor_languages(base_dir: str, actor_json: {},
         lang = lang.strip()
         if lang_list2:
             if ' ' + lang not in lang_list2:
-                lang_list2 += ', ' + lang.strip()
+                lang_list2 += ', ' + lang
         else:
-            lang_list2 += lang.strip()
+            lang_list2 += lang
 
     # remove any existing value
     property_found = None
