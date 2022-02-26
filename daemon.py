@@ -1129,7 +1129,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         if self.server.masto_api_is_active:
             print('mastodon api is busy during request from ' +
-                  referer_domain)
+                  str(referer_domain))
             self._503()
             return True
         self.server.masto_api_is_active = True
