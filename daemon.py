@@ -369,7 +369,7 @@ from filters import add_global_filter
 from filters import remove_global_filter
 from context import has_valid_context
 from context import get_individual_post_context
-from speaker import get_ssm_lbox
+from speaker import get_ssml_box
 from city import get_spoofed_city
 from fitnessFunctions import fitness_performance
 from fitnessFunctions import fitness_thread
@@ -14502,7 +14502,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.debug)
             else:
                 xml_str = \
-                    get_ssm_lbox(self.server.base_dir,
+                    get_ssml_box(self.server.base_dir,
                                  self.path, self.server.domain,
                                  self.server.system_language,
                                  self.server.instanceTitle,
