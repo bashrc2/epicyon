@@ -1118,7 +1118,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         if not referer_domain:
-            if not debug and not self.server.unit_test:
+            if not (debug and self.server.unit_test):
                 print('mastodon api request has no referer domain ' +
                       str(ua_str))
                 self._400()
@@ -1129,7 +1129,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         if self.server.masto_api_is_active:
             print('mastodon api is busy during request from ' +
-                  str(referer_domain))
+                  referer_domain)
             self._503()
             return True
         self.server.masto_api_is_active = True
