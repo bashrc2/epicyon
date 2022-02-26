@@ -52,18 +52,11 @@ def set_actor_languages(base_dir: str, actor_json: {},
     """
     languages_str = languages_str.strip()
     separator = None
-    if ',' in languages_str:
-        separator = ','
-    elif '/' in languages_str:
-        separator = '/'
-    elif ',' in languages_str:
-        separator = ','
-    elif ';' in languages_str:
-        separator = ';'
-    elif '+' in languages_str:
-        separator = '+'
-    elif ' ' in languages_str:
-        separator = ' '
+    possible_separators = (',', '/', ';', '+', ' ')
+    for poss in possible_separators:
+        if poss in languages_str:
+            separator = poss
+            break
     if separator:
         lang_list = languages_str.lower().split(separator)
     else:
