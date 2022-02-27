@@ -6873,19 +6873,41 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, calling_domain)
         self.server.postreq_busy = False
 
-    def _progressive_web_app_manifest(self, calling_domain: str,
+    def _progressive_web_app_manifest(self, base_dir: str,
+                                      calling_domain: str,
                                       getreq_start_time) -> None:
         """gets the PWA manifest
         """
+        pwa_theme_color = 'grey'
+        pwa_theme_background_color = 'black'
+
+        css_filename = base_dir + '/epicyon.css'
+        if os.path.isfile(css_filename):
+            css_str = ''
+            with open(css_filename, 'r') as fp_css:
+                css_str = fp_css.read()
+            if '--pwa-theme-color:' in css_str:
+                pwa_theme_color = css_str.split('--pwa-theme-color:')[1]
+                if ';' in pwa_theme_color:
+                    pwa_theme_color = pwa_theme_color.split(';')[0].strip()
+            if '--pwa-theme-background-color:' in css_str:
+                pwa_theme_background_color = \
+                    css_str.split('--pwa-theme-background-color:')[1]
+                if ';' in pwa_theme_background_color:
+                    pwa_theme_background_color = \
+                        pwa_theme_background_color.split(';')[0].strip()
         app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
         app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
+        app3 = \
+            "https://f-droid.org/en/packages/" + \
+            "com.stoutner.privacybrowser.standard"
         manifest = {
             "name": "Epicyon",
             "short_name": "Epicyon",
             "start_url": "/index.html",
             "display": "standalone",
-            "background_color": "black",
-            "theme_color": "grey",
+            "background_color": pwa_theme_background_color,
+            "theme_color": pwa_theme_color,
             "orientation": "portrait-primary",
             "categories": ["microblog", "fediverse", "activitypub"],
             "screenshots": [
@@ -6960,6 +6982,10 @@ class PubServer(BaseHTTPRequestHandler):
                 {
                     "platform": "fdroid",
                     "url": app2
+                },
+                {
+                    "platform": "fdroid",
+                    "url": app3
                 }
             ]
         }
@@ -14045,7 +14071,8 @@ class PubServer(BaseHTTPRequestHandler):
         if '/manifest.json' in self.path:
             if self._has_accept(calling_domain):
                 if not self._request_http():
-                    self._progressive_web_app_manifest(calling_domain,
+                    self._progressive_web_app_manifest(self.server.base_dir,
+                                                       calling_domain,
                                                        getreq_start_time)
                     return
                 else:

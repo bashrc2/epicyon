@@ -1,6 +1,8 @@
 @charset "UTF-8";
 
 :root {
+    --pwa-theme-color: apple-mobile-statusbar-color;
+    --pwa-theme-background-color: black-translucent;
     --avatar-rounding: 10%;
     --timeline-icon-width: 50px;
     --timeline-icon-width-mobile: 100px;
