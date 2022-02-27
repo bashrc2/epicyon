@@ -2471,7 +2471,10 @@ def send_post(signing_priv_key_pem: str, project_version: str,
         domain_full = get_full_domain(domain, port)
         if shared_item_federation_tokens.get(domain_full):
             signature_header_json['Origin'] = domain_full
+            signature_header_json_ld['Origin'] = domain_full
             signature_header_json['SharesCatalog'] = \
+                shared_item_federation_tokens[domain_full]
+            signature_header_json_ld['SharesCatalog'] = \
                 shared_item_federation_tokens[domain_full]
             if debug:
                 print('SharesCatalog added to header')
