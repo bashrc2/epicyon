@@ -75,6 +75,7 @@
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "newswire-publish-icon": "True",
+    "newswire-date-color": "#5152a3",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "False",
     "rss-icon-at-top": "True",
