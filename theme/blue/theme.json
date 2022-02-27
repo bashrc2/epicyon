@@ -1,4 +1,6 @@
 {
+    "pwa-theme-color": "apple-mobile-statusbar-color",
+    "pwa-theme-background-color": "black-translucent",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "False",

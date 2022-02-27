@@ -1,4 +1,6 @@
 {
+    "pwa-theme-color": "apple-mobile-statusbar-color",
+    "pwa-theme-background-color": "black-translucent",
     "dropdown-fg-color": "black",
     "dropdown-bg-color": "#dedede",
     "dropdown-bg-color-hover": "#ccc",
