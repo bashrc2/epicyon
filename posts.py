@@ -2464,16 +2464,11 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                              post_path, http_prefix, with_digest,
                              post_json_str, 'application/ld+json')
 
-    domain_full = get_full_domain(domain, port)
-    ua_str = 'Epicyon/' + __version__ + \
-        '; +' + http_prefix + '://' + domain_full + '/'
-    signature_header_json['User-Agent'] = ua_str
-    signature_header_json_ld['User-Agent'] = ua_str
-
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
     # so that it can request a catalog
     if to_domain in shared_items_federated_domains:
+        domain_full = get_full_domain(domain, port)
         if shared_item_federation_tokens.get(domain_full):
             signature_header_json['Origin'] = domain_full
             signature_header_json_ld['Origin'] = domain_full
