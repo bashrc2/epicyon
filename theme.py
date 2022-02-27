@@ -16,6 +16,7 @@ from utils import copytree
 from utils import acct_dir
 from utils import dangerous_svg
 from utils import local_actor_url
+from utils import remove_html
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
@@ -272,6 +273,7 @@ def _remove_theme(base_dir: str):
 def set_css_param(css: str, param: str, value: str) -> str:
     """Sets a CSS parameter to a given value
     """
+    value = remove_html(value)
     # is this just a simple string replacement?
     if ';' in param:
         return css.replace(param, value)
