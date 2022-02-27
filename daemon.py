@@ -167,6 +167,7 @@ from webapp_utils import html_hashtag_blocked
 from webapp_utils import html_following_list
 from webapp_utils import set_blog_address
 from webapp_utils import html_show_share
+from webapp_utils import get_pwa_theme_colors
 from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
 from webapp_about import html_about
@@ -6878,35 +6879,10 @@ class PubServer(BaseHTTPRequestHandler):
                                       getreq_start_time) -> None:
         """gets the PWA manifest
         """
-        default_pwa_theme_color = 'apple-mobile-web-app-status-bar-style'
-        default_pwa_theme_background_color = 'black-translucent'
-        pwa_theme_color = default_pwa_theme_color
-        pwa_theme_background_color = default_pwa_theme_background_color
-
         css_filename = base_dir + '/epicyon.css'
-        if os.path.isfile(css_filename):
-            css_str = ''
-            with open(css_filename, 'r') as fp_css:
-                css_str = fp_css.read()
-            if '--pwa-theme-color:' in css_str:
-                pwa_theme_color = css_str.split('--pwa-theme-color:')[1]
-                if ';' in pwa_theme_color:
-                    pwa_theme_color = pwa_theme_color.split(';')[0].strip()
-                pwa_theme_color = remove_html(pwa_theme_color)
-                if ' ' in pwa_theme_color:
-                    pwa_theme_color = \
-                        default_pwa_theme_color
-            if '--pwa-theme-background-color:' in css_str:
-                pwa_theme_background_color = \
-                    css_str.split('--pwa-theme-background-color:')[1]
-                if ';' in pwa_theme_background_color:
-                    pwa_theme_background_color = \
-                        pwa_theme_background_color.split(';')[0].strip()
-                pwa_theme_background_color = \
-                    remove_html(pwa_theme_background_color)
-                if ' ' in pwa_theme_background_color:
-                    pwa_theme_background_color = \
-                        default_pwa_theme_background_color
+        pwa_theme_color, pwa_theme_background_color = \
+            get_pwa_theme_colors(css_filename)
+
         app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
         app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
         app3 = \
