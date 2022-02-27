@@ -605,7 +605,7 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
         '    <meta name="theme-color" content="' + pwa_theme_color + '">\n' + \
         metadata + \
         '    <meta name="apple-mobile-web-app-status-bar-style" ' + \
-        'content="' + pwa_theme_background_color + '">' + \
+        'content="' + pwa_theme_background_color + '">\n' + \
         '    <title>' + instance_title + '</title>\n' + \
         '  </head>\n' + \
         '  <body>\n'
