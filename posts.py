@@ -2260,8 +2260,9 @@ def create_report_post(base_dir: str,
 
 def thread_send_post(session, post_json_str: str, federation_list: [],
                      inbox_url: str, base_dir: str,
-                     signature_header_json: {}, post_log: [],
-                     debug: bool) -> None:
+                     signature_header_json: {},
+                     signature_header_json_ld: {},
+                     post_log: [], debug: bool) -> None:
     """Sends a with retries
     """
     tries = 0
@@ -2286,6 +2287,29 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                       ' unauthorized: ' + str(unauthorized))
         except Exception as ex:
             print('ERROR: post_json_string failed ' + str(ex))
+
+        if unauthorized:
+            # try again with application/ld+json header
+            post_result = None
+            unauthorized = False
+            if debug:
+                print('Getting ld post_json_string for ' + inbox_url)
+            try:
+                post_result, unauthorized, return_code = \
+                    post_json_string(session, post_json_str, federation_list,
+                                     inbox_url, signature_header_json_ld,
+                                     debug)
+                if return_code >= 500 and return_code < 600:
+                    # if an instance is returning a code which indicates that
+                    # it might have a runtime error, like 503, then don't
+                    # continue to post to it
+                    break
+                if debug:
+                    print('Obtained ld post_json_string for ' + inbox_url +
+                          ' unauthorized: ' + str(unauthorized))
+            except Exception as ex:
+                print('ERROR: ld post_json_string failed ' + str(ex))
+
         if unauthorized:
             print('WARN: thread_send_post: Post is unauthorized ' +
                   inbox_url + ' ' + post_json_str)
@@ -2433,7 +2457,12 @@ def send_post(signing_priv_key_pem: str, project_version: str,
         create_signed_header(None, private_key_pem, nickname, domain, port,
                              to_domain, to_port,
                              post_path, http_prefix, with_digest,
-                             post_json_str, None)
+                             post_json_str, 'application/activity+json')
+    signature_header_json_ld = \
+        create_signed_header(None, private_key_pem, nickname, domain, port,
+                             to_domain, to_port,
+                             post_path, http_prefix, with_digest,
+                             post_json_str, 'application/ld+json')
 
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
@@ -2468,6 +2497,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                                 federation_list,
                                 inbox_url, base_dir,
                                 signature_header_json.copy(),
+                                signature_header_json_ld.copy(),
                                 post_log,
                                 debug), daemon=True)
     send_threads.append(thr)
@@ -2818,7 +2848,14 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         create_signed_header(None, private_key_pem, nickname, domain, port,
                              to_domain, to_port,
                              post_path, http_prefix, with_digest,
-                             post_json_str, None)
+                             post_json_str,
+                             'application/activity+json')
+    signature_header_json_ld = \
+        create_signed_header(None, private_key_pem, nickname, domain, port,
+                             to_domain, to_port,
+                             post_path, http_prefix, with_digest,
+                             post_json_str,
+                             'application/ld+json')
     # optionally add a token so that the receiving instance may access
     # your shared items catalog
     if shared_items_token:
@@ -2844,6 +2881,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                                 federation_list,
                                 inbox_url, base_dir,
                                 signature_header_json.copy(),
+                                signature_header_json_ld.copy(),
                                 post_log,
                                 debug), daemon=True)
     send_threads.append(thr)
