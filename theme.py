@@ -513,6 +513,7 @@ def _set_custom_font(base_dir: str):
                               "') format('" +
                               custom_font_type + "')")
             css = set_css_param(css, "*font-family", "'CustomFont'")
+            css = set_css_param(css, "header-font", "'CustomFont'")
             filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
