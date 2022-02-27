@@ -252,7 +252,7 @@ def create_signed_header(dateStr: str, private_key_pem: str, nickname: str,
 
     # Content-Type or Accept header
     if not content_type:
-        content_type = 'application/activity+json'
+        content_type = 'application/activity+json, application/ld+json'
 
     if not withDigest:
         headers = {
