@@ -6878,8 +6878,10 @@ class PubServer(BaseHTTPRequestHandler):
                                       getreq_start_time) -> None:
         """gets the PWA manifest
         """
-        pwa_theme_color = 'grey'
-        pwa_theme_background_color = 'black'
+        default_pwa_theme_color = 'apple-mobile-web-app-status-bar-style'
+        default_pwa_theme_background_color = 'black-translucent'
+        pwa_theme_color = default_pwa_theme_color
+        pwa_theme_background_color = default_pwa_theme_background_color
 
         css_filename = base_dir + '/epicyon.css'
         if os.path.isfile(css_filename):
@@ -6890,12 +6892,21 @@ class PubServer(BaseHTTPRequestHandler):
                 pwa_theme_color = css_str.split('--pwa-theme-color:')[1]
                 if ';' in pwa_theme_color:
                     pwa_theme_color = pwa_theme_color.split(';')[0].strip()
+                pwa_theme_color = remove_html(pwa_theme_color)
+                if ' ' in pwa_theme_color:
+                    pwa_theme_color = \
+                        default_pwa_theme_color
             if '--pwa-theme-background-color:' in css_str:
                 pwa_theme_background_color = \
                     css_str.split('--pwa-theme-background-color:')[1]
                 if ';' in pwa_theme_background_color:
                     pwa_theme_background_color = \
                         pwa_theme_background_color.split(';')[0].strip()
+                pwa_theme_background_color = \
+                    remove_html(pwa_theme_background_color)
+                if ' ' in pwa_theme_background_color:
+                    pwa_theme_background_color = \
+                        default_pwa_theme_background_color
         app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
         app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
         app3 = \
