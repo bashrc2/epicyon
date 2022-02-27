@@ -388,7 +388,7 @@ def post_json(http_prefix: str, domain_full: str,
         post_result = \
             session.post(url=inbox_url,
                          data=json.dumps(post_json_object),
-                         headers=headers, timeout=timeout_sec)
+                         headers=session_headers, timeout=timeout_sec)
     except requests.Timeout as ex:
         if not quiet:
             print('EX: post_json timeout ' + inbox_url + ' ' +
