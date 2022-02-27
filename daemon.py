@@ -6898,6 +6898,9 @@ class PubServer(BaseHTTPRequestHandler):
                         pwa_theme_background_color.split(';')[0].strip()
         app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
         app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
+        app3 = \
+            "https://f-droid.org/en/packages/" + \
+            "com.stoutner.privacybrowser.standard"
         manifest = {
             "name": "Epicyon",
             "short_name": "Epicyon",
@@ -6979,6 +6982,10 @@ class PubServer(BaseHTTPRequestHandler):
                 {
                     "platform": "fdroid",
                     "url": app2
+                },
+                {
+                    "platform": "fdroid",
+                    "url": app3
                 }
             ]
         }
