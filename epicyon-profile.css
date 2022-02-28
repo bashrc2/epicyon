@@ -1744,7 +1744,7 @@ div.container {
         font-family: 'NimbusSanL';
         opacity: 0.7;
     }
-    input[type=checkbox]
+    input[type=checkbox], .profilecheckbox
     {
         -ms-transform: scale(2);
         -moz-transform: scale(2);
@@ -2486,7 +2486,7 @@ div.container {
         font-family: 'NimbusSanL';
         opacity: 0.7;
     }
-    input[type=checkbox]
+    input[type=checkbox], .profilecheckbox
     {
         -ms-transform: scale(4);
         -moz-transform: scale(4);
@@ -3225,7 +3225,7 @@ div.container {
         font-family: 'NimbusSanL';
         opacity: 0.7;
     }
-    input[type=checkbox]
+    input[type=checkbox], .profilecheckbox
     {
         -ms-transform: scale(4);
         -moz-transform: scale(4);
