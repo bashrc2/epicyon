@@ -86,8 +86,10 @@ def replace_twitter(post_json_object: {}, replacement_domain: str,
     """Replace Twitter with a replacement domain
     This allows you to view twitter posts without having a twitter account
     """
-    _replace_silo_domain(post_json_object, 'twitter.com',
-                         replacement_domain, system_language)
+    twitter_domains = ('mobile.twitter.com', 'twitter.com')
+    for tw_domain in twitter_domains:
+        _replace_silo_domain(post_json_object, tw_domain,
+                             replacement_domain, system_language)
 
 
 def _remove_meta_data(image_filename: str, output_filename: str) -> None:

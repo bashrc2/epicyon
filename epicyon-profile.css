@@ -1744,7 +1744,7 @@ div.container {
         font-family: 'NimbusSanL';
         opacity: 0.7;
     }
-    input[type=checkbox]
+    input[type=checkbox], .profilecheckbox
     {
         -ms-transform: scale(2);
         -moz-transform: scale(2);
@@ -2486,13 +2486,13 @@ div.container {
         font-family: 'NimbusSanL';
         opacity: 0.7;
     }
-    input[type=checkbox]
+    input[type=checkbox], .profilecheckbox
     {
-        -ms-transform: scale(4);
-        -moz-transform: scale(4);
-        -webkit-transform: scale(4);
-        -o-transform: scale(4);
-        transform: scale(4);
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
     }
@@ -3225,13 +3225,13 @@ div.container {
         font-family: 'NimbusSanL';
         opacity: 0.7;
     }
-    input[type=checkbox]
+    input[type=checkbox], .profilecheckbox
     {
-        -ms-transform: scale(4);
-        -moz-transform: scale(4);
-        -webkit-transform: scale(4);
-        -o-transform: scale(4);
-        transform: scale(4);
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
         width: 10px;

@@ -1991,7 +1991,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.postreq_busy = False
                     return
                 # login success - redirect with authorization
-                print('Login success: ' + login_nickname)
+                print('====== Login success: ' + login_nickname)
                 # re-activate account if needed
                 activate_account(base_dir, login_nickname, domain)
                 # This produces a deterministic token based
