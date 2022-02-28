@@ -2262,7 +2262,8 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                      inbox_url: str, base_dir: str,
                      signature_header_json: {},
                      signature_header_json_ld: {},
-                     post_log: [], debug: bool) -> None:
+                     post_log: [], debug: bool,
+                     http_prefix: str, domain_full: str) -> None:
     """Sends a with retries
     """
     tries = 0
@@ -2276,7 +2277,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
             post_result, unauthorized, return_code = \
                 post_json_string(session, post_json_str, federation_list,
                                  inbox_url, signature_header_json,
-                                 debug)
+                                 debug, http_prefix, domain_full)
             if return_code >= 500 and return_code < 600:
                 # if an instance is returning a code which indicates that
                 # it might have a runtime error, like 503, then don't
@@ -2298,7 +2299,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                 post_result, unauthorized, return_code = \
                     post_json_string(session, post_json_str, federation_list,
                                      inbox_url, signature_header_json_ld,
-                                     debug)
+                                     debug, http_prefix, domain_full)
                 if return_code >= 500 and return_code < 600:
                     # if an instance is returning a code which indicates that
                     # it might have a runtime error, like 503, then don't
@@ -2467,8 +2468,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
     # so that it can request a catalog
+    domain_full = get_full_domain(domain, port)
     if to_domain in shared_items_federated_domains:
-        domain_full = get_full_domain(domain, port)
         if shared_item_federation_tokens.get(domain_full):
             signature_header_json['Origin'] = domain_full
             signature_header_json_ld['Origin'] = domain_full
@@ -2501,8 +2502,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                                 inbox_url, base_dir,
                                 signature_header_json.copy(),
                                 signature_header_json_ld.copy(),
-                                post_log,
-                                debug), daemon=True)
+                                post_log, debug, http_prefix,
+                                domain_full), daemon=True)
     send_threads.append(thr)
     thr.start()
     return 0
@@ -2625,7 +2626,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
         }
         post_result = \
             post_image(session, attach_image_filename, [],
-                       inbox_url, headers)
+                       inbox_url, headers, http_prefix, from_domain_full)
         if not post_result:
             if debug:
                 print('DEBUG: post failed to upload image')
@@ -2639,7 +2640,9 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
     post_dumps = json.dumps(post_json_object)
     post_result, unauthorized, return_code = \
         post_json_string(session, post_dumps, [],
-                         inbox_url, headers, debug, 5, True)
+                         inbox_url, headers, debug,
+                         http_prefix, from_domain_full,
+                         5, True)
     if not post_result:
         if debug:
             if unauthorized:
@@ -2877,6 +2880,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     if debug:
         print('DEBUG: starting thread to send post')
         pprint(post_json_object)
+    domain_full = get_full_domain(domain, port)
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
@@ -2885,8 +2889,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                                 inbox_url, base_dir,
                                 signature_header_json.copy(),
                                 signature_header_json_ld.copy(),
-                                post_log,
-                                debug), daemon=True)
+                                post_log, debug,
+                                http_prefix, domain_full), daemon=True)
     send_threads.append(thr)
     # thr.start()
     return 0

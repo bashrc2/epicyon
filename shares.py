@@ -653,10 +653,10 @@ def send_share_via_server(base_dir, session,
             'host': from_domain,
             'Authorization': auth_header
         }
+        inbox_url_str = inbox_url.replace('/' + post_to_box, '/shares')
         post_result = \
-            post_image(session, image_filename, [],
-                       inbox_url.replace('/' + post_to_box, '/shares'),
-                       headers)
+            post_image(session, image_filename, [], inbox_url_str,
+                       headers, http_prefix, from_domain_full)
 
     headers = {
         'host': from_domain,
@@ -873,10 +873,10 @@ def send_wanted_via_server(base_dir, session,
             'host': from_domain,
             'Authorization': auth_header
         }
+        inbox_url_str = inbox_url.replace('/' + post_to_box, '/wanted')
         post_result = \
-            post_image(session, image_filename, [],
-                       inbox_url.replace('/' + post_to_box, '/wanted'),
-                       headers)
+            post_image(session, image_filename, [], inbox_url_str,
+                       headers, http_prefix, from_domain_full)
 
     headers = {
         'host': from_domain,

@@ -367,6 +367,15 @@ def download_html(signing_priv_key_pem: str,
                              None, quiet, debug, False)
 
 
+def _set_user_agent(session, http_prefix: str, domain_full: str) -> None:
+    """Sets the user agent
+    """
+    ua_str = \
+        'Epicyon/' + __version__ + '; +' + \
+        http_prefix + '://' + domain_full + '/'
+    session.headers.update({'User-Agent': ua_str})
+
+
 def post_json(http_prefix: str, domain_full: str,
               session, post_json_object: {}, federation_list: [],
               inbox_url: str, headers: {}, timeout_sec: int = 60,
@@ -379,16 +388,13 @@ def post_json(http_prefix: str, domain_full: str,
             print('post_json: ' + inbox_url + ' not permitted')
         return None
 
-    session_headers = headers
-    session_headers['User-Agent'] = 'Epicyon/' + __version__
-    session_headers['User-Agent'] += \
-        '; +' + http_prefix + '://' + domain_full + '/'
+    _set_user_agent(session, http_prefix, domain_full)
 
     try:
         post_result = \
             session.post(url=inbox_url,
                          data=json.dumps(post_json_object),
-                         headers=session_headers, timeout=timeout_sec)
+                         headers=headers, timeout=timeout_sec)
     except requests.Timeout as ex:
         if not quiet:
             print('EX: post_json timeout ' + inbox_url + ' ' +
@@ -421,6 +427,7 @@ def post_json_string(session, post_jsonStr: str,
                      inbox_url: str,
                      headers: {},
                      debug: bool,
+                     http_prefix: str, domain_full: str,
                      timeout_sec: int = 30,
                      quiet: bool = False) -> (bool, bool, int):
     """Post a json message string to the inbox of another person
@@ -434,6 +441,8 @@ def post_json_string(session, post_jsonStr: str,
         if not quiet:
             print('post_json_string: ' + inbox_url + ' not permitted')
         return False, True, 0
+
+    _set_user_agent(session, http_prefix, domain_full)
 
     try:
         post_result = \
@@ -473,7 +482,8 @@ def post_json_string(session, post_jsonStr: str,
 
 
 def post_image(session, attach_image_filename: str, federation_list: [],
-               inbox_url: str, headers: {}) -> str:
+               inbox_url: str, headers: {},
+               http_prefix: str, domain_full: str) -> str:
     """Post an image to the inbox of another person or outbox via c2s
     """
     # check that we are posting to a permitted domain
@@ -504,6 +514,9 @@ def post_image(session, attach_image_filename: str, federation_list: [],
 
     with open(attach_image_filename, 'rb') as av_file:
         media_binary = av_file.read()
+
+        _set_user_agent(session, http_prefix, domain_full)
+
         try:
             post_result = session.post(url=inbox_url, data=media_binary,
                                        headers=headers)
