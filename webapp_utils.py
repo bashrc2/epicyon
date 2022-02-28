@@ -590,6 +590,11 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
         get_pwa_theme_colors(css_filename)
     html_str = \
         '<!DOCTYPE html>\n' + \
+        '<!--\n' + \
+        'Thankyou for using Epicyon. If you are reading this message then ' + \
+        'consider joining the development at ' + \
+        'https://gitlab.com/bashrc2/epicyon\n' + \
+        '-->\n' + \
         '<html lang="' + lang + '">\n' + \
         '  <head>\n' + \
         '    <meta charset="utf-8">\n' + \
