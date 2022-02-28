@@ -582,7 +582,7 @@ def follow_approval_required(base_dir: str, nickname_to_follow: str,
     if os.path.isfile(actor_filename):
         actor = load_json(actor_filename)
         if actor:
-            if actor.get('manually_approves_followers'):
+            if 'manuallyApprovesFollowers' in actor:
                 manually_approve_follows = actor['manuallyApprovesFollowers']
             else:
                 if debug:
@@ -738,34 +738,32 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
     accept_handle = nickname + '@' + domain
 
     # send accept back
-    if debug:
-        print('DEBUG: sending Accept activity for ' +
-              'follow request which arrived at ' +
-              nickname_to_follow + '@' + domain_to_follow +
-              ' back to ' + accept_handle)
+    print('Sending follow Accept activity for ' +
+          'follow request which arrived at ' +
+          nickname_to_follow + '@' + domain_to_follow +
+          ' back to ' + accept_handle)
     accept_json = create_accept(base_dir, federation_list,
                                 nickname_to_follow, domain_to_follow, port,
                                 person_url, '', http_prefix,
                                 follow_json)
-    if debug:
-        pprint(accept_json)
-        print('DEBUG: sending follow Accept from ' +
-              nickname_to_follow + '@' + domain_to_follow +
-              ' port ' + str(port) + ' to ' +
-              accept_handle + ' port ' + str(from_port))
+    pprint(accept_json)
+    print('DEBUG: sending follow Accept from ' +
+          nickname_to_follow + '@' + domain_to_follow +
+          ' port ' + str(port) + ' to ' +
+          accept_handle + ' port ' + str(from_port))
     client_to_server = False
 
     if removeFollowActivity:
         # remove the follow request json
         follow_activity_filename = \
             acct_dir(base_dir, nickname_to_follow, domain_to_follow) + \
-            '/requests/' + \
-            nickname + '@' + domain + '.follow'
+            '/requests/' + nickname + '@' + domain + '.follow'
         if os.path.isfile(follow_activity_filename):
             try:
                 os.remove(follow_activity_filename)
             except OSError:
-                print('EX: followed_account_accepts unable to delete ' +
+                print('EX: follow Accept ' +
+                      'followed_account_accepts unable to delete ' +
                       follow_activity_filename)
 
     group_account = False
@@ -1455,7 +1453,7 @@ def follower_approval_active(base_dir: str,
     if os.path.isfile(actor_filename):
         actor_json = load_json(actor_filename)
         if actor_json:
-            if actor_json.get('manuallyApprovesFollowers'):
+            if 'manuallyApprovesFollowers' in actor_json:
                 manually_approves_followers = \
                     actor_json['manuallyApprovesFollowers']
     return manually_approves_followers
