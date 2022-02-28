@@ -97,7 +97,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
             print('DEBUG: No "to" parameter in follow Accept')
         return
     if debug:
-        print('DEBUG: follow Accept received')
+        print('DEBUG: follow Accept received ' + str(message_json))
     this_actor = message_json['object']['actor']
     nickname = get_nickname_from_actor(this_actor)
     if not nickname:
