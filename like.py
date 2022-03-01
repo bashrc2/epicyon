@@ -36,7 +36,7 @@ from posts import get_person_box
 
 
 def no_of_likes(post_json_object: {}) -> int:
-    """Returns the number of likes ona  given post
+    """Returns the number of likes on a given post
     """
     obj = post_json_object
     if has_object_dict(post_json_object):
