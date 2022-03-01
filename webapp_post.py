@@ -659,18 +659,23 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         like_str += '</label>\n'
     like_post_id = remove_hash_from_post_id(post_json_object['id'])
     like_post_id = remove_id_ending(like_post_id)
+
+    # create the link to likers of the post
     likers_post_id = like_post_id.replace('/', '--')
-    likers_screen_link = \
-        '/users/' + nickname + '?likers=' + likers_post_id
+    likers_screen_link = like_title + like_count_str
+    if like_count > 0:
+        likers_screen_link = \
+            '/users/' + nickname + '?likers=' + likers_post_id
+        likers_screen_link = \
+            '<a href=' + "'" + likers_screen_link + "'>" + \
+            like_title + like_count_str + '</a>'
     like_str += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         like_link + '=' + like_post_id + \
         page_number_param + \
         '?actor=' + post_json_object['actor'] + \
         '?bm=' + timeline_post_bookmark + \
-        '?tl=' + box_name + '" title="' + \
-        '<a href=' + "'" + likers_screen_link + "'>" + \
-        like_title + like_count_str + '</a>">\n'
+        '?tl=' + box_name + '" title="' + likers_screen_link + '">\n'
     like_str += \
         '          ' + \
         '<img loading="lazy" title="' + like_title + like_count_str + \

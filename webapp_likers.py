@@ -52,7 +52,9 @@ def html_likers_of_post(base_dir: str, nickname: str,
     post_json_object = \
         locate_post(base_dir, nickname, domain, post_url)
     if not post_json_object:
-        return html_str + html_footer()
+        return None
+    if not post_json_object.get('actor') or not post_json_object.get('object'):
+        return None
 
     # show the top banner
     banner_file, _ = \
@@ -101,11 +103,11 @@ def html_likers_of_post(base_dir: str, nickname: str,
     if has_object_dict(post_json_object):
         obj = post_json_object['object']
     if not obj.get('likes'):
-        return html_str + html_footer()
+        return None
     if not isinstance(obj['likes'], dict):
-        return html_str + html_footer()
+        return None
     if not obj['likes'].get('items'):
-        return html_str + html_footer()
+        return None
 
     html_str += '<center><h2>' + translate['Liked by'] + '</h2></center>\n'
 

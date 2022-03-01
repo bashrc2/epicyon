@@ -10469,6 +10469,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 'inbox', self.server.default_timeline)
+        if not msg:
+            self._404()
+            return True
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
