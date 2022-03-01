@@ -1,4 +1,8 @@
 {
+    "font-size-likes-mobile": "64px",
+    "likes-margin-left-mobile": "20px",
+    "likes-margin-right-mobile": "0px",
+    "likes-margin-top-mobile": "0px",
     "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
     "pwa-theme-background-color": "black-translucent",
     "dropdown-fg-color": "#d5c7b7",

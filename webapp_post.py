@@ -651,22 +651,29 @@ def _get_like_icon_html(nickname: str, domain_full: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '12.2')
 
-    like_str = ''
-    if like_count_str:
-        # show the number of likes next to icon
-        like_str += '<label class="likesCount">'
-        like_str += like_count_str.replace('(', '').replace(')', '').strip()
-        like_str += '</label>\n'
     like_post_id = remove_hash_from_post_id(post_json_object['id'])
     like_post_id = remove_id_ending(like_post_id)
+
+    like_str = ''
+    if like_count_str:
+        likers_post_id = like_post_id.replace('/', '--')
+        likers_screen_link = \
+            '/users/' + nickname + '?likers=' + likers_post_id
+
+        # show the number of likes next to icon
+        like_str += '<label class="likesCount">'
+        like_str += '<a href="' + likers_screen_link + '" ' + \
+            'title="' + translate['Show who liked this post'] + '">'
+        like_str += like_count_str.replace('(', '').replace(')', '').strip()
+        like_str += '</a></label>\n'
+
     like_str += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         like_link + '=' + like_post_id + \
         page_number_param + \
         '?actor=' + post_json_object['actor'] + \
         '?bm=' + timeline_post_bookmark + \
-        '?tl=' + box_name + '" title="' + \
-        like_title + like_count_str + '">\n'
+        '?tl=' + box_name + '" title="' + like_title + like_count_str + '">\n'
     like_str += \
         '          ' + \
         '<img loading="lazy" title="' + like_title + like_count_str + \
