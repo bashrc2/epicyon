@@ -1,6 +1,11 @@
 @charset "UTF-8";
 
 :root {
+    --liker-names-margin: 2%;
+    --liker-names-size1: 30px;
+    --liker-names-size2: 40px;
+    --liker-names-vertical-spacing1: 50px;
+    --liker-names-vertical-spacing2: 100px;
     --pwa-theme-color: apple-mobile-web-app-status-bar-style;
     --pwa-theme-background-color: black-translucent;
     --avatar-rounding: 10%;
@@ -1078,6 +1083,12 @@ div.container {
         font-size: var(--font-size);
         color: var(--title-color);
     }
+    .likerNames {
+        font-size: var(--liker-names-size1);
+        font-family: Arial, Helvetica, sans-serif;
+        margin: var(--liker-names-margin);
+        line-height: var(--liker-names-vertical-spacing1);
+    }
     .profileHeader img.vcard {
         width: var(--vcard-icon-size);
         float: right;
@@ -1845,6 +1856,12 @@ div.container {
     blockquote {
         font-size: var(--quote-font-size-mobile);
     }
+    .likerNames {
+        font-size: var(--liker-names-size2);
+        font-family: Arial, Helvetica, sans-serif;
+        margin: var(--liker-names-margin);
+        line-height: var(--liker-names-vertical-spacing2);
+    }
     .profileHeader img.vcard {
         width: var(--vcard-icon-size-mobile);
         float: right;
@@ -2583,6 +2600,12 @@ div.container {
     }
     blockquote {
         font-size: var(--quote-font-size-tiny);
+    }
+    .likerNames {
+        font-size: var(--font-size2);
+        font-family: 'NimbusSanL';
+        margin: var(--liker-names-margin);
+        line-height: var(--liker-names-vertical-spacing2);
     }
     .profileHeader img.vcard {
         width: var(--vcard-icon-size-tiny);

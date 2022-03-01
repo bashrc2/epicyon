@@ -126,9 +126,9 @@ def html_likers_of_post(base_dir: str, nickname: str,
         else:
             liker_name = get_nickname_from_actor(liker_actor)
         if likers_list:
-            likers_list += ' '        
+            likers_list += ' '
         likers_list += \
-            '<label class="labels">' + \
+            '<label class="likerNames">' + \
             '<a href="' + liker_actor + '">' + liker_name + '</a>' + \
             '</label>'
     html_str += '<center>\n' + likers_list + '\n</center>\n'
