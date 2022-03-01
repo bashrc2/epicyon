@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
 :root {
-    --liker-names-margin: 2%;
-    --liker-names-size1: 30px;
-    --liker-names-size2: 40px;
+    --likes-names-margin: 2%;
+    --likes-names-size1: 30px;
+    --likes-names-size2: 40px;
     --liker-names-vertical-spacing1: 50px;
     --liker-names-vertical-spacing2: 100px;
     --pwa-theme-color: apple-mobile-web-app-status-bar-style;
@@ -59,8 +59,14 @@
     --font-size4: 18px;
     --font-size5: 16px;
     --font-size-likes: 14px;
-    --font-size-likes-mobile: 32px;
+    --font-size-likes-mobile: 64px;
     --font-size-likes-tiny: 16px;
+    --likes-margin-left-tiny: 10px;
+    --likes-margin-right-tiny: 10px;
+    --likes-margin-top-tiny: -10px;    
+    --likes-margin-left-mobile: 20px;
+    --likes-margin-right-mobile: 0px;
+    --likes-margin-top-mobile: 0px;
     --font-size-pgp-key: 16px;
     --font-size-pgp-key2: 18px;
     --font-size-tox: 16px;
@@ -2043,9 +2049,9 @@ div.container {
     .likesCount {
         font-size: var(--font-size-likes-mobile);
         font-family: 'NimbusSanL';
-        float: right;
-        padding: 32px 0;
-        transform: translateX(var(--likes-count-offset-mobile));
+        margin-left: var(--likes-margin-left-mobile);
+        margin-right: var(--likes-margin-right-mobile);
+        margin-top: var(--likes-margin-top-mobile);
         font-weight: bold;
     }
     .container p.administeredby {
@@ -2788,9 +2794,9 @@ div.container {
     .likesCount {
         font-size: var(--font-size-likes-tiny);
         font-family: 'NimbusSanL';
-        float: right;
-        padding: 32px 0;
-        transform: translateX(var(--likes-count-offset-tiny));
+        margin-left: var(--likes-margin-left-tiny);
+        margin-right: var(--likes-margin-right-tiny);
+        margin-top: var(--likes-margin-top-tiny);
         font-weight: bold;
     }
     .container p.administeredby {
