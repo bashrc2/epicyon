@@ -14,6 +14,7 @@ from utils import get_account_timezone
 from utils import get_display_name
 from utils import get_nickname_from_actor
 from utils import has_object_dict
+from utils import load_json
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_banner_file
@@ -49,8 +50,10 @@ def html_likers_of_post(base_dir: str, nickname: str,
         html_header_with_external_style(css_filename, instance_title, None)
 
     # get the post which was liked
-    post_json_object = \
-        locate_post(base_dir, nickname, domain, post_url)
+    filename = locate_post(base_dir, nickname, domain, post_url)
+    if not filename:
+        return None
+    post_json_object = load_json(filename)
     if not post_json_object:
         return None
     if not post_json_object.get('actor') or not post_json_object.get('object'):
