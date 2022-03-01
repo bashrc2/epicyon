@@ -659,6 +659,9 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         like_str += '</label>\n'
     like_post_id = remove_hash_from_post_id(post_json_object['id'])
     like_post_id = remove_id_ending(like_post_id)
+    likers_post_id = like_post_id.replace('/', '--')
+    likers_screen_link = \
+        '/users/' + nickname + '?likers=' + likers_post_id
     like_str += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         like_link + '=' + like_post_id + \
@@ -666,7 +669,8 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         '?actor=' + post_json_object['actor'] + \
         '?bm=' + timeline_post_bookmark + \
         '?tl=' + box_name + '" title="' + \
-        like_title + like_count_str + '">\n'
+        '<a href=' + "'" + likers_screen_link + "'>" + \
+        like_title + like_count_str + '</a>">\n'
     like_str += \
         '          ' + \
         '<img loading="lazy" title="' + like_title + like_count_str + \
