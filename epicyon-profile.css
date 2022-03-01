@@ -4,6 +4,7 @@
     --likes-names-margin: 2%;
     --likes-names-size1: 30px;
     --likes-names-size2: 40px;
+    --liker-names-margin: 2%;
     --liker-names-vertical-spacing1: 50px;
     --liker-names-vertical-spacing2: 100px;
     --pwa-theme-color: apple-mobile-web-app-status-bar-style;
@@ -63,7 +64,7 @@
     --font-size-likes-tiny: 16px;
     --likes-margin-left-tiny: 10px;
     --likes-margin-right-tiny: 10px;
-    --likes-margin-top-tiny: -10px;    
+    --likes-margin-top-tiny: -10px;
     --likes-margin-left-mobile: 20px;
     --likes-margin-right-mobile: 0px;
     --likes-margin-top-mobile: 0px;
