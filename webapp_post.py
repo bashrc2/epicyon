@@ -663,7 +663,7 @@ def _get_like_icon_html(nickname: str, domain_full: str,
     # create the link to likers of the post
     likers_post_id = like_post_id.replace('/', '--')
     likers_screen_link = like_title + like_count_str
-    if like_count > 0:
+    if like_count_str:
         likers_screen_link = \
             '/users/' + nickname + '?likers=' + likers_post_id
         likers_screen_link = \
