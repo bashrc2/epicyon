@@ -138,9 +138,13 @@ def html_likers_of_post(base_dir: str, nickname: str,
         liker_avatar_url = \
             get_person_avatar_url(base_dir, liker_actor,
                                   person_cache, False)
+        if not liker_avatar_url:
+            liker_avatar_url = ''
+        else:
+            liker_avatar_url = ';' + liker_avatar_url
         liker_options_link = \
             '/users/' + nickname + '?options=' + \
-            liker_actor + ';1;' + liker_avatar_url
+            liker_actor + ';1' + liker_avatar_url
         likers_list += \
             '<label class="likerNames">' + \
             '<a href="' + liker_options_link + '">' + liker_name + '</a>' + \
