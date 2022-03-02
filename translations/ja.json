@@ -512,5 +512,7 @@
     "Created": "作成した",
     "It is done": "されております",
     "Time Zone": "タイムゾーン",
-    "Show who liked this post": "この投稿を高く評価した人を表示する"
+    "Show who liked this post": "この投稿を高く評価した人を表示する",
+    "Show who repeated this post": "この投稿を繰り返した人を表示する",
+    "Repeated by": "によって繰り返される"
 }

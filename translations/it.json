@@ -512,5 +512,7 @@
     "Created": "Creata",
     "It is done": "È fatta",
     "Time Zone": "Fuso orario",
-    "Show who liked this post": "Mostra a chi è piaciuto questo post"
+    "Show who liked this post": "Mostra a chi è piaciuto questo post",
+    "Show who repeated this post": "Mostra chi ha ripetuto questo post",
+    "Repeated by": "Ripetuto da"
 }

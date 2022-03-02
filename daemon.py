@@ -7427,8 +7427,12 @@ class PubServer(BaseHTTPRequestHandler):
             page_number = 1
             options_list = options_str.split(';')
             options_actor = options_list[0]
-            options_page_number = options_list[1]
-            options_profile_url = options_list[2]
+            options_page_number = 1
+            if len(options_list) > 1:
+                options_page_number = options_list[1]
+            options_profile_url = ''
+            if len(options_list) > 2:
+                options_profile_url = options_list[2]
             if '.' in options_profile_url and \
                options_profile_url.startswith('/members/'):
                 ext = options_profile_url.split('.')[-1]
@@ -10479,6 +10483,68 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_show_likers_of_post',
+                            self.server.debug)
+        return True
+
+    def _show_announcers_of_post(self, authorized: bool,
+                                 calling_domain: str, path: str,
+                                 base_dir: str, http_prefix: str,
+                                 domain: str, domain_full: str, port: int,
+                                 onion_domain: str, i2p_domain: str,
+                                 getreq_start_time,
+                                 proxy_type: str, cookie: str,
+                                 debug: str) -> bool:
+        """Show the announcers of a post
+        """
+        if not authorized:
+            return False
+        if '?announcers=' not in path:
+            return False
+        if '/users/' not in path:
+            return False
+        nickname = path.split('/users/')[1]
+        if '?' in nickname:
+            nickname = nickname.split('?')[0]
+        post_url = path.split('?announcers=')[1]
+        if '?' in post_url:
+            post_url = post_url.split('?')[0]
+        post_url = post_url.replace('--', '/')
+
+        # note that the likers function is reused, but with 'shares'
+        msg = \
+            html_likers_of_post(base_dir, nickname, domain, port,
+                                post_url, self.server.translate,
+                                http_prefix,
+                                self.server.theme_name,
+                                self.server.access_keys,
+                                self.server.recent_posts_cache,
+                                self.server.max_recent_posts,
+                                self.server.session,
+                                self.server.cached_webfingers,
+                                self.server.person_cache,
+                                self.server.project_version,
+                                self.server.yt_replace_domain,
+                                self.server.twitter_replacement_domain,
+                                self.server.show_published_date_only,
+                                self.server.peertube_instances,
+                                self.server.allow_local_network_access,
+                                self.server.system_language,
+                                self.server.max_like_count,
+                                self.server.signing_priv_key_pem,
+                                self.server.cw_lists,
+                                self.server.lists_enabled,
+                                'inbox', self.server.default_timeline,
+                                'shares')
+        if not msg:
+            self._404()
+            return True
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('text/html', msglen,
+                          cookie, calling_domain, False)
+        self._write(msg)
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', '_show_announcers_of_post',
                             self.server.debug)
         return True
 
@@ -16561,6 +16627,22 @@ class PubServer(BaseHTTPRequestHandler):
                                      getreq_start_time,
                                      self.server.proxy_type,
                                      cookie, self.server.debug):
+            self.server.getreq_busy = False
+            return
+
+        # show the announcers/repeaters of a post
+        if self._show_announcers_of_post(authorized,
+                                         calling_domain, self.path,
+                                         self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.domain,
+                                         self.server.domain_full,
+                                         self.server.port,
+                                         self.server.onion_domain,
+                                         self.server.i2p_domain,
+                                         getreq_start_time,
+                                         self.server.proxy_type,
+                                         cookie, self.server.debug):
             self.server.getreq_busy = False
             return
 

@@ -15,9 +15,11 @@ from utils import get_display_name
 from utils import get_nickname_from_actor
 from utils import has_object_dict
 from utils import load_json
+from person import get_person_avatar_url
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_banner_file
+from webapp_utils import add_emoji_to_display_name
 from webapp_post import individual_post_as_html
 
 
@@ -38,7 +40,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                         system_language: str,
                         max_like_count: int, signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
-                        boxName: str, default_timeline: str) -> str:
+                        boxName: str, default_timeline: str,
+                        dict_name: str = 'likes') -> str:
     """Returns html for a screen showing who liked a post
     """
     css_filename = base_dir + '/epicyon-profile.css'
@@ -105,17 +108,22 @@ def html_likers_of_post(base_dir: str, nickname: str,
     obj = post_json_object
     if has_object_dict(post_json_object):
         obj = post_json_object['object']
-    if not obj.get('likes'):
+    if not obj.get(dict_name):
         return None
-    if not isinstance(obj['likes'], dict):
+    if not isinstance(obj[dict_name], dict):
         return None
-    if not obj['likes'].get('items'):
+    if not obj[dict_name].get('items'):
         return None
 
-    html_str += '<center><h2>' + translate['Liked by'] + '</h2></center>\n'
+    if dict_name == 'likes':
+        html_str += \
+            '<center><h2>' + translate['Liked by'] + '</h2></center>\n'
+    else:
+        html_str += \
+            '<center><h2>' + translate['Repeated by'] + '</h2></center>\n'
 
     likers_list = ''
-    for like_item in obj['likes']['items']:
+    for like_item in obj[dict_name]['items']:
         if not like_item.get('actor'):
             continue
         liker_actor = like_item['actor']
@@ -123,13 +131,29 @@ def html_likers_of_post(base_dir: str, nickname: str,
             get_display_name(base_dir, liker_actor, person_cache)
         if liker_display_name:
             liker_name = liker_display_name
+            if ':' in liker_name:
+                liker_name = \
+                    add_emoji_to_display_name(session, base_dir,
+                                              http_prefix,
+                                              nickname, domain,
+                                              liker_name, False)
         else:
             liker_name = get_nickname_from_actor(liker_actor)
         if likers_list:
             likers_list += ' '
+        liker_avatar_url = \
+            get_person_avatar_url(base_dir, liker_actor,
+                                  person_cache, False)
+        if not liker_avatar_url:
+            liker_avatar_url = ''
+        else:
+            liker_avatar_url = ';' + liker_avatar_url
+        liker_options_link = \
+            '/users/' + nickname + '?options=' + \
+            liker_actor + ';1' + liker_avatar_url
         likers_list += \
             '<label class="likerNames">' + \
-            '<a href="' + liker_actor + '">' + liker_name + '</a>' + \
+            '<a href="' + liker_options_link + '">' + liker_name + '</a>' + \
             '</label>'
     html_str += '<center>\n' + likers_list + '\n</center>\n'
 

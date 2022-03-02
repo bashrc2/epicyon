@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 from utils import has_object_string_object
 from utils import has_group_type
+from utils import has_object_dict
 from utils import remove_domain_port
 from utils import remove_id_ending
 from utils import has_users_path
@@ -31,6 +32,22 @@ from posts import get_person_box
 from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
+
+
+def no_of_announces(post_json_object: {}) -> int:
+    """Returns the number of announces on a given post
+    """
+    obj = post_json_object
+    if has_object_dict(post_json_object):
+        obj = post_json_object['object']
+    if not obj.get('shares'):
+        return 0
+    if not isinstance(obj['shares'], dict):
+        return 0
+    if not obj['shares'].get('items'):
+        obj['shares']['items'] = []
+        obj['shares']['totalItems'] = 0
+    return len(obj['shares']['items'])
 
 
 def is_self_announce(post_json_object: {}) -> bool:
