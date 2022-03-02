@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives import hashes
 from followingCalendar import add_person_to_calendar
 
 VALID_HASHTAG_CHARS = \
-    set('0123456789' +
+    set('_0123456789' +
         'abcdefghijklmnopqrstuvwxyz' +
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
         '¡¿ÄäÀàÁáÂâÃãÅåǍǎĄąĂăÆæĀā' +
