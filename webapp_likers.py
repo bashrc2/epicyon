@@ -15,6 +15,7 @@ from utils import get_display_name
 from utils import get_nickname_from_actor
 from utils import has_object_dict
 from utils import load_json
+from person import get_person_avatar_url
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_banner_file
@@ -134,9 +135,15 @@ def html_likers_of_post(base_dir: str, nickname: str,
             liker_name = get_nickname_from_actor(liker_actor)
         if likers_list:
             likers_list += ' '
+        liker_avatar_url = \
+            get_person_avatar_url(base_dir, liker_actor,
+                                  person_cache, False)
+        liker_options_link = \
+            '/users/' + nickname + '?options=' + \
+            liker_actor + ';1;' + liker_avatar_url
         likers_list += \
             '<label class="likerNames">' + \
-            '<a href="' + liker_actor + '">' + liker_name + '</a>' + \
+            '<a href="' + liker_options_link + '">' + liker_name + '</a>' + \
             '</label>'
     html_str += '<center>\n' + likers_list + '\n</center>\n'
 

@@ -7427,8 +7427,12 @@ class PubServer(BaseHTTPRequestHandler):
             page_number = 1
             options_list = options_str.split(';')
             options_actor = options_list[0]
-            options_page_number = options_list[1]
-            options_profile_url = options_list[2]
+            options_page_number = 1
+            if len(options_list) > 1:
+                options_page_number = options_list[1]
+            options_profile_url = ''
+            if len(options_list) > 2:
+                options_profile_url = options_list[2]
             if '.' in options_profile_url and \
                options_profile_url.startswith('/members/'):
                 ext = options_profile_url.split('.')[-1]

@@ -34,18 +34,18 @@ def _remove_person_from_cache(base_dir: str, person_url: str,
 
 def check_for_changed_actor(session, base_dir: str,
                             http_prefix: str, domain_full: str,
-                            person_url: str, avatarUrl: str, person_cache: {},
+                            person_url: str, avatar_url: str, person_cache: {},
                             timeout_sec: int):
     """Checks if the avatar url exists and if not then
     the actor has probably changed without receiving an actor/Person Update.
     So clear the actor from the cache and it will be refreshed when the next
     post from them is sent
     """
-    if not session or not avatarUrl:
+    if not session or not avatar_url:
         return
-    if domain_full in avatarUrl:
+    if domain_full in avatar_url:
         return
-    if url_exists(session, avatarUrl, timeout_sec, http_prefix, domain_full):
+    if url_exists(session, avatar_url, timeout_sec, http_prefix, domain_full):
         return
     _remove_person_from_cache(base_dir, person_url, person_cache)
 
