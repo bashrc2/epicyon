@@ -16,6 +16,8 @@ from git import is_git_patch
 from datetime import datetime
 from cache import get_person_from_cache
 from bookmarks import bookmarked_by_person
+from announce import announced_by_person
+from announce import no_of_announces
 from like import liked_by_person
 from like import no_of_likes
 from follow import is_following_actor
@@ -65,7 +67,6 @@ from content import get_mentions_from_html
 from content import switch_words
 from person import is_person_snoozed
 from person import get_person_avatar_url
-from announce import announced_by_person
 from webapp_utils import get_banner_file
 from webapp_utils import get_avatar_image_url
 from webapp_utils import update_avatar_image_cache
@@ -549,7 +550,8 @@ def _get_announce_icon_html(is_announced: bool,
                             translate: {},
                             page_number_param: str,
                             timeline_post_bookmark: str,
-                            box_name: str) -> str:
+                            box_name: str,
+                            max_announce_count: int) -> str:
     """Returns html for announce icon/button
     """
     announce_str = ''
@@ -571,9 +573,19 @@ def _get_announce_icon_html(is_announced: bool,
         repeat_this_post_str = translate[repeat_this_post_str]
     announce_title = repeat_this_post_str
     unannounce_link_str = ''
+    announce_count = no_of_announces(post_json_object)
 
+    announce_count_str = ''
+    if announce_count > 0:
+        if announce_count <= max_announce_count:
+            announce_count_str = ' (' + str(announce_count) + ')'
+        else:
+            announce_count_str = ' (' + str(max_announce_count) + '+)'
     if announced_by_person(is_announced,
                            post_actor, nickname, domain_full):
+        if announce_count == 1:
+            # announced by the reader only
+            announce_count_str = ''
         announce_icon = 'repeat.png'
         announce_emoji = '🔁 '
         announce_link = 'unrepeat'
@@ -590,9 +602,24 @@ def _get_announce_icon_html(is_announced: bool,
     announce_post_id = \
         remove_hash_from_post_id(post_json_object['object']['id'])
     announce_post_id = remove_id_ending(announce_post_id)
+
+    announce_str = ''
+    if announce_count_str:
+        announcers_post_id = announce_post_id.replace('/', '--')
+        announcers_screen_link = \
+            '/users/' + nickname + '?announcers=' + announcers_post_id
+
+        # show the number of announces next to icon
+        announce_str += '<label class="likesCount">'
+        announce_str += '<a href="' + announcers_screen_link + '" ' + \
+            'title="' + translate['Show who repeated this post'] + '">'
+        announce_str += \
+            announce_count_str.replace('(', '').replace(')', '').strip()
+        announce_str += '</a></label>\n'
+
     announce_link_str = '?' + \
         announce_link + '=' + announce_post_id + page_number_param
-    announce_str = \
+    announce_str += \
         '        <a class="imageAnchor" href="/users/' + \
         nickname + announce_link_str + unannounce_link_str + \
         '?actor=' + post_json_object['actor'] + \
@@ -1700,7 +1727,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 translate,
                                 page_number_param,
                                 timeline_post_bookmark,
-                                box_name)
+                                box_name, max_like_count)
 
     _log_post_timing(enable_timing_log, post_start_time, '12')
 
