@@ -1864,6 +1864,11 @@ def _is_valid_language(text: str) -> bool:
         "Ogham": [5760, 5792],
         "Runic": [5792, 5888],
         "Khmer": [6016, 6144],
+        "Hangul Syllables": [44032, 55203],
+        "Hangul Jamo": [4352, 4607],
+        "Hangul Compatibility Jamo": [12592, 12687],
+        "Hangul Jamo Extended-A": [43360, 43391],
+        "Hangul Jamo Extended-B": [55216, 55295],
         "Mongolian": [6144, 6320]
     }
     for lang_name, lang_range in natural_languages.items():
