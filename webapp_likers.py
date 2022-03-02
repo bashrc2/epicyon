@@ -18,6 +18,7 @@ from utils import load_json
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_banner_file
+from webapp_utils import add_emoji_to_display_name
 from webapp_post import individual_post_as_html
 
 
@@ -123,6 +124,12 @@ def html_likers_of_post(base_dir: str, nickname: str,
             get_display_name(base_dir, liker_actor, person_cache)
         if liker_display_name:
             liker_name = liker_display_name
+            if ':' in liker_name:
+                liker_name = \
+                    add_emoji_to_display_name(session, base_dir,
+                                              http_prefix,
+                                              nickname, domain,
+                                              liker_name, False)
         else:
             liker_name = get_nickname_from_actor(liker_actor)
         if likers_list:
