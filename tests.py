@@ -5328,6 +5328,8 @@ def _test_valid_hash_tag():
     assert valid_hash_tag('ThisIsVälid')
     assert valid_hash_tag('यहमान्यहै')
     assert valid_hash_tag('한국어')
+    assert valid_hash_tag('테스트')
+    assert valid_hash_tag('테_스트')
     assert not valid_hash_tag('this-is-invalid')
     assert not valid_hash_tag('ThisIsNotValid!')
     assert not valid_hash_tag('#ThisIsAlsoNotValid')

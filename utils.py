@@ -1874,7 +1874,7 @@ def _is_valid_language(text: str) -> bool:
     for lang_name, lang_range in natural_languages.items():
         ok_lang = True
         for char in text:
-            if char.isdigit():
+            if char.isdigit() or char == '_':
                 continue
             if ord(char) not in range(lang_range[0], lang_range[1]):
                 ok_lang = False
