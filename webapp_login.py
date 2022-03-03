@@ -131,7 +131,8 @@ def html_login(css_cache: {}, translate: {},
                     translate[idx] + \
                     '</p>'
             register_button_str = \
-                '<button type="submit" name="register">Register</button>'
+                '<button type="submit" name="register">' + \
+                translate['Register'] + '</button>'
 
     tos_str = \
         '<p class="login-text"><a href="/about">' + \
