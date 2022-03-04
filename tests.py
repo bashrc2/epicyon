@@ -3807,8 +3807,10 @@ def _test_jsonld():
 def _test_site_active():
     print('test_site_is_active')
     timeout = 10
-    assert site_is_active('https://archive.org', timeout)
-    assert site_is_active('https://mastodon.social', timeout)
+    # at least one site should resolve
+    if not site_is_active('https://archive.org', timeout):
+        if not site_is_active('https://wikipedia.org', timeout):
+            assert site_is_active('https://mastodon.social', timeout)
     assert not site_is_active('https://notarealwebsite.a.b.c', timeout)
 
 
