@@ -1264,10 +1264,6 @@ def _receive_reaction(recent_posts_cache: {},
         return False
     if not has_object_string(message_json, debug):
         return False
-    if not message_json.get('to'):
-        if debug:
-            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
-        return False
     if not message_json.get('content'):
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "content"')

@@ -2917,11 +2917,15 @@ def add_to_field(activity_type: str, post_json_object: {},
                 if post_json_object['type'] == activity_type:
                     is_same_type = True
                     if debug:
-                        print('DEBUG: "to" field assigned to ' + activity_type)
+                        print('DEBUG: ' +
+                              'add_to_field1 "to" field assigned to ' +
+                              activity_type)
                     to_address = post_json_object['object']
                     if '/statuses/' in to_address:
                         to_address = to_address.split('/statuses/')[0]
                     post_json_object['to'] = [to_address]
+                    if debug:
+                        print('DEBUG: "to" address added: ' + to_address)
                     to_field_added = True
         elif has_object_dict(post_json_object):
             # add a to field to bookmark add or remove
@@ -2943,14 +2947,16 @@ def add_to_field(activity_type: str, post_json_object: {},
                     is_same_type = True
                     if isinstance(post_json_object['object']['object'], str):
                         if debug:
-                            print('DEBUG: "to" field assigned to ' +
+                            print('DEBUG: add_to_field2 ' +
+                                  '"to" field assigned to ' +
                                   activity_type)
                         to_address = post_json_object['object']['object']
                         if '/statuses/' in to_address:
                             to_address = to_address.split('/statuses/')[0]
                         post_json_object['object']['to'] = [to_address]
-                        post_json_object['to'] = \
-                            [post_json_object['object']['object']]
+                        post_json_object['to'] = [to_address]
+                        if debug:
+                            print('DEBUG: "to" address added: ' + to_address)
                         to_field_added = True
 
     if not is_same_type:
@@ -3012,7 +3018,8 @@ def _send_to_named_addresses(session, base_dir: str,
                         post_json_obj2 = post_json_object['object']['object']
                         if isinstance(post_json_obj2, str):
                             if debug:
-                                print('DEBUG: "to" field assigned to Follow')
+                                print('DEBUG: _send_to_named_addresses ' +
+                                      '"to" field assigned to Follow')
                             post_json_object['object']['to'] = \
                                 [post_json_object['object']['object']]
                 if not post_json_object['object'].get('to'):
