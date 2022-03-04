@@ -1870,7 +1870,13 @@ def _is_valid_language(text: str) -> bool:
         "Hangul Jamo Extended-A": [43360, 43391],
         "Hangul Jamo Extended-B": [55216, 55295],
         "Mongolian": [6144, 6320],
-        "Ukranian": [1024, 1264]
+        "Cyrillic": [1024, 1279],
+        "Cyrillic Supplement": [1280, 1327],
+        "Cyrillic Extended A": [11744, 11775],
+        "Cyrillic Extended B": [42560, 42655],
+        "Cyrillic Extended C": [7296, 7311],
+        "Phonetic Extensions": [7467, 7544],
+        "Combining Half Marks": [65070, 65071]
     }
     for lang_name, lang_range in natural_languages.items():
         ok_lang = True
