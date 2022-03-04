@@ -1869,7 +1869,8 @@ def _is_valid_language(text: str) -> bool:
         "Hangul Compatibility Jamo": [12592, 12687],
         "Hangul Jamo Extended-A": [43360, 43391],
         "Hangul Jamo Extended-B": [55216, 55295],
-        "Mongolian": [6144, 6320]
+        "Mongolian": [6144, 6320],
+        "Ukranian": [1024, 1264]
     }
     for lang_name, lang_range in natural_languages.items():
         ok_lang = True
