@@ -1836,7 +1836,6 @@ def _is_valid_language(text: str) -> bool:
     """
     natural_languages = {
         "Latin": [65, 866],
-        "Cyrillic": [1024, 1274],
         "Greek": [880, 1280],
         "isArmenian": [1328, 1424],
         "isHebrew": [1424, 1536],
