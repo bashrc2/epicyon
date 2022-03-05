@@ -1,1 +1,1 @@
-Ваші надіслані повідомлення відображатимуться тут у хронологічній хронології.
+Your sent posts will appear here, as a cronological timeline.
