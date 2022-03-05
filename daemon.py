@@ -9877,7 +9877,7 @@ class PubServer(BaseHTTPRequestHandler):
                               onion_domain: str, i2p_domain: str,
                               getreq_start_time,
                               proxy_type: str, cookie: str,
-                              debug: str) -> bool:
+                              debug: str, session) -> bool:
         """Shows the replies to a post
         """
         if not ('/statuses/' in path and '/users/' in path):
@@ -9940,7 +9940,6 @@ class PubServer(BaseHTTPRequestHandler):
                 recent_posts_cache = self.server.recent_posts_cache
                 max_recent_posts = self.server.max_recent_posts
                 translate = self.server.translate
-                session = self.server.session
                 cached_webfingers = self.server.cached_webfingers
                 person_cache = self.server.person_cache
                 project_version = self.server.project_version
@@ -10037,7 +10036,6 @@ class PubServer(BaseHTTPRequestHandler):
                 recent_posts_cache = self.server.recent_posts_cache
                 max_recent_posts = self.server.max_recent_posts
                 translate = self.server.translate
-                session = self.server.session
                 cached_webfingers = self.server.cached_webfingers
                 person_cache = self.server.person_cache
                 project_version = self.server.project_version
@@ -16663,7 +16661,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.i2p_domain,
                                           getreq_start_time,
                                           self.server.proxy_type, cookie,
-                                          self.server.debug):
+                                          self.server.debug,
+                                          self.server.session):
                 self.server.getreq_busy = False
                 return
 
