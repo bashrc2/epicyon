@@ -73,7 +73,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
     agent_domain = None
 
     if agent_str:
-        # is this a web crawler? If so the block it
+        # is this a web crawler? If so then block it by default
+        # unless this is a news instance or if it is in the allowed list
         if 'bot/' in agent_str_lower or 'bot-' in agent_str_lower:
             # if this is a news instance then we want it
             # to be indexed by search engines
