@@ -1808,6 +1808,10 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                            'userAgentsBlockedStr', user_agents_blocked_str,
                            200, '', False)
 
+        edit_profile_form += \
+            '<a href="/users/' + nickname + '/bots.txt">' + \
+            translate['Known Search Bots'] + '</a><br>\n'
+
         crawlers_allowed_str = ''
         for uagent in crawlers_allowed:
             if crawlers_allowed_str:
@@ -1817,10 +1821,6 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             edit_text_area(translate['Web Bots Allowed'],
                            'crawlersAllowedStr', crawlers_allowed_str,
                            200, '', False)
-        edit_profile_form += \
-            '<label class="labels">' + \
-            '<a href="/users/' + nickname + '/bots.txt">' + \
-            translate['Known Web Bots'] + '</a></labels><br>\n'
 
         cw_lists_str = ''
         for name, _ in cw_lists.items():
