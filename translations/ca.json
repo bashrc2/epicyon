@@ -516,5 +516,6 @@
     "Show who repeated this post": "Mostra qui ha repetit aquesta publicació",
     "Repeated by": "Repetit per",
     "Register": "Registra't",
-    "Web Crawlers Allowed": "Es permeten rastrejadors web"
+    "Web Bots Allowed": "Bots web permesos",
+    "Known Web Bots": "Bots web coneguts"
 }

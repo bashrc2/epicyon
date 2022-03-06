@@ -516,5 +516,6 @@
     "Show who repeated this post": "Dangoswch pwy ailadroddodd y post hwn",
     "Repeated by": "Ailadrodd gan",
     "Register": "Cofrestrwch",
-    "Web Crawlers Allowed": "Caniatáu Ymlusgwyr Gwe"
+    "Web Bots Allowed": "Web Bots a Ganiateir",
+    "Known Web Bots": "Web Bots Hysbys"
 }

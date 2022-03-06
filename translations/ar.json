@@ -516,5 +516,6 @@
     "Show who repeated this post": "أظهر من كرر هذا المنصب",
     "Repeated by": "يتكرر بواسطة",
     "Register": "يسجل",
-    "Web Crawlers Allowed": "برامج زحف الويب المسموح بها"
+    "Web Bots Allowed": "مسموح روبوتات الويب",
+    "Known Web Bots": "برامج روبوت الويب المعروفة"
 }

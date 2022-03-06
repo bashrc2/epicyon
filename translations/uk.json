@@ -516,5 +516,6 @@
     "Show who repeated this post": "Покажіть, хто повторив цей пост",
     "Repeated by": "Повторюється за",
     "Register": "Реєстрація",
-    "Web Crawlers Allowed": "Веб-сканери дозволені"
+    "Web Bots Allowed": "Веб-боти дозволені",
+    "Known Web Bots": "Відомі веб-боти"
 }

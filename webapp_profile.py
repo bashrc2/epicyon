@@ -1814,9 +1814,13 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                 crawlers_allowed_str += '\n'
             crawlers_allowed_str += uagent
         edit_profile_form += \
-            edit_text_area(translate['Web Crawlers Allowed'],
+            edit_text_area(translate['Web Bots Allowed'],
                            'crawlersAllowedStr', crawlers_allowed_str,
                            200, '', False)
+        edit_profile_form += \
+            '<label class="labels">' + \
+            '<a href="/users/' + nickname + '/bots.txt">' + \
+            translate['Known Web Bots'] + '</a></labels>\n'
 
         cw_lists_str = ''
         for name, _ in cw_lists.items():

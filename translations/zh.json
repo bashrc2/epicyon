@@ -516,5 +516,6 @@
     "Show who repeated this post": "显示谁重复了这篇文章",
     "Repeated by": "重复",
     "Register": "登记",
-    "Web Crawlers Allowed": "允许网络爬虫"
+    "Web Bots Allowed": "允许网络机器人",
+    "Known Web Bots": "已知的网络机器人"
 }

@@ -14187,6 +14187,24 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', 'isAuthorized',
                             self.server.debug)
 
+        if authorized and self.path.endswith('/bots.txt'):
+            known_bots_str = ''
+            for bot_name in self.server.known_bots:
+                known_bots_str += bot_name + '\n'
+            # TODO
+            msg = known_bots_str.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/plain; charset=utf-8',
+                              msglen, None, calling_domain, True)
+            self._write(msg)
+            if self.server.debug:
+                print('Sent known bots: ' +
+                      self.server.path + ' ' + calling_domain)
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', 'get_known_bots',
+                                self.server.debug)
+            return
+
         # shared items catalog for this instance
         # this is only accessible to instance members or to
         # other instances which present an authorization token

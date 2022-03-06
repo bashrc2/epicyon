@@ -516,5 +516,6 @@
     "Show who repeated this post": "Show who repeated this post",
     "Repeated by": "Repeated by",
     "Register": "Register",
-    "Web Crawlers Allowed": "Web Crawlers Allowed"
+    "Web Bots Allowed": "Web Bots Allowed",
+    "Known Web Bots": "Known Web Bots"
 }

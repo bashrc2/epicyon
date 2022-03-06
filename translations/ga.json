@@ -516,5 +516,6 @@
     "Show who repeated this post": "Taispeáin cé a rinne an postáil seo arís",
     "Repeated by": "Arís agus arís eile ag",
     "Register": "Clár",
-    "Web Crawlers Allowed": "Crawlers Gréasáin Ceadaithe"
+    "Web Bots Allowed": "Róbónna Gréasáin Ceadaithe",
+    "Known Web Bots": "Róbónna Gréasáin Aitheanta"
 }
