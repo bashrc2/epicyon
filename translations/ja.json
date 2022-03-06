@@ -515,5 +515,6 @@
     "Show who liked this post": "この投稿を高く評価した人を表示する",
     "Show who repeated this post": "この投稿を繰り返した人を表示する",
     "Repeated by": "によって繰り返される",
-    "Register": "登録"
+    "Register": "登録",
+    "Web Crawlers Allowed": "許可されるWebクローラー"
 }

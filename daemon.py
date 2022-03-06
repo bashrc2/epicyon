@@ -6689,6 +6689,29 @@ class PubServer(BaseHTTPRequestHandler):
                             set_config_param(base_dir, 'userAgentsBlocked',
                                              user_agents_blocked_str)
 
+                        # save allowed web crawlers
+                        crawlers_allowed = []
+                        if fields.get('crawlersAllowedStr'):
+                            crawlers_allowed_str = \
+                                fields['crawlersAllowedStr']
+                            crawlers_allowed_list = \
+                                crawlers_allowed_str.split('\n')
+                            for uagent in crawlers_allowed_list:
+                                if uagent in crawlers_allowed:
+                                    continue
+                                crawlers_allowed.append(uagent.strip())
+                        if str(self.server.crawlers_allowed) != \
+                           str(crawlers_allowed):
+                            self.server.crawlers_allowed = \
+                                crawlers_allowed
+                            crawlers_allowed_str = ''
+                            for uagent in crawlers_allowed:
+                                if crawlers_allowed_str:
+                                    crawlers_allowed_str += ','
+                                crawlers_allowed_str += uagent
+                            set_config_param(base_dir, 'crawlersAllowed',
+                                             crawlers_allowed_str)
+
                         # save peertube instances list
                         peertube_instances_file = \
                             base_dir + '/accounts/peertube.txt'
@@ -13733,6 +13756,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     city,
                                     self.server.user_agents_blocked,
+                                    self.server.crawlers_allowed,
                                     access_keys,
                                     default_reply_interval_hrs,
                                     self.server.cw_lists,
