@@ -378,6 +378,7 @@ from fitnessFunctions import sorted_watch_points
 from fitnessFunctions import html_watch_points_graph
 from siteactive import referer_is_active
 from webapp_likers import html_likers_of_post
+from crawlers import update_known_crawlers
 import os
 
 
@@ -417,36 +418,6 @@ def save_domain_qrcode(base_dir: str, http_prefix: str,
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
-
-    def _update_known_crawlers(self, ua_str: str) -> None:
-        """Updates a dictionary of known crawlers accessing nodeinfo
-        or the masto API
-        """
-        if not ua_str:
-            return
-
-        curr_time = int(time.time())
-        if self.server.known_crawlers.get(ua_str):
-            self.server.known_crawlers[ua_str]['hits'] += 1
-            self.server.known_crawlers[ua_str]['lastseen'] = curr_time
-        else:
-            self.server.known_crawlers[ua_str] = {
-                "lastseen": curr_time,
-                "hits": 1
-            }
-
-        if curr_time - self.server.last_known_crawler >= 30:
-            # remove any old observations
-            remove_crawlers = []
-            for uagent, item in self.server.known_crawlers.items():
-                if curr_time - item['lastseen'] >= 60 * 60 * 24 * 30:
-                    remove_crawlers.append(uagent)
-            for uagent in remove_crawlers:
-                del self.server.known_crawlers[uagent]
-            # save the list of crawlers
-            save_json(self.server.known_crawlers,
-                      self.server.base_dir + '/accounts/knownCrawlers.json')
-        self.server.last_known_crawler = curr_time
 
     def _get_instance_url(self, calling_domain: str) -> str:
         """Returns the URL for this instance
@@ -1115,7 +1086,8 @@ class PubServer(BaseHTTPRequestHandler):
                       show_node_info_accounts: bool,
                       referer_domain: str,
                       debug: bool,
-                      calling_site_timeout: int) -> bool:
+                      calling_site_timeout: int,
+                      known_crawlers: {}) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -1171,7 +1143,12 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
         print('mastodon api v1: referer ' + referer_domain)
-        self._update_known_crawlers(ua_str)
+        crawl_time = \
+            update_known_crawlers(ua_str, base_dir,
+                                  self.server.known_crawlers,
+                                  self.server.last_known_crawler)
+        if crawl_time is not None:
+            self.server.last_known_crawler = crawl_time
 
         broch_mode = broch_mode_is_active(base_dir)
         send_json, send_json_str = \
@@ -1229,14 +1206,16 @@ class PubServer(BaseHTTPRequestHandler):
                    project_version: str,
                    custom_emoji: [],
                    show_node_info_accounts: bool,
-                   referer_domain: str, debug: bool) -> bool:
+                   referer_domain: str, debug: bool,
+                   known_crawlers: {}) -> bool:
         return self._masto_api_v1(path, calling_domain, ua_str, authorized,
                                   http_prefix, base_dir, nickname, domain,
                                   domain_full, onion_domain, i2p_domain,
                                   translate, registration, system_language,
                                   project_version, custom_emoji,
                                   show_node_info_accounts,
-                                  referer_domain, debug, 5)
+                                  referer_domain, debug, 5,
+                                  known_crawlers)
 
     def _show_vcard(self, base_dir: str, path: str, calling_domain: str,
                     referer_domain: str, domain: str, debug: bool) -> bool:
@@ -1349,7 +1328,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
-        self._update_known_crawlers(ua_str)
+        crawl_time = \
+            update_known_crawlers(ua_str,
+                                  self.server.base_dir,
+                                  self.server.known_crawlers,
+                                  self.server.last_known_crawler)
+        if crawl_time is not None:
+            self.server.last_known_crawler = crawl_time
 
         # If we are in broch mode then don't show potentially
         # sensitive metadata.
@@ -14430,7 +14415,8 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.custom_emoji,
                            self.server.show_node_info_accounts,
                            referer_domain,
-                           self.server.debug):
+                           self.server.debug,
+                           self.server.known_crawlers):
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
