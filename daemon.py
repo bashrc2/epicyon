@@ -380,7 +380,7 @@ from siteactive import referer_is_active
 from webapp_likers import html_likers_of_post
 from crawlers import update_known_crawlers
 from crawlers import blocked_user_agent
-from crawlers import load_known_web_crawlers
+from crawlers import load_known_web_bots
 import os
 
 
@@ -14010,7 +14010,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.blocked_cache,
                                    self.server.blocked_cache_update_secs,
                                    self.server.crawlers_allowed,
-                                   self.server.known_crawlers)
+                                   self.server.known_bots)
             if block:
                 self._400()
                 return
@@ -18553,7 +18553,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.blocked_cache,
                                self.server.blocked_cache_update_secs,
                                self.server.crawlers_allowed,
-                               self.server.known_crawlers)
+                               self.server.known_bots)
         if block:
             self._400()
             self.server.postreq_busy = False
@@ -19670,7 +19670,7 @@ def run_daemon(crawlers_allowed: [],
     httpd.crawlers_allowed = crawlers_allowed
 
     # list of web crawlers known to the system
-    httpd.known_crawlers = load_known_web_crawlers(base_dir)
+    httpd.known_bots = load_known_web_bots(base_dir)
 
     httpd.unit_test = unit_test
     httpd.allow_local_network_access = allow_local_network_access
