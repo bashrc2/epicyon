@@ -1820,7 +1820,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_profile_form += \
             '<label class="labels">' + \
             '<a href="/users/' + nickname + '/bots.txt">' + \
-            translate['Known Web Bots'] + '</a></labels>\n'
+            translate['Known Web Bots'] + '</a></labels><br>\n'
 
         cw_lists_str = ''
         for name, _ in cw_lists.items():
