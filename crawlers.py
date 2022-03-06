@@ -55,7 +55,7 @@ def update_known_crawlers(ua_str: str,
 def load_known_web_bots(base_dir: str) -> []:
     """Returns a list of known web bots
     """
-    known_bots_filename = base_dir + '/accounts/known_web_bots.txt'
+    known_bots_filename = base_dir + '/accounts/knownBots.txt'
     if not os.path.isfile(known_bots_filename):
         return []
     crawlers_str = None
@@ -83,7 +83,7 @@ def load_known_web_bots(base_dir: str) -> []:
 def _save_known_web_bots(base_dir: str, known_bots: []) -> bool:
     """Saves a list of known web bots
     """
-    known_bots_filename = base_dir + '/accounts/known_web_bots.txt'
+    known_bots_filename = base_dir + '/accounts/knownBots.txt'
     known_bots_str = ''
     for crawler in known_bots:
         known_bots_str += crawler.strip() + '\n'
