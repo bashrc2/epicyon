@@ -378,6 +378,8 @@ from fitnessFunctions import sorted_watch_points
 from fitnessFunctions import html_watch_points_graph
 from siteactive import referer_is_active
 from webapp_likers import html_likers_of_post
+from crawlers import update_known_crawlers
+from crawlers import blocked_user_agent
 import os
 
 
@@ -417,36 +419,6 @@ def save_domain_qrcode(base_dir: str, http_prefix: str,
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
-
-    def _update_known_crawlers(self, ua_str: str) -> None:
-        """Updates a dictionary of known crawlers accessing nodeinfo
-        or the masto API
-        """
-        if not ua_str:
-            return
-
-        curr_time = int(time.time())
-        if self.server.known_crawlers.get(ua_str):
-            self.server.known_crawlers[ua_str]['hits'] += 1
-            self.server.known_crawlers[ua_str]['lastseen'] = curr_time
-        else:
-            self.server.known_crawlers[ua_str] = {
-                "lastseen": curr_time,
-                "hits": 1
-            }
-
-        if curr_time - self.server.last_known_crawler >= 30:
-            # remove any old observations
-            remove_crawlers = []
-            for uagent, item in self.server.known_crawlers.items():
-                if curr_time - item['lastseen'] >= 60 * 60 * 24 * 30:
-                    remove_crawlers.append(uagent)
-            for uagent in remove_crawlers:
-                del self.server.known_crawlers[uagent]
-            # save the list of crawlers
-            save_json(self.server.known_crawlers,
-                      self.server.base_dir + '/accounts/knownCrawlers.json')
-        self.server.last_known_crawler = curr_time
 
     def _get_instance_url(self, calling_domain: str) -> str:
         """Returns the URL for this instance
@@ -588,65 +560,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('ERROR: unable to post vote to outbox')
         else:
             print('ERROR: unable to create vote')
-
-    def _blocked_user_agent(self, calling_domain: str, agent_str: str) -> bool:
-        """Should a GET or POST be blocked based upon its user agent?
-        """
-        if not agent_str:
-            return False
-
-        agent_str_lower = agent_str.lower()
-        default_agent_blocks = [
-            'fedilist'
-        ]
-        for ua_block in default_agent_blocks:
-            if ua_block in agent_str_lower:
-                print('Blocked User agent: ' + ua_block)
-                return True
-
-        agent_domain = None
-
-        if agent_str:
-            # is this a web crawler? If so the block it
-            if 'bot/' in agent_str_lower or 'bot-' in agent_str_lower:
-                if self.server.news_instance:
-                    return False
-                print('Blocked Crawler: ' + agent_str)
-                return True
-            # get domain name from User-Agent
-            agent_domain = user_agent_domain(agent_str, self.server.debug)
-        else:
-            # no User-Agent header is present
-            return True
-
-        # is the User-Agent type blocked? eg. "Mastodon"
-        if self.server.user_agents_blocked:
-            blocked_ua = False
-            for agent_name in self.server.user_agents_blocked:
-                if agent_name in agent_str:
-                    blocked_ua = True
-                    break
-            if blocked_ua:
-                return True
-
-        if not agent_domain:
-            return False
-
-        # is the User-Agent domain blocked
-        blocked_ua = False
-        if not agent_domain.startswith(calling_domain):
-            self.server.blocked_cache_last_updated = \
-                update_blocked_cache(self.server.base_dir,
-                                     self.server.blocked_cache,
-                                     self.server.blocked_cache_last_updated,
-                                     self.server.blocked_cache_update_secs)
-
-            blocked_ua = is_blocked_domain(self.server.base_dir, agent_domain,
-                                           self.server.blocked_cache)
-            # if self.server.debug:
-            if blocked_ua:
-                print('Blocked User agent: ' + agent_domain)
-        return blocked_ua
 
     def _request_csv(self) -> bool:
         """Should a csv response be given?
@@ -1115,7 +1028,8 @@ class PubServer(BaseHTTPRequestHandler):
                       show_node_info_accounts: bool,
                       referer_domain: str,
                       debug: bool,
-                      calling_site_timeout: int) -> bool:
+                      calling_site_timeout: int,
+                      known_crawlers: {}) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -1171,7 +1085,12 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
         print('mastodon api v1: referer ' + referer_domain)
-        self._update_known_crawlers(ua_str)
+        crawl_time = \
+            update_known_crawlers(ua_str, base_dir,
+                                  self.server.known_crawlers,
+                                  self.server.last_known_crawler)
+        if crawl_time is not None:
+            self.server.last_known_crawler = crawl_time
 
         broch_mode = broch_mode_is_active(base_dir)
         send_json, send_json_str = \
@@ -1229,14 +1148,16 @@ class PubServer(BaseHTTPRequestHandler):
                    project_version: str,
                    custom_emoji: [],
                    show_node_info_accounts: bool,
-                   referer_domain: str, debug: bool) -> bool:
+                   referer_domain: str, debug: bool,
+                   known_crawlers: {}) -> bool:
         return self._masto_api_v1(path, calling_domain, ua_str, authorized,
                                   http_prefix, base_dir, nickname, domain,
                                   domain_full, onion_domain, i2p_domain,
                                   translate, registration, system_language,
                                   project_version, custom_emoji,
                                   show_node_info_accounts,
-                                  referer_domain, debug, 5)
+                                  referer_domain, debug, 5,
+                                  known_crawlers)
 
     def _show_vcard(self, base_dir: str, path: str, calling_domain: str,
                     referer_domain: str, domain: str, debug: bool) -> bool:
@@ -1349,7 +1270,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
-        self._update_known_crawlers(ua_str)
+        crawl_time = \
+            update_known_crawlers(ua_str,
+                                  self.server.base_dir,
+                                  self.server.known_crawlers,
+                                  self.server.last_known_crawler)
+        if crawl_time is not None:
+            self.server.last_known_crawler = crawl_time
 
         # If we are in broch mode then don't show potentially
         # sensitive metadata.
@@ -6761,6 +6688,29 @@ class PubServer(BaseHTTPRequestHandler):
                                 user_agents_blocked_str += uagent
                             set_config_param(base_dir, 'userAgentsBlocked',
                                              user_agents_blocked_str)
+
+                        # save allowed web crawlers
+                        crawlers_allowed = []
+                        if fields.get('crawlersAllowedStr'):
+                            crawlers_allowed_str = \
+                                fields['crawlersAllowedStr']
+                            crawlers_allowed_list = \
+                                crawlers_allowed_str.split('\n')
+                            for uagent in crawlers_allowed_list:
+                                if uagent in crawlers_allowed:
+                                    continue
+                                crawlers_allowed.append(uagent.strip())
+                        if str(self.server.crawlers_allowed) != \
+                           str(crawlers_allowed):
+                            self.server.crawlers_allowed = \
+                                crawlers_allowed
+                            crawlers_allowed_str = ''
+                            for uagent in crawlers_allowed:
+                                if crawlers_allowed_str:
+                                    crawlers_allowed_str += ','
+                                crawlers_allowed_str += uagent
+                            set_config_param(base_dir, 'crawlersAllowed',
+                                             crawlers_allowed_str)
 
                         # save peertube instances list
                         peertube_instances_file = \
@@ -13806,6 +13756,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     city,
                                     self.server.user_agents_blocked,
+                                    self.server.crawlers_allowed,
                                     access_keys,
                                     default_reply_interval_hrs,
                                     self.server.cw_lists,
@@ -14048,7 +13999,17 @@ class PubServer(BaseHTTPRequestHandler):
         ua_str = self._get_user_agent()
 
         if not self._permitted_crawler_path(self.path):
-            if self._blocked_user_agent(calling_domain, ua_str):
+            block, self.server.blocked_cache_last_updated = \
+                blocked_user_agent(calling_domain, ua_str,
+                                   self.server.news_instance,
+                                   self.server.debug,
+                                   self.server.user_agents_blocked,
+                                   self.server.blocked_cache_last_updated,
+                                   self.server.base_dir,
+                                   self.server.blocked_cache,
+                                   self.server.blocked_cache_update_secs,
+                                   self.server.crawlers_allowed)
+            if block:
                 self._400()
                 return
 
@@ -14430,7 +14391,8 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.custom_emoji,
                            self.server.show_node_info_accounts,
                            referer_domain,
-                           self.server.debug):
+                           self.server.debug,
+                           self.server.known_crawlers):
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -18579,7 +18541,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         ua_str = self._get_user_agent()
 
-        if self._blocked_user_agent(calling_domain, ua_str):
+        block, self.server.blocked_cache_last_updated = \
+            blocked_user_agent(calling_domain, ua_str,
+                               self.server.news_instance,
+                               self.server.debug,
+                               self.server.user_agents_blocked,
+                               self.server.blocked_cache_last_updated,
+                               self.server.base_dir,
+                               self.server.blocked_cache,
+                               self.server.blocked_cache_update_secs,
+                               self.server.crawlers_allowed)
+        if block:
             self._400()
             self.server.postreq_busy = False
             return
@@ -19511,7 +19483,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(dyslexic_font: bool,
+def run_daemon(crawlers_allowed: [],
+               dyslexic_font: bool,
                content_license_url: str,
                lists_enabled: str,
                default_reply_interval_hrs: int,
@@ -19689,6 +19662,9 @@ def run_daemon(dyslexic_font: bool,
 
     # list of blocked user agent types within the User-Agent header
     httpd.user_agents_blocked = user_agents_blocked
+
+    # list of crawler bots permitted within the User-Agent header
+    httpd.crawlers_allowed = crawlers_allowed
 
     httpd.unit_test = unit_test
     httpd.allow_local_network_access = allow_local_network_access

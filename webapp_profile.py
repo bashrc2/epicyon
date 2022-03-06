@@ -1631,6 +1631,7 @@ def _html_edit_profile_shared_items(base_dir: str, nickname: str, domain: str,
 
 def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                                  user_agents_blocked: str,
+                                 crawlers_allowed: str,
                                  translate: {}, reply_interval_hours: int,
                                  cw_lists: {}, lists_enabled: str) -> str:
     """Filtering and blocking section of edit profile screen
@@ -1805,6 +1806,16 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_profile_form += \
             edit_text_area(translate['Blocked User Agents'],
                            'userAgentsBlockedStr', user_agents_blocked_str,
+                           200, '', False)
+
+        crawlers_allowed_str = ''
+        for uagent in crawlers_allowed:
+            if crawlers_allowed_str:
+                crawlers_allowed_str += '\n'
+            crawlers_allowed_str += uagent
+        edit_profile_form += \
+            edit_text_area(translate['Web Crawlers Allowed'],
+                           'crawlersAllowedStr', crawlers_allowed_str,
                            200, '', False)
 
         cw_lists_str = ''
@@ -2137,7 +2148,8 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
                       default_timeline: str, theme: str,
                       peertube_instances: [],
                       text_mode_banner: str, city: str,
-                      user_agents_blocked: str,
+                      user_agents_blocked: [],
+                      crawlers_allowed: [],
                       access_keys: {},
                       default_reply_interval_hrs: int,
                       cw_lists: {}, lists_enabled: str) -> str:
@@ -2354,8 +2366,8 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
                                  default_reply_interval_hrs)
     edit_profile_form += \
         _html_edit_profile_filtering(base_dir, nickname, domain,
-                                     user_agents_blocked, translate,
-                                     reply_interval_hours,
+                                     user_agents_blocked, crawlers_allowed,
+                                     translate, reply_interval_hours,
                                      cw_lists, lists_enabled)
 
     # git projects section

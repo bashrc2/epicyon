@@ -141,6 +141,10 @@ parser.add_argument('--lists_enabled', type=str,
 parser.add_argument('--userAgentBlocks', type=str,
                     default=None,
                     help='List of blocked user agents, separated by commas')
+parser.add_argument('--crawlersAllowed', type=str,
+                    default=None,
+                    help='List of permitted web crawler user agents, ' +
+                    'separated by commas')
 parser.add_argument('--libretranslate', dest='libretranslateUrl', type=str,
                     default=None,
                     help='URL for LibreTranslate service')
@@ -3301,8 +3305,20 @@ else:
         get_config_param(base_dir, 'userAgentsBlocked')
 if user_agents_blocked_str:
     agent_blocks_list = user_agents_blocked_str.split(',')
-    for agentBlockStr in agent_blocks_list:
-        user_agents_blocked.append(agentBlockStr.strip())
+    for user_agents_blocked_str2 in agent_blocks_list:
+        user_agents_blocked.append(user_agents_blocked_str2.strip())
+
+crawlers_allowed = []
+if args.crawlersAllowed:
+    crawlers_allowed_str = args.crawlersAllowed
+    set_config_param(base_dir, 'crawlersAllowed', crawlers_allowed_str)
+else:
+    crawlers_allowed_str = \
+        get_config_param(base_dir, 'crawlersAllowed')
+if crawlers_allowed_str:
+    crawlers_allowed_list = crawlers_allowed_str.split(',')
+    for crawlers_allowed_str2 in crawlers_allowed_list:
+        crawlers_allowed.append(crawlers_allowed_str2.strip())
 
 lists_enabled = ''
 if args.lists_enabled:
@@ -3365,7 +3381,8 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    run_daemon(args.dyslexic_font,
+    run_daemon(crawlers_allowed,
+               args.dyslexic_font,
                content_license_url,
                lists_enabled,
                args.default_reply_interval_hrs,
