@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import os
 import time
 from utils import save_json
 from utils import user_agent_domain
@@ -51,6 +52,51 @@ def update_known_crawlers(ua_str: str,
     return curr_time
 
 
+def load_known_web_bots(base_dir: str) -> []:
+    """Returns a list of known web bots
+    """
+    known_bots_filename = base_dir + '/accounts/knownBots.txt'
+    if not os.path.isfile(known_bots_filename):
+        return []
+    crawlers_str = None
+    try:
+        with open(known_bots_filename, 'r') as fp_crawlers:
+            crawlers_str = fp_crawlers.read()
+    except OSError:
+        print('EX: unable to load web bots from ' +
+              known_bots_filename)
+    if not crawlers_str:
+        return []
+    known_bots = []
+    crawlers_list = crawlers_str.split('\n')
+    for crawler in crawlers_list:
+        if not crawler:
+            continue
+        crawler = crawler.replace('\n', '').strip()
+        if not crawler:
+            continue
+        if crawler not in known_bots:
+            known_bots.append(crawler)
+    return known_bots
+
+
+def _save_known_web_bots(base_dir: str, known_bots: []) -> bool:
+    """Saves a list of known web bots
+    """
+    known_bots_filename = base_dir + '/accounts/knownBots.txt'
+    known_bots_str = ''
+    for crawler in known_bots:
+        known_bots_str += crawler.strip() + '\n'
+    try:
+        with open(known_bots_filename, 'w+') as fp_crawlers:
+            fp_crawlers.write(known_bots_str)
+    except OSError:
+        print("EX: unable to save known web bots to " +
+              known_bots_filename)
+        return False
+    return True
+
+
 def blocked_user_agent(calling_domain: str, agent_str: str,
                        news_instance: bool, debug: bool,
                        user_agents_blocked: [],
@@ -58,7 +104,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                        base_dir: str,
                        blocked_cache: [],
                        blocked_cache_update_secs: int,
-                       crawlers_allowed: []):
+                       crawlers_allowed: [],
+                       known_bots: []):
     """Should a GET or POST be blocked based upon its user agent?
     """
     if not agent_str:
@@ -73,8 +120,13 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
     agent_domain = None
 
     if agent_str:
-        # is this a web crawler? If so the block it
+        # is this a web crawler? If so then block it by default
+        # unless this is a news instance or if it is in the allowed list
         if 'bot/' in agent_str_lower or 'bot-' in agent_str_lower:
+            if agent_str_lower not in known_bots:
+                known_bots.append(agent_str_lower)
+                known_bots.sort()
+                _save_known_web_bots(base_dir, known_bots)
             # if this is a news instance then we want it
             # to be indexed by search engines
             if news_instance:

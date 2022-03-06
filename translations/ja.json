@@ -516,5 +516,6 @@
     "Show who repeated this post": "この投稿を繰り返した人を表示する",
     "Repeated by": "によって繰り返される",
     "Register": "登録",
-    "Web Crawlers Allowed": "許可されるWebクローラー"
+    "Web Bots Allowed": "許可されたWebボット",
+    "Known Search Bots": "既知のWeb検索ボット"
 }

@@ -1808,13 +1808,17 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                            'userAgentsBlockedStr', user_agents_blocked_str,
                            200, '', False)
 
+        edit_profile_form += \
+            '<a href="/users/' + nickname + '/bots.txt">' + \
+            translate['Known Search Bots'] + '</a><br>\n'
+
         crawlers_allowed_str = ''
         for uagent in crawlers_allowed:
             if crawlers_allowed_str:
                 crawlers_allowed_str += '\n'
             crawlers_allowed_str += uagent
         edit_profile_form += \
-            edit_text_area(translate['Web Crawlers Allowed'],
+            edit_text_area(translate['Web Bots Allowed'],
                            'crawlersAllowedStr', crawlers_allowed_str,
                            200, '', False)
 

@@ -380,6 +380,7 @@ from siteactive import referer_is_active
 from webapp_likers import html_likers_of_post
 from crawlers import update_known_crawlers
 from crawlers import blocked_user_agent
+from crawlers import load_known_web_bots
 import os
 
 
@@ -14008,7 +14009,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.base_dir,
                                    self.server.blocked_cache,
                                    self.server.blocked_cache_update_secs,
-                                   self.server.crawlers_allowed)
+                                   self.server.crawlers_allowed,
+                                   self.server.known_bots)
             if block:
                 self._400()
                 return
@@ -14184,6 +14186,24 @@ class PubServer(BaseHTTPRequestHandler):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', 'isAuthorized',
                             self.server.debug)
+
+        if authorized and self.path.endswith('/bots.txt'):
+            known_bots_str = ''
+            for bot_name in self.server.known_bots:
+                known_bots_str += bot_name + '\n'
+            # TODO
+            msg = known_bots_str.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/plain; charset=utf-8',
+                              msglen, None, calling_domain, True)
+            self._write(msg)
+            if self.server.debug:
+                print('Sent known bots: ' +
+                      self.server.path + ' ' + calling_domain)
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', 'get_known_bots',
+                                self.server.debug)
+            return
 
         # shared items catalog for this instance
         # this is only accessible to instance members or to
@@ -18550,7 +18570,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.base_dir,
                                self.server.blocked_cache,
                                self.server.blocked_cache_update_secs,
-                               self.server.crawlers_allowed)
+                               self.server.crawlers_allowed,
+                               self.server.known_bots)
         if block:
             self._400()
             self.server.postreq_busy = False
@@ -19665,6 +19686,9 @@ def run_daemon(crawlers_allowed: [],
 
     # list of crawler bots permitted within the User-Agent header
     httpd.crawlers_allowed = crawlers_allowed
+
+    # list of web crawlers known to the system
+    httpd.known_bots = load_known_web_bots(base_dir)
 
     httpd.unit_test = unit_test
     httpd.allow_local_network_access = allow_local_network_access

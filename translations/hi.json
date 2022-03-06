@@ -516,5 +516,6 @@
     "Show who repeated this post": "दिखाएं कि इस पोस्ट को किसने दोहराया",
     "Repeated by": "द्वारा दोहराया गया",
     "Register": "रजिस्टर करें",
-    "Web Crawlers Allowed": "वेब क्रॉलर की अनुमति है"
+    "Web Bots Allowed": "वेब बॉट्स की अनुमति है",
+    "Known Search Bots": "ज्ञात वेब खोज बॉट्स"
 }

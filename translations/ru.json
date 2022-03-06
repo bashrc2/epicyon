@@ -516,5 +516,6 @@
     "Show who repeated this post": "Показать, кто повторил этот пост",
     "Repeated by": "Повторено",
     "Register": "регистр",
-    "Web Crawlers Allowed": "Веб-сканеры разрешены"
+    "Web Bots Allowed": "Веб-боты разрешены",
+    "Known Search Bots": "Известные боты веб-поиска"
 }
