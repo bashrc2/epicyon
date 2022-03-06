@@ -379,6 +379,7 @@ from fitnessFunctions import html_watch_points_graph
 from siteactive import referer_is_active
 from webapp_likers import html_likers_of_post
 from crawlers import update_known_crawlers
+from crawlers import blocked_user_agent
 import os
 
 
@@ -559,65 +560,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('ERROR: unable to post vote to outbox')
         else:
             print('ERROR: unable to create vote')
-
-    def _blocked_user_agent(self, calling_domain: str, agent_str: str) -> bool:
-        """Should a GET or POST be blocked based upon its user agent?
-        """
-        if not agent_str:
-            return False
-
-        agent_str_lower = agent_str.lower()
-        default_agent_blocks = [
-            'fedilist'
-        ]
-        for ua_block in default_agent_blocks:
-            if ua_block in agent_str_lower:
-                print('Blocked User agent: ' + ua_block)
-                return True
-
-        agent_domain = None
-
-        if agent_str:
-            # is this a web crawler? If so the block it
-            if 'bot/' in agent_str_lower or 'bot-' in agent_str_lower:
-                if self.server.news_instance:
-                    return False
-                print('Blocked Crawler: ' + agent_str)
-                return True
-            # get domain name from User-Agent
-            agent_domain = user_agent_domain(agent_str, self.server.debug)
-        else:
-            # no User-Agent header is present
-            return True
-
-        # is the User-Agent type blocked? eg. "Mastodon"
-        if self.server.user_agents_blocked:
-            blocked_ua = False
-            for agent_name in self.server.user_agents_blocked:
-                if agent_name in agent_str:
-                    blocked_ua = True
-                    break
-            if blocked_ua:
-                return True
-
-        if not agent_domain:
-            return False
-
-        # is the User-Agent domain blocked
-        blocked_ua = False
-        if not agent_domain.startswith(calling_domain):
-            self.server.blocked_cache_last_updated = \
-                update_blocked_cache(self.server.base_dir,
-                                     self.server.blocked_cache,
-                                     self.server.blocked_cache_last_updated,
-                                     self.server.blocked_cache_update_secs)
-
-            blocked_ua = is_blocked_domain(self.server.base_dir, agent_domain,
-                                           self.server.blocked_cache)
-            # if self.server.debug:
-            if blocked_ua:
-                print('Blocked User agent: ' + agent_domain)
-        return blocked_ua
 
     def _request_csv(self) -> bool:
         """Should a csv response be given?
@@ -14033,7 +13975,16 @@ class PubServer(BaseHTTPRequestHandler):
         ua_str = self._get_user_agent()
 
         if not self._permitted_crawler_path(self.path):
-            if self._blocked_user_agent(calling_domain, ua_str):
+            block, self.server.blocked_cache_last_updated = \
+                blocked_user_agent(calling_domain, ua_str,
+                                   self.server.news_instance,
+                                   self.server.debug,
+                                   self.server.user_agents_blocked,
+                                   self.server.blocked_cache_last_updated,
+                                   self.server.base_dir,
+                                   self.server.blocked_cache,
+                                   self.server.blocked_cache_update_secs)
+            if block:
                 self._400()
                 return
 
@@ -18565,7 +18516,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         ua_str = self._get_user_agent()
 
-        if self._blocked_user_agent(calling_domain, ua_str):
+        block, self.server.blocked_cache_last_updated = \
+            blocked_user_agent(calling_domain, ua_str,
+                               self.server.news_instance,
+                               self.server.debug,
+                               self.server.user_agents_blocked,
+                               self.server.blocked_cache_last_updated,
+                               self.server.base_dir,
+                               self.server.blocked_cache,
+                               self.server.blocked_cache_update_secs)
+        if block:
             self._400()
             self.server.postreq_busy = False
             return
