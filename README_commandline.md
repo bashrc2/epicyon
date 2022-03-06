@@ -388,3 +388,15 @@ The CalDav endpoint for an account is:
 ```bash
 yourdomain/calendars/yournick
 ```
+
+## Web Crawlers
+
+Having search engines index social media posts is not usually considered appropriate, since even if "public" they may contain personally identifiable information. If you are running a news instance then web crawlers will be permitted by the system, but otherwise by default they will be blocked.
+
+If you want to allow specific web crawlers then when running the daemon (typically with systemd) you can use the **crawlersAllowed** option. It can take a list of bot names, separated by commas. For example:
+
+```bash
+--crawlersAllowed "googlebot, apple"
+```
+
+Typically web crawlers have names ending in "bot", but partial names can also be used.
