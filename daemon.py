@@ -13983,7 +13983,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.blocked_cache_last_updated,
                                    self.server.base_dir,
                                    self.server.blocked_cache,
-                                   self.server.blocked_cache_update_secs)
+                                   self.server.blocked_cache_update_secs,
+                                   self.server.crawlers_allowed)
             if block:
                 self._400()
                 return
@@ -18524,7 +18525,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.blocked_cache_last_updated,
                                self.server.base_dir,
                                self.server.blocked_cache,
-                               self.server.blocked_cache_update_secs)
+                               self.server.blocked_cache_update_secs,
+                               self.server.crawlers_allowed)
         if block:
             self._400()
             self.server.postreq_busy = False
@@ -19457,7 +19459,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(dyslexic_font: bool,
+def run_daemon(crawlers_allowed: [],
+               dyslexic_font: bool,
                content_license_url: str,
                lists_enabled: str,
                default_reply_interval_hrs: int,
@@ -19635,6 +19638,9 @@ def run_daemon(dyslexic_font: bool,
 
     # list of blocked user agent types within the User-Agent header
     httpd.user_agents_blocked = user_agents_blocked
+
+    # list of crawler bots permitted within the User-Agent header
+    httpd.crawlers_allowed = crawlers_allowed
 
     httpd.unit_test = unit_test
     httpd.allow_local_network_access = allow_local_network_access

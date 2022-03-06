@@ -822,8 +822,10 @@ def create_server_alice(path: str, domain: str, port: int,
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     dyslexic_font = False
+    crawlers_allowed = []
     print('Server running: Alice')
-    run_daemon(dyslexic_font,
+    run_daemon(crawlers_allowed,
+               dyslexic_font,
                content_license_url,
                lists_enabled, default_reply_interval_hrs,
                low_bandwidth, max_like_count,
@@ -975,8 +977,10 @@ def create_server_bob(path: str, domain: str, port: int,
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     dyslexic_font = False
+    crawlers_allowed = []
     print('Server running: Bob')
-    run_daemon(dyslexic_font,
+    run_daemon(crawlers_allowed,
+               dyslexic_font,
                content_license_url,
                lists_enabled, default_reply_interval_hrs,
                low_bandwidth, max_like_count,
@@ -1051,8 +1055,10 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     dyslexic_font = False
+    crawlers_allowed = []
     print('Server running: Eve')
-    run_daemon(dyslexic_font,
+    run_daemon(crawlers_allowed,
+               dyslexic_font,
                content_license_url,
                lists_enabled, default_reply_interval_hrs,
                low_bandwidth, max_like_count,
@@ -1129,8 +1135,10 @@ def create_server_group(path: str, domain: str, port: int,
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     dyslexic_font = False
+    crawlers_allowed = []
     print('Server running: Group')
-    run_daemon(dyslexic_font,
+    run_daemon(crawlers_allowed,
+               dyslexic_font,
                content_license_url,
                lists_enabled, default_reply_interval_hrs,
                low_bandwidth, max_like_count,
