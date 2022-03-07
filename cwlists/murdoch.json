@@ -1,6 +1,7 @@
 {
     "name": "Murdoch press",
     "warning": "Murdoch Press",
+    "description": "Articles will be slanted towards right wing talking points",
     "words": [],
     "domains": [
 	"api.news",
