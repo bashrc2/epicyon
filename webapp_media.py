@@ -55,7 +55,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('"' + video_site)[1]
         if '"' in url:
             url = url.split('"')[0]
-            if '/channel/' not in url:
+            if '/channel/' not in url and '/playlist' not in url:
                 url = url.replace('/watch?v=', '/embed/')
                 if '&' in url:
                     url = url.split('&')[0]
@@ -74,7 +74,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('"' + video_site)[1]
         if '"' in url:
             url = url.split('"')[0]
-            if '/channel/' not in url:
+            if '/channel/' not in url and '/playlist' not in url:
                 url = 'embed/' + url
                 if '&' in url:
                     url = url.split('&')[0]
