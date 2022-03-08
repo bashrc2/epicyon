@@ -126,8 +126,10 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
         contains_bot_string = False
         for bot_str in bot_strings:
             if bot_str in agent_str_lower:
-                contains_bot_string = True
-                break
+                if '://bot' not in agent_str_lower and \
+                   '://robot' not in agent_str_lower:
+                    contains_bot_string = True
+                    break
         if contains_bot_string:
             if agent_str_lower not in known_bots:
                 known_bots.append(agent_str_lower)
