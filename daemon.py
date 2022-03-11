@@ -3275,14 +3275,31 @@ class PubServer(BaseHTTPRequestHandler):
                       follower_nickname + ' to ' + following_actor)
                 if not self.server.signing_priv_key_pem:
                     print('Sending follow request with no signing key')
+
+                curr_domain = domain
+                curr_port = port
+                curr_http_prefix = http_prefix
+                if onion_domain:
+                    if following_domain.endswith('.onion'):
+                        curr_session = self.server.session_onion
+                        curr_domain = onion_domain
+                        curr_port = 80
+                        curr_http_prefix = 'http'
+                if i2p_domain:
+                    if following_domain.endswith('.i2p'):
+                        curr_session = self.server.session_i2p
+                        curr_domain = i2p_domain
+                        curr_port = 80
+                        curr_http_prefix = 'http'
+
                 send_follow_request(curr_session,
                                     base_dir, follower_nickname,
-                                    domain, port,
-                                    http_prefix,
+                                    domain, curr_domain, curr_port,
+                                    curr_http_prefix,
                                     following_nickname,
                                     following_domain,
                                     following_actor,
-                                    following_port, http_prefix,
+                                    following_port, curr_http_prefix,
                                     False, self.server.federation_list,
                                     self.server.send_threads,
                                     self.server.postLog,

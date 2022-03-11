@@ -1590,7 +1590,8 @@ def test_follow_between_servers(base_dir: str) -> None:
     signing_priv_key_pem = None
     send_result = \
         send_follow_request(session_alice, alice_dir,
-                            'alice', alice_domain, alice_port, http_prefix,
+                            'alice', alice_domain,
+                            alice_domain, alice_port, http_prefix,
                             'bob', bob_domain, bob_actor,
                             bob_port, http_prefix,
                             client_to_server, federation_list,
@@ -1810,7 +1811,8 @@ def test_shared_items_federation(base_dir: str) -> None:
     bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     send_result = \
         send_follow_request(session_alice, alice_dir,
-                            'alice', alice_domain, alice_port, http_prefix,
+                            'alice', alice_domain,
+                            alice_domain, alice_port, http_prefix,
                             'bob', bob_domain, bob_actor,
                             bob_port, http_prefix,
                             client_to_server, federation_list,
@@ -2261,7 +2263,8 @@ def test_group_follow(base_dir: str) -> None:
     signing_priv_key_pem = None
     send_result = \
         send_follow_request(session_alice, alice_dir,
-                            'alice', alice_domain, alice_port, http_prefix,
+                            'alice', alice_domain,
+                            alice_domain, alice_port, http_prefix,
                             'testgroup', testgroup_domain, testgroup_actor,
                             testgroupPort, http_prefix,
                             client_to_server, federation_list,
@@ -2338,7 +2341,8 @@ def test_group_follow(base_dir: str) -> None:
     signing_priv_key_pem = None
     send_result = \
         send_follow_request(session_bob, bob_dir,
-                            'bob', bob_domain, bob_port, http_prefix,
+                            'bob', bob_domain,
+                            bob_domain, bob_port, http_prefix,
                             'testgroup', testgroup_domain, testgroup_actor,
                             testgroupPort, http_prefix,
                             client_to_server, federation_list,

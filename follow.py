@@ -852,7 +852,8 @@ def followed_account_rejects(session, base_dir: str, http_prefix: str,
 
 
 def send_follow_request(session, base_dir: str,
-                        nickname: str, domain: str, port: int,
+                        nickname: str, domain: str,
+                        sender_domain: str, sender_port: int,
                         http_prefix: str,
                         follow_nickname: str, follow_domain: str,
                         followedActor: str,
@@ -870,7 +871,7 @@ def send_follow_request(session, base_dir: str,
         print('You are not permitted to follow the domain ' + follow_domain)
         return None
 
-    full_domain = get_full_domain(domain, port)
+    full_domain = get_full_domain(sender_domain, sender_port)
     follow_actor = local_actor_url(http_prefix, nickname, full_domain)
 
     request_domain = get_full_domain(follow_domain, followPort)
@@ -934,7 +935,7 @@ def send_follow_request(session, base_dir: str,
                                     follow_handle, debug)
 
     send_signed_json(new_follow_json, session, base_dir,
-                     nickname, domain, port,
+                     nickname, sender_domain, sender_port,
                      follow_nickname, follow_domain, followPort,
                      'https://www.w3.org/ns/activitystreams#Public',
                      http_prefix, True, client_to_server,
