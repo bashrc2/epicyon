@@ -625,8 +625,12 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
                           handle + ' does not exist')
         else:
             if debug:
-                print('DEBUG: ' + recipient + ' is not local to ' +
-                      domain_match)
+                if recipient.endswith('#Public'):
+                    print('DEBUG: #Public recipient is too non-specific. ' +
+                          recipient + ' ' + domain_match)
+                else:
+                    print('DEBUG: ' + recipient + ' is not local to ' +
+                          domain_match)
                 print(str(toList))
         if recipient.endswith('followers'):
             if debug:
