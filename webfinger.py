@@ -68,12 +68,12 @@ def webfinger_handle(session, handle: str, http_prefix: str,
     """Gets webfinger result for the given ActivityPub handle
     """
     if not session:
-        if debug:
-            print('WARN: No session specified for webfinger_handle')
+        print('WARN: No session specified for webfinger_handle')
         return None
 
     nickname, domain, _ = _parse_handle(handle)
     if not nickname:
+        print('WARN: No nickname found in handle ' + handle)
         return None
     wf_domain = remove_domain_port(domain)
 
@@ -123,14 +123,13 @@ def webfinger_handle(session, handle: str, http_prefix: str,
     if result:
         store_webfinger_in_cache(wf_handle, result, cached_webfingers)
     else:
-        if debug:
-            print("WARN: Unable to webfinger " + url + ' ' +
-                  'nickname: ' + str(nickname) + ' ' +
-                  'handle: ' + str(handle) + ' ' +
-                  'wf_handle: ' + str(wf_handle) + ' ' +
-                  'domain: ' + str(wf_domain) + ' ' +
-                  'headers: ' + str(hdr) + ' ' +
-                  'params: ' + str(par))
+        print("WARN: Unable to webfinger " + url + ' ' +
+              'nickname: ' + str(nickname) + ' ' +
+              'handle: ' + str(handle) + ' ' +
+              'wf_handle: ' + str(wf_handle) + ' ' +
+              'domain: ' + str(wf_domain) + ' ' +
+              'headers: ' + str(hdr) + ' ' +
+              'params: ' + str(par))
 
     return result
 
