@@ -1427,10 +1427,10 @@ def _detect_users_path(url: str) -> str:
     return '/users/'
 
 
-def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
+def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
                    debug: bool, quiet: bool,
                    signing_priv_key_pem: str,
-                   existingSession) -> ({}, {}):
+                   existing_session) -> ({}, {}):
     """Returns the actor json
     """
     if debug:
@@ -1513,8 +1513,8 @@ def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
             http_prefix = 'https'
         else:
             http_prefix = 'http'
-    if existingSession:
-        session = existingSession
+    if existing_session:
+        session = existing_session
     else:
         session = create_session(proxy_type)
     if nickname == 'inbox':
@@ -1541,11 +1541,12 @@ def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
         handle = nickname + '@' + domain
         wf_request = webfinger_handle(session, handle,
                                       http_prefix, cached_webfingers,
-                                      hostDomain, __version__, debug,
+                                      host_domain, __version__, debug,
                                       group_account, signing_priv_key_pem)
         if not wf_request:
             if not quiet:
-                print('get_actor_json Unable to webfinger ' + handle)
+                print('get_actor_json Unable to webfinger ' + handle +
+                      ' ' + http_prefix + ' proxy: ' + str(proxy_type))
             return None, None
         if not isinstance(wf_request, dict):
             if not quiet:
@@ -1600,7 +1601,7 @@ def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
         }
         person_json = \
             get_json(signing_priv_key_pem, session, person_url, as_header,
-                     None, debug, __version__, http_prefix, hostDomain,
+                     None, debug, __version__, http_prefix, host_domain,
                      20, quiet)
         if person_json:
             if not quiet:
