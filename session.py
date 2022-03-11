@@ -767,3 +767,48 @@ def get_method(method_name: str, xml_str: str,
                 print('EX: get_method failed, ' +
                       'connection was reset during get_vcard ' + str(ex))
     return None
+
+
+def get_session_for_domains(server, calling_domain: str, referer_domain: str):
+    """Returns the appropriate session for the given domains
+    """
+    if referer_domain is None:
+        referer_domain = ''
+
+    if '.onion:' in calling_domain or \
+       calling_domain.endswith('.onion') or \
+       '.onion:' in referer_domain or \
+       referer_domain.endswith('.onion'):
+        if not server.domain.endswith('.onion'):
+            if server.onion_domain and server.session_onion:
+                return server.session_onion, 'tor'
+    if '.i2p:' in calling_domain or \
+       calling_domain.endswith('.i2p') or \
+       '.i2p:' in referer_domain or \
+       referer_domain.endswith('.i2p'):
+        if not server.domain.endswith('.i2p'):
+            if server.i2p_domain and server.session_i2p:
+                return server.session_i2p, 'i2p'
+    return server.session, server.proxy_type
+
+
+def get_session_for_domain(server, referer_domain: str):
+    """Returns the appropriate session for the given domain
+    """
+    return get_session_for_domains(server, referer_domain, referer_domain)
+
+
+def set_session_for_sender(server, proxy_type: str, new_session) -> None:
+    """Sets the appropriate session for the given sender
+    """
+    if proxy_type == 'tor':
+        if not server.domain.endswith('.onion'):
+            if server.onion_domain and server.session_onion:
+                server.session_onion = new_session
+                return
+    if proxy_type == 'i2p':
+        if not server.domain.endswith('.i2p'):
+            if server.i2p_domain and server.session_i2p:
+                server.session_i2p = new_session
+                return
+    server.session = new_session

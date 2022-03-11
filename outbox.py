@@ -9,7 +9,6 @@ __module_group__ = "Timeline"
 
 import os
 from shutil import copyfile
-from session import create_session
 from auth import create_password
 from posts import is_image_media
 from posts import outbox_message_create_wrap
@@ -489,12 +488,6 @@ def post_message_to_outbox(session, translate: {},
         if debug:
             print('DEBUG: Updated announcements (shares) collection ' +
                   'for the post associated with the Announce activity')
-    if not server.session:
-        print('DEBUG: creating new session for c2s')
-        server.session = create_session(proxy_type)
-        if not server.session:
-            print('ERROR: Failed to create session for post_message_to_outbox')
-            return False
     if debug:
         print('DEBUG: sending c2s post to followers')
     # remove inactive threads

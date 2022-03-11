@@ -16,6 +16,7 @@ from utils import load_json
 from utils import is_account_dir
 from utils import acct_dir
 from outbox import post_message_to_outbox
+from session import create_session
 
 
 def _update_post_schedule(base_dir: str, handle: str, httpd,
@@ -93,7 +94,17 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
 
             if nickname:
                 httpd.post_to_nickname = nickname
-            if not post_message_to_outbox(httpd.session,
+
+            # create session if needed
+            curr_session = httpd.session
+            curr_proxy_type = httpd.proxy_type
+            if not curr_session:
+                curr_session = create_session(httpd.proxy_type)
+                httpd.session = curr_session
+            if not curr_session:
+                continue
+
+            if not post_message_to_outbox(curr_session,
                                           httpd.translate,
                                           post_json_object, nickname,
                                           httpd, base_dir,
@@ -111,7 +122,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                                           httpd.cached_webfingers,
                                           httpd.person_cache,
                                           httpd.allow_deletion,
-                                          httpd.proxy_type,
+                                          curr_proxy_type,
                                           httpd.project_version,
                                           httpd.debug,
                                           httpd.yt_replace_domain,

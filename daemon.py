@@ -22,6 +22,9 @@ from hashlib import sha256
 from hashlib import md5
 from shutil import copyfile
 from session import create_session
+from session import get_session_for_domain
+from session import get_session_for_domains
+from session import set_session_for_sender
 from webfinger import webfinger_meta
 from webfinger import webfinger_node_info
 from webfinger import webfinger_lookup
@@ -654,7 +657,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('DEBUG: creating new session during ' + calling_function)
         curr_session = create_session(proxy_type)
         if curr_session:
-            self.server.session = curr_session
+            set_session_for_sender(self.server, proxy_type, curr_session)
             return curr_session
         print('ERROR: GET failed to create session during ' +
               calling_function)
@@ -693,7 +696,9 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.person_cache, self.server.debug,
                                self.server.project_version,
                                self.server.http_prefix,
-                               self.server.domain, self.server.onion_domain,
+                               self.server.domain,
+                               self.server.onion_domain,
+                               self.server.i2p_domain,
                                self.server.signing_priv_key_pem)
         if not pub_key:
             if self.server.debug:
@@ -1428,6 +1433,9 @@ class PubServer(BaseHTTPRequestHandler):
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
+        if not curr_session:
+            return False
+
         city = self.server.city
 
         if post_to_nickname:
@@ -14129,8 +14137,6 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def do_GET(self):
-        curr_session = self.server.session
-        proxy_type = self.server.proxy_type
         calling_domain = self.server.domain_full
 
         if self.headers.get('Host'):
@@ -14175,6 +14181,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         referer_domain = self._get_referer_domain(ua_str)
+
+        curr_session, proxy_type = \
+            get_session_for_domains(self.server,
+                                    calling_domain, referer_domain)
 
         getreq_start_time = time.time()
 
@@ -18739,19 +18749,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
 
     def do_POST(self):
-        curr_session = self.server.session
         proxy_type = self.server.proxy_type
         postreq_start_time = time.time()
-
-        curr_session = \
-            self._establish_session("POST", curr_session,
-                                    proxy_type)
-        if not curr_session:
-            fitness_performance(postreq_start_time, self.server.fitness,
-                                '_POST', 'create_session',
-                                self.server.debug)
-            self._404()
-            return
 
         if self.server.debug:
             print('DEBUG: POST to ' + self.server.base_dir +
@@ -18813,6 +18812,19 @@ class PubServer(BaseHTTPRequestHandler):
             print('Content-type header missing')
             self._400()
             self.server.postreq_busy = False
+            return
+
+        curr_session, proxy_type = \
+            get_session_for_domain(self.server, calling_domain)
+
+        curr_session = \
+            self._establish_session("POST", curr_session,
+                                    proxy_type)
+        if not curr_session:
+            fitness_performance(postreq_start_time, self.server.fitness,
+                                '_POST', 'create_session',
+                                self.server.debug)
+            self._404()
             return
 
         # returns after this point should set postreq_busy to False
@@ -20090,7 +20102,8 @@ def run_daemon(crawlers_allowed: [],
     httpd.favicons_cache = {}
     httpd.proxy_type = proxy_type
     httpd.session = None
-    httpd.session_last_update = 0
+    httpd.session_onion = None
+    httpd.session_i2p = None
     httpd.last_getreq = 0
     httpd.last_postreq = 0
     httpd.getreq_busy = False

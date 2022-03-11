@@ -141,6 +141,7 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
                        person_cache: {}, debug: bool,
                        project_version: str, http_prefix: str,
                        domain: str, onion_domain: str,
+                       i2p_domain: str,
                        signing_priv_key_pem: str) -> str:
     if not person_url:
         return None
@@ -162,6 +163,9 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
         if onion_domain:
             if '.onion/' in person_url:
                 person_domain = onion_domain
+        elif i2p_domain:
+            if '.i2p/' in person_url:
+                person_domain = i2p_domain
         profile_str = 'https://www.w3.org/ns/activitystreams'
         accept_str = \
             'application/activity+json; profile="' + profile_str + '"'

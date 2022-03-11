@@ -1824,7 +1824,8 @@ def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
 def _receive_announce(recent_posts_cache: {},
                       session, handle: str, is_group: bool, base_dir: str,
                       http_prefix: str,
-                      domain: str, onion_domain: str, port: int,
+                      domain: str,
+                      onion_domain: str, i2p_domain: str, port: int,
                       send_threads: [], post_log: [], cached_webfingers: {},
                       person_cache: {}, message_json: {}, federation_list: [],
                       debug: bool, translate: {},
@@ -2034,6 +2035,7 @@ def _receive_announce(recent_posts_cache: {},
                                            person_cache, debug,
                                            __version__, http_prefix,
                                            domain, onion_domain,
+                                           i2p_domain,
                                            signing_priv_key_pem)
                     if pub_key:
                         if debug:
@@ -2322,6 +2324,7 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
 
 def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
                                   domain: str, onion_domain: str,
+                                  i2p_domain: str,
                                   person_cache: {},
                                   post_json_object: {}, debug: bool,
                                   signing_priv_key_pem: str) -> None:
@@ -2355,7 +2358,8 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
             get_person_pub_key(base_dir, session, lookup_actor,
                                person_cache, debug,
                                __version__, http_prefix,
-                               domain, onion_domain, signing_priv_key_pem)
+                               domain, onion_domain, i2p_domain,
+                               signing_priv_key_pem)
         if pub_key:
             if debug:
                 print('DEBUG: public key obtained for reply: ' + lookup_actor)
@@ -3403,7 +3407,7 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
     if _receive_announce(recent_posts_cache,
                          session, handle, is_group,
                          base_dir, http_prefix,
-                         domain, onion_domain, port,
+                         domain, onion_domain, i2p_domain, port,
                          send_threads, post_log,
                          cached_webfingers,
                          person_cache,
@@ -3565,7 +3569,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
 
         # get the avatar for a reply/announce
         _obtain_avatar_for_reply_post(session, base_dir,
-                                      http_prefix, domain, onion_domain,
+                                      http_prefix, domain,
+                                      onion_domain, i2p_domain,
                                       person_cache, post_json_object, debug,
                                       signing_priv_key_pem)
 
@@ -3915,7 +3920,7 @@ def _receive_follow_request(session, base_dir: str, http_prefix: str,
                             message_json: {}, federation_list: [],
                             debug: bool, project_version: str,
                             max_followers: int, onion_domain: str,
-                            signing_priv_key_pem: str,
+                            i2p_domain: str, signing_priv_key_pem: str,
                             unit_test: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
@@ -4036,7 +4041,7 @@ def _receive_follow_request(session, base_dir: str, http_prefix: str,
         if not get_person_pub_key(base_dir, session, message_json['actor'],
                                   person_cache, debug, project_version,
                                   http_prefix, domain_to_follow, onion_domain,
-                                  signing_priv_key_pem):
+                                  i2p_domain, signing_priv_key_pem):
             if debug:
                 print('Unable to obtain following actor: ' +
                       message_json['actor'])
@@ -4074,7 +4079,8 @@ def _receive_follow_request(session, base_dir: str, http_prefix: str,
             if not get_person_pub_key(base_dir, session, message_json['actor'],
                                       person_cache, debug, project_version,
                                       http_prefix, domain_to_follow,
-                                      onion_domain, signing_priv_key_pem):
+                                      onion_domain, i2p_domain,
+                                      signing_priv_key_pem):
                 if debug:
                     print('Unable to obtain following actor: ' +
                           message_json['actor'])
@@ -4153,10 +4159,24 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
     """Processes received items and moves them to the appropriate
     directories
     """
+    print('Starting new session when starting inbox queue')
     curr_session_time = int(time.time())
     session_last_update = curr_session_time
-    print('Starting new session when starting inbox queue')
     session = create_session(proxy_type)
+
+    # is this is a clearnet instance then optionally start sessions
+    # for onion and i2p domains
+    session_onion = None
+    session_i2p = None
+    session_last_update_onion = curr_session_time
+    session_last_update_i2p = curr_session_time
+    if proxy_type != 'tor' and onion_domain:
+        print('Starting onion session when starting inbox queue')
+        session_onion = create_session('tor')
+    if proxy_type != 'i2p' and i2p_domain:
+        print('Starting i2p session when starting inbox queue')
+        session_i2p = create_session('i2p')
+
     inbox_handle = 'inbox@' + domain
     if debug:
         print('DEBUG: Inbox queue running')
@@ -4209,16 +4229,6 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                 _restore_queue_items(base_dir, queue)
             continue
 
-        curr_time = int(time.time())
-
-        # recreate the session periodically
-        if not session or curr_time - session_last_update > 21600:
-            print('Regenerating inbox queue session at 6hr interval')
-            session = create_session(proxy_type)
-            if not session:
-                continue
-            session_last_update = curr_time
-
         # oldest item first
         queue.sort()
         queue_filename = queue[0]
@@ -4249,6 +4259,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                           str(queue_filename))
             continue
 
+        curr_time = int(time.time())
+
         # clear the daily quotas for maximum numbers of received posts
         if curr_time - quotas_last_update_daily > 60 * 60 * 24:
             quotas_daily = {
@@ -4276,6 +4288,42 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                  account_max_posts_per_day, debug):
             continue
 
+        curr_session = session
+        curr_proxy_type = proxy_type
+        curr_session_last_update = session_last_update
+        session_type = 'default'
+        if queue_json.get('actor'):
+            if isinstance(queue_json['actor'], str):
+                sender_domain, _ = get_domain_from_actor(queue_json['actor'])
+                if sender_domain.endswith('.onion') and \
+                   session_onion and proxy_type != 'tor':
+                    curr_proxy_type = 'tor'
+                    curr_session = session_onion
+                    session_type = 'onion'
+                    curr_session_last_update = session_last_update_onion
+                elif (sender_domain.endswith('.i2p') and
+                      session_i2p and proxy_type != 'i2p'):
+                    curr_proxy_type = 'i2p'
+                    curr_session = session_i2p
+                    session_type = 'i2p'
+                    curr_session_last_update = session_last_update_i2p
+
+        # recreate the session periodically
+        if not curr_session or curr_time - curr_session_last_update > 21600:
+            print('Regenerating inbox queue session at 6hr interval')
+            curr_session = create_session(curr_proxy_type)
+            if not curr_session:
+                continue
+            if session_type == 'default':
+                session = curr_session
+                session_last_update = curr_time
+            elif session_type == 'onion':
+                session_onion = curr_session
+                session_last_update_onion = curr_time
+            elif session_type == 'i2p':
+                session_i2p = curr_session
+                session_last_update_i2p = curr_time
+
         if debug and queue_json.get('actor'):
             print('Obtaining public key for actor ' + queue_json['actor'])
 
@@ -4298,10 +4346,11 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                 break
 
             pub_key = \
-                get_person_pub_key(base_dir, session, key_id,
+                get_person_pub_key(base_dir, curr_session, key_id,
                                    person_cache, debug,
                                    project_version, http_prefix,
-                                   domain, onion_domain, signing_priv_key_pem)
+                                   domain, onion_domain, i2p_domain,
+                                   signing_priv_key_pem)
             if pub_key:
                 if debug:
                     print('DEBUG: public key: ' + str(pub_key))
@@ -4409,7 +4458,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
         # if queue_json['post'].get('id'):
         #     queue_json['post']['id'] = queue_json['id']
 
-        if _receive_undo(session,
+        if _receive_undo(curr_session,
                          base_dir, http_prefix, port,
                          send_threads, post_log,
                          cached_webfingers,
@@ -4430,7 +4479,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
 
         if debug:
             print('DEBUG: checking for follow requests')
-        if _receive_follow_request(session,
+        if _receive_follow_request(curr_session,
                                    base_dir, http_prefix, port,
                                    send_threads, post_log,
                                    cached_webfingers,
@@ -4438,7 +4487,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                    queue_json['post'],
                                    federation_list,
                                    debug, project_version,
-                                   max_followers, onion_domain,
+                                   max_followers, onion_domain, i2p_domain,
                                    signing_priv_key_pem, unit_test):
             if os.path.isfile(queue_filename):
                 try:
@@ -4455,7 +4504,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
             if debug:
                 print('DEBUG: No follow requests')
 
-        if receive_accept_reject(session,
+        if receive_accept_reject(curr_session,
                                  base_dir, http_prefix, domain, port,
                                  send_threads, post_log,
                                  cached_webfingers, person_cache,
@@ -4472,7 +4521,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                 queue.pop(0)
             continue
 
-        if _receive_update_activity(recent_posts_cache, session,
+        if _receive_update_activity(recent_posts_cache, curr_session,
                                     base_dir, http_prefix,
                                     domain, port,
                                     send_threads, post_log,
@@ -4555,7 +4604,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
             languages_understood = []
             _inbox_after_initial(recent_posts_cache,
                                  max_recent_posts,
-                                 session, key_id, handle,
+                                 curr_session, key_id, handle,
                                  queue_json['post'],
                                  base_dir, http_prefix,
                                  send_threads, post_log,
@@ -4563,7 +4612,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                  person_cache, queue,
                                  domain,
                                  onion_domain, i2p_domain,
-                                 port, proxy_type,
+                                 port, curr_proxy_type,
                                  federation_list,
                                  debug,
                                  queue_filename, destination,
