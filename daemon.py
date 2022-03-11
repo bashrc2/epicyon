@@ -3731,17 +3731,11 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 # profile search
                 nickname = get_nickname_from_actor(actor_str)
-                curr_session = \
-                    self._establish_session("handle search",
-                                            curr_session,
-                                            proxy_type)
-                if not curr_session:
-                    self.server.postreq_busy = False
-                    return
                 profile_path_str = path.replace('/searchhandle', '')
 
                 # are we already following the searched for handle?
                 if is_following_actor(base_dir, nickname, domain, search_str):
+                    # get the actor
                     if not has_users_path(search_str):
                         search_nickname = get_nickname_from_actor(search_str)
                         search_domain, search_port = \
@@ -3753,6 +3747,23 @@ class PubServer(BaseHTTPRequestHandler):
                                             search_domain_full)
                     else:
                         actor = search_str
+
+                    # establish the session
+                    curr_proxy_type = proxy_type
+                    if '.onion/' in actor:
+                        curr_proxy_type = 'tor'
+                    elif '.i2p/' in actor:
+                        curr_proxy_type = 'i2p'
+
+                    curr_session = \
+                        self._establish_session("handle search",
+                                                curr_session,
+                                                curr_proxy_type)
+                    if not curr_session:
+                        self.server.postreq_busy = False
+                        return
+
+                    # get the avatar url for the actor
                     avatar_url = \
                         get_avatar_image_url(curr_session,
                                              base_dir, http_prefix,
@@ -3769,7 +3780,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               getreq_start_time,
                                               onion_domain, i2p_domain,
                                               cookie, debug, authorized,
-                                              curr_session, proxy_type)
+                                              curr_session, curr_proxy_type)
                     return
                 else:
                     show_published_date_only = \
@@ -3797,6 +3808,26 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+
+                    profile_handle = search_str.replace('\n', '').strip()
+
+                    # establish the session
+                    curr_proxy_type = proxy_type
+                    if '.onion/' in profile_handle or \
+                       profile_handle.endswith('.onion'):
+                        curr_proxy_type = 'tor'
+                    elif ('.i2p/' in profile_handle or
+                          profile_handle.endswith('.i2p')):
+                        curr_proxy_type = 'i2p'
+
+                    curr_session = \
+                        self._establish_session("handle search",
+                                                curr_session,
+                                                curr_proxy_type)
+                    if not curr_session:
+                        self.server.postreq_busy = False
+                        return
+
                     profile_str = \
                         html_profile_after_search(self.server.css_cache,
                                                   recent_posts_cache,
@@ -3808,7 +3839,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   nickname,
                                                   domain,
                                                   port,
-                                                  search_str,
+                                                  profile_handle,
                                                   curr_session,
                                                   cached_webfingers,
                                                   self.server.person_cache,
