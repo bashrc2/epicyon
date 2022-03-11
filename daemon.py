@@ -3770,8 +3770,10 @@ class PubServer(BaseHTTPRequestHandler):
                     curr_proxy_type = proxy_type
                     if '.onion/' in actor:
                         curr_proxy_type = 'tor'
+                        curr_session = self.server.session_onion
                     elif '.i2p/' in actor:
                         curr_proxy_type = 'i2p'
+                        curr_session = self.server.session_i2p
 
                     curr_session = \
                         self._establish_session("handle search",
@@ -3834,9 +3836,11 @@ class PubServer(BaseHTTPRequestHandler):
                     if '.onion/' in profile_handle or \
                        profile_handle.endswith('.onion'):
                         curr_proxy_type = 'tor'
+                        curr_session = self.server.session_onion
                     elif ('.i2p/' in profile_handle or
                           profile_handle.endswith('.i2p')):
                         curr_proxy_type = 'i2p'
+                        curr_session = self.server.session_i2p
 
                     curr_session = \
                         self._establish_session("handle search",
