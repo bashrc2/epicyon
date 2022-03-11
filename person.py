@@ -1515,8 +1515,14 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
             http_prefix = 'http'
     if existing_session:
         session = existing_session
+        if debug:
+            print('DEBUG: get_actor_json using existing session ' +
+                  str(proxy_type) + ' ' + domain)
     else:
         session = create_session(proxy_type)
+        if debug:
+            print('DEBUG: get_actor_json using session ' +
+                  str(proxy_type) + ' ' + domain)
     if nickname == 'inbox':
         nickname = domain
 
