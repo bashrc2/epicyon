@@ -459,7 +459,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                              message_bytes: str,
                              http_headers: {},
                              post_path: str, debug: bool,
-                             blocked_cache: [], system_language: str) -> str:
+                             blocked_cache: [], system_language: str,
+                             mitm: bool) -> str:
     """Saves the given json to the inbox queue for the person
     key_id specifies the actor sending the post
     """
@@ -592,7 +593,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
         'original': original_post_json_object,
         'digest': digest,
         'filename': filename,
-        'destination': destination
+        'destination': destination,
+        'mitm': mitm
     }
 
     if debug:

@@ -424,6 +424,21 @@ def save_domain_qrcode(base_dir: str, http_prefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _detect_mitm(self) -> bool:
+        """Detect if a request contains a MiTM
+        """
+        mitm_domains = ['cloudflare']
+        check_headers = (
+            'Server', 'Report-To', 'Report-to', 'report-to',
+            'Expect-CT', 'Expect-Ct', 'expect-ct'
+        )
+        for interloper in mitm_domains:
+            for header_name in check_headers:
+                if self.headers.get(header_name):
+                    if interloper in self.headers[header_name]:
+                        return True
+        return False
+
     def _get_instance_url(self, calling_domain: str) -> str:
         """Returns the URL for this instance
         """
@@ -1711,6 +1726,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.blocked_cache_last_updated,
                                  self.server.blocked_cache_update_secs)
 
+        mitm = self._detect_mitm()
+
         queue_filename = \
             save_post_to_inbox_queue(self.server.base_dir,
                                      self.server.http_prefix,
@@ -1722,7 +1739,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.path,
                                      self.server.debug,
                                      self.server.blocked_cache,
-                                     self.server.system_language)
+                                     self.server.system_language,
+                                     mitm)
         if queue_filename:
             # add json to the queue
             if queue_filename not in self.server.inbox_queue:
