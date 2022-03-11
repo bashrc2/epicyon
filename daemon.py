@@ -698,13 +698,22 @@ class PubServer(BaseHTTPRequestHandler):
                 print('AUTH: Secure mode GET request not permitted: ' + key_id)
             return False
 
+        if self.server.onion_domain:
+            if '.onion/' in key_id:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.i2p/' in key_id:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("secure mode",
                                     curr_session, proxy_type)
         if not curr_session:
             return False
 
-        # obtain the public key
+        # obtain the public key. key_id is the actor
         pub_key = \
             get_person_pub_key(self.server.base_dir,
                                curr_session, key_id,
@@ -8116,6 +8125,16 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor_path_str, cookie,
                                    calling_domain)
             return
+
+        if self.server.onion_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("announceButton",
                                     curr_session, proxy_type)
@@ -8279,6 +8298,16 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor_path_str, cookie,
                                    calling_domain)
             return
+
+        if self.server.onion_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("undoAnnounceButton",
                                     curr_session, proxy_type)
@@ -8358,6 +8387,16 @@ class PubServer(BaseHTTPRequestHandler):
                 handle_nickname + '@' + \
                 get_full_domain(handle_domain, handle_port)
         if '@' in following_handle:
+
+            if self.server.onion_domain:
+                if following_handle.endswith('.onion'):
+                    curr_session = self.server.session_onion
+                    proxy_type = 'tor'
+            if self.server.i2p_domain:
+                if following_handle.endswith('.i2p'):
+                    curr_session = self.server.session_i2p
+                    proxy_type = 'i2p'
+
             curr_session = \
                 self._establish_session("followApproveButton",
                                         curr_session, proxy_type)
@@ -8598,6 +8637,16 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor_path_str, cookie,
                                    calling_domain)
             return
+
+        if self.server.onion_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("likeButton",
                                     curr_session, proxy_type)
@@ -8774,6 +8823,16 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor_path_str, cookie,
                                    calling_domain)
             return
+
+        if self.server.onion_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("undoLikeButton",
                                     curr_session, proxy_type)
@@ -8955,6 +9014,16 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor_path_str, cookie,
                                    calling_domain)
             return
+
+        if self.server.onion_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("reactionButton",
                                     curr_session, proxy_type)
@@ -9152,6 +9221,16 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
         emoji_content = urllib.parse.unquote_plus(emoji_content_encoded)
+
+        if self.server.onion_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("undoReactionButton",
                                     curr_session, proxy_type)
@@ -9420,6 +9499,16 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor_path_str, cookie,
                                    calling_domain)
             return
+
+        if self.server.onion_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("bookmarkButton",
                                     curr_session, proxy_type)
@@ -9559,6 +9648,16 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor_path_str, cookie,
                                    calling_domain)
             return
+
+        if self.server.onion_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_onion
+                proxy_type = 'tor'
+        if self.server.i2p_domain:
+            if '.onion/' in actor:
+                curr_session = self.server.session_i2p
+                proxy_type = 'i2p'
+
         curr_session = \
             self._establish_session("undo_bookmarkButton",
                                     curr_session, proxy_type)
@@ -9713,6 +9812,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actor + '/' + timeline_str,
                                        cookie, calling_domain)
                 return
+
+            if self.server.onion_domain:
+                if '.onion/' in actor:
+                    curr_session = self.server.session_onion
+                    proxy_type = 'tor'
+            if self.server.i2p_domain:
+                if '.onion/' in actor:
+                    curr_session = self.server.session_i2p
+                    proxy_type = 'i2p'
+
             curr_session = \
                 self._establish_session("deleteButton",
                                         curr_session, proxy_type)

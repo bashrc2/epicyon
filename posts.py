@@ -2981,7 +2981,8 @@ def _is_profile_update(post_json_object: {}) -> bool:
     return False
 
 
-def _send_to_named_addresses(session, base_dir: str,
+def _send_to_named_addresses(session, session_onion, session_i2p,
+                             base_dir: str,
                              nickname: str, domain: str,
                              onion_domain: str, i2p_domain: str, port: int,
                              http_prefix: str, federation_list: [],
@@ -3102,16 +3103,19 @@ def _send_to_named_addresses(session, base_dir: str,
         from_domain = domain
         from_domain_full = get_full_domain(domain, port)
         from_http_prefix = http_prefix
+        curr_session = session
         if onion_domain:
             if to_domain.endswith('.onion'):
                 from_domain = onion_domain
                 from_domain_full = onion_domain
                 from_http_prefix = 'http'
-        elif i2p_domain:
+                curr_session = session_onion
+        if i2p_domain:
             if to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
                 from_domain_full = i2p_domain
                 from_http_prefix = 'http'
+                curr_session = session_i2p
         cc_list = []
 
         # if the "to" domain is within the shared items
@@ -3125,7 +3129,7 @@ def _send_to_named_addresses(session, base_dir: str,
 
         group_account = has_group_type(base_dir, address, person_cache)
 
-        send_signed_json(post_json_object, session, base_dir,
+        send_signed_json(post_json_object, curr_session, base_dir,
                          nickname, from_domain, port,
                          to_nickname, to_domain, to_port,
                          cc_list, from_http_prefix, True, client_to_server,
@@ -3136,8 +3140,8 @@ def _send_to_named_addresses(session, base_dir: str,
                          signing_priv_key_pem, 34436782)
 
 
-def send_to_named_addresses_thread(session, base_dir: str,
-                                   nickname: str, domain: str,
+def send_to_named_addresses_thread(session, session_onion, session_i2p,
+                                   base_dir: str, nickname: str, domain: str,
                                    onion_domain: str,
                                    i2p_domain: str, port: int,
                                    http_prefix: str, federation_list: [],
@@ -3152,8 +3156,8 @@ def send_to_named_addresses_thread(session, base_dir: str,
     """
     send_thread = \
         thread_with_trace(target=_send_to_named_addresses,
-                          args=(session, base_dir,
-                                nickname, domain,
+                          args=(session, session_onion, session_i2p,
+                                base_dir, nickname, domain,
                                 onion_domain, i2p_domain, port,
                                 http_prefix, federation_list,
                                 send_threads, post_log,
@@ -3209,9 +3213,8 @@ def _sending_profile_update(post_json_object: {}) -> bool:
     return False
 
 
-def send_to_followers(session, base_dir: str,
-                      nickname: str,
-                      domain: str,
+def send_to_followers(session, session_onion, session_i2p,
+                      base_dir: str, nickname: str, domain: str,
                       onion_domain: str, i2p_domain: str, port: int,
                       http_prefix: str, federation_list: [],
                       send_threads: [], post_log: [],
@@ -3224,9 +3227,6 @@ def send_to_followers(session, base_dir: str,
     """sends a post to the followers of the given nickname
     """
     print('send_to_followers')
-    if not session:
-        print('WARN: No session for send_to_followers')
-        return
     if not _post_is_addressed_to_followers(base_dir, nickname, domain,
                                            port, http_prefix,
                                            post_json_object):
@@ -3278,9 +3278,25 @@ def send_to_followers(session, base_dir: str,
         print('Sending post to followers domain is active: ' +
               follower_domain_url)
 
+        # select the appropriate session
+        curr_session = session
+        curr_http_prefix = http_prefix
+        if onion_domain:
+            if follower_domain.endswith('.onion'):
+                curr_session = session_onion
+                curr_http_prefix = 'http'
+        if i2p_domain:
+            if follower_domain.endswith('.i2p'):
+                curr_session = session_i2p
+                curr_http_prefix = 'http'
+        if not curr_session:
+            print('WARN: session not found when sending to follower ' +
+                  follower_domain_url)
+            continue
+
         with_shared_inbox = \
-            _has_shared_inbox(session, http_prefix, follower_domain, debug,
-                              signing_priv_key_pem)
+            _has_shared_inbox(curr_session, curr_http_prefix, follower_domain,
+                              debug, signing_priv_key_pem)
         if debug:
             if with_shared_inbox:
                 print(follower_domain + ' has shared inbox')
@@ -3305,7 +3321,7 @@ def send_to_followers(session, base_dir: str,
             if to_domain.endswith('.onion'):
                 from_domain = onion_domain
                 from_http_prefix = 'http'
-        elif i2p_domain:
+        if i2p_domain:
             if to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
                 from_http_prefix = 'http'
@@ -3333,7 +3349,7 @@ def send_to_followers(session, base_dir: str,
                   nickname + '@' + domain +
                   ' to ' + to_nickname + '@' + to_domain)
 
-            send_signed_json(post_json_object, session, base_dir,
+            send_signed_json(post_json_object, curr_session, base_dir,
                              nickname, from_domain, port,
                              to_nickname, to_domain, to_port,
                              cc_list, from_http_prefix, True,
@@ -3362,7 +3378,7 @@ def send_to_followers(session, base_dir: str,
                           nickname + '@' + domain + ' to ' +
                           to_nickname + '@' + to_domain)
 
-                send_signed_json(post_json_object, session, base_dir,
+                send_signed_json(post_json_object, curr_session, base_dir,
                                  nickname, from_domain, port,
                                  to_nickname, to_domain, to_port,
                                  cc_list, from_http_prefix, True,
@@ -3383,9 +3399,8 @@ def send_to_followers(session, base_dir: str,
     print('Sending post to followers ends ' + str(sending_mins) + ' mins')
 
 
-def send_to_followers_thread(session, base_dir: str,
-                             nickname: str,
-                             domain: str,
+def send_to_followers_thread(session, session_onion, session_i2p,
+                             base_dir: str, nickname: str, domain: str,
                              onion_domain: str, i2p_domain: str, port: int,
                              http_prefix: str, federation_list: [],
                              send_threads: [], post_log: [],
@@ -3399,8 +3414,8 @@ def send_to_followers_thread(session, base_dir: str,
     """
     send_thread = \
         thread_with_trace(target=send_to_followers,
-                          args=(session, base_dir,
-                                nickname, domain,
+                          args=(session, session_onion, session_i2p,
+                                base_dir, nickname, domain,
                                 onion_domain, i2p_domain, port,
                                 http_prefix, federation_list,
                                 send_threads, post_log,

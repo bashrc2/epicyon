@@ -2647,7 +2647,8 @@ def _group_handle(base_dir: str, handle: str) -> bool:
     return actor_json['type'] == 'Group'
 
 
-def _send_to_group_members(session, base_dir: str, handle: str, port: int,
+def _send_to_group_members(session, session_onion, session_i2p,
+                           base_dir: str, handle: str, port: int,
                            post_json_object: {},
                            http_prefix: str, federation_list: [],
                            send_threads: [], post_log: [],
@@ -2708,7 +2709,8 @@ def _send_to_group_members(session, base_dir: str, handle: str, port: int,
                         person_cache, cached_webfingers,
                         debug, __version__, signing_priv_key_pem)
 
-    send_to_followers_thread(session, base_dir, nickname, domain,
+    send_to_followers_thread(session, session_onion, session_i2p,
+                             base_dir, nickname, domain,
                              onion_domain, i2p_domain, port,
                              http_prefix, federation_list,
                              send_threads, post_log,
@@ -3033,8 +3035,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
 def _receive_question_vote(base_dir: str, nickname: str, domain: str,
                            http_prefix: str, handle: str, debug: bool,
                            post_json_object: {}, recent_posts_cache: {},
-                           session, onion_domain: str,
-                           i2p_domain: str, port: int,
+                           session, session_onion, session_i2p,
+                           onion_domain: str, i2p_domain: str, port: int,
                            federation_list: [], send_threads: [], post_log: [],
                            cached_webfingers: {}, person_cache: {},
                            signing_priv_key_pem: str,
@@ -3110,7 +3112,8 @@ def _receive_question_vote(base_dir: str, nickname: str, domain: str,
     question_json['type'] = 'Update'
     shared_items_federated_domains = []
     shared_item_federation_tokens = {}
-    send_to_followers_thread(session, base_dir, nickname, domain,
+    send_to_followers_thread(session, session_onion, session_i2p,
+                             base_dir, nickname, domain,
                              onion_domain, i2p_domain, port,
                              http_prefix, federation_list,
                              send_threads, post_log,
@@ -3238,7 +3241,8 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
 
 
 def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
-                         session, key_id: str, handle: str, message_json: {},
+                         session, session_onion, session_i2p,
+                         key_id: str, handle: str, message_json: {},
                          base_dir: str, http_prefix: str, send_threads: [],
                          post_log: [], cached_webfingers: {}, person_cache: {},
                          queue: [], domain: str,
@@ -3513,7 +3517,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
         _receive_question_vote(base_dir, nickname, domain,
                                http_prefix, handle, debug,
                                post_json_object, recent_posts_cache,
-                               session, onion_domain, i2p_domain, port,
+                               session, session_onion, session_i2p,
+                               onion_domain, i2p_domain, port,
                                federation_list, send_threads, post_log,
                                cached_webfingers, person_cache,
                                signing_priv_key_pem,
@@ -3679,7 +3684,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
 
             # send the post out to group members
             if is_group:
-                _send_to_group_members(session, base_dir, handle, port,
+                _send_to_group_members(session, session_onion, session_i2p,
+                                       base_dir, handle, port,
                                        post_json_object,
                                        http_prefix, federation_list,
                                        send_threads,
@@ -4167,21 +4173,27 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
     """
     print('Starting new session when starting inbox queue')
     curr_session_time = int(time.time())
-    session_last_update = curr_session_time
+    session_last_update = 0
     session = create_session(proxy_type)
+    if session:
+        session_last_update = curr_session_time
 
     # is this is a clearnet instance then optionally start sessions
     # for onion and i2p domains
     session_onion = None
     session_i2p = None
-    session_last_update_onion = curr_session_time
-    session_last_update_i2p = curr_session_time
+    session_last_update_onion = 0
+    session_last_update_i2p = 0
     if proxy_type != 'tor' and onion_domain:
         print('Starting onion session when starting inbox queue')
         session_onion = create_session('tor')
+        if session_onion:
+            session_onion = curr_session_time
     if proxy_type != 'i2p' and i2p_domain:
         print('Starting i2p session when starting inbox queue')
         session_i2p = create_session('i2p')
+        if session_i2p:
+            session_i2p = curr_session_time
 
     inbox_handle = 'inbox@' + domain
     if debug:
@@ -4294,10 +4306,37 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                  account_max_posts_per_day, debug):
             continue
 
+        # recreate the session periodically
+        if not session or curr_time - session_last_update > 21600:
+            print('Regenerating inbox queue session at 6hr interval')
+            session = create_session(proxy_type)
+            if session:
+                session_last_update = curr_time
+            else:
+                print('WARN: inbox session not created')
+                continue
+        if onion_domain:
+            if not session_onion or \
+               curr_time - session_last_update_onion > 21600:
+                print('Regenerating inbox queue onion session at 6hr interval')
+                session_onion = create_session('tor')
+                if session_onion:
+                    session_last_update_onion = curr_time
+                else:
+                    print('WARN: inbox onion session not created')
+                    continue
+        if i2p_domain:
+            if not session_i2p or curr_time - session_last_update_i2p > 21600:
+                print('Regenerating inbox queue i2p session at 6hr interval')
+                session_i2p = create_session('i2p')
+                if session_i2p:
+                    session_last_update_i2p = curr_time
+                else:
+                    print('WARN: inbox i2p session not created')
+                    continue
+
         curr_session = session
         curr_proxy_type = proxy_type
-        curr_session_last_update = session_last_update
-        session_type = 'default'
         if queue_json.get('actor'):
             if isinstance(queue_json['actor'], str):
                 sender_domain, _ = get_domain_from_actor(queue_json['actor'])
@@ -4305,30 +4344,10 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                    session_onion and proxy_type != 'tor':
                     curr_proxy_type = 'tor'
                     curr_session = session_onion
-                    session_type = 'onion'
-                    curr_session_last_update = session_last_update_onion
                 elif (sender_domain.endswith('.i2p') and
                       session_i2p and proxy_type != 'i2p'):
                     curr_proxy_type = 'i2p'
                     curr_session = session_i2p
-                    session_type = 'i2p'
-                    curr_session_last_update = session_last_update_i2p
-
-        # recreate the session periodically
-        if not curr_session or curr_time - curr_session_last_update > 21600:
-            print('Regenerating inbox queue session at 6hr interval')
-            curr_session = create_session(curr_proxy_type)
-            if not curr_session:
-                continue
-            if session_type == 'default':
-                session = curr_session
-                session_last_update = curr_time
-            elif session_type == 'onion':
-                session_onion = curr_session
-                session_last_update_onion = curr_time
-            elif session_type == 'i2p':
-                session_i2p = curr_session
-                session_last_update_i2p = curr_time
 
         if debug and queue_json.get('actor'):
             print('Obtaining public key for actor ' + queue_json['actor'])
@@ -4610,7 +4629,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
             languages_understood = []
             _inbox_after_initial(recent_posts_cache,
                                  max_recent_posts,
-                                 curr_session, key_id, handle,
+                                 session, session_onion, session_i2p,
+                                 key_id, handle,
                                  queue_json['post'],
                                  base_dir, http_prefix,
                                  send_threads, post_log,
