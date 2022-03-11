@@ -144,7 +144,8 @@ def html_profile_after_search(css_cache: {},
                               max_like_count: int,
                               signing_priv_key_pem: str,
                               cw_lists: {}, lists_enabled: str,
-                              timezone: str) -> str:
+                              timezone: str,
+                              onion_domain: str, i2p_domain: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -153,8 +154,17 @@ def html_profile_after_search(css_cache: {},
         http = True
     elif http_prefix == 'gnunet':
         gnunet = True
+    from_domain = domain
+    if onion_domain:
+        if '.onion/' in profile_handle or profile_handle.endswith('.onion'):
+            from_domain = onion_domain
+            http = True
+    if i2p_domain:
+        if '.i2p/' in profile_handle or profile_handle.endswith('.i2p'):
+            from_domain = i2p_domain
+            http = True
     profile_json, as_header = \
-        get_actor_json(domain, profile_handle, http, gnunet, debug, False,
+        get_actor_json(from_domain, profile_handle, http, gnunet, debug, False,
                        signing_priv_key_pem, session)
     if not profile_json:
         return None
@@ -327,7 +337,7 @@ def html_profile_after_search(css_cache: {},
     user_feed = \
         parse_user_feed(signing_priv_key_pem,
                         session, outbox_url, as_header, project_version,
-                        http_prefix, domain, debug)
+                        http_prefix, from_domain, debug)
     if user_feed:
         i = 0
         for item in user_feed:

@@ -3858,7 +3858,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                   signing_priv_key_pem,
                                                   self.server.cw_lists,
                                                   self.server.lists_enabled,
-                                                  timezone)
+                                                  timezone,
+                                                  self.server.onion_domain,
+                                                  self.server.i2p_domain)
                 if profile_str:
                     msg = profile_str.encode('utf-8')
                     msglen = len(msg)
