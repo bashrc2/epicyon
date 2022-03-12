@@ -9864,6 +9864,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 return
 
+            delete_url = delete_url.replace('/', '#')
             delete_str = \
                 html_confirm_delete(self.server.css_cache,
                                     self.server.recent_posts_cache,
