@@ -1555,7 +1555,8 @@ class PubServer(BaseHTTPRequestHandler):
                     pass
         return index
 
-    def _post_to_outbox_thread(self, message_json: {}) -> bool:
+    def _post_to_outbox_thread(self, message_json: {},
+                               curr_session, proxy_type: str) -> bool:
         """Creates a thread to send a post
         """
         account_outbox_thread_name = self.post_to_nickname
@@ -1570,7 +1571,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.outboxThread[account_outbox_thread_name][index] = \
             thread_with_trace(target=self._post_to_outbox,
                               args=(message_json.copy(),
-                                    self.server.project_version, None),
+                                    self.server.project_version, None,
+                                    curr_session, proxy_type),
                               daemon=True)
         print('Starting outbox thread')
         self.server.outboxThread[account_outbox_thread_name][index].start()
@@ -3176,7 +3178,8 @@ class PubServer(BaseHTTPRequestHandler):
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
-                          debug: bool) -> None:
+                          debug: bool,
+                          curr_session, proxy_type: str) -> None:
         """Confirm to unfollow
         """
         users_path = path.split('/unfollowconfirm')[0]
@@ -3251,7 +3254,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  following_nickname, following_domain_full,
                                  self.server.debug, group_account)
-                self._post_to_outbox_thread(unfollow_json)
+                self._post_to_outbox_thread(unfollow_json,
+                                            curr_session, proxy_type)
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -4343,7 +4347,8 @@ class PubServer(BaseHTTPRequestHandler):
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str,
                              onion_domain: str, i2p_domain: str,
-                             debug: bool) -> None:
+                             debug: bool,
+                             curr_session, proxy_type: str) -> None:
         """Endpoint for removing posts after confirmation
         """
         page_number = 1
@@ -4428,7 +4433,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   domain, year_int,
                                                   month_int,
                                                   remove_message_id)
-                    self._post_to_outbox_thread(delete_json)
+                    self._post_to_outbox_thread(delete_json,
+                                                curr_session, proxy_type)
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -19374,7 +19380,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain_full,
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
-                                          self.server.debug)
+                                          self.server.debug,
+                                          curr_session, proxy_type)
                 self.server.postreq_busy = False
                 return
 
@@ -19414,7 +19421,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.port,
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
-                                       self.server.debug)
+                                       self.server.debug,
+                                       curr_session, proxy_type)
                 self.server.postreq_busy = False
                 return
 
