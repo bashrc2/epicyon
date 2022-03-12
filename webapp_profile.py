@@ -118,9 +118,10 @@ def _valid_profile_preview_post(post_json_object: {},
     if not post_json_object.get('actor'):
         return False, None
     if not is_announced_feed_item:
-        if post_json_object['actor'] != person_url and \
-           post_json_object['object']['type'] != 'Page':
-            return False, None
+        if has_object_dict(post_json_object):
+            if post_json_object['actor'] != person_url and \
+               post_json_object['object']['type'] != 'Page':
+                return False, None
     return True, post_json_object
 
 
