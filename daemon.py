@@ -13334,11 +13334,14 @@ class PubServer(BaseHTTPRequestHandler):
             if self._secure_mode(curr_session, proxy_type):
                 accept_str = self.headers['Accept']
                 msg_str = json.dumps(actor_json, ensure_ascii=False)
+                curr_http_prefix = self.server.http_prefix + '://'
                 if is_onion_request(calling_domain, referer_domain,
                                     self.server.domain, onion_domain):
-                    msg_str = msg_str.replace(domain, onion_domain)
+                    msg_str = msg_str.replace(curr_http_prefix + domain,
+                                              'http://' + onion_domain)
                 elif is_i2p_request(calling_domain, referer_domain,
-                                    self.server.domain, i2p_domain):
+                                    curr_http_prefix + self.server.domain,
+                                    'http://' + i2p_domain):
                     msg_str = msg_str.replace(domain, i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
