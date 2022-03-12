@@ -9821,6 +9821,9 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timeline_str:
                 timeline_str = timeline_str.split('?')[0]
         users_path = path.split('?delete=')[0]
+        if not users_path.startswith('/users/'):
+            if '/users/' in users_path:
+                users_path = '/users/' + users_path.split('/users/')[1]
         actor = \
             http_prefix + '://' + domain_full + users_path
         if self.server.allow_deletion or \
