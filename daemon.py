@@ -426,6 +426,27 @@ def save_domain_qrcode(base_dir: str, http_prefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _convert_domains(self, calling_domain, referer_domain,
+                         msg_str: str) -> str:
+        """Convert domains to onion or i2p
+        """
+        curr_http_prefix = self.server.http_prefix + '://'
+        if is_onion_request(calling_domain, referer_domain,
+                            self.server.domain,
+                            self.server.onion_domain):
+            msg_str = msg_str.replace(curr_http_prefix +
+                                      self.server.domain,
+                                      'http://' +
+                                      self.server.onion_domain)
+        elif is_i2p_request(calling_domain, referer_domain,
+                            self.server.domain,
+                            self.server.i2p_domain):
+            msg_str = msg_str.replace(curr_http_prefix +
+                                      self.server.domain,
+                                      'http://' +
+                                      self.server.i2p_domain)
+        return msg_str
+
     def _detect_mitm(self) -> bool:
         """Detect if a request contains a MiTM
         """
@@ -1165,7 +1186,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   broch_mode)
 
         if send_json is not None:
-            msg = json.dumps(send_json).encode('utf-8')
+            msg_str = json.dumps(send_json)
+            msg_str = self._convert_domains(calling_domain, referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if self._has_accept(calling_domain):
                 if 'application/ld+json' in self.headers['Accept']:
@@ -1354,7 +1378,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    node_info_version,
                                    show_node_info_accounts)
         if info:
-            msg = json.dumps(info).encode('utf-8')
+            msg_str = json.dumps(info)
+            msg_str = self._convert_domains(calling_domain, referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if self._has_accept(calling_domain):
                 if 'application/ld+json' in self.headers['Accept']:
@@ -1427,21 +1454,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domain_full)
             if wf_result:
                 msg_str = json.dumps(wf_result)
-                curr_http_prefix = self.server.http_prefix + '://'
-                if is_onion_request(calling_domain, referer_domain,
-                                    self.server.domain,
-                                    self.server.onion_domain):
-                    msg_str = msg_str.replace(curr_http_prefix +
-                                              self.server.domain,
-                                              'http://' +
-                                              self.server.onion_domain)
-                elif is_i2p_request(calling_domain, referer_domain,
-                                    self.server.domain,
-                                    self.server.i2p_domain):
-                    msg_str = msg_str.replace(curr_http_prefix +
-                                              self.server.domain,
-                                              'http://' +
-                                              self.server.i2p_domain)
+                msg_str = self._convert_domains(calling_domain,
+                                                referer_domain,
+                                                msg_str)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 if self._has_accept(calling_domain):
@@ -1467,18 +1482,10 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.domain, self.server.onion_domain,
                              self.server.port, self.server.debug)
         if wf_result:
-            msg_str = msg = json.dumps(wf_result)
-            curr_http_prefix = self.server.http_prefix + '://'
-            if is_onion_request(calling_domain, referer_domain,
-                                self.server.domain, self.server.onion_domain):
-                msg_str = msg_str.replace(curr_http_prefix +
-                                          self.server.domain,
-                                          'http://' + self.server.onion_domain)
-            elif is_i2p_request(calling_domain, referer_domain,
-                                self.server.domain, self.server.i2p_domain):
-                msg_str = msg_str.replace(curr_http_prefix +
-                                          self.server.domain,
-                                          'http://' + self.server.i2p_domain)
+            msg_str = json.dumps(wf_result)
+            msg_str = self._convert_domains(calling_domain,
+                                            referer_domain,
+                                            msg_str)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/jrd+json', msglen,
@@ -7038,6 +7045,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _progressive_web_app_manifest(self, base_dir: str,
                                       calling_domain: str,
+                                      referer_domain: str,
                                       getreq_start_time) -> None:
         """gets the PWA manifest
         """
@@ -7138,8 +7146,12 @@ class PubServer(BaseHTTPRequestHandler):
                 }
             ]
         }
-        msg = json.dumps(manifest,
-                         ensure_ascii=False).encode('utf-8')
+        msg_str = json.dumps(manifest, ensure_ascii=False)
+        msg_str = self._convert_domains(calling_domain,
+                                        referer_domain,
+                                        msg_str)
+        msg = msg_str.encode('utf-8')
+
         msglen = len(msg)
         self._set_headers('application/json', msglen,
                           None, calling_domain, False)
@@ -7150,7 +7162,8 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', '_progressive_web_app_manifest',
                             self.server.debug)
 
-    def _browser_config(self, calling_domain: str, getreq_start_time) -> None:
+    def _browser_config(self, calling_domain: str, referer_domain: str,
+                        getreq_start_time) -> None:
         """Used by MS Windows to put an icon on the desktop if you
         link to a website
         """
@@ -7165,8 +7178,11 @@ class PubServer(BaseHTTPRequestHandler):
             '  </msapplication>\n' + \
             '</browserconfig>'
 
-        msg = json.dumps(xml_str,
-                         ensure_ascii=False).encode('utf-8')
+        msg_str = json.dumps(xml_str, ensure_ascii=False)
+        msg_str = self._convert_domains(calling_domain,
+                                        referer_domain,
+                                        msg_str)
+        msg = msg_str.encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/xrd+xml', msglen,
                           None, calling_domain, False)
@@ -7253,7 +7269,8 @@ class PubServer(BaseHTTPRequestHandler):
             print('favicon not sent: ' + calling_domain)
         self._404()
 
-    def _get_speaker(self, calling_domain: str, path: str,
+    def _get_speaker(self, calling_domain: str, referer_domain: str,
+                     path: str,
                      base_dir: str, domain: str, debug: bool) -> None:
         """Returns the speaker file used for TTS and
         accessed via c2s
@@ -7268,8 +7285,11 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         speaker_json = load_json(speaker_filename)
-        msg = json.dumps(speaker_json,
-                         ensure_ascii=False).encode('utf-8')
+        msg_str = json.dumps(speaker_json, ensure_ascii=False)
+        msg_str = self._convert_domains(calling_domain,
+                                        referer_domain,
+                                        msg_str)
+        msg = msg_str.encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
                           None, calling_domain, False)
@@ -10219,7 +10239,8 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, calling_domain)
 
     def _show_replies_to_post(self, authorized: bool,
-                              calling_domain: str, path: str,
+                              calling_domain: str, referer_domain: str,
+                              path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domain_full: str, port: int,
                               onion_domain: str, i2p_domain: str,
@@ -10340,8 +10361,11 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug)
             else:
                 if self._secure_mode(curr_session, proxy_type):
-                    msg = json.dumps(replies_json, ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(replies_json, ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     protocol_str = 'application/json'
                     msglen = len(msg)
                     self._set_headers(protocol_str, msglen, None,
@@ -10439,9 +10463,11 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug)
             else:
                 if self._secure_mode(curr_session, proxy_type):
-                    msg = json.dumps(replies_json,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(replies_json, ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     protocol_str = 'application/json'
                     msglen = len(msg)
                     self._set_headers(protocol_str, msglen,
@@ -10456,7 +10482,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_roles(self, authorized: bool,
-                    calling_domain: str, path: str,
+                    calling_domain: str, referer_domain: str,
+                    path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
@@ -10559,9 +10586,11 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if self._secure_mode(curr_session, proxy_type):
                     roles_list = get_actor_roles_list(actor_json)
-                    msg = json.dumps(roles_list,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(roles_list, ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
                                       None, calling_domain, False)
@@ -10575,7 +10604,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_skills(self, authorized: bool,
-                     calling_domain: str, path: str,
+                     calling_domain: str, referer_domain: str,
+                     path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str, port: int,
                      onion_domain: str, i2p_domain: str,
@@ -10692,9 +10722,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     get_occupation_skills(actor_json)
                                 skills = \
                                     get_skills_from_list(actor_skills_list)
-                                msg = json.dumps(skills,
-                                                 ensure_ascii=False)
-                                msg = msg.encode('utf-8')
+                                msg_str = json.dumps(skills,
+                                                     ensure_ascii=False)
+                                msg_str = self._convert_domains(calling_domain,
+                                                                referer_domain,
+                                                                msg_str)
+                                msg = msg_str.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('application/json',
                                                   msglen, None,
@@ -10714,7 +10747,8 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _show_individual_at_post(self, authorized: bool,
-                                 calling_domain: str, path: str,
+                                 calling_domain: str, referer_domain: str,
+                                 path: str,
                                  base_dir: str, http_prefix: str,
                                  domain: str, domain_full: str, port: int,
                                  onion_domain: str, i2p_domain: str,
@@ -10771,7 +10805,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         result = self._show_post_from_file(post_filename, liked_by,
                                            react_by, react_emoji,
-                                           authorized, calling_domain, path,
+                                           authorized, calling_domain,
+                                           referer_domain, path,
                                            base_dir, http_prefix, nickname,
                                            domain, domain_full, port,
                                            onion_domain, i2p_domain,
@@ -10911,7 +10946,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _show_post_from_file(self, post_filename: str, liked_by: str,
                              react_by: str, react_emoji: str,
                              authorized: bool,
-                             calling_domain: str, path: str,
+                             calling_domain: str, referer_domain: str,
+                             path: str,
                              base_dir: str, http_prefix: str, nickname: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
@@ -10990,12 +11026,15 @@ class PubServer(BaseHTTPRequestHandler):
                     unwrapped_json = post_json_object['object']
                     unwrapped_json['@context'] = \
                         get_individual_post_context()
-                    msg = json.dumps(unwrapped_json,
-                                     ensure_ascii=False)
+                    msg_str = json.dumps(unwrapped_json,
+                                         ensure_ascii=False)
                 else:
-                    msg = json.dumps(post_json_object,
-                                     ensure_ascii=False)
-                msg = msg.encode('utf-8')
+                    msg_str = json.dumps(post_json_object,
+                                         ensure_ascii=False)
+                msg_str = self._convert_domains(calling_domain,
+                                                referer_domain,
+                                                msg_str)
+                msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
@@ -11010,7 +11049,8 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _show_individual_post(self, authorized: bool,
-                              calling_domain: str, path: str,
+                              calling_domain: str, referer_domain: str,
+                              path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domain_full: str, port: int,
                               onion_domain: str, i2p_domain: str,
@@ -11061,7 +11101,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         result = self._show_post_from_file(post_filename, liked_by,
                                            react_by, react_emoji,
-                                           authorized, calling_domain, path,
+                                           authorized, calling_domain,
+                                           referer_domain, path,
                                            base_dir, http_prefix, nickname,
                                            domain, domain_full, port,
                                            onion_domain, i2p_domain,
@@ -11075,7 +11116,8 @@ class PubServer(BaseHTTPRequestHandler):
         return result
 
     def _show_notify_post(self, authorized: bool,
-                          calling_domain: str, path: str,
+                          calling_domain: str, referer_domain: str,
+                          path: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
@@ -11108,7 +11150,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         result = self._show_post_from_file(post_filename, liked_by,
                                            react_by, react_emoji,
-                                           authorized, calling_domain, path,
+                                           authorized, calling_domain,
+                                           referer_domain, path,
                                            base_dir, http_prefix, nickname,
                                            domain, domain_full, port,
                                            onion_domain, i2p_domain,
@@ -11122,7 +11165,8 @@ class PubServer(BaseHTTPRequestHandler):
         return result
 
     def _show_inbox(self, authorized: bool,
-                    calling_domain: str, path: str,
+                    calling_domain: str, referer_domain: str,
+                    path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
@@ -11256,7 +11300,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                 '_GET', '_show_inbox3',
                                                 self.server.debug)
                         if msg:
-                            msg = msg.encode('utf-8')
+                            msg_str = msg
+                            msg_str = self._convert_domains(calling_domain,
+                                                            referer_domain,
+                                                            msg_str)
+                            msg = msg_str.encode('utf-8')
                             msglen = len(msg)
                             self._set_headers('text/html', msglen,
                                               cookie, calling_domain, False)
@@ -11270,8 +11318,11 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authorized fetch here because
                         # there is already the authorization check
-                        msg = json.dumps(inbox_feed, ensure_ascii=False)
-                        msg = msg.encode('utf-8')
+                        msg_str = json.dumps(inbox_feed, ensure_ascii=False)
+                        msg_str = self._convert_domains(calling_domain,
+                                                        referer_domain,
+                                                        msg_str)
+                        msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
                                           None, calling_domain, False)
@@ -11297,7 +11348,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_dms(self, authorized: bool,
-                  calling_domain: str, path: str,
+                  calling_domain: str, referer_domain: str,
+                  path: str,
                   base_dir: str, http_prefix: str,
                   domain: str, domain_full: str, port: int,
                   onion_domain: str, i2p_domain: str,
@@ -11422,8 +11474,12 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authorized fetch here because
                         # there is already the authorization check
-                        msg = json.dumps(inbox_dm_feed, ensure_ascii=False)
-                        msg = msg.encode('utf-8')
+                        msg_str = \
+                            json.dumps(inbox_dm_feed, ensure_ascii=False)
+                        msg_str = self._convert_domains(calling_domain,
+                                                        referer_domain,
+                                                        msg_str)
+                        msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json',
                                           msglen,
@@ -11450,7 +11506,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_replies(self, authorized: bool,
-                      calling_domain: str, path: str,
+                      calling_domain: str, referer_domain: str,
+                      path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str, port: int,
                       onion_domain: str, i2p_domain: str,
@@ -11574,9 +11631,12 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
-                    msg = json.dumps(inbox_replies_feed,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(inbox_replies_feed,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
                                       None, calling_domain, False)
@@ -11602,7 +11662,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_media_timeline(self, authorized: bool,
-                             calling_domain: str, path: str,
+                             calling_domain: str, referer_domain: str,
+                             path: str,
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
@@ -11725,9 +11786,12 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
-                    msg = json.dumps(inbox_media_feed,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(inbox_media_feed,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
                                       None, calling_domain, False)
@@ -11753,7 +11817,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_blogs_timeline(self, authorized: bool,
-                             calling_domain: str, path: str,
+                             calling_domain: str, referer_domain: str,
+                             path: str,
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
@@ -11876,9 +11941,12 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
-                    msg = json.dumps(inbox_blogs_feed,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(inbox_blogs_feed,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
@@ -11905,7 +11973,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_news_timeline(self, authorized: bool,
-                            calling_domain: str, path: str,
+                            calling_domain: str, referer_domain: str,
+                            path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str, port: int,
                             onion_domain: str, i2p_domain: str,
@@ -12036,9 +12105,12 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
-                    msg = json.dumps(inbox_news_feed,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(inbox_news_feed,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
@@ -12064,7 +12136,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_features_timeline(self, authorized: bool,
-                                calling_domain: str, path: str,
+                                calling_domain: str, referer_domain: str,
+                                path: str,
                                 base_dir: str, http_prefix: str,
                                 domain: str, domain_full: str, port: int,
                                 onion_domain: str, i2p_domain: str,
@@ -12199,9 +12272,12 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
-                    msg = json.dumps(inbox_features_feed,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(inbox_features_feed,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
@@ -12409,7 +12485,8 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _show_bookmarks_timeline(self, authorized: bool,
-                                 calling_domain: str, path: str,
+                                 calling_domain: str, referer_domain: str,
+                                 path: str,
                                  base_dir: str, http_prefix: str,
                                  domain: str, domain_full: str, port: int,
                                  onion_domain: str, i2p_domain: str,
@@ -12536,9 +12613,12 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authorized fetch here because
                         # there is already the authorization check
-                        msg = json.dumps(bookmarks_feed,
-                                         ensure_ascii=False)
-                        msg = msg.encode('utf-8')
+                        msg_str = json.dumps(bookmarks_feed,
+                                             ensure_ascii=False)
+                        msg_str = self._convert_domains(calling_domain,
+                                                        referer_domain,
+                                                        msg_str)
+                        msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
                                           None, calling_domain, False)
@@ -12563,7 +12643,8 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _show_outbox_timeline(self, authorized: bool,
-                              calling_domain: str, path: str,
+                              calling_domain: str, referer_domain: str,
+                              path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domain_full: str, port: int,
                               onion_domain: str, i2p_domain: str,
@@ -12679,9 +12760,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug)
             else:
                 if self._secure_mode(curr_session, proxy_type):
-                    msg = json.dumps(outbox_feed,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(outbox_feed,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
                                       None, calling_domain, False)
@@ -12696,7 +12780,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_mod_timeline(self, authorized: bool,
-                           calling_domain: str, path: str,
+                           calling_domain: str, referer_domain: str,
+                           path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
@@ -12821,9 +12906,12 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authorized fetch here because
                         # there is already the authorization check
-                        msg = json.dumps(moderation_feed,
-                                         ensure_ascii=False)
-                        msg = msg.encode('utf-8')
+                        msg_str = json.dumps(moderation_feed,
+                                             ensure_ascii=False)
+                        msg_str = self._convert_domains(calling_domain,
+                                                        referer_domain,
+                                                        msg_str)
+                        msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
                                           None, calling_domain, False)
@@ -12846,7 +12934,8 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _show_shares_feed(self, authorized: bool,
-                          calling_domain: str, path: str,
+                          calling_domain: str, referer_domain: str,
+                          path: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
@@ -12956,9 +13045,12 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
             else:
                 if self._secure_mode(curr_session, proxy_type):
-                    msg = json.dumps(shares,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
+                    msg_str = json.dumps(shares,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
                                       None, calling_domain, False)
@@ -12973,7 +13065,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_following_feed(self, authorized: bool,
-                             calling_domain: str, path: str,
+                             calling_domain: str, referer_domain: str,
+                             path: str,
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
@@ -13087,8 +13180,12 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
             else:
                 if self._secure_mode(curr_session, proxy_type):
-                    msg = json.dumps(following,
-                                     ensure_ascii=False).encode('utf-8')
+                    msg_str = json.dumps(following,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
                                       None, calling_domain, False)
@@ -13103,7 +13200,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_followers_feed(self, authorized: bool,
-                             calling_domain: str, path: str,
+                             calling_domain: str, referer_domain: str,
+                             path: str,
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
@@ -13218,8 +13316,12 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
             else:
                 if self._secure_mode(curr_session, proxy_type):
-                    msg = json.dumps(followers,
-                                     ensure_ascii=False).encode('utf-8')
+                    msg_str = json.dumps(followers,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
                                       None, calling_domain, False)
@@ -13234,6 +13336,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _get_featured_collection(self, calling_domain: str,
+                                 referer_domain: str,
                                  base_dir: str, path: str,
                                  http_prefix: str,
                                  nickname: str, domain: str,
@@ -13245,14 +13348,19 @@ class PubServer(BaseHTTPRequestHandler):
         featured_collection = \
             json_pin_post(base_dir, http_prefix,
                           nickname, domain, domain_full, system_language)
-        msg = json.dumps(featured_collection,
-                         ensure_ascii=False).encode('utf-8')
+        msg_str = json.dumps(featured_collection,
+                             ensure_ascii=False)
+        msg_str = self._convert_domains(calling_domain,
+                                        referer_domain,
+                                        msg_str)
+        msg = msg_str.encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
                           None, calling_domain, False)
         self._write(msg)
 
     def _get_featured_tags_collection(self, calling_domain: str,
+                                      referer_domain: str,
                                       path: str,
                                       http_prefix: str,
                                       domain_full: str):
@@ -13268,8 +13376,12 @@ class PubServer(BaseHTTPRequestHandler):
             'totalItems': 0,
             'type': 'OrderedCollection'
         }
-        msg = json.dumps(featured_tags_collection,
-                         ensure_ascii=False).encode('utf-8')
+        msg_str = json.dumps(featured_tags_collection,
+                             ensure_ascii=False)
+        msg_str = self._convert_domains(calling_domain,
+                                        referer_domain,
+                                        msg_str)
+        msg = msg_str.encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
                           None, calling_domain, False)
@@ -13362,15 +13474,9 @@ class PubServer(BaseHTTPRequestHandler):
             if self._secure_mode(curr_session, proxy_type):
                 accept_str = self.headers['Accept']
                 msg_str = json.dumps(actor_json, ensure_ascii=False)
-                curr_http_prefix = self.server.http_prefix + '://'
-                if is_onion_request(calling_domain, referer_domain,
-                                    self.server.domain, onion_domain):
-                    msg_str = msg_str.replace(curr_http_prefix + domain,
-                                              'http://' + onion_domain)
-                elif is_i2p_request(calling_domain, referer_domain,
-                                    self.server.domain, i2p_domain):
-                    msg_str = msg_str.replace(curr_http_prefix + domain,
-                                              'http://' + i2p_domain)
+                msg_str = self._convert_domains(calling_domain,
+                                                referer_domain,
+                                                msg_str)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 if 'application/ld+json' in accept_str:
@@ -13393,7 +13499,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
         return True
 
-    def _show_instance_actor(self, calling_domain: str, path: str,
+    def _show_instance_actor(self, calling_domain: str,
+                             referer_domain: str, path: str,
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
@@ -13447,12 +13554,9 @@ class PubServer(BaseHTTPRequestHandler):
         actor_json['followers'] = actor_url + '/followers'
         actor_json['following'] = actor_url + '/following'
         msg_str = json.dumps(actor_json, ensure_ascii=False)
-        if onion_domain and calling_domain.endswith('.onion'):
-            msg_str = msg_str.replace(http_prefix + '://' + domain_full,
-                                      'http://' + onion_domain)
-        elif i2p_domain and calling_domain.endswith('.i2p'):
-            msg_str = msg_str.replace(http_prefix + '://' + domain_full,
-                                      'http://' + i2p_domain)
+        msg_str = self._convert_domains(calling_domain,
+                                        referer_domain,
+                                        msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         if 'application/ld+json' in accept_str:
@@ -14331,7 +14435,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _get_following_json(self, base_dir: str, path: str,
-                            calling_domain: str,
+                            calling_domain: str, referer_domain: str,
                             http_prefix: str,
                             domain: str, port: int,
                             followingItemsPerPage: int,
@@ -14346,8 +14450,12 @@ class PubServer(BaseHTTPRequestHandler):
                 print(listName + ' json feed not found for ' + path)
             self._404()
             return
-        msg = json.dumps(following_json,
-                         ensure_ascii=False).encode('utf-8')
+        msg_str = json.dumps(following_json,
+                             ensure_ascii=False)
+        msg_str = self._convert_domains(calling_domain,
+                                        referer_domain,
+                                        msg_str)
+        msg = msg_str.encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json',
                           msglen, None, calling_domain, False)
@@ -14560,7 +14668,8 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/Actor' or \
            self.path == '/users/Actor':
             self.path = '/users/inbox'
-            if self._show_instance_actor(calling_domain, self.path,
+            if self._show_instance_actor(calling_domain, referer_domain,
+                                         self.path,
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.server.domain,
@@ -14608,6 +14717,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self._request_http():
                     self._progressive_web_app_manifest(self.server.base_dir,
                                                        calling_domain,
+                                                       referer_domain,
                                                        getreq_start_time)
                     return
                 else:
@@ -14615,7 +14725,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '/browserconfig.xml' in self.path:
             if self._has_accept(calling_domain):
-                self._browser_config(calling_domain, getreq_start_time)
+                self._browser_config(calling_domain, referer_domain,
+                                     getreq_start_time)
                 return
 
         # default newswire favicon, for links to sites which
@@ -14734,8 +14845,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                             self.path,
                                                             self.server.debug,
                                                             'shares')
-                    msg = json.dumps(catalog_json,
-                                     ensure_ascii=False).encode('utf-8')
+                    msg_str = json.dumps(catalog_json,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen, None, calling_domain, False)
@@ -14829,8 +14944,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                             self.path,
                                                             self.server.debug,
                                                             'wanted')
-                    msg = json.dumps(catalog_json,
-                                     ensure_ascii=False).encode('utf-8')
+                    msg_str = json.dumps(catalog_json,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen, None, calling_domain, False)
@@ -15058,7 +15177,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/following?page=' in self.path:
                 self._get_following_json(self.server.base_dir,
                                          self.path,
-                                         calling_domain,
+                                         calling_domain, referer_domain,
                                          self.server.http_prefix,
                                          self.server.domain,
                                          self.server.port,
@@ -15068,7 +15187,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif '/followers?page=' in self.path:
                 self._get_following_json(self.server.base_dir,
                                          self.path,
-                                         calling_domain,
+                                         calling_domain, referer_domain,
                                          self.server.http_prefix,
                                          self.server.domain,
                                          self.server.port,
@@ -15078,7 +15197,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif '/followrequests?page=' in self.path:
                 self._get_following_json(self.server.base_dir,
                                          self.path,
-                                         calling_domain,
+                                         calling_domain, referer_domain,
                                          self.server.http_prefix,
                                          self.server.domain,
                                          self.server.port,
@@ -15093,7 +15212,8 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/speaker'):
             if 'application/ssml' not in self.headers['Accept']:
                 # json endpoint
-                self._get_speaker(calling_domain, self.path,
+                self._get_speaker(calling_domain, referer_domain,
+                                  self.path,
                                   self.server.base_dir,
                                   self.server.domain,
                                   self.server.debug)
@@ -15183,8 +15303,12 @@ class PubServer(BaseHTTPRequestHandler):
                 message_json['object']['id'] = post_id
                 message_json['object']['url'] = replace_users_with_at(post_id)
                 message_json['object']['atomUri'] = post_id
-            msg = json.dumps(message_json,
-                             ensure_ascii=False).encode('utf-8')
+            msg_str = json.dumps(message_json,
+                                 ensure_ascii=False)
+            msg_str = self._convert_domains(calling_domain,
+                                            referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/json',
                               msglen, None, calling_domain, False)
@@ -15197,7 +15321,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
             # return the featured posts collection
-            self._get_featured_collection(calling_domain,
+            self._get_featured_collection(calling_domain, referer_domain,
                                           self.server.base_dir,
                                           self.path,
                                           self.server.http_prefix,
@@ -15208,7 +15332,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if not html_getreq and \
            users_in_path and self.path.endswith('/collections/featuredTags'):
-            self._get_featured_tags_collection(calling_domain,
+            self._get_featured_tags_collection(calling_domain, referer_domain,
                                                self.path,
                                                self.server.http_prefix,
                                                self.server.domain_full)
@@ -15246,8 +15370,12 @@ class PubServer(BaseHTTPRequestHandler):
                     graph = '_GET'
                 watch_points_json = \
                     sorted_watch_points(self.server.fitness, graph)
-                msg = json.dumps(watch_points_json,
-                                 ensure_ascii=False).encode('utf-8')
+                msg_str = json.dumps(watch_points_json,
+                                     ensure_ascii=False)
+                msg_str = self._convert_domains(calling_domain,
+                                                referer_domain,
+                                                msg_str)
+                msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/json', msglen,
                                   None, calling_domain, False)
@@ -15331,8 +15459,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                    self.server.domain,
                                                    self.server.domain_full,
                                                    self.server.http_prefix)
-                msg = json.dumps(dev_json,
-                                 ensure_ascii=False).encode('utf-8')
+                msg_str = json.dumps(dev_json, ensure_ascii=False)
+                msg_str = self._convert_domains(calling_domain,
+                                                referer_domain,
+                                                msg_str)
+                msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
@@ -17094,7 +17225,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get an individual post from the path /@nickname/statusnumber
         if self._show_individual_at_post(authorized,
-                                         calling_domain, self.path,
+                                         calling_domain, referer_domain,
+                                         self.path,
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.server.domain,
@@ -17150,7 +17282,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get replies to a post /users/nickname/statuses/number/replies
         if self.path.endswith('/replies') or '/replies?page=' in self.path:
             if self._show_replies_to_post(authorized,
-                                          calling_domain, self.path,
+                                          calling_domain, referer_domain,
+                                          self.path,
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           self.server.domain,
@@ -17172,7 +17305,8 @@ class PubServer(BaseHTTPRequestHandler):
         # roles on profile screen
         if self.path.endswith('/roles') and users_in_path:
             if self._show_roles(authorized,
-                                calling_domain, self.path,
+                                calling_domain, referer_domain,
+                                self.path,
                                 self.server.base_dir,
                                 self.server.http_prefix,
                                 self.server.domain,
@@ -17194,7 +17328,8 @@ class PubServer(BaseHTTPRequestHandler):
         # show skills on the profile page
         if self.path.endswith('/skills') and users_in_path:
             if self._show_skills(authorized,
-                                 calling_domain, self.path,
+                                 calling_domain, referer_domain,
+                                 self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
                                  self.server.domain,
@@ -17215,7 +17350,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '?notifypost=' in self.path and users_in_path and authorized:
             if self._show_notify_post(authorized,
-                                      calling_domain, self.path,
+                                      calling_domain, referer_domain,
+                                      self.path,
                                       self.server.base_dir,
                                       self.server.http_prefix,
                                       self.server.domain,
@@ -17234,7 +17370,8 @@ class PubServer(BaseHTTPRequestHandler):
         # /users/nickname/statuses/number
         if '/statuses/' in self.path and users_in_path:
             if self._show_individual_post(authorized,
-                                          calling_domain, self.path,
+                                          calling_domain, referer_domain,
+                                          self.path,
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           self.server.domain,
@@ -17256,7 +17393,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get the inbox timeline for a given person
         if self.path.endswith('/inbox') or '/inbox?page=' in self.path:
             if self._show_inbox(authorized,
-                                calling_domain, self.path,
+                                calling_domain, referer_domain,
+                                self.path,
                                 self.server.base_dir,
                                 self.server.http_prefix,
                                 self.server.domain,
@@ -17288,7 +17426,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get the direct messages timeline for a given person
         if self.path.endswith('/dm') or '/dm?page=' in self.path:
             if self._show_dms(authorized,
-                              calling_domain, self.path,
+                              calling_domain, referer_domain,
+                              self.path,
                               self.server.base_dir,
                               self.server.http_prefix,
                               self.server.domain,
@@ -17310,7 +17449,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get the replies timeline for a given person
         if self.path.endswith('/tlreplies') or '/tlreplies?page=' in self.path:
             if self._show_replies(authorized,
-                                  calling_domain, self.path,
+                                  calling_domain, referer_domain,
+                                  self.path,
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain,
@@ -17332,7 +17472,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get the media timeline for a given person
         if self.path.endswith('/tlmedia') or '/tlmedia?page=' in self.path:
             if self._show_media_timeline(authorized,
-                                         calling_domain, self.path,
+                                         calling_domain, referer_domain,
+                                         self.path,
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.server.domain,
@@ -17354,7 +17495,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get the blogs for a given person
         if self.path.endswith('/tlblogs') or '/tlblogs?page=' in self.path:
             if self._show_blogs_timeline(authorized,
-                                         calling_domain, self.path,
+                                         calling_domain, referer_domain,
+                                         self.path,
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.server.domain,
@@ -17376,7 +17518,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get the news for a given person
         if self.path.endswith('/tlnews') or '/tlnews?page=' in self.path:
             if self._show_news_timeline(authorized,
-                                        calling_domain, self.path,
+                                        calling_domain, referer_domain,
+                                        self.path,
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
@@ -17395,7 +17538,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/tlfeatures') or \
            '/tlfeatures?page=' in self.path:
             if self._show_features_timeline(authorized,
-                                            calling_domain, self.path,
+                                            calling_domain, referer_domain,
+                                            self.path,
                                             self.server.base_dir,
                                             self.server.http_prefix,
                                             self.server.domain,
@@ -17536,7 +17680,8 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/bookmarks') or \
            '/bookmarks?page=' in self.path:
             if self._show_bookmarks_timeline(authorized,
-                                             calling_domain, self.path,
+                                             calling_domain, referer_domain,
+                                             self.path,
                                              self.server.base_dir,
                                              self.server.http_prefix,
                                              self.server.domain,
@@ -17559,7 +17704,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/outbox') or \
            '/outbox?page=' in self.path:
             if self._show_outbox_timeline(authorized,
-                                          calling_domain, self.path,
+                                          calling_domain, referer_domain,
+                                          self.path,
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           self.server.domain,
@@ -17582,7 +17728,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/moderation') or \
            '/moderation?' in self.path:
             if self._show_mod_timeline(authorized,
-                                       calling_domain, self.path,
+                                       calling_domain, referer_domain,
+                                       self.path,
                                        self.server.base_dir,
                                        self.server.http_prefix,
                                        self.server.domain,
@@ -17602,7 +17749,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         if self._show_shares_feed(authorized,
-                                  calling_domain, self.path,
+                                  calling_domain, referer_domain,
+                                  self.path,
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain,
@@ -17622,7 +17770,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         if self._show_following_feed(authorized,
-                                     calling_domain, self.path,
+                                     calling_domain, referer_domain,
+                                     self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
@@ -17642,7 +17791,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         if self._show_followers_feed(authorized,
-                                     calling_domain, self.path,
+                                     calling_domain, referer_domain,
+                                     self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
@@ -17715,8 +17865,11 @@ class PubServer(BaseHTTPRequestHandler):
                 print('EX: unable to read file ' + filename)
             if content:
                 content_json = json.loads(content)
-                msg = json.dumps(content_json,
-                                 ensure_ascii=False).encode('utf-8')
+                msg_str = json.dumps(content_json, ensure_ascii=False)
+                msg_str = self._convert_domains(calling_domain,
+                                                referer_domain,
+                                                msg_str)
+                msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
@@ -18977,7 +19130,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         return json.loads(message_bytes)
 
-    def _crypto_api_query(self, calling_domain: str) -> bool:
+    def _crypto_api_query(self, calling_domain: str,
+                          referer_domain: str) -> bool:
         handle = self._crypto_ap_iread_handle()
         if not handle:
             return False
@@ -18997,9 +19151,12 @@ class PubServer(BaseHTTPRequestHandler):
                         devices_list.append(content_json)
                 break
             # return the list of devices for this handle
-            msg = \
-                json.dumps(devices_list,
-                           ensure_ascii=False).encode('utf-8')
+            msg_str = \
+                json.dumps(devices_list, ensure_ascii=False)
+            msg_str = self._convert_domains(calling_domain,
+                                            referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/json',
                               msglen,
@@ -19008,7 +19165,8 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _crypto_api(self, path: str, authorized: bool) -> None:
+    def _crypto_api(self, path: str, authorized: bool,
+                    calling_domain: str, referer_domain: str) -> None:
         """POST or GET with the crypto API
         """
         if authorized and path.startswith('/api/v1/crypto/keys/upload'):
@@ -19042,7 +19200,7 @@ class PubServer(BaseHTTPRequestHandler):
         elif path.startswith('/api/v1/crypto/keys/query'):
             # given a handle (nickname@domain) return a list of the devices
             # registered to that handle
-            if not self._crypto_api_query():
+            if not self._crypto_api_query(calling_domain, referer_domain):
                 self._400()
         elif path.startswith('/api/v1/crypto/keys/claim'):
             # TODO
@@ -19167,7 +19325,8 @@ class PubServer(BaseHTTPRequestHandler):
             print(str(self.headers))
 
         if self.path.startswith('/api/v1/crypto/'):
-            self._crypto_api(self.path, authorized)
+            self._crypto_api(self.path, authorized,
+                             calling_domain, calling_domain)
             self.server.postreq_busy = False
             return
 
