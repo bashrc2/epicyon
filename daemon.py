@@ -1374,7 +1374,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.nodeinfo_is_active = False
         return True
 
-    def _webfinger(self, calling_domain: str) -> bool:
+    def _webfinger(self, calling_domain: str, referer_domain: str) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
         if self.server.debug:
@@ -1426,7 +1426,23 @@ class PubServer(BaseHTTPRequestHandler):
                     webfinger_node_info(self.server.http_prefix,
                                         self.server.domain_full)
             if wf_result:
-                msg = json.dumps(wf_result).encode('utf-8')
+                msg_str = json.dumps(wf_result)
+                curr_http_prefix = self.server.http_prefix + '://'
+                if is_onion_request(calling_domain, referer_domain,
+                                    self.server.domain,
+                                    self.server.onion_domain):
+                    msg_str = msg_str.replace(curr_http_prefix +
+                                              self.server.domain,
+                                              'http://' +
+                                              self.server.onion_domain)
+                elif is_i2p_request(calling_domain, referer_domain,
+                                    self.server.domain,
+                                    self.server.i2p_domain):
+                    msg_str = msg_str.replace(curr_http_prefix +
+                                              self.server.domain,
+                                              'http://' +
+                                              self.server.i2p_domain)
+                msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 if self._has_accept(calling_domain):
                     if 'application/ld+json' in self.headers['Accept']:
@@ -1451,7 +1467,19 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.domain, self.server.onion_domain,
                              self.server.port, self.server.debug)
         if wf_result:
-            msg = json.dumps(wf_result).encode('utf-8')
+            msg_str = msg = json.dumps(wf_result)
+            curr_http_prefix = self.server.http_prefix + '://'
+            if is_onion_request(calling_domain, referer_domain,
+                                self.server.domain, self.server.onion_domain):
+                msg_str = msg_str.replace(curr_http_prefix +
+                                          self.server.domain,
+                                          'http://' + self.server.onion_domain)
+            elif is_i2p_request(calling_domain, referer_domain,
+                                self.server.domain, self.server.i2p_domain):
+                msg_str = msg_str.replace(curr_http_prefix +
+                                          self.server.domain,
+                                          'http://' + self.server.i2p_domain)
+            msg = msg_str.encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/jrd+json', msglen,
                               None, calling_domain, True)
@@ -13340,9 +13368,9 @@ class PubServer(BaseHTTPRequestHandler):
                     msg_str = msg_str.replace(curr_http_prefix + domain,
                                               'http://' + onion_domain)
                 elif is_i2p_request(calling_domain, referer_domain,
-                                    curr_http_prefix + self.server.domain,
-                                    'http://' + i2p_domain):
-                    msg_str = msg_str.replace(domain, i2p_domain)
+                                    self.server.domain, i2p_domain):
+                    msg_str = msg_str.replace(curr_http_prefix + domain,
+                                              'http://' + i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 if 'application/ld+json' in accept_str:
@@ -16094,7 +16122,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # get webfinger endpoint for a person
-        if self._webfinger(calling_domain):
+        if self._webfinger(calling_domain, referer_domain):
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'webfinger called',
                                 self.server.debug)
