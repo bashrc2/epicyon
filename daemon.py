@@ -1581,7 +1581,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Update the inbox queue
         """
         if debug:
-            
+            print('INBOX: checking inbox queue restart')
         if self.server.restart_inbox_queue_in_progress:
             self._503()
             print('INBOX: ' +
@@ -1591,6 +1591,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check that the incoming message has a fully recognized
         # linked data context
+        if debug:
+            print('INBOX: checking valid context')
         if not has_valid_context(message_json):
             print('INBOX: ' +
                   'message arriving at inbox queue has no valid context')
@@ -1599,6 +1601,8 @@ class PubServer(BaseHTTPRequestHandler):
             return 3
 
         # check for blocked domains so that they can be rejected early
+        if debug:
+            print('INBOX: checking for actor')
         message_domain = None
         if not has_actor(message_json, self.server.debug):
             print('INBOX: message arriving at inbox queue has no actor')
@@ -1607,6 +1611,8 @@ class PubServer(BaseHTTPRequestHandler):
             return 3
 
         # actor should be a string
+        if debug:
+            print('INBOX: checking that actor is string')
         if not isinstance(message_json['actor'], str):
             print('INBOX: ' +
                   'actor should be a string ' + str(message_json['actor']))
@@ -1615,6 +1621,8 @@ class PubServer(BaseHTTPRequestHandler):
             return 3
 
         # check that some additional fields are strings
+        if debug:
+            print('INBOX: checking fields 1')
         string_fields = ('id', 'type', 'published')
         for check_field in string_fields:
             if not message_json.get(check_field):
@@ -1628,6 +1636,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return 3
 
         # check that to/cc fields are lists
+        if debug:
+            print('INBOX: checking to and cc fields')
         list_fields = ('to', 'cc')
         for check_field in list_fields:
             if not message_json.get(check_field):
@@ -1640,6 +1650,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return 3
 
         if has_object_dict(message_json):
+            if debug:
+                print('INBOX: checking object fields')
             string_fields = (
                 'id', 'actor', 'type', 'content', 'published',
                 'summary', 'url', 'attributedTo'
@@ -1655,6 +1667,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.postreq_busy = False
                     return 3
             # check that some fields are lists
+            if debug:
+                print('INBOX: checking object to and cc fields')
             list_fields = ('to', 'cc', 'attachment')
             for check_field in list_fields:
                 if not message_json['object'].get(check_field):
@@ -1668,6 +1682,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return 3
 
         # actor should look like a url
+        if debug:
+            print('INBOX: checking that actor looks like a url')
         if '://' not in message_json['actor'] or \
            '.' not in message_json['actor']:
             print('INBOX: POST actor does not look like a url ' +
@@ -1677,6 +1693,8 @@ class PubServer(BaseHTTPRequestHandler):
             return 3
 
         # sent by an actor on a local network address?
+        if debug:
+            print('INBOX: checking for local network access')
         if not self.server.allow_local_network_access:
             local_network_pattern_list = get_local_network_addresses()
             for local_network_pattern in local_network_pattern_list:
@@ -1696,6 +1714,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.blocked_cache_last_updated,
                                  self.server.blocked_cache_update_secs)
 
+        if debug:
+            print('INBOX: checking for blocked domain ' + message_domain)
         if is_blocked_domain(self.server.base_dir, message_domain,
                              self.server.blocked_cache):
             print('INBOX: POST from blocked domain ' + message_domain)
@@ -1704,6 +1724,8 @@ class PubServer(BaseHTTPRequestHandler):
             return 3
 
         # if the inbox queue is full then return a busy code
+        if debug:
+            print('INBOX: checking for full queue')
         if len(self.server.inbox_queue) >= self.server.max_queue_length:
             if message_domain:
                 print('INBOX: Queue: ' +
@@ -1752,6 +1774,8 @@ class PubServer(BaseHTTPRequestHandler):
         # save the json for later queue processing
         message_bytes_decoded = message_bytes.decode('utf-8')
 
+        if debug:
+            print('INBOX: checking for invalid links')
         if contains_invalid_local_links(message_bytes_decoded):
             print('INBOX: post contains invalid local links ' +
                   str(original_message_json))
@@ -1765,6 +1789,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         mitm = self._detect_mitm()
 
+        if debug:
+            print('INBOX: saving post to queue')
         queue_filename = \
             save_post_to_inbox_queue(self.server.base_dir,
                                      self.server.http_prefix,
