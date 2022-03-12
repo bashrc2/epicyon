@@ -3453,3 +3453,39 @@ def set_account_timezone(base_dir: str, nickname: str, domain: str,
     timezone = timezone.strip()
     with open(tz_filename, 'w+') as fp_timezone:
         fp_timezone.write(timezone)
+
+
+def is_onion_request(calling_domain: str, referer_domain: str,
+                     domain: str, onion_domain: str) -> bool:
+    """Do the given domains indicate that this is a request
+    from an onion instance
+    """
+    if not onion_domain:
+        return False
+    if domain == onion_domain:
+        return True
+    if calling_domain.endswith('.onion'):
+        return True
+    if not referer_domain:
+        return False
+    if referer_domain.endswith('.onion'):
+        return True
+    return False
+
+
+def is_i2p_request(calling_domain: str, referer_domain: str,
+                   domain: str, i2p_domain: str) -> bool:
+    """Do the given domains indicate that this is a request
+    from an i2p instance
+    """
+    if not i2p_domain:
+        return False
+    if domain == i2p_domain:
+        return True
+    if calling_domain.endswith('.i2p'):
+        return True
+    if not referer_domain:
+        return False
+    if referer_domain.endswith('.i2p'):
+        return True
+    return False

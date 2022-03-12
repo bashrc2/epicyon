@@ -251,6 +251,8 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import is_onion_request
+from utils import is_i2p_request
 from utils import get_account_timezone
 from utils import set_account_timezone
 from utils import load_account_timezones
@@ -13246,7 +13248,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
 
     def _show_person_profile(self, authorized: bool,
-                             calling_domain: str, path: str,
+                             calling_domain: str,
+                             referer_domain: str, path: str,
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
@@ -13294,11 +13297,8 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.max_recent_posts,
                              self.server.translate,
                              self.server.project_version,
-                             base_dir,
-                             http_prefix,
-                             authorized,
-                             actor_json, 'posts',
-                             curr_session,
+                             base_dir, http_prefix, authorized,
+                             actor_json, 'posts', curr_session,
                              self.server.cached_webfingers,
                              self.server.person_cache,
                              self.server.yt_replace_domain,
@@ -13334,6 +13334,12 @@ class PubServer(BaseHTTPRequestHandler):
             if self._secure_mode(curr_session, proxy_type):
                 accept_str = self.headers['Accept']
                 msg_str = json.dumps(actor_json, ensure_ascii=False)
+                if is_onion_request(calling_domain, referer_domain,
+                                    self.server.domain, onion_domain):
+                    msg_str = msg_str.replace(domain, onion_domain)
+                elif is_i2p_request(calling_domain, referer_domain,
+                                    self.server.domain, i2p_domain):
+                    msg_str = msg_str.replace(domain, i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 if 'application/ld+json' in accept_str:
@@ -17626,7 +17632,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # look up a person
         if self._show_person_profile(authorized,
-                                     calling_domain, self.path,
+                                     calling_domain, referer_domain,
+                                     self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
