@@ -1262,6 +1262,8 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
+    session_onion = None
+    session_i2p = None
     session = create_session(proxy_type)
     send_threads = []
     postLog = []
@@ -1272,8 +1274,19 @@ if args.approve:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    manual_approve_follow_request(session, base_dir,
-                                  http_prefix,
+    onion_domain = get_config_param(base_dir, 'onionDomain')
+    if args.onion:
+        onion_domain = args.onion
+    if onion_domain:
+        session_onion = create_session('tor')
+    i2p_domain = get_config_param(base_dir, 'i2pDomain')
+    if args.i2p_domain:
+        i2p_domain = args.i2p_domain
+    if i2p_domain:
+        session_i2p = create_session('i2p')
+    manual_approve_follow_request(session, session_onion, session_i2p,
+                                  onion_domain, i2p_domain,
+                                  base_dir, http_prefix,
                                   args.nickname, domain, port,
                                   args.approve,
                                   federation_list,
@@ -1290,6 +1303,8 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
+    session_onion = None
+    session_i2p = None
     session = create_session(proxy_type)
     send_threads = []
     postLog = []
@@ -1300,8 +1315,19 @@ if args.deny:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    manual_deny_follow_request(session, base_dir,
-                               http_prefix,
+    onion_domain = get_config_param(base_dir, 'onionDomain')
+    if args.onion:
+        onion_domain = args.onion
+    if onion_domain:
+        session_onion = create_session('tor')
+    i2p_domain = get_config_param(base_dir, 'i2pDomain')
+    if args.i2p_domain:
+        i2p_domain = args.i2p_domain
+    if i2p_domain:
+        session_i2p = create_session('i2p')
+    manual_deny_follow_request(session, session_onion, session_i2p,
+                               onion_domain, i2p_domain,
+                               base_dir, http_prefix,
                                args.nickname, domain, port,
                                args.deny,
                                federation_list,
@@ -3381,6 +3407,7 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
+    print('allowdeletion: ' + str(args.allowdeletion))
     run_daemon(crawlers_allowed,
                args.dyslexic_font,
                content_license_url,

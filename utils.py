@@ -2023,6 +2023,32 @@ def is_public_post(post_json_object: {}) -> bool:
     return False
 
 
+def is_unlisted_post(post_json_object: {}) -> bool:
+    """Returns true if the given post is unlisted
+    """
+    if not post_json_object.get('type'):
+        return False
+    if post_json_object['type'] != 'Create':
+        return False
+    if not has_object_dict(post_json_object):
+        return False
+    if not post_json_object['object'].get('to'):
+        return False
+    if not post_json_object['object'].get('cc'):
+        return False
+    has_followers = False
+    for recipient in post_json_object['object']['to']:
+        if recipient.endswith('/followers'):
+            has_followers = True
+            break
+    if not has_followers:
+        return False
+    for recipient in post_json_object['object']['cc']:
+        if recipient.endswith('#Public'):
+            return True
+    return False
+
+
 def copytree(src: str, dst: str, symlinks: str = False, ignore: bool = None):
     """Copy a directory
     """

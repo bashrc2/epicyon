@@ -19,8 +19,9 @@ from utils import acct_dir
 from threads import thread_with_trace
 
 
-def manual_deny_follow_request(session, base_dir: str,
-                               http_prefix: str,
+def manual_deny_follow_request(session, session_onion, session_i2p,
+                               onion_domain: str, i2p_domain: str,
+                               base_dir: str, http_prefix: str,
                                nickname: str, domain: str, port: int,
                                deny_handle: str,
                                federation_list: [],
@@ -59,7 +60,9 @@ def manual_deny_follow_request(session, base_dir: str,
     if ':' in deny_domain:
         deny_port = get_port_from_domain(deny_domain)
         deny_domain = remove_domain_port(deny_domain)
-    followed_account_rejects(session, base_dir, http_prefix,
+    followed_account_rejects(session, session_onion, session_i2p,
+                             onion_domain, i2p_domain,
+                             base_dir, http_prefix,
                              nickname, domain, port,
                              deny_nickname, deny_domain, deny_port,
                              federation_list,
@@ -71,8 +74,9 @@ def manual_deny_follow_request(session, base_dir: str,
     print('Follow request from ' + deny_handle + ' was denied.')
 
 
-def manual_deny_follow_request_thread(session, base_dir: str,
-                                      http_prefix: str,
+def manual_deny_follow_request_thread(session, session_onion, session_i2p,
+                                      onion_domain: str, i2p_domain: str,
+                                      base_dir: str, http_prefix: str,
                                       nickname: str, domain: str, port: int,
                                       deny_handle: str,
                                       federation_list: [],
@@ -86,8 +90,9 @@ def manual_deny_follow_request_thread(session, base_dir: str,
     """
     thr = \
         thread_with_trace(target=manual_deny_follow_request,
-                          args=(session, base_dir,
-                                http_prefix,
+                          args=(session, session_onion, session_i2p,
+                                onion_domain, i2p_domain,
+                                base_dir, http_prefix,
                                 nickname, domain, port,
                                 deny_handle,
                                 federation_list,
@@ -120,8 +125,9 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
             print('EX: unable to write ' + approved_filename)
 
 
-def manual_approve_follow_request(session, base_dir: str,
-                                  http_prefix: str,
+def manual_approve_follow_request(session, session_onion, session_i2p,
+                                  onion_domain: str, i2p_domain: str,
+                                  base_dir: str, http_prefix: str,
                                   nickname: str, domain: str, port: int,
                                   approve_handle: str,
                                   federation_list: [],
@@ -206,12 +212,31 @@ def manual_approve_follow_request(session, base_dir: str,
                                     get_port_from_domain(approve_domain)
                                 approve_domain = \
                                     remove_domain_port(approve_domain)
+
+                            curr_domain = domain
+                            curr_port = port
+                            curr_session = session
+                            curr_http_prefix = http_prefix
+                            if onion_domain and \
+                               approve_domain.endswith('.onion'):
+                                curr_domain = onion_domain
+                                curr_port = 80
+                                curr_session = session_onion
+                                curr_http_prefix = 'http'
+                            elif (i2p_domain and
+                                  approve_domain.endswith('.i2p')):
+                                curr_domain = i2p_domain
+                                curr_port = 80
+                                curr_session = session_i2p
+                                curr_http_prefix = 'http'
+
                             print('Manual follow accept: Sending Accept for ' +
                                   handle + ' follow request from ' +
                                   approve_nickname + '@' + approve_domain)
-                            followed_account_accepts(session, base_dir,
-                                                     http_prefix,
-                                                     nickname, domain, port,
+                            followed_account_accepts(curr_session, base_dir,
+                                                     curr_http_prefix,
+                                                     nickname,
+                                                     curr_domain, curr_port,
                                                      approve_nickname,
                                                      approve_domain,
                                                      approve_port,
@@ -281,8 +306,9 @@ def manual_approve_follow_request(session, base_dir: str,
                   approve_follows_filename + '.new')
 
 
-def manual_approve_follow_request_thread(session, base_dir: str,
-                                         http_prefix: str,
+def manual_approve_follow_request_thread(session, session_onion, session_i2p,
+                                         onion_domain: str, i2p_domain: str,
+                                         base_dir: str, http_prefix: str,
                                          nickname: str, domain: str, port: int,
                                          approve_handle: str,
                                          federation_list: [],
@@ -297,8 +323,9 @@ def manual_approve_follow_request_thread(session, base_dir: str,
     """
     thr = \
         thread_with_trace(target=manual_approve_follow_request,
-                          args=(session, base_dir,
-                                http_prefix,
+                          args=(session, session_onion, session_i2p,
+                                onion_domain, i2p_domain,
+                                base_dir, http_prefix,
                                 nickname, domain, port,
                                 approve_handle,
                                 federation_list,
