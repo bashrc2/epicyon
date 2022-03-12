@@ -8587,6 +8587,10 @@ class PubServer(BaseHTTPRequestHandler):
                 get_full_domain(handle_domain, handle_port)
         if '@' in following_handle:
             manual_deny_follow_request_thread(curr_session,
+                                              self.server.session_onion,
+                                              self.server.session_i2p,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain,
                                               base_dir, http_prefix,
                                               follower_nickname,
                                               domain, port,

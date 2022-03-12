@@ -19,8 +19,9 @@ from utils import acct_dir
 from threads import thread_with_trace
 
 
-def manual_deny_follow_request(session, base_dir: str,
-                               http_prefix: str,
+def manual_deny_follow_request(session, session_onion, session_i2p,
+                               onion_domain: str, i2p_domain: str,
+                               base_dir: str, http_prefix: str,
                                nickname: str, domain: str, port: int,
                                deny_handle: str,
                                federation_list: [],
@@ -59,7 +60,9 @@ def manual_deny_follow_request(session, base_dir: str,
     if ':' in deny_domain:
         deny_port = get_port_from_domain(deny_domain)
         deny_domain = remove_domain_port(deny_domain)
-    followed_account_rejects(session, base_dir, http_prefix,
+    followed_account_rejects(session, session_onion, session_i2p,
+                             onion_domain, i2p_domain,
+                             base_dir, http_prefix,
                              nickname, domain, port,
                              deny_nickname, deny_domain, deny_port,
                              federation_list,
@@ -71,8 +74,9 @@ def manual_deny_follow_request(session, base_dir: str,
     print('Follow request from ' + deny_handle + ' was denied.')
 
 
-def manual_deny_follow_request_thread(session, base_dir: str,
-                                      http_prefix: str,
+def manual_deny_follow_request_thread(session, session_onion, session_i2p,
+                                      onion_domain: str, i2p_domain: str,
+                                      base_dir: str, http_prefix: str,
                                       nickname: str, domain: str, port: int,
                                       deny_handle: str,
                                       federation_list: [],
@@ -86,8 +90,9 @@ def manual_deny_follow_request_thread(session, base_dir: str,
     """
     thr = \
         thread_with_trace(target=manual_deny_follow_request,
-                          args=(session, base_dir,
-                                http_prefix,
+                          args=(session, session_onion, session_i2p,
+                                onion_domain, i2p_domain,
+                                base_dir, http_prefix,
                                 nickname, domain, port,
                                 deny_handle,
                                 federation_list,
