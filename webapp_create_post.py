@@ -122,12 +122,12 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
                 'icons/scope_blog.png"/><b>' + \
                 translate['Blog'] + '</b><br>' + \
                 translate['Publicly visible post'] + '</a></li>\n'
-        drop_down_content += \
-            '<li><a href="' + path_base + dropdown_unlisted_suffix + \
-            '"><img loading="lazy" alt="" title="" src="/' + \
-            'icons/scope_unlisted.png"/><b>' + \
-            translate['Unlisted'] + '</b><br>' + \
-            translate['Not on public timeline'] + '</a></li>\n'
+    drop_down_content += \
+        '<li><a href="' + path_base + dropdown_unlisted_suffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        'icons/scope_unlisted.png"/><b>' + \
+        translate['Unlisted'] + '</b><br>' + \
+        translate['Not on public timeline'] + '</a></li>\n'
     drop_down_content += \
         '<li><a href="' + path_base + dropdown_followers_suffix + \
         '" accesskey="' + access_keys['menuFollowers'] + '">' + \
