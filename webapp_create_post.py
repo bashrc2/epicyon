@@ -300,8 +300,6 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                         new_post_path = new_post_path.split('?')[0]
                     if new_post_path.endswith('/newpost'):
                         path = path.replace('/newpost', '/newfollowers')
-                    elif new_post_path.endswith('/newunlisted'):
-                        path = path.replace('/newunlisted', '/newfollowers')
                     show_public_on_dropdown = False
         else:
             new_post_text = \
