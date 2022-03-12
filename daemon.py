@@ -437,6 +437,16 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.headers.get(header_name):
                     if interloper in self.headers[header_name]:
                         return True
+        # The presence if these headers on their own indicates a MiTM
+        mitm_headers = (
+            'CF-Connecting-IP', 'CF-RAY', 'CF-IPCountry', 'CF-Visitor',
+            'CDN-Loop', 'CF-Worker'
+        )
+        for header_name in mitm_headers:
+            if self.headers.get(header_name):
+                return True
+            if self.headers.get(header_name.lower()):
+                return True
         return False
 
     def _get_instance_url(self, calling_domain: str) -> str:
