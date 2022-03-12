@@ -1577,9 +1577,11 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _update_inbox_queue(self, nickname: str, message_json: {},
-                            message_bytes: str) -> int:
+                            message_bytes: str, debug: bool) -> int:
         """Update the inbox queue
         """
+        if debug:
+            
         if self.server.restart_inbox_queue_in_progress:
             self._503()
             print('INBOX: ' +
@@ -19869,27 +19871,28 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         if self.server.debug:
-            print('DEBUG: POST saving to inbox queue')
+            print('INBOX: POST saving to inbox queue')
         if users_in_path:
             path_users_section = self.path.split('/users/')[1]
             if '/' not in path_users_section:
                 if self.server.debug:
-                    print('DEBUG: This is not a users endpoint')
+                    print('INBOX: This is not a users endpoint')
             else:
                 self.post_to_nickname = path_users_section.split('/')[0]
                 if self.post_to_nickname:
                     queue_status = \
                         self._update_inbox_queue(self.post_to_nickname,
-                                                 message_json, message_bytes)
+                                                 message_json, message_bytes,
+                                                 self.server.debug)
                     if queue_status >= 0 and queue_status <= 3:
                         self.server.postreq_busy = False
                         return
                     if self.server.debug:
-                        print('_update_inbox_queue exited ' +
+                        print('INBOX: _update_inbox_queue exited ' +
                               'without doing anything')
                 else:
                     if self.server.debug:
-                        print('self.post_to_nickname is None')
+                        print('INBOX: self.post_to_nickname is None')
             self.send_response(403)
             self.end_headers()
             self.server.postreq_busy = False
@@ -19897,10 +19900,11 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 if self.server.debug:
-                    print('DEBUG: POST to shared inbox')
+                    print('INBOX: POST to shared inbox')
                 queue_status = \
                     self._update_inbox_queue('inbox', message_json,
-                                             message_bytes)
+                                             message_bytes,
+                                             self.server.debug)
                 if queue_status >= 0 and queue_status <= 3:
                     self.server.postreq_busy = False
                     return
