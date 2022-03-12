@@ -57,6 +57,7 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
+from utils import is_unlisted_post
 from content import limit_repeated_words
 from content import replace_emoji_from_tags
 from content import html_replace_quote_marks
@@ -389,7 +390,7 @@ def _get_avatar_image_html(showAvatarOptions: bool,
 
 
 def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
-                         is_public_repeat: bool,
+                         is_public_reply: bool, is_unlisted_reply: bool,
                          show_icons: bool, comments_enabled: bool,
                          post_json_object: {}, page_number_param: str,
                          translate: {}, system_language: str,
@@ -439,10 +440,17 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
     conversation_str = ''
     if conversation_id:
         conversation_str = '?conversationId=' + conversation_id
-    if is_public_repeat:
+    if is_public_reply:
         reply_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyto=' + reply_to_link + \
+            '?actor=' + post_json_object['actor'] + \
+            conversation_str + \
+            '" title="' + reply_to_this_post_str + '">\n'
+    elif is_unlisted_reply:
+        reply_str += \
+            '        <a class="imageAnchor" href="/users/' + \
+            nickname + '?replyunlisted=' + reply_to_link + \
             '?actor=' + post_json_object['actor'] + \
             conversation_str + \
             '" title="' + reply_to_this_post_str + '">\n'
@@ -1698,10 +1706,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
             conversation_id = post_json_object['object']['conversation']
 
     public_reply = False
+    unlisted_reply = False
     if is_public_post(post_json_object):
         public_reply = True
+    if is_unlisted_post(post_json_object):
+        public_reply = False
+        unlisted_reply = True
     reply_str = _get_reply_icon_html(base_dir, nickname, domain,
-                                     public_reply,
+                                     public_reply, unlisted_reply,
                                      show_icons, comments_enabled,
                                      post_json_object, page_number_param,
                                      translate, system_language,

@@ -692,7 +692,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     if inReplyTo:
         dropdown_new_post_suffix += '?replyto=' + inReplyTo
         dropdown_new_blog_suffix += '?replyto=' + inReplyTo
-        dropdown_unlisted_suffix += '?replyto=' + inReplyTo
+        dropdown_unlisted_suffix += '?replyunlisted=' + inReplyTo
         dropdown_followers_suffix += '?replyfollowers=' + inReplyTo
         if reply_is_chat:
             dropdown_dm_suffix += '?replychat=' + inReplyTo

@@ -16799,6 +16799,26 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('DEBUG: replyto path ' + self.path)
 
+            # unlisted reply
+            if '?replyunlisted=' in self.path:
+                in_reply_to_url = self.path.split('?replyunlisted=')[1]
+                if '?' in in_reply_to_url:
+                    mentions_list = in_reply_to_url.split('?')
+                    for m in mentions_list:
+                        if m.startswith('mention='):
+                            reply_handle = m.replace('mention=', '')
+                            if reply_handle not in reply_to_list:
+                                reply_to_list.append(reply_handle)
+                        if m.startswith('page='):
+                            reply_page_str = m.replace('page=', '')
+                            if reply_page_str.isdigit():
+                                reply_page_number = int(reply_page_str)
+                    in_reply_to_url = mentions_list[0]
+                self.path = \
+                    self.path.split('?replyunlisted=')[0] + '/newunlisted'
+                if self.server.debug:
+                    print('DEBUG: replyunlisted path ' + self.path)
+
             # reply to followers
             if '?replyfollowers=' in self.path:
                 in_reply_to_url = self.path.split('?replyfollowers=')[1]
