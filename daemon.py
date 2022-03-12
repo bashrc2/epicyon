@@ -1582,14 +1582,16 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if self.server.restart_inbox_queue_in_progress:
             self._503()
-            print('Message arrived but currently restarting inbox queue')
+            print('INBOX: ' +
+                  'message arrived but currently restarting inbox queue')
             self.server.postreq_busy = False
             return 2
 
         # check that the incoming message has a fully recognized
         # linked data context
         if not has_valid_context(message_json):
-            print('Message arriving at inbox queue has no valid context')
+            print('INBOX: ' +
+                  'message arriving at inbox queue has no valid context')
             self._400()
             self.server.postreq_busy = False
             return 3
@@ -1597,13 +1599,15 @@ class PubServer(BaseHTTPRequestHandler):
         # check for blocked domains so that they can be rejected early
         message_domain = None
         if not has_actor(message_json, self.server.debug):
-            print('Message arriving at inbox queue has no actor')
+            print('INBOX: message arriving at inbox queue has no actor')
             self._400()
             self.server.postreq_busy = False
             return 3
 
         # actor should be a string
         if not isinstance(message_json['actor'], str):
+            print('INBOX: ' +
+                  'actor should be a string ' + str(message_json['actor']))
             self._400()
             self.server.postreq_busy = False
             return 3
@@ -1614,6 +1618,9 @@ class PubServer(BaseHTTPRequestHandler):
             if not message_json.get(check_field):
                 continue
             if not isinstance(message_json[check_field], str):
+                print('INBOX: ' +
+                      'id, type and published fields should be strings ' +
+                      check_field + ' ' + str(message_json[check_field]))
                 self._400()
                 self.server.postreq_busy = False
                 return 3
@@ -1624,6 +1631,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not message_json.get(check_field):
                 continue
             if not isinstance(message_json[check_field], list):
+                print('INBOX: To and Cc fields should be strings ' +
+                      check_field + ' ' + str(message_json[check_field]))
                 self._400()
                 self.server.postreq_busy = False
                 return 3
@@ -1637,6 +1646,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if not message_json['object'].get(check_field):
                     continue
                 if not isinstance(message_json['object'][check_field], str):
+                    print('INBOX: ' +
+                          check_field + ' should be a string ' +
+                          str(message_json[check_field]))
                     self._400()
                     self.server.postreq_busy = False
                     return 3
@@ -1646,6 +1658,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if not message_json['object'].get(check_field):
                     continue
                 if not isinstance(message_json['object'][check_field], list):
+                    print('INBOX: ' +
+                          check_field + ' should be a list ' +
+                          str(message_json[check_field]))
                     self._400()
                     self.server.postreq_busy = False
                     return 3
@@ -1653,7 +1668,7 @@ class PubServer(BaseHTTPRequestHandler):
         # actor should look like a url
         if '://' not in message_json['actor'] or \
            '.' not in message_json['actor']:
-            print('POST actor does not look like a url ' +
+            print('INBOX: POST actor does not look like a url ' +
                   message_json['actor'])
             self._400()
             self.server.postreq_busy = False
@@ -1664,7 +1679,7 @@ class PubServer(BaseHTTPRequestHandler):
             local_network_pattern_list = get_local_network_addresses()
             for local_network_pattern in local_network_pattern_list:
                 if local_network_pattern in message_json['actor']:
-                    print('POST actor contains local network address ' +
+                    print('INBOX: POST actor contains local network address ' +
                           message_json['actor'])
                     self._400()
                     self.server.postreq_busy = False
@@ -1681,7 +1696,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if is_blocked_domain(self.server.base_dir, message_domain,
                              self.server.blocked_cache):
-            print('POST from blocked domain ' + message_domain)
+            print('INBOX: POST from blocked domain ' + message_domain)
             self._400()
             self.server.postreq_busy = False
             return 3
@@ -1689,10 +1704,11 @@ class PubServer(BaseHTTPRequestHandler):
         # if the inbox queue is full then return a busy code
         if len(self.server.inbox_queue) >= self.server.max_queue_length:
             if message_domain:
-                print('Queue: Inbox queue is full. Incoming post from ' +
+                print('INBOX: Queue: ' +
+                      'Inbox queue is full. Incoming post from ' +
                       message_json['actor'])
             else:
-                print('Queue: Inbox queue is full')
+                print('INBOX: Queue: Inbox queue is full')
             self._503()
             clear_queue_items(self.server.base_dir, self.server.inbox_queue)
             if not self.server.restart_inbox_queue_in_progress:
@@ -1735,7 +1751,7 @@ class PubServer(BaseHTTPRequestHandler):
         message_bytes_decoded = message_bytes.decode('utf-8')
 
         if contains_invalid_local_links(message_bytes_decoded):
-            print('WARN: post contains invalid local links ' +
+            print('INBOX: post contains invalid local links ' +
                   str(original_message_json))
             return 5
 
@@ -4358,8 +4374,10 @@ class PubServer(BaseHTTPRequestHandler):
             if '/statuses/' in remove_message_id:
                 remove_post_actor = remove_message_id.split('/statuses/')[0]
             if origin_path_str in remove_post_actor:
-                toList = ['https://www.w3.org/ns/activitystreams#Public',
-                          remove_post_actor]
+                toList = [
+                    'https://www.w3.org/ns/activitystreams#Public',
+                    remove_post_actor
+                ]
                 delete_json = {
                     "@context": "https://www.w3.org/ns/activitystreams",
                     'actor': remove_post_actor,
