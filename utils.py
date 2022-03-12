@@ -1383,8 +1383,6 @@ def locate_post(base_dir: str, nickname: str, domain: str,
     account_dir = acct_dir(base_dir, nickname, domain) + '/'
     for box_name in boxes:
         post_filename = account_dir + box_name + '/' + post_url
-        if box_name == 'outbox':
-            print('locate_post filename: ' + post_filename)
         if os.path.isfile(post_filename):
             return post_filename
 

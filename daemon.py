@@ -4337,6 +4337,7 @@ class PubServer(BaseHTTPRequestHandler):
                 remove_post_confirm_params.split('messageId=')[1]
             if '&' in remove_message_id:
                 remove_message_id = remove_message_id.split('&')[0]
+            print('remove_message_id: ' + remove_message_id)
             if 'pageNumber=' in remove_post_confirm_params:
                 page_number_str = \
                     remove_post_confirm_params.split('pageNumber=')[1]
