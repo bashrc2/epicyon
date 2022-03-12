@@ -4401,6 +4401,8 @@ class PubServer(BaseHTTPRequestHandler):
                     month_str = month_str.split('&')[0]
             if '/statuses/' in remove_message_id:
                 remove_post_actor = remove_message_id.split('/statuses/')[0]
+            print('origin_path_str: ' + origin_path_str)
+            print('remove_post_actor: ' + remove_post_actor)
             if origin_path_str in remove_post_actor:
                 toList = [
                     'https://www.w3.org/ns/activitystreams#Public',
