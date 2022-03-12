@@ -3407,7 +3407,7 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    print('allowdeletion: ' + str(allowdeletion))
+    print('allowdeletion: ' + str(args.allowdeletion))
     run_daemon(crawlers_allowed,
                args.dyslexic_font,
                content_license_url,
