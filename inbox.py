@@ -3926,7 +3926,8 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
     return has_json_signature, jwebsig_type
 
 
-def _receive_follow_request(session, base_dir: str, http_prefix: str,
+def _receive_follow_request(session, session_onion, session_i2p,
+                            base_dir: str, http_prefix: str,
                             port: int, send_threads: [], post_log: [],
                             cached_webfingers: {}, person_cache: {},
                             message_json: {}, federation_list: [],
@@ -4012,8 +4013,23 @@ def _receive_follow_request(session, base_dir: str, http_prefix: str,
 
     approve_handle = nickname + '@' + domain_full
 
+    curr_session = session
+    curr_http_prefix = http_prefix
+    curr_domain = domain
+    curr_port = from_port
+    if onion_domain and domain_to_follow.endswith('.onion'):
+        curr_session = session_onion
+        curr_http_prefix = 'http'
+        curr_domain = onion_domain
+        curr_port = 80
+    elif i2p_domain and domain_to_follow.endswith('.i2p'):
+        curr_session = session_i2p
+        curr_http_prefix = 'http'
+        curr_domain = i2p_domain
+        curr_port = 80
+
     # is the actor sending the request valid?
-    if not valid_sending_actor(session, base_dir,
+    if not valid_sending_actor(curr_session, base_dir,
                                nickname_to_follow, domain_to_follow,
                                person_cache, message_json,
                                signing_priv_key_pem, debug, unit_test):
@@ -4050,9 +4066,11 @@ def _receive_follow_request(session, base_dir: str, http_prefix: str,
         # Getting their public key has the same result
         if debug:
             print('Obtaining the following actor: ' + message_json['actor'])
-        if not get_person_pub_key(base_dir, session, message_json['actor'],
+        if not get_person_pub_key(base_dir, curr_session,
+                                  message_json['actor'],
                                   person_cache, debug, project_version,
-                                  http_prefix, domain_to_follow, onion_domain,
+                                  curr_http_prefix,
+                                  domain_to_follow, onion_domain,
                                   i2p_domain, signing_priv_key_pem):
             if debug:
                 print('Unable to obtain following actor: ' +
@@ -4088,9 +4106,10 @@ def _receive_follow_request(session, base_dir: str, http_prefix: str,
             if debug:
                 print('Obtaining the following actor: ' +
                       message_json['actor'])
-            if not get_person_pub_key(base_dir, session, message_json['actor'],
+            if not get_person_pub_key(base_dir, curr_session,
+                                      message_json['actor'],
                                       person_cache, debug, project_version,
-                                      http_prefix, domain_to_follow,
+                                      curr_http_prefix, domain_to_follow,
                                       onion_domain, i2p_domain,
                                       signing_priv_key_pem):
                 if debug:
@@ -4134,9 +4153,9 @@ def _receive_follow_request(session, base_dir: str, http_prefix: str,
                     print('EX: unable to write ' + followers_filename)
 
     print('Beginning follow accept')
-    return followed_account_accepts(session, base_dir, http_prefix,
+    return followed_account_accepts(curr_session, base_dir, curr_http_prefix,
                                     nickname_to_follow, domain_to_follow, port,
-                                    nickname, domain, from_port,
+                                    nickname, curr_domain, curr_port,
                                     message_json['actor'], federation_list,
                                     message_json, send_threads, post_log,
                                     cached_webfingers, person_cache,
@@ -4504,7 +4523,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
 
         if debug:
             print('DEBUG: checking for follow requests')
-        if _receive_follow_request(curr_session,
+        if _receive_follow_request(curr_session, session_onion, session_i2p,
                                    base_dir, http_prefix, port,
                                    send_threads, post_log,
                                    cached_webfingers,
