@@ -947,19 +947,19 @@ def send_follow_request(session, base_dir: str,
     return new_follow_json
 
 
-def send_follow_requestViaServer(base_dir: str, session,
-                                 from_nickname: str, password: str,
-                                 from_domain: str, from_port: int,
-                                 follow_nickname: str, follow_domain: str,
-                                 followPort: int,
-                                 http_prefix: str,
-                                 cached_webfingers: {}, person_cache: {},
-                                 debug: bool, project_version: str,
-                                 signing_priv_key_pem: str) -> {}:
+def send_follow_request_via_server(base_dir: str, session,
+                                   from_nickname: str, password: str,
+                                   from_domain: str, from_port: int,
+                                   follow_nickname: str, follow_domain: str,
+                                   followPort: int,
+                                   http_prefix: str,
+                                   cached_webfingers: {}, person_cache: {},
+                                   debug: bool, project_version: str,
+                                   signing_priv_key_pem: str) -> {}:
     """Creates a follow request via c2s
     """
     if not session:
-        print('WARN: No session for send_follow_requestViaServer')
+        print('WARN: No session for send_follow_request_via_server')
         return 6
 
     from_domain_full = get_full_domain(from_domain, from_port)

@@ -51,7 +51,7 @@ from posts import send_post_via_server
 from posts import seconds_between_published
 from follow import clear_follows
 from follow import clear_followers
-from follow import send_follow_requestViaServer
+from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
 from utils import convert_published_to_local_timezone
@@ -3094,13 +3094,13 @@ def test_client_to_server(base_dir: str):
 
     print('\n\nAlice follows Bob')
     signing_priv_key_pem = None
-    send_follow_requestViaServer(alice_dir, session_alice,
-                                 'alice', password,
-                                 alice_domain, alice_port,
-                                 'bob', bob_domain, bob_port,
-                                 http_prefix,
-                                 cached_webfingers, person_cache,
-                                 True, __version__, signing_priv_key_pem)
+    send_follow_request_via_server(alice_dir, session_alice,
+                                   'alice', password,
+                                   alice_domain, alice_port,
+                                   'bob', bob_domain, bob_port,
+                                   http_prefix,
+                                   cached_webfingers, person_cache,
+                                   True, __version__, signing_priv_key_pem)
     alice_petnames_filename = alice_dir + '/accounts/' + \
         'alice@' + alice_domain + '/petnames.txt'
     alice_following_filename = \
@@ -3136,13 +3136,13 @@ def test_client_to_server(base_dir: str):
                                  alice_domain, alice_port)
 
     print('\n\nEVENT: Bob follows Alice')
-    send_follow_requestViaServer(alice_dir, session_alice,
-                                 'bob', 'bobpass',
-                                 bob_domain, bob_port,
-                                 'alice', alice_domain, alice_port,
-                                 http_prefix,
-                                 cached_webfingers, person_cache,
-                                 True, __version__, signing_priv_key_pem)
+    send_follow_request_via_server(alice_dir, session_alice,
+                                   'bob', 'bobpass',
+                                   bob_domain, bob_port,
+                                   'alice', alice_domain, alice_port,
+                                   http_prefix,
+                                   cached_webfingers, person_cache,
+                                   True, __version__, signing_priv_key_pem)
     for _ in range(10):
         if os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
                           '/followers.txt'):
