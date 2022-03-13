@@ -4154,6 +4154,9 @@ def _receive_follow_request(session, session_onion, session_i2p,
                         followers_file.write(approve_handle + '\n')
                 except OSError:
                     print('EX: unable to write ' + followers_filename)
+        else:
+            print('ACCEPT: Follow Accept account directory not found: ' +
+                  account_to_be_followed)
 
     print('Beginning follow accept')
     return followed_account_accepts(curr_session, base_dir, curr_http_prefix,
