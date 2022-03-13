@@ -753,7 +753,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
 def _receive_undo_follow(session, base_dir: str, http_prefix: str,
                          port: int, message_json: {},
                          federation_list: [],
-                         debug: bool) -> bool:
+                         debug: bool, domain: str,
+                         onion_domain: str, i2p_domain: str) -> bool:
     if not message_json['object'].get('actor'):
         if debug:
             print('DEBUG: follow request has no actor within object')
@@ -786,6 +787,9 @@ def _receive_undo_follow(session, base_dir: str, http_prefix: str,
         return False
     domain_following, port_following = \
         get_domain_from_actor(message_json['object']['object'])
+    if domain_following.endswith(onion_domain) or \
+       domain_following.endswith(i2p_domain):
+        domain_following = domain
     domain_following_full = get_full_domain(domain_following, port_following)
 
     group_account = \
@@ -810,7 +814,8 @@ def _receive_undo(session, base_dir: str, http_prefix: str,
                   port: int, send_threads: [], post_log: [],
                   cached_webfingers: {}, person_cache: {},
                   message_json: {}, federation_list: [],
-                  debug: bool) -> bool:
+                  debug: bool, domain: str,
+                  onion_domain: str, i2p_domain: str) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
     if not message_json['type'].startswith('Undo'):
@@ -831,7 +836,8 @@ def _receive_undo(session, base_dir: str, http_prefix: str,
        message_json['object']['type'] == 'Join':
         return _receive_undo_follow(session, base_dir, http_prefix,
                                     port, message_json,
-                                    federation_list, debug)
+                                    federation_list, debug,
+                                    domain, onion_domain, i2p_domain)
     return False
 
 
@@ -1009,7 +1015,7 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
 def _receive_like(recent_posts_cache: {},
                   session, handle: str, is_group: bool, base_dir: str,
                   http_prefix: str, domain: str, port: int,
-                  onion_domain: str,
+                  onion_domain: str, i2p_domain: str,
                   send_threads: [], post_log: [], cached_webfingers: {},
                   person_cache: {}, message_json: {}, federation_list: [],
                   debug: bool,
@@ -3281,7 +3287,7 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                      session, handle, is_group,
                      base_dir, http_prefix,
                      domain, port,
-                     onion_domain,
+                     onion_domain, i2p_domain,
                      send_threads, post_log,
                      cached_webfingers,
                      person_cache,
@@ -3933,7 +3939,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                             cached_webfingers: {}, person_cache: {},
                             message_json: {}, federation_list: [],
                             debug: bool, project_version: str,
-                            max_followers: int, onion_domain: str,
+                            max_followers: int,
+                            curr_domain: str, onion_domain: str,
                             i2p_domain: str, signing_priv_key_pem: str,
                             unit_test: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
@@ -3972,6 +3979,10 @@ def _receive_follow_request(session, session_onion, session_i2p,
                   'not found within object')
         return False
     domain_to_follow, temp_port = get_domain_from_actor(message_json['object'])
+    # switch to the local domain rather than its onion or i2p version
+    if domain_to_follow.endswith(onion_domain) or \
+       domain_to_follow.endswith(i2p_domain):
+        domain_to_follow = curr_domain
     if not domain_permitted(domain_to_follow, federation_list):
         if debug:
             print('DEBUG: follow domain not permitted ' + domain_to_follow)
@@ -4515,7 +4526,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                          person_cache,
                          queue_json['post'],
                          federation_list,
-                         debug):
+                         debug, domain, onion_domain, i2p_domain):
             print('Queue: Undo accepted from ' + key_id)
             if os.path.isfile(queue_filename):
                 try:
@@ -4537,7 +4548,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                    queue_json['post'],
                                    federation_list,
                                    debug, project_version,
-                                   max_followers, onion_domain, i2p_domain,
+                                   max_followers, domain,
+                                   onion_domain, i2p_domain,
                                    signing_priv_key_pem, unit_test):
             if os.path.isfile(queue_filename):
                 try:
