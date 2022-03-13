@@ -4602,7 +4602,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                  send_threads, post_log,
                                  cached_webfingers, person_cache,
                                  queue_json['post'],
-                                 federation_list, debug):
+                                 federation_list, debug,
+                                 domain, onion_domain, i2p_domain):
             print('Queue: Accept/Reject received from ' + key_id)
             if os.path.isfile(queue_filename):
                 try:
