@@ -4020,6 +4020,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                       base_dir + '/accounts/' + handle_to_follow)
             return True
 
+    is_already_follower = False
     if is_follower_of_person(base_dir,
                              nickname_to_follow, domain_to_follow_full,
                              nickname, domain_full):
@@ -4027,7 +4028,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
             print('DEBUG: ' + nickname + '@' + domain +
                   ' is already a follower of ' +
                   nickname_to_follow + '@' + domain_to_follow)
-        return True
+        is_already_follower = True
 
     approve_handle = nickname + '@' + domain_full
 
@@ -4057,7 +4058,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
         return False
 
     # what is the followers policy?
-    if follow_approval_required(base_dir, nickname_to_follow,
+    if not is_already_follower and \
+       follow_approval_required(base_dir, nickname_to_follow,
                                 domain_to_follow, debug, approve_handle):
         print('Follow approval is required')
         if domain.endswith('.onion'):
@@ -4109,7 +4111,12 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     message_json, debug, message_json['actor'],
                                     group_account)
     else:
-        print('Follow request does not require approval ' + approve_handle)
+        if is_already_follower:
+            print(approve_handle + ' is already a follower. ' +
+                  'Re-sending Accept.')
+        else:
+            print('Follow request does not require approval ' +
+                  approve_handle)
         # update the followers
         account_to_be_followed = \
             acct_dir(base_dir, nickname_to_follow, domain_to_follow)
