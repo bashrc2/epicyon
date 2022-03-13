@@ -3952,7 +3952,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                             message_json: {}, federation_list: [],
                             debug: bool, project_version: str,
                             max_followers: int,
-                            curr_domain: str, onion_domain: str,
+                            this_domain: str, onion_domain: str,
                             i2p_domain: str, signing_priv_key_pem: str,
                             unit_test: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
@@ -3994,10 +3994,10 @@ def _receive_follow_request(session, session_onion, session_i2p,
     # switch to the local domain rather than its onion or i2p version
     if onion_domain:
         if domain_to_follow.endswith(onion_domain):
-            domain_to_follow = curr_domain
+            domain_to_follow = this_domain
     if i2p_domain:
         if domain_to_follow.endswith(i2p_domain):
-            domain_to_follow = curr_domain
+            domain_to_follow = this_domain
     if not domain_permitted(domain_to_follow, federation_list):
         if debug:
             print('DEBUG: follow domain not permitted ' + domain_to_follow)
@@ -4200,7 +4200,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     cached_webfingers, person_cache,
                                     debug, project_version, True,
                                     signing_priv_key_pem,
-                                    curr_domain, onion_domain, i2p_domain)
+                                    this_domain, onion_domain, i2p_domain)
 
 
 def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
