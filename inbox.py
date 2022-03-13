@@ -787,9 +787,12 @@ def _receive_undo_follow(session, base_dir: str, http_prefix: str,
         return False
     domain_following, port_following = \
         get_domain_from_actor(message_json['object']['object'])
-    if domain_following.endswith(onion_domain) or \
-       domain_following.endswith(i2p_domain):
-        domain_following = domain
+    if onion_domain:
+        if domain_following.endswith(onion_domain):
+            domain_following = domain
+    if i2p_domain:
+        if domain_following.endswith(i2p_domain):
+            domain_following = domain
     domain_following_full = get_full_domain(domain_following, port_following)
 
     group_account = \
@@ -3980,9 +3983,12 @@ def _receive_follow_request(session, session_onion, session_i2p,
         return False
     domain_to_follow, temp_port = get_domain_from_actor(message_json['object'])
     # switch to the local domain rather than its onion or i2p version
-    if domain_to_follow.endswith(onion_domain) or \
-       domain_to_follow.endswith(i2p_domain):
-        domain_to_follow = curr_domain
+    if onion_domain:
+        if domain_to_follow.endswith(onion_domain):
+            domain_to_follow = curr_domain
+    if i2p_domain:
+        if domain_to_follow.endswith(i2p_domain):
+            domain_to_follow = curr_domain
     if not domain_permitted(domain_to_follow, federation_list):
         if debug:
             print('DEBUG: follow domain not permitted ' + domain_to_follow)
