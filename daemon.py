@@ -8535,10 +8535,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if following_handle.endswith('.onion'):
                     curr_session = self.server.session_onion
                     proxy_type = 'tor'
+                    port = 80
             if self.server.i2p_domain:
                 if following_handle.endswith('.i2p'):
                     curr_session = self.server.session_i2p
                     proxy_type = 'i2p'
+                    port = 80
 
             curr_session = \
                 self._establish_session("followApproveButton",

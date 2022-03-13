@@ -3112,12 +3112,16 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                 from_domain_full = onion_domain
                 from_http_prefix = 'http'
                 curr_session = session_onion
+                port = 80
+                to_port = 80
         if i2p_domain:
             if to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
                 from_domain_full = i2p_domain
                 from_http_prefix = 'http'
                 curr_session = session_i2p
+                port = 80
+                to_port = 80
         cc_list = []
 
         # if the "to" domain is within the shared items
@@ -3324,10 +3328,14 @@ def send_to_followers(session, session_onion, session_i2p,
             if to_domain.endswith('.onion'):
                 from_domain = onion_domain
                 from_http_prefix = 'http'
+                port = 80
+                to_port = 80
         if i2p_domain:
             if to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
                 from_http_prefix = 'http'
+                port = 80
+                to_port = 80
 
         if with_shared_inbox:
             to_nickname = follower_handles[index].split('@')[0]
