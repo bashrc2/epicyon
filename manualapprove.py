@@ -222,12 +222,14 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                approve_domain.endswith('.onion'):
                                 curr_domain = onion_domain
                                 curr_port = 80
+                                approve_port = 80
                                 curr_session = session_onion
                                 curr_http_prefix = 'http'
                             elif (i2p_domain and
                                   approve_domain.endswith('.i2p')):
                                 curr_domain = i2p_domain
                                 curr_port = 80
+                                approve_port = 80
                                 curr_session = session_i2p
                                 curr_http_prefix = 'http'
 

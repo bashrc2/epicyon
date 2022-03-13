@@ -3381,6 +3381,7 @@ class PubServer(BaseHTTPRequestHandler):
                         curr_session = self.server.session_onion
                         curr_domain = onion_domain
                         curr_port = 80
+                        following_port = 80
                         curr_http_prefix = 'http'
                         curr_proxy_type = 'tor'
                 if i2p_domain:
@@ -3388,6 +3389,7 @@ class PubServer(BaseHTTPRequestHandler):
                         curr_session = self.server.session_i2p
                         curr_domain = i2p_domain
                         curr_port = 80
+                        following_port = 80
                         curr_http_prefix = 'http'
                         curr_proxy_type = 'i2p'
 

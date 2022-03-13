@@ -4023,11 +4023,13 @@ def _receive_follow_request(session, session_onion, session_i2p,
         curr_http_prefix = 'http'
         curr_domain = onion_domain
         curr_port = 80
+        port = 80
     elif i2p_domain and domain_to_follow.endswith('.i2p'):
         curr_session = session_i2p
         curr_http_prefix = 'http'
         curr_domain = i2p_domain
         curr_port = 80
+        port = 80
 
     # is the actor sending the request valid?
     if not valid_sending_actor(curr_session, base_dir,
