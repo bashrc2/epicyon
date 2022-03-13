@@ -4045,7 +4045,9 @@ def _receive_follow_request(session, session_onion, session_i2p,
     curr_http_prefix = http_prefix
     curr_domain = domain
     curr_port = from_port
-    if onion_domain and domain_to_follow.endswith('.onion'):
+    if onion_domain and \
+       not curr_domain.endswith('.onion') and \
+       domain_to_follow.endswith('.onion'):
         curr_session = session_onion
         curr_http_prefix = 'http'
         curr_domain = onion_domain
@@ -4053,7 +4055,9 @@ def _receive_follow_request(session, session_onion, session_i2p,
         port = 80
         if debug:
             print('Domain switched from ' + domain + ' to ' + curr_domain)
-    elif i2p_domain and domain_to_follow.endswith('.i2p'):
+    elif (i2p_domain and
+          not curr_domain.endswith('.i2p') and
+          domain_to_follow.endswith('.i2p')):
         curr_session = session_i2p
         curr_http_prefix = 'http'
         curr_domain = i2p_domain

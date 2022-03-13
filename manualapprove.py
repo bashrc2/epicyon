@@ -222,6 +222,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                             curr_http_prefix = http_prefix
                             curr_proxy_type = proxy_type
                             if onion_domain and \
+                               not curr_domain.endswith('.onion') and \
                                approve_domain.endswith('.onion'):
                                 curr_domain = onion_domain
                                 curr_port = 80
@@ -230,6 +231,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                 curr_http_prefix = 'http'
                                 curr_proxy_type = 'tor'
                             elif (i2p_domain and
+                                  not curr_domain.endswith('.i2p') and
                                   approve_domain.endswith('.i2p')):
                                 curr_domain = i2p_domain
                                 curr_port = 80

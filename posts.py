@@ -3115,7 +3115,8 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
         from_http_prefix = http_prefix
         curr_session = session
         if onion_domain:
-            if to_domain.endswith('.onion'):
+            if not from_domain.endswith('.onion') and \
+               to_domain.endswith('.onion'):
                 from_domain = onion_domain
                 from_domain_full = onion_domain
                 from_http_prefix = 'http'
@@ -3123,7 +3124,8 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                 port = 80
                 to_port = 80
         if i2p_domain:
-            if to_domain.endswith('.i2p'):
+            if not from_domain.endswith('.i2p') and \
+               to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
                 from_domain_full = i2p_domain
                 from_http_prefix = 'http'

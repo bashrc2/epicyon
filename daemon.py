@@ -3379,7 +3379,8 @@ class PubServer(BaseHTTPRequestHandler):
                 curr_http_prefix = http_prefix
                 curr_proxy_type = proxy_type
                 if onion_domain:
-                    if following_domain.endswith('.onion'):
+                    if not curr_domain.endswith('.onion') and \
+                       following_domain.endswith('.onion'):
                         curr_session = self.server.session_onion
                         curr_domain = onion_domain
                         curr_port = 80
@@ -3387,7 +3388,8 @@ class PubServer(BaseHTTPRequestHandler):
                         curr_http_prefix = 'http'
                         curr_proxy_type = 'tor'
                 if i2p_domain:
-                    if following_domain.endswith('.i2p'):
+                    if not curr_domain.endswith('.i2p') and \
+                       following_domain.endswith('.i2p'):
                         curr_session = self.server.session_i2p
                         curr_domain = i2p_domain
                         curr_port = 80
