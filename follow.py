@@ -108,8 +108,8 @@ def _remove_from_follow_base(base_dir: str,
     approve_follows_filename = accounts_dir + '/' + follow_file + '.txt'
     if not os.path.isfile(approve_follows_filename):
         if debug:
-            print('WARN: Approve follow requests file ' +
-                  approve_follows_filename + ' not found')
+            print('There is no ' + follow_file +
+                  ' to remove ' + handle + ' from')
         return
     accept_deny_actor = None
     if accept_or_deny_handle not in open(approve_follows_filename).read():
