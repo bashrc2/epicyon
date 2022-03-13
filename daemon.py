@@ -3375,18 +3375,26 @@ class PubServer(BaseHTTPRequestHandler):
                 curr_domain = domain
                 curr_port = port
                 curr_http_prefix = http_prefix
+                curr_proxy_type = proxy_type
                 if onion_domain:
                     if following_domain.endswith('.onion'):
                         curr_session = self.server.session_onion
                         curr_domain = onion_domain
                         curr_port = 80
                         curr_http_prefix = 'http'
+                        curr_proxy_type = 'tor'
                 if i2p_domain:
                     if following_domain.endswith('.i2p'):
                         curr_session = self.server.session_i2p
                         curr_domain = i2p_domain
                         curr_port = 80
                         curr_http_prefix = 'http'
+                        curr_proxy_type = 'i2p'
+
+                curr_session = \
+                    self._establish_session("follow request",
+                                            curr_session,
+                                            curr_proxy_type)
 
                 send_follow_request(curr_session,
                                     base_dir, follower_nickname,
