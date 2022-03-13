@@ -8530,7 +8530,6 @@ class PubServer(BaseHTTPRequestHandler):
                 handle_nickname + '@' + \
                 get_full_domain(handle_domain, handle_port)
         if '@' in following_handle:
-
             if self.server.onion_domain:
                 if following_handle.endswith('.onion'):
                     curr_session = self.server.session_onion
@@ -8546,11 +8545,13 @@ class PubServer(BaseHTTPRequestHandler):
                 self._establish_session("followApproveButton",
                                         curr_session, proxy_type)
             if not curr_session:
+                print('WARN: unable to establish session ' +
+                      'when approving follow request')
                 self._404()
                 return
             signing_priv_key_pem = \
                 self.server.signing_priv_key_pem
-            manual_approve_follow_request_thread(curr_session,
+            manual_approve_follow_request_thread(self.server.session,
                                                  self.server.session_onion,
                                                  self.server.session_i2p,
                                                  self.server.onion_domain,
@@ -8714,7 +8715,7 @@ class PubServer(BaseHTTPRequestHandler):
                 handle_nickname + '@' + \
                 get_full_domain(handle_domain, handle_port)
         if '@' in following_handle:
-            manual_deny_follow_request_thread(curr_session,
+            manual_deny_follow_request_thread(self.server.session,
                                               self.server.session_onion,
                                               self.server.session_i2p,
                                               self.server.onion_domain,
