@@ -8548,7 +8548,7 @@ class PubServer(BaseHTTPRequestHandler):
                     port = 80
 
             curr_session = \
-                self._establish_session("followApproveButton",
+                self._establish_session("follow_approve_button",
                                         curr_session, proxy_type)
             if not curr_session:
                 print('WARN: unable to establish session ' +
@@ -8573,7 +8573,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.person_cache,
                                                  debug,
                                                  self.server.project_version,
-                                                 signing_priv_key_pem)
+                                                 signing_priv_key_pem,
+                                                 proxy_type)
         origin_path_str_absolute = \
             http_prefix + '://' + domain_full + origin_path_str
         if calling_domain.endswith('.onion') and onion_domain:

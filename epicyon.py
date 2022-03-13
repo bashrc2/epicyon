@@ -1293,7 +1293,7 @@ if args.approve:
                                   send_threads, postLog,
                                   cached_webfingers, person_cache,
                                   debug, __version__,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, proxy_type)
     sys.exit()
 
 if args.deny:
