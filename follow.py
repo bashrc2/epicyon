@@ -731,7 +731,9 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              removeFollowActivity: bool,
-                             signing_priv_key_pem: str):
+                             signing_priv_key_pem: str,
+                             curr_domain: str,
+                             onion_domain: str, i2p_domain: str):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
@@ -780,10 +782,12 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                             send_threads, postLog, cached_webfingers,
                             person_cache, debug, project_version, None,
                             group_account, signing_priv_key_pem,
-                            7856837)
+                            7856837, curr_domain, onion_domain, i2p_domain)
 
 
-def followed_account_rejects(session, base_dir: str, http_prefix: str,
+def followed_account_rejects(session, session_onion, session_i2p,
+                             onion_domain: str, i2p_domain: str,
+                             base_dir: str, http_prefix: str,
                              nickname_to_follow: str, domain_to_follow: str,
                              port: int,
                              nickname: str, domain: str, from_port: int,
@@ -848,7 +852,8 @@ def followed_account_rejects(session, base_dir: str, http_prefix: str,
                             send_threads, postLog, cached_webfingers,
                             person_cache, debug, project_version, None,
                             group_account, signing_priv_key_pem,
-                            6393063)
+                            6393063,
+                            domain, onion_domain, i2p_domain)
 
 
 def send_follow_request(session, base_dir: str,
@@ -861,7 +866,9 @@ def send_follow_request(session, base_dir: str,
                         client_to_server: bool, federation_list: [],
                         send_threads: [], postLog: [], cached_webfingers: {},
                         person_cache: {}, debug: bool,
-                        project_version: str, signing_priv_key_pem: str) -> {}:
+                        project_version: str, signing_priv_key_pem: str,
+                        curr_domain: str,
+                        onion_domain: str, i2p_domain: str) -> {}:
     """Gets the json object for sending a follow request
     """
     if not signing_priv_key_pem:
@@ -942,7 +949,8 @@ def send_follow_request(session, base_dir: str,
                      federation_list,
                      send_threads, postLog, cached_webfingers, person_cache,
                      debug, project_version, None, group_account,
-                     signing_priv_key_pem, 8234389)
+                     signing_priv_key_pem, 8234389,
+                     curr_domain, onion_domain, i2p_domain)
 
     return new_follow_json
 

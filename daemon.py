@@ -3412,7 +3412,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cached_webfingers,
                                     self.server.person_cache, debug,
                                     self.server.project_version,
-                                    self.server.signing_priv_key_pem)
+                                    self.server.signing_priv_key_pem,
+                                    self.server.domain,
+                                    self.server.onion_domain,
+                                    self.server.i2p_domain)
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -8306,7 +8309,10 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.cached_webfingers,
                             debug,
                             self.server.project_version,
-                            self.server.signing_priv_key_pem)
+                            self.server.signing_priv_key_pem,
+                            self.server.domain,
+                            self.server.onion_domain,
+                            self.server.i2p_domain)
         announce_filename = None
         if announce_json:
             # save the announce straight to the outbox

@@ -2664,6 +2664,7 @@ def _send_to_group_members(session, session_onion, session_i2p,
                            cached_webfingers: {},
                            person_cache: {}, debug: bool,
                            system_language: str,
+                           curr_domain: str,
                            onion_domain: str, i2p_domain: str,
                            signing_priv_key_pem: str) -> None:
     """When a post arrives for a group send it out to the group members
@@ -2716,7 +2717,8 @@ def _send_to_group_members(session, session_onion, session_i2p,
                         http_prefix, post_id, False, False,
                         send_threads, post_log,
                         person_cache, cached_webfingers,
-                        debug, __version__, signing_priv_key_pem)
+                        debug, __version__, signing_priv_key_pem,
+                        curr_domain, onion_domain, i2p_domain)
 
     send_to_followers_thread(session, session_onion, session_i2p,
                              base_dir, nickname, domain,
@@ -2854,7 +2856,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                signing_priv_key_pem: str,
                content_license_url: str,
                languages_understood: [],
-               bounce_is_chat: bool) -> bool:
+               bounce_is_chat: bool,
+               curr_domain: str, onion_domain: str, i2p_domain: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2928,7 +2931,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                      http_prefix, False, False, federation_list,
                      send_threads, post_log, cached_webfingers,
                      person_cache, debug, __version__, None, group_account,
-                     signing_priv_key_pem, 7238634)
+                     signing_priv_key_pem, 7238634,
+                     curr_domain, onion_domain, i2p_domain)
     return True
 
 
@@ -2944,7 +2948,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                  handle: str, system_language: str,
                  signing_priv_key_pem: str,
                  content_license_url: str,
-                 languages_understood: []) -> bool:
+                 languages_understood: [],
+                 curr_domain: str, onion_domain: str, i2p_domain: str) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -3031,7 +3036,9 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                                        signing_priv_key_pem,
                                        content_license_url,
                                        languages_understood,
-                                       bounce_chat)
+                                       bounce_chat,
+                                       curr_domain,
+                                       onion_domain, i2p_domain)
                 return False
 
     # dm index will be updated
@@ -3559,7 +3566,9 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                                     handle, system_language,
                                     signing_priv_key_pem,
                                     content_license_url,
-                                    languages_understood):
+                                    languages_understood,
+                                    domain,
+                                    onion_domain, i2p_domain):
                     return False
 
             # get the actor being replied to
@@ -3701,7 +3710,7 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                                        post_log, cached_webfingers,
                                        person_cache,
                                        debug, system_language,
-                                       onion_domain, i2p_domain,
+                                       domain, onion_domain, i2p_domain,
                                        signing_priv_key_pem)
 
     # if the post wasn't saved
@@ -4190,7 +4199,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     message_json, send_threads, post_log,
                                     cached_webfingers, person_cache,
                                     debug, project_version, True,
-                                    signing_priv_key_pem)
+                                    signing_priv_key_pem,
+                                    curr_domain, onion_domain, i2p_domain)
 
 
 def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,

@@ -2723,7 +2723,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                      person_cache: {}, debug: bool, project_version: str,
                      shared_items_token: str, group_account: bool,
                      signing_priv_key_pem: str,
-                     source_id: int) -> int:
+                     source_id: int, curr_domain: str,
+                     onion_domain: str, i2p_domain: str) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -2819,12 +2820,19 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     # shared_inbox is optional
 
     # get the senders private key
+    account_domain = origin_domain
+    if onion_domain:
+        if account_domain == onion_domain:
+            account_domain = curr_domain
+    if i2p_domain:
+        if account_domain == i2p_domain:
+            account_domain = curr_domain
     private_key_pem = \
-        _get_person_key(nickname, domain, base_dir, 'private', debug)
+        _get_person_key(nickname, account_domain, base_dir, 'private', debug)
     if len(private_key_pem) == 0:
         if debug:
             print('DEBUG: Private key not found for ' +
-                  nickname + '@' + domain +
+                  nickname + '@' + account_domain +
                   ' in ' + base_dir + '/keys/private')
         return 6
 
@@ -3143,7 +3151,8 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                          send_threads, post_log, cached_webfingers,
                          person_cache, debug, project_version,
                          shared_items_token, group_account,
-                         signing_priv_key_pem, 34436782)
+                         signing_priv_key_pem, 34436782,
+                         domain, onion_domain, i2p_domain)
 
 
 def send_to_named_addresses_thread(session, session_onion, session_i2p,
@@ -3368,7 +3377,8 @@ def send_to_followers(session, session_onion, session_i2p,
                              send_threads, post_log, cached_webfingers,
                              person_cache, debug, project_version,
                              shared_items_token, group_account,
-                             signing_priv_key_pem, 639342)
+                             signing_priv_key_pem, 639342,
+                             domain, onion_domain, i2p_domain)
         else:
             # send to individual followers without using a shared inbox
             for handle in follower_handles:
@@ -3397,7 +3407,8 @@ def send_to_followers(session, session_onion, session_i2p,
                                  send_threads, post_log, cached_webfingers,
                                  person_cache, debug, project_version,
                                  shared_items_token, group_account,
-                                 signing_priv_key_pem, 634219)
+                                 signing_priv_key_pem, 634219,
+                                 domain, onion_domain, i2p_domain)
 
         time.sleep(4)
 

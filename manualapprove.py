@@ -251,7 +251,10 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                                      person_cache,
                                                      debug,
                                                      project_version, False,
-                                                     signing_priv_key_pem)
+                                                     signing_priv_key_pem,
+                                                     domain,
+                                                     onion_domain,
+                                                     i2p_domain)
                     update_approved_followers = True
                 else:
                     # this isn't the approved follow so it will remain

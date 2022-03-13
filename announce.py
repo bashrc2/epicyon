@@ -141,7 +141,9 @@ def create_announce(session, base_dir: str, federation_list: [],
                     send_threads: [], postLog: [],
                     person_cache: {}, cached_webfingers: {},
                     debug: bool, project_version: str,
-                    signing_priv_key_pem: str) -> {}:
+                    signing_priv_key_pem: str,
+                    curr_domain: str,
+                    onion_domain: str, i2p_domain: str) -> {}:
     """Creates an announce message
     Typically to_url will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the
@@ -202,7 +204,8 @@ def create_announce(session, base_dir: str, federation_list: [],
                          send_threads, postLog, cached_webfingers,
                          person_cache,
                          debug, project_version, None, group_account,
-                         signing_priv_key_pem, 639633)
+                         signing_priv_key_pem, 639633,
+                         curr_domain, onion_domain, i2p_domain)
 
     return new_announce
 
@@ -213,7 +216,9 @@ def announce_public(session, base_dir: str, federation_list: [],
                     send_threads: [], postLog: [],
                     person_cache: {}, cached_webfingers: {},
                     debug: bool, project_version: str,
-                    signing_priv_key_pem: str) -> {}:
+                    signing_priv_key_pem: str,
+                    curr_domain: str,
+                    onion_domain: str, i2p_domain: str) -> {}:
     """Makes a public announcement
     """
     from_domain = get_full_domain(domain, port)
@@ -227,7 +232,8 @@ def announce_public(session, base_dir: str, federation_list: [],
                            send_threads, postLog,
                            person_cache, cached_webfingers,
                            debug, project_version,
-                           signing_priv_key_pem)
+                           signing_priv_key_pem, curr_domain,
+                           onion_domain, i2p_domain)
 
 
 def send_announce_via_server(base_dir: str, session,

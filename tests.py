@@ -1393,7 +1393,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                      'alice', alice_domain, alice_port, [],
                      status_number, False, bob_send_threads, bob_post_log,
                      bob_person_cache, bob_cached_webfingers,
-                     True, __version__, signing_priv_key_pem)
+                     True, __version__, signing_priv_key_pem,
+                     bob_domain, None, None)
 
     for _ in range(20):
         if 'likes' in open(outbox_post_filename).read():
@@ -1415,7 +1416,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          status_number, '😀',
                          False, bob_send_threads, bob_post_log,
                          bob_person_cache, bob_cached_webfingers,
-                         True, __version__, signing_priv_key_pem)
+                         True, __version__, signing_priv_key_pem,
+                         bob_domain, None, None)
 
     for i in range(20):
         if 'reactions' in open(outbox_post_filename).read():
@@ -1451,7 +1453,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     object_url,
                     False, bob_send_threads, bob_post_log,
                     bob_person_cache, bob_cached_webfingers,
-                    True, __version__, signing_priv_key_pem)
+                    True, __version__, signing_priv_key_pem,
+                    bob_domain, None, None)
     announce_message_arrived = False
     outbox_message_arrived = False
     for i in range(10):
@@ -1597,7 +1600,8 @@ def test_follow_between_servers(base_dir: str) -> None:
                             client_to_server, federation_list,
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
-                            True, __version__, signing_priv_key_pem)
+                            True, __version__, signing_priv_key_pem,
+                            alice_domain, None, None)
     print('send_result: ' + str(send_result))
 
     for _ in range(16):
@@ -1818,7 +1822,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                             client_to_server, federation_list,
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
-                            True, __version__, signing_priv_key_pem)
+                            True, __version__, signing_priv_key_pem,
+                            alice_domain, None, None)
     print('send_result: ' + str(send_result))
 
     for _ in range(16):
@@ -2270,7 +2275,8 @@ def test_group_follow(base_dir: str) -> None:
                             client_to_server, federation_list,
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
-                            True, __version__, signing_priv_key_pem)
+                            True, __version__, signing_priv_key_pem,
+                            alice_domain, None, None)
     print('send_result: ' + str(send_result))
 
     alice_following_filename = \
@@ -2348,7 +2354,8 @@ def test_group_follow(base_dir: str) -> None:
                             client_to_server, federation_list,
                             bob_send_threads, bob_post_log,
                             bob_cached_webfingers, bob_person_cache,
-                            True, __version__, signing_priv_key_pem)
+                            True, __version__, signing_priv_key_pem,
+                            bob_domain, None, None)
     print('send_result: ' + str(send_result))
 
     bob_following_filename = \
