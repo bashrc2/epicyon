@@ -88,6 +88,7 @@ def manual_deny_follow_request_thread(session, session_onion, session_i2p,
     """Manually deny a follow request, within a thread so that the
     user interface doesn't lag
     """
+    print('THREAD: manual_deny_follow_request')
     thr = \
         thread_with_trace(target=manual_deny_follow_request,
                           args=(session, session_onion, session_i2p,
@@ -321,6 +322,7 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
     """Manually approve a follow request, in a thread so as not to cause
     the UI to lag
     """
+    print('THREAD: manual_approve_follow_request')
     thr = \
         thread_with_trace(target=manual_approve_follow_request,
                           args=(session, session_onion, session_i2p,

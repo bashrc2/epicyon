@@ -193,7 +193,7 @@ def run_post_schedule(base_dir: str, httpd, max_scheduled_posts: int):
 def run_post_schedule_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the scheduled post thread running even if it dies
     """
-    print('Starting scheduled post watchdog')
+    print('THREAD: Starting scheduled post watchdog')
     post_schedule_original = \
         httpd.thrPostSchedule.clone(run_post_schedule)
     httpd.thrPostSchedule.start()
@@ -202,6 +202,7 @@ def run_post_schedule_watchdog(project_version: str, httpd) -> None:
         if httpd.thrPostSchedule.is_alive():
             continue
         httpd.thrPostSchedule.kill()
+        print('THREAD: restarting scheduled post watchdog')
         httpd.thrPostSchedule = \
             post_schedule_original.clone(run_post_schedule)
         httpd.thrPostSchedule.start()

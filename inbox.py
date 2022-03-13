@@ -3747,7 +3747,7 @@ def _restore_queue_items(base_dir: str, queue: []) -> None:
 def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
-    print('Starting inbox queue watchdog')
+    print('THREAD: Starting inbox queue watchdog')
     inbox_queue_original = httpd.thrInboxQueue.clone(run_inbox_queue)
     httpd.thrInboxQueue.start()
     while True:
@@ -3755,6 +3755,7 @@ def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
         if not httpd.thrInboxQueue.is_alive() or httpd.restart_inbox_queue:
             httpd.restart_inbox_queue_in_progress = True
             httpd.thrInboxQueue.kill()
+            print('THREAD: restarting inbox queue watchdog')
             httpd.thrInboxQueue = inbox_queue_original.clone(run_inbox_queue)
             httpd.inbox_queue.clear()
             httpd.thrInboxQueue.start()

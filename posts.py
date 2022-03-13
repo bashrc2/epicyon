@@ -2494,6 +2494,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
         send_threads[0].kill()
         send_threads.pop(0)
         print('WARN: thread killed')
+    print('THREAD: thread_send_post')
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
@@ -2881,6 +2882,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         print('DEBUG: starting thread to send post')
         pprint(post_json_object)
     domain_full = get_full_domain(domain, port)
+    print('THREAD: thread_send_post 2')
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
@@ -3154,6 +3156,7 @@ def send_to_named_addresses_thread(session, session_onion, session_i2p,
                                    signing_priv_key_pem: str):
     """Returns a thread used to send a post to named addresses
     """
+    print('THREAD: _send_to_named_addresses')
     send_thread = \
         thread_with_trace(target=_send_to_named_addresses,
                           args=(session, session_onion, session_i2p,
@@ -3412,6 +3415,7 @@ def send_to_followers_thread(session, session_onion, session_i2p,
                              signing_priv_key_pem: str):
     """Returns a thread used to send a post to followers
     """
+    print('THREAD: send_to_followers')
     send_thread = \
         thread_with_trace(target=send_to_followers,
                           args=(session, session_onion, session_i2p,
