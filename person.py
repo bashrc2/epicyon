@@ -1687,17 +1687,13 @@ def valid_sending_actor(session, base_dir: str,
     if sending_actor.endswith(domain + '/users/' + nickname):
         return True
 
-    # get their actor
-    actor_json = \
-        get_person_from_cache(base_dir, sending_actor, person_cache, True)
-    downloaded_actor = False
-    if not actor_json:
-        # download the actor
-        actor_json, _ = get_actor_json(domain, sending_actor,
-                                       True, False, debug, True,
-                                       signing_priv_key_pem, session)
-        if actor_json:
-            downloaded_actor = True
+    # download the actor
+    # NOTE: the actor should not be obtained from the local cache,
+    # because they may have changed fields which are being tested here,
+    # such as the bio length
+    actor_json, _ = get_actor_json(domain, sending_actor,
+                                   True, False, debug, True,
+                                   signing_priv_key_pem, session)
     if not actor_json:
         # if the actor couldn't be obtained then proceed anyway
         return True
@@ -1776,9 +1772,8 @@ def valid_sending_actor(session, base_dir: str,
                           sending_actor)
                     return False
 
-    if downloaded_actor:
-        # if the actor is valid and was downloaded then
-        # store it in the cache, but don't write it to file
-        store_person_in_cache(base_dir, sending_actor, actor_json,
-                              person_cache, False)
+    # if the actor is valid and was downloaded then
+    # store it in the cache, but don't write it to file
+    store_person_in_cache(base_dir, sending_actor, actor_json,
+                          person_cache, False)
     return True
