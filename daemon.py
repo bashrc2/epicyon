@@ -1479,7 +1479,9 @@ class PubServer(BaseHTTPRequestHandler):
                   str(self.server.base_dir))
         wf_result = \
             webfinger_lookup(self.path, self.server.base_dir,
-                             self.server.domain, self.server.onion_domain,
+                             self.server.domain,
+                             self.server.onion_domain,
+                             self.server.i2p_domain,
                              self.server.port, self.server.debug)
         if wf_result:
             msg_str = json.dumps(wf_result)
