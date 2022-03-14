@@ -3297,7 +3297,8 @@ def _inbox_after_initial(server,
                          default_reply_interval_hrs: int,
                          cw_lists: {}, lists_enabled: str,
                          content_license_url: str,
-                         languages_understood: []) -> bool:
+                         languages_understood: [],
+                         mitm: bool) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -3634,6 +3635,16 @@ def _inbox_after_initial(server,
 
         # save the post to file
         if save_json(post_json_object, destination_filename):
+            if mitm:
+                # write a file to indicate that this post was delivered
+                # via a third party
+                destination_filename_mitm = destination_filename + '.mitm'
+                try:
+                    with open(destination_filename_mitm, 'w+') as mitm_file:
+                        mitm_file.write('\n')
+                except OSError:
+                    print('EX: unable to write ' + destination_filename_mitm)
+
             _low_frequency_post_notification(base_dir, http_prefix,
                                              nickname, domain, port,
                                              handle, post_is_dm, json_obj)
@@ -4728,6 +4739,9 @@ def run_inbox_queue(server,
             destination = \
                 queue_json['destination'].replace(inbox_handle, handle)
             languages_understood = []
+            mitm = False
+            if queue_json.get('mitm'):
+                mitm = True
             _inbox_after_initial(server,
                                  recent_posts_cache,
                                  max_recent_posts,
@@ -4759,7 +4773,7 @@ def run_inbox_queue(server,
                                  default_reply_interval_hrs,
                                  cw_lists, lists_enabled,
                                  content_license_url,
-                                 languages_understood)
+                                 languages_understood, mitm)
             if debug:
                 pprint(queue_json['post'])
                 print('Queue: Queue post accepted')
