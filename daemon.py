@@ -20784,7 +20784,7 @@ def run_daemon(crawlers_allowed: [],
     print('THREAD: Creating inbox queue')
     httpd.thrInboxQueue = \
         thread_with_trace(target=run_inbox_queue,
-                          args=(httpd.recent_posts_cache,
+                          args=(httpd, httpd.recent_posts_cache,
                                 httpd.max_recent_posts,
                                 project_version,
                                 base_dir, http_prefix, httpd.send_threads,

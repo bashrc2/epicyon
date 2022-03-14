@@ -2671,7 +2671,7 @@ def _group_handle(base_dir: str, handle: str) -> bool:
     return actor_json['type'] == 'Group'
 
 
-def _send_to_group_members(session, session_onion, session_i2p,
+def _send_to_group_members(server, session, session_onion, session_i2p,
                            base_dir: str, handle: str, port: int,
                            post_json_object: {},
                            http_prefix: str, federation_list: [],
@@ -2735,7 +2735,7 @@ def _send_to_group_members(session, session_onion, session_i2p,
                         debug, __version__, signing_priv_key_pem,
                         curr_domain, onion_domain, i2p_domain)
 
-    send_to_followers_thread(session, session_onion, session_i2p,
+    send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir, nickname, domain,
                              onion_domain, i2p_domain, port,
                              http_prefix, federation_list,
@@ -3063,7 +3063,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
     return True
 
 
-def _receive_question_vote(base_dir: str, nickname: str, domain: str,
+def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                            http_prefix: str, handle: str, debug: bool,
                            post_json_object: {}, recent_posts_cache: {},
                            session, session_onion, session_i2p,
@@ -3143,7 +3143,7 @@ def _receive_question_vote(base_dir: str, nickname: str, domain: str,
     question_json['type'] = 'Update'
     shared_items_federated_domains = []
     shared_item_federation_tokens = {}
-    send_to_followers_thread(session, session_onion, session_i2p,
+    send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir, nickname, domain,
                              onion_domain, i2p_domain, port,
                              http_prefix, federation_list,
@@ -3271,7 +3271,8 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
     return 0
 
 
-def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
+def _inbox_after_initial(server,
+                         recent_posts_cache: {}, max_recent_posts: int,
                          session, session_onion, session_i2p,
                          key_id: str, handle: str, message_json: {},
                          base_dir: str, http_prefix: str, send_threads: [],
@@ -3558,7 +3559,7 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
         populate_replies(base_dir, http_prefix, domain, post_json_object,
                          max_replies, debug)
 
-        _receive_question_vote(base_dir, nickname, domain,
+        _receive_question_vote(server, base_dir, nickname, domain,
                                http_prefix, handle, debug,
                                post_json_object, recent_posts_cache,
                                session, session_onion, session_i2p,
@@ -3730,7 +3731,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
 
             # send the post out to group members
             if is_group:
-                _send_to_group_members(session, session_onion, session_i2p,
+                _send_to_group_members(server,
+                                       session, session_onion, session_i2p,
                                        base_dir, handle, port,
                                        post_json_object,
                                        http_prefix, federation_list,
@@ -4239,7 +4241,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     this_domain, onion_domain, i2p_domain)
 
 
-def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
+def run_inbox_queue(server,
+                    recent_posts_cache: {}, max_recent_posts: int,
                     project_version: str,
                     base_dir: str, http_prefix: str,
                     send_threads: [], post_log: [],
@@ -4725,7 +4728,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
             destination = \
                 queue_json['destination'].replace(inbox_handle, handle)
             languages_understood = []
-            _inbox_after_initial(recent_posts_cache,
+            _inbox_after_initial(server,
+                                 recent_posts_cache,
                                  max_recent_posts,
                                  session, session_onion, session_i2p,
                                  key_id, handle,
