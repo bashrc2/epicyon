@@ -51,7 +51,7 @@ from posts import send_post_via_server
 from posts import seconds_between_published
 from follow import clear_follows
 from follow import clear_followers
-from follow import send_follow_requestViaServer
+from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
 from utils import convert_published_to_local_timezone
@@ -1393,7 +1393,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                      'alice', alice_domain, alice_port, [],
                      status_number, False, bob_send_threads, bob_post_log,
                      bob_person_cache, bob_cached_webfingers,
-                     True, __version__, signing_priv_key_pem)
+                     True, __version__, signing_priv_key_pem,
+                     bob_domain, None, None)
 
     for _ in range(20):
         if 'likes' in open(outbox_post_filename).read():
@@ -1415,7 +1416,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          status_number, '😀',
                          False, bob_send_threads, bob_post_log,
                          bob_person_cache, bob_cached_webfingers,
-                         True, __version__, signing_priv_key_pem)
+                         True, __version__, signing_priv_key_pem,
+                         bob_domain, None, None)
 
     for i in range(20):
         if 'reactions' in open(outbox_post_filename).read():
@@ -1451,10 +1453,11 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     object_url,
                     False, bob_send_threads, bob_post_log,
                     bob_person_cache, bob_cached_webfingers,
-                    True, __version__, signing_priv_key_pem)
+                    True, __version__, signing_priv_key_pem,
+                    bob_domain, None, None)
     announce_message_arrived = False
     outbox_message_arrived = False
-    for i in range(10):
+    for i in range(20):
         time.sleep(1)
         if not os.path.isdir(inbox_path):
             continue
@@ -1597,7 +1600,8 @@ def test_follow_between_servers(base_dir: str) -> None:
                             client_to_server, federation_list,
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
-                            True, __version__, signing_priv_key_pem)
+                            True, __version__, signing_priv_key_pem,
+                            alice_domain, None, None)
     print('send_result: ' + str(send_result))
 
     for _ in range(16):
@@ -1818,7 +1822,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                             client_to_server, federation_list,
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
-                            True, __version__, signing_priv_key_pem)
+                            True, __version__, signing_priv_key_pem,
+                            alice_domain, None, None)
     print('send_result: ' + str(send_result))
 
     for _ in range(16):
@@ -2270,7 +2275,8 @@ def test_group_follow(base_dir: str) -> None:
                             client_to_server, federation_list,
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
-                            True, __version__, signing_priv_key_pem)
+                            True, __version__, signing_priv_key_pem,
+                            alice_domain, None, None)
     print('send_result: ' + str(send_result))
 
     alice_following_filename = \
@@ -2348,7 +2354,8 @@ def test_group_follow(base_dir: str) -> None:
                             client_to_server, federation_list,
                             bob_send_threads, bob_post_log,
                             bob_cached_webfingers, bob_person_cache,
-                            True, __version__, signing_priv_key_pem)
+                            True, __version__, signing_priv_key_pem,
+                            bob_domain, None, None)
     print('send_result: ' + str(send_result))
 
     bob_following_filename = \
@@ -3094,13 +3101,13 @@ def test_client_to_server(base_dir: str):
 
     print('\n\nAlice follows Bob')
     signing_priv_key_pem = None
-    send_follow_requestViaServer(alice_dir, session_alice,
-                                 'alice', password,
-                                 alice_domain, alice_port,
-                                 'bob', bob_domain, bob_port,
-                                 http_prefix,
-                                 cached_webfingers, person_cache,
-                                 True, __version__, signing_priv_key_pem)
+    send_follow_request_via_server(alice_dir, session_alice,
+                                   'alice', password,
+                                   alice_domain, alice_port,
+                                   'bob', bob_domain, bob_port,
+                                   http_prefix,
+                                   cached_webfingers, person_cache,
+                                   True, __version__, signing_priv_key_pem)
     alice_petnames_filename = alice_dir + '/accounts/' + \
         'alice@' + alice_domain + '/petnames.txt'
     alice_following_filename = \
@@ -3136,13 +3143,13 @@ def test_client_to_server(base_dir: str):
                                  alice_domain, alice_port)
 
     print('\n\nEVENT: Bob follows Alice')
-    send_follow_requestViaServer(alice_dir, session_alice,
-                                 'bob', 'bobpass',
-                                 bob_domain, bob_port,
-                                 'alice', alice_domain, alice_port,
-                                 http_prefix,
-                                 cached_webfingers, person_cache,
-                                 True, __version__, signing_priv_key_pem)
+    send_follow_request_via_server(alice_dir, session_alice,
+                                   'bob', 'bobpass',
+                                   bob_domain, bob_port,
+                                   'alice', alice_domain, alice_port,
+                                   http_prefix,
+                                   cached_webfingers, person_cache,
+                                   True, __version__, signing_priv_key_pem)
     for _ in range(10):
         if os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
                           '/followers.txt'):

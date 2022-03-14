@@ -509,7 +509,7 @@ def post_message_to_outbox(session, translate: {},
         followers_threads.pop(0)
     # create a thread to send the post to followers
     followers_thread = \
-        send_to_followers_thread(server.session,
+        send_to_followers_thread(server, server.session,
                                  server.session_onion,
                                  server.session_i2p,
                                  base_dir,
@@ -653,7 +653,7 @@ def post_message_to_outbox(session, translate: {},
             print('c2s sender: ' +
                   post_to_nickname + '@' + domain + ':' + str(port))
     named_addresses_thread = \
-        send_to_named_addresses_thread(server.session,
+        send_to_named_addresses_thread(server, server.session,
                                        server.session_onion,
                                        server.session_i2p,
                                        base_dir, post_to_nickname,
@@ -668,6 +668,7 @@ def post_message_to_outbox(session, translate: {},
                                        version,
                                        shared_items_federated_domains,
                                        shared_item_federation_tokens,
-                                       signing_priv_key_pem)
+                                       signing_priv_key_pem,
+                                       proxy_type)
     followers_threads.append(named_addresses_thread)
     return True

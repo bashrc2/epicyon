@@ -606,7 +606,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
 def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
                                recipients_dict: {},
                                domain_match: str, domain: str,
-                               actor: str, debug: bool) -> bool:
+                               actor: str, debug: bool,
+                               onion_domain: str, i2p_domain: str) -> bool:
     """Given a list of post recipients (toList) from 'to' or 'cc' parameters
     populate a recipients_dict with the handle for each
     """
@@ -614,9 +615,18 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
     for recipient in toList:
         if not recipient:
             continue
-        # is this a to a local account?
+        # if the recipient is an onion or i2p address then
+        # is it an account on a clearnet instance?
+        # If so then change the onion/i2p to the account domain
+        if onion_domain:
+            if onion_domain + '/' in recipient:
+                recipient = recipient.replace(onion_domain, domain)
+        if i2p_domain:
+            if i2p_domain + '/' in recipient:
+                recipient = recipient.replace(i2p_domain, domain)
+        # is this a to an account on this instance?
         if domain_match in recipient:
-            # get the handle for the local account
+            # get the handle for the account on this instance
             nickname = recipient.split(domain_match)[1]
             handle = nickname + '@' + domain
             if os.path.isdir(base_dir + '/accounts/' + handle):
@@ -643,7 +653,8 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
 
 def _inbox_post_recipients(base_dir: str, post_json_object: {},
                            http_prefix: str, domain: str, port: int,
-                           debug: bool) -> ([], []):
+                           debug: bool,
+                           onion_domain: str, i2p_domain: str) -> ([], []):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
     """
@@ -678,7 +689,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                            recipients_list,
                                            recipients_dict,
                                            domain_match, domain_base,
-                                           actor, debug)
+                                           actor, debug,
+                                           onion_domain, i2p_domain)
             if includes_followers:
                 follower_recipients = True
         else:
@@ -695,7 +707,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                            recipients_list,
                                            recipients_dict,
                                            domain_match, domain_base,
-                                           actor, debug)
+                                           actor, debug,
+                                           onion_domain, i2p_domain)
             if includes_followers:
                 follower_recipients = True
         else:
@@ -720,7 +733,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                        recipients_list,
                                        recipients_dict,
                                        domain_match, domain_base,
-                                       actor, debug)
+                                       actor, debug,
+                                       onion_domain, i2p_domain)
         if includes_followers:
             follower_recipients = True
 
@@ -734,7 +748,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                        recipients_list,
                                        recipients_dict,
                                        domain_match, domain_base,
-                                       actor, debug)
+                                       actor, debug,
+                                       onion_domain, i2p_domain)
         if includes_followers:
             follower_recipients = True
 
@@ -753,7 +768,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
 def _receive_undo_follow(session, base_dir: str, http_prefix: str,
                          port: int, message_json: {},
                          federation_list: [],
-                         debug: bool) -> bool:
+                         debug: bool, domain: str,
+                         onion_domain: str, i2p_domain: str) -> bool:
     if not message_json['object'].get('actor'):
         if debug:
             print('DEBUG: follow request has no actor within object')
@@ -786,6 +802,12 @@ def _receive_undo_follow(session, base_dir: str, http_prefix: str,
         return False
     domain_following, port_following = \
         get_domain_from_actor(message_json['object']['object'])
+    if onion_domain:
+        if domain_following.endswith(onion_domain):
+            domain_following = domain
+    if i2p_domain:
+        if domain_following.endswith(i2p_domain):
+            domain_following = domain
     domain_following_full = get_full_domain(domain_following, port_following)
 
     group_account = \
@@ -810,7 +832,8 @@ def _receive_undo(session, base_dir: str, http_prefix: str,
                   port: int, send_threads: [], post_log: [],
                   cached_webfingers: {}, person_cache: {},
                   message_json: {}, federation_list: [],
-                  debug: bool) -> bool:
+                  debug: bool, domain: str,
+                  onion_domain: str, i2p_domain: str) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
     if not message_json['type'].startswith('Undo'):
@@ -831,7 +854,8 @@ def _receive_undo(session, base_dir: str, http_prefix: str,
        message_json['object']['type'] == 'Join':
         return _receive_undo_follow(session, base_dir, http_prefix,
                                     port, message_json,
-                                    federation_list, debug)
+                                    federation_list, debug,
+                                    domain, onion_domain, i2p_domain)
     return False
 
 
@@ -1009,7 +1033,7 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
 def _receive_like(recent_posts_cache: {},
                   session, handle: str, is_group: bool, base_dir: str,
                   http_prefix: str, domain: str, port: int,
-                  onion_domain: str,
+                  onion_domain: str, i2p_domain: str,
                   send_threads: [], post_log: [], cached_webfingers: {},
                   person_cache: {}, message_json: {}, federation_list: [],
                   debug: bool,
@@ -2647,7 +2671,7 @@ def _group_handle(base_dir: str, handle: str) -> bool:
     return actor_json['type'] == 'Group'
 
 
-def _send_to_group_members(session, session_onion, session_i2p,
+def _send_to_group_members(server, session, session_onion, session_i2p,
                            base_dir: str, handle: str, port: int,
                            post_json_object: {},
                            http_prefix: str, federation_list: [],
@@ -2655,6 +2679,7 @@ def _send_to_group_members(session, session_onion, session_i2p,
                            cached_webfingers: {},
                            person_cache: {}, debug: bool,
                            system_language: str,
+                           curr_domain: str,
                            onion_domain: str, i2p_domain: str,
                            signing_priv_key_pem: str) -> None:
     """When a post arrives for a group send it out to the group members
@@ -2707,9 +2732,10 @@ def _send_to_group_members(session, session_onion, session_i2p,
                         http_prefix, post_id, False, False,
                         send_threads, post_log,
                         person_cache, cached_webfingers,
-                        debug, __version__, signing_priv_key_pem)
+                        debug, __version__, signing_priv_key_pem,
+                        curr_domain, onion_domain, i2p_domain)
 
-    send_to_followers_thread(session, session_onion, session_i2p,
+    send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir, nickname, domain,
                              onion_domain, i2p_domain, port,
                              http_prefix, federation_list,
@@ -2845,7 +2871,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                signing_priv_key_pem: str,
                content_license_url: str,
                languages_understood: [],
-               bounce_is_chat: bool) -> bool:
+               bounce_is_chat: bool,
+               curr_domain: str, onion_domain: str, i2p_domain: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2919,7 +2946,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                      http_prefix, False, False, federation_list,
                      send_threads, post_log, cached_webfingers,
                      person_cache, debug, __version__, None, group_account,
-                     signing_priv_key_pem, 7238634)
+                     signing_priv_key_pem, 7238634,
+                     curr_domain, onion_domain, i2p_domain)
     return True
 
 
@@ -2935,7 +2963,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                  handle: str, system_language: str,
                  signing_priv_key_pem: str,
                  content_license_url: str,
-                 languages_understood: []) -> bool:
+                 languages_understood: [],
+                 curr_domain: str, onion_domain: str, i2p_domain: str) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -3022,7 +3051,9 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                                        signing_priv_key_pem,
                                        content_license_url,
                                        languages_understood,
-                                       bounce_chat)
+                                       bounce_chat,
+                                       curr_domain,
+                                       onion_domain, i2p_domain)
                 return False
 
     # dm index will be updated
@@ -3032,7 +3063,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
     return True
 
 
-def _receive_question_vote(base_dir: str, nickname: str, domain: str,
+def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                            http_prefix: str, handle: str, debug: bool,
                            post_json_object: {}, recent_posts_cache: {},
                            session, session_onion, session_i2p,
@@ -3112,7 +3143,7 @@ def _receive_question_vote(base_dir: str, nickname: str, domain: str,
     question_json['type'] = 'Update'
     shared_items_federated_domains = []
     shared_item_federation_tokens = {}
-    send_to_followers_thread(session, session_onion, session_i2p,
+    send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir, nickname, domain,
                              onion_domain, i2p_domain, port,
                              http_prefix, federation_list,
@@ -3240,7 +3271,8 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
     return 0
 
 
-def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
+def _inbox_after_initial(server,
+                         recent_posts_cache: {}, max_recent_posts: int,
                          session, session_onion, session_i2p,
                          key_id: str, handle: str, message_json: {},
                          base_dir: str, http_prefix: str, send_threads: [],
@@ -3268,6 +3300,19 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                          languages_understood: []) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
+    # if this is a clearnet instance then replace any onion/i2p
+    # domains with the account domain
+    if onion_domain or i2p_domain:
+        message_str = json.dumps(message_json, ensure_ascii=False)
+        if onion_domain:
+            if onion_domain in message_str:
+                message_str = message_str.replace(onion_domain, domain)
+                message_json = json.loads(message_str)
+        if i2p_domain:
+            if i2p_domain in message_str:
+                message_str = message_str.replace(i2p_domain, domain)
+                message_json = json.loads(message_str)
+
     actor = key_id
     if '#' in actor:
         actor = key_id.split('#')[0]
@@ -3281,7 +3326,7 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                      session, handle, is_group,
                      base_dir, http_prefix,
                      domain, port,
-                     onion_domain,
+                     onion_domain, i2p_domain,
                      send_threads, post_log,
                      cached_webfingers,
                      person_cache,
@@ -3514,7 +3559,7 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
         populate_replies(base_dir, http_prefix, domain, post_json_object,
                          max_replies, debug)
 
-        _receive_question_vote(base_dir, nickname, domain,
+        _receive_question_vote(server, base_dir, nickname, domain,
                                http_prefix, handle, debug,
                                post_json_object, recent_posts_cache,
                                session, session_onion, session_i2p,
@@ -3550,7 +3595,9 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                                     handle, system_language,
                                     signing_priv_key_pem,
                                     content_license_url,
-                                    languages_understood):
+                                    languages_understood,
+                                    domain,
+                                    onion_domain, i2p_domain):
                     return False
 
             # get the actor being replied to
@@ -3684,7 +3731,8 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
 
             # send the post out to group members
             if is_group:
-                _send_to_group_members(session, session_onion, session_i2p,
+                _send_to_group_members(server,
+                                       session, session_onion, session_i2p,
                                        base_dir, handle, port,
                                        post_json_object,
                                        http_prefix, federation_list,
@@ -3692,7 +3740,7 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                                        post_log, cached_webfingers,
                                        person_cache,
                                        debug, system_language,
-                                       onion_domain, i2p_domain,
+                                       domain, onion_domain, i2p_domain,
                                        signing_priv_key_pem)
 
     # if the post wasn't saved
@@ -3747,7 +3795,7 @@ def _restore_queue_items(base_dir: str, queue: []) -> None:
 def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
-    print('Starting inbox queue watchdog')
+    print('THREAD: Starting inbox queue watchdog')
     inbox_queue_original = httpd.thrInboxQueue.clone(run_inbox_queue)
     httpd.thrInboxQueue.start()
     while True:
@@ -3755,6 +3803,7 @@ def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
         if not httpd.thrInboxQueue.is_alive() or httpd.restart_inbox_queue:
             httpd.restart_inbox_queue_in_progress = True
             httpd.thrInboxQueue.kill()
+            print('THREAD: restarting inbox queue watchdog')
             httpd.thrInboxQueue = inbox_queue_original.clone(run_inbox_queue)
             httpd.inbox_queue.clear()
             httpd.thrInboxQueue.start()
@@ -3932,7 +3981,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                             cached_webfingers: {}, person_cache: {},
                             message_json: {}, federation_list: [],
                             debug: bool, project_version: str,
-                            max_followers: int, onion_domain: str,
+                            max_followers: int,
+                            this_domain: str, onion_domain: str,
                             i2p_domain: str, signing_priv_key_pem: str,
                             unit_test: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
@@ -3971,6 +4021,13 @@ def _receive_follow_request(session, session_onion, session_i2p,
                   'not found within object')
         return False
     domain_to_follow, temp_port = get_domain_from_actor(message_json['object'])
+    # switch to the local domain rather than its onion or i2p version
+    if onion_domain:
+        if domain_to_follow.endswith(onion_domain):
+            domain_to_follow = this_domain
+    if i2p_domain:
+        if domain_to_follow.endswith(i2p_domain):
+            domain_to_follow = this_domain
     if not domain_permitted(domain_to_follow, federation_list):
         if debug:
             print('DEBUG: follow domain not permitted ' + domain_to_follow)
@@ -4002,6 +4059,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                       base_dir + '/accounts/' + handle_to_follow)
             return True
 
+    is_already_follower = False
     if is_follower_of_person(base_dir,
                              nickname_to_follow, domain_to_follow_full,
                              nickname, domain_full):
@@ -4009,7 +4067,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
             print('DEBUG: ' + nickname + '@' + domain +
                   ' is already a follower of ' +
                   nickname_to_follow + '@' + domain_to_follow)
-        return True
+        is_already_follower = True
 
     approve_handle = nickname + '@' + domain_full
 
@@ -4017,16 +4075,26 @@ def _receive_follow_request(session, session_onion, session_i2p,
     curr_http_prefix = http_prefix
     curr_domain = domain
     curr_port = from_port
-    if onion_domain and domain_to_follow.endswith('.onion'):
+    if onion_domain and \
+       not curr_domain.endswith('.onion') and \
+       domain_to_follow.endswith('.onion'):
         curr_session = session_onion
         curr_http_prefix = 'http'
         curr_domain = onion_domain
         curr_port = 80
-    elif i2p_domain and domain_to_follow.endswith('.i2p'):
+        port = 80
+        if debug:
+            print('Domain switched from ' + domain + ' to ' + curr_domain)
+    elif (i2p_domain and
+          not curr_domain.endswith('.i2p') and
+          domain_to_follow.endswith('.i2p')):
         curr_session = session_i2p
         curr_http_prefix = 'http'
         curr_domain = i2p_domain
         curr_port = 80
+        port = 80
+        if debug:
+            print('Domain switched from ' + domain + ' to ' + curr_domain)
 
     # is the actor sending the request valid?
     if not valid_sending_actor(curr_session, base_dir,
@@ -4037,7 +4105,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
         return False
 
     # what is the followers policy?
-    if follow_approval_required(base_dir, nickname_to_follow,
+    if not is_already_follower and \
+       follow_approval_required(base_dir, nickname_to_follow,
                                 domain_to_follow, debug, approve_handle):
         print('Follow approval is required')
         if domain.endswith('.onion'):
@@ -4089,7 +4158,12 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     message_json, debug, message_json['actor'],
                                     group_account)
     else:
-        print('Follow request does not require approval ' + approve_handle)
+        if is_already_follower:
+            print(approve_handle + ' is already a follower. ' +
+                  'Re-sending Accept.')
+        else:
+            print('Follow request does not require approval ' +
+                  approve_handle)
         # update the followers
         account_to_be_followed = \
             acct_dir(base_dir, nickname_to_follow, domain_to_follow)
@@ -4151,6 +4225,9 @@ def _receive_follow_request(session, session_onion, session_i2p,
                         followers_file.write(approve_handle + '\n')
                 except OSError:
                     print('EX: unable to write ' + followers_filename)
+        else:
+            print('ACCEPT: Follow Accept account directory not found: ' +
+                  account_to_be_followed)
 
     print('Beginning follow accept')
     return followed_account_accepts(curr_session, base_dir, curr_http_prefix,
@@ -4160,10 +4237,12 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     message_json, send_threads, post_log,
                                     cached_webfingers, person_cache,
                                     debug, project_version, True,
-                                    signing_priv_key_pem)
+                                    signing_priv_key_pem,
+                                    this_domain, onion_domain, i2p_domain)
 
 
-def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
+def run_inbox_queue(server,
+                    recent_posts_cache: {}, max_recent_posts: int,
                     project_version: str,
                     base_dir: str, http_prefix: str,
                     send_threads: [], post_log: [],
@@ -4509,7 +4588,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                          person_cache,
                          queue_json['post'],
                          federation_list,
-                         debug):
+                         debug, domain, onion_domain, i2p_domain):
             print('Queue: Undo accepted from ' + key_id)
             if os.path.isfile(queue_filename):
                 try:
@@ -4531,7 +4610,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                    queue_json['post'],
                                    federation_list,
                                    debug, project_version,
-                                   max_followers, onion_domain, i2p_domain,
+                                   max_followers, domain,
+                                   onion_domain, i2p_domain,
                                    signing_priv_key_pem, unit_test):
             if os.path.isfile(queue_filename):
                 try:
@@ -4553,7 +4633,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                                  send_threads, post_log,
                                  cached_webfingers, person_cache,
                                  queue_json['post'],
-                                 federation_list, debug):
+                                 federation_list, debug,
+                                 domain, onion_domain, i2p_domain):
             print('Queue: Accept/Reject received from ' + key_id)
             if os.path.isfile(queue_filename):
                 try:
@@ -4590,7 +4671,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
         # get recipients list
         recipients_dict, recipients_dict_followers = \
             _inbox_post_recipients(base_dir, queue_json['post'],
-                                   http_prefix, domain, port, debug)
+                                   http_prefix, domain, port, debug,
+                                   onion_domain, i2p_domain)
         if len(recipients_dict.items()) == 0 and \
            len(recipients_dict_followers.items()) == 0:
             if debug:
@@ -4646,7 +4728,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
             destination = \
                 queue_json['destination'].replace(inbox_handle, handle)
             languages_understood = []
-            _inbox_after_initial(recent_posts_cache,
+            _inbox_after_initial(server,
+                                 recent_posts_cache,
                                  max_recent_posts,
                                  session, session_onion, session_i2p,
                                  key_id, handle,

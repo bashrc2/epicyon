@@ -76,7 +76,9 @@ def create_reject(base_dir: str, federation_list: [],
 
 
 def _accept_follow(base_dir: str, domain: str, message_json: {},
-                   federation_list: [], debug: bool) -> None:
+                   federation_list: [], debug: bool,
+                   curr_domain: str,
+                   onion_domain: str, i2p_domain: str) -> None:
     """Receiving a follow Accept activity
     """
     if not has_object_stringType(message_json, debug):
@@ -144,6 +146,16 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
               followed_actor)
         return
 
+    # convert from onion/i2p to clearnet accepted domain
+    if onion_domain:
+        if accepted_domain.endswith('.onion') and \
+           not curr_domain.endswith('.onion'):
+            accepted_domain = curr_domain
+    if i2p_domain:
+        if accepted_domain.endswith('.i2p') and \
+           not curr_domain.endswith('.i2p'):
+            accepted_domain = curr_domain
+
     accepted_domain_full = accepted_domain
     if accepted_port:
         accepted_domain_full = accepted_domain + ':' + str(accepted_port)
@@ -189,7 +201,9 @@ def receive_accept_reject(session, base_dir: str,
                           cached_webfingers: {},
                           person_cache: {}, message_json: {},
                           federation_list: [],
-                          debug: bool) -> bool:
+                          debug: bool,
+                          curr_domain: str,
+                          onion_domain: str, i2p_domain: str) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
     if message_json['type'] != 'Accept' and message_json['type'] != 'Reject':
@@ -215,7 +229,8 @@ def receive_accept_reject(session, base_dir: str,
                   ' does not contain a nickname. ' +
                   'Assuming single user instance.')
     # receive follow accept
-    _accept_follow(base_dir, domain, message_json, federation_list, debug)
+    _accept_follow(base_dir, domain, message_json, federation_list, debug,
+                   curr_domain, onion_domain, i2p_domain)
     if debug:
         print('DEBUG: Uh, ' + message_json['type'] + ', I guess')
     return True

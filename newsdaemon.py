@@ -882,7 +882,7 @@ def run_newswire_daemon(base_dir: str, httpd,
 def run_newswire_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the newswire update thread running even if it dies
     """
-    print('Starting newswire watchdog')
+    print('THREAD: Starting newswire watchdog')
     newswire_original = \
         httpd.thrPostSchedule.clone(run_newswire_daemon)
     httpd.thrNewswireDaemon.start()
@@ -891,6 +891,7 @@ def run_newswire_watchdog(project_version: str, httpd) -> None:
         if httpd.thrNewswireDaemon.is_alive():
             continue
         httpd.thrNewswireDaemon.kill()
+        print('THREAD: restarting newswire watchdog')
         httpd.thrNewswireDaemon = \
             newswire_original.clone(run_newswire_daemon)
         httpd.thrNewswireDaemon.start()

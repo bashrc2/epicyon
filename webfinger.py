@@ -245,7 +245,7 @@ def webfinger_meta(http_prefix: str, domain_full: str) -> str:
 
 
 def webfinger_lookup(path: str, base_dir: str,
-                     domain: str, onion_domain: str,
+                     domain: str, onion_domain: str, i2p_domain: str,
                      port: int, debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     """
@@ -287,6 +287,11 @@ def webfinger_lookup(path: str, base_dir: str,
         if onion_domain in handle:
             handle = handle.replace(onion_domain, domain)
             onionify = True
+    i2pify = False
+    if i2p_domain:
+        if i2p_domain in handle:
+            handle = handle.replace(i2p_domain, domain)
+            i2pify = True
     # instance actor
     if handle.startswith('actor@'):
         handle = handle.replace('actor@', 'inbox@', 1)
@@ -299,11 +304,14 @@ def webfinger_lookup(path: str, base_dir: str,
         if debug:
             print('DEBUG: WEBFINGER filename not found ' + filename)
         return None
-    if not onionify:
+    if not onionify and not i2pify:
         wf_json = load_json(filename)
-    else:
+    elif onionify:
         print('Webfinger request for onionified ' + handle)
         wf_json = load_json_onionify(filename, domain, onion_domain)
+    else:
+        print('Webfinger request for i2pified ' + handle)
+        wf_json = load_json_onionify(filename, domain, i2p_domain)
     if not wf_json:
         wf_json = {"nickname": "unknown"}
     return wf_json

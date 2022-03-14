@@ -2494,6 +2494,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
         send_threads[0].kill()
         send_threads.pop(0)
         print('WARN: thread killed')
+    print('THREAD: thread_send_post')
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
@@ -2722,7 +2723,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                      person_cache: {}, debug: bool, project_version: str,
                      shared_items_token: str, group_account: bool,
                      signing_priv_key_pem: str,
-                     source_id: int) -> int:
+                     source_id: int, curr_domain: str,
+                     onion_domain: str, i2p_domain: str) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -2818,12 +2820,19 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     # shared_inbox is optional
 
     # get the senders private key
+    account_domain = origin_domain
+    if onion_domain:
+        if account_domain == onion_domain:
+            account_domain = curr_domain
+    if i2p_domain:
+        if account_domain == i2p_domain:
+            account_domain = curr_domain
     private_key_pem = \
-        _get_person_key(nickname, domain, base_dir, 'private', debug)
+        _get_person_key(nickname, account_domain, base_dir, 'private', debug)
     if len(private_key_pem) == 0:
         if debug:
             print('DEBUG: Private key not found for ' +
-                  nickname + '@' + domain +
+                  nickname + '@' + account_domain +
                   ' in ' + base_dir + '/keys/private')
         return 6
 
@@ -2848,6 +2857,20 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
     post_json_str = json.dumps(post_json_object)
+
+    # if the sender domain has changed from clearnet to onion or i2p
+    # then change the content of the post accordingly
+    if debug:
+        print('Checking for changed origin domain: ' +
+              domain + ' ' + curr_domain)
+    if domain != curr_domain:
+        if not curr_domain.endswith('.onion') and \
+           not curr_domain.endswith('.i2p'):
+            if debug:
+                print('Changing post content sender domain from ' +
+                      curr_domain + ' to ' + domain)
+            post_json_str = \
+                post_json_str.replace(curr_domain, domain)
 
     # construct the http header, including the message body digest
     signature_header_json = \
@@ -2881,6 +2904,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         print('DEBUG: starting thread to send post')
         pprint(post_json_object)
     domain_full = get_full_domain(domain, port)
+    print('THREAD: thread_send_post 2')
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
@@ -2981,7 +3005,7 @@ def _is_profile_update(post_json_object: {}) -> bool:
     return False
 
 
-def _send_to_named_addresses(session, session_onion, session_i2p,
+def _send_to_named_addresses(server, session, session_onion, session_i2p,
                              base_dir: str,
                              nickname: str, domain: str,
                              onion_domain: str, i2p_domain: str, port: int,
@@ -2992,7 +3016,8 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                              project_version: str,
                              shared_items_federated_domains: [],
                              shared_item_federation_tokens: {},
-                             signing_priv_key_pem: str) -> None:
+                             signing_priv_key_pem: str,
+                             proxy_type: str) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -3091,11 +3116,6 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                     print('Not sending profile update to self. ' +
                           nickname + '@' + domain_full)
                 continue
-        if debug:
-            domain_full = get_full_domain(domain, port)
-            to_domain_full = get_full_domain(to_domain, to_port)
-            print('DEBUG: Post sending s2s: ' + nickname + '@' + domain_full +
-                  ' to ' + to_nickname + '@' + to_domain_full)
 
         # if we have an alt onion domain and we are sending to
         # another onion domain then switch the clearnet
@@ -3104,19 +3124,37 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
         from_domain_full = get_full_domain(domain, port)
         from_http_prefix = http_prefix
         curr_session = session
+        curr_proxy_type = proxy_type
+        session_type = 'default'
         if onion_domain:
-            if to_domain.endswith('.onion'):
+            if not from_domain.endswith('.onion') and \
+               to_domain.endswith('.onion'):
                 from_domain = onion_domain
                 from_domain_full = onion_domain
                 from_http_prefix = 'http'
                 curr_session = session_onion
+                port = 80
+                to_port = 80
+                curr_proxy_type = 'tor'
+                session_type = 'tor'
         if i2p_domain:
-            if to_domain.endswith('.i2p'):
+            if not from_domain.endswith('.i2p') and \
+               to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
                 from_domain_full = i2p_domain
                 from_http_prefix = 'http'
                 curr_session = session_i2p
+                port = 80
+                to_port = 80
+                curr_proxy_type = 'i2p'
+                session_type = 'i2p'
         cc_list = []
+
+        if debug:
+            to_domain_full = get_full_domain(to_domain, to_port)
+            print('DEBUG: Post sending s2s: ' +
+                  nickname + '@' + from_domain_full +
+                  ' to ' + to_nickname + '@' + to_domain_full)
 
         # if the "to" domain is within the shared items
         # federation list then send the token for this domain
@@ -3129,6 +3167,16 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
 
         group_account = has_group_type(base_dir, address, person_cache)
 
+        if not curr_session:
+            curr_session = create_session(curr_proxy_type)
+            if server:
+                if session_type == 'tor':
+                    server.session_onion = curr_session
+                elif session_type == 'i2p':
+                    server.session_i2p = curr_session
+                else:
+                    server.session = curr_session
+
         send_signed_json(post_json_object, curr_session, base_dir,
                          nickname, from_domain, port,
                          to_nickname, to_domain, to_port,
@@ -3137,10 +3185,11 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                          send_threads, post_log, cached_webfingers,
                          person_cache, debug, project_version,
                          shared_items_token, group_account,
-                         signing_priv_key_pem, 34436782)
+                         signing_priv_key_pem, 34436782,
+                         domain, onion_domain, i2p_domain)
 
 
-def send_to_named_addresses_thread(session, session_onion, session_i2p,
+def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                    base_dir: str, nickname: str, domain: str,
                                    onion_domain: str,
                                    i2p_domain: str, port: int,
@@ -3151,12 +3200,14 @@ def send_to_named_addresses_thread(session, session_onion, session_i2p,
                                    project_version: str,
                                    shared_items_federated_domains: [],
                                    shared_item_federation_tokens: {},
-                                   signing_priv_key_pem: str):
+                                   signing_priv_key_pem: str,
+                                   proxy_type: str):
     """Returns a thread used to send a post to named addresses
     """
+    print('THREAD: _send_to_named_addresses')
     send_thread = \
         thread_with_trace(target=_send_to_named_addresses,
-                          args=(session, session_onion, session_i2p,
+                          args=(server, session, session_onion, session_i2p,
                                 base_dir, nickname, domain,
                                 onion_domain, i2p_domain, port,
                                 http_prefix, federation_list,
@@ -3166,7 +3217,8 @@ def send_to_named_addresses_thread(session, session_onion, session_i2p,
                                 project_version,
                                 shared_items_federated_domains,
                                 shared_item_federation_tokens,
-                                signing_priv_key_pem), daemon=True)
+                                signing_priv_key_pem,
+                                proxy_type), daemon=True)
     try:
         send_thread.start()
     except SocketError as ex:
@@ -3213,7 +3265,7 @@ def _sending_profile_update(post_json_object: {}) -> bool:
     return False
 
 
-def send_to_followers(session, session_onion, session_i2p,
+def send_to_followers(server, session, session_onion, session_i2p,
                       base_dir: str, nickname: str, domain: str,
                       onion_domain: str, i2p_domain: str, port: int,
                       http_prefix: str, federation_list: [],
@@ -3245,6 +3297,12 @@ def send_to_followers(session, session_onion, session_i2p,
 
     # this is after the message has arrived at the server
     client_to_server = False
+
+    curr_proxy_type = None
+    if domain.endswith('.onion'):
+        curr_proxy_type = 'tor'
+    elif domain.endswith('.i2p'):
+        curr_proxy_type = 'i2p'
 
     # for each instance
     sending_start_time = datetime.datetime.utcnow()
@@ -3289,10 +3347,6 @@ def send_to_followers(session, session_onion, session_i2p,
             if follower_domain.endswith('.i2p'):
                 curr_session = session_i2p
                 curr_http_prefix = 'http'
-        if not curr_session:
-            print('WARN: session not found when sending to follower ' +
-                  follower_domain_url)
-            continue
 
         with_shared_inbox = \
             _has_shared_inbox(curr_session, curr_http_prefix, follower_domain,
@@ -3317,14 +3371,33 @@ def send_to_followers(session, session_onion, session_i2p,
         # have an alt onion domain then use the alt
         from_domain = domain
         from_http_prefix = http_prefix
+        session_type = 'default'
         if onion_domain:
             if to_domain.endswith('.onion'):
                 from_domain = onion_domain
                 from_http_prefix = 'http'
+                port = 80
+                to_port = 80
+                curr_proxy_type = 'tor'
+                session_type = 'tor'
         if i2p_domain:
             if to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
                 from_http_prefix = 'http'
+                port = 80
+                to_port = 80
+                curr_proxy_type = 'i2p'
+                session_type = 'i2p'
+
+        if not curr_session:
+            curr_session = create_session(curr_proxy_type)
+            if server:
+                if session_type == 'tor':
+                    server.session_onion = curr_session
+                elif session_type == 'i2p':
+                    server.session_i2p = curr_session
+                else:
+                    server.session = curr_session
 
         if with_shared_inbox:
             to_nickname = follower_handles[index].split('@')[0]
@@ -3357,7 +3430,8 @@ def send_to_followers(session, session_onion, session_i2p,
                              send_threads, post_log, cached_webfingers,
                              person_cache, debug, project_version,
                              shared_items_token, group_account,
-                             signing_priv_key_pem, 639342)
+                             signing_priv_key_pem, 639342,
+                             domain, onion_domain, i2p_domain)
         else:
             # send to individual followers without using a shared inbox
             for handle in follower_handles:
@@ -3386,7 +3460,8 @@ def send_to_followers(session, session_onion, session_i2p,
                                  send_threads, post_log, cached_webfingers,
                                  person_cache, debug, project_version,
                                  shared_items_token, group_account,
-                                 signing_priv_key_pem, 634219)
+                                 signing_priv_key_pem, 634219,
+                                 domain, onion_domain, i2p_domain)
 
         time.sleep(4)
 
@@ -3399,7 +3474,7 @@ def send_to_followers(session, session_onion, session_i2p,
     print('Sending post to followers ends ' + str(sending_mins) + ' mins')
 
 
-def send_to_followers_thread(session, session_onion, session_i2p,
+def send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir: str, nickname: str, domain: str,
                              onion_domain: str, i2p_domain: str, port: int,
                              http_prefix: str, federation_list: [],
@@ -3412,9 +3487,10 @@ def send_to_followers_thread(session, session_onion, session_i2p,
                              signing_priv_key_pem: str):
     """Returns a thread used to send a post to followers
     """
+    print('THREAD: send_to_followers')
     send_thread = \
         thread_with_trace(target=send_to_followers,
-                          args=(session, session_onion, session_i2p,
+                          args=(server, session, session_onion, session_i2p,
                                 base_dir, nickname, domain,
                                 onion_domain, i2p_domain, port,
                                 http_prefix, federation_list,

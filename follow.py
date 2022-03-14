@@ -108,8 +108,8 @@ def _remove_from_follow_base(base_dir: str,
     approve_follows_filename = accounts_dir + '/' + follow_file + '.txt'
     if not os.path.isfile(approve_follows_filename):
         if debug:
-            print('WARN: Approve follow requests file ' +
-                  approve_follows_filename + ' not found')
+            print('There is no ' + follow_file +
+                  ' to remove ' + handle + ' from')
         return
     accept_deny_actor = None
     if accept_or_deny_handle not in open(approve_follows_filename).read():
@@ -731,7 +731,9 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              removeFollowActivity: bool,
-                             signing_priv_key_pem: str):
+                             signing_priv_key_pem: str,
+                             curr_domain: str,
+                             onion_domain: str, i2p_domain: str):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
@@ -780,10 +782,12 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                             send_threads, postLog, cached_webfingers,
                             person_cache, debug, project_version, None,
                             group_account, signing_priv_key_pem,
-                            7856837)
+                            7856837, curr_domain, onion_domain, i2p_domain)
 
 
-def followed_account_rejects(session, base_dir: str, http_prefix: str,
+def followed_account_rejects(session, session_onion, session_i2p,
+                             onion_domain: str, i2p_domain: str,
+                             base_dir: str, http_prefix: str,
                              nickname_to_follow: str, domain_to_follow: str,
                              port: int,
                              nickname: str, domain: str, from_port: int,
@@ -848,7 +852,8 @@ def followed_account_rejects(session, base_dir: str, http_prefix: str,
                             send_threads, postLog, cached_webfingers,
                             person_cache, debug, project_version, None,
                             group_account, signing_priv_key_pem,
-                            6393063)
+                            6393063,
+                            domain, onion_domain, i2p_domain)
 
 
 def send_follow_request(session, base_dir: str,
@@ -861,7 +866,9 @@ def send_follow_request(session, base_dir: str,
                         client_to_server: bool, federation_list: [],
                         send_threads: [], postLog: [], cached_webfingers: {},
                         person_cache: {}, debug: bool,
-                        project_version: str, signing_priv_key_pem: str) -> {}:
+                        project_version: str, signing_priv_key_pem: str,
+                        curr_domain: str,
+                        onion_domain: str, i2p_domain: str) -> {}:
     """Gets the json object for sending a follow request
     """
     if not signing_priv_key_pem:
@@ -942,24 +949,25 @@ def send_follow_request(session, base_dir: str,
                      federation_list,
                      send_threads, postLog, cached_webfingers, person_cache,
                      debug, project_version, None, group_account,
-                     signing_priv_key_pem, 8234389)
+                     signing_priv_key_pem, 8234389,
+                     curr_domain, onion_domain, i2p_domain)
 
     return new_follow_json
 
 
-def send_follow_requestViaServer(base_dir: str, session,
-                                 from_nickname: str, password: str,
-                                 from_domain: str, from_port: int,
-                                 follow_nickname: str, follow_domain: str,
-                                 followPort: int,
-                                 http_prefix: str,
-                                 cached_webfingers: {}, person_cache: {},
-                                 debug: bool, project_version: str,
-                                 signing_priv_key_pem: str) -> {}:
+def send_follow_request_via_server(base_dir: str, session,
+                                   from_nickname: str, password: str,
+                                   from_domain: str, from_port: int,
+                                   follow_nickname: str, follow_domain: str,
+                                   followPort: int,
+                                   http_prefix: str,
+                                   cached_webfingers: {}, person_cache: {},
+                                   debug: bool, project_version: str,
+                                   signing_priv_key_pem: str) -> {}:
     """Creates a follow request via c2s
     """
     if not session:
-        print('WARN: No session for send_follow_requestViaServer')
+        print('WARN: No session for send_follow_request_via_server')
         return 6
 
     from_domain_full = get_full_domain(from_domain, from_port)

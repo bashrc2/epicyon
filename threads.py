@@ -75,6 +75,7 @@ class thread_with_trace(threading.Thread):
     def clone(self, func):
         """Create a clone
         """
+        print('THREAD: clone')
         return thread_with_trace(target=func,
                                  args=self._args,
                                  daemon=True)

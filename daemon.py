@@ -1479,7 +1479,9 @@ class PubServer(BaseHTTPRequestHandler):
                   str(self.server.base_dir))
         wf_result = \
             webfinger_lookup(self.path, self.server.base_dir,
-                             self.server.domain, self.server.onion_domain,
+                             self.server.domain,
+                             self.server.onion_domain,
+                             self.server.i2p_domain,
                              self.server.port, self.server.debug)
         if wf_result:
             msg_str = json.dumps(wf_result)
@@ -1605,6 +1607,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('Creating outbox thread ' +
               account_outbox_thread_name + '/' +
               str(self.server.outbox_thread_index[account_outbox_thread_name]))
+        print('THREAD: _post_to_outbox')
         self.server.outboxThread[account_outbox_thread_name][index] = \
             thread_with_trace(target=self._post_to_outbox,
                               args=(message_json.copy(),
@@ -3374,18 +3377,30 @@ class PubServer(BaseHTTPRequestHandler):
                 curr_domain = domain
                 curr_port = port
                 curr_http_prefix = http_prefix
+                curr_proxy_type = proxy_type
                 if onion_domain:
-                    if following_domain.endswith('.onion'):
+                    if not curr_domain.endswith('.onion') and \
+                       following_domain.endswith('.onion'):
                         curr_session = self.server.session_onion
                         curr_domain = onion_domain
                         curr_port = 80
+                        following_port = 80
                         curr_http_prefix = 'http'
+                        curr_proxy_type = 'tor'
                 if i2p_domain:
-                    if following_domain.endswith('.i2p'):
+                    if not curr_domain.endswith('.i2p') and \
+                       following_domain.endswith('.i2p'):
                         curr_session = self.server.session_i2p
                         curr_domain = i2p_domain
                         curr_port = 80
+                        following_port = 80
                         curr_http_prefix = 'http'
+                        curr_proxy_type = 'i2p'
+
+                curr_session = \
+                    self._establish_session("follow request",
+                                            curr_session,
+                                            curr_proxy_type)
 
                 send_follow_request(curr_session,
                                     base_dir, follower_nickname,
@@ -3401,7 +3416,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cached_webfingers,
                                     self.server.person_cache, debug,
                                     self.server.project_version,
-                                    self.server.signing_priv_key_pem)
+                                    self.server.signing_priv_key_pem,
+                                    self.server.domain,
+                                    self.server.onion_domain,
+                                    self.server.i2p_domain)
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -8295,7 +8313,10 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.cached_webfingers,
                             debug,
                             self.server.project_version,
-                            self.server.signing_priv_key_pem)
+                            self.server.signing_priv_key_pem,
+                            self.server.domain,
+                            self.server.onion_domain,
+                            self.server.i2p_domain)
         announce_filename = None
         if announce_json:
             # save the announce straight to the outbox
@@ -8519,25 +8540,28 @@ class PubServer(BaseHTTPRequestHandler):
                 handle_nickname + '@' + \
                 get_full_domain(handle_domain, handle_port)
         if '@' in following_handle:
-
             if self.server.onion_domain:
                 if following_handle.endswith('.onion'):
                     curr_session = self.server.session_onion
                     proxy_type = 'tor'
+                    port = 80
             if self.server.i2p_domain:
                 if following_handle.endswith('.i2p'):
                     curr_session = self.server.session_i2p
                     proxy_type = 'i2p'
+                    port = 80
 
             curr_session = \
-                self._establish_session("followApproveButton",
+                self._establish_session("follow_approve_button",
                                         curr_session, proxy_type)
             if not curr_session:
+                print('WARN: unable to establish session ' +
+                      'when approving follow request')
                 self._404()
                 return
             signing_priv_key_pem = \
                 self.server.signing_priv_key_pem
-            manual_approve_follow_request_thread(curr_session,
+            manual_approve_follow_request_thread(self.server.session,
                                                  self.server.session_onion,
                                                  self.server.session_i2p,
                                                  self.server.onion_domain,
@@ -8553,7 +8577,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.person_cache,
                                                  debug,
                                                  self.server.project_version,
-                                                 signing_priv_key_pem)
+                                                 signing_priv_key_pem,
+                                                 proxy_type)
         origin_path_str_absolute = \
             http_prefix + '://' + domain_full + origin_path_str
         if calling_domain.endswith('.onion') and onion_domain:
@@ -8701,7 +8726,7 @@ class PubServer(BaseHTTPRequestHandler):
                 handle_nickname + '@' + \
                 get_full_domain(handle_domain, handle_port)
         if '@' in following_handle:
-            manual_deny_follow_request_thread(curr_session,
+            manual_deny_follow_request_thread(self.server.session,
                                               self.server.session_onion,
                                               self.server.session_i2p,
                                               self.server.onion_domain,
@@ -20184,7 +20209,7 @@ def run_shares_expire(version_number: str, base_dir: str) -> None:
 def run_posts_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the posts thread running even if it dies
     """
-    print('Starting posts queue watchdog')
+    print('THREAD: Starting posts queue watchdog')
     posts_queue_original = httpd.thrPostsQueue.clone(run_posts_queue)
     httpd.thrPostsQueue.start()
     while True:
@@ -20192,6 +20217,7 @@ def run_posts_watchdog(project_version: str, httpd) -> None:
         if httpd.thrPostsQueue.is_alive():
             continue
         httpd.thrPostsQueue.kill()
+        print('THREAD: restarting posts queue')
         httpd.thrPostsQueue = posts_queue_original.clone(run_posts_queue)
         httpd.thrPostsQueue.start()
         print('Restarting posts queue...')
@@ -20200,7 +20226,7 @@ def run_posts_watchdog(project_version: str, httpd) -> None:
 def run_shares_expire_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the shares expiry thread running even if it dies
     """
-    print('Starting shares expiry watchdog')
+    print('THREAD: Starting shares expiry watchdog')
     shares_expire_original = httpd.thrSharesExpire.clone(run_shares_expire)
     httpd.thrSharesExpire.start()
     while True:
@@ -20208,6 +20234,7 @@ def run_shares_expire_watchdog(project_version: str, httpd) -> None:
         if httpd.thrSharesExpire.is_alive():
             continue
         httpd.thrSharesExpire.kill()
+        print('THREAD: restarting shares watchdog')
         httpd.thrSharesExpire = shares_expire_original.clone(run_shares_expire)
         httpd.thrSharesExpire.start()
         print('Restarting shares expiry...')
@@ -20688,13 +20715,13 @@ def run_daemon(crawlers_allowed: [],
         print('Creating shared item files directory')
         os.mkdir(base_dir + '/sharefiles')
 
-    print('Creating fitness thread')
+    print('THREAD: Creating fitness thread')
     httpd.thrFitness = \
         thread_with_trace(target=fitness_thread,
                           args=(base_dir, httpd.fitness), daemon=True)
     httpd.thrFitness.start()
 
-    print('Creating cache expiry thread')
+    print('THREAD: Creating cache expiry thread')
     httpd.thrCache = \
         thread_with_trace(target=expire_cache,
                           args=(base_dir, httpd.person_cache,
@@ -20706,12 +20733,13 @@ def run_daemon(crawlers_allowed: [],
     # number of mins after which sending posts or updates will expire
     httpd.send_threads_timeout_mins = send_threads_timeout_mins
 
-    print('Creating posts queue')
+    print('THREAD: Creating posts queue')
     httpd.thrPostsQueue = \
         thread_with_trace(target=run_posts_queue,
                           args=(base_dir, httpd.send_threads, debug,
                                 httpd.send_threads_timeout_mins), daemon=True)
     if not unit_test:
+        print('THREAD: run_posts_watchdog')
         httpd.thrPostsWatchdog = \
             thread_with_trace(target=run_posts_watchdog,
                               args=(project_version, httpd), daemon=True)
@@ -20719,11 +20747,12 @@ def run_daemon(crawlers_allowed: [],
     else:
         httpd.thrPostsQueue.start()
 
-    print('Creating expire thread for shared items')
+    print('THREAD: Creating expire thread for shared items')
     httpd.thrSharesExpire = \
         thread_with_trace(target=run_shares_expire,
                           args=(project_version, base_dir), daemon=True)
     if not unit_test:
+        print('THREAD: run_shares_expire_watchdog')
         httpd.thrSharesExpireWatchdog = \
             thread_with_trace(target=run_shares_expire_watchdog,
                               args=(project_version, httpd), daemon=True)
@@ -20752,10 +20781,10 @@ def run_daemon(crawlers_allowed: [],
 
     create_initial_last_seen(base_dir, http_prefix)
 
-    print('Creating inbox queue')
+    print('THREAD: Creating inbox queue')
     httpd.thrInboxQueue = \
         thread_with_trace(target=run_inbox_queue,
-                          args=(httpd.recent_posts_cache,
+                          args=(httpd, httpd.recent_posts_cache,
                                 httpd.max_recent_posts,
                                 project_version,
                                 base_dir, http_prefix, httpd.send_threads,
@@ -20784,19 +20813,19 @@ def run_daemon(crawlers_allowed: [],
                                 httpd.default_reply_interval_hrs,
                                 httpd.cw_lists), daemon=True)
 
-    print('Creating scheduled post thread')
+    print('THREAD: Creating scheduled post thread')
     httpd.thrPostSchedule = \
         thread_with_trace(target=run_post_schedule,
                           args=(base_dir, httpd, 20), daemon=True)
 
-    print('Creating newswire thread')
+    print('THREAD: Creating newswire thread')
     httpd.thrNewswireDaemon = \
         thread_with_trace(target=run_newswire_daemon,
                           args=(base_dir, httpd,
                                 http_prefix, domain, port,
                                 httpd.translate), daemon=True)
 
-    print('Creating federated shares thread')
+    print('THREAD: Creating federated shares thread')
     httpd.thrFederatedSharesDaemon = \
         thread_with_trace(target=run_federated_shares_daemon,
                           args=(base_dir, httpd,
@@ -20818,25 +20847,25 @@ def run_daemon(crawlers_allowed: [],
     httpd.signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
     if not unit_test:
-        print('Creating inbox queue watchdog')
+        print('THREAD: Creating inbox queue watchdog')
         httpd.thrWatchdog = \
             thread_with_trace(target=run_inbox_queue_watchdog,
                               args=(project_version, httpd), daemon=True)
         httpd.thrWatchdog.start()
 
-        print('Creating scheduled post watchdog')
+        print('THREAD: Creating scheduled post watchdog')
         httpd.thrWatchdogSchedule = \
             thread_with_trace(target=run_post_schedule_watchdog,
                               args=(project_version, httpd), daemon=True)
         httpd.thrWatchdogSchedule.start()
 
-        print('Creating newswire watchdog')
+        print('THREAD: Creating newswire watchdog')
         httpd.thrNewswireWatchdog = \
             thread_with_trace(target=run_newswire_watchdog,
                               args=(project_version, httpd), daemon=True)
         httpd.thrNewswireWatchdog.start()
 
-        print('Creating federated shares watchdog')
+        print('THREAD: Creating federated shares watchdog')
         httpd.thrFederatedSharesWatchdog = \
             thread_with_trace(target=run_federated_shares_watchdog,
                               args=(project_version, httpd), daemon=True)

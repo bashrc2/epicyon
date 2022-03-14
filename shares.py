@@ -1610,7 +1610,7 @@ def run_federated_shares_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the federated shares update thread
     running even if it dies
     """
-    print('Starting federated shares watchdog')
+    print('THREAD: Starting federated shares watchdog')
     federated_shares_original = \
         httpd.thrPostSchedule.clone(run_federated_shares_daemon)
     httpd.thrFederatedSharesDaemon.start()
@@ -1619,6 +1619,7 @@ def run_federated_shares_watchdog(project_version: str, httpd) -> None:
         if httpd.thrFederatedSharesDaemon.is_alive():
             continue
         httpd.thrFederatedSharesDaemon.kill()
+        print('THREAD: restarting federated shares watchdog')
         httpd.thrFederatedSharesDaemon = \
             federated_shares_original.clone(run_federated_shares_daemon)
         httpd.thrFederatedSharesDaemon.start()

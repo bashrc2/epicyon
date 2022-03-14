@@ -861,16 +861,11 @@ def set_theme(base_dir: str, name: str, domain: str,
 
     _remove_theme(base_dir)
 
+    # has the theme changed?
     themes = get_themes_list(base_dir)
     for theme_name in themes:
         theme_name_lower = theme_name.lower()
         if name == theme_name_lower:
-            allow_access = allow_local_network_access
-            try:
-                globals()['set_theme' + theme_name](base_dir, allow_access)
-            except BaseException:
-                print('EX: set_theme unable to set theme ' + theme_name)
-
             if prev_theme_name:
                 if prev_theme_name.lower() != theme_name_lower:
                     # change the banner and profile image
@@ -878,12 +873,14 @@ def set_theme(base_dir: str, name: str, domain: str,
                     _set_theme_images(base_dir, name)
                     _set_theme_fonts(base_dir, name)
             result = True
+            break
 
     if not result:
         # default
         _set_theme_default(base_dir, allow_local_network_access)
         result = True
 
+    # read theme settings from a json file in the theme directory
     variables_file = base_dir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variables_file):
         _read_variables_file(base_dir, name, variables_file,

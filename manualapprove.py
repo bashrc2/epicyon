@@ -17,6 +17,7 @@ from utils import get_port_from_domain
 from utils import get_user_paths
 from utils import acct_dir
 from threads import thread_with_trace
+from session import create_session
 
 
 def manual_deny_follow_request(session, session_onion, session_i2p,
@@ -88,6 +89,7 @@ def manual_deny_follow_request_thread(session, session_onion, session_i2p,
     """Manually deny a follow request, within a thread so that the
     user interface doesn't lag
     """
+    print('THREAD: manual_deny_follow_request')
     thr = \
         thread_with_trace(target=manual_deny_follow_request,
                           args=(session, session_onion, session_i2p,
@@ -135,7 +137,8 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool,
                                   project_version: str,
-                                  signing_priv_key_pem: str) -> None:
+                                  signing_priv_key_pem: str,
+                                  proxy_type: str) -> None:
     """Manually approve a follow request
     """
     handle = nickname + '@' + domain
@@ -217,18 +220,28 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                             curr_port = port
                             curr_session = session
                             curr_http_prefix = http_prefix
+                            curr_proxy_type = proxy_type
                             if onion_domain and \
+                               not curr_domain.endswith('.onion') and \
                                approve_domain.endswith('.onion'):
                                 curr_domain = onion_domain
                                 curr_port = 80
+                                approve_port = 80
                                 curr_session = session_onion
                                 curr_http_prefix = 'http'
+                                curr_proxy_type = 'tor'
                             elif (i2p_domain and
+                                  not curr_domain.endswith('.i2p') and
                                   approve_domain.endswith('.i2p')):
                                 curr_domain = i2p_domain
                                 curr_port = 80
+                                approve_port = 80
                                 curr_session = session_i2p
                                 curr_http_prefix = 'http'
+                                curr_proxy_type = 'i2p'
+
+                            if not curr_session:
+                                curr_session = create_session(curr_proxy_type)
 
                             print('Manual follow accept: Sending Accept for ' +
                                   handle + ' follow request from ' +
@@ -248,7 +261,10 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                                      person_cache,
                                                      debug,
                                                      project_version, False,
-                                                     signing_priv_key_pem)
+                                                     signing_priv_key_pem,
+                                                     domain,
+                                                     onion_domain,
+                                                     i2p_domain)
                     update_approved_followers = True
                 else:
                     # this isn't the approved follow so it will remain
@@ -317,10 +333,12 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
                                          person_cache: {},
                                          debug: bool,
                                          project_version: str,
-                                         signing_priv_key_pem: str) -> None:
+                                         signing_priv_key_pem: str,
+                                         proxy_type: str) -> None:
     """Manually approve a follow request, in a thread so as not to cause
     the UI to lag
     """
+    print('THREAD: manual_approve_follow_request')
     thr = \
         thread_with_trace(target=manual_approve_follow_request,
                           args=(session, session_onion, session_i2p,
@@ -333,6 +351,7 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
                                 cached_webfingers, person_cache,
                                 debug,
                                 project_version,
-                                signing_priv_key_pem), daemon=True)
+                                signing_priv_key_pem,
+                                proxy_type), daemon=True)
     thr.start()
     send_threads.append(thr)
