@@ -606,7 +606,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
 def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
                                recipients_dict: {},
                                domain_match: str, domain: str,
-                               actor: str, debug: bool) -> bool:
+                               actor: str, debug: bool,
+                               onion_domain: str, i2p_domain: str) -> bool:
     """Given a list of post recipients (toList) from 'to' or 'cc' parameters
     populate a recipients_dict with the handle for each
     """
@@ -614,9 +615,18 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
     for recipient in toList:
         if not recipient:
             continue
-        # is this a to a local account?
+        # if the recipient is an onion or i2p address then
+        # is it an account on a clearnet instance?
+        # If so then change the onion/i2p to the account domain
+        if onion_domain:
+            if onion_domain + '/' in recipient:
+                recipient = recipient.replace(onion_domain, domain)
+        if i2p_domain:
+            if i2p_domain + '/' in recipient:
+                recipient = recipient.replace(i2p_domain, domain)
+        # is this a to an account on this instance?
         if domain_match in recipient:
-            # get the handle for the local account
+            # get the handle for the account on this instance
             nickname = recipient.split(domain_match)[1]
             handle = nickname + '@' + domain
             if os.path.isdir(base_dir + '/accounts/' + handle):
@@ -643,7 +653,8 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
 
 def _inbox_post_recipients(base_dir: str, post_json_object: {},
                            http_prefix: str, domain: str, port: int,
-                           debug: bool) -> ([], []):
+                           debug: bool,
+                           onion_domain: str, i2p_domain: str) -> ([], []):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
     """
@@ -678,7 +689,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                            recipients_list,
                                            recipients_dict,
                                            domain_match, domain_base,
-                                           actor, debug)
+                                           actor, debug,
+                                           onion_domain, i2p_domain)
             if includes_followers:
                 follower_recipients = True
         else:
@@ -695,7 +707,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                            recipients_list,
                                            recipients_dict,
                                            domain_match, domain_base,
-                                           actor, debug)
+                                           actor, debug,
+                                           onion_domain, i2p_domain)
             if includes_followers:
                 follower_recipients = True
         else:
@@ -720,7 +733,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                        recipients_list,
                                        recipients_dict,
                                        domain_match, domain_base,
-                                       actor, debug)
+                                       actor, debug,
+                                       onion_domain, i2p_domain)
         if includes_followers:
             follower_recipients = True
 
@@ -734,7 +748,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                        recipients_list,
                                        recipients_dict,
                                        domain_match, domain_base,
-                                       actor, debug)
+                                       actor, debug,
+                                       onion_domain, i2p_domain)
         if includes_followers:
             follower_recipients = True
 
@@ -4640,7 +4655,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
         # get recipients list
         recipients_dict, recipients_dict_followers = \
             _inbox_post_recipients(base_dir, queue_json['post'],
-                                   http_prefix, domain, port, debug)
+                                   http_prefix, domain, port, debug,
+                                   onion_domain, i2p_domain)
         if len(recipients_dict.items()) == 0 and \
            len(recipients_dict_followers.items()) == 0:
             if debug:
