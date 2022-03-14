@@ -2858,6 +2858,14 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     # subsequent conversions after creating message body digest
     post_json_str = json.dumps(post_json_object)
 
+    # if the sender domain has changed from clearnet to onion or i2p
+    # then change the content of the post accordingly
+    if account_domain != origin_domain:
+        if not origin_domain.endswith('.onion') and \
+           not origin_domain.endswith('.i2p'):
+            post_json_str = \
+                post_json_str.replace(origin_domain, account_domain)
+
     # construct the http header, including the message body digest
     signature_header_json = \
         create_signed_header(None, private_key_pem, nickname, domain, port,
