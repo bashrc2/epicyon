@@ -60,6 +60,7 @@ from donate import get_donation_url
 from donate import set_donation_url
 from donate import get_website
 from donate import set_website
+from person import add_alternate_domains
 from person import add_actor_update_timestamp
 from person import set_person_notes
 from person import get_default_person_context
@@ -428,7 +429,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _convert_domains(self, calling_domain, referer_domain,
                          msg_str: str) -> str:
-        """Convert domains to onion or i2p
+        """Convert domains to onion or i2p, depending upon who is asking
         """
         curr_http_prefix = self.server.http_prefix + '://'
         if is_onion_request(calling_domain, referer_domain,
@@ -13428,6 +13429,7 @@ class PubServer(BaseHTTPRequestHandler):
         actor_json = person_lookup(domain, path, base_dir)
         if not actor_json:
             return False
+        add_alternate_domains(actor_json, domain, onion_domain, i2p_domain)
         if self._request_http():
             curr_session = \
                 self._establish_session("showPersonProfile",
