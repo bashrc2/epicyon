@@ -3299,6 +3299,18 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                          languages_understood: []) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
+    # if this is a clearnet instance then replace any onion/i2p
+    # domains with the account domain
+    message_str = json.dumps(message_json, ensure_ascii=False)
+    if onion_domain:
+        if onion_domain in message_str:
+            message_str = message_str.replace(onion_domain, domain)
+            message_json = json.loads(message_str)
+    if i2p_domain:
+        if i2p_domain in message_str:
+            message_str = message_str.replace(i2p_domain, domain)
+            message_json = json.loads(message_str)
+
     actor = key_id
     if '#' in actor:
         actor = key_id.split('#')[0]
