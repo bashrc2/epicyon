@@ -3102,11 +3102,6 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                     print('Not sending profile update to self. ' +
                           nickname + '@' + domain_full)
                 continue
-        if debug:
-            domain_full = get_full_domain(domain, port)
-            to_domain_full = get_full_domain(to_domain, to_port)
-            print('DEBUG: Post sending s2s: ' + nickname + '@' + domain_full +
-                  ' to ' + to_nickname + '@' + to_domain_full)
 
         # if we have an alt onion domain and we are sending to
         # another onion domain then switch the clearnet
@@ -3137,6 +3132,12 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                 to_port = 80
                 curr_proxy_type = 'i2p'
         cc_list = []
+
+        if debug:
+            to_domain_full = get_full_domain(to_domain, to_port)
+            print('DEBUG: Post sending s2s: ' +
+                  nickname + '@' + from_domain_full +
+                  ' to ' + to_nickname + '@' + to_domain_full)
 
         # if the "to" domain is within the shared items
         # federation list then send the token for this domain
