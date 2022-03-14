@@ -3002,7 +3002,8 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                              project_version: str,
                              shared_items_federated_domains: [],
                              shared_item_federation_tokens: {},
-                             signing_priv_key_pem: str) -> None:
+                             signing_priv_key_pem: str,
+                             proxy_type: str) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -3114,6 +3115,7 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
         from_domain_full = get_full_domain(domain, port)
         from_http_prefix = http_prefix
         curr_session = session
+        curr_proxy_type = proxy_type
         if onion_domain:
             if not from_domain.endswith('.onion') and \
                to_domain.endswith('.onion'):
@@ -3123,6 +3125,7 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                 curr_session = session_onion
                 port = 80
                 to_port = 80
+                curr_proxy_type = 'tor'
         if i2p_domain:
             if not from_domain.endswith('.i2p') and \
                to_domain.endswith('.i2p'):
@@ -3132,6 +3135,7 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                 curr_session = session_i2p
                 port = 80
                 to_port = 80
+                curr_proxy_type = 'i2p'
         cc_list = []
 
         # if the "to" domain is within the shared items
@@ -3144,6 +3148,10 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                     shared_item_federation_tokens[from_domain_full]
 
         group_account = has_group_type(base_dir, address, person_cache)
+
+        if not curr_session:
+            # TODO add this to the server object
+            curr_session = create_session(curr_proxy_type)
 
         send_signed_json(post_json_object, curr_session, base_dir,
                          nickname, from_domain, port,
@@ -3168,7 +3176,8 @@ def send_to_named_addresses_thread(session, session_onion, session_i2p,
                                    project_version: str,
                                    shared_items_federated_domains: [],
                                    shared_item_federation_tokens: {},
-                                   signing_priv_key_pem: str):
+                                   signing_priv_key_pem: str,
+                                   proxy_type: str):
     """Returns a thread used to send a post to named addresses
     """
     print('THREAD: _send_to_named_addresses')
@@ -3184,7 +3193,8 @@ def send_to_named_addresses_thread(session, session_onion, session_i2p,
                                 project_version,
                                 shared_items_federated_domains,
                                 shared_item_federation_tokens,
-                                signing_priv_key_pem), daemon=True)
+                                signing_priv_key_pem,
+                                proxy_type), daemon=True)
     try:
         send_thread.start()
     except SocketError as ex:
@@ -3264,6 +3274,12 @@ def send_to_followers(session, session_onion, session_i2p,
     # this is after the message has arrived at the server
     client_to_server = False
 
+    curr_proxy_type = None
+    if domain.endswith('.onion'):
+        curr_proxy_type = 'tor'
+    elif domain.endswith('.i2p'):
+        curr_proxy_type = 'i2p'
+
     # for each instance
     sending_start_time = datetime.datetime.utcnow()
     print('Sending post to followers begins ' +
@@ -3307,10 +3323,6 @@ def send_to_followers(session, session_onion, session_i2p,
             if follower_domain.endswith('.i2p'):
                 curr_session = session_i2p
                 curr_http_prefix = 'http'
-        if not curr_session:
-            print('WARN: session not found when sending to follower ' +
-                  follower_domain_url)
-            continue
 
         with_shared_inbox = \
             _has_shared_inbox(curr_session, curr_http_prefix, follower_domain,
@@ -3335,18 +3347,25 @@ def send_to_followers(session, session_onion, session_i2p,
         # have an alt onion domain then use the alt
         from_domain = domain
         from_http_prefix = http_prefix
+
         if onion_domain:
             if to_domain.endswith('.onion'):
                 from_domain = onion_domain
                 from_http_prefix = 'http'
                 port = 80
                 to_port = 80
+                curr_proxy_type = 'tor'
         if i2p_domain:
             if to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
                 from_http_prefix = 'http'
                 port = 80
                 to_port = 80
+                curr_proxy_type = 'i2p'
+
+        if not curr_session:
+            # TODO add this to the server object
+            curr_session = create_session(curr_proxy_type)
 
         if with_shared_inbox:
             to_nickname = follower_handles[index].split('@')[0]

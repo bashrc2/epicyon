@@ -1457,7 +1457,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     bob_domain, None, None)
     announce_message_arrived = False
     outbox_message_arrived = False
-    for i in range(10):
+    for i in range(20):
         time.sleep(1)
         if not os.path.isdir(inbox_path):
             continue
