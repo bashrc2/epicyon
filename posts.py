@@ -3779,6 +3779,11 @@ def _add_post_to_timeline(file_path: str, boxname: str,
                 # append a replies identifier, which will later be removed
                 post_str += '<hasReplies>'
 
+            mitm_filename = file_path.replace('.json', '.mitm')
+            if os.path.isfile(mitm_filename):
+                # append a mitm identifier, which will later be removed
+                post_str += '<postmitm>'
+
         return _add_post_string_to_timeline(post_str, boxname, posts_in_box,
                                             box_actor)
     return False
@@ -4078,6 +4083,13 @@ def _create_box_indexed(recent_posts_cache: {},
             # remove the replies identifier
             post_str = post_str.replace('<hasReplies>', '')
 
+        # Check if the post was delivered via a third party
+        mitm = False
+        if post_str.endswith('<postmitm>'):
+            mitm = True
+            # remove the mitm identifier
+            post_str = post_str.replace('<postmitm>', '')
+
         pst = None
         try:
             pst = json.loads(post_str)
@@ -4089,6 +4101,9 @@ def _create_box_indexed(recent_posts_cache: {},
         # This will be used to indicate that replies exist within the html
         # created by individual_post_as_html
         pst['hasReplies'] = has_replies
+
+        # was the post delivered via a third party?
+        pst['mitm'] = mitm
 
         if not authorized:
             if not remove_post_interactions(pst, False):

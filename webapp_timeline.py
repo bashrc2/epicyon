@@ -906,6 +906,9 @@ def html_timeline(css_cache: {}, default_timeline: str,
                                          timeline_start_time,
                                          box_name, '11')
 
+                    mitm = False
+                    if item.get('mitm'):
+                        mitm = True
                     # read the post from disk
                     curr_tl_str = \
                         individual_post_as_html(signing_priv_key_pem,
@@ -932,7 +935,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
                                                 manually_approve_followers,
                                                 False, True, use_cache_only,
                                                 cw_lists, lists_enabled,
-                                                timezone)
+                                                timezone, mitm)
                     _log_timeline_timing(enable_timing_log,
                                          timeline_start_time, box_name, '12')
 

@@ -699,7 +699,7 @@ def html_history_search(css_cache: {}, translate: {}, base_dir: str,
                                     show_individual_post_icons,
                                     False, False, False, False,
                                     cw_lists, lists_enabled,
-                                    timezone)
+                                    timezone, False)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -885,7 +885,7 @@ def html_hashtag_search(css_cache: {},
                                     manually_approves_followers,
                                     show_public_only,
                                     store_to_sache, False, cw_lists,
-                                    lists_enabled, timezone)
+                                    lists_enabled, timezone, False)
         if post_str:
             hashtag_search_form += separator_str + post_str
         index += 1

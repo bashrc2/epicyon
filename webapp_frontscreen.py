@@ -87,7 +87,7 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False,
                                             True, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone)
+                                            timezone, False)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1

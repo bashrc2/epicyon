@@ -1416,7 +1416,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             use_cache_only: bool,
                             cw_lists: {},
                             lists_enabled: str,
-                            timezone: str) -> str:
+                            timezone: str,
+                            mitm: bool) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2094,7 +2095,7 @@ def html_individual_post(css_cache: {},
                          theme_name: str, system_language: str,
                          max_like_count: int, signing_priv_key_pem: str,
                          cw_lists: {}, lists_enabled: str,
-                         timezone: str) -> str:
+                         timezone: str, mitm: bool) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2160,7 +2161,7 @@ def html_individual_post(css_cache: {},
                                 allow_local_network_access, theme_name,
                                 system_language, max_like_count,
                                 False, authorized, False, False, False, False,
-                                cw_lists, lists_enabled, timezone)
+                                cw_lists, lists_enabled, timezone, mitm)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2173,6 +2174,10 @@ def html_individual_post(css_cache: {},
                 break
             post_json_object = load_json(post_filename)
             if post_json_object:
+                mitm = False
+                if os.path.isfile(post_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 post_str = \
                     individual_post_as_html(signing_priv_key_pem,
                                             True, recent_posts_cache,
@@ -2196,7 +2201,7 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone) + post_str
+                                            timezone, mitm) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2234,7 +2239,7 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone)
+                                            timezone, False)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2288,7 +2293,7 @@ def html_post_replies(css_cache: {},
                                         False, False, False, False,
                                         False, False,
                                         cw_lists, lists_enabled,
-                                        timezone)
+                                        timezone, False)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2341,7 +2346,7 @@ def html_emoji_reaction_picker(css_cache: {},
                                 theme_name, system_language,
                                 max_like_count,
                                 False, False, False, False, False, False,
-                                cw_lists, lists_enabled, timezone)
+                                cw_lists, lists_enabled, timezone, False)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):
