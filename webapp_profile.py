@@ -368,7 +368,7 @@ def html_profile_after_search(css_cache: {},
                                         False, False, False,
                                         False, False, False,
                                         cw_lists, lists_enabled,
-                                        timezone)
+                                        timezone, False)
             i += 1
             if i >= 8:
                 break
@@ -1125,7 +1125,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False,
                                             True, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone)
+                                            timezone, False)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1

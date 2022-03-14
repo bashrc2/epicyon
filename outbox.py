@@ -457,6 +457,10 @@ def post_message_to_outbox(session, translate: {},
                     timezone = \
                         get_account_timezone(base_dir,
                                              post_to_nickname, domain)
+                    mitm = False
+                    if os.path.isfile(saved_filename.replace('.json', '') +
+                                      '.mitm'):
+                        mitm = True
                     individual_post_as_html(signing_priv_key_pem,
                                             False, recent_posts_cache,
                                             max_recent_posts,
@@ -481,7 +485,7 @@ def post_message_to_outbox(session, translate: {},
                                             manually_approve_followers,
                                             False, True, use_cache_only,
                                             cw_lists, lists_enabled,
-                                            timezone)
+                                            timezone, mitm)
 
     if outbox_announce(recent_posts_cache,
                        base_dir, message_json, debug):

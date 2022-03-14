@@ -38,6 +38,7 @@ from roles import set_role
 from roles import set_rolesFromList
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import get_nickname_from_actor
 from utils import remove_html
 from utils import contains_invalid_chars
 from utils import replace_users_with_at
@@ -859,6 +860,31 @@ def person_upgrade_actor(base_dir: str, person_json: {},
             '.json'
         if os.path.isfile(actor_cache_filename):
             save_json(person_json, actor_cache_filename)
+
+
+def add_alternate_domains(actor_json: {}, domain: str,
+                          onion_domain: str, i2p_domain: str) -> None:
+    """Adds alternate onion and/or i2p domains to alsoKnownAs
+    """
+    if not onion_domain and not i2p_domain:
+        return
+    if not actor_json.get('id'):
+        return
+    if domain not in actor_json['id']:
+        return
+    nickname = get_nickname_from_actor(actor_json['id'])
+    if not nickname:
+        return
+    if 'alsoKnownAs' not in actor_json:
+        actor_json['alsoKnownAs'] = []
+    if onion_domain:
+        onion_actor = 'http://' + onion_domain + '/users/' + nickname
+        if onion_actor not in actor_json['alsoKnownAs']:
+            actor_json['alsoKnownAs'].append(onion_actor)
+    if i2p_domain:
+        i2p_actor = 'http://' + i2p_domain + '/users/' + nickname
+        if i2p_actor not in actor_json['alsoKnownAs']:
+            actor_json['alsoKnownAs'].append(i2p_actor)
 
 
 def person_lookup(domain: str, path: str, base_dir: str) -> {}:

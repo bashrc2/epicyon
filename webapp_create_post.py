@@ -286,7 +286,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                                                     False, False, False,
                                                     False, False, False,
                                                     cw_lists, lists_enabled,
-                                                    timezone)
+                                                    timezone, False)
 
                 reply_str = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'

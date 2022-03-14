@@ -60,6 +60,7 @@ from donate import get_donation_url
 from donate import set_donation_url
 from donate import get_website
 from donate import set_website
+from person import add_alternate_domains
 from person import add_actor_update_timestamp
 from person import set_person_notes
 from person import get_default_person_context
@@ -428,7 +429,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _convert_domains(self, calling_domain, referer_domain,
                          msg_str: str) -> str:
-        """Convert domains to onion or i2p
+        """Convert domains to onion or i2p, depending upon who is asking
         """
         curr_http_prefix = self.server.http_prefix + '://'
         if is_onion_request(calling_domain, referer_domain,
@@ -8363,6 +8364,10 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.account_timezone.get(self.post_to_nickname):
                 timezone = \
                     self.server.account_timezone.get(self.post_to_nickname)
+            mitm = False
+            if os.path.isfile(announce_filename.replace('.json', '') +
+                              '.mitm'):
+                mitm = True
             individual_post_as_html(self.server.signing_priv_key_pem, False,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
@@ -8391,7 +8396,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     False, True, False,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
-                                    timezone)
+                                    timezone, mitm)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
         actor_path_str = \
@@ -8894,6 +8899,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(self.post_to_nickname):
                     timezone = \
                         self.server.account_timezone.get(self.post_to_nickname)
+                mitm = False
+                if os.path.isfile(liked_post_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -8924,7 +8933,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, mitm)
             else:
                 print('WARN: Liked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -9072,6 +9081,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(self.post_to_nickname):
                     timezone = \
                         self.server.account_timezone.get(self.post_to_nickname)
+                mitm = False
+                if os.path.isfile(liked_post_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9102,7 +9115,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, mitm)
             else:
                 print('WARN: Unliked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -9279,6 +9292,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(self.post_to_nickname):
                     timezone = \
                         self.server.account_timezone.get(self.post_to_nickname)
+                mitm = False
+                if os.path.isfile(reaction_post_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9309,7 +9326,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, mitm)
             else:
                 print('WARN: Emoji reaction post not found: ' +
                       reaction_post_filename)
@@ -9476,6 +9493,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(self.post_to_nickname):
                     timezone = \
                         self.server.account_timezone.get(self.post_to_nickname)
+                mitm = False
+                if os.path.isfile(reaction_post_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9506,7 +9527,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, mitm)
             else:
                 print('WARN: Unreaction post not found: ' +
                       reaction_post_filename)
@@ -9723,6 +9744,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(self.post_to_nickname):
                     timezone = \
                         self.server.account_timezone.get(self.post_to_nickname)
+                mitm = False
+                if os.path.isfile(bookmark_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9753,7 +9778,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, mitm)
             else:
                 print('WARN: Bookmarked post not found: ' + bookmark_filename)
         # self._post_to_outbox(bookmark_json,
@@ -9875,6 +9900,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(self.post_to_nickname):
                     timezone = \
                         self.server.account_timezone.get(self.post_to_nickname)
+                mitm = False
+                if os.path.isfile(bookmark_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9905,7 +9934,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, mitm)
             else:
                 print('WARN: Unbookmarked post not found: ' +
                       bookmark_filename)
@@ -10100,6 +10129,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+                mitm = False
+                if os.path.isfile(mute_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         allow_downloads,
                                         self.server.recent_posts_cache,
@@ -10131,7 +10164,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         use_cache_only,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, mitm)
             else:
                 print('WARN: Muted post not found: ' + mute_filename)
 
@@ -10217,6 +10250,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+                mitm = False
+                if os.path.isfile(mute_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         allow_downloads,
                                         self.server.recent_posts_cache,
@@ -10248,7 +10285,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         use_cache_only,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, mitm)
             else:
                 print('WARN: Unmuted post not found: ' + mute_filename)
         if calling_domain.endswith('.onion') and onion_domain:
@@ -11008,6 +11045,10 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.account_timezone.get(nickname):
                 timezone = \
                     self.server.account_timezone.get(nickname)
+            mitm = False
+            if os.path.isfile(post_filename.replace('.json', '') +
+                              '.mitm'):
+                mitm = True
             msg = \
                 html_individual_post(self.server.css_cache,
                                      self.server.recent_posts_cache,
@@ -11034,7 +11075,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.signing_priv_key_pem,
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
-                                     timezone)
+                                     timezone, mitm)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -13428,6 +13469,7 @@ class PubServer(BaseHTTPRequestHandler):
         actor_json = person_lookup(domain, path, base_dir)
         if not actor_json:
             return False
+        add_alternate_domains(actor_json, domain, onion_domain, i2p_domain)
         if self._request_http():
             curr_session = \
                 self._establish_session("showPersonProfile",

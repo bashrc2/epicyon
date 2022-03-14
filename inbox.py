@@ -296,7 +296,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     signing_priv_key_pem: str,
                                     cw_lists: {},
                                     lists_enabled: str,
-                                    timezone: str) -> None:
+                                    timezone: str,
+                                    mitm: bool) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -321,7 +322,7 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             peertube_instances, allow_local_network_access,
                             theme_name, system_language, max_like_count,
                             not_dm, True, True, False, True, False,
-                            cw_lists, lists_enabled, timezone)
+                            cw_lists, lists_enabled, timezone, mitm)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -1133,6 +1134,9 @@ def _receive_like(recent_posts_cache: {},
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(liked_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
+            mitm = False
+            if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+                mitm = True
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1151,7 +1155,7 @@ def _receive_like(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled, timezone)
+                                    lists_enabled, timezone, mitm)
     return True
 
 
@@ -1247,6 +1251,9 @@ def _receive_undo_like(recent_posts_cache: {},
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(liked_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
+            mitm = False
+            if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+                mitm = True
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1265,7 +1272,7 @@ def _receive_undo_like(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled, timezone)
+                                    lists_enabled, timezone, mitm)
     return True
 
 
@@ -1393,6 +1400,9 @@ def _receive_reaction(recent_posts_cache: {},
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(reaction_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
+            mitm = False
+            if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+                mitm = True
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1412,7 +1422,7 @@ def _receive_reaction(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled, timezone)
+                                    lists_enabled, timezone, mitm)
     return True
 
 
@@ -1527,6 +1537,9 @@ def _receive_undo_reaction(recent_posts_cache: {},
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(reaction_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
+            mitm = False
+            if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+                mitm = True
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1546,7 +1559,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled, timezone)
+                                    lists_enabled, timezone, mitm)
     return True
 
 
@@ -1639,6 +1652,9 @@ def _receive_bookmark(recent_posts_cache: {},
             follower_approval_active(base_dir, nickname, domain)
         not_dm = not is_dm(bookmarked_post_json)
         timezone = get_account_timezone(base_dir, nickname, domain)
+        mitm = False
+        if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+            mitm = True
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache, max_recent_posts,
                                 translate, page_number, base_dir,
@@ -1657,7 +1673,7 @@ def _receive_bookmark(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists,
-                                lists_enabled, timezone)
+                                lists_enabled, timezone, mitm)
     return True
 
 
@@ -1754,6 +1770,9 @@ def _receive_undo_bookmark(recent_posts_cache: {},
             follower_approval_active(base_dir, nickname, domain)
         not_dm = not is_dm(bookmarked_post_json)
         timezone = get_account_timezone(base_dir, nickname, domain)
+        mitm = False
+        if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+            mitm = True
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache, max_recent_posts,
                                 translate, page_number, base_dir,
@@ -1772,7 +1791,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists, lists_enabled,
-                                timezone)
+                                timezone, mitm)
     return True
 
 
@@ -1963,6 +1982,9 @@ def _receive_announce(recent_posts_cache: {},
     if debug:
         print('Generating html for announce ' + message_json['id'])
     timezone = get_account_timezone(base_dir, nickname, domain)
+    mitm = False
+    if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+        mitm = True
     announce_html = \
         individual_post_as_html(signing_priv_key_pem, True,
                                 recent_posts_cache, max_recent_posts,
@@ -1982,7 +2004,7 @@ def _receive_announce(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists,
-                                lists_enabled, timezone)
+                                lists_enabled, timezone, mitm)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -3110,6 +3132,9 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
         follower_approval_active(base_dir, nickname, domain)
     not_dm = not is_dm(question_json)
     timezone = get_account_timezone(base_dir, nickname, domain)
+    mitm = False
+    if os.path.isfile(question_post_filename.replace('.json', '') + '.mitm'):
+        mitm = True
     individual_post_as_html(signing_priv_key_pem, False,
                             recent_posts_cache, max_recent_posts,
                             translate, page_number, base_dir,
@@ -3128,7 +3153,7 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             show_individual_post_icons,
                             manually_approve_followers,
                             False, True, False, cw_lists,
-                            lists_enabled, timezone)
+                            lists_enabled, timezone, mitm)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,
@@ -3297,7 +3322,8 @@ def _inbox_after_initial(server,
                          default_reply_interval_hrs: int,
                          cw_lists: {}, lists_enabled: str,
                          content_license_url: str,
-                         languages_understood: []) -> bool:
+                         languages_understood: [],
+                         mitm: bool) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -3634,6 +3660,17 @@ def _inbox_after_initial(server,
 
         # save the post to file
         if save_json(post_json_object, destination_filename):
+            if mitm:
+                # write a file to indicate that this post was delivered
+                # via a third party
+                destination_filename_mitm = \
+                    destination_filename.replace('.json', '') + '.mitm'
+                try:
+                    with open(destination_filename_mitm, 'w+') as mitm_file:
+                        mitm_file.write('\n')
+                except OSError:
+                    print('EX: unable to write ' + destination_filename_mitm)
+
             _low_frequency_post_notification(base_dir, http_prefix,
                                              nickname, domain, port,
                                              handle, post_is_dm, json_obj)
@@ -3693,7 +3730,7 @@ def _inbox_after_initial(server,
                                                         signing_priv_key_pem,
                                                         cw_lists,
                                                         lists_enabled,
-                                                        timezone)
+                                                        timezone, mitm)
                         if debug:
                             time_diff = \
                                 str(int((time.time() - html_cache_start_time) *
@@ -4728,6 +4765,9 @@ def run_inbox_queue(server,
             destination = \
                 queue_json['destination'].replace(inbox_handle, handle)
             languages_understood = []
+            mitm = False
+            if queue_json.get('mitm'):
+                mitm = True
             _inbox_after_initial(server,
                                  recent_posts_cache,
                                  max_recent_posts,
@@ -4759,7 +4799,7 @@ def run_inbox_queue(server,
                                  default_reply_interval_hrs,
                                  cw_lists, lists_enabled,
                                  content_license_url,
-                                 languages_understood)
+                                 languages_understood, mitm)
             if debug:
                 pprint(queue_json['post'])
                 print('Queue: Queue post accepted')

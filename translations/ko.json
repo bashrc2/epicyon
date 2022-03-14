@@ -517,5 +517,6 @@
     "Repeated by": "반복한 사람",
     "Register": "등록",
     "Web Bots Allowed": "웹 봇 허용",
-    "Known Search Bots": "알려진 웹 검색 봇"
+    "Known Search Bots": "알려진 웹 검색 봇",
+    "mitm": "제3자가 메시지를 읽거나 수정했을 수 있습니다."
 }

@@ -78,6 +78,9 @@ def html_likers_of_post(base_dir: str, nickname: str,
 
     # show the post which was liked
     timezone = get_account_timezone(base_dir, nickname, domain)
+    mitm = False
+    if os.path.isfile(filename.replace('.json', '') + '.mitm'):
+        mitm = True
     html_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache,
@@ -102,7 +105,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                 False, False, False,
                                 False, False, False,
                                 cw_lists, lists_enabled,
-                                timezone)
+                                timezone, mitm)
 
     # show likers beneath the post
     obj = post_json_object

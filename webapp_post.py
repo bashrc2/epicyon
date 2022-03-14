@@ -1026,8 +1026,8 @@ def _get_post_title_announce_html(base_dir: str,
                                   page_number: int,
                                   message_id_str: str,
                                   container_class_icons: str,
-                                  container_class: str) -> (str, str,
-                                                            str, str):
+                                  container_class: str,
+                                  mitm: bool) -> (str, str, str, str):
     """Returns the announce title of a post containing names of participants
     x announces y
     """
@@ -1081,6 +1081,10 @@ def _get_post_title_announce_html(base_dir: str,
     title_str += \
         _announce_with_display_name_html(translate, post_json_object,
                                          announce_display_name)
+
+    if mitm:
+        title_str += _mitm_warning_html(translate)
+
     # show avatar of person replied to
     announce_actor = attributed_to
     announce_avatar_url = \
@@ -1141,6 +1145,16 @@ def _reply_to_unknown_html(translate: {},
         '" class="announceOrReply">@unknown</a>\n'
 
 
+def _mitm_warning_html(translate: {}) -> str:
+    """Returns the html title for a reply to an unknown handle
+    """
+    mitm_warning_str = translate['mitm']
+    return '        <img loading="lazy" title="' + \
+        mitm_warning_str + '" alt="' + \
+        mitm_warning_str + '" src="/icons' + \
+        '/mitm.png" class="announceOrReply"/>\n'
+
+
 def _reply_with_unknown_path_html(translate: {},
                                   post_json_object: {},
                                   post_domain: str) -> str:
@@ -1196,7 +1210,8 @@ def _get_post_title_reply_html(base_dir: str,
                                page_number: int,
                                message_id_str: str,
                                container_class_icons: str,
-                               container_class: str) -> (str, str, str, str):
+                               container_class: str,
+                               mitm: bool) -> (str, str, str, str):
     """Returns the reply title of a post containing names of participants
     x replies to y
     """
@@ -1264,6 +1279,9 @@ def _get_post_title_reply_html(base_dir: str,
 
     title_str += _get_reply_html(translate, in_reply_to, reply_display_name)
 
+    if mitm:
+        title_str += _mitm_warning_html(translate)
+
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
 
     # show avatar of person replied to
@@ -1309,7 +1327,8 @@ def _get_post_title_html(base_dir: str,
                          page_number: int,
                          message_id_str: str,
                          container_class_icons: str,
-                         container_class: str) -> (str, str, str, str):
+                         container_class: str,
+                         mitm: bool) -> (str, str, str, str):
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
@@ -1337,7 +1356,7 @@ def _get_post_title_html(base_dir: str,
                                              page_number,
                                              message_id_str,
                                              container_class_icons,
-                                             container_class)
+                                             container_class, mitm)
 
     return _get_post_title_reply_html(base_dir,
                                       http_prefix,
@@ -1356,7 +1375,7 @@ def _get_post_title_html(base_dir: str,
                                       page_number,
                                       message_id_str,
                                       container_class_icons,
-                                      container_class)
+                                      container_class, mitm)
 
 
 def _get_footer_with_icons(show_icons: bool,
@@ -1416,7 +1435,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             use_cache_only: bool,
                             cw_lists: {},
                             lists_enabled: str,
-                            timezone: str) -> str:
+                            timezone: str,
+                            mitm: bool) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -1845,7 +1865,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                              page_number,
                                              message_id_str,
                                              container_class_icons,
-                                             container_class)
+                                             container_class, mitm)
     title_str += title_str2
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
@@ -2094,7 +2114,7 @@ def html_individual_post(css_cache: {},
                          theme_name: str, system_language: str,
                          max_like_count: int, signing_priv_key_pem: str,
                          cw_lists: {}, lists_enabled: str,
-                         timezone: str) -> str:
+                         timezone: str, mitm: bool) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2160,7 +2180,7 @@ def html_individual_post(css_cache: {},
                                 allow_local_network_access, theme_name,
                                 system_language, max_like_count,
                                 False, authorized, False, False, False, False,
-                                cw_lists, lists_enabled, timezone)
+                                cw_lists, lists_enabled, timezone, mitm)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2173,6 +2193,10 @@ def html_individual_post(css_cache: {},
                 break
             post_json_object = load_json(post_filename)
             if post_json_object:
+                mitm = False
+                if os.path.isfile(post_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
                 post_str = \
                     individual_post_as_html(signing_priv_key_pem,
                                             True, recent_posts_cache,
@@ -2196,7 +2220,7 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone) + post_str
+                                            timezone, mitm) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2234,7 +2258,7 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone)
+                                            timezone, False)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2288,7 +2312,7 @@ def html_post_replies(css_cache: {},
                                         False, False, False, False,
                                         False, False,
                                         cw_lists, lists_enabled,
-                                        timezone)
+                                        timezone, False)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2341,7 +2365,7 @@ def html_emoji_reaction_picker(css_cache: {},
                                 theme_name, system_language,
                                 max_like_count,
                                 False, False, False, False, False, False,
-                                cw_lists, lists_enabled, timezone)
+                                cw_lists, lists_enabled, timezone, False)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

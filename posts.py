@@ -3779,6 +3779,11 @@ def _add_post_to_timeline(file_path: str, boxname: str,
                 # append a replies identifier, which will later be removed
                 post_str += '<hasReplies>'
 
+            mitm_filename = file_path.replace('.json', '.mitm')
+            if os.path.isfile(mitm_filename):
+                # append a mitm identifier, which will later be removed
+                post_str += '<postmitm>'
+
         return _add_post_string_to_timeline(post_str, boxname, posts_in_box,
                                             box_actor)
     return False
@@ -4078,6 +4083,13 @@ def _create_box_indexed(recent_posts_cache: {},
             # remove the replies identifier
             post_str = post_str.replace('<hasReplies>', '')
 
+        # Check if the post was delivered via a third party
+        mitm = False
+        if post_str.endswith('<postmitm>'):
+            mitm = True
+            # remove the mitm identifier
+            post_str = post_str.replace('<postmitm>', '')
+
         pst = None
         try:
             pst = json.loads(post_str)
@@ -4089,6 +4101,9 @@ def _create_box_indexed(recent_posts_cache: {},
         # This will be used to indicate that replies exist within the html
         # created by individual_post_as_html
         pst['hasReplies'] = has_replies
+
+        # was the post delivered via a third party?
+        pst['mitm'] = mitm
 
         if not authorized:
             if not remove_post_interactions(pst, False):
@@ -4842,18 +4857,22 @@ def download_announce(session, base_dir: str, http_prefix: str,
             return None
 
         if not isinstance(announced_json, dict):
-            print('WARN: announce json is not a dict - ' +
+            print('WARN: announced post json is not a dict - ' +
                   post_json_object['object'])
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
         if not announced_json.get('id'):
+            print('WARN: announced post does not have an id ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
         if not announced_json.get('type'):
+            print('WARN: announced post does not have a type ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
@@ -4866,11 +4885,15 @@ def download_announce(session, base_dir: str, http_prefix: str,
             if converted_json:
                 announced_json = converted_json
         if '/statuses/' not in announced_json['id']:
+            print('WARN: announced post id does not contain /statuses/ ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
         if not has_users_path(announced_json['id']):
+            print('WARN: announced post id does not contain /users/ ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
@@ -4878,22 +4901,30 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if announced_json['type'] != 'Note' and \
            announced_json['type'] != 'Page' and \
            announced_json['type'] != 'Article':
+            print('WARN: announced post is not Note/Page/Article ' +
+                  str(announced_json))
             # You can only announce Note or Article types
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
         if not announced_json.get('content'):
+            print('WARN: announced post does not have content ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
         if not announced_json.get('published'):
+            print('WARN: announced post does not have published ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
         if not valid_post_date(announced_json['published'], 90, debug):
+            print('WARN: announced post is not recently published ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
@@ -4906,18 +4937,24 @@ def download_announce(session, base_dir: str, http_prefix: str,
         # Check the content of the announce
         content_str = announced_json['content']
         if dangerous_markup(content_str, allow_local_network_access):
+            print('WARN: announced post contains dangerous markup ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
 
         if is_filtered(base_dir, nickname, domain, content_str):
+            print('WARN: announced post has been filtered ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
 
         if invalid_ciphertext(content_str):
+            print('WARN: announced post contains invalid ciphertext ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
@@ -4943,6 +4980,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                                        actor_nickname, actor_domain,
                                        actor_port, announced_json)
         if announced_json['type'] != 'Create':
+            print('WARN: announced post could not be wrapped in Create ' +
+                  str(announced_json))
             # Create wrap failed
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
@@ -4963,6 +5002,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                 get_full_domain(attributed_domain, attributed_port)
             if is_blocked(base_dir, nickname, domain,
                           attributed_nickname, attributed_domain):
+                print('WARN: announced post handle is blocked ' +
+                      str(attributed_nickname) + '@' + attributed_domain)
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache)
