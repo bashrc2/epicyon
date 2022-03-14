@@ -3005,7 +3005,7 @@ def _is_profile_update(post_json_object: {}) -> bool:
     return False
 
 
-def _send_to_named_addresses(session, session_onion, session_i2p,
+def _send_to_named_addresses(server, session, session_onion, session_i2p,
                              base_dir: str,
                              nickname: str, domain: str,
                              onion_domain: str, i2p_domain: str, port: int,
@@ -3125,6 +3125,7 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
         from_http_prefix = http_prefix
         curr_session = session
         curr_proxy_type = proxy_type
+        session_type = 'default'
         if onion_domain:
             if not from_domain.endswith('.onion') and \
                to_domain.endswith('.onion'):
@@ -3135,6 +3136,7 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                 port = 80
                 to_port = 80
                 curr_proxy_type = 'tor'
+                session_type = 'tor'
         if i2p_domain:
             if not from_domain.endswith('.i2p') and \
                to_domain.endswith('.i2p'):
@@ -3145,6 +3147,7 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                 port = 80
                 to_port = 80
                 curr_proxy_type = 'i2p'
+                session_type = 'i2p'
         cc_list = []
 
         if debug:
@@ -3165,8 +3168,14 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
         group_account = has_group_type(base_dir, address, person_cache)
 
         if not curr_session:
-            # TODO add this to the server object
             curr_session = create_session(curr_proxy_type)
+            if server:
+                if session_type == 'tor':
+                    server.session_onion = curr_session
+                elif session_type == 'i2p':
+                    server.session_i2p = curr_session
+                else:
+                    server.session = curr_session
 
         send_signed_json(post_json_object, curr_session, base_dir,
                          nickname, from_domain, port,
@@ -3180,7 +3189,7 @@ def _send_to_named_addresses(session, session_onion, session_i2p,
                          domain, onion_domain, i2p_domain)
 
 
-def send_to_named_addresses_thread(session, session_onion, session_i2p,
+def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                    base_dir: str, nickname: str, domain: str,
                                    onion_domain: str,
                                    i2p_domain: str, port: int,
@@ -3198,7 +3207,7 @@ def send_to_named_addresses_thread(session, session_onion, session_i2p,
     print('THREAD: _send_to_named_addresses')
     send_thread = \
         thread_with_trace(target=_send_to_named_addresses,
-                          args=(session, session_onion, session_i2p,
+                          args=(server, session, session_onion, session_i2p,
                                 base_dir, nickname, domain,
                                 onion_domain, i2p_domain, port,
                                 http_prefix, federation_list,
@@ -3256,7 +3265,7 @@ def _sending_profile_update(post_json_object: {}) -> bool:
     return False
 
 
-def send_to_followers(session, session_onion, session_i2p,
+def send_to_followers(server, session, session_onion, session_i2p,
                       base_dir: str, nickname: str, domain: str,
                       onion_domain: str, i2p_domain: str, port: int,
                       http_prefix: str, federation_list: [],
@@ -3362,7 +3371,7 @@ def send_to_followers(session, session_onion, session_i2p,
         # have an alt onion domain then use the alt
         from_domain = domain
         from_http_prefix = http_prefix
-
+        session_type = 'default'
         if onion_domain:
             if to_domain.endswith('.onion'):
                 from_domain = onion_domain
@@ -3370,6 +3379,7 @@ def send_to_followers(session, session_onion, session_i2p,
                 port = 80
                 to_port = 80
                 curr_proxy_type = 'tor'
+                session_type = 'tor'
         if i2p_domain:
             if to_domain.endswith('.i2p'):
                 from_domain = i2p_domain
@@ -3377,10 +3387,17 @@ def send_to_followers(session, session_onion, session_i2p,
                 port = 80
                 to_port = 80
                 curr_proxy_type = 'i2p'
+                session_type = 'i2p'
 
         if not curr_session:
-            # TODO add this to the server object
             curr_session = create_session(curr_proxy_type)
+            if server:
+                if session_type == 'tor':
+                    server.session_onion = curr_session
+                elif session_type == 'i2p':
+                    server.session_i2p = curr_session
+                else:
+                    server.session = curr_session
 
         if with_shared_inbox:
             to_nickname = follower_handles[index].split('@')[0]
@@ -3457,7 +3474,7 @@ def send_to_followers(session, session_onion, session_i2p,
     print('Sending post to followers ends ' + str(sending_mins) + ' mins')
 
 
-def send_to_followers_thread(session, session_onion, session_i2p,
+def send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir: str, nickname: str, domain: str,
                              onion_domain: str, i2p_domain: str, port: int,
                              http_prefix: str, federation_list: [],
@@ -3473,7 +3490,7 @@ def send_to_followers_thread(session, session_onion, session_i2p,
     print('THREAD: send_to_followers')
     send_thread = \
         thread_with_trace(target=send_to_followers,
-                          args=(session, session_onion, session_i2p,
+                          args=(server, session, session_onion, session_i2p,
                                 base_dir, nickname, domain,
                                 onion_domain, i2p_domain, port,
                                 http_prefix, federation_list,
