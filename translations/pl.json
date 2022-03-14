@@ -517,5 +517,6 @@
     "Repeated by": "Powtórzone przez",
     "Register": "Zarejestrować",
     "Web Bots Allowed": "Dozwolone boty internetowe",
-    "Known Search Bots": "Znane boty wyszukiwania w sieci"
+    "Known Search Bots": "Znane boty wyszukiwania w sieci",
+    "mitm": "Wiadomość mogła zostać przeczytana lub zmodyfikowana przez osobę trzecią"
 }

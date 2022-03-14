@@ -517,5 +517,6 @@
     "Repeated by": "Repetido por",
     "Register": "Registro",
     "Web Bots Allowed": "Webbots permitidos",
-    "Known Search Bots": "Bots de pesquisa na Web conhecidos"
+    "Known Search Bots": "Bots de pesquisa na Web conhecidos",
+    "mitm": "A mensagem pode ter sido lida ou modificada por terceiros"
 }
