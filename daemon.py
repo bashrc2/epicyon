@@ -464,7 +464,7 @@ class PubServer(BaseHTTPRequestHandler):
         # The presence if these headers on their own indicates a MiTM
         mitm_headers = (
             'CF-Connecting-IP', 'CF-RAY', 'CF-IPCountry', 'CF-Visitor',
-            'CDN-Loop', 'CF-Worker'
+            'CDN-Loop', 'CF-Worker', 'CF-Cache-Status'
         )
         for header_name in mitm_headers:
             if self.headers.get(header_name):
