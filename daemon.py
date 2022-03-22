@@ -20633,7 +20633,12 @@ def run_daemon(crawlers_allowed: [],
     httpd.domain = domain
     httpd.port = port
     httpd.domain_full = get_full_domain(domain, port)
-    save_domain_qrcode(base_dir, http_prefix, httpd.domain_full)
+    if onion_domain:
+        save_domain_qrcode(base_dir, 'http', onion_domain)
+    elif i2p_domain:
+        save_domain_qrcode(base_dir, 'http', i2p_domain)
+    else:
+        save_domain_qrcode(base_dir, http_prefix, httpd.domain_full)
     httpd.http_prefix = http_prefix
     httpd.debug = debug
     httpd.federation_list = fed_list.copy()
