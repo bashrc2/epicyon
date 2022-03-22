@@ -13821,11 +13821,6 @@ class PubServer(BaseHTTPRequestHandler):
         qr_filename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode.png'
         if os.path.isfile(qr_filename):
-            if self._etag_exists(qr_filename):
-                # The file has not changed
-                self._304()
-                return
-
             tries = 0
             media_binary = None
             while tries < 5:
