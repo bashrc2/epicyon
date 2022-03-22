@@ -13803,12 +13803,21 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _show_qrcode(self, calling_domain: str, path: str,
-                     base_dir: str, domain: str, port: int,
-                     getreq_start_time) -> bool:
+                     base_dir: str, domain: str,
+                     onion_domain: str, i2p_domain: str,
+                     port: int, getreq_start_time) -> bool:
         """Shows a QR code for an account
         """
         nickname = get_nickname_from_actor(path)
-        save_person_qrcode(base_dir, nickname, domain, port)
+        if onion_domain:
+            qrcode_domain = onion_domain
+            port = 80
+        elif i2p_domain:
+            qrcode_domain = i2p_domain
+            port = 80
+        else:
+            qrcode_domain = domain
+        save_person_qrcode(base_dir, nickname, domain, qrcode_domain, port)
         qr_filename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode.png'
         if os.path.isfile(qr_filename):
@@ -16146,6 +16155,8 @@ class PubServer(BaseHTTPRequestHandler):
             if self._show_qrcode(calling_domain, self.path,
                                  self.server.base_dir,
                                  self.server.domain,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain,
                                  self.server.port,
                                  getreq_start_time):
                 return
