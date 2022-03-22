@@ -969,9 +969,9 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
         'frame', 'iframe', 'html', 'body',
         'hr', 'allow-popups', 'allow-scripts',
         'amp-'
-    ]    
+    ]
     return _is_dangerous_string_tag(content, allow_local_network_access,
-                                separators, invalid_strings)
+                                    separators, invalid_strings)
 
 
 def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
