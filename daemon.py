@@ -13802,9 +13802,9 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _show_q_rcode(self, calling_domain: str, path: str,
-                      base_dir: str, domain: str, port: int,
-                      getreq_start_time) -> bool:
+    def _show_qrcode(self, calling_domain: str, path: str,
+                     base_dir: str, domain: str, port: int,
+                     getreq_start_time) -> bool:
         """Shows a QR code for an account
         """
         nickname = get_nickname_from_actor(path)
@@ -13825,7 +13825,7 @@ class PubServer(BaseHTTPRequestHandler):
                         media_binary = av_file.read()
                         break
                 except BaseException as ex:
-                    print('EX: _show_q_rcode ' + str(tries) + ' ' + str(ex))
+                    print('EX: _show_qrcode ' + str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
             if media_binary:
@@ -13837,7 +13837,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(media_binary)
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
-                                    '_GET', '_show_q_rcode',
+                                    '_GET', '_show_qrcode',
                                     self.server.debug)
                 return True
         self._404()
@@ -16143,11 +16143,11 @@ class PubServer(BaseHTTPRequestHandler):
         # QR code for account handle
         if users_in_path and \
            self.path.endswith('/qrcode.png'):
-            if self._show_q_rcode(calling_domain, self.path,
-                                  self.server.base_dir,
-                                  self.server.domain,
-                                  self.server.port,
-                                  getreq_start_time):
+            if self._show_qrcode(calling_domain, self.path,
+                                 self.server.base_dir,
+                                 self.server.domain,
+                                 self.server.port,
+                                 getreq_start_time):
                 return
 
         fitness_performance(getreq_start_time, self.server.fitness,
