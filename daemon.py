@@ -464,7 +464,7 @@ class PubServer(BaseHTTPRequestHandler):
         # The presence if these headers on their own indicates a MiTM
         mitm_headers = (
             'CF-Connecting-IP', 'CF-RAY', 'CF-IPCountry', 'CF-Visitor',
-            'CDN-Loop', 'CF-Worker'
+            'CDN-Loop', 'CF-Worker', 'CF-Cache-Status'
         )
         for header_name in mitm_headers:
             if self.headers.get(header_name):
@@ -13802,13 +13802,22 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _show_q_rcode(self, calling_domain: str, path: str,
-                      base_dir: str, domain: str, port: int,
-                      getreq_start_time) -> bool:
+    def _show_qrcode(self, calling_domain: str, path: str,
+                     base_dir: str, domain: str,
+                     onion_domain: str, i2p_domain: str,
+                     port: int, getreq_start_time) -> bool:
         """Shows a QR code for an account
         """
         nickname = get_nickname_from_actor(path)
-        save_person_qrcode(base_dir, nickname, domain, port)
+        if onion_domain:
+            qrcode_domain = onion_domain
+            port = 80
+        elif i2p_domain:
+            qrcode_domain = i2p_domain
+            port = 80
+        else:
+            qrcode_domain = domain
+        save_person_qrcode(base_dir, nickname, domain, qrcode_domain, port)
         qr_filename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode.png'
         if os.path.isfile(qr_filename):
@@ -13825,7 +13834,7 @@ class PubServer(BaseHTTPRequestHandler):
                         media_binary = av_file.read()
                         break
                 except BaseException as ex:
-                    print('EX: _show_q_rcode ' + str(tries) + ' ' + str(ex))
+                    print('EX: _show_qrcode ' + str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
             if media_binary:
@@ -13837,7 +13846,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(media_binary)
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
-                                    '_GET', '_show_q_rcode',
+                                    '_GET', '_show_qrcode',
                                     self.server.debug)
                 return True
         self._404()
@@ -16143,11 +16152,13 @@ class PubServer(BaseHTTPRequestHandler):
         # QR code for account handle
         if users_in_path and \
            self.path.endswith('/qrcode.png'):
-            if self._show_q_rcode(calling_domain, self.path,
-                                  self.server.base_dir,
-                                  self.server.domain,
-                                  self.server.port,
-                                  getreq_start_time):
+            if self._show_qrcode(calling_domain, self.path,
+                                 self.server.base_dir,
+                                 self.server.domain,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain,
+                                 self.server.port,
+                                 getreq_start_time):
                 return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -20633,7 +20644,12 @@ def run_daemon(crawlers_allowed: [],
     httpd.domain = domain
     httpd.port = port
     httpd.domain_full = get_full_domain(domain, port)
-    save_domain_qrcode(base_dir, http_prefix, httpd.domain_full)
+    if onion_domain:
+        save_domain_qrcode(base_dir, 'http', onion_domain)
+    elif i2p_domain:
+        save_domain_qrcode(base_dir, 'http', i2p_domain)
+    else:
+        save_domain_qrcode(base_dir, http_prefix, httpd.domain_full)
     httpd.http_prefix = http_prefix
     httpd.debug = debug
     httpd.federation_list = fed_list.copy()

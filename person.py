@@ -582,15 +582,15 @@ def create_group(base_dir: str, nickname: str, domain: str, port: int,
 
 
 def save_person_qrcode(base_dir: str,
-                       nickname: str, domain: str, port: int,
-                       scale=6) -> None:
+                       nickname: str, domain: str, qrcode_domain: str,
+                       port: int, scale=6) -> None:
     """Saves a qrcode image for the handle of the person
     This helps to transfer onion or i2p handles to a mobile device
     """
     qrcode_filename = acct_dir(base_dir, nickname, domain) + '/qrcode.png'
     if os.path.isfile(qrcode_filename):
         return
-    handle = get_full_domain('@' + nickname + '@' + domain, port)
+    handle = get_full_domain('@' + nickname + '@' + qrcode_domain, port)
     url = pyqrcode.create(handle)
     url.png(qrcode_filename, scale)
 
@@ -707,7 +707,7 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
         registrations_remaining -= 1
         set_config_param(base_dir, 'registrationsRemaining',
                          str(registrations_remaining))
-    save_person_qrcode(base_dir, nickname, domain, port)
+    save_person_qrcode(base_dir, nickname, domain, domain, port)
     return private_key_pem, public_key_pem, new_person, webfinger_endpoint
 
 
