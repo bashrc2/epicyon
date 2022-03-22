@@ -581,6 +581,30 @@ def create_group(base_dir: str, nickname: str, domain: str, port: int,
     return private_key_pem, public_key_pem, new_person, webfinger_endpoint
 
 
+def clear_person_qrcodes(base_dir: str) -> None:
+    """Clears qrcodes for all accounts
+    """
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for handle in dirs:
+            if '@' not in handle:
+                continue
+            nickname = handle.split('@')[0]
+            domain = handle.split('@')[1]
+            qrcode_filename = \
+                acct_dir(base_dir, nickname, domain) + '/qrcode.png'
+            if os.path.isfile(qrcode_filename):
+                try:
+                    os.remove(qrcode_filename)
+                except OSError:
+                    pass
+            if os.path.isfile(qrcode_filename + '.etag'):
+                try:
+                    os.remove(qrcode_filename + '.etag')
+                except OSError:
+                    pass
+        break
+
+
 def save_person_qrcode(base_dir: str,
                        nickname: str, domain: str, qrcode_domain: str,
                        port: int, scale=6) -> None:

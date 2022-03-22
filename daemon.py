@@ -60,6 +60,7 @@ from donate import get_donation_url
 from donate import set_donation_url
 from donate import get_website
 from donate import set_website
+from person import clear_person_qrcodes
 from person import add_alternate_domains
 from person import add_actor_update_timestamp
 from person import set_person_notes
@@ -20650,6 +20651,7 @@ def run_daemon(crawlers_allowed: [],
         save_domain_qrcode(base_dir, 'http', i2p_domain)
     else:
         save_domain_qrcode(base_dir, http_prefix, httpd.domain_full)
+    clear_person_qrcodes(base_dir)
     httpd.http_prefix = http_prefix
     httpd.debug = debug
     httpd.federation_list = fed_list.copy()
