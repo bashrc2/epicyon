@@ -153,6 +153,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             peertube_sites = (
                 'share.tube',
                 'visionon.tv',
+                'anarchy.tube',
                 'peertube.fr',
                 'kolektiva.media',
                 'peertube.social',
