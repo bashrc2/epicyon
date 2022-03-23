@@ -151,7 +151,7 @@ def html_person_options(default_timeline: str,
     options_str += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + handle_shown + '</p>\n'
-    if follows_you:
+    if follows_you and authorized:
         options_str += \
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
     if moved_to:
