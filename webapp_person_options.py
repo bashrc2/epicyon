@@ -66,6 +66,8 @@ def html_person_options(default_timeline: str,
     """Show options for a person: view/follow/block/report
     """
     options_domain, options_port = get_domain_from_actor(options_actor)
+    if not options_domain:
+        return None
     options_domain_full = get_full_domain(options_domain, options_port)
 
     if os.path.isfile(base_dir + '/accounts/options-background-custom.jpg'):

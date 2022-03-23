@@ -7765,12 +7765,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.news_instance,
                                     authorized,
                                     access_keys, is_group).encode('utf-8')
-            msglen = len(msg)
-            self._set_headers('text/html', msglen,
-                              cookie, calling_domain, False)
-            self._write(msg)
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_person_options', debug)
+            if msg:
+                msglen = len(msg)
+                self._set_headers('text/html', msglen,
+                                  cookie, calling_domain, False)
+                self._write(msg)
+                fitness_performance(getreq_start_time, self.server.fitness,
+                                    '_GET', '_show_person_options', debug)
+            else:
+                self._404()
             return
 
         if '/users/news/' in path:
