@@ -46,6 +46,8 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
     # remove any cached version of this post so that the
     # bookmark icon is changed
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
@@ -166,6 +168,8 @@ def update_bookmarks_collection(recent_posts_cache: {},
         # remove any cached version of this post so that the
         # bookmark icon is changed
         nickname = get_nickname_from_actor(actor)
+        if not nickname:
+            return
         cached_post_filename = \
             get_cached_post_filename(base_dir, nickname,
                                      domain, post_json_object)

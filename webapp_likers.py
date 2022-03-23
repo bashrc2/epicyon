@@ -142,6 +142,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                               liker_name, False)
         else:
             liker_name = get_nickname_from_actor(liker_actor)
+            if not liker_name:
+                liker_name = 'unknown'
         if likers_list:
             likers_list += ' '
         liker_avatar_url = \

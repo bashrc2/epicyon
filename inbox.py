@@ -1941,6 +1941,9 @@ def _receive_announce(recent_posts_cache: {},
     # is the announce actor blocked?
     nickname = handle.split('@')[0]
     actor_nickname = get_nickname_from_actor(message_json['actor'])
+    if not actor_nickname:
+        print('WARN: _receive_announce no actor_nickname')
+        return False
     actor_domain, _ = get_domain_from_actor(message_json['actor'])
     if is_blocked(base_dir, nickname, domain, actor_nickname, actor_domain):
         print('Receive announce blocked for actor: ' +
@@ -1948,13 +1951,16 @@ def _receive_announce(recent_posts_cache: {},
         return False
 
     # also check the actor for the url being announced
-    announcedActorNickname = get_nickname_from_actor(message_json['object'])
+    announced_actor_nickname = get_nickname_from_actor(message_json['object'])
+    if not announced_actor_nickname:
+        print('WARN: _receive_announce no announced_actor_nickname')
+        return False
     announcedActorDomain, announcedActorPort = \
         get_domain_from_actor(message_json['object'])
     if is_blocked(base_dir, nickname, domain,
-                  announcedActorNickname, announcedActorDomain):
+                  announced_actor_nickname, announcedActorDomain):
         print('Receive announce object blocked for actor: ' +
-              announcedActorNickname + '@' + announcedActorDomain)
+              announced_actor_nickname + '@' + announcedActorDomain)
         return False
 
     # is this post in the outbox of the person?
@@ -2788,6 +2794,8 @@ def _inbox_update_calendar(base_dir: str, handle: str,
 
     actor = post_json_object['actor']
     actor_nickname = get_nickname_from_actor(actor)
+    if not actor_nickname:
+        return
     actor_domain, _ = get_domain_from_actor(actor)
     handle_nickname = handle.split('@')[0]
     handle_domain = handle.split('@')[1]
@@ -3254,6 +3262,8 @@ def _low_frequency_post_notification(base_dir: str, http_prefix: str,
     if not isinstance(attributed_to, str):
         return
     from_nickname = get_nickname_from_actor(attributed_to)
+    if not from_nickname:
+        return
     from_domain, from_port = get_domain_from_actor(attributed_to)
     from_domain_full = get_full_domain(from_domain, from_port)
     if notify_when_person_posts(base_dir, nickname, domain,
@@ -3282,6 +3292,8 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
     if not isinstance(attributed_to, str):
         return 0
     from_nickname = get_nickname_from_actor(attributed_to)
+    if not from_nickname:
+        return 0
     from_domain, from_port = get_domain_from_actor(attributed_to)
     from_domain_full = get_full_domain(from_domain, from_port)
     if receive_git_patch(base_dir, nickname, domain,

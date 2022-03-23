@@ -541,6 +541,8 @@ def html_emoji_reactions(post_json_object: {}, interactive: bool,
         emoji_content = item['content']
         emoji_actor = item['actor']
         emoji_nickname = get_nickname_from_actor(emoji_actor)
+        if not emoji_nickname:
+            return ''
         emoji_domain, _ = get_domain_from_actor(emoji_actor)
         emoji_handle = emoji_nickname + '@' + emoji_domain
         if emoji_actor == actor:

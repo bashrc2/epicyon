@@ -2429,6 +2429,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
     """An individual follow entry on the profile screen
     """
     follow_url_nickname = get_nickname_from_actor(followUrl)
+    if not follow_url_nickname:
+        return ''
     follow_url_domain, follow_url_port = get_domain_from_actor(followUrl)
     follow_url_domain_full = \
         get_full_domain(follow_url_domain, follow_url_port)

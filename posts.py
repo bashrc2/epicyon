@@ -4815,6 +4815,9 @@ def download_announce(session, base_dir: str, http_prefix: str,
                 'Accept': accept_str
             }
         actor_nickname = get_nickname_from_actor(post_json_object['actor'])
+        if not actor_nickname:
+            print('WARN: download_announce no actor_nickname')
+            return None
         actor_domain, actor_port = \
             get_domain_from_actor(post_json_object['actor'])
         if not actor_domain:

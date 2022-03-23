@@ -68,6 +68,8 @@ def outbox_availability(base_dir: str, nickname: str, message_json: {},
         return False
 
     actor_nickname = get_nickname_from_actor(message_json['actor'])
+    if not actor_nickname:
+        return False
     if actor_nickname != nickname:
         return False
     domain, _ = get_domain_from_actor(message_json['actor'])

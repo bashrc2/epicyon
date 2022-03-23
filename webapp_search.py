@@ -380,6 +380,8 @@ def html_search(css_cache: {}, translate: {},
     """
     actor = path.replace('/search', '')
     search_nickname = get_nickname_from_actor(actor)
+    if not search_nickname:
+        return ''
 
     set_custom_background(base_dir, 'search-background', 'follow-background')
 

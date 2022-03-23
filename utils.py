@@ -2343,6 +2343,8 @@ def undo_likes_collection_entry(recent_posts_cache: {},
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
@@ -2409,6 +2411,8 @@ def undo_reaction_collection_entry(recent_posts_cache: {},
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
@@ -2476,6 +2480,8 @@ def undo_announce_collection_entry(recent_posts_cache: {},
     # remove any cached version of this announce so that the announce
     # icon is changed
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain,
                                  post_json_object)

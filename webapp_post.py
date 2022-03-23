@@ -104,11 +104,12 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {}) -> str:
         if isinstance(obj_json['attributedTo'], str):
             attrib = obj_json['attributedTo']
             actor_nick = get_nickname_from_actor(attrib)
-            actor_domain, _ = get_domain_from_actor(attrib)
-            actor_handle = actor_nick + '@' + actor_domain
-            metadata += \
-                "    <meta content=\"@" + actor_handle + \
-                "\" property=\"og:title\" />\n"
+            if actor_nick:
+                actor_domain, _ = get_domain_from_actor(attrib)
+                actor_handle = actor_nick + '@' + actor_domain
+                metadata += \
+                    "    <meta content=\"@" + actor_handle + \
+                    "\" property=\"og:title\" />\n"
     if obj_json.get('url'):
         metadata += \
             "    <meta content=\"" + obj_json['url'] + \
@@ -410,6 +411,8 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
         # check that the alternative replyTo url is not blocked
         block_nickname = \
             get_nickname_from_actor(post_json_object['object']['replyTo'])
+        if not block_nickname:
+            return reply_str
         block_domain, _ = \
             get_domain_from_actor(post_json_object['object']['replyTo'])
         if not is_blocked(base_dir, nickname, domain,
@@ -1516,6 +1519,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if domain_full not in post_actor:
         # lookup the correct webfinger for the post_actor
         post_actor_nickname = get_nickname_from_actor(post_actor)
+        if not post_actor_nickname:
+            return ''
         post_actor_domain, post_actor_port = get_domain_from_actor(post_actor)
         post_actor_domain_full = \
             get_full_domain(post_actor_domain, post_actor_port)
@@ -2132,6 +2137,8 @@ def html_individual_post(css_cache: {},
 
     if by_str:
         by_str_nickname = get_nickname_from_actor(by_str)
+        if not by_str_nickname:
+            return ''
         by_str_domain, by_str_port = get_domain_from_actor(by_str)
         by_str_domain = get_full_domain(by_str_domain, by_str_port)
         by_str_handle = by_str_nickname + '@' + by_str_domain
