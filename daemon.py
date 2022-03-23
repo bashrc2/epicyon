@@ -6657,14 +6657,16 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # this account is a bot
                     if fields.get('isBot'):
-                        if fields['isBot'] == 'on':
+                        if fields['isBot'] == 'on' and \
+                           actor_json.get('type'):
                             if actor_json['type'] != 'Service':
                                 actor_json['type'] = 'Service'
                                 actor_changed = True
                     else:
                         # this account is a group
                         if fields.get('isGroup'):
-                            if fields['isGroup'] == 'on':
+                            if fields['isGroup'] == 'on' and \
+                               actor_json.get('type'):
                                 if actor_json['type'] != 'Group':
                                     # only allow admin to create groups
                                     if path.startswith('/users/' +
@@ -6673,9 +6675,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         actor_changed = True
                         else:
                             # this account is a person (default)
-                            if actor_json['type'] != 'Person':
-                                actor_json['type'] = 'Person'
-                                actor_changed = True
+                            if actor_json.get('type'):
+                                if actor_json['type'] != 'Person':
+                                    actor_json['type'] = 'Person'
+                                    actor_changed = True
 
                     # grayscale theme
                     if path.startswith('/users/' + admin_nickname + '/') or \
@@ -7700,8 +7703,9 @@ class PubServer(BaseHTTPRequestHandler):
                     moved_to = actor_json['movedTo']
                     if '"' in moved_to:
                         moved_to = moved_to.split('"')[1]
-                if actor_json['type'] == 'Group':
-                    is_group = True
+                if actor_json.get('type'):
+                    if actor_json['type'] == 'Group':
+                        is_group = True
                 locked_account = get_locked_account(actor_json)
                 donate_url = get_donation_url(actor_json)
                 website_url = get_website(actor_json, self.server.translate)

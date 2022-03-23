@@ -2690,6 +2690,8 @@ def _group_handle(base_dir: str, handle: str) -> bool:
     actor_json = load_json(actor_file)
     if not actor_json:
         return False
+    if not actor_json.get('type'):
+        return False
     return actor_json['type'] == 'Group'
 
 
