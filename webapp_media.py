@@ -155,6 +155,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 'visionon.tv',
                 'anarchy.tube',
                 'peertube.fr',
+                'video.nerdcave.site',
                 'kolektiva.media',
                 'peertube.social',
                 'videos.lescommuns.org'
