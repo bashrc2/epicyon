@@ -3919,6 +3919,15 @@ def _test_danger_markup():
         '<script src="https://evilsite/payload.js" /></p>'
     assert dangerous_markup(content, allow_local_network_access)
 
+    content = '<p>This is a valid-looking message. But it contains ' + \
+        'spyware. <amp-analytics type="gtag" ' + \
+        'data-credentials="include"></amp-analytics></p>'
+    assert dangerous_markup(content, allow_local_network_access)
+
+    content = '<p>This is a valid-looking message. But it contains ' + \
+        '<a href="something.googleapis.com/anotherthing">spyware.</a></p>'
+    assert dangerous_markup(content, allow_local_network_access)
+
     content = '<p>This message embeds an evil frame.' + \
         '<iframe src="somesite"></iframe></p>'
     assert dangerous_markup(content, allow_local_network_access)

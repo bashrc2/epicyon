@@ -884,8 +884,8 @@ def is_local_network_address(ip_address: str) -> bool:
     return False
 
 
-def _is_dangerous_string(content: str, allow_local_network_access: bool,
-                         separators: [], invalid_strings: []) -> bool:
+def _is_dangerous_string_tag(content: str, allow_local_network_access: bool,
+                             separators: [], invalid_strings: []) -> bool:
     """Returns true if the given string is dangerous
     """
     for separator_style in separators:
@@ -908,12 +908,48 @@ def _is_dangerous_string(content: str, allow_local_network_access: bool,
                     return True
             if ' ' not in markup:
                 for bad_str in invalid_strings:
-                    if bad_str in markup:
-                        return True
+                    if not bad_str.endswith('-'):
+                        if bad_str in markup:
+                            return True
+                    else:
+                        if markup.startswith(bad_str):
+                            return True
             else:
                 for bad_str in invalid_strings:
-                    if bad_str + ' ' in markup:
-                        return True
+                    if not bad_str.endswith('-'):
+                        if bad_str + ' ' in markup:
+                            return True
+                    else:
+                        if markup.startswith(bad_str):
+                            return True
+    return False
+
+
+def _is_dangerous_string_simple(content: str, allow_local_network_access: bool,
+                                separators: [], invalid_strings: []) -> bool:
+    """Returns true if the given string is dangerous
+    """
+    for separator_style in separators:
+        start_char = separator_style[0]
+        end_char = separator_style[1]
+        if start_char not in content:
+            continue
+        if end_char not in content:
+            continue
+        content_sections = content.split(start_char)
+        invalid_partials = ()
+        if not allow_local_network_access:
+            invalid_partials = get_local_network_addresses()
+        for markup in content_sections:
+            if end_char not in markup:
+                continue
+            markup = markup.split(end_char)[0].strip()
+            for partial_match in invalid_partials:
+                if partial_match in markup:
+                    return True
+            for bad_str in invalid_strings:
+                if bad_str in markup:
+                    return True
     return False
 
 
@@ -922,13 +958,20 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
     invalid_strings = [
+        'analytics', 'ampproject', 'googleapis'
+    ]
+    if _is_dangerous_string_simple(content, allow_local_network_access,
+                                   separators, invalid_strings):
+        return True
+    invalid_strings = [
         'script', 'noscript', 'code', 'pre',
         'canvas', 'style', 'abbr',
         'frame', 'iframe', 'html', 'body',
-        'hr', 'allow-popups', 'allow-scripts'
+        'hr', 'allow-popups', 'allow-scripts',
+        'amp-'
     ]
-    return _is_dangerous_string(content, allow_local_network_access,
-                                separators, invalid_strings)
+    return _is_dangerous_string_tag(content, allow_local_network_access,
+                                    separators, invalid_strings)
 
 
 def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
@@ -938,8 +981,8 @@ def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
     invalid_strings = [
         'script'
     ]
-    return _is_dangerous_string(content, allow_local_network_access,
-                                separators, invalid_strings)
+    return _is_dangerous_string_tag(content, allow_local_network_access,
+                                    separators, invalid_strings)
 
 
 def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
