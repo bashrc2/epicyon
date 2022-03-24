@@ -3350,7 +3350,7 @@ def _inbox_after_initial(server,
                          cw_lists: {}, lists_enabled: str,
                          content_license_url: str,
                          languages_understood: [],
-                         mitm: bool) -> bool:
+                         mitm: bool, bold_reading: bool) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -3376,10 +3376,6 @@ def _inbox_after_initial(server,
     is_group = _group_handle(base_dir, handle)
 
     handle_name = handle.split('@')[0]
-
-    bold_reading = False
-    if server.bold_reading.get(handle_name):
-        bold_reading = True
 
     if _receive_like(recent_posts_cache,
                      session, handle, is_group,
@@ -4808,6 +4804,11 @@ def run_inbox_queue(server,
             mitm = False
             if queue_json.get('mitm'):
                 mitm = True
+            bold_reading = False
+            bold_reading_filename = \
+                base_dir + '/accounts/' + handle + '/.boldReading'
+            if os.path.isfile(bold_reading_filename):
+                bold_reading = True
             _inbox_after_initial(server,
                                  recent_posts_cache,
                                  max_recent_posts,
@@ -4839,7 +4840,8 @@ def run_inbox_queue(server,
                                  default_reply_interval_hrs,
                                  cw_lists, lists_enabled,
                                  content_license_url,
-                                 languages_understood, mitm)
+                                 languages_understood, mitm,
+                                 bold_reading)
             if debug:
                 pprint(queue_json['post'])
                 print('Queue: Queue post accepted')
