@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import math
 import html
 import os
 import email.parser
@@ -1349,7 +1350,8 @@ def bold_reading_string(text: str) -> str:
                 reading_markup = True
             if reading_markup and '>' in wrd:
                 reading_markup = False
-            if not reading_markup and len(wrd) > 1 and \
+            wrd_len = len(wrd)
+            if not reading_markup and wrd_len > 1 and \
                '<' not in wrd and '>' not in wrd and \
                '&' not in wrd and '=' not in wrd and \
                not wrd.startswith(':'):
@@ -1361,9 +1363,9 @@ def bold_reading_string(text: str) -> str:
                     wrd = wrd[1:]
                 if wrd.endswith('"'):
                     postfix = '"'
-                    wrd = wrd[:len(wrd) - 1]
+                    wrd = wrd[:wrd_len - 1]
 
-                initial_chars = int(len(wrd) / 2)
+                initial_chars = int(math.ceil(wrd_len / 2.0))
                 new_parag += \
                     prefix + '<b>' + wrd[:initial_chars] + '</b>' + \
                     wrd[initial_chars:] + postfix + ' '

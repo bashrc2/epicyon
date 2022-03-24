@@ -6703,7 +6703,7 @@ def _test_bold_reading() -> None:
     text_bold = bold_reading_string(text)
     expected = \
         "<p><b>Th</b>is <b>i</b>s a <b>te</b>st <b>o</b>f " + \
-        "<b>embol</b>dening <b>wi</b>th <b>parag</b>raph.</p>"
+        "<b>embold</b>ening <b>wi</b>th <b>parag</b>raph.</p>"
     if text_bold != expected:
         print(text_bold)
     assert text_bold == expected
@@ -6714,8 +6714,8 @@ def _test_bold_reading() -> None:
     text_bold = bold_reading_string(text)
     expected = \
         "<p><b>Th</b>is <b>i</b>s a <b>te</b>st <b>o</b>f " + \
-        "<b>embol</b>dening</p><p><b>Wi</b>th <b>mo</b>re " + \
-        "<b>th</b>an <b>o</b>ne <b>parag</b>raph.</p>"
+        "<b>embold</b>ening</p><p><b>Wi</b>th <b>mo</b>re " + \
+        "<b>th</b>an <b>on</b>e <b>parag</b>raph.</p>"
     if text_bold != expected:
         print(text_bold)
     assert text_bold == expected
@@ -6731,10 +6731,10 @@ def _test_bold_reading() -> None:
         print(text_bold)
     assert text_bold == expected
 
-    text = "There&apos;s some quoted text here"
+    text = "There&apos;s the quoted text here"
     text_bold = bold_reading_string(text)
     expected = \
-        "<b>The</b>re's <b>so</b>me <b>quo</b>ted <b>te</b>xt <b>he</b>re"
+        "<b>Ther</b>e's <b>th</b>e <b>quo</b>ted <b>te</b>xt <b>he</b>re"
     if text_bold != expected:
         print(text_bold)
     assert text_bold == expected
