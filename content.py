@@ -1349,7 +1349,7 @@ def bold_reading_string(text: str) -> str:
                 reading_markup = False
             if not reading_markup and len(wrd) > 1 and \
                '<' not in wrd and '>' not in wrd and \
-               not wrd.startswith(':'):
+               '&' not in wrd and not wrd.startswith(':'):
 
                 prefix = ''
                 postfix = ''
