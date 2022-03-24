@@ -3780,8 +3780,6 @@ def _inbox_after_initial(server,
                                   boxname + ' post as html to cache in ' +
                                   time_diff + ' mS')
 
-            handle_name = handle.split('@')[0]
-
             # is this an edit of a previous post?
             # in Mastodon "delete and redraft"
             # NOTE: this must be done before update_conversation is called
