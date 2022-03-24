@@ -1331,6 +1331,7 @@ def contains_invalid_local_links(content: str) -> bool:
 def bold_reading_string(text: str) -> str:
     """Returns bold reading formatted text
     """
+    text = urllib.parse.unquote(text)
     add_paragraph_markup = False
     if '<p>' in text:
         text = text.replace('</p>', '\n').replace('<p>', '')
