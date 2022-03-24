@@ -24,7 +24,7 @@ from webapp_utils import html_footer
 from webapp_post import individual_post_as_html
 
 
-def html_confirm_delete(css_cache: {},
+def html_confirm_delete(server, css_cache: {},
                         recent_posts_cache: {}, max_recent_posts: int,
                         translate, page_number: int,
                         session, base_dir: str, message_id: str,
@@ -45,6 +45,8 @@ def html_confirm_delete(css_cache: {},
         return None
     actor = message_id.split('/statuses/')[0]
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return None
     domain, port = get_domain_from_actor(actor)
     domain_full = get_full_domain(domain, port)
 
@@ -69,6 +71,9 @@ def html_confirm_delete(css_cache: {},
     mitm = False
     if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
         mitm = True
+    bold_reading = False
+    if server.bold_reading.get(nickname):
+        bold_reading = True
     delete_post_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache, max_recent_posts,
@@ -84,7 +89,8 @@ def html_confirm_delete(css_cache: {},
                                 peertube_instances, allow_local_network_access,
                                 theme_name, system_language, max_like_count,
                                 False, False, False, False, False, False,
-                                cw_lists, lists_enabled, timezone, mitm)
+                                cw_lists, lists_enabled, timezone, mitm,
+                                bold_reading)
     delete_post_str += '<center>'
     delete_post_str += \
         '  <p class="followText">' + \
@@ -119,6 +125,8 @@ def html_confirm_remove_shared_item(css_cache: {}, translate: {},
     """Shows a screen asking to confirm the removal of a shared item
     """
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return None
     domain, port = get_domain_from_actor(actor)
     domain_full = get_full_domain(domain, port)
     shares_file = \
@@ -207,10 +215,11 @@ def html_confirm_follow(css_cache: {}, translate: {}, base_dir: str,
     follow_str += '  <a href="' + follow_actor + '">\n'
     follow_str += \
         '  <img loading="lazy" src="' + follow_profile_url + '"/></a>\n'
-    follow_str += \
-        '  <p class="followText">' + translate['Follow'] + ' ' + \
-        get_nickname_from_actor(follow_actor) + \
-        '@' + follow_domain + ' ?</p>\n'
+    follow_actor_nick = get_nickname_from_actor(follow_actor)
+    if follow_actor_nick:
+        follow_str += \
+            '  <p class="followText">' + translate['Follow'] + ' ' + \
+            follow_actor_nick + '@' + follow_domain + ' ?</p>\n'
     follow_str += '  <form method="POST" action="' + \
         origin_path_str + '/followconfirm">\n'
     follow_str += '    <input type="hidden" name="actor" value="' + \
@@ -255,10 +264,11 @@ def html_confirm_unfollow(css_cache: {}, translate: {}, base_dir: str,
     follow_str += '  <a href="' + follow_actor + '">\n'
     follow_str += \
         '  <img loading="lazy" src="' + follow_profile_url + '"/></a>\n'
-    follow_str += \
-        '  <p class="followText">' + translate['Stop following'] + \
-        ' ' + get_nickname_from_actor(follow_actor) + \
-        '@' + follow_domain + ' ?</p>\n'
+    follow_actor_nick = get_nickname_from_actor(follow_actor)
+    if follow_actor_nick:
+        follow_str += \
+            '  <p class="followText">' + translate['Stop following'] + \
+            ' ' + follow_actor_nick + '@' + follow_domain + ' ?</p>\n'
     follow_str += '  <form method="POST" action="' + \
         origin_path_str + '/unfollowconfirm">\n'
     follow_str += '    <input type="hidden" name="actor" value="' + \
@@ -300,9 +310,11 @@ def html_confirm_unblock(css_cache: {}, translate: {}, base_dir: str,
     block_str += '  <a href="' + block_actor + '">\n'
     block_str += \
         '  <img loading="lazy" src="' + block_profile_url + '"/></a>\n'
-    block_str += \
-        '  <p class="blockText">' + translate['Stop blocking'] + ' ' + \
-        get_nickname_from_actor(block_actor) + '@' + block_domain + ' ?</p>\n'
+    block_actor_nick = get_nickname_from_actor(block_actor)
+    if block_actor_nick:
+        block_str += \
+            '  <p class="blockText">' + translate['Stop blocking'] + ' ' + \
+            block_actor_nick + '@' + block_domain + ' ?</p>\n'
     block_str += '  <form method="POST" action="' + \
         origin_path_str + '/unblockconfirm">\n'
     block_str += '    <input type="hidden" name="actor" value="' + \

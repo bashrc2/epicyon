@@ -37,7 +37,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                              theme_name: str, system_language: str,
                              max_like_count: int,
                              signing_priv_key_pem: str, cw_lists: {},
-                             lists_enabled: str) -> str:
+                             lists_enabled: str,
+                             bold_reading: bool) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -87,7 +88,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False,
                                             True, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone, False)
+                                            timezone, False,
+                                            bold_reading)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1
@@ -121,6 +123,7 @@ def html_front_screen(signing_priv_key_pem: str,
                       cw_lists: {}, lists_enabled: str) -> str:
     """Show the news instance front screen
     """
+    bold_reading = False
     nickname = profile_json['preferredUsername']
     if not nickname:
         return ""
@@ -191,7 +194,8 @@ def html_front_screen(signing_priv_key_pem: str,
                                  theme, system_language,
                                  max_like_count,
                                  signing_priv_key_pem,
-                                 cw_lists, lists_enabled) + license_str
+                                 cw_lists, lists_enabled,
+                                 bold_reading) + license_str
 
     # Footer which is only used for system accounts
     profile_footer_str = '      </td>\n'

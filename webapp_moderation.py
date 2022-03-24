@@ -55,7 +55,7 @@ def html_moderation(css_cache: {}, default_timeline: str,
                     shared_items_federated_domains: [],
                     signing_priv_key_pem: str,
                     cw_lists: {}, lists_enabled: str,
-                    timezone: str) -> str:
+                    timezone: str, bold_reading: bool) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -81,7 +81,7 @@ def html_moderation(css_cache: {}, default_timeline: str,
                          text_mode_banner, access_keys, system_language,
                          max_like_count, shared_items_federated_domains,
                          signing_priv_key_pem, cw_lists, lists_enabled,
-                         timezone)
+                         timezone, bold_reading)
 
 
 def html_account_info(css_cache: {}, translate: {},
@@ -107,6 +107,8 @@ def html_account_info(css_cache: {}, translate: {},
         html_header_with_external_style(css_filename, instance_title, None)
 
     search_nickname = get_nickname_from_actor(search_handle)
+    if not search_nickname:
+        return ''
     search_domain, search_port = get_domain_from_actor(search_handle)
 
     search_handle = search_nickname + '@' + search_domain
@@ -146,6 +148,8 @@ def html_account_info(css_cache: {}, translate: {},
     blocked_followers = []
     for follower_actor in followers_list:
         follower_nickname = get_nickname_from_actor(follower_actor)
+        if not follower_nickname:
+            return ''
         follower_domain, follower_port = get_domain_from_actor(follower_actor)
         follower_domain_full = get_full_domain(follower_domain, follower_port)
         if is_blocked(base_dir, nickname, domain,
@@ -160,6 +164,8 @@ def html_account_info(css_cache: {}, translate: {},
     blocked_following = []
     for following_actor in following_list:
         following_nickname = get_nickname_from_actor(following_actor)
+        if not following_nickname:
+            return ''
         following_domain, following_port = \
             get_domain_from_actor(following_actor)
         following_domain_full = \
@@ -224,6 +230,8 @@ def html_account_info(css_cache: {}, translate: {},
             ':</p>\n'
         for actor in blocked_following:
             following_nickname = get_nickname_from_actor(actor)
+            if not following_nickname:
+                return ''
             following_domain, following_port = get_domain_from_actor(actor)
             following_domain_full = \
                 get_full_domain(following_domain, following_port)
@@ -243,6 +251,8 @@ def html_account_info(css_cache: {}, translate: {},
             ':</p>\n'
         for actor in blocked_followers:
             follower_nickname = get_nickname_from_actor(actor)
+            if not follower_nickname:
+                return ''
             follower_domain, follower_port = get_domain_from_actor(actor)
             follower_domain_full = \
                 get_full_domain(follower_domain, follower_port)

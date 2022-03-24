@@ -66,6 +66,8 @@ def html_person_options(default_timeline: str,
     """Show options for a person: view/follow/block/report
     """
     options_domain, options_port = get_domain_from_actor(options_actor)
+    if not options_domain:
+        return None
     options_domain_full = get_full_domain(options_domain, options_port)
 
     if os.path.isfile(base_dir + '/accounts/options-background-custom.jpg'):
@@ -97,6 +99,8 @@ def html_person_options(default_timeline: str,
                            dormant_months)
 
         options_nickname = get_nickname_from_actor(options_actor)
+        if not options_nickname:
+            return None
         options_domain_full = get_full_domain(options_domain, options_port)
         follows_you = \
             is_follower_of_person(base_dir,
@@ -140,7 +144,10 @@ def html_person_options(default_timeline: str,
     options_str += '  <a href="' + options_actor + '">\n'
     options_str += '  <img loading="lazy" src="' + options_profile_url + \
         '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
-    handle = get_nickname_from_actor(options_actor) + '@' + options_domain
+    handle_nick = get_nickname_from_actor(options_actor)
+    if not handle_nick:
+        return None
+    handle = handle_nick + '@' + options_domain
     handle_shown = handle
     if locked_account:
         handle_shown += '🔒'
@@ -151,7 +158,7 @@ def html_person_options(default_timeline: str,
     options_str += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + handle_shown + '</p>\n'
-    if follows_you:
+    if follows_you and authorized:
         options_str += \
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
     if moved_to:

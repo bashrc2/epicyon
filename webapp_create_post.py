@@ -212,7 +212,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                   max_like_count: int, signing_priv_key_pem: str,
                   cw_lists: {}, lists_enabled: str,
                   boxName: str,
-                  reply_is_chat: bool) -> str:
+                  reply_is_chat: bool, bold_reading: bool) -> str:
     """New post screen
     """
     reply_str = ''
@@ -286,7 +286,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                                                     False, False, False,
                                                     False, False, False,
                                                     cw_lists, lists_enabled,
-                                                    timezone, False)
+                                                    timezone, False,
+                                                    bold_reading)
 
                 reply_str = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'

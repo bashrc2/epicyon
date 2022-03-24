@@ -187,13 +187,14 @@ def create_announce(session, base_dir: str, federation_list: [],
     group_account = False
     if has_users_path(object_url):
         announce_nickname = get_nickname_from_actor(object_url)
-        announce_domain, announce_port = get_domain_from_actor(object_url)
-        if '/' + str(announce_nickname) + '/' in object_url:
-            announce_actor = \
-                object_url.split('/' + announce_nickname + '/')[0] + \
-                '/' + announce_nickname
-            if has_group_type(base_dir, announce_actor, person_cache):
-                group_account = True
+        if announce_nickname:
+            announce_domain, announce_port = get_domain_from_actor(object_url)
+            if '/' + str(announce_nickname) + '/' in object_url:
+                announce_actor = \
+                    object_url.split('/' + announce_nickname + '/')[0] + \
+                    '/' + announce_nickname
+                if has_group_type(base_dir, announce_actor, person_cache):
+                    group_account = True
 
     if announce_nickname and announce_domain:
         send_signed_json(new_announce, session, base_dir,

@@ -297,7 +297,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     cw_lists: {},
                                     lists_enabled: str,
                                     timezone: str,
-                                    mitm: bool) -> None:
+                                    mitm: bool,
+                                    bold_reading: bool) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -322,7 +323,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             peertube_instances, allow_local_network_access,
                             theme_name, system_language, max_like_count,
                             not_dm, True, True, False, True, False,
-                            cw_lists, lists_enabled, timezone, mitm)
+                            cw_lists, lists_enabled, timezone, mitm,
+                            bold_reading)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -1047,7 +1049,8 @@ def _receive_like(recent_posts_cache: {},
                   allow_local_network_access: bool,
                   theme_name: str, system_language: str,
                   max_like_count: int, cw_lists: {},
-                  lists_enabled: str) -> bool:
+                  lists_enabled: str,
+                  bold_reading: bool) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Like':
@@ -1155,7 +1158,8 @@ def _receive_like(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled, timezone, mitm)
+                                    lists_enabled, timezone, mitm,
+                                    bold_reading)
     return True
 
 
@@ -1174,7 +1178,8 @@ def _receive_undo_like(recent_posts_cache: {},
                        allow_local_network_access: bool,
                        theme_name: str, system_language: str,
                        max_like_count: int, cw_lists: {},
-                       lists_enabled: str) -> bool:
+                       lists_enabled: str,
+                       bold_reading: bool) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -1272,7 +1277,8 @@ def _receive_undo_like(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled, timezone, mitm)
+                                    lists_enabled, timezone, mitm,
+                                    bold_reading)
     return True
 
 
@@ -1292,7 +1298,7 @@ def _receive_reaction(recent_posts_cache: {},
                       allow_local_network_access: bool,
                       theme_name: str, system_language: str,
                       max_like_count: int, cw_lists: {},
-                      lists_enabled: str) -> bool:
+                      lists_enabled: str, bold_reading: bool) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'EmojiReact':
@@ -1422,7 +1428,8 @@ def _receive_reaction(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled, timezone, mitm)
+                                    lists_enabled, timezone, mitm,
+                                    bold_reading)
     return True
 
 
@@ -1443,7 +1450,8 @@ def _receive_undo_reaction(recent_posts_cache: {},
                            allow_local_network_access: bool,
                            theme_name: str, system_language: str,
                            max_like_count: int, cw_lists: {},
-                           lists_enabled: str) -> bool:
+                           lists_enabled: str,
+                           bold_reading: bool) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -1559,7 +1567,8 @@ def _receive_undo_reaction(recent_posts_cache: {},
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
-                                    lists_enabled, timezone, mitm)
+                                    lists_enabled, timezone, mitm,
+                                    bold_reading)
     return True
 
 
@@ -1577,7 +1586,7 @@ def _receive_bookmark(recent_posts_cache: {},
                       allow_local_network_access: bool,
                       theme_name: str, system_language: str,
                       max_like_count: int, cw_lists: {},
-                      lists_enabled: {}) -> bool:
+                      lists_enabled: {}, bold_reading: bool) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -1673,7 +1682,8 @@ def _receive_bookmark(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists,
-                                lists_enabled, timezone, mitm)
+                                lists_enabled, timezone, mitm,
+                                bold_reading)
     return True
 
 
@@ -1693,7 +1703,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                            allow_local_network_access: bool,
                            theme_name: str, system_language: str,
                            max_like_count: int, cw_lists: {},
-                           lists_enabled: str) -> bool:
+                           lists_enabled: str, bold_reading: bool) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -1791,7 +1801,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists, lists_enabled,
-                                timezone, mitm)
+                                timezone, mitm, bold_reading)
     return True
 
 
@@ -1887,7 +1897,7 @@ def _receive_announce(recent_posts_cache: {},
                       allow_deletion: bool,
                       peertube_instances: [],
                       max_like_count: int, cw_lists: {},
-                      lists_enabled: str) -> bool:
+                      lists_enabled: str, bold_reading: bool) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -1941,6 +1951,9 @@ def _receive_announce(recent_posts_cache: {},
     # is the announce actor blocked?
     nickname = handle.split('@')[0]
     actor_nickname = get_nickname_from_actor(message_json['actor'])
+    if not actor_nickname:
+        print('WARN: _receive_announce no actor_nickname')
+        return False
     actor_domain, _ = get_domain_from_actor(message_json['actor'])
     if is_blocked(base_dir, nickname, domain, actor_nickname, actor_domain):
         print('Receive announce blocked for actor: ' +
@@ -1948,13 +1961,16 @@ def _receive_announce(recent_posts_cache: {},
         return False
 
     # also check the actor for the url being announced
-    announcedActorNickname = get_nickname_from_actor(message_json['object'])
+    announced_actor_nickname = get_nickname_from_actor(message_json['object'])
+    if not announced_actor_nickname:
+        print('WARN: _receive_announce no announced_actor_nickname')
+        return False
     announcedActorDomain, announcedActorPort = \
         get_domain_from_actor(message_json['object'])
     if is_blocked(base_dir, nickname, domain,
-                  announcedActorNickname, announcedActorDomain):
+                  announced_actor_nickname, announcedActorDomain):
         print('Receive announce object blocked for actor: ' +
-              announcedActorNickname + '@' + announcedActorDomain)
+              announced_actor_nickname + '@' + announcedActorDomain)
         return False
 
     # is this post in the outbox of the person?
@@ -2004,7 +2020,8 @@ def _receive_announce(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists,
-                                lists_enabled, timezone, mitm)
+                                lists_enabled, timezone, mitm,
+                                bold_reading)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -2024,7 +2041,7 @@ def _receive_announce(recent_posts_cache: {},
                                          system_language,
                                          domain_full, person_cache,
                                          signing_priv_key_pem,
-                                         blocked_cache)
+                                         blocked_cache, bold_reading)
     if not post_json_object:
         print('WARN: unable to download announce: ' + str(message_json))
         not_in_onion = True
@@ -2788,6 +2805,8 @@ def _inbox_update_calendar(base_dir: str, handle: str,
 
     actor = post_json_object['actor']
     actor_nickname = get_nickname_from_actor(actor)
+    if not actor_nickname:
+        return
     actor_domain, _ = get_domain_from_actor(actor)
     handle_nickname = handle.split('@')[0]
     handle_domain = handle.split('@')[1]
@@ -3103,7 +3122,8 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                            allow_local_network_access: bool,
                            theme_name: str, system_language: str,
                            max_like_count: int,
-                           cw_lists: {}, lists_enabled: bool) -> None:
+                           cw_lists: {}, lists_enabled: bool,
+                           bold_reading: bool) -> None:
     """Updates the votes on a Question/poll
     """
     # if this is a reply to a question then update the votes
@@ -3155,7 +3175,8 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             show_individual_post_icons,
                             manually_approve_followers,
                             False, True, False, cw_lists,
-                            lists_enabled, timezone, mitm)
+                            lists_enabled, timezone, mitm,
+                            bold_reading)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,
@@ -3254,6 +3275,8 @@ def _low_frequency_post_notification(base_dir: str, http_prefix: str,
     if not isinstance(attributed_to, str):
         return
     from_nickname = get_nickname_from_actor(attributed_to)
+    if not from_nickname:
+        return
     from_domain, from_port = get_domain_from_actor(attributed_to)
     from_domain_full = get_full_domain(from_domain, from_port)
     if notify_when_person_posts(base_dir, nickname, domain,
@@ -3282,6 +3305,8 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
     if not isinstance(attributed_to, str):
         return 0
     from_nickname = get_nickname_from_actor(attributed_to)
+    if not from_nickname:
+        return 0
     from_domain, from_port = get_domain_from_actor(attributed_to)
     from_domain_full = get_full_domain(from_domain, from_port)
     if receive_git_patch(base_dir, nickname, domain,
@@ -3325,7 +3350,7 @@ def _inbox_after_initial(server,
                          cw_lists: {}, lists_enabled: str,
                          content_license_url: str,
                          languages_understood: [],
-                         mitm: bool) -> bool:
+                         mitm: bool, bold_reading: bool) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -3350,6 +3375,8 @@ def _inbox_after_initial(server,
     post_is_dm = False
     is_group = _group_handle(base_dir, handle)
 
+    handle_name = handle.split('@')[0]
+
     if _receive_like(recent_posts_cache,
                      session, handle, is_group,
                      base_dir, http_prefix,
@@ -3368,7 +3395,8 @@ def _inbox_after_initial(server,
                      peertube_instances,
                      allow_local_network_access,
                      theme_name, system_language,
-                     max_like_count, cw_lists, lists_enabled):
+                     max_like_count, cw_lists, lists_enabled,
+                     bold_reading):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         return False
@@ -3390,7 +3418,8 @@ def _inbox_after_initial(server,
                           peertube_instances,
                           allow_local_network_access,
                           theme_name, system_language,
-                          max_like_count, cw_lists, lists_enabled):
+                          max_like_count, cw_lists, lists_enabled,
+                          bold_reading):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         return False
@@ -3413,7 +3442,8 @@ def _inbox_after_initial(server,
                          peertube_instances,
                          allow_local_network_access,
                          theme_name, system_language,
-                         max_like_count, cw_lists, lists_enabled):
+                         max_like_count, cw_lists, lists_enabled,
+                         bold_reading):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         return False
@@ -3435,7 +3465,8 @@ def _inbox_after_initial(server,
                               peertube_instances,
                               allow_local_network_access,
                               theme_name, system_language,
-                              max_like_count, cw_lists, lists_enabled):
+                              max_like_count, cw_lists, lists_enabled,
+                              bold_reading):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
         return False
@@ -3457,7 +3488,8 @@ def _inbox_after_initial(server,
                          peertube_instances,
                          allow_local_network_access,
                          theme_name, system_language,
-                         max_like_count, cw_lists, lists_enabled):
+                         max_like_count, cw_lists, lists_enabled,
+                         bold_reading):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         return False
@@ -3479,7 +3511,8 @@ def _inbox_after_initial(server,
                               peertube_instances,
                               allow_local_network_access,
                               theme_name, system_language,
-                              max_like_count, cw_lists, lists_enabled):
+                              max_like_count, cw_lists, lists_enabled,
+                              bold_reading):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
@@ -3505,7 +3538,8 @@ def _inbox_after_initial(server,
                          max_recent_posts,
                          allow_deletion,
                          peertube_instances,
-                         max_like_count, cw_lists, lists_enabled):
+                         max_like_count, cw_lists, lists_enabled,
+                         bold_reading):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -3603,7 +3637,8 @@ def _inbox_after_initial(server,
                                allow_local_network_access,
                                theme_name, system_language,
                                max_like_count,
-                               cw_lists, lists_enabled)
+                               cw_lists, lists_enabled,
+                               bold_reading)
 
         is_reply_to_muted_post = False
 
@@ -3646,7 +3681,8 @@ def _inbox_after_initial(server,
                               twitter_replacement_domain,
                               allow_local_network_access,
                               recent_posts_cache, debug, system_language,
-                              domain_full, person_cache, signing_priv_key_pem):
+                              domain_full, person_cache, signing_priv_key_pem,
+                              bold_reading):
                 # media index will be updated
                 update_index_list.append('tlmedia')
             if is_blog_post(post_json_object):
@@ -3706,11 +3742,10 @@ def _inbox_after_initial(server,
                             print('Saving inbox post as html to cache')
 
                         html_cache_start_time = time.time()
-                        handle_name = handle.split('@')[0]
                         allow_local_net_access = allow_local_network_access
                         show_pub_date_only = show_published_date_only
-                        timezone = get_account_timezone(base_dir,
-                                                        handle_name, domain)
+                        timezone = \
+                            get_account_timezone(base_dir, handle_name, domain)
                         _inbox_store_post_to_html_cache(recent_posts_cache,
                                                         max_recent_posts,
                                                         translate, base_dir,
@@ -3732,7 +3767,8 @@ def _inbox_after_initial(server,
                                                         signing_priv_key_pem,
                                                         cw_lists,
                                                         lists_enabled,
-                                                        timezone, mitm)
+                                                        timezone, mitm,
+                                                        bold_reading)
                         if debug:
                             time_diff = \
                                 str(int((time.time() - html_cache_start_time) *
@@ -3740,8 +3776,6 @@ def _inbox_after_initial(server,
                             print('Saved ' +
                                   boxname + ' post as html to cache in ' +
                                   time_diff + ' mS')
-
-            handle_name = handle.split('@')[0]
 
             # is this an edit of a previous post?
             # in Mastodon "delete and redraft"
@@ -4770,6 +4804,11 @@ def run_inbox_queue(server,
             mitm = False
             if queue_json.get('mitm'):
                 mitm = True
+            bold_reading = False
+            bold_reading_filename = \
+                base_dir + '/accounts/' + handle + '/.boldReading'
+            if os.path.isfile(bold_reading_filename):
+                bold_reading = True
             _inbox_after_initial(server,
                                  recent_posts_cache,
                                  max_recent_posts,
@@ -4801,7 +4840,8 @@ def run_inbox_queue(server,
                                  default_reply_interval_hrs,
                                  cw_lists, lists_enabled,
                                  content_license_url,
-                                 languages_understood, mitm)
+                                 languages_understood, mitm,
+                                 bold_reading)
             if debug:
                 pprint(queue_json['post'])
                 print('Queue: Queue post accepted')

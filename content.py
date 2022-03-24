@@ -7,6 +7,8 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import math
+import html
 import os
 import email.parser
 import urllib.parse
@@ -701,7 +703,7 @@ def replace_content_duplicates(content: str) -> str:
     return content
 
 
-def remove_text_formatting(content: str) -> str:
+def remove_text_formatting(content: str, bold_reading: bool) -> str:
     """Removes markup for bold, italics, etc
     """
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
@@ -709,6 +711,9 @@ def remove_text_formatting(content: str) -> str:
     if '<' not in content:
         return content
     for markup in REMOVE_MARKUP:
+        if bold_reading:
+            if markup == 'b':
+                continue
         content = content.replace('<' + markup + '>', '')
         content = content.replace('</' + markup + '>', '')
         content = content.replace('<' + markup.upper() + '>', '')
@@ -1323,3 +1328,62 @@ def contains_invalid_local_links(content: str) -> bool:
         if '?' + inv_str + '=' in content:
             return True
     return False
+
+
+def bold_reading_string(text: str) -> str:
+    """Returns bold reading formatted text
+    """
+    text = html.unescape(text)
+    add_paragraph_markup = False
+    if '<p>' in text:
+        text = text.replace('</p>', '\n').replace('<p>', '')
+        add_paragraph_markup = True
+    paragraphs = text.split('\n')
+    parag_ctr = 0
+    new_text = ''
+    for parag in paragraphs:
+        words = parag.split(' ')
+        new_parag = ''
+        reading_markup = False
+        for wrd in words:
+            if '<' in wrd:
+                reading_markup = True
+            if reading_markup and '>' in wrd:
+                reading_markup = False
+            wrd_len = len(wrd)
+            if not reading_markup and wrd_len > 1 and \
+               '<' not in wrd and '>' not in wrd and \
+               '&' not in wrd and '=' not in wrd and \
+               not wrd.startswith(':'):
+
+                prefix = ''
+                postfix = ''
+                if wrd.startswith('"'):
+                    prefix = '"'
+                    wrd = wrd[1:]
+                if wrd.endswith('"'):
+                    postfix = '"'
+                    wrd = wrd[:wrd_len - 1]
+
+                initial_chars = int(math.ceil(wrd_len / 2.0))
+                new_parag += \
+                    prefix + '<b>' + wrd[:initial_chars] + '</b>' + \
+                    wrd[initial_chars:] + postfix + ' '
+            else:
+                new_parag += wrd + ' '
+        parag_ctr += 1
+        new_parag = new_parag.strip()
+        if not new_parag:
+            continue
+        if parag_ctr < len(paragraphs):
+            if not add_paragraph_markup:
+                new_text += new_parag + '\n'
+            else:
+                new_text += '<p>' + new_parag + '</p>'
+        else:
+            if not add_paragraph_markup:
+                new_text += new_parag
+            else:
+                new_text += '<p>' + new_parag + '</p>'
+
+    return new_text

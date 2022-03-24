@@ -418,6 +418,8 @@ def shares_timeline_json(actor: str, pageNumber: int, items_per_page: int,
                         share_actor = share_actor.replace('___', '://')
                         share_actor = share_actor.replace('--', '/')
                         share_nickname = get_nickname_from_actor(share_actor)
+                        if not share_nickname:
+                            continue
                         if is_blocked(base_dir, nickname, domain,
                                       share_nickname, federated_domain, None):
                             continue
@@ -1538,6 +1540,8 @@ def html_search_result_share(base_dir: str, shared_item: {}, translate: {},
     # should the remove button be shown?
     show_remove_button = False
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return ''
     if actor.endswith('/users/' + contact_nickname):
         show_remove_button = True
     elif is_moderator(base_dir, nickname):

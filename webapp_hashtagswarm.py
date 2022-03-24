@@ -200,6 +200,8 @@ def html_search_hashtag_category(css_cache: {}, translate: {},
     actor = path.split('/category/')[0]
     category_str = path.split('/category/')[1].strip()
     search_nickname = get_nickname_from_actor(actor)
+    if not search_nickname:
+        return ''
 
     set_custom_background(base_dir, 'search-background', 'follow-background')
 

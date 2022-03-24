@@ -58,6 +58,7 @@ from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
+from content import bold_reading_string
 from content import limit_repeated_words
 from content import replace_emoji_from_tags
 from content import html_replace_quote_marks
@@ -104,11 +105,12 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {}) -> str:
         if isinstance(obj_json['attributedTo'], str):
             attrib = obj_json['attributedTo']
             actor_nick = get_nickname_from_actor(attrib)
-            actor_domain, _ = get_domain_from_actor(attrib)
-            actor_handle = actor_nick + '@' + actor_domain
-            metadata += \
-                "    <meta content=\"@" + actor_handle + \
-                "\" property=\"og:title\" />\n"
+            if actor_nick:
+                actor_domain, _ = get_domain_from_actor(attrib)
+                actor_handle = actor_nick + '@' + actor_domain
+                metadata += \
+                    "    <meta content=\"@" + actor_handle + \
+                    "\" property=\"og:title\" />\n"
     if obj_json.get('url'):
         metadata += \
             "    <meta content=\"" + obj_json['url'] + \
@@ -410,6 +412,8 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
         # check that the alternative replyTo url is not blocked
         block_nickname = \
             get_nickname_from_actor(post_json_object['object']['replyTo'])
+        if not block_nickname:
+            return reply_str
         block_domain, _ = \
             get_domain_from_actor(post_json_object['object']['replyTo'])
         if not is_blocked(base_dir, nickname, domain,
@@ -1436,7 +1440,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             cw_lists: {},
                             lists_enabled: str,
                             timezone: str,
-                            mitm: bool) -> str:
+                            mitm: bool, bold_reading: bool) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -1516,6 +1520,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if domain_full not in post_actor:
         # lookup the correct webfinger for the post_actor
         post_actor_nickname = get_nickname_from_actor(post_actor)
+        if not post_actor_nickname:
+            return ''
         post_actor_domain, post_actor_port = get_domain_from_actor(post_actor)
         post_actor_domain_full = \
             get_full_domain(post_actor_domain, post_actor_port)
@@ -1598,7 +1604,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blocked_cache)
+                              blocked_cache, bold_reading)
         if not post_json_announce:
             # if the announce could not be downloaded then mark it as rejected
             announced_post_id = remove_id_ending(post_json_object['id'])
@@ -1884,7 +1890,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     published_link = message_id
     # blog posts should have no /statuses/ in their link
+    post_is_blog = False
     if is_blog_post(post_json_object):
+        post_is_blog = True
         # is this a post to the local domain?
         if '://' + domain in message_id:
             published_link = message_id.replace('/statuses/', '/')
@@ -1947,7 +1955,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             system_language: ''
         }
 
+    displaying_ciphertext = False
     if post_json_object['object'].get('cipherText'):
+        displaying_ciphertext = True
         post_json_object['object']['content'] = \
             e2e_edecrypt_message_from_device(post_json_object['object'])
         post_json_object['object']['contentMap'][system_language] = \
@@ -1979,9 +1989,16 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     if not is_pgp_encrypted(content_str):
         if not is_patch:
+            # Add bold text
+            if bold_reading and \
+               not displaying_ciphertext and \
+               not post_is_blog:
+                content_str = bold_reading_string(content_str)
+
             object_content = \
                 remove_long_words(content_str, 40, [])
-            object_content = remove_text_formatting(object_content)
+            object_content = \
+                remove_text_formatting(object_content, bold_reading)
             object_content = limit_repeated_words(object_content, 6)
             object_content = \
                 switch_words(base_dir, nickname, domain, object_content)
@@ -2114,7 +2131,8 @@ def html_individual_post(css_cache: {},
                          theme_name: str, system_language: str,
                          max_like_count: int, signing_priv_key_pem: str,
                          cw_lists: {}, lists_enabled: str,
-                         timezone: str, mitm: bool) -> str:
+                         timezone: str, mitm: bool,
+                         bold_reading: bool) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2132,6 +2150,8 @@ def html_individual_post(css_cache: {},
 
     if by_str:
         by_str_nickname = get_nickname_from_actor(by_str)
+        if not by_str_nickname:
+            return ''
         by_str_domain, by_str_port = get_domain_from_actor(by_str)
         by_str_domain = get_full_domain(by_str_domain, by_str_port)
         by_str_handle = by_str_nickname + '@' + by_str_domain
@@ -2180,7 +2200,8 @@ def html_individual_post(css_cache: {},
                                 allow_local_network_access, theme_name,
                                 system_language, max_like_count,
                                 False, authorized, False, False, False, False,
-                                cw_lists, lists_enabled, timezone, mitm)
+                                cw_lists, lists_enabled, timezone, mitm,
+                                bold_reading)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2220,7 +2241,8 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone, mitm) + post_str
+                                            timezone, mitm,
+                                            bold_reading) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2258,7 +2280,8 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone, False)
+                                            timezone, False,
+                                            bold_reading)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2286,7 +2309,7 @@ def html_post_replies(css_cache: {},
                       max_like_count: int,
                       signing_priv_key_pem: str, cw_lists: {},
                       lists_enabled: str,
-                      timezone: str) -> str:
+                      timezone: str, bold_reading: bool) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -2312,7 +2335,8 @@ def html_post_replies(css_cache: {},
                                         False, False, False, False,
                                         False, False,
                                         cw_lists, lists_enabled,
-                                        timezone, False)
+                                        timezone, False,
+                                        bold_reading)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2342,7 +2366,7 @@ def html_emoji_reaction_picker(css_cache: {},
                                max_like_count: int, signing_priv_key_pem: str,
                                cw_lists: {}, lists_enabled: str,
                                box_name: str, page_number: int,
-                               timezone: str) -> str:
+                               timezone: str, bold_reading: bool) -> str:
     """Returns the emoji picker screen
     """
     reacted_to_post_str = \
@@ -2365,7 +2389,8 @@ def html_emoji_reaction_picker(css_cache: {},
                                 theme_name, system_language,
                                 max_like_count,
                                 False, False, False, False, False, False,
-                                cw_lists, lists_enabled, timezone, False)
+                                cw_lists, lists_enabled, timezone, False,
+                                bold_reading)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

@@ -42,6 +42,8 @@ def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     nickname = get_nickname_from_actor(path)
+    if not nickname:
+        return None
     actor = local_actor_url(http_prefix, nickname, domain_full)
     domain, _ = get_domain_from_actor(actor)
     message_id = actor + '/statuses/' + post_id
@@ -304,6 +306,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         month_number = curr_date.month
 
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return ''
 
     set_custom_background(base_dir, 'calendar-background',
                           'calendar-background')
