@@ -1345,9 +1345,9 @@ def bold_reading_string(text: str) -> str:
         new_parag = ''
         reading_markup = False
         for wrd in words:
-            if '<' in wrd and '>' not in wrd:
+            if '<' in wrd:
                 reading_markup = True
-            if reading_markup and '>' in wrd and '<' not in wrd:
+            if reading_markup and '>' in wrd:
                 reading_markup = False
             if not reading_markup and len(wrd) > 1 and \
                '<' not in wrd and '>' not in wrd and \
