@@ -6699,7 +6699,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: unable to write bold reading ' +
                                       bold_reading_filename)
                     if not bold_reading:
-                        if self.server.bold_reading[nickname]:
+                        if self.server.bold_reading.get(nickname):
                             del self.server.bold_reading[nickname]
                         if os.path.isfile(bold_reading_filename):
                             try:
