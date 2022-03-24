@@ -1339,7 +1339,9 @@ def bold_reading_string(text: str) -> str:
         words = parag.split(' ')
         new_parag = ''
         for wrd in words:
-            if len(wrd) > 1 and '<' not in wrd and '>' not in wrd:
+            if len(wrd) > 1 and \
+               '<' not in wrd and '>' not in wrd and \
+               not wrd.startswith(':'):
                 initial_chars = int(len(wrd) / 2)
                 new_parag += \
                     '<b>' + wrd[:initial_chars] + '</b>' + \
