@@ -6720,6 +6720,17 @@ def _test_bold_reading() -> None:
         print(text_bold)
     assert text_bold == expected
 
+    text = '<p>This is a test <a class="some class" ' + \
+        'href="some_url">with markup containing spaces</a><p>'
+    text_bold = bold_reading_string(text)
+    expected = \
+        '<p><b>Th</b>is <b>i</b>s a <b>te</b>st ' + \
+        '<a class="some class" href="some_url">with ' + \
+        '<b>mar</b>kup <b>conta</b>ining spaces</a></p>'
+    if text_bold != expected:
+        print(text_bold)
+    assert text_bold == expected
+
 
 def run_all_tests():
     base_dir = os.getcwd()

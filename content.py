@@ -1334,12 +1334,17 @@ def bold_reading_string(text: str) -> str:
         add_paragraph_markup = True
     paragraphs = text.split('\n')
     parag_ctr = 0
-    new_text = ''
+    new_text = ''    
     for parag in paragraphs:
         words = parag.split(' ')
         new_parag = ''
+        reading_markup = False
         for wrd in words:
-            if len(wrd) > 1 and \
+            if '<' in wrd and '>' not in wrd:
+                reading_markup = True
+            if reading_markup and '>' in wrd and '<' not in wrd:
+                reading_markup = False
+            if not reading_markup and len(wrd) > 1 and \
                '<' not in wrd and '>' not in wrd and \
                not wrd.startswith(':'):
 
