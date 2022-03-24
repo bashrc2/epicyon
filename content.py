@@ -1351,7 +1351,8 @@ def bold_reading_string(text: str) -> str:
                 reading_markup = False
             if not reading_markup and len(wrd) > 1 and \
                '<' not in wrd and '>' not in wrd and \
-               '&' not in wrd and not wrd.startswith(':'):
+               '&' not in wrd and '=' not in wrd and \
+               not wrd.startswith(':'):
 
                 prefix = ''
                 postfix = ''
@@ -1370,6 +1371,8 @@ def bold_reading_string(text: str) -> str:
                 new_parag += wrd + ' '
         parag_ctr += 1
         new_parag = new_parag.strip()
+        if not new_parag:
+            continue
         if parag_ctr < len(paragraphs):
             if not add_paragraph_markup:
                 new_text += new_parag + '\n'

@@ -6739,6 +6739,20 @@ def _test_bold_reading() -> None:
         print(text_bold)
     assert text_bold == expected
 
+    text = '<p><span class=\"h-card\"><a ' + \
+        'href=\"https://something.social/@someone\" ' + \
+        'class=\"u-url mention\">@<span>Someone or other' + \
+        '</span></a></span> some text</p>'
+    text_bold = bold_reading_string(text)
+    expected = \
+        '<p><span class="h-card">' + \
+        '<a href="https://something.social/@someone" ' + \
+        'class="u-url mention">@<span>Someone <b>o</b>r other' + \
+        '</span></a></span> <b>so</b>me <b>te</b>xt</p>'
+    if text_bold != expected:
+        print(text_bold)
+    assert text_bold == expected
+
 
 def run_all_tests():
     base_dir = os.getcwd()
