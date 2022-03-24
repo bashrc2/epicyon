@@ -701,7 +701,7 @@ def replace_content_duplicates(content: str) -> str:
     return content
 
 
-def remove_text_formatting(content: str) -> str:
+def remove_text_formatting(content: str, bold_reading: bool) -> str:
     """Removes markup for bold, italics, etc
     """
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
@@ -709,6 +709,9 @@ def remove_text_formatting(content: str) -> str:
     if '<' not in content:
         return content
     for markup in REMOVE_MARKUP:
+        if bold_reading:
+            if markup == 'b':
+                continue
         content = content.replace('<' + markup + '>', '')
         content = content.replace('</' + markup + '>', '')
         content = content.replace('<' + markup.upper() + '>', '')
@@ -1334,7 +1337,7 @@ def bold_reading_string(text: str) -> str:
         add_paragraph_markup = True
     paragraphs = text.split('\n')
     parag_ctr = 0
-    new_text = ''    
+    new_text = ''
     for parag in paragraphs:
         words = parag.split(' ')
         new_parag = ''

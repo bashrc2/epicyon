@@ -219,6 +219,10 @@ def post_message_to_outbox(session, translate: {},
                                            domain, port,
                                            message_json)
 
+    bold_reading = False
+    if server.bold_reading.get(post_to_nickname):
+        bold_reading = True
+
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if has_object_dict(message_json):
@@ -430,7 +434,8 @@ def post_message_to_outbox(session, translate: {},
                                       recent_posts_cache, debug,
                                       system_language,
                                       domain_full, person_cache,
-                                      signing_priv_key_pem):
+                                      signing_priv_key_pem,
+                                      bold_reading):
                         inbox_update_index('tlmedia', base_dir,
                                            post_to_nickname + '@' + domain,
                                            saved_filename, debug)
@@ -461,9 +466,6 @@ def post_message_to_outbox(session, translate: {},
                     if os.path.isfile(saved_filename.replace('.json', '') +
                                       '.mitm'):
                         mitm = True
-                    bold_reading = False
-                    if server.bold_reading.get(post_to_nickname):
-                        bold_reading = True
                     individual_post_as_html(signing_priv_key_pem,
                                             False, recent_posts_cache,
                                             max_recent_posts,

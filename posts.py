@@ -3683,7 +3683,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                    recent_posts_cache: {}, debug: bool,
                    system_language: str,
                    domain_full: str, person_cache: {},
-                   signing_priv_key_pem: str) -> bool:
+                   signing_priv_key_pem: str,
+                   bold_reading: bool) -> bool:
     """Returns true if the given post has attached image media
     """
     if post_json_object['type'] == 'Announce':
@@ -3699,7 +3700,7 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blocked_cache)
+                              blocked_cache, bold_reading)
         if post_json_announce:
             post_json_object = post_json_announce
     if post_json_object['type'] != 'Create':
@@ -4765,7 +4766,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       system_language: str,
                       domain_full: str, person_cache: {},
                       signing_priv_key_pem: str,
-                      blocked_cache: {}) -> {}:
+                      blocked_cache: {}, bold_reading: bool) -> {}:
     """Download the post referenced by an announce
     """
     if not post_json_object.get('object'):
@@ -4972,7 +4973,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
         content_str = limit_repeated_words(content_str, 6)
 
         # remove text formatting, such as bold/italics
-        content_str = remove_text_formatting(content_str)
+        content_str = remove_text_formatting(content_str, bold_reading)
 
         # set the content after santitization
         announced_json['content'] = content_str

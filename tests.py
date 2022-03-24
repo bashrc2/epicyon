@@ -3728,10 +3728,10 @@ def _test_recent_posts_cache():
 def _test_remove_txt_formatting():
     print('test_remove_txt_formatting')
     test_str = '<p>Text without formatting</p>'
-    result_str = remove_text_formatting(test_str)
+    result_str = remove_text_formatting(test_str, False)
     assert result_str == test_str
     test_str = '<p>Text <i>with</i> <h3>formatting</h3></p>'
-    result_str = remove_text_formatting(test_str)
+    result_str = remove_text_formatting(test_str, False)
     assert result_str == '<p>Text with formatting</p>'
 
 

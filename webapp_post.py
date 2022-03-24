@@ -1604,7 +1604,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blocked_cache)
+                              blocked_cache, bold_reading)
         if not post_json_announce:
             # if the announce could not be downloaded then mark it as rejected
             announced_post_id = remove_id_ending(post_json_object['id'])
@@ -1987,20 +1987,18 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '16')
 
-    print('Test bold_reading 1 ' + str(bold_reading))
     if not is_pgp_encrypted(content_str):
         if not is_patch:
             # Add bold text
-            print('Test bold_reading 2 ' + str(bold_reading))
             if bold_reading and \
                not displaying_ciphertext and \
                not post_is_blog:
                 content_str = bold_reading_string(content_str)
-                print('Test bold_reading 3 ' + content_str)
 
             object_content = \
                 remove_long_words(content_str, 40, [])
-            object_content = remove_text_formatting(object_content)
+            object_content = \
+                remove_text_formatting(object_content, bold_reading)
             object_content = limit_repeated_words(object_content, 6)
             object_content = \
                 switch_words(base_dir, nickname, domain, object_content)

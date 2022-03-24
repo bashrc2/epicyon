@@ -2041,7 +2041,7 @@ def _receive_announce(recent_posts_cache: {},
                                          system_language,
                                          domain_full, person_cache,
                                          signing_priv_key_pem,
-                                         blocked_cache)
+                                         blocked_cache, bold_reading)
     if not post_json_object:
         print('WARN: unable to download announce: ' + str(message_json))
         not_in_onion = True
@@ -3681,7 +3681,8 @@ def _inbox_after_initial(server,
                               twitter_replacement_domain,
                               allow_local_network_access,
                               recent_posts_cache, debug, system_language,
-                              domain_full, person_cache, signing_priv_key_pem):
+                              domain_full, person_cache, signing_priv_key_pem,
+                              bold_reading):
                 # media index will be updated
                 update_index_list.append('tlmedia')
             if is_blog_post(post_json_object):
