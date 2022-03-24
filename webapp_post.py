@@ -1987,13 +1987,16 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '16')
 
+    print('Test bold_reading 1 ' + str(bold_reading))
     if not is_pgp_encrypted(content_str):
         if not is_patch:
             # Add bold text
+            print('Test bold_reading 2 ' + str(bold_reading))
             if bold_reading and \
                not displaying_ciphertext and \
                not post_is_blog:
                 content_str = bold_reading_string(content_str)
+                print('Test bold_reading 3 ' + content_str)
 
             object_content = \
                 remove_long_words(content_str, 40, [])
