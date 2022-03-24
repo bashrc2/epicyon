@@ -1890,7 +1890,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     published_link = message_id
     # blog posts should have no /statuses/ in their link
+    post_is_blog = False
     if is_blog_post(post_json_object):
+        post_is_blog = True
         # is this a post to the local domain?
         if '://' + domain in message_id:
             published_link = message_id.replace('/statuses/', '/')
@@ -1988,7 +1990,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not is_pgp_encrypted(content_str):
         if not is_patch:
             # Add bold text
-            if bold_reading and not displaying_ciphertext:
+            if bold_reading and \
+               not displaying_ciphertext and \
+               not post_is_blog:
                 content_str = bold_reading_string(content_str)
 
             object_content = \
