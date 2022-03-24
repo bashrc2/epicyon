@@ -1983,13 +1983,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             post_json_object['object']['type'],
                             summary_str, content_str)
 
-    if bold_reading and not is_patch and not displaying_ciphertext:
-        content_str = bold_reading_string(content_str)
-
     _log_post_timing(enable_timing_log, post_start_time, '16')
 
     if not is_pgp_encrypted(content_str):
         if not is_patch:
+            # Add bold text
+            if bold_reading and not displaying_ciphertext:
+                content_str = bold_reading_string(content_str)
+
             object_content = \
                 remove_long_words(content_str, 40, [])
             object_content = remove_text_formatting(object_content)
