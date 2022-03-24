@@ -6731,6 +6731,14 @@ def _test_bold_reading() -> None:
         print(text_bold)
     assert text_bold == expected
 
+    text = "There&apos;s some quoted text here"
+    text_bold = bold_reading_string(text)
+    expected = \
+        "<b>The</b>re's <b>so</b>me <b>quo</b>ted <b>te</b>xt <b>he</b>re"
+    if text_bold != expected:
+        print(text_bold)
+    assert text_bold == expected
+
 
 def run_all_tests():
     base_dir = os.getcwd()

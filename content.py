@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import html
 import os
 import email.parser
 import urllib.parse
@@ -1331,7 +1332,7 @@ def contains_invalid_local_links(content: str) -> bool:
 def bold_reading_string(text: str) -> str:
     """Returns bold reading formatted text
     """
-    text = urllib.parse.unquote(text)
+    text = html.unescape(text)
     add_paragraph_markup = False
     if '<p>' in text:
         text = text.replace('</p>', '\n').replace('<p>', '')
