@@ -461,6 +461,9 @@ def post_message_to_outbox(session, translate: {},
                     if os.path.isfile(saved_filename.replace('.json', '') +
                                       '.mitm'):
                         mitm = True
+                    bold_reading = False
+                    if server.bold_reading.get(post_to_nickname):
+                        bold_reading = True
                     individual_post_as_html(signing_priv_key_pem,
                                             False, recent_posts_cache,
                                             max_recent_posts,
@@ -485,7 +488,8 @@ def post_message_to_outbox(session, translate: {},
                                             manually_approve_followers,
                                             False, True, use_cache_only,
                                             cw_lists, lists_enabled,
-                                            timezone, mitm)
+                                            timezone, mitm,
+                                            bold_reading)
 
     if outbox_announce(recent_posts_cache,
                        base_dir, message_json, debug):

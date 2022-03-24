@@ -58,6 +58,7 @@ from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
+from content import bold_reading_string
 from content import limit_repeated_words
 from content import replace_emoji_from_tags
 from content import html_replace_quote_marks
@@ -1439,7 +1440,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             cw_lists: {},
                             lists_enabled: str,
                             timezone: str,
-                            mitm: bool) -> str:
+                            mitm: bool, bold_reading: bool) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -1952,7 +1953,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             system_language: ''
         }
 
+    displaying_ciphertext = False
     if post_json_object['object'].get('cipherText'):
+        displaying_ciphertext = True
         post_json_object['object']['content'] = \
             e2e_edecrypt_message_from_device(post_json_object['object'])
         post_json_object['object']['contentMap'][system_language] = \
@@ -1979,6 +1982,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
     is_patch = is_git_patch(base_dir, nickname, domain,
                             post_json_object['object']['type'],
                             summary_str, content_str)
+
+    if bold_reading and not is_patch and not displaying_ciphertext:
+        content_str = bold_reading_string(content_str)
 
     _log_post_timing(enable_timing_log, post_start_time, '16')
 
@@ -2119,7 +2125,8 @@ def html_individual_post(css_cache: {},
                          theme_name: str, system_language: str,
                          max_like_count: int, signing_priv_key_pem: str,
                          cw_lists: {}, lists_enabled: str,
-                         timezone: str, mitm: bool) -> str:
+                         timezone: str, mitm: bool,
+                         bold_reading: bool) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2187,7 +2194,8 @@ def html_individual_post(css_cache: {},
                                 allow_local_network_access, theme_name,
                                 system_language, max_like_count,
                                 False, authorized, False, False, False, False,
-                                cw_lists, lists_enabled, timezone, mitm)
+                                cw_lists, lists_enabled, timezone, mitm,
+                                bold_reading)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2227,7 +2235,8 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone, mitm) + post_str
+                                            timezone, mitm,
+                                            bold_reading) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2265,7 +2274,8 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone, False)
+                                            timezone, False,
+                                            bold_reading)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2293,7 +2303,7 @@ def html_post_replies(css_cache: {},
                       max_like_count: int,
                       signing_priv_key_pem: str, cw_lists: {},
                       lists_enabled: str,
-                      timezone: str) -> str:
+                      timezone: str, bold_reading: bool) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -2319,7 +2329,8 @@ def html_post_replies(css_cache: {},
                                         False, False, False, False,
                                         False, False,
                                         cw_lists, lists_enabled,
-                                        timezone, False)
+                                        timezone, False,
+                                        bold_reading)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2349,7 +2360,7 @@ def html_emoji_reaction_picker(css_cache: {},
                                max_like_count: int, signing_priv_key_pem: str,
                                cw_lists: {}, lists_enabled: str,
                                box_name: str, page_number: int,
-                               timezone: str) -> str:
+                               timezone: str, bold_reading: bool) -> str:
     """Returns the emoji picker screen
     """
     reacted_to_post_str = \
@@ -2372,7 +2383,8 @@ def html_emoji_reaction_picker(css_cache: {},
                                 theme_name, system_language,
                                 max_like_count,
                                 False, False, False, False, False, False,
-                                cw_lists, lists_enabled, timezone, False)
+                                cw_lists, lists_enabled, timezone, False,
+                                bold_reading)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

@@ -518,5 +518,6 @@
     "Register": "登记",
     "Web Bots Allowed": "允许网络机器人",
     "Known Search Bots": "已知的网络搜索机器人",
-    "mitm": "消息可能已被第三方阅读或修改"
+    "mitm": "消息可能已被第三方阅读或修改",
+    "Bold reading": "大胆阅读"
 }

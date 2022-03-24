@@ -75,6 +75,7 @@ from blog import get_blog_address
 from webapp_post import individual_post_as_html
 from webapp_timeline import html_individual_share
 from blocking import get_cw_list_variable
+from content import bold_reading_string
 
 THEME_FORMATS = '.zip, .gz'
 
@@ -146,7 +147,8 @@ def html_profile_after_search(css_cache: {},
                               signing_priv_key_pem: str,
                               cw_lists: {}, lists_enabled: str,
                               timezone: str,
-                              onion_domain: str, i2p_domain: str) -> str:
+                              onion_domain: str, i2p_domain: str,
+                              bold_reading: bool) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -368,7 +370,8 @@ def html_profile_after_search(css_cache: {},
                                         False, False, False,
                                         False, False, False,
                                         cw_lists, lists_enabled,
-                                        timezone, False)
+                                        timezone, False,
+                                        bold_reading)
             i += 1
             if i >= 8:
                 break
@@ -591,7 +594,7 @@ def html_profile(signing_priv_key_pem: str,
                  max_items_per_page: int,
                  cw_lists: {}, lists_enabled: str,
                  content_license_url: str,
-                 timezone: str) -> str:
+                 timezone: str, bold_reading: bool) -> str:
     """Show the profile page as html
     """
     nickname = profile_json['preferredUsername']
@@ -1002,7 +1005,7 @@ def html_profile(signing_priv_key_pem: str,
                                 max_like_count,
                                 signing_priv_key_pem,
                                 cw_lists, lists_enabled,
-                                timezone) + license_str
+                                timezone, bold_reading) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1076,7 +1079,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         max_like_count: int,
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
-                        timezone: str) -> str:
+                        timezone: str, bold_reading: bool) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1125,7 +1128,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False,
                                             True, False, False,
                                             cw_lists, lists_enabled,
-                                            timezone, False)
+                                            timezone, False,
+                                            bold_reading)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1
@@ -1993,7 +1997,7 @@ def _html_edit_profile_options(is_admin: bool,
                                notify_likes: str, notify_reactions: str,
                                hide_like_button: str,
                                hide_reaction_button: str,
-                               translate: {}) -> str:
+                               translate: {}, bold_reading: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2025,6 +2029,9 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(translate["Don't show the Reaction button"],
                        'hideReactionButton', hide_reaction_button)
+    bold_str = bold_reading_string(translate['Bold reading'])
+    edit_profile_form += \
+        edit_check_box(bold_str, 'boldReading', bold_reading)
     edit_profile_form += '    </div>\n'
     return edit_profile_form
 
@@ -2158,7 +2165,8 @@ def _html_edit_profile_top_banner(base_dir: str,
     return edit_profile_form
 
 
-def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
+def html_edit_profile(server, css_cache: {}, translate: {},
+                      base_dir: str, path: str,
                       domain: str, port: int, http_prefix: str,
                       default_timeline: str, theme: str,
                       peertube_instances: [],
@@ -2176,6 +2184,10 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
     if not nickname:
         return ''
     domain_full = get_full_domain(domain, port)
+
+    bold_reading = False
+    if server.bold_reading(nickname):
+        bold_reading = True
 
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actor_filename):
@@ -2346,7 +2358,7 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
                                    remove_twitter,
                                    notify_likes, notify_reactions,
                                    hide_like_button, hide_reaction_button,
-                                   translate)
+                                   translate, bold_reading)
 
     # Contact information
     edit_profile_form += \

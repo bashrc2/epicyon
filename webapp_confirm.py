@@ -24,7 +24,7 @@ from webapp_utils import html_footer
 from webapp_post import individual_post_as_html
 
 
-def html_confirm_delete(css_cache: {},
+def html_confirm_delete(server, css_cache: {},
                         recent_posts_cache: {}, max_recent_posts: int,
                         translate, page_number: int,
                         session, base_dir: str, message_id: str,
@@ -71,6 +71,9 @@ def html_confirm_delete(css_cache: {},
     mitm = False
     if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
         mitm = True
+    bold_reading = False
+    if server.bold_reading.get(nickname):
+        bold_reading = True
     delete_post_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache, max_recent_posts,
@@ -86,7 +89,8 @@ def html_confirm_delete(css_cache: {},
                                 peertube_instances, allow_local_network_access,
                                 theme_name, system_language, max_like_count,
                                 False, False, False, False, False, False,
-                                cw_lists, lists_enabled, timezone, mitm)
+                                cw_lists, lists_enabled, timezone, mitm,
+                                bold_reading)
     delete_post_str += '<center>'
     delete_post_str += \
         '  <p class="followText">' + \

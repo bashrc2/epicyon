@@ -613,7 +613,7 @@ def html_history_search(css_cache: {}, translate: {}, base_dir: str,
                         signing_priv_key_pem: str,
                         cw_lists: {},
                         lists_enabled: str,
-                        timezone: str) -> str:
+                        timezone: str, bold_reading: bool) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -701,7 +701,7 @@ def html_history_search(css_cache: {}, translate: {}, base_dir: str,
                                     show_individual_post_icons,
                                     False, False, False, False,
                                     cw_lists, lists_enabled,
-                                    timezone, False)
+                                    timezone, False, bold_reading)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -727,7 +727,7 @@ def html_hashtag_search(css_cache: {},
                         max_like_count: int,
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
-                        timezone: str) -> str:
+                        timezone: str, bold_reading: bool) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -887,7 +887,8 @@ def html_hashtag_search(css_cache: {},
                                     manually_approves_followers,
                                     show_public_only,
                                     store_to_sache, False, cw_lists,
-                                    lists_enabled, timezone, False)
+                                    lists_enabled, timezone, False,
+                                    bold_reading)
         if post_str:
             hashtag_search_form += separator_str + post_str
         index += 1

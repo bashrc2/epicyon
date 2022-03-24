@@ -3480,6 +3480,24 @@ def load_account_timezones(base_dir: str) -> {}:
     return account_timezone
 
 
+def load_bold_reading(base_dir: str) -> {}:
+    """Returns a dictionary containing the bold reading status for each account
+    """
+    bold_reading = {}
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if acct.startswith('inbox@') or acct.startswith('Actor@'):
+                continue
+            bold_reading_filename = \
+                base_dir + '/accounts/' + acct + '/.boldReading'
+            if os.path.isfile(bold_reading_filename):
+                nickname = acct.split('@')[0]
+                bold_reading[nickname] = True
+    return bold_reading
+
+
 def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the timezone for the given account
     """

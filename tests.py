@@ -129,6 +129,7 @@ from inbox import json_post_allows_comments
 from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from categories import guess_hashtag_category
+from content import bold_reading_string
 from content import safe_web_text
 from content import words_similarity
 from content import get_price_from_string
@@ -6687,6 +6688,39 @@ def _test_published_to_local_timezone() -> None:
     assert local_time_str == 'Sat Feb 26, 05:15'
 
 
+def _test_bold_reading() -> None:
+    print('bold_reading')
+    text = "This is a test of emboldening."
+    text_bold = bold_reading_string(text)
+    expected = \
+        "<b>Th</b>is <b>i</b>s a <b>te</b>st <b>o</b>f " + \
+        "<b>embold</b>ening."
+    if text_bold != expected:
+        print(text_bold)
+    assert text_bold == expected
+
+    text = "<p>This is a test of emboldening with paragraph.<p>"
+    text_bold = bold_reading_string(text)
+    expected = \
+        "<p><b>Th</b>is <b>i</b>s a <b>te</b>st <b>o</b>f " + \
+        "<b>embol</b>dening <b>wi</b>th <b>parag</b>raph.</p>"
+    if text_bold != expected:
+        print(text_bold)
+    assert text_bold == expected
+
+    text = \
+        "<p>This is a test of emboldening</p>" + \
+        "<p>With more than one paragraph.<p>"
+    text_bold = bold_reading_string(text)
+    expected = \
+        "<p><b>Th</b>is <b>i</b>s a <b>te</b>st <b>o</b>f " + \
+        "<b>embol</b>dening</p><p><b>Wi</b>th <b>mo</b>re " + \
+        "<b>th</b>an <b>o</b>ne <b>parag</b>raph.</p>"
+    if text_bold != expected:
+        print(text_bold)
+    assert text_bold == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -6703,6 +6737,7 @@ def run_all_tests():
                             'message_json', 'liked_post_json'])
     _test_checkbox_names()
     _test_functions()
+    _test_bold_reading()
     _test_published_to_local_timezone()
     _test_safe_webtext()
     _test_get_link_from_rss_item()

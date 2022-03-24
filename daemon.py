@@ -283,6 +283,7 @@ from utils import get_occupation_skills
 from utils import get_occupation_name
 from utils import set_occupation_name
 from utils import load_translations_from_file
+from utils import load_bold_reading
 from utils import get_local_network_addresses
 from utils import decoded_host
 from utils import is_public_post
@@ -3034,6 +3035,11 @@ class PubServer(BaseHTTPRequestHandler):
             custom_submit_text = get_config_param(base_dir, 'customSubmitText')
             conversation_id = None
             reply_is_chat = False
+
+            bold_reading = False
+            if self.server.bold_reading(chooser_nickname):
+                bold_reading = True
+
             msg = html_new_post(self.server.css_cache,
                                 False, self.server.translate,
                                 base_dir,
@@ -3069,7 +3075,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 self.server.default_timeline,
-                                reply_is_chat).encode('utf-8')
+                                reply_is_chat,
+                                bold_reading).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -3173,6 +3180,11 @@ class PubServer(BaseHTTPRequestHandler):
             custom_submit_text = get_config_param(base_dir, 'customSubmitText')
             conversation_id = None
             reply_is_chat = False
+
+            bold_reading = False
+            if self.server.bold_reading.get(chooser_nickname):
+                bold_reading = True
+
             msg = html_new_post(self.server.css_cache,
                                 False, self.server.translate,
                                 base_dir,
@@ -3207,7 +3219,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 self.server.default_timeline,
-                                reply_is_chat).encode('utf-8')
+                                reply_is_chat,
+                                bold_reading).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -3704,6 +3717,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+                bold_reading = False
+                if self.server.bold_reading(nickname):
+                    bold_reading = True
                 hashtag_str = \
                     html_hashtag_search(self.server.css_cache,
                                         nickname, domain, port,
@@ -3729,7 +3745,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.signing_priv_key_pem,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, bold_reading)
                 if hashtag_str:
                     msg = hashtag_str.encode('utf-8')
                     msglen = len(msg)
@@ -3806,6 +3822,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+                bold_reading = False
+                if self.server.bold_reading(nickname):
+                    bold_reading = True
                 history_str = \
                     html_history_search(self.server.css_cache,
                                         self.server.translate,
@@ -3834,7 +3853,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.signing_priv_key_pem,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, bold_reading)
                 if history_str:
                     msg = history_str.encode('utf-8')
                     msglen = len(msg)
@@ -3884,6 +3903,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+                bold_reading = False
+                if self.server.bold_reading.get(nickname):
+                    bold_reading = True
                 bookmarks_str = \
                     html_history_search(self.server.css_cache,
                                         self.server.translate,
@@ -3912,7 +3934,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.signing_priv_key_pem,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, bold_reading)
                 if bookmarks_str:
                     msg = bookmarks_str.encode('utf-8')
                     msglen = len(msg)
@@ -4046,6 +4068,10 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.postreq_busy = False
                         return
 
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
+
                     profile_str = \
                         html_profile_after_search(self.server.css_cache,
                                                   recent_posts_cache,
@@ -4078,7 +4104,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.lists_enabled,
                                                   timezone,
                                                   self.server.onion_domain,
-                                                  self.server.i2p_domain)
+                                                  self.server.i2p_domain,
+                                                  bold_reading)
                 if profile_str:
                     msg = profile_str.encode('utf-8')
                     msglen = len(msg)
@@ -6655,6 +6682,33 @@ class PubServer(BaseHTTPRequestHandler):
                                       'unable to delete ' +
                                       hide_reaction_button_file)
 
+                    # bold reading checkbox
+                    bold_reading_filename = \
+                        acct_dir(base_dir, nickname, domain) + \
+                        '/.boldReading'
+                    bold_reading = False
+                    if fields.get('boldReading'):
+                        if fields['boldReading'] == 'on':
+                            bold_reading = True
+                            self.server.bold_reading[nickname] = True
+                            try:
+                                with open(bold_reading_filename,
+                                          'w+') as rfile:
+                                    rfile.write('\n')
+                            except OSError:
+                                print('EX: unable to write bold reading ' +
+                                      bold_reading_filename)
+                    if not bold_reading:
+                        if self.server.bold_reading[nickname]:
+                            del self.server.bold_reading[nickname]
+                        if os.path.isfile(bold_reading_filename):
+                            try:
+                                os.remove(bold_reading_filename)
+                            except OSError:
+                                print('EX: _profile_edit ' +
+                                      'unable to delete ' +
+                                      bold_reading_filename)
+
                     # notify about new Likes
                     if on_final_welcome_screen:
                         # default setting from welcome screen
@@ -8204,6 +8258,9 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.account_timezone.get(nickname):
             timezone = \
                 self.server.account_timezone.get(nickname)
+        bold_reading = False
+        if self.server.bold_reading(nickname):
+            bold_reading = True
         hashtag_str = \
             html_hashtag_search(self.server.css_cache,
                                 nickname, domain, port,
@@ -8228,7 +8285,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                timezone)
+                                timezone, bold_reading)
         if hashtag_str:
             msg = hashtag_str.encode('utf-8')
             msglen = len(msg)
@@ -8445,6 +8502,9 @@ class PubServer(BaseHTTPRequestHandler):
             if os.path.isfile(announce_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
+            bionic_reading = False
+            if self.server.bionic_reading.get(self.post_to_nickname):
+                bionic_reading = True
             individual_post_as_html(self.server.signing_priv_key_pem, False,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
@@ -8473,7 +8533,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     False, True, False,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
-                                    timezone, mitm)
+                                    timezone, mitm, bionic_reading)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
         actor_path_str = \
@@ -8986,6 +9046,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(liked_post_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
+                bionic_reading = False
+                if self.server.bionic_reading.get(self.post_to_nickname):
+                    bionic_reading = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9016,7 +9079,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone, mitm)
+                                        timezone, mitm, bionic_reading)
             else:
                 print('WARN: Liked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -9168,6 +9231,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(liked_post_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
+                bionic_reading = False
+                if self.server.bionic_reading.get(self.post_to_nickname):
+                    bionic_reading = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9198,7 +9264,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone, mitm)
+                                        timezone, mitm, bionic_reading)
             else:
                 print('WARN: Unliked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -9379,6 +9445,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(reaction_post_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
+                bionic_reading = False
+                if self.server.bionic_reading.get(self.post_to_nickname):
+                    bionic_reading = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9409,7 +9478,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone, mitm)
+                                        timezone, mitm, bionic_reading)
             else:
                 print('WARN: Emoji reaction post not found: ' +
                       reaction_post_filename)
@@ -9580,6 +9649,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(reaction_post_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
+                bionic_reading = False
+                if self.server.bionic_reading.get(self.post_to_nickname):
+                    bionic_reading = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9610,7 +9682,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone, mitm)
+                                        timezone, mitm, bionic_reading)
             else:
                 print('WARN: Unreaction post not found: ' +
                       reaction_post_filename)
@@ -9687,6 +9759,11 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.account_timezone.get(self.post_to_nickname):
             timezone = \
                 self.server.account_timezone.get(self.post_to_nickname)
+
+        bold_reading = False
+        if self.server.bold_reading.get(self.post_to_nickname):
+            bold_reading = True
+
         msg = \
             html_emoji_reaction_picker(self.server.css_cache,
                                        self.server.recent_posts_cache,
@@ -9712,7 +9789,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.cw_lists,
                                        self.server.lists_enabled,
                                        timeline_str, page_number,
-                                       timezone)
+                                       timezone, bold_reading)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
@@ -9831,6 +9908,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(bookmark_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
+                bionic_reading = False
+                if self.server.bionic_reading.get(self.post_to_nickname):
+                    bionic_reading = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9861,7 +9941,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone, mitm)
+                                        timezone, mitm, bionic_reading)
             else:
                 print('WARN: Bookmarked post not found: ' + bookmark_filename)
         # self._post_to_outbox(bookmark_json,
@@ -9987,6 +10067,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(bookmark_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
+                bionic_reading = False
+                if self.server.bionic_reading.get(self.post_to_nickname):
+                    bionic_reading = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -10017,7 +10100,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         False, True, False,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone, mitm)
+                                        timezone, mitm, bionic_reading)
             else:
                 print('WARN: Unbookmarked post not found: ' +
                       bookmark_filename)
@@ -10107,7 +10190,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             delete_str = \
-                html_confirm_delete(self.server.css_cache,
+                html_confirm_delete(self.server,
+                                    self.server.css_cache,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate, page_number,
@@ -10219,6 +10303,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(mute_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
+                bionic_reading = False
+                if self.server.bionic_reading.get(nickname):
+                    bionic_reading = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         allow_downloads,
                                         self.server.recent_posts_cache,
@@ -10250,7 +10337,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         use_cache_only,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone, mitm)
+                                        timezone, mitm, bionic_reading)
             else:
                 print('WARN: Muted post not found: ' + mute_filename)
 
@@ -10343,6 +10430,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(mute_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
+                bionic_reading = False
+                if self.server.bionic_reading.get(nickname):
+                    bionic_reading = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         allow_downloads,
                                         self.server.recent_posts_cache,
@@ -10374,7 +10464,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         use_cache_only,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone, mitm)
+                                        timezone, mitm, bionic_reading)
             else:
                 print('WARN: Unmuted post not found: ' + mute_filename)
         if calling_domain.endswith('.onion') and onion_domain:
@@ -10475,6 +10565,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+                bold_reading = False
+                if self.server.bold_reading.get(nickname):
+                    bold_reading = True
                 msg = \
                     html_post_replies(self.server.css_cache,
                                       recent_posts_cache,
@@ -10501,7 +10594,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.signing_priv_key_pem,
                                       self.server.cw_lists,
                                       self.server.lists_enabled,
-                                      timezone)
+                                      timezone, bold_reading)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -10577,6 +10670,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+                bold_reading = False
+                if self.server.bold_reading.get(nickname):
+                    bold_reading = True
                 msg = \
                     html_post_replies(self.server.css_cache,
                                       recent_posts_cache,
@@ -10603,7 +10699,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.signing_priv_key_pem,
                                       self.server.cw_lists,
                                       self.server.lists_enabled,
-                                      timezone)
+                                      timezone, bold_reading)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -10692,6 +10788,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
@@ -10725,7 +10824,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      None, None, self.server.cw_lists,
                                      self.server.lists_enabled,
                                      self.server.content_license_url,
-                                     timezone)
+                                     timezone, bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -10821,6 +10920,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 if self.server.account_timezone.get(nick):
                                     timezone = \
                                         self.server.account_timezone.get(nick)
+                                bold_reading = False
+                                if self.server.bold_reading.get(nick):
+                                    bold_reading = True
                                 msg = \
                                     html_profile(signing_priv_key_pem,
                                                  self.server.rss_icon_at_top,
@@ -10855,7 +10957,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.cw_lists,
                                                  self.server.lists_enabled,
                                                  content_license_url,
-                                                 timezone)
+                                                 timezone, bold_reading)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -10995,6 +11097,10 @@ class PubServer(BaseHTTPRequestHandler):
             post_url = post_url.split('?')[0]
         post_url = post_url.replace('--', '/')
 
+        bold_reading = False
+        if self.server.bold_reading.get(nickname):
+            bold_reading = True
+
         msg = \
             html_likers_of_post(base_dir, nickname, domain, port,
                                 post_url, self.server.translate,
@@ -11017,7 +11123,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                'inbox', self.server.default_timeline)
+                                'inbox', self.server.default_timeline,
+                                bold_reading)
         if not msg:
             self._404()
             return True
@@ -11056,6 +11163,10 @@ class PubServer(BaseHTTPRequestHandler):
             post_url = post_url.split('?')[0]
         post_url = post_url.replace('--', '/')
 
+        bold_reading = False
+        if self.server.bold_reading.get(nickname):
+            bold_reading = True
+
         # note that the likers function is reused, but with 'shares'
         msg = \
             html_likers_of_post(base_dir, nickname, domain, port,
@@ -11080,7 +11191,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 'inbox', self.server.default_timeline,
-                                'shares')
+                                bold_reading, 'shares')
         if not msg:
             self._404()
             return True
@@ -11134,10 +11245,16 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.account_timezone.get(nickname):
                 timezone = \
                     self.server.account_timezone.get(nickname)
+
             mitm = False
             if os.path.isfile(post_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
+
+            bold_reading = False
+            if self.server.bold_reading.get(nickname):
+                bold_reading = True
+
             msg = \
                 html_individual_post(self.server.css_cache,
                                      self.server.recent_posts_cache,
@@ -11164,7 +11281,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.signing_priv_key_pem,
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
-                                     timezone, mitm)
+                                     timezone, mitm, bold_reading)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -11408,6 +11525,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.account_timezone.get(nickname):
                             timezone = \
                                 self.server.account_timezone.get(nickname)
+                        bold_reading = False
+                        if self.server.bold_reading.get(nickname):
+                            bold_reading = True
                         msg = html_inbox(self.server.css_cache,
                                          default_timeline,
                                          recent_posts_cache,
@@ -11448,7 +11568,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.signing_priv_key_pem,
                                          self.server.cw_lists,
                                          self.server.lists_enabled,
-                                         timezone)
+                                         timezone, bold_reading)
                         if getreq_start_time:
                             fitness_performance(getreq_start_time,
                                                 self.server.fitness,
@@ -11576,6 +11696,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.account_timezone.get(nickname):
                             timezone = \
                                 self.server.account_timezone.get(nickname)
+                        bold_reading = False
+                        if self.server.bold_reading.get(nickname):
+                            bold_reading = True
                         msg = \
                             html_inbox_dms(self.server.css_cache,
                                            self.server.default_timeline,
@@ -11616,7 +11739,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.signing_priv_key_pem,
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
-                                           timezone)
+                                           timezone, bold_reading)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -11733,6 +11856,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
                     msg = \
                         html_inbox_replies(self.server.css_cache,
                                            self.server.default_timeline,
@@ -11773,7 +11899,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.signing_priv_key_pem,
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
-                                           timezone)
+                                           timezone, bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -11887,6 +12013,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading(nickname):
+                        bold_reading = True
                     msg = \
                         html_inbox_media(self.server.css_cache,
                                          self.server.default_timeline,
@@ -11928,7 +12057,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.signing_priv_key_pem,
                                          self.server.cw_lists,
                                          self.server.lists_enabled,
-                                         timezone)
+                                         timezone, bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12042,6 +12171,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
                     msg = \
                         html_inbox_blogs(self.server.css_cache,
                                          self.server.default_timeline,
@@ -12083,7 +12215,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.signing_priv_key_pem,
                                          self.server.cw_lists,
                                          self.server.lists_enabled,
-                                         timezone)
+                                         timezone, bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12205,6 +12337,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
                     msg = \
                         html_inbox_news(self.server.css_cache,
                                         self.server.default_timeline,
@@ -12247,7 +12382,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.signing_priv_key_pem,
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
-                                        timezone)
+                                        timezone, bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12372,6 +12507,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
                     msg = \
                         html_inbox_features(self.server.css_cache,
                                             self.server.default_timeline,
@@ -12414,7 +12552,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.signing_priv_key_pem,
                                             self.server.cw_lists,
                                             self.server.lists_enabled,
-                                            timezone)
+                                            timezone, bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12493,6 +12631,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
                     msg = \
                         html_shares(self.server.css_cache,
                                     self.server.default_timeline,
@@ -12530,7 +12671,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.shared_items_federated_domains,
                                     self.server.signing_priv_key_pem,
                                     self.server.cw_lists,
-                                    self.server.lists_enabled, timezone)
+                                    self.server.lists_enabled, timezone,
+                                    bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12583,6 +12725,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
                     msg = \
                         html_wanted(self.server.css_cache,
                                     self.server.default_timeline,
@@ -12621,7 +12766,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.signing_priv_key_pem,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
-                                    timezone)
+                                    timezone, bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12714,6 +12859,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.account_timezone.get(nickname):
                             timezone = \
                                 self.server.account_timezone.get(nickname)
+                        bold_reading = False
+                        if self.server.bold_reading.get(nickname):
+                            bold_reading = True
                         msg = \
                             html_bookmarks(self.server.css_cache,
                                            self.server.default_timeline,
@@ -12755,7 +12903,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.signing_priv_key_pem,
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
-                                           timezone)
+                                           timezone, bold_reading)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -12864,6 +13012,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+                bold_reading = False
+                if self.server.bold_reading.get(nickname):
+                    bold_reading = True
                 msg = \
                     html_outbox(self.server.css_cache,
                                 self.server.default_timeline,
@@ -12903,7 +13054,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                timezone)
+                                timezone, bold_reading)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -13008,6 +13159,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.account_timezone.get(nickname):
                             timezone = \
                                 self.server.account_timezone.get(nickname)
+                        bold_reading = False
+                        if self.server.bold_reading.get(nickname):
+                            bold_reading = True
                         msg = \
                             html_moderation(self.server.css_cache,
                                             self.server.default_timeline,
@@ -13048,7 +13202,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.signing_priv_key_pem,
                                             self.server.cw_lists,
                                             self.server.lists_enabled,
-                                            timezone)
+                                            timezone, bold_reading)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -13151,6 +13305,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.account_timezone.get(nickname):
                         timezone = \
                             self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading(nickname):
+                        bold_reading = True
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
@@ -13186,7 +13343,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
                                      self.server.content_license_url,
-                                     timezone)
+                                     timezone, bold_reading)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13287,6 +13444,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.content_license_url
                     shared_items_federated_domains = \
                         self.server.shared_items_federated_domains
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
@@ -13323,7 +13483,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
                                      content_license_url,
-                                     timezone).encode('utf-8')
+                                     timezone, bold_reading).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -13422,6 +13582,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.content_license_url
                     shared_items_federated_domains = \
                         self.server.shared_items_federated_domains
+                    bold_reading = False
+                    if self.server.bold_reading(nickname):
+                        bold_reading = True
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
@@ -13459,7 +13622,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
                                      content_license_url,
-                                     timezone).encode('utf-8')
+                                     timezone, bold_reading).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
                                       cookie, calling_domain, False)
@@ -13583,6 +13746,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.account_timezone.get(nickname):
                     timezone = \
                         self.server.account_timezone.get(nickname)
+            bold_reading = False
+            if self.server.bold_reading.get(nickname):
+                bold_reading = True
             msg = \
                 html_profile(self.server.signing_priv_key_pem,
                              self.server.rss_icon_at_top,
@@ -13615,7 +13781,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.cw_lists,
                              self.server.lists_enabled,
                              self.server.content_license_url,
-                             timezone).encode('utf-8')
+                             timezone, bold_reading).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -14371,6 +14537,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if reply_post_filename:
                     post_json_object = load_json(reply_post_filename)
 
+            bold_reading = False
+            if self.server.bold_reading.get(nickname):
+                bold_reading = True
+
             msg = html_new_post(self.server.css_cache,
                                 media_instance,
                                 translate,
@@ -14408,7 +14578,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 self.server.default_timeline,
-                                reply_is_chat).encode('utf-8')
+                                reply_is_chat,
+                                bold_reading).encode('utf-8')
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
                 self._404()
@@ -14476,7 +14647,7 @@ class PubServer(BaseHTTPRequestHandler):
                     access_keys = self.server.key_shortcuts[nickname]
 
             default_reply_interval_hrs = self.server.default_reply_interval_hrs
-            msg = html_edit_profile(self.server.css_cache,
+            msg = html_edit_profile(self.server, self.server.css_cache,
                                     translate,
                                     base_dir,
                                     path, domain,
@@ -20522,6 +20693,9 @@ def run_daemon(crawlers_allowed: [],
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)
+
+    # for each account, whether bold reading is enabled
+    httpd.bold_reading = load_bold_reading(base_dir)
 
     httpd.account_timezone = load_account_timezones(base_dir)
 

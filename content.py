@@ -1323,3 +1323,40 @@ def contains_invalid_local_links(content: str) -> bool:
         if '?' + inv_str + '=' in content:
             return True
     return False
+
+
+def bold_reading_string(text: str) -> str:
+    """Returns bold reading formatted text
+    """
+    add_paragraph_markup = False
+    if '<p>' in text:
+        text = text.replace('</p>', '\n').replace('<p>', '')
+        add_paragraph_markup = True
+    paragraphs = text.split('\n')
+    parag_ctr = 0
+    new_text = ''
+    for parag in paragraphs:
+        words = parag.split(' ')
+        new_parag = ''
+        for wrd in words:
+            if len(wrd) > 1 and '<' not in wrd and '>' not in wrd:
+                initial_chars = int(len(wrd) / 2)
+                new_parag += \
+                    '<b>' + wrd[:initial_chars] + '</b>' + \
+                    wrd[initial_chars:] + ' '
+            else:
+                new_parag += wrd + ' '
+        parag_ctr += 1
+        new_parag = new_parag.strip()
+        if parag_ctr < len(paragraphs):
+            if not add_paragraph_markup:
+                new_text += new_parag + '\n'
+            else:
+                new_text += '<p>' + new_parag + '</p>'
+        else:
+            if not add_paragraph_markup:
+                new_text += new_parag
+            else:
+                new_text += '<p>' + new_parag + '</p>'
+
+    return new_text
