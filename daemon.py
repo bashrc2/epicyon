@@ -811,7 +811,15 @@ class PubServer(BaseHTTPRequestHandler):
     def _logout_redirect(self, redirect: str, cookie: str,
                          calling_domain: str) -> None:
         if '://' not in redirect:
-            print('REDIRECT ERROR: redirect is not an absolute url ' +
+            if calling_domain.endswith('.onion') and self.server.onion_domain:
+                redirect = 'http://' + self.server.onion_domain + redirect
+            elif calling_domain.endswith('.i2p') and self.server.i2p_domain:
+                redirect = 'http://' + self.server.i2p_domain + redirect
+            else:
+                redirect = \
+                    self.server.http_prefix + '://' + \
+                    self.server.domain_full + redirect
+            print('WARN: redirect was not an absolute url, changed to ' +
                   redirect)
 
         self.send_response(303)
@@ -925,7 +933,15 @@ class PubServer(BaseHTTPRequestHandler):
     def _redirect_headers(self, redirect: str, cookie: str,
                           calling_domain: str) -> None:
         if '://' not in redirect:
-            print('REDIRECT ERROR: redirect is not an absolute url ' +
+            if calling_domain.endswith('.onion') and self.server.onion_domain:
+                redirect = 'http://' + self.server.onion_domain + redirect
+            elif calling_domain.endswith('.i2p') and self.server.i2p_domain:
+                redirect = 'http://' + self.server.i2p_domain + redirect
+            else:
+                redirect = \
+                    self.server.http_prefix + '://' + \
+                    self.server.domain_full + redirect
+            print('WARN: redirect was not an absolute url, changed to ' +
                   redirect)
 
         self.send_response(303)
