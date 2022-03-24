@@ -1342,10 +1342,20 @@ def bold_reading_string(text: str) -> str:
             if len(wrd) > 1 and \
                '<' not in wrd and '>' not in wrd and \
                not wrd.startswith(':'):
+
+                prefix = ''
+                postfix = ''
+                if wrd.startswith('"'):
+                    prefix = '"'
+                    wrd = wrd[1:]
+                if wrd.endswith('"'):
+                    postfix = '"'
+                    wrd = wrd[:len(wrd) - 1]
+
                 initial_chars = int(len(wrd) / 2)
                 new_parag += \
-                    '<b>' + wrd[:initial_chars] + '</b>' + \
-                    wrd[initial_chars:] + ' '
+                    prefix + '<b>' + wrd[:initial_chars] + '</b>' + \
+                    wrd[initial_chars:] + postfix + ' '
             else:
                 new_parag += wrd + ' '
         parag_ctr += 1
