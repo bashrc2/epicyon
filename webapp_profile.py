@@ -2186,7 +2186,7 @@ def html_edit_profile(server, css_cache: {}, translate: {},
     domain_full = get_full_domain(domain, port)
 
     bold_reading = False
-    if server.bold_reading(nickname):
+    if server.bold_reading[nickname]:
         bold_reading = True
 
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'

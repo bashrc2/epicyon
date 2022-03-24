@@ -3037,7 +3037,7 @@ class PubServer(BaseHTTPRequestHandler):
             reply_is_chat = False
 
             bold_reading = False
-            if self.server.bold_reading(chooser_nickname):
+            if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
             msg = html_new_post(self.server.css_cache,
@@ -3718,7 +3718,7 @@ class PubServer(BaseHTTPRequestHandler):
                     timezone = \
                         self.server.account_timezone.get(nickname)
                 bold_reading = False
-                if self.server.bold_reading(nickname):
+                if self.server.bold_reading.get(nickname):
                     bold_reading = True
                 hashtag_str = \
                     html_hashtag_search(self.server.css_cache,
@@ -3823,7 +3823,7 @@ class PubServer(BaseHTTPRequestHandler):
                     timezone = \
                         self.server.account_timezone.get(nickname)
                 bold_reading = False
-                if self.server.bold_reading(nickname):
+                if self.server.bold_reading.get(nickname):
                     bold_reading = True
                 history_str = \
                     html_history_search(self.server.css_cache,
@@ -8259,7 +8259,7 @@ class PubServer(BaseHTTPRequestHandler):
             timezone = \
                 self.server.account_timezone.get(nickname)
         bold_reading = False
-        if self.server.bold_reading(nickname):
+        if self.server.bold_reading.get(nickname):
             bold_reading = True
         hashtag_str = \
             html_hashtag_search(self.server.css_cache,
@@ -12014,7 +12014,7 @@ class PubServer(BaseHTTPRequestHandler):
                         timezone = \
                             self.server.account_timezone.get(nickname)
                     bold_reading = False
-                    if self.server.bold_reading(nickname):
+                    if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
                         html_inbox_media(self.server.css_cache,
@@ -13306,7 +13306,7 @@ class PubServer(BaseHTTPRequestHandler):
                         timezone = \
                             self.server.account_timezone.get(nickname)
                     bold_reading = False
-                    if self.server.bold_reading(nickname):
+                    if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
@@ -13583,7 +13583,7 @@ class PubServer(BaseHTTPRequestHandler):
                     shared_items_federated_domains = \
                         self.server.shared_items_federated_domains
                     bold_reading = False
-                    if self.server.bold_reading(nickname):
+                    if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
