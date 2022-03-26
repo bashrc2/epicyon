@@ -1429,6 +1429,7 @@ if args.message:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    languages_understood = [args.language]
     if args.languages_understood:
         languages_understood = [args.languages_understood]
 
