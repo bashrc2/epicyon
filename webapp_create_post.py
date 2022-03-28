@@ -90,7 +90,8 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
             'id="my-newPostDropdown" value="" name="my-checkbox">\n'
     drop_down_content += '  <label for="my-newPostDropdown"\n'
     drop_down_content += '     data-toggle="newPostDropdown">\n'
-    drop_down_content += '  <img loading="lazy" alt="" title="" src="/' + \
+    drop_down_content += '  <img loading="lazy" decoding="async" ' + \
+        'alt="" title="" src="/' + \
         'icons/' + scope_icon + '"/><b>' + scope_description + '</b></label>\n'
 
     if no_drop_down:
@@ -102,7 +103,7 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
         drop_down_content += \
             '<li><a href="' + path_base + dropdown_new_post_suffix + \
             '" accesskey="' + access_keys['Public'] + '">' + \
-            '<img loading="lazy" alt="" title="" src="/' + \
+            '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
             'icons/scope_public.png"/><b>' + \
             translate['Public'] + '</b><br>' + \
             translate['Visible to anyone'] + '</a></li>\n'
@@ -110,7 +111,8 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
             drop_down_content += \
                 '<li><a href="' + path_base + dropdown_new_blog_suffix + \
                 '" accesskey="' + access_keys['menuBlogs'] + '">' + \
-                '<img loading="lazy" alt="" title="" src="/' + \
+                '<img loading="lazy" decoding="async" ' + \
+                'alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Article'] + '</b><br>' + \
                 translate['Create an article'] + '</a></li>\n'
@@ -118,27 +120,28 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
             drop_down_content += \
                 '<li><a href="' + path_base + dropdown_new_blog_suffix + \
                 '" accesskey="' + access_keys['menuBlogs'] + '">' + \
-                '<img loading="lazy" alt="" title="" src="/' + \
+                '<img loading="lazy" decoding="async" ' + \
+                'alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Blog'] + '</b><br>' + \
                 translate['Publicly visible post'] + '</a></li>\n'
     drop_down_content += \
         '<li><a href="' + path_base + dropdown_unlisted_suffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '"><img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_unlisted.png"/><b>' + \
         translate['Unlisted'] + '</b><br>' + \
         translate['Not on public timeline'] + '</a></li>\n'
     drop_down_content += \
         '<li><a href="' + path_base + dropdown_followers_suffix + \
         '" accesskey="' + access_keys['menuFollowers'] + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
+        '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_followers.png"/><b>' + \
         translate['Followers'] + '</b><br>' + \
         translate['Only to followers'] + '</a></li>\n'
     drop_down_content += \
         '<li><a href="' + path_base + dropdown_dm_suffix + \
         '" accesskey="' + access_keys['menuDM'] + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
+        '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_dm.png"/><b>' + \
         translate['DM'] + '</b><br>' + \
         translate['Only to mentioned people'] + '</a></li>\n'
@@ -146,14 +149,14 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
     drop_down_content += \
         '<li><a href="' + path_base + dropdown_reminder_suffix + \
         '" accesskey="' + access_keys['Reminder'] + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
+        '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
     drop_down_content += \
         '<li><a href="' + path_base + dropdown_report_suffix + \
         '" accesskey="' + access_keys['reportButton'] + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
+        '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_report.png"/><b>' + \
         translate['Report'] + '</b><br>' + \
         translate['Send to moderators'] + '</a></li>\n'
@@ -162,20 +165,21 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
         drop_down_content += \
             '<li><a href="' + path_base + \
             '/newshare" accesskey="' + access_keys['menuShares'] + '">' + \
-            '<img loading="lazy" alt="" title="" src="/' + \
+            '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
             'icons/scope_share.png"/><b>' + \
             translate['Shares'] + '</b><br>' + \
             translate['Describe a shared item'] + '</a></li>\n'
         drop_down_content += \
             '<li><a href="' + path_base + \
             '/newwanted" accesskey="' + access_keys['menuWanted'] + '">' + \
-            '<img loading="lazy" alt="" title="" src="/' + \
+            '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
             'icons/scope_wanted.png"/><b>' + \
             translate['Wanted'] + '</b><br>' + \
             translate['Describe something wanted'] + '</a></li>\n'
         drop_down_content += \
             '<li><a href="' + path_base + \
-            '/newquestion"><img loading="lazy" alt="" title="" src="/' + \
+            '/newquestion"><img loading="lazy" decoding="async" ' + \
+            'alt="" title="" src="/' + \
             'icons/scope_question.png"/><b>' + \
             translate['Question'] + '</b><br>' + \
             translate['Ask a question'] + '</a></li>\n'
@@ -225,7 +229,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     date_and_time_str = '<p>\n'
     if not is_new_reminder:
         date_and_time_str += \
-            '<img loading="lazy" alt="" title="" ' + \
+            '<img loading="lazy" decoding="async" alt="" title="" ' + \
             'class="emojicalendar" src="/' + \
             'icons/calendar.png"/>\n'
     # select a date and time for this post
@@ -652,7 +656,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">\n'
-    new_post_form += '<img loading="lazy" class="timeline-banner" src="' + \
+    new_post_form += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + banner_file + '" alt="" /></a>\n' + \
         '</header>\n'
 
@@ -765,8 +770,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
     new_post_form += \
         '      <td><a href="' + path_base + \
-        '/searchemoji"><img loading="lazy" class="emojisearch" ' + \
-        'src="/emoji/1F601.png" title="' + \
+        '/searchemoji"><img loading="lazy" decoding="async" ' + \
+        'class="emojisearch" src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a></td>\n'
 

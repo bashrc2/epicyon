@@ -19675,6 +19675,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_POST', 'create_session',
                                 self.server.debug)
             self._404()
+            self.server.postreq_busy = False
             return
 
         # returns after this point should set postreq_busy to False

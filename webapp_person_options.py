@@ -142,7 +142,8 @@ def html_person_options(default_timeline: str,
     options_str += '  <div class="optionsAvatar">\n'
     options_str += '  <center>\n'
     options_str += '  <a href="' + options_actor + '">\n'
-    options_str += '  <img loading="lazy" src="' + options_profile_url + \
+    options_str += '  <img loading="lazy" decoding="async" ' + \
+        'src="' + options_profile_url + \
         '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
     handle_nick = get_nickname_from_actor(options_actor)
     if not handle_nick:

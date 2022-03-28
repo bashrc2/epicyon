@@ -159,7 +159,7 @@ def html_confirm_remove_shared_item(css_cache: {}, translate: {},
     shares_str += '  <div class="followAvatar">\n'
     shares_str += '  <center>\n'
     if shared_item_image_url:
-        shares_str += '  <img loading="lazy" src="' + \
+        shares_str += '  <img loading="lazy" decoding="async" src="' + \
             shared_item_image_url + '"/>\n'
     shares_str += \
         '  <p class="followText">' + translate['Remove'] + \
@@ -214,7 +214,8 @@ def html_confirm_follow(css_cache: {}, translate: {}, base_dir: str,
     follow_str += '  <center>\n'
     follow_str += '  <a href="' + follow_actor + '">\n'
     follow_str += \
-        '  <img loading="lazy" src="' + follow_profile_url + '"/></a>\n'
+        '  <img loading="lazy" decoding="async" ' + \
+        'src="' + follow_profile_url + '"/></a>\n'
     follow_actor_nick = get_nickname_from_actor(follow_actor)
     if follow_actor_nick:
         follow_str += \
@@ -263,7 +264,8 @@ def html_confirm_unfollow(css_cache: {}, translate: {}, base_dir: str,
     follow_str += '  <center>\n'
     follow_str += '  <a href="' + follow_actor + '">\n'
     follow_str += \
-        '  <img loading="lazy" src="' + follow_profile_url + '"/></a>\n'
+        '  <img loading="lazy" decoding="async" src="' + \
+        follow_profile_url + '"/></a>\n'
     follow_actor_nick = get_nickname_from_actor(follow_actor)
     if follow_actor_nick:
         follow_str += \
@@ -309,7 +311,8 @@ def html_confirm_unblock(css_cache: {}, translate: {}, base_dir: str,
     block_str += '  <center>\n'
     block_str += '  <a href="' + block_actor + '">\n'
     block_str += \
-        '  <img loading="lazy" src="' + block_profile_url + '"/></a>\n'
+        '  <img loading="lazy" decoding="async" src="' + \
+        block_profile_url + '"/></a>\n'
     block_actor_nick = get_nickname_from_actor(block_actor)
     if block_actor_nick:
         block_str += \

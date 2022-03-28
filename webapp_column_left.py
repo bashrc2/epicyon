@@ -140,7 +140,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
             edit_image_class = 'leftColEditImage'
             html_str += \
                 '\n      <center>\n        <img class="leftColImg" ' + \
-                'alt="" loading="lazy" src="/users/' + \
+                'alt="" loading="lazy" decoding="async" src="/users/' + \
                 nickname + '/' + left_image_file + '" />\n' + \
                 '      </center>\n'
 
@@ -163,7 +163,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         html_str += \
             '      <a href="/users/' + nickname + '/editlinks" ' + \
             'accesskey="' + access_keys['menuEdit'] + '">' + \
-            '<img class="' + edit_image_class + '" loading="lazy" alt="' + \
+            '<img class="' + edit_image_class + \
+            '" loading="lazy" decoding="async" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
             translate['Edit Links'] + '" src="/icons/edit.png" /></a>\n'
 
@@ -172,7 +173,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         html_str += \
             '      <a href="/users/' + nickname + '/themedesigner" ' + \
             'accesskey="' + access_keys['menuThemeDesigner'] + '">' + \
-            '<img class="' + edit_image_class + '" loading="lazy" alt="' + \
+            '<img class="' + edit_image_class + \
+            '" loading="lazy" decoding="async" alt="' + \
             translate['Theme Designer'] + ' | " title="' + \
             translate['Theme Designer'] + '" src="/icons/theme.png" /></a>\n'
 
@@ -190,7 +192,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         rss_title = translate['RSS feed for this site']
     rss_icon_str = \
         '      <a href="' + rss_url + '"><img class="' + edit_image_class + \
-        '" loading="lazy" alt="' + rss_title + '" title="' + rss_title + \
+        '" loading="lazy" decoding="async" alt="' + \
+        rss_title + '" title="' + rss_title + \
         '" src="/icons/logorss.png" /></a>\n'
     if rss_icon_at_top:
         html_str += rss_icon_str
@@ -387,7 +390,7 @@ def html_links_mobile(css_cache: {}, base_dir: str,
     html_str += \
         '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">' + \
-        '<img loading="lazy" class="timeline-banner" ' + \
+        '<img loading="lazy" decoding="async" class="timeline-banner" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
 
@@ -457,7 +460,7 @@ def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
         translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">\n'
     edit_links_form += \
-        '<img loading="lazy" class="timeline-banner" ' + \
+        '<img loading="lazy" decoding="async" class="timeline-banner" ' + \
         'alt = "" src="' + \
         '/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '</header>\n'

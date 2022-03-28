@@ -356,7 +356,8 @@ def _get_avatar_image_html(showAvatarOptions: bool,
         if translate.get(show_profile_str):
             show_profile_str = translate[show_profile_str]
         avatar_link += \
-            '<img loading="lazy" src="' + avatar_url + '" title="' + \
+            '<img loading="lazy" decoding="async" ' + \
+            'src="' + avatar_url + '" title="' + \
             show_profile_str + '" alt=" "' + avatar_position + \
             get_broken_link_substitute() + '/></a>\n'
 
@@ -373,7 +374,7 @@ def _get_avatar_image_html(showAvatarOptions: bool,
                 ';' + str(page_number) + ';' + \
                 avatar_url + message_id_str + '">\n'
             avatar_link += \
-                '        <img loading="lazy" title="' + \
+                '        <img loading="lazy" decoding="async" title="' + \
                 show_options_for_this_person_str + '" ' + \
                 'alt="👤 ' + \
                 show_options_for_this_person_str + '" ' + \
@@ -382,7 +383,7 @@ def _get_avatar_image_html(showAvatarOptions: bool,
         else:
             # don't link to the person options for the news account
             avatar_link += \
-                '        <img loading="lazy" title="' + \
+                '        <img loading="lazy" decoding="async" title="' + \
                 show_options_for_this_person_str + '" ' + \
                 'alt="👤 ' + \
                 show_options_for_this_person_str + '" ' + \
@@ -481,7 +482,7 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
 
     reply_str += \
         '        ' + \
-        '<img loading="lazy" title="' + \
+        '<img loading="lazy" decoding="async" title="' + \
         reply_to_this_post_str + '" alt="' + reply_to_this_post_str + \
         ' |" src="/icons/reply.png"/></a>\n'
     return reply_str
@@ -520,7 +521,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                     post_id.split('/statuses/')[1] + \
                     ';actor=' + actor_nickname + \
                     '" title="' + edit_blog_post_str + '">' + \
-                    '<img loading="lazy" title="' + \
+                    '<img loading="lazy" decoding="async" title="' + \
                     edit_blog_post_str + '" alt="' + edit_blog_post_str + \
                     ' |" src="/icons/edit.png"/></a>\n'
             else:
@@ -531,7 +532,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                     post_id.split('/statuses/')[1] + \
                     '?actor=' + actor_nickname + \
                     '" title="' + edit_blog_post_str + '">' + \
-                    '<img loading="lazy" title="' + \
+                    '<img loading="lazy" decoding="async" title="' + \
                     edit_blog_post_str + '" alt="' + edit_blog_post_str + \
                     ' |" src="/icons/edit.png"/></a>\n'
         elif isEvent:
@@ -545,7 +546,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 post_id.split('/statuses/')[1] + \
                 '?actor=' + actor_nickname + \
                 '" title="' + edit_event_str + '">' + \
-                '<img loading="lazy" title="' + \
+                '<img loading="lazy" decoding="async" title="' + \
                 edit_event_str + '" alt="' + edit_event_str + \
                 ' |" src="/icons/edit.png"/></a>\n'
     return edit_str
@@ -640,7 +641,7 @@ def _get_announce_icon_html(is_announced: bool,
 
     announce_str += \
         '          ' + \
-        '<img loading="lazy" title="' + announce_title + \
+        '<img loading="lazy" decoding="async" title="' + announce_title + \
         '" alt="' + announce_emoji + announce_title + \
         ' |" src="/icons/' + announce_icon + '"/></a>\n'
     return announce_str
@@ -715,7 +716,8 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         '?tl=' + box_name + '" title="' + like_title + like_count_str + '">\n'
     like_str += \
         '          ' + \
-        '<img loading="lazy" title="' + like_title + like_count_str + \
+        '<img loading="lazy" decoding="async" title="' + \
+        like_title + like_count_str + \
         '" alt="' + like_emoji + like_title + \
         ' |" src="/icons/' + like_icon + '"/></a>\n'
     return like_str
@@ -762,7 +764,8 @@ def _get_bookmark_icon_html(nickname: str, domain_full: str,
         '?tl=' + box_name + '" title="' + bookmark_title + '">\n'
     bookmark_str += \
         '        ' + \
-        '<img loading="lazy" title="' + bookmark_title + '" alt="' + \
+        '<img loading="lazy" decoding="async" title="' + \
+        bookmark_title + '" alt="' + \
         bookmark_emoji + bookmark_title + ' |" src="/icons' + \
         '/' + bookmark_icon + '"/></a>\n'
     return bookmark_str
@@ -800,7 +803,8 @@ def _get_reaction_icon_html(nickname: str, domain_full: str,
         '?tl=' + box_name + '" title="' + reaction_title + '">\n'
     reaction_str += \
         '        ' + \
-        '<img loading="lazy" title="' + reaction_title + '" alt="' + \
+        '<img loading="lazy" decoding="async" title="' + \
+        reaction_title + '" alt="' + \
         reaction_title + ' |" src="/icons' + \
         '/' + reaction_icon + '"/></a>\n'
     return reaction_str
@@ -834,7 +838,7 @@ def _get_mute_icon_html(is_muted: bool,
             '" title="' + mute_this_post_str + '">\n'
         mute_str += \
             '          ' + \
-            '<img loading="lazy" alt="' + \
+            '<img loading="lazy" decoding="async" alt="' + \
             mute_this_post_str + \
             ' |" title="' + mute_this_post_str + \
             '" src="/icons/mute.png"/></a>\n'
@@ -849,7 +853,8 @@ def _get_mute_icon_html(is_muted: bool,
             timeline_post_bookmark + '" title="' + undo_mute_str + '">\n'
         mute_str += \
             '          ' + \
-            '<img loading="lazy" alt="🔇 ' + undo_mute_str + \
+            '<img loading="lazy" decoding="async" ' + \
+            'alt="🔇 ' + undo_mute_str + \
             ' |" title="' + undo_mute_str + \
             '" src="/icons/unmute.png"/></a>\n'
     return mute_str
@@ -880,7 +885,7 @@ def _get_delete_icon_html(nickname: str, domain_full: str,
                     '" title="' + delete_this_post_str + '">\n'
                 delete_str += \
                     '          ' + \
-                    '<img loading="lazy" alt="' + \
+                    '<img loading="lazy" decoding="async" alt="' + \
                     delete_this_post_str + \
                     ' |" title="' + delete_this_post_str + \
                     '" src="/icons/delete.png"/></a>\n'
@@ -970,7 +975,7 @@ def _boost_own_post_html(translate: {}) -> str:
     announces_str = 'announces'
     if translate.get(announces_str):
         announces_str = translate[announces_str]
-    return '        <img loading="lazy" title="' + \
+    return '        <img loading="lazy" decoding="async" title="' + \
         announces_str + \
         '" alt="' + announces_str + \
         '" src="/icons' + \
@@ -986,7 +991,7 @@ def _announce_unattributed_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
-    return '    <img loading="lazy" title="' + \
+    return '    <img loading="lazy" decoding="async" title="' + \
         announces_str + '" alt="' + \
         announces_str + '" src="/icons' + \
         '/repeat_inactive.png" ' + \
@@ -1004,7 +1009,7 @@ def _announce_with_display_name_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
-    return '          <img loading="lazy" title="' + \
+    return '          <img loading="lazy" decoding="async" title="' + \
         announces_str + '" alt="' + \
         announces_str + '" src="/' + \
         'icons/repeat_inactive.png" ' + \
@@ -1111,7 +1116,8 @@ def _get_post_title_announce_html(base_dir: str,
             'href="/users/' + nickname + '?options=' + \
             announce_actor + ';' + str(page_number) + \
             ';' + announce_avatar_url + message_id_str + '">' \
-            '<img loading="lazy" src="' + announce_avatar_url + '" ' + \
+            '<img loading="lazy" decoding="async" src="' + \
+            announce_avatar_url + '" ' + \
             'title="' + show_options_for_this_person_str + \
             '" alt=" "' + avatar_position + \
             get_broken_link_substitute() + '/></a>\n    </div>\n'
@@ -1126,7 +1132,7 @@ def _reply_to_yourself_html(translate: {}) -> str:
     replying_to_themselves_str = 'replying to themselves'
     if translate.get(replying_to_themselves_str):
         replying_to_themselves_str = translate[replying_to_themselves_str]
-    return '    <img loading="lazy" title="' + \
+    return '    <img loading="lazy" decoding="async" title="' + \
         replying_to_themselves_str + \
         '" alt="' + replying_to_themselves_str + \
         '" src="/icons' + \
@@ -1140,7 +1146,7 @@ def _reply_to_unknown_html(translate: {},
     replying_to_str = 'replying to'
     if translate.get(replying_to_str):
         replying_to_str = translate[replying_to_str]
-    return '        <img loading="lazy" title="' + \
+    return '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
         replying_to_str + '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n' + \
@@ -1153,7 +1159,7 @@ def _mitm_warning_html(translate: {}) -> str:
     """Returns the html title for a reply to an unknown handle
     """
     mitm_warning_str = translate['mitm']
-    return '        <img loading="lazy" title="' + \
+    return '        <img loading="lazy" decoding="async" title="' + \
         mitm_warning_str + '" alt="' + \
         mitm_warning_str + '" src="/icons' + \
         '/mitm.png" class="announceOrReply"/>\n'
@@ -1168,7 +1174,7 @@ def _reply_with_unknown_path_html(translate: {},
     replying_to_str = 'replying to'
     if translate.get(replying_to_str):
         replying_to_str = translate[replying_to_str]
-    return '        <img loading="lazy" title="' + \
+    return '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + \
         '" alt="' + replying_to_str + \
         '" src="/icons/reply.png" ' + \
@@ -1187,7 +1193,7 @@ def _get_reply_html(translate: {},
     if translate.get(replying_to_str):
         replying_to_str = translate[replying_to_str]
     return '        ' + \
-        '<img loading="lazy" title="' + \
+        '<img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
         replying_to_str + '" src="/' + \
         'icons/reply.png" ' + \
@@ -1305,7 +1311,8 @@ def _get_post_title_reply_html(base_dir: str,
             'href="/users/' + nickname + '?options=' + reply_actor + \
             ';' + str(page_number) + ';' + reply_avatar_url + \
             message_id_str + '">\n' + \
-            '          <img loading="lazy" src="' + reply_avatar_url + '" ' + \
+            '          <img loading="lazy" decoding="async" ' + \
+            'src="' + reply_avatar_url + '" ' + \
             'title="' + show_profile_str + \
             '" alt=" "' + avatar_position + get_broken_link_substitute() + \
             '/></a>\n        </div>\n'
@@ -1712,7 +1719,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     # Show a DM icon for DMs in the inbox timeline
     if post_is_dm:
         title_str = \
-            title_str + ' <img loading="lazy" src="/' + \
+            title_str + ' <img loading="lazy" decoding="async" src="/' + \
             'icons/dm.png" class="DMicon"/>\n'
 
     # check if replying is permitted
@@ -2434,8 +2441,8 @@ def html_emoji_reaction_picker(css_cache: {},
         '?page=' + str(page_number) + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
-    header_str += '<img loading="lazy" class="timeline-banner" ' + \
-        'alt="" ' + \
+    header_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '</header>\n'
 

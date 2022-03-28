@@ -73,7 +73,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">\n'
-    html_str += '<img loading="lazy" class="timeline-banner" src="' + \
+    html_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + banner_file + '" alt="" /></a>\n' + \
         '</header>\n'
 
