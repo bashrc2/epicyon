@@ -1438,7 +1438,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             allow_local_network_access: bool,
                             theme_name: str, system_language: str,
                             max_like_count: int,
-                            showRepeats: bool,
+                            show_repeats: bool,
                             show_icons: bool,
                             manually_approves_followers: bool,
                             show_public_only: bool,
@@ -1583,10 +1583,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
     timeline_post_bookmark = timeline_post_bookmark.replace('/', '-')
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
-    show_repeat_icon = showRepeats
+    show_repeat_icon = show_repeats
     is_public_repeat = False
     post_is_dm = is_dm(post_json_object)
-    if showRepeats:
+    if show_repeats:
         if post_is_dm:
             show_repeat_icon = False
         else:
