@@ -199,7 +199,8 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                     '?month=' + str(month_number) + \
                     '?day=' + str(day_number) + \
                     '?time=' + event_time + \
-                    '">\n<img class="calendardayicon" loading="lazy" alt="' + \
+                    '">\n<img class="calendardayicon" loading="lazy" ' + \
+                    'decoding="async" alt="' + \
                     translate['Delete this event'] + ' |" title="' + \
                     translate['Delete this event'] + '" src="/' + \
                     'icons/delete.png" /></a></td>\n'
@@ -395,7 +396,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '?month=' + str(prev_month_number) + '" ' + \
         'accesskey="' + access_keys['Page up'] + '">'
     calendar_str += \
-        '  <img loading="lazy" alt="' + translate['Previous month'] + \
+        '  <img loading="lazy" decoding="async" ' + \
+        'alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
     calendar_str += '  <a href="' + cal_actor + '/inbox" title="'
@@ -407,7 +409,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '?month=' + str(next_month_number) + '" ' + \
         'accesskey="' + access_keys['Page down'] + '">'
     calendar_str += \
-        '  <img loading="lazy" alt="' + translate['Next month'] + \
+        '  <img loading="lazy" decoding="async" ' + \
+        'alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \
         '/prev.png" class="buttonnext"/></a>\n'
     calendar_str += '</caption>\n'

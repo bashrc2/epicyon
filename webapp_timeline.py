@@ -107,7 +107,8 @@ def _html_timeline_new_post(manually_approve_followers: bool,
         if not icons_as_buttons:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newdm?nodropdown"><img loading="lazy" src="/' + \
+                '/newdm?nodropdown"><img loading="lazy" ' + \
+                'decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new DM'] + \
                 '" alt="| ' + translate['Create a new DM'] + \
@@ -121,7 +122,7 @@ def _html_timeline_new_post(manually_approve_followers: bool,
         if not icons_as_buttons:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newblog"><img loading="lazy" src="/' + \
+                '/newblog"><img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
                 translate['Create a new post'] + \
@@ -135,7 +136,8 @@ def _html_timeline_new_post(manually_approve_followers: bool,
         if not icons_as_buttons:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newshare?nodropdown"><img loading="lazy" src="/' + \
+                '/newshare?nodropdown">' + \
+                '<img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new shared item'] + '" alt="| ' + \
                 translate['Create a new shared item'] + \
@@ -149,7 +151,8 @@ def _html_timeline_new_post(manually_approve_followers: bool,
         if not icons_as_buttons:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newwanted?nodropdown"><img loading="lazy" src="/' + \
+                '/newwanted?nodropdown">' + \
+                '<img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new wanted item'] + '" alt="| ' + \
                 translate['Create a new wanted item'] + \
@@ -164,7 +167,8 @@ def _html_timeline_new_post(manually_approve_followers: bool,
             if not icons_as_buttons:
                 new_post_button_str += \
                     '<a class="imageAnchor" href="' + users_path + \
-                    '/newpost"><img loading="lazy" src="/' + \
+                    '/newpost">' + \
+                    '<img loading="lazy" decoding="async" src="/' + \
                     'icons/newpost.png" title="' + \
                     translate['Create a new post'] + '" alt="| ' + \
                     translate['Create a new post'] + \
@@ -178,7 +182,8 @@ def _html_timeline_new_post(manually_approve_followers: bool,
             if not icons_as_buttons:
                 new_post_button_str += \
                     '<a class="imageAnchor" href="' + users_path + \
-                    '/newfollowers"><img loading="lazy" src="/' + \
+                    '/newfollowers">' + \
+                    '<img loading="lazy" decoding="async" src="/' + \
                     'icons/newpost.png" title="' + \
                     translate['Create a new post'] + \
                     '" alt="| ' + translate['Create a new post'] + \
@@ -638,7 +643,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
                         '<a href="' + users_path + \
                         '/followers#buttonheader" ' + \
                         'accesskey="' + access_keys['followButton'] + '">' + \
-                        '<img loading="lazy" ' + \
+                        '<img loading="lazy" decoding="async" ' + \
                         'class="timelineicon" alt="' + \
                         translate['Approve follow requests'] + \
                         '" title="' + translate['Approve follow requests'] + \
@@ -717,8 +722,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
-    tl_str += '<img loading="lazy" class="timeline-banner" ' + \
-        'alt="" ' + \
+    tl_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
         'src="' + users_path + '/' + banner_file + '" /></a>\n' + \
         '</header>\n'
 
@@ -850,7 +855,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
             '    <a href="' + users_path + '/' + box_name + \
             '?page=' + str(page_number - 1) + \
             '" accesskey="' + access_keys['Page up'] + '">' + \
-            '<img loading="lazy" class="pageicon" src="/' + \
+            '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
             translate['Page up'] + '" alt="' + \
             translate['Page up'] + '"></a>\n' + \
@@ -962,7 +967,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
             '        <a href="' + users_path + '/' + box_name + '?page=' + \
             str(page_number + 1) + \
             '" accesskey="' + access_keys['Page down'] + '">' + \
-            '<img loading="lazy" class="pageicon" src="/' + \
+            '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
@@ -999,7 +1004,8 @@ def html_individual_share(domain: str, share_id: str,
     if shared_item.get('imageUrl'):
         profile_str += '<a href="' + shared_item['imageUrl'] + '">\n'
         profile_str += \
-            '<img loading="lazy" src="' + shared_item['imageUrl'] + \
+            '<img loading="lazy" decoding="async" ' + \
+            'src="' + shared_item['imageUrl'] + \
             '" alt="' + translate['Item image'] + '">\n</a>\n'
     profile_str += '<p>' + shared_item['summary'] + '</p>\n<p>'
     if shared_item.get('itemQty'):
@@ -1089,7 +1095,8 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(page_number - 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
+            '"><img loading="lazy" decoding="async" ' + \
+            'class="pageicon" src="/' + \
             'icons/pageup.png" title="' + translate['Page up'] + \
             '" alt="' + translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
@@ -1129,7 +1136,8 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(page_number + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
+            '"><img loading="lazy" decoding="async" ' + \
+            'class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>\n' + \
             '  </center>\n'

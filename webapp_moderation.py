@@ -357,7 +357,7 @@ def html_moderation_info(css_cache: {}, translate: {},
             '/users/' + nickname + '?options=' + actor + ';1;' + \
             '/members/' + acct_nickname + ext
         info_form += '<td>\n<a href="' + acct_url + '">'
-        info_form += '<img loading="lazy" style="width:90%" '
+        info_form += '<img loading="lazy" decoding="async" style="width:90%" '
         info_form += 'src="' + avatar_url + '" />'
         info_form += '<br><center>'
         if is_moderator(base_dir, acct_nickname):

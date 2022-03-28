@@ -220,7 +220,8 @@ def html_search_hashtag_category(css_cache: {}, translate: {},
 
     if os.path.isfile(search_banner_filename):
         html_str += '<a href="' + actor + '/search">\n'
-        html_str += '<img loading="lazy" class="timeline-banner" src="' + \
+        html_str += '<img loading="lazy" decoding="async" ' + \
+            'class="timeline-banner" src="' + \
             actor + '/' + search_banner_file + '" alt="" /></a>\n'
 
     html_str += \

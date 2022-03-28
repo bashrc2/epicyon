@@ -199,7 +199,7 @@ def html_theme_designer(css_cache: {}, base_dir: str,
     theme_form += \
         '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">' + \
-        '<img loading="lazy" class="timeline-banner" ' + \
+        '<img loading="lazy" decoding="async" class="timeline-banner" ' + \
         'title="' + translate['Switch to timeline view'] + '" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'

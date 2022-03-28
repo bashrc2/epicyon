@@ -95,8 +95,8 @@ def _html_podcast_performers(podcast_properties: {}) -> str:
         podcast_str += '    <figure>\n'
         podcast_str += '      <a href="' + performer_url + '">\n'
         podcast_str += \
-            '        <img loading="lazy" src="' + performer_img + \
-            '" alt="" />\n'
+            '        <img loading="lazy" decoding="async" ' + \
+            'src="' + performer_img + '" alt="" />\n'
         podcast_str += \
             '      <figcaption>' + performer_title + '</figcaption>\n'
         podcast_str += '      </a>\n'
@@ -194,10 +194,12 @@ def html_podcast_episode(css_cache: {}, translate: {},
     podcast_str += '  <center>\n'
     podcast_str += '  <a href="' + link_url + '">\n'
     if image_src == 'srcset':
-        podcast_str += '  <img loading="lazy" srcset="' + image_url + \
+        podcast_str += '  <img loading="lazy" decoding="async" ' + \
+            'srcset="' + image_url + \
             '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
     else:
-        podcast_str += '  <img loading="lazy" src="' + image_url + \
+        podcast_str += '  <img loading="lazy" decoding="async" ' + \
+            'src="' + image_url + \
             '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
     podcast_str += '  </center>\n'
     podcast_str += '  </div>\n'
@@ -235,7 +237,7 @@ def html_podcast_episode(css_cache: {}, translate: {},
             if '?utm_' in url:
                 url = url.split('?utm_')[0]
             podcast_str += \
-                "  <iframe loading=\"lazy\" src=\"" + \
+                "  <iframe loading=\"lazy\" decoding=\"async\" src=\"" + \
                 url + "\" width=\"400\" height=\"300\" " + \
                 "frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
                 "allowfullscreen>\n  </iframe>\n"

@@ -104,7 +104,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             html_str += \
                 '\n      <center>\n' + \
                 '          <img class="rightColImg" ' + \
-                'alt="" loading="lazy" src="/users/' + \
+                'alt="" loading="lazy" decoding="async" src="/users/' + \
                 nickname + '/' + right_image_file + '" />\n' + \
                 '      </center>\n'
 
@@ -136,7 +136,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                 '/users/' + nickname + '/editnewswire" ' + \
                 'accesskey="' + access_keys['menuEdit'] + '">' + \
                 '<img class="' + edit_image_class + \
-                '" loading="lazy" alt="' + \
+                '" loading="lazy" decoding="async" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit_notify.png" /></a>\n'
@@ -147,7 +147,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                 '/users/' + nickname + '/editnewswire" ' + \
                 'accesskey="' + access_keys['menuEdit'] + '">' + \
                 '<img class="' + edit_image_class + \
-                '" loading="lazy" alt="' + \
+                '" loading="lazy" decoding="async" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit.png" /></a>\n'
@@ -156,14 +156,14 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
     rss_icon_str = \
         '        <a href="/categories.xml">' + \
         '<img class="' + edit_image_class + \
-        '" loading="lazy" alt="' + \
+        '" loading="lazy" decoding="async" alt="' + \
         translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
         translate['Hashtag Categories RSS Feed'] + '" src="/' + \
         'icons/categoriesrss.png" /></a>\n'
     rss_icon_str += \
         '        <a href="/newswire.xml">' + \
         '<img class="' + edit_image_class + \
-        '" loading="lazy" alt="' + \
+        '" loading="lazy" decoding="async" alt="' + \
         translate['Newswire RSS Feed'] + ' | " title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         'icons/logorss.png" /></a>\n'
@@ -181,7 +181,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                 '/users/' + nickname + '/newblog?nodropdown" ' + \
                 'accesskey="' + access_keys['menuNewPost'] + '">' + \
                 '<img class="' + edit_image_class + \
-                '" loading="lazy" alt="' + \
+                '" loading="lazy" decoding="async" alt="' + \
                 title_str + '" title="' + \
                 title_str + '" src="/' + \
                 'icons/publish.png" /></a>\n'
@@ -261,7 +261,8 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                             cached_favicon_filename.replace(base_dir, '')
 
             favicon_link = \
-                '<img loading="lazy" src="' + favicon_url + '" ' + \
+                '<img loading="lazy" decoding="async" ' + \
+                'src="' + favicon_url + '" ' + \
                 'alt="" ' + _get_broken_fav_substitute() + '/>'
         moderated_item = item[5]
         link_url = url
@@ -298,7 +299,8 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                     ' ' + date_shown + '<a href="/users/' + nickname + \
                     '/newswireunvote=' + date_str_link + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
-                html_str += '<img loading="lazy" class="voteicon" src="/' + \
+                html_str += '<img loading="lazy" decoding="async" ' + \
+                    'class="voteicon" src="/' + \
                     'alt="' + translate['Remove Vote'] + '" ' + \
                     'icons/vote.png" /></a></p>\n'
             else:
@@ -390,8 +392,8 @@ def html_citations(base_dir: str, nickname: str, domain: str,
         '<a href="/users/' + nickname + '/newblog" title="' + \
         translate['Go Back'] + '" alt="' + \
         translate['Go Back'] + '">\n'
-    html_str += '<img loading="lazy" class="timeline-banner" ' + \
-        'alt="" src="' + \
+    html_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" src="' + \
         '/users/' + nickname + '/' + banner_file + '" /></a>\n'
 
     html_str += \
@@ -504,7 +506,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
     html_str += \
         '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">' + \
-        '<img loading="lazy" class="timeline-banner" ' + \
+        '<img loading="lazy" decoding="async" class="timeline-banner" ' + \
         'alt="' + translate['Timeline banner image'] + '" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
 
@@ -576,7 +578,8 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
         translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">\n'
     edit_newswire_form += \
-        '<img loading="lazy" class="timeline-banner" src="' + \
+        '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + banner_file + '" ' + \
         'alt="" /></a>\n</header>'
 

@@ -40,7 +40,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         if '<' in url:
             url = url.split('<')[0]
             content += \
-                "<center>\n<iframe loading=\"lazy\" " + \
+                "<center>\n<iframe loading=\"lazy\" decoding=\"async\" " + \
                 "src=\"https://player.vimeo.com/video/" + \
                 url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
@@ -62,7 +62,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 if '?utm_' in url:
                     url = url.split('?utm_')[0]
                 content += \
-                    "<center>\n<iframe loading=\"lazy\" src=\"" + \
+                    "<center>\n<iframe loading=\"lazy\" " + \
+                    "decoding=\"async\" src=\"" + \
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
@@ -82,7 +83,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     url = url.split('?utm_')[0]
                 video_site = 'https://www.youtube.com/'
                 content += \
-                    "<center>\n<iframe loading=\"lazy\" src=\"" + \
+                    "<center>\n<iframe loading=\"lazy\" " + \
+                    "decoding=\"async\" src=\"" + \
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
@@ -113,7 +115,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 if '?utm_' in url:
                     url = url.split('?utm_')[0]
                 content += \
-                    "<center>\n<iframe loading=\"lazy\" src=\"" + \
+                    "<center>\n<iframe loading=\"lazy\" " + \
+                    "decoding=\"async\" src=\"" + \
                     video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
@@ -133,7 +136,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 url = url + '/oembed'
             url += video_site_settings
             content += \
-                "<center>\n<iframe loading=\"lazy\" src=\"" + \
+                "<center>\n<iframe loading=\"lazy\" " + \
+                "decoding=\"async\" src=\"" + \
                 video_site + url + "\" width=\"" + \
                 str(width) + "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"fullscreen\" " + \
@@ -195,7 +199,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             url = url.replace('/watch/', '/embed/')
 
             content += \
-                "<center>\n<iframe loading=\"lazy\" " + \
+                "<center>\n<iframe loading=\"lazy\" decoding=\"async\" " + \
                 "sandbox=\"allow-same-origin " + \
                 "allow-scripts\" src=\"https://" + \
                 site + url + "\" width=\"" + str(width) + \

@@ -220,7 +220,7 @@ def header_buttons_timeline(default_timeline: str,
             # the search icon
             tl_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/search"><img loading="lazy" src="/' + \
+                '/search"><img loading="lazy" decoding="async" src="/' + \
                 'icons/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
                 translate['Search and follow'] + \
@@ -248,7 +248,7 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += \
                 '      <a class="imageAnchor" href="' + \
                 users_path + calendar_path + \
-                '"><img loading="lazy" src="/icons/' + \
+                '"><img loading="lazy" decoding="async" src="/icons/' + \
                 calendar_image + '" title="' + translate['Calendar'] + \
                 '" alt="| ' + calendar_alt_text + \
                 '" class="timelineicon"/></a>\n'
@@ -265,7 +265,7 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += \
                 '      <a class="imageAnchor" href="' + \
                 users_path + '/minimal' + \
-                '"><img loading="lazy" src="/icons' + \
+                '"><img loading="lazy" decoding="async" src="/icons' + \
                 '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
                 '" alt="| ' + translate['Show/Hide Buttons'] + \
                 '" class="timelineicon"/></a>\n'
@@ -287,7 +287,7 @@ def header_buttons_timeline(default_timeline: str,
         tl_str += \
             '<a class="imageAnchorMobile" href="' + \
             users_path + '/newswiremobile">' + \
-            '<img loading="lazy" src="/icons' + \
+            '<img loading="lazy" decoding="async" src="/icons' + \
             '/newswire.png" title="' + translate['News'] + \
             '" alt="| ' + translate['News'] + \
             '" class="timelineicon"/></a>'
@@ -305,7 +305,7 @@ def header_buttons_timeline(default_timeline: str,
         tl_str += \
             '<a class="imageAnchorMobile" href="' + \
             users_path + '/linksmobile">' + \
-            '<img loading="lazy" src="/icons' + \
+            '<img loading="lazy" decoding="async" src="/icons' + \
             '/links.png" title="' + translate['Edit Links'] + \
             '" alt="| ' + translate['Edit Links'] + \
             '" class="timelineicon"/></a>'

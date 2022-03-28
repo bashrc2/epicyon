@@ -166,7 +166,7 @@ def html_login(css_cache: {}, translate: {},
         '<form method="POST" action="/login">\n' + \
         '  <div class="imgcontainer">\n' + \
         text_mode_logo_html + '\n' + \
-        '    <img loading="lazy" src="' + login_image + \
+        '    <img loading="lazy" decoding="async" src="' + login_image + \
         '" alt="' + instance_title + '" class="loginimage">\n' + \
         login_text + tos_str + '\n' + \
         '  </div>\n' + \
@@ -188,7 +188,7 @@ def html_login(css_cache: {}, translate: {},
         '  </div>\n' + \
         '</form>\n' + \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
-        '<img loading="lazy" class="license" title="' + \
+        '<img loading="lazy" decoding="async" class="license" title="' + \
         translate['Get the source code'] + '" alt="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>\n'
     login_form += html_footer()

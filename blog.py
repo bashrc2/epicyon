@@ -497,14 +497,14 @@ def html_blog_post(session, authorized: bool,
     blog_str += '<a href="' + http_prefix + '://' + \
         domain_full + '/blog/' + nickname + '/rss.xml">'
     blog_str += '<img style="width:3%;min-width:50px" ' + \
-        'loading="lazy" alt="RSS 2.0" ' + \
+        'loading="lazy" decoding="async" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a>'
 
     # blog_str += '<a href="' + http_prefix + '://' + \
     #     domain_full + '/blog/' + nickname + '/rss.txt">'
     # blog_str += '<img style="width:3%;min-width:50px" ' + \
-    #     'loading="lazy" alt="RSS 3.0" ' + \
+    #     'loading="lazy" decoding="async" alt="RSS 3.0" ' + \
     #     'title="RSS 3.0" src="/' + \
     #     'icons/rss3.png" /></a>'
 
@@ -557,7 +557,7 @@ def html_blog_page(authorized: bool, session,
             navigate_str += '<a href="' + http_prefix + '://' + \
                 domain_full + '/blog/' + \
                 nickname + '?page=' + str(page_number-1) + '">' + \
-                '<img loading="lazy" alt="<" title="<" ' + \
+                '<img loading="lazy" decoding="async" alt="<" title="<" ' + \
                 'src="/icons' + \
                 '/prev.png" class="buttonprev"/></a>\n'
         if len(timeline_json['orderedItems']) >= no_of_items:
@@ -565,7 +565,7 @@ def html_blog_page(authorized: bool, session,
             navigate_str += '<a href="' + http_prefix + '://' + \
                 domain_full + '/blog/' + nickname + \
                 '?page=' + str(page_number + 1) + '">' + \
-                '<img loading="lazy" alt=">" title=">" ' + \
+                '<img loading="lazy" decoding="async" alt=">" title=">" ' + \
                 'src="/icons' + \
                 '/prev.png" class="buttonnext"/></a>\n'
         navigate_str += '</p>'
@@ -590,13 +590,13 @@ def html_blog_page(authorized: bool, session,
 
     blog_str += '<a href="' + http_prefix + '://' + \
         domain_full + '/blog/' + nickname + '/rss.xml">'
-    blog_str += '<img loading="lazy" alt="RSS 2.0" ' + \
+    blog_str += '<img loading="lazy" decoding="async" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a>'
 
     # blog_str += '<a href="' + http_prefix + '://' + \
     #     domain_full + '/blog/' + nickname + '/rss.txt">'
-    # blog_str += '<img loading="lazy" alt="RSS 3.0" ' + \
+    # blog_str += '<img loading="lazy" decoding="async" alt="RSS 3.0" ' + \
     #     'title="RSS 3.0" src="/' + \
     #     'icons/rss3.png" /></a>'
 
@@ -838,7 +838,7 @@ def html_edit_blog(media_instance: bool, translate: {},
         translate['This is a scheduled post.'] + '</label></p>'
 
     date_and_location += \
-        '<p><img loading="lazy" alt="" title="" ' + \
+        '<p><img loading="lazy" decoding="async" alt="" title="" ' + \
         'class="emojicalendar" src="/icons/calendar.png"/>'
     date_and_location += \
         '<label class="labels">' + translate['Date'] + ': </label>'
@@ -874,13 +874,14 @@ def html_edit_blog(media_instance: bool, translate: {},
 
     edit_blog_form += '      <div class="dropbtn">'
     edit_blog_form += \
-        '        <img loading="lazy" alt="" title="" src="/icons' + \
+        '        <img loading="lazy" decoding="async" ' + \
+        'alt="" title="" src="/icons' + \
         '/' + scope_icon + '"/><b class="scope-desc">' + \
         scope_description + '</b>'
     edit_blog_form += '      </div>'
 
     edit_blog_form += '      <a href="' + path_base + \
-        '/searchemoji"><img loading="lazy" ' + \
+        '/searchemoji"><img loading="lazy" decoding="async" ' + \
         'class="emojisearch" src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a>'

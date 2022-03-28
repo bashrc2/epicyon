@@ -136,13 +136,13 @@ def header_buttons_front_screen(translate: {},
             header_str += \
                 '        <a href="' + \
                 '/users/news/newswiremobile">' + \
-                '<img loading="lazy" src="/icons' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
                 '/newswire.png" title="' + translate['Newswire'] + \
                 '" alt="| ' + translate['Newswire'] + '"/></a>\n'
             header_str += \
                 '        <a href="' + \
                 '/users/news/linksmobile">' + \
-                '<img loading="lazy" src="/icons' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
                 '/links.png" title="' + translate['Links'] + \
                 '" alt="| ' + translate['Links'] + '"/></a>\n'
     else:
@@ -1117,7 +1117,8 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
                     if not is_muted:
                         gallery_str += '  <a href="' + image_url + '">\n'
                         gallery_str += \
-                            '    <img loading="lazy" src="' + \
+                            '    <img loading="lazy" ' + \
+                            'decoding="async" src="' + \
                             image_url + '" alt="" title="">\n'
                         gallery_str += '  </a>\n'
                     if post_json_object['object'].get('url'):
@@ -1145,7 +1146,8 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
 
                 attachment_str += '<a href="' + image_url + '">'
                 attachment_str += \
-                    '<img loading="lazy" src="' + image_url + \
+                    '<img loading="lazy" decoding="async" ' + \
+                    'src="' + image_url + \
                     '" alt="' + image_description + '" title="' + \
                     image_description + '" class="attachment"></a>\n'
                 attachment_ctr += 1
@@ -1492,7 +1494,8 @@ def html_search_result_share(base_dir: str, shared_item: {}, translate: {},
         shared_items_form += \
             '<a href="' + shared_item['imageUrl'] + '">\n'
         shared_items_form += \
-            '<img loading="lazy" src="' + shared_item['imageUrl'] + \
+            '<img loading="lazy" decoding="async" ' + \
+            'src="' + shared_item['imageUrl'] + \
             '" alt="Item image"></a>\n'
     shared_items_form += '<p>' + shared_item['summary'] + '</p>\n<p>'
     if shared_item.get('itemQty'):
@@ -1630,8 +1633,8 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
         '<header>\n' + \
         '<a href="/users/' + nickname + '/' + \
         default_timeline + '" title="" alt="">\n'
-    share_str += '<img loading="lazy" class="timeline-banner" ' + \
-        'alt="" ' + \
+    share_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '</header><br>\n'
     share_str += \

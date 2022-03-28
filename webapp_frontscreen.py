@@ -144,7 +144,7 @@ def html_front_screen(signing_priv_key_pem: str,
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
     profile_header_str = \
-        '<img loading="lazy" class="timeline-banner" ' + \
+        '<img loading="lazy" decoding="async" class="timeline-banner" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" />\n'
     if login_button:
         profile_header_str += '<center>' + login_button + '</center>\n'

@@ -411,8 +411,8 @@ def _get_profile_header(base_dir: str, http_prefix: str,
         '        <a href="/users/' + \
         nickname + '/' + default_timeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n' + \
-        '          <img loading="lazy" src="' + avatar_url + '" ' + \
-        'alt=""  class="title"></a>\n'
+        '          <img loading="lazy" decoding="async" ' + \
+        'src="' + avatar_url + '" alt=""  class="title"></a>\n'
 
     occupation_str = ''
     if occupation_name:
@@ -517,8 +517,8 @@ def _get_profile_header_after_search(base_dir: str,
             '      <a href="/users/' + \
             nickname + '/' + default_timeline + '" title="' + \
             translate['Switch to timeline view'] + '">\n' + \
-            '          <img loading="lazy" src="' + avatar_url + '" ' + \
-            'alt="" class="title"></a>\n'
+            '          <img loading="lazy" decoding="async" src="' + \
+            avatar_url + '" ' + 'alt="" class="title"></a>\n'
     if not display_name:
         display_name = search_nickname
     html_str += \
@@ -750,13 +750,13 @@ def html_profile(signing_priv_key_pem: str,
     if authorized:
         edit_profile_str = \
             '<a class="imageAnchor" href="' + users_path + '/editprofile">' + \
-            '<img loading="lazy" src="/icons' + \
+            '<img loading="lazy" decoding="async" src="/icons' + \
             '/edit.png" title="' + translate['Edit'] + \
             '" alt="| ' + translate['Edit'] + '" class="timelineicon"/></a>\n'
 
         logout_str = \
             '<a class="imageAnchor" href="/logout">' + \
-            '<img loading="lazy" src="/icons' + \
+            '<img loading="lazy" decoding="async" src="/icons' + \
             '/logout.png" title="' + translate['Logout'] + \
             '" alt="| ' + translate['Logout'] + \
             '" class="timelineicon"/></a>\n'
@@ -984,7 +984,7 @@ def html_profile(signing_priv_key_pem: str,
 
     license_str = \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
-        '<img loading="lazy" class="license" alt="' + \
+        '<img loading="lazy" decoding="async" class="license" alt="' + \
         translate['Get the source code'] + '" title="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
@@ -1161,7 +1161,8 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                 '  <center>\n' + \
                 '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(page_number - 1) + '#buttonheader' + \
-                '"><img loading="lazy" class="pageicon" src="/' + \
+                '"><img loading="lazy" decoding="async" ' + \
+                'class="pageicon" src="/' + \
                 'icons/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
                 translate['Page up'] + '"></a>\n' + \
@@ -1191,7 +1192,8 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                 '  <center>\n' + \
                 '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(page_number + 1) + '#buttonheader' + \
-                '"><img loading="lazy" class="pageicon" src="/' + \
+                '"><img loading="lazy" decoding="async" ' + \
+                'class="pageicon" src="/' + \
                 'icons/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
                 translate['Page down'] + '"></a>\n' + \
@@ -2137,7 +2139,8 @@ def _html_edit_profile_top_banner(base_dir: str,
     """
     edit_profile_form = \
         '<a href="/users/' + nickname + '/' + default_timeline + '">' + \
-        '<img loading="lazy" class="timeline-banner" src="' + \
+        '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + banner_file + '" alt="" /></a>\n'
 
     edit_profile_form += \
@@ -2513,7 +2516,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
     result_str += \
         '<a href="/users/' + actor_nickname + '?options=' + \
         followUrl + ';1;' + avatar_url + '">\n'
-    result_str += '<p><img loading="lazy" src="' + avatar_url + '" alt=" ">'
+    result_str += '<p><img loading="lazy" decoding="async" ' + \
+        'src="' + avatar_url + '" alt=" ">'
     result_str += title_str + '</a>' + buttons_str + '</p>\n'
     result_str += '</div>\n'
     return result_str

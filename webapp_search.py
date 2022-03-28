@@ -98,7 +98,8 @@ def html_search_emoji(css_cache: {}, translate: {},
         heading_shown = False
         emoji_form += '<center>'
         msg_str1 = translate['Copy the text then paste it into your post']
-        msg_str2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
+        msg_str2 = ':<img loading="lazy" decoding="async" ' + \
+            'class="searchEmoji" src="/emoji/'
         for emoji_name, filename in results.items():
             if not os.path.isfile(base_dir + '/emoji/' + filename):
                 if not os.path.isfile(base_dir + '/emojicustom/' + filename):
@@ -161,7 +162,8 @@ def _html_search_result_share_page(actor: str, domain_full: str,
         '  <center>\n' + '    <a href="' + actor + \
         '" type="submit" name="submitSearch">\n'
     shared_items_form += \
-        '    <img loading="lazy" ' + 'class="pageicon" src="/icons' + \
+        '    <img loading="lazy" decoding="async" ' + \
+        'class="pageicon" src="/icons' + \
         '/' + image_url + '" title="' + title_str + \
         '" alt="' + title_str + '"/></a>\n'
     shared_items_form += '  </center>\n'
@@ -410,7 +412,8 @@ def html_search(css_cache: {}, translate: {},
             translate['Switch to timeline view'] + '" alt="' + \
             translate['Switch to timeline view'] + '" ' + \
             'accesskey="' + timeline_key + '">\n'
-        follow_str += '<img loading="lazy" class="timeline-banner" src="' + \
+        follow_str += '<img loading="lazy" decoding="async" ' + \
+            'class="timeline-banner" src="' + \
             users_path + '/' + search_banner_file + '" alt="" /></a>\n' + \
             '</header>\n'
 
@@ -579,7 +582,7 @@ def html_skills_search(actor: str,
                 '<div class="search-result""><a href="' + \
                 actor + '/skills">'
             skill_search_form += \
-                '<img loading="lazy" src="' + avatar_url + \
+                '<img loading="lazy" decoding="async" src="' + avatar_url + \
                 '" alt="" /><span class="search-result-text">' + actor_name + \
                 '</span></a></div>'
             ctr += 1
@@ -790,7 +793,8 @@ def html_hashtag_search(css_cache: {},
     hashtag_search_form += '<a href="/tags/rss2/' + hashtag + '">'
     hashtag_search_form += \
         '<img style="width:3%;min-width:50px" ' + \
-        'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
+        'loading="lazy" decoding="async" ' + \
+        'alt="RSS 2.0" title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a></center>\n'
 
     # edit the category for this hashtag
@@ -820,7 +824,8 @@ def html_hashtag_search(css_cache: {},
             '    <a href="/users/' + nickname + \
             '/tags/' + hashtag + '?page=' + \
             str(page_number - 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
+            '"><img loading="lazy" decoding="async" ' + \
+            'class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
@@ -899,7 +904,8 @@ def html_hashtag_search(css_cache: {},
             '  <center>\n' + \
             '    <a href="/users/' + nickname + '/tags/' + hashtag + \
             '?page=' + str(page_number + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/icons' + \
+            '"><img loading="lazy" decoding="async" ' + \
+            'class="pageicon" src="/icons' + \
             '/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>' + \
             '  </center>'
