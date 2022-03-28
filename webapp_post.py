@@ -1980,6 +1980,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
            ':no_boosts:' in content_str or \
            ':boosts_no:' in content_str:
             announce_str = ''
+        if ':reply_no:' in content_str or \
+           ':noreply:' in content_str or \
+           ':noreplies:' in content_str or \
+           ':no_reply:' in content_str or \
+           ':no_replies:' in content_str or \
+           ':replies_no:' in content_str:
+            reply_str = ''
 
     new_footer_str = \
         _get_footer_with_icons(show_icons,
