@@ -4068,7 +4068,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
         return False
     if not has_users_path(message_json['actor']):
         if debug:
-            print('DEBUG: users/profile/accounts/channel missing from actor')
+            print('DEBUG: ' +
+                  'users/profile/author/accounts/channel missing from actor')
         return False
     domain, temp_port = get_domain_from_actor(message_json['actor'])
     from_port = port
@@ -4090,7 +4091,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
         message_json['to'] = message_json['object']
     if not has_users_path(message_json['object']):
         if debug:
-            print('DEBUG: users/profile/channel/accounts ' +
+            print('DEBUG: users/profile/author/channel/accounts ' +
                   'not found within object')
         return False
     domain_to_follow, temp_port = get_domain_from_actor(message_json['object'])

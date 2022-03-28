@@ -565,7 +565,7 @@ def _get_announce_icon_html(is_announced: bool,
                             timeline_post_bookmark: str,
                             box_name: str,
                             max_announce_count: int) -> str:
-    """Returns html for announce icon/button
+    """Returns html for announce icon/button at the bottom of the post
     """
     announce_str = ''
 
@@ -1438,7 +1438,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             allow_local_network_access: bool,
                             theme_name: str, system_language: str,
                             max_like_count: int,
-                            showRepeats: bool,
+                            show_repeats: bool,
                             show_icons: bool,
                             manually_approves_followers: bool,
                             show_public_only: bool,
@@ -1583,10 +1583,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
     timeline_post_bookmark = timeline_post_bookmark.replace('/', '-')
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
-    show_repeat_icon = showRepeats
+    show_repeat_icon = show_repeats
     is_public_repeat = False
     post_is_dm = is_dm(post_json_object)
-    if showRepeats:
+    if show_repeats:
         if post_is_dm:
             show_repeat_icon = False
         else:
@@ -1922,17 +1922,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
         container_class_icons = 'containericons dm'
         container_class = 'container dm'
 
-    new_footer_str = \
-        _get_footer_with_icons(show_icons,
-                               container_class_icons,
-                               reply_str, announce_str,
-                               like_str, reaction_str, bookmark_str,
-                               delete_str, mute_str, edit_str,
-                               post_json_object, published_link,
-                               time_class, published_str)
-    if new_footer_str:
-        footer_str = new_footer_str
-
     # add any content warning from the cwlists directory
     add_cw_from_lists(post_json_object, cw_lists, translate, lists_enabled)
 
@@ -1950,11 +1939,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
             post_json_object['object']['summaryMap'] = {
                 system_language: sensitive_str
             }
-
-    # add an extra line if there is a content warning,
-    # for better vertical spacing on mobile
-    if post_is_sensitive:
-        footer_str = '<br>' + footer_str
 
     if not post_json_object['object'].get('summary'):
         post_json_object['object']['summary'] = ''
@@ -1985,6 +1969,42 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 system_language, translate)
         if not content_str:
             return ''
+
+    if content_str:
+        # does an emoji indicate a no boost preference?
+        # if so then don't show the repeat/announce icon
+        if ':boost_no:' in content_str or \
+           ':noboost:' in content_str or \
+           ':noboosts:' in content_str or \
+           ':no_boost:' in content_str or \
+           ':no_boosts:' in content_str or \
+           ':boosts_no:' in content_str:
+            announce_str = ''
+        # does an emoji indicate a no replies preference?
+        # if so then don't show the reply icon
+        if ':reply_no:' in content_str or \
+           ':noreply:' in content_str or \
+           ':noreplies:' in content_str or \
+           ':no_reply:' in content_str or \
+           ':no_replies:' in content_str or \
+           ':replies_no:' in content_str:
+            reply_str = ''
+
+    new_footer_str = \
+        _get_footer_with_icons(show_icons,
+                               container_class_icons,
+                               reply_str, announce_str,
+                               like_str, reaction_str, bookmark_str,
+                               delete_str, mute_str, edit_str,
+                               post_json_object, published_link,
+                               time_class, published_str)
+    if new_footer_str:
+        footer_str = new_footer_str
+
+    # add an extra line if there is a content warning,
+    # for better vertical spacing on mobile
+    if post_is_sensitive:
+        footer_str = '<br>' + footer_str
 
     summary_str = get_summary_from_post(post_json_object, system_language,
                                         languages_understood)

@@ -2314,6 +2314,10 @@ if args.followers:
             nickname = args.followers.split('/profile/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.followers.split('/profile/')[0]
+        elif '/author/' in args.followers:
+            nickname = args.followers.split('/author/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.followers.split('/author/')[0]
         elif '/channel/' in args.followers:
             nickname = args.followers.split('/channel/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
@@ -2401,6 +2405,7 @@ if args.followers:
         person_url = person_url.replace('/accounts/', '/actor/')
         person_url = person_url.replace('/channel/', '/actor/')
         person_url = person_url.replace('/profile/', '/actor/')
+        person_url = person_url.replace('/author/', '/actor/')
         person_url = person_url.replace('/u/', '/actor/')
         person_url = person_url.replace('/c/', '/actor/')
     if not person_url:
