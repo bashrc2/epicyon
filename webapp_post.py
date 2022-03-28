@@ -1970,9 +1970,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not content_str:
             return ''
 
-    # does an emoji indicate no boost preference?
-    # if so then don't show the repeat/announce icon
     if content_str:
+        # does an emoji indicate a no boost preference?
+        # if so then don't show the repeat/announce icon
         if ':boost_no:' in content_str or \
            ':noboost:' in content_str or \
            ':noboosts:' in content_str or \
@@ -1980,6 +1980,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
            ':no_boosts:' in content_str or \
            ':boosts_no:' in content_str:
             announce_str = ''
+        # does an emoji indicate a no replies preference?
+        # if so then don't show the reply icon
         if ':reply_no:' in content_str or \
            ':noreply:' in content_str or \
            ':noreplies:' in content_str or \
