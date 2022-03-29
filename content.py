@@ -551,7 +551,10 @@ def _add_emoji(base_dir: str, word_str: str,
         return False
     emoji_filename = base_dir + '/emoji/' + emoji_dict[emoji] + '.png'
     if not os.path.isfile(emoji_filename):
-        return False
+        emoji_filename = \
+            base_dir + '/emojicustom/' + emoji_dict[emoji] + '.png'
+        if not os.path.isfile(emoji_filename):
+            return False
     emoji_url = http_prefix + "://" + domain + \
         "/emoji/" + emoji_dict[emoji] + '.png'
     post_tags[emoji] = {
@@ -940,21 +943,15 @@ def add_html_tags(base_dir: str, http_prefix: str,
                 emoji_dict = load_json(base_dir + '/emoji/emoji.json')
 
                 # append custom emoji to the dict
-                if os.path.isfile(base_dir + '/emojicustom/emoji.json'):
-                    custom_emoji_dict = \
-                        load_json(base_dir + '/emojicustom/emoji.json')
+                custom_emoji_filename = base_dir + '/emojicustom/emoji.json'
+                if os.path.isfile(custom_emoji_filename):
+                    custom_emoji_dict = load_json(custom_emoji_filename)
                     if custom_emoji_dict:
-                        emojis_combined = True
-                        try:
-                            emoji_dict = dict(emoji_dict, **custom_emoji_dict)
-                        except BaseException:
-                            emojis_combined = False
-                        if not emojis_combined:
-                            # combine emoji dicts one by one
-                            for ename, eitem in custom_emoji_dict.items():
-                                if ename and eitem:
-                                    if not emoji_dict.get(ename):
-                                        emoji_dict[ename] = eitem
+                        # combine emoji dicts one by one
+                        for ename, eitem in custom_emoji_dict.items():
+                            if ename and eitem:
+                                if not emoji_dict.get(ename):
+                                    emoji_dict[ename] = eitem
 
 #                print('TAG: looking up emoji for :' + word_str2 + ':')
                 _add_emoji(base_dir, ':' + word_str2 + ':', http_prefix,
@@ -1387,3 +1384,29 @@ def bold_reading_string(text: str) -> str:
                 new_text += '<p>' + new_parag + '</p>'
 
     return new_text
+
+
+def import_emoji(base_dir: str, import_filename: str, session) -> None:
+    """Imports emoji from the given filename
+    """
+    if not os.path.isfile(import_filename):
+        return
+    emoji_dict = load_json(base_dir + '/emoji/default_emoji.json', 0, 1)
+    added = 0
+    with open(import_filename, "r") as fp_emoji:
+        lines = fp_emoji.readlines()
+        for line in lines:
+            url = line.split(', ')[0]
+            tag = line.split(', ')[1].strip()
+            tag = tag.split(':')[1]
+            if emoji_dict.get(tag):
+                continue
+            emoji_image_filename = base_dir + '/emoji/' + tag + '.png'
+            if os.path.isfile(emoji_image_filename):
+                continue
+            if download_image(session, base_dir, url,
+                              emoji_image_filename, True, False):
+                emoji_dict[tag] = tag
+                added += 1
+    save_json(emoji_dict, base_dir + '/emoji/default_emoji.json')
+    print(str(added) + ' custom emoji added')

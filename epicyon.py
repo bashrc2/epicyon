@@ -104,6 +104,7 @@ from migrate import migrate_accounts
 from desktop_client import run_desktop_client
 from happening import dav_month_via_server
 from happening import dav_day_via_server
+from content import import_emoji
 
 
 def str2bool(value_str) -> bool:
@@ -134,6 +135,9 @@ parser.add_argument('--eventLocation', type=str,
 parser.add_argument('--content_license_url', type=str,
                     default='https://creativecommons.org/licenses/by/4.0',
                     help='Url of the license used for the instance content')
+parser.add_argument('--import_emoji', type=str,
+                    default='',
+                    help='Import emoji from the given instance domain')
 parser.add_argument('--lists_enabled', type=str,
                     default=None,
                     help='Names of content warning lists enabled. ' +
@@ -730,6 +734,13 @@ elif args.gnunet:
 base_dir = args.base_dir
 if base_dir.endswith('/'):
     print("--path option should not end with '/'")
+    sys.exit()
+
+if args.import_emoji:
+    import_filename = args.import_emoji
+    print('Importing custom emoji from ' + import_filename)
+    session = create_session(None)
+    import_emoji(base_dir, import_filename, session)
     sys.exit()
 
 # automatic translations

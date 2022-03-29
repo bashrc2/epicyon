@@ -5354,6 +5354,7 @@ def _test_prepare_html_post_nick():
 
 def _test_valid_hash_tag():
     print('test_valid_hash_tag')
+    assert valid_hash_tag('blobcat_thisisfine')
     assert valid_hash_tag('ThisIsValid')
     assert valid_hash_tag('this_is_valid')
     assert valid_hash_tag('ThisIsValid12345')
