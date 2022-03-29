@@ -5354,6 +5354,7 @@ def _test_prepare_html_post_nick():
 
 def _test_valid_hash_tag():
     print('test_valid_hash_tag')
+    assert valid_hash_tag('blobcat_thisisfine')
     assert valid_hash_tag('ThisIsValid')
     assert valid_hash_tag('this_is_valid')
     assert valid_hash_tag('ThisIsValid12345')
@@ -6755,7 +6756,7 @@ def _test_bold_reading() -> None:
 
 
 def run_all_tests():
-    base_dir = os.getcwd()
+    base_dir = os.getcwd()    
     print('Running tests...')
     update_default_themes_list(os.getcwd())
     _test_source_contains_no_tabs()
