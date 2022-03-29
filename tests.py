@@ -6756,7 +6756,7 @@ def _test_bold_reading() -> None:
 
 
 def run_all_tests():
-    base_dir = os.getcwd()    
+    base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
     _test_source_contains_no_tabs()
