@@ -1387,3 +1387,29 @@ def bold_reading_string(text: str) -> str:
                 new_text += '<p>' + new_parag + '</p>'
 
     return new_text
+
+
+def import_emoji(base_dir: str, import_filename: str, session) -> None:
+    """Imports emoji from the given filename
+    """
+    if not os.path.isfile(import_filename):
+        return
+    emoji_dict = load_json(base_dir + '/emoji/default_emoji.json', 0, 1)
+    added = 0
+    with open(import_filename, "r") as fp_emoji:
+        lines = fp_emoji.readlines()
+        for line in lines:
+            url = line.split(', ')[0]
+            tag = line.split(', ')[1].strip()
+            tag = tag.split(':')[1]
+            if emoji_dict.get(tag):
+                continue
+            emoji_image_filename = base_dir + '/emoji/' + tag + '.png'
+            if os.path.isfile(emoji_image_filename):
+                continue
+            if download_image(session, base_dir, url,
+                              emoji_image_filename, True, False):
+                emoji_dict[tag] = tag
+                added += 1
+    save_json(emoji_dict, base_dir + '/emoji/default_emoji.json')
+    print(str(added) + ' custom emoji added')
