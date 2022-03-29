@@ -775,5 +775,13 @@
     "lavabit": "lavabit",
     "libreoffice": "libreoffice",
     "xmpp": "xmpp",
-    "jabber": "xmpp"
+    "jabber": "xmpp",
+    "bbcmicroowl": "bbcmicroowl",
+    "bbcmicro": "bbcmicroowl",
+    "acorn": "acornmicro",
+    "bbcacorn": "acornmicro",
+    "acornmicro": "acornmicro",
+    "matrix": "matrix",
+    "rolleyes": "1F440",
+    "eyesroll": "1F440"
 }
