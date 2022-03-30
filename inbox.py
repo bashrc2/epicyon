@@ -2306,11 +2306,16 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
 
     if not message_json['object'].get('published'):
         return False
-    if 'T' not in message_json['object']['published']:
+    published = message_json['object']['published']
+    if 'T' not in published:
         return False
-    if 'Z' not in message_json['object']['published']:
+    if 'Z' not in published:
         return False
-    if not valid_post_date(message_json['object']['published'], 90, debug):
+    if '.' in published:
+        # converts 2022-03-30T17:37:58.734Z into 2022-03-30T17:37:58Z
+        published = published.split('.')[0] + 'Z'
+        message_json['object']['published'] = published
+    if not valid_post_date(published, 90, debug):
         return False
 
     summary = None

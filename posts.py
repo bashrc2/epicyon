@@ -4926,6 +4926,10 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
+        if '.' in announced_json['published'] and \
+           'Z' in announced_json['published']:
+            announced_json['published'] = \
+                announced_json['published'].split('.')[0] + 'Z'
         if not valid_post_date(announced_json['published'], 90, debug):
             print('WARN: announced post is not recently published ' +
                   str(announced_json))

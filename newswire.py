@@ -268,6 +268,14 @@ def _valid_feed_date(pub_date: str, debug: bool = False) -> bool:
     # convert from YY-MM-DD HH:MM:SS+00:00 to
     # YY-MM-DDTHH:MM:SSZ
     post_date = pub_date.replace(' ', 'T').replace('+00:00', 'Z')
+    if '.' in post_date:
+        ending = post_date.split('.')[1]
+        timezone_str = ''
+        for ending_char in ending:
+            if not ending_char.isdigit():
+                timezone_str += ending_char
+        if timezone_str:
+            post_date = post_date.split('.')[0] + timezone_str
     return valid_post_date(post_date, 90, debug)
 
 
@@ -320,6 +328,15 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
         if 'UT' in pub_date and 'UT' not in date_format:
             continue
 
+        # remove any fraction of a second
+        if '.' in pub_date:
+            ending = pub_date.split('.')[1]
+            timezone_str = ''
+            for ending_char in ending:
+                if not ending_char.isdigit():
+                    timezone_str += ending_char
+            if timezone_str:
+                pub_date = pub_date.split('.')[0] + timezone_str
         try:
             published_date = datetime.strptime(pub_date, date_format)
         except BaseException:
