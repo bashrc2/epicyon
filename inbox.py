@@ -3596,6 +3596,9 @@ def _inbox_after_initial(server,
         if not valid_sending_actor(session, base_dir, nickname, domain,
                                    person_cache, post_json_object,
                                    signing_priv_key_pem, debug, unit_test):
+            if debug:
+                print('Inbox sending actor is not valid ' +
+                      str(post_json_object))
             return False
 
         if post_json_object.get('object'):
@@ -3661,6 +3664,8 @@ def _inbox_after_initial(server,
                                     languages_understood,
                                     domain,
                                     onion_domain, i2p_domain):
+                    if debug:
+                        print('Invalid DM ' + str(post_json_object))
                     return False
 
             # get the actor being replied to
@@ -3815,9 +3820,14 @@ def _inbox_after_initial(server,
                                        debug, system_language,
                                        domain, onion_domain, i2p_domain,
                                        signing_priv_key_pem)
+    else:
+        if debug:
+            print("Inbox post is not valid " + str(post_json_object))
 
     # if the post wasn't saved
     if not os.path.isfile(destination_filename):
+        if debug:
+            print("Inbox post was not saved " + destination_filename)
         return False
 
     return True
