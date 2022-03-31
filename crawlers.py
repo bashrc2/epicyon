@@ -113,14 +113,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
 
     agent_str_lower = agent_str.lower()
     for ua_block in default_user_agent_blocks:
-        if agent_str_lower.endswith(ua_block) or \
-           ua_block + "/" in agent_str_lower or \
-           ua_block + ")" in agent_str_lower or \
-           ua_block + ";" in agent_str_lower or \
-           ua_block + "," in agent_str_lower or \
-           ua_block + ">" in agent_str_lower or \
-           ua_block + "<" in agent_str_lower or \
-           ua_block + " " in agent_str_lower:
+        if ua_block in agent_str_lower:
             print('Blocked User agent 1: ' + ua_block)
             return True, blocked_cache_last_updated
 

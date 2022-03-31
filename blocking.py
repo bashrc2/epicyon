@@ -327,10 +327,10 @@ def is_blocked_domain(base_dir: str, domain: str,
     if not broch_mode_is_active(base_dir):
         if blocked_cache:
             for blocked_str in blocked_cache:
-                if '*@' + domain in blocked_str:
+                if blocked_str == '*@' + domain:
                     return True
                 if short_domain:
-                    if '*@' + short_domain in blocked_str:
+                    if blocked_str == '*@' + short_domain:
                         return True
         else:
             # instance block list
@@ -339,10 +339,10 @@ def is_blocked_domain(base_dir: str, domain: str,
                 try:
                     with open(global_blocking_filename, 'r') as fp_blocked:
                         blocked_str = fp_blocked.read()
-                        if '*@' + domain in blocked_str:
+                        if '*@' + domain + '\n' in blocked_str:
                             return True
                         if short_domain:
-                            if '*@' + short_domain in blocked_str:
+                            if '*@' + short_domain + '\n' in blocked_str:
                                 return True
                 except OSError as ex:
                     print('EX: unable to read ' + global_blocking_filename +
