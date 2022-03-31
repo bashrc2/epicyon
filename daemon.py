@@ -7872,7 +7872,6 @@ class PubServer(BaseHTTPRequestHandler):
                     access_keys = self.server.key_shortcuts[nickname]
 
             if curr_session:
-                check_actor_timeout = 5
                 # because this is slow, do it in a separate thread
                 if self.server.thrCheckActor.get(nickname):
                     # kill existing thread
@@ -7886,7 +7885,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.domain_full,
                                             options_actor, options_profile_url,
                                             self.server.person_cache,
-                                            check_actor_timeout), daemon=True)
+                                            self.server.check_actor_timeout),
+                                      daemon=True)
                 self.server.thrCheckActor[nickname].start()
 
             msg = \
@@ -20632,7 +20632,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(crawlers_allowed: [],
+def run_daemon(check_actor_timeout: int,
+               crawlers_allowed: [],
                dyslexic_font: bool,
                content_license_url: str,
                lists_enabled: str,
@@ -20797,6 +20798,12 @@ def run_daemon(crawlers_allowed: [],
         'Public': 'p',
         'Reminder': 'r'
     }
+
+    # timeout used when checking for actor changes when clicking an avatar
+    # and entering person options screen
+    if check_actor_timeout < 2:
+        check_actor_timeout = 2
+    httpd.check_actor_timeout = check_actor_timeout
 
     # how many hours after a post was publushed can a reply be made
     default_reply_interval_hrs = 9999999
