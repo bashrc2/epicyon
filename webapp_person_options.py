@@ -29,6 +29,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_keyboard_navigation
+from fitnessFunctions import fitness_performance
 
 
 def html_person_options(default_timeline: str,
@@ -62,18 +63,32 @@ def html_person_options(default_timeline: str,
                         news_instance: bool,
                         authorized: bool,
                         access_keys: {},
-                        is_group: bool) -> str:
+                        is_group: bool,
+                        getreq_start_time,
+                        fitness: {}, debug: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options start',
+                        debug)
+
     options_domain, options_port = get_domain_from_actor(options_actor)
     if not options_domain:
         return None
     options_domain_full = get_full_domain(options_domain, options_port)
 
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options get domain',
+                        debug)
+
     if os.path.isfile(base_dir + '/accounts/options-background-custom.jpg'):
         if not os.path.isfile(base_dir + '/accounts/options-background.jpg'):
             copyfile(base_dir + '/accounts/options-background.jpg',
                      base_dir + '/accounts/options-background.jpg')
+
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options background',
+                        debug)
 
     dormant = False
     follow_str = 'Follow'
@@ -110,6 +125,10 @@ def html_person_options(default_timeline: str,
                       options_nickname, options_domain_full):
             block_str = 'Block'
 
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options 1',
+                        debug)
+
     options_link_str = ''
     if options_link:
         options_link_str = \
@@ -118,6 +137,10 @@ def html_person_options(default_timeline: str,
     css_filename = base_dir + '/epicyon-options.css'
     if os.path.isfile(base_dir + '/options.css'):
         css_filename = base_dir + '/options.css'
+
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options 2',
+                        debug)
 
     # To snooze, or not to snooze? That is the question
     snooze_button_str = 'Snooze'
@@ -132,10 +155,19 @@ def html_person_options(default_timeline: str,
             ' tabindex="-1""><button class="button" name="submitDonate">' + \
             translate['Donate'] + '</button></a>\n'
 
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options 3',
+                        debug)
+
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     options_str = \
         html_header_with_external_style(css_filename, instance_title, None)
+
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options 4',
+                        debug)
+
     options_str += html_keyboard_navigation(text_mode_banner, {}, {})
     options_str += '<br><br>\n'
     options_str += '<div class="options">\n'
@@ -196,6 +228,11 @@ def html_person_options(default_timeline: str,
         other_accounts_html += '</p>\n'
         if ctr > 0:
             options_str += other_accounts_html
+
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options 5',
+                        debug)
+
     if email_address:
         options_str += \
             '<p class="imText">' + translate['Email'] + \
@@ -259,6 +296,11 @@ def html_person_options(default_timeline: str,
         options_actor + '">\n'
     options_str += '    <input type="hidden" name="avatarUrl" value="' + \
         options_profile_url + '">\n'
+
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options 6',
+                        debug)
+
     if authorized:
         if origin_path_str == '/users/' + nickname:
             if options_nickname:
@@ -272,6 +314,10 @@ def html_person_options(default_timeline: str,
                     '    <button type="submit" class="buttonsmall" ' + \
                     'name="submitPetname">' + \
                     translate['Submit'] + '</button><br>\n'
+
+                fitness_performance(getreq_start_time, fitness,
+                                    '_GET', 'html_person_options petname',
+                                    debug)
 
             # Notify when a post arrives from this person
             if is_following_actor(base_dir, nickname, domain, options_actor):
@@ -301,6 +347,10 @@ def html_person_options(default_timeline: str,
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 
+                fitness_performance(getreq_start_time, fitness,
+                                    '_GET', 'html_person_options following',
+                                    debug)
+
             # checkbox for permission to post to newswire
             newswire_posts_permitted = False
             if options_domain_full == domain_full:
@@ -325,6 +375,9 @@ def html_person_options(default_timeline: str,
                     else:
                         newswire_posts_permitted = True
                     options_str += checkbox_str
+                    fitness_performance(getreq_start_time, fitness,
+                                        '_GET', 'html_person_options news 1',
+                                        debug)
 
             # whether blogs created by this account are moderated on
             # the newswire
@@ -343,6 +396,9 @@ def html_person_options(default_timeline: str,
                 if not os.path.isfile(moderated_filename):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
+                fitness_performance(getreq_start_time, fitness,
+                                    '_GET', 'html_person_options news 2',
+                                    debug)
 
             # checkbox for permission to post to featured articles
             if news_instance and options_domain_full == domain_full:
@@ -362,6 +418,13 @@ def html_person_options(default_timeline: str,
                                               options_domain):
                         checkbox_str = checkbox_str.replace(' checked>', '>')
                     options_str += checkbox_str
+                    fitness_performance(getreq_start_time, fitness,
+                                        '_GET', 'html_person_options news 3',
+                                        debug)
+
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options 7',
+                        debug)
 
     options_str += options_link_str
     back_path = '/'
@@ -439,6 +502,10 @@ def html_person_options(default_timeline: str,
             'name="optionnotes" style="height:400px" spellcheck="true" ' + \
             'accesskey="' + access_keys['enterNotes'] + '">' + \
             person_notes + '</textarea>\n'
+
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'html_person_options 8',
+                        debug)
 
     options_str += \
         '  </form>\n' + \

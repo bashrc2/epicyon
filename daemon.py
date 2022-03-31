@@ -7786,6 +7786,8 @@ class PubServer(BaseHTTPRequestHandler):
                              curr_session, proxy_type: str) -> None:
         """Show person options screen
         """
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', '_show_person_options start', debug)
         back_to_path = ''
         options_str = path.split('?options=')[1]
         origin_path_str = path.split('?options=')[0]
@@ -7831,12 +7833,16 @@ class PubServer(BaseHTTPRequestHandler):
             locked_account = False
             also_known_as = None
             moved_to = ''
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', '_show_person_options 2', debug)
             actor_json = \
                 get_person_from_cache(base_dir,
                                       options_actor,
                                       self.server.person_cache,
                                       True)
             if actor_json:
+                fitness_performance(getreq_start_time, self.server.fitness,
+                                    '_GET', '_show_person_options 3', debug)
                 if actor_json.get('movedTo'):
                     moved_to = actor_json['movedTo']
                     if '"' in moved_to:
@@ -7861,14 +7867,26 @@ class PubServer(BaseHTTPRequestHandler):
                 pgp_fingerprint = get_pgp_fingerprint(actor_json)
                 if actor_json.get('alsoKnownAs'):
                     also_known_as = actor_json['alsoKnownAs']
+                fitness_performance(getreq_start_time, self.server.fitness,
+                                    '_GET', '_show_person_options 4', debug)
 
             if curr_session:
+                fitness_performance(getreq_start_time, self.server.fitness,
+                                    '_GET', '_show_person_options 5', debug)
+                check_actor_timeout = 2
+                if self.server.domain.endswith('.onion') or \
+                   self.server.domain.endswith('.i2p'):
+                    # allow more time for a slower response
+                    check_actor_timeout = 5
                 check_for_changed_actor(curr_session,
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain_full,
                                         options_actor, options_profile_url,
-                                        self.server.person_cache, 5)
+                                        self.server.person_cache,
+                                        check_actor_timeout)
+                fitness_performance(getreq_start_time, self.server.fitness,
+                                    '_GET', '_show_person_options 6', debug)
 
             access_keys = self.server.access_keys
             if '/users/' in path:
@@ -7902,7 +7920,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     self.server.news_instance,
                                     authorized,
-                                    access_keys, is_group)
+                                    access_keys, is_group,
+                                    getreq_start_time,
+                                    self.server.fitness,
+                                    debug)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
