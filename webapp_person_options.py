@@ -136,6 +136,7 @@ def html_person_options(default_timeline: str,
         get_config_param(base_dir, 'instanceTitle')
     options_str = \
         html_header_with_external_style(css_filename, instance_title, None)
+
     options_str += html_keyboard_navigation(text_mode_banner, {}, {})
     options_str += '<br><br>\n'
     options_str += '<div class="options">\n'
@@ -196,6 +197,7 @@ def html_person_options(default_timeline: str,
         other_accounts_html += '</p>\n'
         if ctr > 0:
             options_str += other_accounts_html
+
     if email_address:
         options_str += \
             '<p class="imText">' + translate['Email'] + \
@@ -259,6 +261,7 @@ def html_person_options(default_timeline: str,
         options_actor + '">\n'
     options_str += '    <input type="hidden" name="avatarUrl" value="' + \
         options_profile_url + '">\n'
+
     if authorized:
         if origin_path_str == '/users/' + nickname:
             if options_nickname:

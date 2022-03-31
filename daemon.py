@@ -7862,21 +7862,33 @@ class PubServer(BaseHTTPRequestHandler):
                 if actor_json.get('alsoKnownAs'):
                     also_known_as = actor_json['alsoKnownAs']
 
-            if curr_session:
-                check_for_changed_actor(curr_session,
-                                        self.server.base_dir,
-                                        self.server.http_prefix,
-                                        self.server.domain_full,
-                                        options_actor, options_profile_url,
-                                        self.server.person_cache, 5)
-
             access_keys = self.server.access_keys
+            nickname = 'instance'
             if '/users/' in path:
                 nickname = path.split('/users/')[1]
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
                 if self.server.key_shortcuts.get(nickname):
                     access_keys = self.server.key_shortcuts[nickname]
+
+            if curr_session:
+                # because this is slow, do it in a separate thread
+                if self.server.thrCheckActor.get(nickname):
+                    # kill existing thread
+                    self.server.thrCheckActor[nickname].kill()
+
+                self.server.thrCheckActor[nickname] = \
+                    thread_with_trace(target=check_for_changed_actor,
+                                      args=(curr_session,
+                                            self.server.base_dir,
+                                            self.server.http_prefix,
+                                            self.server.domain_full,
+                                            options_actor, options_profile_url,
+                                            self.server.person_cache,
+                                            self.server.check_actor_timeout),
+                                      daemon=True)
+                self.server.thrCheckActor[nickname].start()
+
             msg = \
                 html_person_options(self.server.default_timeline,
                                     self.server.css_cache,
@@ -20620,7 +20632,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(crawlers_allowed: [],
+def run_daemon(check_actor_timeout: int,
+               crawlers_allowed: [],
                dyslexic_font: bool,
                content_license_url: str,
                lists_enabled: str,
@@ -20785,6 +20798,12 @@ def run_daemon(crawlers_allowed: [],
         'Public': 'p',
         'Reminder': 'r'
     }
+
+    # timeout used when checking for actor changes when clicking an avatar
+    # and entering person options screen
+    if check_actor_timeout < 2:
+        check_actor_timeout = 2
+    httpd.check_actor_timeout = check_actor_timeout
 
     # how many hours after a post was publushed can a reply be made
     default_reply_interval_hrs = 9999999
@@ -21210,6 +21229,10 @@ def run_daemon(crawlers_allowed: [],
     # signing key used for authorized fetch
     # this is the instance actor private key
     httpd.signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+
+    # threads used for checking for actor changes when clicking on
+    # avatar icon / person options
+    httpd.thrCheckActor = {}
 
     if not unit_test:
         print('THREAD: Creating inbox queue watchdog')

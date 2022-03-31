@@ -195,6 +195,10 @@ parser.add_argument('--i2p_domain', dest='i2p_domain', type=str,
 parser.add_argument('-p', '--port', dest='port', type=int,
                     default=None,
                     help='Port number to run on')
+parser.add_argument('--check-actor-timeout', dest='check_actor_timeout',
+                    type=int, default=2,
+                    help='Timeout in seconds used for checking is an actor ' +
+                    'has changed when clicking their avatar image')
 parser.add_argument('--year', dest='year', type=int,
                     default=search_date.year,
                     help='Year for calendar query')
@@ -3425,7 +3429,8 @@ if args.defaultCurrency:
 
 if __name__ == "__main__":
     print('allowdeletion: ' + str(args.allowdeletion))
-    run_daemon(crawlers_allowed,
+    run_daemon(args.check_actor_timeout,
+               crawlers_allowed,
                args.dyslexic_font,
                content_license_url,
                lists_enabled,

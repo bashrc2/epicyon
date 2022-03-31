@@ -824,8 +824,10 @@ def create_server_alice(path: str, domain: str, port: int,
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     dyslexic_font = False
     crawlers_allowed = []
+    check_actor_timeout = 2
     print('Server running: Alice')
-    run_daemon(crawlers_allowed,
+    run_daemon(check_actor_timeout,
+               crawlers_allowed,
                dyslexic_font,
                content_license_url,
                lists_enabled, default_reply_interval_hrs,
@@ -979,8 +981,10 @@ def create_server_bob(path: str, domain: str, port: int,
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     dyslexic_font = False
     crawlers_allowed = []
+    check_actor_timeout = 2
     print('Server running: Bob')
-    run_daemon(crawlers_allowed,
+    run_daemon(check_actor_timeout,
+               crawlers_allowed,
                dyslexic_font,
                content_license_url,
                lists_enabled, default_reply_interval_hrs,
@@ -1057,8 +1061,10 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     dyslexic_font = False
     crawlers_allowed = []
+    check_actor_timeout = 2
     print('Server running: Eve')
-    run_daemon(crawlers_allowed,
+    run_daemon(check_actor_timeout,
+               crawlers_allowed,
                dyslexic_font,
                content_license_url,
                lists_enabled, default_reply_interval_hrs,
@@ -1137,8 +1143,10 @@ def create_server_group(path: str, domain: str, port: int,
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     dyslexic_font = False
     crawlers_allowed = []
+    check_actor_timeout = 2
     print('Server running: Group')
-    run_daemon(crawlers_allowed,
+    run_daemon(check_actor_timeout,
+               crawlers_allowed,
                dyslexic_font,
                content_license_url,
                lists_enabled, default_reply_interval_hrs,
@@ -5096,7 +5104,8 @@ def _test_functions():
         'e2e_eremove_device',
         'setOrganizationScheme',
         'fill_headers',
-        '_nothing'
+        '_nothing',
+        'check_for_changed_actor'
     ]
     exclude_imports = [
         'link',
