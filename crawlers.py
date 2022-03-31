@@ -117,6 +117,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
            ua_block + "/" in agent_str_lower or \
            ua_block + ")" in agent_str_lower or \
            ua_block + ";" in agent_str_lower or \
+           ua_block + "," in agent_str_lower or \
            ua_block + ">" in agent_str_lower or \
            ua_block + "<" in agent_str_lower or \
            ua_block + " " in agent_str_lower:
