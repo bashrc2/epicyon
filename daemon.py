@@ -7920,10 +7920,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     self.server.news_instance,
                                     authorized,
-                                    access_keys, is_group,
-                                    getreq_start_time,
-                                    self.server.fitness,
-                                    debug)
+                                    access_keys, is_group)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
