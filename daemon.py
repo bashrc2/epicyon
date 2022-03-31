@@ -7786,8 +7786,6 @@ class PubServer(BaseHTTPRequestHandler):
                              curr_session, proxy_type: str) -> None:
         """Show person options screen
         """
-        fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_person_options start', debug)
         back_to_path = ''
         options_str = path.split('?options=')[1]
         origin_path_str = path.split('?options=')[0]
@@ -7833,16 +7831,12 @@ class PubServer(BaseHTTPRequestHandler):
             locked_account = False
             also_known_as = None
             moved_to = ''
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_person_options 2', debug)
             actor_json = \
                 get_person_from_cache(base_dir,
                                       options_actor,
                                       self.server.person_cache,
                                       True)
             if actor_json:
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_show_person_options 3', debug)
                 if actor_json.get('movedTo'):
                     moved_to = actor_json['movedTo']
                     if '"' in moved_to:
@@ -7867,34 +7861,34 @@ class PubServer(BaseHTTPRequestHandler):
                 pgp_fingerprint = get_pgp_fingerprint(actor_json)
                 if actor_json.get('alsoKnownAs'):
                     also_known_as = actor_json['alsoKnownAs']
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_show_person_options 4', debug)
-
-            if curr_session:
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_show_person_options 5', debug)
-                check_actor_timeout = 2
-                if self.server.domain.endswith('.onion') or \
-                   self.server.domain.endswith('.i2p'):
-                    # allow more time for a slower response
-                    check_actor_timeout = 5
-                check_for_changed_actor(curr_session,
-                                        self.server.base_dir,
-                                        self.server.http_prefix,
-                                        self.server.domain_full,
-                                        options_actor, options_profile_url,
-                                        self.server.person_cache,
-                                        check_actor_timeout)
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_show_person_options 6', debug)
 
             access_keys = self.server.access_keys
+            nickname = 'instance'
             if '/users/' in path:
                 nickname = path.split('/users/')[1]
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
                 if self.server.key_shortcuts.get(nickname):
                     access_keys = self.server.key_shortcuts[nickname]
+
+            if curr_session:
+                check_actor_timeout = 5
+                # because this is slow, do it in a separate thread
+                if self.server.thrCheckActor.get(nickname):
+                    # kill existing thread
+                    self.server.thrCheckActor[nickname].kill()
+
+                self.server.thrCheckActor[nickname] = \
+                    thread_with_trace(target=check_for_changed_actor,
+                                      args=(curr_session,
+                                            self.server.base_dir,
+                                            self.server.http_prefix,
+                                            self.server.domain_full,
+                                            options_actor, options_profile_url,
+                                            self.server.person_cache,
+                                            check_actor_timeout), daemon=True)
+                self.server.thrCheckActor[nickname].start()
+
             msg = \
                 html_person_options(self.server.default_timeline,
                                     self.server.css_cache,
@@ -21228,6 +21222,10 @@ def run_daemon(crawlers_allowed: [],
     # signing key used for authorized fetch
     # this is the instance actor private key
     httpd.signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+
+    # threads used for checking for actor changes when clicking on
+    # avatar icon / person options
+    httpd.thrCheckActor = {}
 
     if not unit_test:
         print('THREAD: Creating inbox queue watchdog')
