@@ -327,10 +327,10 @@ def is_blocked_domain(base_dir: str, domain: str,
     if not broch_mode_is_active(base_dir):
         if blocked_cache:
             for blocked_str in blocked_cache:
-                if '*@' + domain in blocked_str:
+                if blocked_str == '*@' + domain:
                     return True
                 if short_domain:
-                    if '*@' + short_domain in blocked_str:
+                    if blocked_str == '*@' + short_domain:
                         return True
         else:
             # instance block list
@@ -339,10 +339,10 @@ def is_blocked_domain(base_dir: str, domain: str,
                 try:
                     with open(global_blocking_filename, 'r') as fp_blocked:
                         blocked_str = fp_blocked.read()
-                        if '*@' + domain in blocked_str:
+                        if '*@' + domain + '\n' in blocked_str:
                             return True
                         if short_domain:
-                            if '*@' + short_domain in blocked_str:
+                            if '*@' + short_domain + '\n' in blocked_str:
                                 return True
                 except OSError as ex:
                     print('EX: unable to read ' + global_blocking_filename +
@@ -379,7 +379,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                 if '*@' + domain in blocked_str:
                     return True
                 if block_handle:
-                    if block_handle in blocked_str:
+                    if blocked_str == block_handle:
                         return True
         else:
             global_blocks_filename = base_dir + '/accounts/blocking.txt'
@@ -387,33 +387,34 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                 if '*@' + block_domain in open(global_blocks_filename).read():
                     return True
                 if block_handle:
-                    if block_handle in open(global_blocks_filename).read():
+                    block_str = block_handle + '\n'
+                    if block_str in open(global_blocks_filename).read():
                         return True
     else:
         # instance allow list
         allow_filename = base_dir + '/accounts/allowedinstances.txt'
         short_domain = _get_short_domain(block_domain)
         if not short_domain:
-            if block_domain not in open(allow_filename).read():
+            if block_domain + '\n' not in open(allow_filename).read():
                 return True
         else:
-            if short_domain not in open(allow_filename).read():
+            if short_domain + '\n' not in open(allow_filename).read():
                 return True
 
     # account level allow list
     account_dir = acct_dir(base_dir, nickname, domain)
     allow_filename = account_dir + '/allowedinstances.txt'
     if os.path.isfile(allow_filename):
-        if block_domain not in open(allow_filename).read():
+        if block_domain + '\n' not in open(allow_filename).read():
             return True
 
     # account level block list
     blocking_filename = account_dir + '/blocking.txt'
     if os.path.isfile(blocking_filename):
-        if '*@' + block_domain in open(blocking_filename).read():
+        if '*@' + block_domain + '\n' in open(blocking_filename).read():
             return True
         if block_handle:
-            if block_handle in open(blocking_filename).read():
+            if block_handle + '\n' in open(blocking_filename).read():
                 return True
     return False
 
