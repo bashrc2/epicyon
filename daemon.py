@@ -1332,7 +1332,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
             return True
         if self.server.nodeinfo_is_active:
-            print('nodeinfo is busy during request from ' + referer_domain)
+            if not referer_domain:
+                print('nodeinfo is busy during request without referer domain')
+            else:
+                print('nodeinfo is busy during request from ' + referer_domain)
             self._503()
             return True
         self.server.nodeinfo_is_active = True
@@ -1413,7 +1416,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/ld+json', msglen,
                                   None, calling_domain, True)
             self._write(msg)
-            print('nodeinfo sent to ' + referer_domain)
+            if referer_domain:
+                print('nodeinfo sent to ' + referer_domain)
+            else:
+                print('nodeinfo sent to unknown referer')
             self.server.nodeinfo_is_active = False
             return True
         self._404()
