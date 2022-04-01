@@ -1176,7 +1176,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: ' + path)
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
-        print('mastodon api v1: referer ' + referer_domain)
+        print('mastodon api v1: referer ' + str(referer_domain))
         crawl_time = \
             update_known_crawlers(ua_str, base_dir,
                                   self.server.known_crawlers,
