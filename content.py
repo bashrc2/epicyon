@@ -355,11 +355,12 @@ def replace_emoji_from_tags(session, base_dir: str,
                                                           replace_char)
                                 replaced = True
                             except BaseException:
-                                print('EX: replace_emoji_from_tags 1 ' +
-                                      'no conversion of ' +
-                                      str(icon_name) + ' to chr ' +
-                                      tag_item['name'] + ' ' +
-                                      tag_item['icon']['url'])
+                                if debug:
+                                    print('EX: replace_emoji_from_tags 1 ' +
+                                          'no conversion of ' +
+                                          str(icon_name) + ' to chr ' +
+                                          tag_item['name'] + ' ' +
+                                          tag_item['icon']['url'])
                             if not replaced:
                                 _save_custom_emoji(session, base_dir,
                                                    tag_item['name'],
@@ -377,11 +378,13 @@ def replace_emoji_from_tags(session, base_dir: str,
                                     replaced = True
                                 except BaseException:
                                     icon_code_sequence = ''
-                                    print('EX: replace_emoji_from_tags 2 ' +
-                                          'no conversion of ' +
-                                          str(icode) + ' to chr ' +
-                                          tag_item['name'] + ' ' +
-                                          tag_item['icon']['url'])
+                                    if debug:
+                                        print('EX: ' +
+                                              'replace_emoji_from_tags 2 ' +
+                                              'no conversion of ' +
+                                              str(icode) + ' to chr ' +
+                                              tag_item['name'] + ' ' +
+                                              tag_item['icon']['url'])
                                 if not replaced:
                                     _save_custom_emoji(session, base_dir,
                                                        tag_item['name'],
