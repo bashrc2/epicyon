@@ -305,11 +305,6 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
                "%a, %d %b %Y %H:%M:%S AKST",
                "%a, %d %b %Y %H:%M:%S HST",
                "%a, %d %b %Y %H:%M:%S UT",
-<<<<<<< HEAD
-               "%a, %d %b %Y %H:%M:%S Z",
-               "%a, %d %b %Y %H:%M:%S GMT",
-=======
->>>>>>> 619663a3c83d30b8856862a8b9b035b4513decc2
                "%Y-%m-%dT%H:%M:%SZ",
                "%Y-%m-%dT%H:%M:%S%z")
     published_date = None
