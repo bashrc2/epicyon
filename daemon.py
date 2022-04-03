@@ -21111,12 +21111,15 @@ def run_daemon(check_actor_timeout: int,
                           args=(base_dir, httpd.fitness), daemon=True)
     httpd.thrFitness.start()
 
+    httpd.recent_posts_cache = {}
+
     print('THREAD: Creating cache expiry thread')
     httpd.thrCache = \
         thread_with_trace(target=expire_cache,
                           args=(base_dir, httpd.person_cache,
                                 httpd.http_prefix,
                                 archive_dir,
+                                httpd.recent_posts_cache,
                                 httpd.maxPostsInBox), daemon=True)
     httpd.thrCache.start()
 
@@ -21150,7 +21153,6 @@ def run_daemon(check_actor_timeout: int,
     else:
         httpd.thrSharesExpire.start()
 
-    httpd.recent_posts_cache = {}
     httpd.max_recent_posts = max_recent_posts
     httpd.iconsCache = {}
     httpd.fontsCache = {}

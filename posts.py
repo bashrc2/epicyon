@@ -4118,7 +4118,7 @@ def _create_box_indexed(recent_posts_cache: {},
 def expire_cache(base_dir: str, person_cache: {},
                  http_prefix: str, archive_dir: str,
                  recent_posts_cache: {},
-                 max_posts_in_box=32000):
+                 max_posts_in_box: int):
     """Thread used to expire actors from the cache and archive old posts
     """
     while True:
