@@ -1633,9 +1633,10 @@ class PubServer(BaseHTTPRequestHandler):
               account_outbox_thread_name + '/' +
               str(self.server.outbox_thread_index[account_outbox_thread_name]))
         print('THREAD: _post_to_outbox')
+        message_json_copy = message_json.copy()
         self.server.outboxThread[account_outbox_thread_name][index] = \
             thread_with_trace(target=self._post_to_outbox,
-                              args=(message_json.copy(),
+                              args=(message_json_copy,
                                     self.server.project_version, None,
                                     curr_session, proxy_type),
                               daemon=True)
@@ -21111,12 +21112,15 @@ def run_daemon(check_actor_timeout: int,
                           args=(base_dir, httpd.fitness), daemon=True)
     httpd.thrFitness.start()
 
+    httpd.recent_posts_cache = {}
+
     print('THREAD: Creating cache expiry thread')
     httpd.thrCache = \
         thread_with_trace(target=expire_cache,
                           args=(base_dir, httpd.person_cache,
                                 httpd.http_prefix,
                                 archive_dir,
+                                httpd.recent_posts_cache,
                                 httpd.maxPostsInBox), daemon=True)
     httpd.thrCache.start()
 
@@ -21150,7 +21154,6 @@ def run_daemon(check_actor_timeout: int,
     else:
         httpd.thrSharesExpire.start()
 
-    httpd.recent_posts_cache = {}
     httpd.max_recent_posts = max_recent_posts
     httpd.iconsCache = {}
     httpd.fontsCache = {}

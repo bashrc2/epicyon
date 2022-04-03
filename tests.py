@@ -678,7 +678,7 @@ def _test_cache():
     assert result['test'] == 'This is a test'
 
 
-def _test_threads_function(param: str):
+def _test_threads_function(param1: str, param2: str):
     for _ in range(10000):
         time.sleep(2)
 
@@ -687,7 +687,7 @@ def _test_threads():
     print('test_threads')
     thr = \
         thread_with_trace(target=_test_threads_function,
-                          args=('test',),
+                          args=('test', 'test2'),
                           daemon=True)
     thr.start()
     assert thr.is_alive() is True
@@ -4869,6 +4869,122 @@ def _test_post_field_names(source_file: str, fieldnames: []):
                     assert False
 
 
+def _test_thread_functions():
+    print('test_thread_functions')
+    modules = {}
+    threads_called_in_modules = []
+
+    # get the source for each module
+    for _, _, files in os.walk('.'):
+        for source_file in files:
+            if not source_file.endswith('.py'):
+                continue
+            if source_file.startswith('.#'):
+                continue
+            if source_file.startswith('flycheck_'):
+                continue
+            mod_name = source_file.replace('.py', '')
+            if mod_name == 'threads':
+                # don't test the threads module itself
+                continue
+            modules[mod_name] = {
+                'functions': []
+            }
+            source_str = ''
+            with open(source_file, 'r') as fp_src:
+                source_str = fp_src.read()
+                modules[mod_name]['source'] = source_str
+                if 'thread_with_trace(' in source_str:
+                    threads_called_in_modules.append(mod_name)
+            with open(source_file, 'r') as fp_src:
+                lines = fp_src.readlines()
+                modules[mod_name]['lines'] = lines
+
+    for mod_name in threads_called_in_modules:
+        thread_sections = \
+            modules[mod_name]['source'].split('thread_with_trace(')
+        ctr = 0
+        for thread_str in thread_sections:
+            if ctr == 0 or ',' not in thread_str:
+                ctr += 1
+                continue
+            thread_function_args = thread_str.split(',')
+            first_parameter = thread_function_args[0]
+            if 'target=' not in first_parameter:
+                ctr += 1
+                continue
+            thread_function_name = first_parameter.split('target=')[1].strip()
+            if not thread_function_name:
+                ctr += 1
+                continue
+            if thread_function_name.startswith('self.'):
+                thread_function_name = thread_function_name.split('self.')[1]
+            # is this function declared at the top of the module
+            # or defined within the module?
+            import_str = ' import ' + thread_function_name
+            def_str = 'def ' + thread_function_name + '('
+            if import_str not in modules[mod_name]['source']:
+                if def_str not in modules[mod_name]['source']:
+                    print(mod_name + ' ' + first_parameter)
+                    print(import_str + ' not in ' + mod_name)
+                    assert(False)
+            if def_str in modules[mod_name]['source']:
+                defininition_module = mod_name
+            else:
+                # which module is the thread function defined within?
+                test_str = modules[mod_name]['source'].split(import_str)[0]
+                defininition_module = test_str.split('from ')[-1]
+            print('Thread function ' + thread_function_name +
+                  ' defined in ' + defininition_module)
+            # check the function arguments
+            second_parameter = thread_function_args[1]
+            if 'args=' not in second_parameter:
+                print('No args parameter in ' + thread_function_name +
+                      ' module ' + mod_name)
+                ctr += 1
+                continue
+            arg_ctr = 0
+            calling_function_args_list = []
+            for func_arg in thread_function_args:
+                if arg_ctr == 0:
+                    arg_ctr += 1
+                    continue
+                last_arg = False
+                if '(' in func_arg:
+                    func_arg = func_arg.split('(')[1]
+
+                if func_arg.endswith(')'):
+                    func_arg = func_arg.split(')')[0]
+                    last_arg = True
+                func_arg = func_arg.strip()
+                calling_function_args_list.append(func_arg)
+                if last_arg:
+                    break
+                arg_ctr += 1
+#            print(mod_name + ' ' + thread_function_name + ' ' +
+#                  str(calling_function_args_list))
+            # get the function definition arguments
+            test_str = \
+                modules[defininition_module]['source'].split(def_str)[1]
+            test_str = test_str.split(')')[0]
+            definition_function_args_list = test_str.split(',')
+            if len(definition_function_args_list) > 0:
+                if definition_function_args_list[0] == 'self':
+                    definition_function_args_list = \
+                        definition_function_args_list[1:]
+            if len(definition_function_args_list) != \
+               len(calling_function_args_list):
+                print('Thread function ' + thread_function_name +
+                      ' has ' + str(len(definition_function_args_list)) +
+                      ' arguments, but ' +
+                      str(len(calling_function_args_list)) +
+                      ' were given in module ' + mod_name)
+                print(str(definition_function_args_list))
+                print(str(calling_function_args_list))
+                assert(False)
+            ctr += 1
+
+
 def _test_functions():
     print('test_functions')
     function = {}
@@ -6779,6 +6895,7 @@ def run_all_tests():
                            ['queue_json', 'post_json_object',
                             'message_json', 'liked_post_json'])
     _test_checkbox_names()
+    _test_thread_functions()
     _test_functions()
     _test_bold_reading()
     _test_published_to_local_timezone()
