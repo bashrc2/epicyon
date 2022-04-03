@@ -39,6 +39,7 @@ from collections import deque, namedtuple
 from numbers import Integral, Real
 
 from context import getApschemaV1_9
+from context import getApschemaV1_10
 from context import getApschemaV1_20
 from context import getApschemaV1_21
 from context import getLitepubV0_1
@@ -408,6 +409,13 @@ def load_document(url):
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getApschemaV1_9()
+            }
+            return doc
+        elif url.endswith('/apschema/v1.10'):
+            doc = {
+                'contextUrl': None,
+                'documentUrl': url,
+                'document': getApschemaV1_10()
             }
             return doc
         elif url.endswith('/apschema/v1.20'):
