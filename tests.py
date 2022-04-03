@@ -4950,10 +4950,10 @@ def _test_thread_functions():
                     arg_ctr += 1
                     continue
                 last_arg = False
-                if '(' in func_arg:
+                if '(' in func_arg and '()' not in func_arg:
                     func_arg = func_arg.split('(')[1]
 
-                if func_arg.endswith(')'):
+                if func_arg.endswith(')') and '()' not in func_arg:
                     func_arg = func_arg.split(')')[0]
                     last_arg = True
                 func_arg = func_arg.strip()

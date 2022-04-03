@@ -2495,16 +2495,14 @@ def send_post(signing_priv_key_pem: str, project_version: str,
         send_threads.pop(0)
         print('WARN: thread killed')
     print('THREAD: thread_send_post')
-    signature_header_json_copy = signature_header_json.copy()
-    signature_header_json_ld_copy = signature_header_json_ld.copy()
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
                                 post_json_str,
                                 federation_list,
                                 inbox_url, base_dir,
-                                signature_header_json_copy,
-                                signature_header_json_ld_copy,
+                                signature_header_json.copy(),
+                                signature_header_json_ld.copy(),
                                 post_log, debug, http_prefix,
                                 domain_full), daemon=True)
     send_threads.append(thr)
@@ -2907,16 +2905,14 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         pprint(post_json_object)
     domain_full = get_full_domain(domain, port)
     print('THREAD: thread_send_post 2')
-    signature_header_json_copy = signature_header_json.copy(),
-    signature_header_json_ld_copy = signature_header_json_ld.copy(),
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
                                 post_json_str,
                                 federation_list,
                                 inbox_url, base_dir,
-                                signature_header_json_copy,
-                                signature_header_json_ld_copy,
+                                signature_header_json.copy(),
+                                signature_header_json_ld.copy(),
                                 post_log, debug,
                                 http_prefix, domain_full), daemon=True)
     send_threads.append(thr)
@@ -3492,7 +3488,6 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
     """Returns a thread used to send a post to followers
     """
     print('THREAD: send_to_followers')
-    post_json_object_copy = post_json_object.copy()
     send_thread = \
         thread_with_trace(target=send_to_followers,
                           args=(server, session, session_onion, session_i2p,
@@ -3501,7 +3496,7 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
                                 http_prefix, federation_list,
                                 send_threads, post_log,
                                 cached_webfingers, person_cache,
-                                post_json_object_copy, debug,
+                                post_json_object.copy(), debug,
                                 project_version,
                                 shared_items_federated_domains,
                                 shared_item_federation_tokens,

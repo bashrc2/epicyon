@@ -1633,10 +1633,9 @@ class PubServer(BaseHTTPRequestHandler):
               account_outbox_thread_name + '/' +
               str(self.server.outbox_thread_index[account_outbox_thread_name]))
         print('THREAD: _post_to_outbox')
-        message_json_copy = message_json.copy()
         self.server.outboxThread[account_outbox_thread_name][index] = \
             thread_with_trace(target=self._post_to_outbox,
-                              args=(message_json_copy,
+                              args=(message_json.copy(),
                                     self.server.project_version, None,
                                     curr_session, proxy_type),
                               daemon=True)
