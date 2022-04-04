@@ -417,7 +417,7 @@ SHARES_PER_PAGE = 12
 
 
 def save_domain_qrcode(base_dir: str, http_prefix: str,
-                       domain_full: str, scale=6) -> None:
+                       domain_full: str, scale : int = 6) -> None:
     """Saves a qrcode image for the domain name
     This helps to transfer onion or i2p domains to a mobile device
     """
