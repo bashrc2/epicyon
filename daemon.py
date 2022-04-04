@@ -16,7 +16,6 @@ import datetime
 from socket import error as SocketError
 import errno
 from functools import partial
-import pyqrcode
 # for saving images
 from hashlib import sha256
 from hashlib import md5
@@ -389,6 +388,7 @@ from webapp_likers import html_likers_of_post
 from crawlers import update_known_crawlers
 from crawlers import blocked_user_agent
 from crawlers import load_known_web_bots
+from qrcode import save_domain_qrcode
 import os
 
 
@@ -414,16 +414,6 @@ FOLLOWS_PER_PAGE = 6
 
 # number of item shares per page
 SHARES_PER_PAGE = 12
-
-
-def save_domain_qrcode(base_dir: str, http_prefix: str,
-                       domain_full: str, scale : int = 6) -> None:
-    """Saves a qrcode image for the domain name
-    This helps to transfer onion or i2p domains to a mobile device
-    """
-    qrcode_filename = base_dir + '/accounts/qrcode.png'
-    url = pyqrcode.create(http_prefix + '://' + domain_full)
-    url.png(qrcode_filename, scale)
 
 
 class PubServer(BaseHTTPRequestHandler):
