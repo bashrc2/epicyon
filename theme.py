@@ -528,7 +528,7 @@ def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
     save_json(theme_params, custom_theme_filename)
     set_theme(base_dir, theme_name, domain,
               allow_local_network_access, system_language,
-              dyslexic_font)
+              dyslexic_font, False)
 
 
 def reset_theme_designer_settings(base_dir: str, theme_name: str, domain: str,
@@ -575,24 +575,30 @@ def _set_theme_default(base_dir: str, allow_local_network_access: bool):
     name = 'default'
     _remove_theme(base_dir)
     _set_theme_in_config(base_dir, name)
-    bg_params = {
-        "login": "jpg",
-        "follow": "jpg",
-        "options": "jpg",
-        "search": "jpg"
-    }
-    theme_params = {
-        "newswire-publish-icon": True,
-        "full-width-timeline-buttons": False,
-        "icons-as-buttons": False,
-        "rss-icon-at-top": True,
-        "publish-button-at-top": False,
-        "banner-height": "20vh",
-        "banner-height-mobile": "10vh",
-        "search-banner-height-mobile": "15vh"
-    }
-    _set_theme_from_dict(base_dir, name, theme_params, bg_params,
-                         allow_local_network_access)
+
+    variables_file = base_dir + '/theme/' + name + '/theme.json'
+    if os.path.isfile(variables_file):
+        _read_variables_file(base_dir, name, variables_file,
+                             allow_local_network_access)
+    else:
+        bg_params = {
+            "login": "jpg",
+            "follow": "jpg",
+            "options": "jpg",
+            "search": "jpg"
+        }
+        theme_params = {
+            "newswire-publish-icon": True,
+            "full-width-timeline-buttons": False,
+            "icons-as-buttons": False,
+            "rss-icon-at-top": True,
+            "publish-button-at-top": False,
+            "banner-height": "20vh",
+            "banner-height-mobile": "10vh",
+            "search-banner-height-mobile": "15vh"
+        }
+        _set_theme_from_dict(base_dir, name, theme_params, bg_params,
+                             allow_local_network_access)
 
 
 def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
@@ -846,7 +852,7 @@ def _set_clear_cache_flag(base_dir: str) -> None:
 
 def set_theme(base_dir: str, name: str, domain: str,
               allow_local_network_access: bool, system_language: str,
-              dyslexic_font: bool) -> bool:
+              dyslexic_font: bool, designer_reset: bool) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
@@ -854,7 +860,7 @@ def set_theme(base_dir: str, name: str, domain: str,
     prev_theme_name = get_theme(base_dir)
 
     # if the theme has changed then remove any custom settings
-    if prev_theme_name != name:
+    if prev_theme_name != name or designer_reset:
         reset_theme_designer_settings(base_dir, name, domain,
                                       allow_local_network_access,
                                       system_language)
@@ -867,7 +873,8 @@ def set_theme(base_dir: str, name: str, domain: str,
         theme_name_lower = theme_name.lower()
         if name == theme_name_lower:
             if prev_theme_name:
-                if prev_theme_name.lower() != theme_name_lower:
+                if prev_theme_name.lower() != theme_name_lower or \
+                   designer_reset:
                     # change the banner and profile image
                     # to the default for the theme
                     _set_theme_images(base_dir, name)

@@ -13,6 +13,7 @@ VALID_CONTEXTS = (
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
     "*/apschema/v1.9",
+    "*/apschema/v1.10",
     "*/apschema/v1.21",
     "*/apschema/v1.20",
     "*/litepub-0.1.jsonld",
@@ -152,6 +153,44 @@ def getApschemaV1_20() -> {}:
             "value": "schema:value",
             "discoverable": "toot:discoverable",
             "wall": "sm:wall"
+        }
+    }
+
+
+def getApschemaV1_10() -> {}:
+    # https://domain/apschema/v1.10
+    return {
+        '@context': {
+            'Hashtag': 'as:Hashtag',
+            'PropertyValue': 'schema:PropertyValue',
+            'commentPolicy': 'zot:commentPolicy',
+            'conversation': 'ostatus:conversation',
+            'diaspora': 'https://diasporafoundation.org/ns/',
+            'directMessage': 'zot:directMessage',
+            'emojiReaction': 'zot:emojiReaction',
+            'expires': 'zot:expires',
+            'guid': 'diaspora:guid',
+            'id': '@id',
+            'locationAddress': 'zot:locationAddress',
+            'locationDeleted': 'zot:locationDeleted',
+            'locationPrimary': 'zot:locationPrimary',
+            'magicEnv': {'@id': 'zot:magicEnv', '@type': '@id'},
+            'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
+            'meAlgorithm': 'zot:meAlgorithm',
+            'meCreator': 'zot:meCreator',
+            'meData': 'zot:meData',
+            'meDataType': 'zot:meDataType',
+            'meEncoding': 'zot:meEncoding',
+            'meSignatureValue': 'zot:meSignatureValue',
+            'nomadicHubs': 'zot:nomadicHubs',
+            'nomadicLocation': 'zot:nomadicLocation',
+            'nomadicLocations': {'@id': 'zot:nomadicLocations',
+                                 '@type': '@id'},
+            'ostatus': 'http://ostatus.org#',
+            'schema': 'http://schema.org#',
+            'type': '@type',
+            'value': 'schema:value',
+            'zot': 'https://hubzilla.vikshepa.com/apschema#'
         }
     }
 

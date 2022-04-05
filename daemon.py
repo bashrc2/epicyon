@@ -16,7 +16,6 @@ import datetime
 from socket import error as SocketError
 import errno
 from functools import partial
-import pyqrcode
 # for saving images
 from hashlib import sha256
 from hashlib import md5
@@ -389,6 +388,7 @@ from webapp_likers import html_likers_of_post
 from crawlers import update_known_crawlers
 from crawlers import blocked_user_agent
 from crawlers import load_known_web_bots
+from qrcode import save_domain_qrcode
 import os
 
 
@@ -414,16 +414,6 @@ FOLLOWS_PER_PAGE = 6
 
 # number of item shares per page
 SHARES_PER_PAGE = 12
-
-
-def save_domain_qrcode(base_dir: str, http_prefix: str,
-                       domain_full: str, scale=6) -> None:
-    """Saves a qrcode image for the domain name
-    This helps to transfer onion or i2p domains to a mobile device
-    """
-    qrcode_filename = base_dir + '/accounts/qrcode.png'
-    url = pyqrcode.create(http_prefix + '://' + domain_full)
-    url.png(qrcode_filename, scale)
 
 
 class PubServer(BaseHTTPRequestHandler):
@@ -2521,7 +2511,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               system_language)
                 set_theme(base_dir, theme_name, domain,
                           allow_local_network_access, system_language,
-                          dyslexic_font)
+                          dyslexic_font, True)
 
             if calling_domain.endswith('.onion') and onion_domain:
                 origin_path_str = \
@@ -5600,7 +5590,7 @@ class PubServer(BaseHTTPRequestHandler):
                             set_theme(base_dir, self.server.theme_name, domain,
                                       allow_local_network_access,
                                       system_language,
-                                      self.server.dyslexic_font)
+                                      self.server.dyslexic_font, True)
                             self.server.text_mode_banner = \
                                 get_text_mode_banner(self.server.base_dir)
                             self.server.iconsCache = {}
@@ -6555,7 +6545,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 set_theme(base_dir, curr_theme, domain,
                                           allow_local_network_access,
                                           system_language,
-                                          self.server.dyslexic_font)
+                                          self.server.dyslexic_font, False)
                                 self.server.text_mode_banner = \
                                     get_text_mode_banner(base_dir)
                                 self.server.iconsCache = {}
@@ -6852,7 +6842,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain,
                                       self.server.allow_local_network_access,
                                       self.server.system_language,
-                                      self.server.dyslexic_font)
+                                      self.server.dyslexic_font, False)
 
                     # low bandwidth images checkbox
                     if path.startswith('/users/' + admin_nickname + '/') or \
