@@ -201,7 +201,7 @@
     "hashtag-size2": "40px",
     "hashtag-margin": "2%",
     "text-entry-foreground": "#ccc",
-    "text-entry-background": "#111"
+    "text-entry-background": "#111",
     "header-bg-color": "#282c37",
     "post-bg-color": "#282c37",
     "column-left-color": "#282c37",
@@ -224,9 +224,9 @@
     "border-color": "#505050",
     "border-width": "2px",
     "border-width-header": "2px",
-    "font-color-header": "#ccc",;
+    "font-color-header": "#ccc",
     "font-size-button-mobile": "34px",
-    "font-size-links: 18px",
+    "font-size-links": "18px",
     "font-size-newswire": "18px",
     "font-size-newswire-mobile": "38px",
     "font-size": "30px",
