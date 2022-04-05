@@ -575,24 +575,30 @@ def _set_theme_default(base_dir: str, allow_local_network_access: bool):
     name = 'default'
     _remove_theme(base_dir)
     _set_theme_in_config(base_dir, name)
-    bg_params = {
-        "login": "jpg",
-        "follow": "jpg",
-        "options": "jpg",
-        "search": "jpg"
-    }
-    theme_params = {
-        "newswire-publish-icon": True,
-        "full-width-timeline-buttons": False,
-        "icons-as-buttons": False,
-        "rss-icon-at-top": True,
-        "publish-button-at-top": False,
-        "banner-height": "20vh",
-        "banner-height-mobile": "10vh",
-        "search-banner-height-mobile": "15vh"
-    }
-    _set_theme_from_dict(base_dir, name, theme_params, bg_params,
-                         allow_local_network_access)
+
+    variables_file = base_dir + '/theme/' + name + '/theme.json'
+    if os.path.isfile(variables_file):
+        _read_variables_file(base_dir, name, variables_file,
+                             allow_local_network_access)
+    else:
+        bg_params = {
+            "login": "jpg",
+            "follow": "jpg",
+            "options": "jpg",
+            "search": "jpg"
+        }
+        theme_params = {
+            "newswire-publish-icon": True,
+            "full-width-timeline-buttons": False,
+            "icons-as-buttons": False,
+            "rss-icon-at-top": True,
+            "publish-button-at-top": False,
+            "banner-height": "20vh",
+            "banner-height-mobile": "10vh",
+            "search-banner-height-mobile": "15vh"
+        }
+        _set_theme_from_dict(base_dir, name, theme_params, bg_params,
+                             allow_local_network_access)
 
 
 def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
