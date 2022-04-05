@@ -210,6 +210,7 @@
     "dropdown-bg-color": "#111",
     "dropdown-bg-color-hover": "#333",
     "dropdown-fg-color-hover": "#dddddd",
+    "main-bg-color": "#282c37",
     "main-bg-color-reply": "#212c37",
     "main-bg-color-dm": "#222",
     "main-bg-color-report": "#221c27",
