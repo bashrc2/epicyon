@@ -867,7 +867,8 @@ def set_theme(base_dir: str, name: str, domain: str,
         theme_name_lower = theme_name.lower()
         if name == theme_name_lower:
             if prev_theme_name:
-                if prev_theme_name.lower() != theme_name_lower:
+                if prev_theme_name.lower() != theme_name_lower or \
+                   designer_reset:
                     # change the banner and profile image
                     # to the default for the theme
                     _set_theme_images(base_dir, name)
