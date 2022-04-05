@@ -2511,7 +2511,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               system_language)
                 set_theme(base_dir, theme_name, domain,
                           allow_local_network_access, system_language,
-                          dyslexic_font)
+                          dyslexic_font, True)
 
             if calling_domain.endswith('.onion') and onion_domain:
                 origin_path_str = \
@@ -5590,7 +5590,7 @@ class PubServer(BaseHTTPRequestHandler):
                             set_theme(base_dir, self.server.theme_name, domain,
                                       allow_local_network_access,
                                       system_language,
-                                      self.server.dyslexic_font)
+                                      self.server.dyslexic_font, True)
                             self.server.text_mode_banner = \
                                 get_text_mode_banner(self.server.base_dir)
                             self.server.iconsCache = {}
@@ -6545,7 +6545,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 set_theme(base_dir, curr_theme, domain,
                                           allow_local_network_access,
                                           system_language,
-                                          self.server.dyslexic_font)
+                                          self.server.dyslexic_font, False)
                                 self.server.text_mode_banner = \
                                     get_text_mode_banner(base_dir)
                                 self.server.iconsCache = {}
@@ -6842,7 +6842,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain,
                                       self.server.allow_local_network_access,
                                       self.server.system_language,
-                                      self.server.dyslexic_font)
+                                      self.server.dyslexic_font, False)
 
                     # low bandwidth images checkbox
                     if path.startswith('/users/' + admin_nickname + '/') or \

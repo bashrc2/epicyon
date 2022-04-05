@@ -528,7 +528,7 @@ def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
     save_json(theme_params, custom_theme_filename)
     set_theme(base_dir, theme_name, domain,
               allow_local_network_access, system_language,
-              dyslexic_font)
+              dyslexic_font, False)
 
 
 def reset_theme_designer_settings(base_dir: str, theme_name: str, domain: str,
@@ -846,7 +846,7 @@ def _set_clear_cache_flag(base_dir: str) -> None:
 
 def set_theme(base_dir: str, name: str, domain: str,
               allow_local_network_access: bool, system_language: str,
-              dyslexic_font: bool) -> bool:
+              dyslexic_font: bool, designer_reset: bool) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
@@ -854,7 +854,7 @@ def set_theme(base_dir: str, name: str, domain: str,
     prev_theme_name = get_theme(base_dir)
 
     # if the theme has changed then remove any custom settings
-    if prev_theme_name != name:
+    if prev_theme_name != name or designer_reset:
         reset_theme_designer_settings(base_dir, name, domain,
                                       allow_local_network_access,
                                       system_language)
