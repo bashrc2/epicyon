@@ -168,7 +168,7 @@
     "event-public-color": "#282c37",
     "today-foreground": "black",
     "today-circle": "grey",
-    "event-background": "lightgrey",
+    "event-background": "black",
     "event-background-private": "grey",
     "event-foreground": "white",
     "title-text": "white",
