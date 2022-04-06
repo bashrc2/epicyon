@@ -239,7 +239,7 @@ def html_podcast_episode(css_cache: {}, translate: {},
             podcast_str += \
                 "  <iframe loading=\"lazy\" decoding=\"async\" src=\"" + \
                 url + "\" width=\"400\" height=\"300\" " + \
-                "frameborder=\"0\" allow=\"autoplay; fullscreen\" " + \
+                "frameborder=\"0\" allow=\"fullscreen\" " + \
                 "allowfullscreen>\n  </iframe>\n"
         elif 'video' in podcast_properties['linkMimeType']:
             video_mime_type = podcast_properties['linkMimeType']
