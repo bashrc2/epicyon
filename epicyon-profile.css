@@ -13,36 +13,36 @@
     --timeline-icon-width: 50px;
     --timeline-icon-width-mobile: 100px;
     --timeline-icon-width-tiny: 50px;
-    --header-bg-color: #e6ebf0;
-    --main-bg-color: #e6ebf0;
-    --post-bg-color: #e6ebf0;
-    --column-left-color: #e6ebf0;
-    --link-bg-color: #e6ebf0;
-    --dropdown-fg-color: #222;
-    --dropdown-bg-color: white;
-    --dropdown-bg-color-hover: lightgrey;
-    --dropdown-fg-color-hover: #222;
-    --main-bg-color-reply: white;
-    --main-bg-color-dm: #e3dbf0;
-    --main-bg-color-report: #e3dbf0;
-    --main-header-color-roles: #ebebf0;
-    --main-fg-color: #2d2c37;
-    --cw-color: #2d2c37;
+    --header-bg-color: #282c37;
+    --main-bg-color: #282c37;
+    --post-bg-color: #282c37;
+    --column-left-color: #282c37;
+    --link-bg-color: #282c37;
+    --dropdown-fg-color: #dddddd;
+    --dropdown-bg-color: #111;
+    --dropdown-bg-color-hover: #333;
+    --dropdown-fg-color-hover: #dddddd;
+    --main-bg-color-reply: #212c37;
+    --main-bg-color-dm: #222;
+    --main-bg-color-report: #221c27;
+    --main-header-color-roles: #282237;
+    --main-fg-color: #dddddd;
+    --cw-color: #dddddd;
     --cw-style: normal;
     --cw-weight: bold;
-    --column-left-fg-color: #2d2c37;
-    --column-right-fg-color: black;
+    --column-left-fg-color: #dddddd;
+    --column-right-fg-color: yellow;
     --column-right-fg-color-voted-on: red;
-    --main-link-color: darkblue;
-    --main-link-color-hover: blue;
-    --main-visited-color: #232c37;
-    --border-color: #c0cdd9;
-    --border-width: 1px;
-    --border-width-header: 1px;
+    --main-link-color: #999;
+    --main-link-color-hover: #bbb;
+    --main-visited-color: #888;
+    --border-color: #505050;
+    --border-width: 2px;
+    --border-width-header: 2px;
     --font-size-header: 18px;
     --font-size-header-mobile: 32px;
-    --font-size-header-tiny: 16px;
-    --font-color-header: black;
+    --font-size-header-tiny: 13px;
+    --font-color-header: #ccc;
     --font-size-button-mobile: 26px;
     --font-size-button-tiny: 13px;
     --font-size-links: 14px;
@@ -91,10 +91,10 @@
     --button-background-hover: #777;
     --button-text-hover: white;
     --button-selected: #666;
-    --button-highlighted: #2b5c6d;
+    --button-highlighted: green;
     --button-fg-highlighted: #FFFFFF;
-    --button-selected-highlighted: #2b5c6d;
-    --button-approve: #2b5c6d;
+    --button-selected-highlighted: darkgreen;
+    --button-approve: darkgreen;
     --button-deny: darkred;
     --button-width-chars: 10ch;
     --button-height: 10px;
@@ -104,16 +104,16 @@
     --image-corners: 10%;
     --gallery-border: #ccc;
     --gallery-hover: #777;
-    --gallery-text-color: black;
+    --gallery-text-color: #ccc;
     --gallery-font-size: 22px;
     --gallery-font-size-mobile: 35px;
     --gallery-font-size-tiny: 17.5px;
     --button-corner-radius: 5px;
     --timeline-border-radius: 5px;
-    --timeline-posts-background-color: #e6ebf0;
+    --timeline-posts-background-color: #282c37;
     --icons-side: right;
-    --title-color: #2a2c37;
-    --focus-color: grey;
+    --title-color: #999;
+    --focus-color: white;
     --quote-right-margin: 0.1em;
     --quote-font-weight: normal;
     --quote-font-size: 120%;
@@ -121,8 +121,8 @@
     --quote-font-size-tiny: 60%;
     --line-spacing: 180%;
     --line-spacing-newswire: 120%;
-    --newswire-item-moderated-color: grey;
-    --newswire-date-moderated-color: grey;
+    --newswire-item-moderated-color: white;
+    --newswire-date-moderated-color: white;
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
@@ -150,14 +150,14 @@
     --column-right-icon-size: 2.1vw;
     --column-right-icon-size-mobile: 10%;
     --column-right-icon-size-tiny: 5%;
-    --newswire-date-color: #00a594;
+    --newswire-date-color: white;
     --newswire-voted-background-color: black;
-    --login-button-color: #2b5c6d;
+    --login-button-color: #2965;
     --login-button-fg-color: black;
     --button-event-corner-radius: 60px;
-    --button-event-background-color: #2b5c6d;
+    --button-event-background-color: green;
     --button-event-fg-color: white;
-    --hashtag-background-color: grey;
+    --hashtag-background-color: black;
     --hashtag-fg-color: white;
     --tab-border-width: 0px;
     --tab-border-color: grey;
@@ -195,7 +195,7 @@
     --profile-text-align: left;
     --verticals-width: 0;
     --italic-font-style: italic;
-    --header-font: 'NimbusSanL';
+    --header-font: 'Arial, Helvetica, sans-serif';
     --button-bottom-margin: 10px;
     --rendering: normal;
     --voteresult-color: #dddddd;
@@ -212,18 +212,18 @@
 }
 
 @font-face {
-    font-family: 'NimbusSanL';
+    font-family: 'Bedstead';
     font-style: italic;
     font-weight: normal;
     font-display: block;
-    src: url('./fonts/NimbusSanL-italic.otf') format('opentype');
+    src: url('./fonts/bedstead.otf') format('opentype');
 }
 @font-face {
-    font-family: 'NimbusSanL';
+    font-family: 'Bedstead';
     font-style: normal;
     font-weight: normal;
     font-display: block;
-    src: url('./fonts/NimbusSanL.otf') format('opentype');
+    src: url('./fonts/bedstead.otf') format('opentype');
 }
 
 body, html {
@@ -231,7 +231,7 @@ body, html {
     color: var(--main-fg-color);
 
     height: 100%;
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     min-width: 950px;
     font-size: var(--font-size);
     line-height: var(--line-spacing);
@@ -398,7 +398,7 @@ a:focus {
 }
 
 .profileHeader {
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     position: relative;
     overflow: hidden;
     margin: 10px;
@@ -458,14 +458,14 @@ a:focus {
 
 .about {
     font-size: var(--font-size5);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     float: right;
 }
 
 .blogreplies {
     color: var(--button-highlighted);
     font-size: var(--font-size2);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     float: right;
 }
 
@@ -485,13 +485,13 @@ a:focus {
 
 .new-post-text {
     font-size: var(--font-size2);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     padding: 4px 0;
 }
 
 .new-post-subtext {
     font-size: var(--font-size-header);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     padding: 4px 0;
 }
 
@@ -618,7 +618,7 @@ a:focus {
 
 .gitpatch {
     width: 90%;
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
 }
 
 .searchEmoji {
@@ -661,7 +661,7 @@ a:focus {
 
 .imText {
     font-size: var(--font-size4);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     color: var(--main-link-color);
     background: var(--link-bg-color);
 }
@@ -754,7 +754,7 @@ a:focus {
     margin-left: 25%;
     text-align: left;
     font-size: var(--font-size2);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     font-weight: bold;
     color: var(--button-selected);
     line-height: 40px;
@@ -771,7 +771,7 @@ a:focus {
     width: 10%;
     height: 30px;
     background-color: var(--button-background);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
 }
 
 input[type=number] {
@@ -784,12 +784,12 @@ input[type=number] {
     margin-bottom: 16px;
     resize: vertical;
     font-size: var(--font-size-header);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
 }
 
 .labels {
     font-size: var(--font-size);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
 }
 
 .transparent {
@@ -812,14 +812,14 @@ input[type=number] {
 .labelsright {
     float: right;
     font-size: var(--font-size);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
 }
 
 input[type=date] {
     background-color: var(--main-bg-color-reply);
     color: var(--main-fg-color);
     font-size: var(--font-size);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     border: none;
 }
 
@@ -827,7 +827,7 @@ input[type=time] {
     background-color: var(--main-bg-color-reply);
     color: var(--main-fg-color);
     font-size: var(--font-size);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     border: none;
 }
 
@@ -840,7 +840,7 @@ input[type=submit] {
     border-radius: var(--button-corner-radius);
     cursor: pointer;
     font-size: var(--font-size-header);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     width: 10ch;
     float: right;
 }
@@ -855,7 +855,7 @@ input[type=submit] {
     border-radius: var(--button-corner-radius);
     cursor: pointer;
     font-size: var(--font-size2);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     opacity: 0.7;
 }
 
@@ -885,7 +885,7 @@ input[type=submit]:hover {
 
 .search-result-text {
     font-size: var(--font-size);
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
 }
 
 .search-result img {
@@ -930,7 +930,7 @@ input[type=submit]:hover {
 .newPostDropdown > label:after,
 .newPostDropdown > a[role="button"]:after {
     content: "";
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
     display: inline-block;
     margin-left: 6px;
 }
@@ -1046,7 +1046,7 @@ div.gallery img {
 .invisible {
     color: transparent;
     font-size: 0;
-    font-family: 'NimbusSanL';
+    font-family: 'Arial, Helvetica, sans-serif';
 }
 
 .gallerytext {
@@ -1078,7 +1078,7 @@ div.container {
         color: var(--main-fg-color);
 
         height: 100%;
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         min-width: 950px;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
@@ -1100,7 +1100,7 @@ div.container {
     }
     .followText {
         font-size: var(--follow-text-size1);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .accountsTable {
         width: 100%;
@@ -1303,7 +1303,7 @@ div.container {
     }
     .likesCount {
         font-size: var(--font-size-likes);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         float: right;
         padding: 10px 0;
         transform: translateX(var(--likes-count-offset));
@@ -1311,25 +1311,25 @@ div.container {
     }
     .container p.administeredby {
         font-size: var(--font-size-header);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .toxaddr {
         font-size: var(--font-size-tox);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .ssbaddr {
         font-size: var(--font-size-pgp-key);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .pgp {
         font-size: var(--font-size-pgp-key);
         color: var(--main-link-color);
         background: var(--link-bg-color);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     body, html {
         font-size: var(--font-size4);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .galleryContainer {
         display: grid;
@@ -1340,7 +1340,7 @@ div.container {
     div.gallerytext {
         color: var(--gallery-text-color);
         font-size: var(--gallery-font-size);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     div.gallery {
         margin: 5px 1.5%;
@@ -1451,7 +1451,7 @@ div.container {
         color: var(--button-event-fg-color);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding);
         transition: all 0.5s;
         cursor: pointer;
@@ -1536,7 +1536,7 @@ div.container {
         color: var(--publish-button-text);
         text-align: center;
         font-size: var(--font-size-publish-button);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 200px;
@@ -1554,7 +1554,7 @@ div.container {
         color: var(--button-fg-highlighted);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
@@ -1606,7 +1606,7 @@ div.container {
         color: #FFFFFF;
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding);
         width: 20%;
         max-width: 200px;
@@ -1622,7 +1622,7 @@ div.container {
         color: #FFFFFF;
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding);
         width: 20%;
         max-width: 200px;
@@ -1650,7 +1650,7 @@ div.container {
         margin-bottom: 16px;
         resize: vertical;
         font-size: var(--font-size2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
     }
@@ -1664,21 +1664,21 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 10ch;
         float: right;
     }
     .question {
         font-size: var(--font-size);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .questionresult {
         font-size: var(--font-size);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     input[type=radio] {
         font-size: var(--font-size);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 32px;
         vertical-align: middle;
         margin-right: 20px;
@@ -1693,7 +1693,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 20%;
     }
     input[type=file] {
@@ -1705,7 +1705,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 96%;
     }
     .cancelbtn {
@@ -1718,12 +1718,12 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 20%;
     }
     .scope-desc {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .buttonunfollow {
         border-radius: var(--button-corner-radius);
@@ -1732,7 +1732,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding);
         width: 20%;
         max-width: 200px;
@@ -1757,7 +1757,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         opacity: 0.7;
     }
     input[type=checkbox], .profilecheckbox
@@ -1847,7 +1847,7 @@ div.container {
         color: var(--main-fg-color);
 
         height: 100%;
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         min-width: 950px;
         margin-left: 0;
         font-size: var(--font-size);
@@ -2047,7 +2047,7 @@ div.container {
     }
     .likesCount {
         font-size: var(--font-size-likes-mobile);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         margin-left: var(--likes-margin-left-mobile);
         margin-right: var(--likes-margin-right-mobile);
         margin-top: var(--likes-margin-top-mobile);
@@ -2055,30 +2055,30 @@ div.container {
     }
     .container p.administeredby {
         font-size: var(--font-size-tox2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .toxaddr {
         font-size: var(--font-size-tox2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .ssbaddr {
         font-size: var(--font-size-pgp-key2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .pgp {
         font-size: var(--font-size-pgp-key2);
         color: var(--main-link-color);
         background: var(--link-bg-color);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     body, html {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     div.gallerytext {
         color: var(--gallery-text-color);
         font-size: var(--gallery-font-size-mobile);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .galleryContainer {
         display: grid;
@@ -2193,7 +2193,7 @@ div.container {
         color: var(--button-event-fg-color);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-mobile);
         transition: all 0.5s;
         cursor: pointer;
@@ -2258,7 +2258,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-mobile);
         width: 20%;
         min-width: var(--button-width-chars);
@@ -2287,7 +2287,7 @@ div.container {
         color: var(--publish-button-text);
         text-align: center;
         font-size: var(--font-size-newswire-mobile);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -2303,7 +2303,7 @@ div.container {
         color: var(--button-fg-highlighted);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -2354,7 +2354,7 @@ div.container {
         color: #FFFFFF;
         text-align: center;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -2370,7 +2370,7 @@ div.container {
         color: #FFFFFF;
         text-align: center;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -2398,7 +2398,7 @@ div.container {
         margin-bottom: 16px;
         resize: vertical;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
     }
@@ -2412,21 +2412,21 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 10ch;
         float: right;
     }
     .question {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .questionresult {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     input[type=radio] {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         height: 90px;
         vertical-align: middle;
         margin-right: 20px;
@@ -2441,7 +2441,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 20%;
     }
     input[type=file] {
@@ -2453,7 +2453,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 95.4%;
     }
     .cancelbtn {
@@ -2466,12 +2466,12 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 20%;
     }
     .scope-desc {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .buttonunfollow {
         border-radius: var(--button-corner-radius);
@@ -2480,7 +2480,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 200px;
@@ -2505,7 +2505,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         opacity: 0.7;
     }
     input[type=checkbox], .profilecheckbox
@@ -2577,7 +2577,7 @@ div.container {
     }
     .followText {
         font-size: var(--follow-text-size2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .rlab {
         font-size: var(--font-size-mobile);
@@ -2592,7 +2592,7 @@ div.container {
         color: var(--main-fg-color);
 
         height: 100%;
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         min-width: 400px;
         margin-left: 0;
         font-size: var(--font-size);
@@ -2608,7 +2608,7 @@ div.container {
     }
     .likerNames {
         font-size: var(--font-size2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         margin: var(--liker-names-margin);
         line-height: var(--liker-names-vertical-spacing2);
     }
@@ -2792,7 +2792,7 @@ div.container {
     }
     .likesCount {
         font-size: var(--font-size-likes-tiny);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         margin-left: var(--likes-margin-left-tiny);
         margin-right: var(--likes-margin-right-tiny);
         margin-top: var(--likes-margin-top-tiny);
@@ -2800,30 +2800,30 @@ div.container {
     }
     .container p.administeredby {
         font-size: var(--font-size-tox2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .toxaddr {
         font-size: var(--font-size-tox2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .ssbaddr {
         font-size: var(--font-size-pgp-key2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .pgp {
         font-size: var(--font-size-pgp-key2);
         color: var(--main-link-color);
         background: var(--link-bg-color);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     body, html {
         font-size: var(--font-size4);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     div.gallerytext {
         color: var(--gallery-text-color);
         font-size: var(--gallery-font-size-tiny);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .galleryContainer {
         display: grid;
@@ -2938,7 +2938,7 @@ div.container {
         color: var(--button-event-fg-color);
         text-align: center;
         font-size: var(--font-size-button-tiny);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-tiny);
         transition: all 0.5s;
         cursor: pointer;
@@ -3003,7 +3003,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-tiny);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-tiny);
         width: 20%;
         min-width: var(--button-width-chars);
@@ -3032,7 +3032,7 @@ div.container {
         color: var(--publish-button-text);
         text-align: center;
         font-size: var(--font-size-newswire-tiny);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-tiny);
         width: 20%;
         max-width: 400px;
@@ -3048,7 +3048,7 @@ div.container {
         color: var(--button-fg-highlighted);
         text-align: center;
         font-size: var(--font-size-button-tiny);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-tiny);
         width: 20%;
         max-width: 400px;
@@ -3099,7 +3099,7 @@ div.container {
         color: #FFFFFF;
         text-align: center;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-tiny);
         width: 20%;
         max-width: 400px;
@@ -3115,7 +3115,7 @@ div.container {
         color: #FFFFFF;
         text-align: center;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-tiny);
         width: 20%;
         max-width: 400px;
@@ -3143,7 +3143,7 @@ div.container {
         margin-bottom: 16px;
         resize: vertical;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
     }
@@ -3157,21 +3157,21 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size4);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 10ch;
         float: right;
     }
     .question {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .questionresult {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     input[type=radio] {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         height: 90px;
         vertical-align: middle;
         margin-right: 20px;
@@ -3186,7 +3186,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 20%;
     }
     input[type=file] {
@@ -3198,7 +3198,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 95.4%;
     }
     .cancelbtn {
@@ -3211,12 +3211,12 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         width: 20%;
     }
     .scope-desc {
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .buttonunfollow {
         border-radius: var(--button-corner-radius);
@@ -3225,7 +3225,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-tiny);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-tiny);
         width: 20%;
         max-width: 200px;
@@ -3250,7 +3250,7 @@ div.container {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
         opacity: 0.7;
     }
     input[type=checkbox], .profilecheckbox
@@ -3323,7 +3323,7 @@ div.container {
     }
     .followText {
         font-size: var(--follow-text-size2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .rlab {
         font-size: var(--font-size-tiny);
@@ -3349,7 +3349,7 @@ div.container {
     }
     .labels {
         font-size: var(--font-size2);
-        font-family: 'NimbusSanL';
+        font-family: 'Arial, Helvetica, sans-serif';
     }
     .newPostDropdown img {
         width: var(--font-size-dropdown-header-tiny);
