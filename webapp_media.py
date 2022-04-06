@@ -114,6 +114,17 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     url = url.split('&')[0]
                 if '?utm_' in url:
                     url = url.split('?utm_')[0]
+                # explicitly turn off autoplay
+                if '?' in url:
+                    if '&autoplay=' not in url:
+                        url += '&autoplay=0'
+                    else:
+                        url = url.replace('&autoplay=1', '&autoplay=0')
+                else:
+                    if '?autoplay=' not in url:
+                        url += '?autoplay=0'
+                    else:
+                        url = url.replace('?autoplay=1', '?autoplay=0')
                 content += \
                     "<center>\n<iframe loading=\"lazy\" " + \
                     "decoding=\"async\" src=\"" + \
