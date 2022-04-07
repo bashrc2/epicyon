@@ -47,7 +47,6 @@ def html_person_options(default_timeline: str,
                         blog_address: str,
                         tox_address: str,
                         briar_address: str,
-                        jami_address: str,
                         cwtch_address: str,
                         enigma_pub_key: str,
                         pgp_pub_key: str,
@@ -237,9 +236,6 @@ def html_person_options(default_timeline: str,
             options_str += \
                 '<p class="imText">briar://' + \
                 remove_html(briar_address) + '</p>\n'
-    if jami_address:
-        options_str += \
-            '<p class="imText">Jami: ' + remove_html(jami_address) + '</p>\n'
     if cwtch_address:
         options_str += \
             '<p class="imText">Cwtch: ' + remove_html(cwtch_address) + '</p>\n'

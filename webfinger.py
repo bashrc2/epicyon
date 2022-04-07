@@ -406,7 +406,6 @@ def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
         "ssb": "ssb",
         "briar": "briar",
         "cwtch": "cwtch",
-        "jami": "jami",
         "tox": "toxId"
     }
 

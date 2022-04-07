@@ -24,7 +24,6 @@ from posts import get_person_box
 from auth import create_basic_auth_header
 from session import post_json
 from xmpp import get_xmpp_address
-from jami import get_jami_address
 from matrix import get_matrix_address
 from briar import get_briar_address
 from cwtch import get_cwtch_address
@@ -657,9 +656,6 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
-    jami_address = get_jami_address(actor)
-    if jami_address:
-        vcard_str += 'IMPP:jami:' + jami_address + '\n'
     matrix_address = get_matrix_address(actor)
     if matrix_address:
         vcard_str += 'IMPP:matrix:' + matrix_address + '\n'
@@ -710,11 +706,6 @@ def actor_to_vcard_xml(actor: {}, domain: str) -> str:
         vcard_str += '    <impp>' + \
             '<parameters><type><text>xmpp</text></type></parameters>' + \
             '<text>' + xmpp_address + '</text></impp>\n'
-    jami_address = get_jami_address(actor)
-    if jami_address:
-        vcard_str += '    <impp>' + \
-            '<parameters><type><text>jami</text></type></parameters>' + \
-            '<text>' + jami_address + '</text></impp>\n'
     matrix_address = get_matrix_address(actor)
     if matrix_address:
         vcard_str += '    <impp>' + \
