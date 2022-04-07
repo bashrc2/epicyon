@@ -49,8 +49,6 @@ from tox import get_tox_address
 from tox import set_tox_address
 from briar import get_briar_address
 from briar import set_briar_address
-from jami import get_jami_address
-from jami import set_jami_address
 from cwtch import get_cwtch_address
 from cwtch import set_cwtch_address
 from matrix import get_matrix_address
@@ -5946,18 +5944,6 @@ class PubServer(BaseHTTPRequestHandler):
                             set_briar_address(actor_json, '')
                             actor_changed = True
 
-                    # change jami address
-                    current_jami_address = get_jami_address(actor_json)
-                    if fields.get('jamiAddress'):
-                        if fields['jamiAddress'] != current_jami_address:
-                            set_jami_address(actor_json,
-                                             fields['jamiAddress'])
-                            actor_changed = True
-                    else:
-                        if current_jami_address:
-                            set_jami_address(actor_json, '')
-                            actor_changed = True
-
                     # change cwtch address
                     current_cwtch_address = get_cwtch_address(actor_json)
                     if fields.get('cwtchAddress'):
@@ -7820,7 +7806,6 @@ class PubServer(BaseHTTPRequestHandler):
             blog_address = None
             tox_address = None
             briar_address = None
-            jami_address = None
             cwtch_address = None
             ssb_address = None
             email_address = None
@@ -7849,7 +7834,6 @@ class PubServer(BaseHTTPRequestHandler):
                 blog_address = get_blog_address(actor_json)
                 tox_address = get_tox_address(actor_json)
                 briar_address = get_briar_address(actor_json)
-                jami_address = get_jami_address(actor_json)
                 cwtch_address = get_cwtch_address(actor_json)
                 email_address = get_email_address(actor_json)
                 enigma_pub_key = get_enigma_pub_key(actor_json)
@@ -7899,7 +7883,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     xmpp_address, matrix_address,
                                     ssb_address, blog_address,
                                     tox_address, briar_address,
-                                    jami_address, cwtch_address,
+                                    cwtch_address,
                                     enigma_pub_key,
                                     pgp_pub_key, pgp_fingerprint,
                                     email_address,

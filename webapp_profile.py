@@ -51,7 +51,6 @@ from pgp import get_pgp_pub_key
 from enigma import get_enigma_pub_key
 from tox import get_tox_address
 from briar import get_briar_address
-from jami import get_jami_address
 from cwtch import get_cwtch_address
 from filters import is_filtered
 from follow import is_follower_of_person
@@ -675,11 +674,10 @@ def html_profile(signing_priv_key_pem: str,
     ssb_address = get_ssb_address(profile_json)
     tox_address = get_tox_address(profile_json)
     briar_address = get_briar_address(profile_json)
-    jami_address = get_jami_address(profile_json)
     cwtch_address = get_cwtch_address(profile_json)
     if donate_url or website_url or xmpp_address or matrix_address or \
        ssb_address or tox_address or briar_address or \
-       jami_address or cwtch_address or pgp_pub_key or enigma_pub_key or \
+       cwtch_address or pgp_pub_key or enigma_pub_key or \
        pgp_fingerprint or email_address:
         donate_section = '<div class="container">\n'
         donate_section += '  <center>\n'
@@ -724,10 +722,6 @@ def html_profile(signing_priv_key_pem: str,
                 donate_section += \
                     '<p>briar://<label class="toxaddr">' + \
                     briar_address + '</label></p>\n'
-        if jami_address:
-            donate_section += \
-                '<p>Jami: <label class="toxaddr">' + \
-                jami_address + '</label></p>\n'
         if cwtch_address:
             donate_section += \
                 '<p>Cwtch: <label class="toxaddr">' + \
@@ -1941,7 +1935,6 @@ def _html_edit_profile_contact_info(nickname: str,
                                     ssb_address: str,
                                     tox_address: str,
                                     briar_address: str,
-                                    jami_address: str,
                                     cwtch_address: str,
                                     translate: {}) -> str:
     """Contact Information section of edit profile screen
@@ -1958,7 +1951,6 @@ def _html_edit_profile_contact_info(nickname: str,
     edit_profile_form += edit_text_field('Tox', 'toxAddress', tox_address)
     edit_profile_form += edit_text_field('Briar', 'briarAddress',
                                          briar_address)
-    edit_profile_form += edit_text_field('Jami', 'jamiAddress', jami_address)
     edit_profile_form += edit_text_field('Cwtch', 'cwtchAddress',
                                          cwtch_address)
     edit_profile_form += \
@@ -2208,7 +2200,7 @@ def html_edit_profile(server, css_cache: {}, translate: {},
     bio_str = donate_url = website_url = email_address = ''
     pgp_pub_key = enigma_pub_key = ''
     pgp_fingerprint = xmpp_address = matrix_address = ''
-    ssb_address = blog_address = tox_address = jami_address = ''
+    ssb_address = blog_address = tox_address = ''
     cwtch_address = briar_address = manually_approves_followers = ''
 
     actor_json = load_json(actor_filename)
@@ -2223,7 +2215,6 @@ def html_edit_profile(server, css_cache: {}, translate: {},
         blog_address = get_blog_address(actor_json)
         tox_address = get_tox_address(actor_json)
         briar_address = get_briar_address(actor_json)
-        jami_address = get_jami_address(actor_json)
         cwtch_address = get_cwtch_address(actor_json)
         email_address = get_email_address(actor_json)
         enigma_pub_key = get_enigma_pub_key(actor_json)
@@ -2368,7 +2359,7 @@ def html_edit_profile(server, css_cache: {}, translate: {},
         _html_edit_profile_contact_info(nickname, email_address,
                                         xmpp_address, matrix_address,
                                         ssb_address, tox_address,
-                                        briar_address, jami_address,
+                                        briar_address,
                                         cwtch_address, translate)
 
     # Encryption Keys

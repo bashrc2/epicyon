@@ -782,7 +782,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
     if actor_json.get('attachment'):
         og_tags = (
             'email', 'openpgp', 'blog', 'xmpp', 'matrix', 'briar',
-            'jami', 'cwtch', 'languages'
+            'cwtch', 'languages'
         )
         for attach_json in actor_json['attachment']:
             if not attach_json.get('name'):
