@@ -745,6 +745,7 @@ def remove_long_words(content: str, max_word_length: int,
                 else:
                     content = content[:max_word_length]
                 return content
+    content = content.replace('<p></p>', '<p> </p>')
     words = content.split(' ')
     if not long_words_list:
         long_words_list = []
@@ -806,6 +807,7 @@ def remove_long_words(content: str, max_word_length: int,
     if content.startswith('<p>'):
         if not content.endswith('</p>'):
             content = content.strip() + '</p>'
+    content = content.replace('<p> </p>', '<p></p>')
     return content
 
 
