@@ -2845,6 +2845,43 @@ def _test_create_person_account(base_dir: str):
     assert test_post_json['object']['content']
     assert '(yawn)' in test_post_json['object']['content']
 
+    content = \
+        'I would regard fediverse as being things based on ActivityPub ' + \
+        'or OStatus. i.e. things whose protocol lineage can be traced ' + \
+        'back to identica/statusnet/pumpio.\n' + \
+        '\nFediverse is a vague term though ' + \
+        'and I know some people regard Matrix and Diaspora as being ' + \
+        'fediverse. If fediverse just means any federated system ' + \
+        'then email would be somequitelongword.\nAnotherlongwordhere sentence.'
+    test_post_json = \
+        create_public_post(base_dir, nickname, domain, port, http_prefix,
+                           content, followers_only, save_to_file,
+                           client_to_server,
+                           comments_enabled, attach_image_filename, media_type,
+                           'Not suitable for Vogons', 'London, England',
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time, test_location,
+                           test_is_article, system_language, conversation_id,
+                           low_bandwidth, content_license_url,
+                           languages_understood)
+    assert test_post_json
+    assert test_post_json.get('object')
+    assert test_post_json['object']['content']
+    assert 'Fediverse' in test_post_json['object']['content']
+    content_str = test_post_json['object']['content']
+    object_content = remove_long_words(content_str, 40, [])
+    assert 'Fediverse' in object_content
+    bold_reading = False
+    object_content = remove_text_formatting(object_content, bold_reading)
+    assert 'Fediverse' in object_content
+    object_content = limit_repeated_words(object_content, 6)
+    assert 'Fediverse' in object_content
+    object_content = html_replace_email_quote(object_content)
+    assert 'Fediverse' in object_content
+    object_content = html_replace_quote_marks(object_content)
+    assert 'Fediverse' in object_content
+
     os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
