@@ -1038,6 +1038,17 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         print('EDITPOST: actors do not match ' +
               post_json_object['actor'] + ' != ' + message_json['actor'])
         return False
+    # save the edit history to file
+    post_history_filename = post_filename.replace('.json', '') + '.edits'
+    post_history_json = {}
+    if os.path.isfile(post_history_filename):
+        post_history_json = load_json(post_history_filename, 1)
+    if post_json_object['object'].get('updated'):
+        published_str = post_json_object['object']['updated']
+    else:
+        published_str = post_json_object['object']['published']
+    post_history_json[published_str] = post_json_object
+    save_json(post_history_json, post_history_filename)
     # Change Update to Create
     message_json['type'] = 'Create'
     save_json(message_json, post_filename)
@@ -1080,8 +1091,7 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             session, cached_webfingers, person_cache,
                             nickname, domain, port, message_json,
                             None, True, allow_deletion,
-                            http_prefix, __version__,
-                            'inbox',
+                            http_prefix, __version__, 'inbox',
                             yt_replace_domain,
                             twitter_replacement_domain,
                             show_published_date_only,

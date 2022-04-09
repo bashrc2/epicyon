@@ -1831,7 +1831,9 @@ def delete_post(base_dir: str, http_prefix: str,
     # remove any attachment
     _remove_attachment(base_dir, http_prefix, domain, post_json_object)
 
-    extensions = ('votes', 'arrived', 'muted', 'tts', 'reject', 'mitm')
+    extensions = (
+        'votes', 'arrived', 'muted', 'tts', 'reject', 'mitm', 'edits'
+    )
     for ext in extensions:
         ext_filename = post_filename + '.' + ext
         if os.path.isfile(ext_filename):
@@ -1840,6 +1842,14 @@ def delete_post(base_dir: str, http_prefix: str,
             except OSError:
                 print('EX: delete_post unable to remove ext ' +
                       str(ext_filename))
+        elif post_filename.endswith('.json'):
+            ext_filename = post_filename.replace('.json', '') + '.' + ext
+            if os.path.isfile(ext_filename):
+                try:
+                    os.remove(ext_filename)
+                except OSError:
+                    print('EX: delete_post unable to remove ext ' +
+                          str(ext_filename))
 
     # remove cached html version of the post
     delete_cached_html(base_dir, nickname, domain, post_json_object)
