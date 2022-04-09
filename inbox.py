@@ -1033,11 +1033,28 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         return False
     if not post_json_object.get('actor'):
         return False
+    if not has_object_dict(post_json_object):
+        return False
+    if not post_json_object['object'].get('content'):
+        return False
+    if not message_json['object'].get('content'):
+        return False
     # does the actor match?
     if post_json_object['actor'] != message_json['actor']:
         print('EDITPOST: actors do not match ' +
               post_json_object['actor'] + ' != ' + message_json['actor'])
         return False
+    # has the content changed?
+    if post_json_object['object']['content'] == \
+       message_json['object']['content']:
+        # same content
+        if 'summary' in post_json_object['object'] and \
+           'summary' in message_json['object']:
+            if post_json_object['object']['summary'] == \
+               message_json['object']['summary']:
+                return False
+        else:
+            return False
     # save the edit history to file
     post_history_filename = post_filename.replace('.json', '') + '.edits'
     post_history_json = {}
