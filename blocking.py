@@ -13,7 +13,7 @@ import time
 from datetime import datetime
 from utils import has_object_string
 from utils import has_object_string_object
-from utils import has_object_stringType
+from utils import has_object_string_type
 from utils import remove_domain_port
 from utils import has_object_dict
 from utils import is_account_dir
@@ -483,7 +483,7 @@ def outbox_undo_block(base_dir: str, http_prefix: str,
             print('DEBUG: not an undo block')
         return
 
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return
     if not message_json['object']['type'] == 'Block':
         if debug:
@@ -841,7 +841,7 @@ def outbox_undo_mute(base_dir: str, http_prefix: str,
         return
     if not message_json['type'] == 'Undo':
         return
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return
     if message_json['object']['type'] != 'Ignore':
         return

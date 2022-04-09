@@ -10,7 +10,7 @@ __module_group__ = "Profile Metadata"
 import os
 import html
 from utils import acct_dir
-from utils import has_object_stringType
+from utils import has_object_string_type
 
 
 def _git_format_content(content: str) -> str:
@@ -114,7 +114,7 @@ def convert_post_to_patch(base_dir: str, nickname: str, domain: str,
     """Detects whether the given post contains a patch
     and if so then converts it to a Patch ActivityPub type
     """
-    if not has_object_stringType(post_json_object, False):
+    if not has_object_string_type(post_json_object, False):
         return False
     if post_json_object['object']['type'] == 'Patch':
         return True

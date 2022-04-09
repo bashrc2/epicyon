@@ -1680,8 +1680,8 @@ def remove_post_from_cache(post_json_object: {},
             del recent_posts_cache['html'][post_id]
 
 
-def _delete_cached_html(base_dir: str, nickname: str, domain: str,
-                        post_json_object: {}):
+def delete_cached_html(base_dir: str, nickname: str, domain: str,
+                       post_json_object: {}):
     """Removes cached html file for the given post
     """
     cached_post_filename = \
@@ -1691,7 +1691,7 @@ def _delete_cached_html(base_dir: str, nickname: str, domain: str,
             try:
                 os.remove(cached_post_filename)
             except OSError:
-                print('EX: _delete_cached_html ' +
+                print('EX: delete_cached_html ' +
                       'unable to delete cached post file ' +
                       str(cached_post_filename))
 
@@ -1831,7 +1831,9 @@ def delete_post(base_dir: str, http_prefix: str,
     # remove any attachment
     _remove_attachment(base_dir, http_prefix, domain, post_json_object)
 
-    extensions = ('votes', 'arrived', 'muted', 'tts', 'reject', 'mitm')
+    extensions = (
+        'votes', 'arrived', 'muted', 'tts', 'reject', 'mitm', 'edits'
+    )
     for ext in extensions:
         ext_filename = post_filename + '.' + ext
         if os.path.isfile(ext_filename):
@@ -1840,9 +1842,17 @@ def delete_post(base_dir: str, http_prefix: str,
             except OSError:
                 print('EX: delete_post unable to remove ext ' +
                       str(ext_filename))
+        elif post_filename.endswith('.json'):
+            ext_filename = post_filename.replace('.json', '') + '.' + ext
+            if os.path.isfile(ext_filename):
+                try:
+                    os.remove(ext_filename)
+                except OSError:
+                    print('EX: delete_post unable to remove ext ' +
+                          str(ext_filename))
 
     # remove cached html version of the post
-    _delete_cached_html(base_dir, nickname, domain, post_json_object)
+    delete_cached_html(base_dir, nickname, domain, post_json_object)
 
     has_object = False
     if post_json_object.get('object'):
@@ -2206,7 +2216,7 @@ def is_blog_post(post_json_object: {}) -> bool:
         return False
     if not has_object_dict(post_json_object):
         return False
-    if not has_object_stringType(post_json_object, False):
+    if not has_object_string_type(post_json_object, False):
         return False
     if not post_json_object['object'].get('content'):
         return False
@@ -3353,12 +3363,12 @@ def has_actor(post_json_object: {}, debug: bool) -> bool:
     return False
 
 
-def has_object_stringType(post_json_object: {}, debug: bool) -> bool:
+def has_object_string_type(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have a type field within an object dict?
     """
     if not has_object_dict(post_json_object):
         if debug:
-            print('has_object_stringType no object found')
+            print('has_object_string_type no object found')
         return False
     if post_json_object['object'].get('type'):
         if isinstance(post_json_object['object']['type'], str):
@@ -3377,7 +3387,7 @@ def has_object_string_object(post_json_object: {}, debug: bool) -> bool:
     """
     if not has_object_dict(post_json_object):
         if debug:
-            print('has_object_stringType no object found')
+            print('has_object_string_type no object found')
         return False
     if post_json_object['object'].get('object'):
         if isinstance(post_json_object['object']['object'], str):

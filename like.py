@@ -11,7 +11,7 @@ import os
 from pprint import pprint
 from utils import has_object_string
 from utils import has_object_string_object
-from utils import has_object_stringType
+from utils import has_object_string_type
 from utils import remove_domain_port
 from utils import has_object_dict
 from utils import has_users_path
@@ -395,7 +395,7 @@ def outbox_undo_like(recent_posts_cache: {},
         return
     if not message_json['type'] == 'Undo':
         return
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return
     if not message_json['object']['type'] == 'Like':
         if debug:

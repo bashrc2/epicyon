@@ -20,7 +20,7 @@ from utils import acct_dir
 from utils import has_group_type
 from utils import local_actor_url
 from utils import has_actor
-from utils import has_object_stringType
+from utils import has_object_string_type
 
 
 def _create_accept_reject(base_dir: str, federation_list: [],
@@ -81,7 +81,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
                    onion_domain: str, i2p_domain: str) -> None:
     """Receiving a follow Accept activity
     """
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return
     if not message_json['object']['type'] == 'Follow':
         if not message_json['object']['type'] == 'Join':

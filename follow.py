@@ -10,7 +10,7 @@ __module_group__ = "ActivityPub"
 from pprint import pprint
 import os
 from utils import has_object_string_object
-from utils import has_object_stringType
+from utils import has_object_string_type
 from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
@@ -1407,7 +1407,7 @@ def outbox_undo_follow(base_dir: str, message_json: {}, debug: bool) -> None:
         return
     if not message_json['type'] == 'Undo':
         return
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return
     if not message_json['object']['type'] == 'Follow':
         if not message_json['object']['type'] == 'Join':
