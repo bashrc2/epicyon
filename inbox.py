@@ -3706,6 +3706,10 @@ def _inbox_after_initial(server,
                                       person_cache, post_json_object, debug,
                                       signing_priv_key_pem)
 
+        if json_obj.get('updated') and json_obj.get('id'):
+            updated_post_id = remove_id_ending(json_obj['id'])
+            print('Receiving edit to post ' + updated_post_id)
+
         # save the post to file
         if save_json(post_json_object, destination_filename):
             if mitm:
