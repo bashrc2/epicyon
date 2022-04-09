@@ -17,6 +17,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import delete_cached_html
 from utils import get_account_timezone
 from utils import domain_permitted
 from utils import is_group_account
@@ -61,7 +62,7 @@ from utils import undo_likes_collection_entry
 from utils import undo_reaction_collection_entry
 from utils import has_group_type
 from utils import local_actor_url
-from utils import has_object_stringType
+from utils import has_object_string_type
 from utils import valid_hash_tag
 from categories import get_hashtag_categories
 from categories import set_hashtag_category
@@ -849,7 +850,7 @@ def _receive_undo(session, base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return False
     if not has_object_string_object(message_json, debug):
         return False
@@ -979,20 +980,150 @@ def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
     remove_post_from_cache(message_json, recent_posts_cache)
 
 
+def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
+                          base_dir: str,
+                          nickname: str, domain: str,
+                          max_mentions: int, max_emoji: int,
+                          allow_local_network_access: bool,
+                          debug: bool,
+                          system_language: str, http_prefix: str,
+                          domain_full: str, person_cache: {},
+                          signing_priv_key_pem: str,
+                          max_recent_posts: int, translate: {},
+                          session, cached_webfingers: {}, port: int,
+                          allow_deletion: bool,
+                          yt_replace_domain: str,
+                          twitter_replacement_domain: str,
+                          show_published_date_only: bool,
+                          peertube_instances: [],
+                          theme_name: str, max_like_count: int,
+                          cw_lists: {}) -> bool:
+    """A post was edited
+    """
+    if not has_object_dict(message_json):
+        return False
+    # message url of the question
+    if not message_json['object'].get('id'):
+        return False
+    if not message_json.get('actor'):
+        return False
+    if not has_actor(message_json, False):
+        return False
+    if not has_actor(message_json['object'], False):
+        return False
+    message_id = remove_id_ending(message_json['object']['id'])
+    if '#' in message_id:
+        message_id = message_id.split('#', 1)[0]
+    # find the post which was edited
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
+    if not post_filename:
+        print('EDITPOST: ' + message_id + ' has already expired')
+        return False
+    if not _valid_post_content(base_dir, nickname, domain,
+                               message_json, max_mentions, max_emoji,
+                               allow_local_network_access, debug,
+                               system_language, http_prefix,
+                               domain_full, person_cache):
+        print('EDITPOST: contains invalid content' + str(message_json))
+        return False
+
+    # load the json for the post
+    post_json_object = load_json(post_filename, 1)
+    if not post_json_object:
+        return False
+    if not post_json_object.get('actor'):
+        return False
+    # does the actor match?
+    if post_json_object['actor'] != message_json['actor']:
+        print('EDITPOST: actors do not match ' +
+              post_json_object['actor'] + ' != ' + message_json['actor'])
+        return False
+    # Change Update to Create
+    message_json['type'] = 'Create'
+    save_json(message_json, post_filename)
+    # ensure that the cached post is removed if it exists, so
+    # that it then will be recreated
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain, message_json)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
+            try:
+                os.remove(cached_post_filename)
+            except OSError:
+                print('EX: _receive_edit_to_post unable to delete ' +
+                      cached_post_filename)
+    # remove any cached html for the post which was edited
+    delete_cached_html(base_dir, nickname, domain, post_json_object)
+    # remove from memory cache
+    remove_post_from_cache(message_json, recent_posts_cache)
+    # regenerate html for the post
+    page_number = 1
+    show_published_date_only = False
+    show_individual_post_icons = True
+    manually_approve_followers = \
+        follower_approval_active(base_dir, nickname, domain)
+    not_dm = not is_dm(message_json)
+    timezone = get_account_timezone(base_dir, nickname, domain)
+    mitm = False
+    if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+        mitm = True
+    bold_reading = False
+    bold_reading_filename = \
+        base_dir + '/accounts/' + nickname + '@' + domain + '/.boldReading'
+    if os.path.isfile(bold_reading_filename):
+        bold_reading = True
+    timezone = get_account_timezone(base_dir, nickname, domain)
+    lists_enabled = get_config_param(base_dir, "listsEnabled")
+    individual_post_as_html(signing_priv_key_pem, False,
+                            recent_posts_cache, max_recent_posts,
+                            translate, page_number, base_dir,
+                            session, cached_webfingers, person_cache,
+                            nickname, domain, port, message_json,
+                            None, True, allow_deletion,
+                            http_prefix, __version__,
+                            'inbox',
+                            yt_replace_domain,
+                            twitter_replacement_domain,
+                            show_published_date_only,
+                            peertube_instances,
+                            allow_local_network_access,
+                            theme_name, system_language,
+                            max_like_count, not_dm,
+                            show_individual_post_icons,
+                            manually_approve_followers,
+                            False, True, False, cw_lists,
+                            lists_enabled, timezone, mitm,
+                            bold_reading)
+    return True
+
+
 def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                              http_prefix: str, domain: str, port: int,
                              send_threads: [], post_log: [],
                              cached_webfingers: {},
                              person_cache: {}, message_json: {},
                              federation_list: [],
-                             nickname: str, debug: bool) -> bool:
+                             nickname: str, debug: bool,
+                             max_mentions: int, max_emoji: int,
+                             allow_local_network_access: bool,
+                             system_language: str,
+                             signing_priv_key_pem: str,
+                             max_recent_posts: int, translate: {},
+                             allow_deletion: bool,
+                             yt_replace_domain: str,
+                             twitter_replacement_domain: str,
+                             show_published_date_only: bool,
+                             peertube_instances: [],
+                             theme_name: str, max_like_count: int,
+                             cw_lists: {}) -> bool:
+
     """Receives an Update activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Update':
         return False
     if not has_actor(message_json, debug):
         return False
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return False
     if not has_users_path(message_json['actor']):
         if debug:
@@ -1006,6 +1137,30 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
         if debug:
             print('DEBUG: Question update was received')
         return True
+    elif message_json['object']['type'] == 'Note':
+        if message_json['object'].get('id'):
+            domain_full = get_full_domain(domain, port)
+            if _receive_edit_to_post(recent_posts_cache, message_json,
+                                     base_dir, nickname, domain,
+                                     max_mentions, max_emoji,
+                                     allow_local_network_access,
+                                     debug, system_language, http_prefix,
+                                     domain_full, person_cache,
+                                     signing_priv_key_pem,
+                                     max_recent_posts, translate,
+                                     session, cached_webfingers, port,
+                                     allow_deletion,
+                                     yt_replace_domain,
+                                     twitter_replacement_domain,
+                                     show_published_date_only,
+                                     peertube_instances,
+                                     theme_name, max_like_count,
+                                     cw_lists):
+                print('EDITPOST: received ' + message_json['object']['id'])
+                return True
+        else:
+            print('EDITPOST: rejected ' + str(message_json))
+            return False
 
     if message_json['object']['type'] == 'Person' or \
        message_json['object']['type'] == 'Application' or \
@@ -1186,7 +1341,7 @@ def _receive_undo_like(recent_posts_cache: {},
         return False
     if not has_actor(message_json, debug):
         return False
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return False
     if message_json['object']['type'] != 'Like':
         return False
@@ -1458,7 +1613,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
         return False
     if not has_actor(message_json, debug):
         return False
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return False
     if message_json['object']['type'] != 'EmojiReact':
         return False
@@ -1599,7 +1754,7 @@ def _receive_bookmark(recent_posts_cache: {},
         if debug:
             print('DEBUG: no target in inbox bookmark Add')
         return False
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return False
     if not isinstance(message_json['target'], str):
         if debug:
@@ -1716,7 +1871,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
         if debug:
             print('DEBUG: no target in inbox undo bookmark Remove')
         return False
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return False
     if not isinstance(message_json['target'], str):
         if debug:
@@ -2317,6 +2472,20 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         message_json['object']['published'] = published
     if not valid_post_date(published, 90, debug):
         return False
+
+    # if the post has been edited then check its edit date
+    if message_json['object'].get('updated'):
+        published_update = message_json['object']['updated']
+        if 'T' not in published_update:
+            return False
+        if 'Z' not in published_update:
+            return False
+        if '.' in published_update:
+            # converts 2022-03-30T17:37:58.734Z into 2022-03-30T17:37:58Z
+            published_update = published_update.split('.')[0] + 'Z'
+            message_json['object']['updated'] = published_update
+        if not valid_post_date(published_update, 90, debug):
+            return False
 
     summary = None
     if message_json['object'].get('summary'):
@@ -3706,10 +3875,6 @@ def _inbox_after_initial(server,
                                       person_cache, post_json_object, debug,
                                       signing_priv_key_pem)
 
-        if json_obj.get('updated') and json_obj.get('id'):
-            updated_post_id = remove_id_ending(json_obj['id'])
-            print('Receiving edit to post ' + updated_post_id)
-
         # save the post to file
         if save_json(post_json_object, destination_filename):
             if mitm:
@@ -4748,7 +4913,19 @@ def run_inbox_queue(server,
                                     queue_json['post'],
                                     federation_list,
                                     queue_json['postNickname'],
-                                    debug):
+                                    debug,
+                                    max_mentions, max_emoji,
+                                    allow_local_network_access,
+                                    system_language,
+                                    signing_priv_key_pem,
+                                    max_recent_posts, translate,
+                                    allow_deletion,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    theme_name, max_like_count,
+                                    cw_lists):
             if debug:
                 print('Queue: Update accepted from ' + key_id)
             if os.path.isfile(queue_filename):

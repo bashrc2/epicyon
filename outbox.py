@@ -16,7 +16,7 @@ from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
 from utils import get_account_timezone
-from utils import has_object_stringType
+from utils import has_object_string_type
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import get_local_network_addresses
@@ -76,7 +76,7 @@ def _person_receive_update_outbox(recent_posts_cache: {},
         return
     if message_json['type'] != 'Update':
         return
-    if not has_object_stringType(message_json, debug):
+    if not has_object_string_type(message_json, debug):
         return
     if not isinstance(message_json['object']['type'], str):
         if debug:
