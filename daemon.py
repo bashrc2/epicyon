@@ -2199,7 +2199,8 @@ class PubServer(BaseHTTPRequestHandler):
             # which button was pressed?
             for moderation_str in moderation_params.split('&'):
                 if moderation_str.startswith('submitInfo='):
-                    if 'submitInfo=' in moderation_str:
+                    if not moderation_text and \
+                       'submitInfo=' in moderation_str:
                         moderation_text = \
                             moderation_str.split('submitInfo=')[1].strip()
                         mod_text = moderation_text.replace('+', ' ')
