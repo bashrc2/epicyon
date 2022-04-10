@@ -202,6 +202,9 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             if '/c/' in url:
                 # don't try to embed peertube channel page
                 continue
+            if '?sort=' in url:
+                # don't try to embed a sorted list
+                continue
             if '/w/' in url:
                 if '/videos/' not in url:
                     url = url.replace('/w/', '/videos/embed/')
