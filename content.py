@@ -14,6 +14,9 @@ import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
+from dateutil.parser import parse
+from utils import convert_published_to_local_timezone
+from utils import has_object_dict
 from utils import valid_hash_tag
 from utils import dangerous_svg
 from utils import remove_domain_port
@@ -1460,8 +1463,55 @@ def content_diff(content: str, prev_content: str) -> str:
                 diff_text += reference_text[ctr]
                 ctr += 1
 
+            if state == 1:
+                diff_text += '</label>'
+
             while ctr < len(reference_text):
                 diff_text += reference_text[ctr]
                 ctr += 1
             diff_content = diff_content.replace(reference_text, diff_text)
     return diff_content
+
+
+def create_edits_html(edits_json: {}, post_json_object: {},
+                      translate: {}, timezone: str) -> str:
+    """ Creates html showing historical edits made to a post
+    """
+    if not edits_json:
+        return ''
+    if not has_object_dict(post_json_object):
+        return ''
+    if not post_json_object['object'].get('content'):
+        return ''
+    edit_dates_list = []
+    for modified, item in edits_json.items():
+        edit_dates_list.append(modified)
+    edit_dates_list.sort(reverse=True)
+    edits_str = ''
+    content = remove_html(post_json_object['object']['content'])
+    for modified in edit_dates_list:
+        prev_json = edits_json[modified]
+        if not has_object_dict(prev_json):
+            continue
+        if not prev_json['object'].get('content'):
+            continue
+        prev_content = remove_html(prev_json['object']['content'])
+        if content == prev_content:
+            continue
+        diff = content_diff(content, prev_content)
+        if not diff:
+            continue
+        diff = diff.replace('\n', '</p><p>')
+        # convert to local time
+        datetime_object = parse(modified)
+        datetime_object = \
+            convert_published_to_local_timezone(datetime_object, timezone)
+        modified_str = datetime_object.strftime("%a %b %d, %H:%M")
+        diff = '<p><b>' + modified_str + '</b></p><p>' + diff + '</p>'
+        edits_str += diff
+        content = prev_content
+    if not edits_str:
+        return ''
+    return '<br><details><summary class="cw">' + \
+        translate['SHOW EDITS'] + '</summary>' + \
+        edits_str + '</details>\n'

@@ -58,6 +58,7 @@ from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
+from content import create_edits_html
 from content import bold_reading_string
 from content import limit_repeated_words
 from content import replace_emoji_from_tags
@@ -1479,6 +1480,18 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '2')
 
+    # does this post have edits?
+    edits_post_url = \
+        remove_id_ending(message_id.strip()).replace('/', '#') + '.edits'
+    account_dir = acct_dir(base_dir, nickname, domain) + '/'
+    edits_filename = account_dir + box_name + '/' + edits_post_url
+    edits_str = ''
+    if os.path.isfile(edits_filename):
+        edits_json = load_json(edits_filename, 0, 1)
+        if edits_json:
+            edits_str = create_edits_html(edits_json, post_json_object,
+                                          translate, timezone)
+
     message_id_str = ''
     if message_id:
         message_id_str = ';' + message_id
@@ -2016,6 +2029,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     if not is_pgp_encrypted(content_str):
         if not is_patch:
+            # append any edits
+            content_str += edits_str
             # Add bold text
             if bold_reading and \
                not displaying_ciphertext and \
