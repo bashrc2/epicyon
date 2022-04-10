@@ -2212,7 +2212,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 search_handle = \
                                     search_nickname + '@' + search_domain
                             else:
-                                search_handle = None
+                                search_handle = ''
                         if '@' not in search_handle:
                             if search_handle.startswith('http'):
                                 search_nickname = \
@@ -2223,7 +2223,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     search_handle = \
                                         search_nickname + '@' + search_domain
                                 else:
-                                    search_handle = None
+                                    search_handle = ''
                         if '@' not in search_handle:
                             # is this a local nickname on this instance?
                             local_handle = \
@@ -2232,8 +2232,10 @@ class PubServer(BaseHTTPRequestHandler):
                                              '/accounts/' + local_handle):
                                 search_handle = local_handle
                             else:
-                                search_handle = None
-                    if not search_handle:
+                                search_handle = ''
+                    if search_handle is None:
+                        search_handle = ''
+                    if '@' in search_handle:
                         msg = \
                             html_account_info(self.server.css_cache,
                                               self.server.translate,
