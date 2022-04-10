@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import difflib
 import math
 import html
 import os
@@ -1415,3 +1416,52 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
                 added += 1
     save_json(emoji_dict, base_dir + '/emoji/default_emoji.json')
     print(str(added) + ' custom emoji added')
+
+
+def content_diff(content: str, prev_content: str) -> str:
+    """Returns a diff for the given content
+    """
+    d = difflib.Differ()
+    text1_lines = content.splitlines()
+    text2_lines = prev_content.splitlines()
+    diff = d.compare(text1_lines, text2_lines)
+
+    diff_content = content
+    diff_text = ''
+    reference_text = ''
+    change_positions = ''
+    for line in diff:
+        if line.startswith('- '):
+            reference_text = line[2:]
+        elif line.startswith('? '):
+            change_positions = line[2:]
+            state = 0
+            ctr = 0
+            for changed_char in change_positions:
+                if state == 0:
+                    if changed_char == '-':
+                        diff_text += \
+                            '<label class="diff_add">' + reference_text[ctr]
+                        ctr += 1
+                        state = 1
+                        continue
+                    elif changed_char == '+':
+                        diff_text += \
+                            '<label class="diff_remove">' + reference_text[ctr]
+                        ctr += 1
+                        state = 1
+                        continue
+                elif state == 1:
+                    if changed_char != '-' and changed_char != '+':
+                        diff_text += '</label>' + reference_text[ctr]
+                        ctr += 1
+                        state = 0
+                        continue
+                diff_text += reference_text[ctr]
+                ctr += 1
+
+            while ctr < len(reference_text):
+                diff_text += reference_text[ctr]
+                ctr += 1
+            diff_content = diff_content.replace(reference_text, diff_text)
+    return diff_content
