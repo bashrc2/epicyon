@@ -2186,6 +2186,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '&' in moderation_params:
             moderation_text = None
             moderation_button = None
+            # get the moderation text first
             for moderation_str in moderation_params.split('&'):
                 if moderation_str.startswith('moderationAction'):
                     if '=' in moderation_str:
@@ -2194,6 +2195,8 @@ class PubServer(BaseHTTPRequestHandler):
                         mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
+            # which button was pressed?
+            for moderation_str in moderation_params.split('&'):
                 if moderation_str.startswith('submitInfo'):
                     if '=' in moderation_str:
                         moderation_text = \
