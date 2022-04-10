@@ -2187,21 +2187,21 @@ class PubServer(BaseHTTPRequestHandler):
             moderation_text = None
             moderation_button = None
             # get the moderation text first
-            moderation_params = moderation_params.replace('%40', '@')
+            actStr = 'moderationAction='
             for moderation_str in moderation_params.split('&'):
-                if moderation_str.startswith('moderationAction'):
-                    if '=' in moderation_str:
+                if moderation_str.startswith(actStr):
+                    if actStr in moderation_str:
                         moderation_text = \
-                            moderation_str.split('=')[1].strip()
+                            moderation_str.split(actStr)[1].strip()
                         mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
             # which button was pressed?
             for moderation_str in moderation_params.split('&'):
-                if moderation_str.startswith('submitInfo'):
-                    if '=' in moderation_str:
+                if moderation_str.startswith('submitInfo='):
+                    if 'submitInfo=' in moderation_str:
                         moderation_text = \
-                            moderation_str.split('=')[1].strip()
+                            moderation_str.split('submitInfo=')[1].strip()
                         mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
