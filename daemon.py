@@ -2204,6 +2204,7 @@ class PubServer(BaseHTTPRequestHandler):
                         search_handle = moderation_text
                     else:
                         search_handle = moderation_str.strip()
+                    print('search_handle: ' + str(search_handle))
                     if search_handle:
                         if '/@' in search_handle:
                             search_nickname = \
