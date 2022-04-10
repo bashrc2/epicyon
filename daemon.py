@@ -2233,7 +2233,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 search_handle = local_handle
                             else:
                                 search_handle = None
-                    if search_handle:
+                    if not search_handle:
                         msg = \
                             html_account_info(self.server.css_cache,
                                               self.server.translate,
