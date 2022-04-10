@@ -2194,18 +2194,14 @@ class PubServer(BaseHTTPRequestHandler):
                         mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
-                elif moderation_str.startswith('submitInfo'):
+                if moderation_str.startswith('submitInfo'):
                     if '=' in moderation_str:
                         moderation_text = \
                             moderation_str.split('=')[1].strip()
                         mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
-                        search_handle = moderation_text
-                    else:
-                        search_handle = moderation_str.strip()
-                    print('search_handle: ' + str(search_handle))
-                    print('moderation_str: ' + str(moderation_str))
+                    search_handle = moderation_text
                     if search_handle:
                         if '/@' in search_handle:
                             search_nickname = \
@@ -2265,7 +2261,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                     self.server.postreq_busy = False
                     return
-                elif moderation_str.startswith('submitBlock'):
+                if moderation_str.startswith('submitBlock'):
                     moderation_button = 'block'
                 elif moderation_str.startswith('submitUnblock'):
                     moderation_button = 'unblock'
