@@ -2186,18 +2186,23 @@ class PubServer(BaseHTTPRequestHandler):
         if '&' in moderation_params:
             moderation_text = None
             moderation_button = None
+            # get the moderation text first
+            actStr = 'moderationAction='
             for moderation_str in moderation_params.split('&'):
-                if moderation_str.startswith('moderationAction'):
-                    if '=' in moderation_str:
+                if moderation_str.startswith(actStr):
+                    if actStr in moderation_str:
                         moderation_text = \
-                            moderation_str.split('=')[1].strip()
+                            moderation_str.split(actStr)[1].strip()
                         mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
-                elif moderation_str.startswith('submitInfo'):
-                    if '=' in moderation_str:
+            # which button was pressed?
+            for moderation_str in moderation_params.split('&'):
+                if moderation_str.startswith('submitInfo='):
+                    if not moderation_text and \
+                       'submitInfo=' in moderation_str:
                         moderation_text = \
-                            moderation_str.split('=')[1].strip()
+                            moderation_str.split('submitInfo=')[1].strip()
                         mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
@@ -2212,7 +2217,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 search_handle = \
                                     search_nickname + '@' + search_domain
                             else:
-                                search_handle = None
+                                search_handle = ''
                         if '@' not in search_handle:
                             if search_handle.startswith('http'):
                                 search_nickname = \
@@ -2223,7 +2228,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     search_handle = \
                                         search_nickname + '@' + search_domain
                                 else:
-                                    search_handle = None
+                                    search_handle = ''
                         if '@' not in search_handle:
                             # is this a local nickname on this instance?
                             local_handle = \
@@ -2232,8 +2237,10 @@ class PubServer(BaseHTTPRequestHandler):
                                              '/accounts/' + local_handle):
                                 search_handle = local_handle
                             else:
-                                search_handle = None
-                    if search_handle:
+                                search_handle = ''
+                    if search_handle is None:
+                        search_handle = ''
+                    if '@' in search_handle:
                         msg = \
                             html_account_info(self.server.css_cache,
                                               self.server.translate,
@@ -2259,7 +2266,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                     self.server.postreq_busy = False
                     return
-                elif moderation_str.startswith('submitBlock'):
+                if moderation_str.startswith('submitBlock'):
                     moderation_button = 'block'
                 elif moderation_str.startswith('submitUnblock'):
                     moderation_button = 'unblock'
