@@ -263,13 +263,11 @@ mark {
 }
 
 .diff_add {
-    color: var(--main-link-color);
-    text-decoration: underline;
+    color: var(--time-color);
 }
 
 .diff_remove {
     color: var(--title-color);
-    text-decoration: underline;
 }
 
 .accesskeys {
