@@ -254,5 +254,7 @@
     "banner-height": "15vh",
     "post-separator-margin-top": "0",
     "post-separator-margin-bottom": "0",
-    "header-font": "Arial, Helvetica, sans-serif"
+    "header-font": "Arial, Helvetica, sans-serif",
+    "diff-add": "#FFFFFF",
+    "diff-remove": "#aaa"
 }
