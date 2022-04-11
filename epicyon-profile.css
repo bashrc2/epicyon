@@ -209,6 +209,8 @@
     --vcard-icon-size: 32px;
     --vcard-icon-size-mobile: 80px;
     --vcard-icon-size-tiny: 80px;
+    --diff-add: #FFFFFF;
+    --diff-remove: #aaa;
 }
 
 @font-face {
@@ -263,13 +265,11 @@ mark {
 }
 
 .diff_add {
-    color: var(--main-link-color);
-    text-decoration: underline;
+    color: var(--diff-add);
 }
 
 .diff_remove {
-    color: var(--title-color);
-    text-decoration: underline;
+    color: var(--diff-remove);
 }
 
 .accesskeys {

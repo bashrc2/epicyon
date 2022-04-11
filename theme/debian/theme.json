@@ -1,4 +1,6 @@
 {
+    "diff-add": "#111",
+    "diff-remove": "#333",
     "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
     "pwa-theme-background-color": "black-translucent",
     "dropdown-fg-color": "#222",
