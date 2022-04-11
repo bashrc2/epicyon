@@ -6982,7 +6982,7 @@ def _test_diff_content() -> None:
         create_edits_html(edits_json, post_json_object, translate, timezone)
     assert html_str
     expected = \
-        '<br><details><summary class="cw">SHOW EDITS</summary>' + \
+        '<details><summary class="cw">SHOW EDITS</summary>' + \
         '<p><b>Mon Dec 14, 01:07</b></p><p><label class="diff_add">' + \
         '+ This is some content</label><br><label class="diff_remove">' + \
         '- This is some previous content</label><br>' + \
