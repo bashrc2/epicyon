@@ -519,5 +519,6 @@
     "Web Bots Allowed": "許可されたWebボット",
     "Known Search Bots": "既知のWeb検索ボット",
     "mitm": "メッセージが第三者によって読み取られたり変更されたりした可能性があります",
-    "Bold reading": "大胆な読書"
+    "Bold reading": "大胆な読書",
+    "SHOW EDITS": "編集を表示"
 }

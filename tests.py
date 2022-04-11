@@ -129,6 +129,8 @@ from inbox import json_post_allows_comments
 from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from categories import guess_hashtag_category
+from content import create_edits_html
+from content import content_diff
 from content import bold_reading_string
 from content import safe_web_text
 from content import words_similarity
@@ -6917,6 +6919,82 @@ def _test_bold_reading() -> None:
     assert text_bold == expected
 
 
+def _test_diff_content() -> None:
+    print('diff_content')
+    prev_content = \
+        'Some text before.\n' + \
+        'Starting sentence. This is some content.\nThis is another line.'
+    content = \
+        'Some text before.\nThis is some more content.\nThis is another line.'
+    result = content_diff(content, prev_content)
+    expected = \
+        '<p><label class="diff_remove">' + \
+        '- Starting sentence</label><br><label class="diff_add">' + \
+        '+ This is some more content</label><br>' + \
+        '<label class="diff_remove">- This is some content</label></p>'
+    assert result == expected
+
+    content = \
+        'Some text before.\nThis is content.\nThis line.'
+    result = content_diff(content, prev_content)
+    expected = \
+        '<p><label class="diff_remove">- Starting sentence</label><br>' + \
+        '<label class="diff_add">+ This is content</label><br>' + \
+        '<label class="diff_remove">- This is some content</label><br>' + \
+        '<label class="diff_add">+ This line</label><br>' + \
+        '<label class="diff_remove">- This is another line</label></p>'
+    assert result == expected
+
+    translate = {
+        "SHOW EDITS": "SHOW EDITS"
+    }
+    timezone = 'Europe/Berlin'
+    content1 = \
+        "<p>This is some content.</p>" + \
+        "<p>Some other content.</p>"
+    content2 = \
+        "<p>This is some previous content.</p>" + \
+        "<p>Some other previous content.</p>"
+    content3 = \
+        "<p>This is some more previous content.</p>" + \
+        "<p>Some other previous content.</p>"
+    post_json_object = {
+        "object": {
+            "content": content1,
+            "published": "2020-12-14T00:08:06Z"
+        }
+    }
+    edits_json = {
+        "2020-12-14T00:05:19Z": {
+            "object": {
+                "content": content3,
+                "published": "2020-12-14T00:05:19Z"
+            }
+        },
+        "2020-12-14T00:07:34Z": {
+            "object": {
+                "content": content2,
+                "published": "2020-12-14T00:07:34Z"
+            }
+        }
+    }
+    html_str = \
+        create_edits_html(edits_json, post_json_object, translate, timezone)
+    assert html_str
+    expected = \
+        '<br><details><summary class="cw">SHOW EDITS</summary>' + \
+        '<p><b>Mon Dec 14, 01:07</b></p><p><label class="diff_add">' + \
+        '+ This is some content</label><br><label class="diff_remove">' + \
+        '- This is some previous content</label><br>' + \
+        '<label class="diff_add">+ Some other content</label><br>' + \
+        '<label class="diff_remove">- Some other previous content' + \
+        '</label></p><p><b>Mon Dec 14, 01:05</b></p><p>' + \
+        '<label class="diff_add">+ This is some previous content' + \
+        '</label><br><label class="diff_remove">' + \
+        '- This is some more previous content</label></p></details>'
+    assert html_str == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -6934,6 +7012,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_diff_content()
     _test_bold_reading()
     _test_published_to_local_timezone()
     _test_safe_webtext()

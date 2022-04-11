@@ -12,6 +12,7 @@ import os
 import datetime
 import time
 import random
+from shutil import copyfile
 from linked_data_sig import verify_json_signature
 from languages import understood_post_language
 from like import update_likes_collection
@@ -1064,8 +1065,9 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         published_str = post_json_object['object']['updated']
     else:
         published_str = post_json_object['object']['published']
-    post_history_json[published_str] = post_json_object
-    save_json(post_history_json, post_history_filename)
+    if not post_history_json.get(published_str):
+        post_history_json[published_str] = post_json_object
+        save_json(post_history_json, post_history_filename)
     # Change Update to Create
     message_json['type'] = 'Create'
     save_json(message_json, post_filename)
@@ -3930,6 +3932,50 @@ def _inbox_after_initial(server,
                 except OSError:
                     print('EX: unable to write ' + destination_filename_muted)
 
+            # is this an edit of a previous post?
+            # in Mastodon "delete and redraft"
+            # NOTE: this must be done before update_conversation is called
+            edited_filename, edited_json = \
+                edited_post_filename(base_dir, handle_name, domain,
+                                     post_json_object, debug, 300)
+
+            # If this was an edit then update the edits json file and
+            # delete the previous version of the post
+            if edited_filename and edited_json:
+                prev_edits_filename = \
+                    edited_filename.replace('.json', '.edits')
+                edits_filename = \
+                    destination_filename.replace('.json', '.edits')
+                modified = edited_json['object']['published']
+                if os.path.isfile(edits_filename):
+                    edits_json = load_json(edits_filename)
+                    if edits_json:
+                        if not edits_json.get(modified):
+                            edits_json[modified] = edited_json
+                            save_json(edits_json, edits_filename)
+                else:
+                    if os.path.isfile(prev_edits_filename):
+                        if prev_edits_filename != edits_filename:
+                            try:
+                                copyfile(prev_edits_filename, edits_filename)
+                            except OSError:
+                                print('EX: failed to copy edits file')
+                        edits_json = load_json(edits_filename)
+                        if edits_json:
+                            if not edits_json.get(modified):
+                                edits_json[modified] = edited_json
+                                save_json(edits_json, edits_filename)
+                    else:
+                        edits_json = {
+                            modified: edited_json
+                        }
+                        save_json(edits_json, edits_filename)
+
+                if edited_filename != destination_filename:
+                    delete_post(base_dir, http_prefix,
+                                nickname, domain, edited_filename,
+                                debug, recent_posts_cache)
+
             # update the indexes for different timelines
             for boxname in update_index_list:
                 if not inbox_update_index(boxname, base_dir, handle,
@@ -3983,21 +4029,8 @@ def _inbox_after_initial(server,
                                   boxname + ' post as html to cache in ' +
                                   time_diff + ' mS')
 
-            # is this an edit of a previous post?
-            # in Mastodon "delete and redraft"
-            # NOTE: this must be done before update_conversation is called
-            edited_filename = \
-                edited_post_filename(base_dir, handle_name, domain,
-                                     post_json_object, debug, 300)
-
             update_conversation(base_dir, handle_name, domain,
                                 post_json_object)
-
-            # If this was an edit then delete the previous version of the post
-            if edited_filename:
-                delete_post(base_dir, http_prefix,
-                            nickname, domain, edited_filename,
-                            debug, recent_posts_cache)
 
             # store the id of the last post made by this actor
             _store_last_post_id(base_dir, nickname, domain, post_json_object)

@@ -5476,31 +5476,31 @@ def seconds_between_published(published1: str, published2: str) -> int:
 
 def edited_post_filename(base_dir: str, nickname: str, domain: str,
                          post_json_object: {}, debug: bool,
-                         max_time_diff_seconds: int) -> str:
+                         max_time_diff_seconds: int) -> (str, {}):
     """Returns the filename of the edited post
     """
     if not has_object_dict(post_json_object):
-        return ''
+        return '', None
     if not post_json_object.get('type'):
-        return ''
+        return '', None
     if not post_json_object['object'].get('type'):
-        return ''
+        return '', None
     if not post_json_object['object'].get('published'):
-        return ''
+        return '', None
     if not post_json_object['object'].get('id'):
-        return ''
+        return '', None
     if not post_json_object['object'].get('content'):
-        return ''
+        return '', None
     if not post_json_object['object'].get('attributedTo'):
-        return ''
+        return '', None
     if not isinstance(post_json_object['object']['attributedTo'], str):
-        return ''
+        return '', None
     actor = post_json_object['object']['attributedTo']
     actor_filename = \
         acct_dir(base_dir, nickname, domain) + '/lastpost/' + \
         actor.replace('/', '#')
     if not os.path.isfile(actor_filename):
-        return ''
+        return '', None
     post_id = remove_id_ending(post_json_object['object']['id'])
     lastpost_id = None
     try:
@@ -5508,48 +5508,48 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
             lastpost_id = fp_actor.read()
     except OSError:
         print('EX: edited_post_filename unable to read ' + actor_filename)
-        return ''
+        return '', None
     if not lastpost_id:
-        return ''
+        return '', None
     if lastpost_id == post_id:
-        return ''
+        return '', None
     lastpost_filename = \
         locate_post(base_dir, nickname, domain, lastpost_id, False)
     if not lastpost_filename:
-        return ''
+        return '', None
     lastpost_json = load_json(lastpost_filename, 0)
     if not lastpost_json:
-        return ''
+        return '', None
     if not lastpost_json.get('type'):
-        return ''
+        return '', None
     if lastpost_json['type'] != post_json_object['type']:
-        return ''
+        return '', None
     if not lastpost_json['object'].get('type'):
-        return ''
+        return '', None
     if lastpost_json['object']['type'] != post_json_object['object']['type']:
-        return
+        return '', None
     if not lastpost_json['object'].get('published'):
-        return ''
+        return '', None
     if not lastpost_json['object'].get('id'):
-        return ''
+        return '', None
     if not lastpost_json['object'].get('content'):
-        return ''
+        return '', None
     if not lastpost_json['object'].get('attributedTo'):
-        return ''
+        return '', None
     if not isinstance(lastpost_json['object']['attributedTo'], str):
-        return ''
+        return '', None
     time_diff_seconds = \
         seconds_between_published(lastpost_json['object']['published'],
                                   post_json_object['object']['published'])
     if time_diff_seconds > max_time_diff_seconds:
-        return ''
+        return '', None
     if debug:
         print(post_id + ' might be an edit of ' + lastpost_id)
     if words_similarity(lastpost_json['object']['content'],
                         post_json_object['object']['content'], 10) < 70:
-        return ''
+        return '', None
     print(post_id + ' is an edit of ' + lastpost_id)
-    return lastpost_filename
+    return lastpost_filename, lastpost_json
 
 
 def get_original_post_from_announce_url(announce_url: str, base_dir: str,

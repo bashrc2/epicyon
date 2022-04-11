@@ -7,12 +7,16 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import difflib
 import math
 import html
 import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
+from dateutil.parser import parse
+from utils import convert_published_to_local_timezone
+from utils import has_object_dict
 from utils import valid_hash_tag
 from utils import dangerous_svg
 from utils import remove_domain_port
@@ -1415,3 +1419,87 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
                 added += 1
     save_json(emoji_dict, base_dir + '/emoji/default_emoji.json')
     print(str(added) + ' custom emoji added')
+
+
+def content_diff(content: str, prev_content: str) -> str:
+    """Returns a diff for the given content
+    """
+    d = difflib.Differ()
+    text1_lines = content.splitlines()
+    text1_sentences = []
+    for line in text1_lines:
+        sentences = line.split('.')
+        for sentence in sentences:
+            text1_sentences.append(sentence.strip())
+
+    text2_lines = prev_content.splitlines()
+    text2_sentences = []
+    for line in text2_lines:
+        sentences = line.split('.')
+        for sentence in sentences:
+            text2_sentences.append(sentence.strip())
+
+    diff = d.compare(text1_sentences, text2_sentences)
+
+    diff_text = ''
+    for line in diff:
+        if line.startswith('- '):
+            if not diff_text:
+                diff_text = '<p>'
+            else:
+                diff_text += '<br>'
+            diff_text += '<label class="diff_add">+ ' + line[2:] + '</label>'
+        elif line.startswith('+ '):
+            if not diff_text:
+                diff_text = '<p>'
+            else:
+                diff_text += '<br>'
+            diff_text += \
+                '<label class="diff_remove">- ' + line[2:] + '</label>'
+    if diff_text:
+        diff_text += '</p>'
+    return diff_text
+
+
+def create_edits_html(edits_json: {}, post_json_object: {},
+                      translate: {}, timezone: str) -> str:
+    """ Creates html showing historical edits made to a post
+    """
+    if not edits_json:
+        return ''
+    if not has_object_dict(post_json_object):
+        return ''
+    if not post_json_object['object'].get('content'):
+        return ''
+    edit_dates_list = []
+    for modified, item in edits_json.items():
+        edit_dates_list.append(modified)
+    edit_dates_list.sort(reverse=True)
+    edits_str = ''
+    content = remove_html(post_json_object['object']['content'])
+    for modified in edit_dates_list:
+        prev_json = edits_json[modified]
+        if not has_object_dict(prev_json):
+            continue
+        if not prev_json['object'].get('content'):
+            continue
+        prev_content = remove_html(prev_json['object']['content'])
+        if content == prev_content:
+            continue
+        diff = content_diff(content, prev_content)
+        if not diff:
+            continue
+        diff = diff.replace('\n', '</p><p>')
+        # convert to local time
+        datetime_object = parse(modified)
+        datetime_object = \
+            convert_published_to_local_timezone(datetime_object, timezone)
+        modified_str = datetime_object.strftime("%a %b %d, %H:%M")
+        diff = '<p><b>' + modified_str + '</b></p>' + diff
+        edits_str += diff
+        content = prev_content
+    if not edits_str:
+        return ''
+    return '<br><details><summary class="cw">' + \
+        translate['SHOW EDITS'] + '</summary>' + \
+        edits_str + '</details>'

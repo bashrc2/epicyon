@@ -262,6 +262,16 @@ mark {
     font-weight: bold;
 }
 
+.diff_add {
+    color: var(--main-link-color);
+    text-decoration: underline;
+}
+
+.diff_remove {
+    color: var(--title-color);
+    text-decoration: underline;
+}
+
 .accesskeys {
     border: 0;
     width: 100%;
