@@ -1397,6 +1397,7 @@ def bold_reading_string(text: str) -> str:
 
 def import_emoji(base_dir: str, import_filename: str, session) -> None:
     """Imports emoji from the given filename
+    Each line should be [emoji url], :emojiname:
     """
     if not os.path.isfile(import_filename):
         return
