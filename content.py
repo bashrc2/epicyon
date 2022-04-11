@@ -1426,51 +1426,39 @@ def content_diff(content: str, prev_content: str) -> str:
     """
     d = difflib.Differ()
     text1_lines = content.splitlines()
-    text2_lines = prev_content.splitlines()
-    diff = d.compare(text1_lines, text2_lines)
+    text1_sentences = []
+    for line in text1_lines:
+        sentences = line.split('.')
+        for sentence in sentences:
+            text1_sentences.append(sentence.strip())
 
-    diff_content = content
+    text2_lines = prev_content.splitlines()
+    text2_sentences = []
+    for line in text2_lines:
+        sentences = line.split('.')
+        for sentence in sentences:
+            text2_sentences.append(sentence.strip())
+
+    diff = d.compare(text1_sentences, text2_sentences)
+
     diff_text = ''
-    reference_text = ''
-    change_positions = ''
     for line in diff:
         if line.startswith('- '):
-            reference_text = line[2:]
-        elif line.startswith('? '):
-            change_positions = line[2:]
-            state = 0
-            ctr = 0
-            for changed_char in change_positions:
-                if state == 0:
-                    if changed_char == '-':
-                        diff_text += \
-                            '<label class="diff_add">' + reference_text[ctr]
-                        ctr += 1
-                        state = 1
-                        continue
-                    elif changed_char == '+':
-                        diff_text += \
-                            '<label class="diff_remove">' + reference_text[ctr]
-                        ctr += 1
-                        state = 1
-                        continue
-                elif state == 1:
-                    if changed_char != '-' and changed_char != '+':
-                        diff_text += '</label>' + reference_text[ctr]
-                        ctr += 1
-                        state = 0
-                        continue
-                diff_text += reference_text[ctr]
-                ctr += 1
-
-            if state == 1:
-                diff_text += '</label>'
-
-            while ctr < len(reference_text):
-                diff_text += reference_text[ctr]
-                ctr += 1
-            diff_content = diff_content.replace(reference_text, diff_text)
-    return diff_content
+            if not diff_text:
+                diff_text = '<p>'
+            else:
+                diff_text += '<br>'
+            diff_text += '<label class="diff_add">+ ' + line[2:] + '</label>'
+        elif line.startswith('+ '):
+            if not diff_text:
+                diff_text = '<p>'
+            else:
+                diff_text += '<br>'
+            diff_text += \
+                '<label class="diff_remove">- ' + line[2:] + '</label>'
+    if diff_text:
+        diff_text += '</p>'
+    return diff_text
 
 
 def create_edits_html(edits_json: {}, post_json_object: {},
@@ -1507,11 +1495,11 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         datetime_object = \
             convert_published_to_local_timezone(datetime_object, timezone)
         modified_str = datetime_object.strftime("%a %b %d, %H:%M")
-        diff = '<p><b>' + modified_str + '</b></p><p>' + diff + '</p>'
+        diff = '<p><b>' + modified_str + '</b></p>' + diff
         edits_str += diff
         content = prev_content
     if not edits_str:
         return ''
     return '<br><details><summary class="cw">' + \
         translate['SHOW EDITS'] + '</summary>' + \
-        edits_str + '</details>\n'
+        edits_str + '</details>'

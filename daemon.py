@@ -20792,7 +20792,7 @@ def run_daemon(check_actor_timeout: int,
         check_actor_timeout = 2
     httpd.check_actor_timeout = check_actor_timeout
 
-    # how many hours after a post was publushed can a reply be made
+    # how many hours after a post was published can a reply be made
     default_reply_interval_hrs = 9999999
     httpd.default_reply_interval_hrs = default_reply_interval_hrs
 
