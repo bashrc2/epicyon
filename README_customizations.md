@@ -26,6 +26,20 @@ When a moderator report is created the message at the top of the screen can be c
 
 Extra emoji can be added to the *emoji* directory and you should then update the **emoji/emoji.json** file, which maps the name to the filename (without the .png extension).
 
+Another way to import emoji is to create a text file where each line is the url of the emoji png file and the emoji name, separated by a comma.
+
+```bash
+https://somesite/emoji1.png, :emojiname1:
+https://somesite/emoji2.png, :emojiname2:
+https://somesite/emoji3.png, :emojiname3:
+```
+
+Then this can be imported with:
+
+```bash
+python3 epicyon.py --import-emoji [textfile]
+```
+
 ## Themes
 
 If you want to create a new theme then the functions for that are within *theme.py*. These functions take the CSS templates and modify them. You will need to edit *themesDropdown* within *webinterface.py* and add the appropriate translations for the theme name. Themes are selectable from the profile screen of the administrator.
