@@ -42,4 +42,4 @@ python3 epicyon.py --import-emoji [textfile]
 
 ## Themes
 
-If you want to create a new theme then the functions for that are within *theme.py*. These functions take the CSS templates and modify them. You will need to edit *themesDropdown* within *webinterface.py* and add the appropriate translations for the theme name. Themes are selectable from the profile screen of the administrator.
+If you want to create a new theme then copy the *default* directory within the *theme* directory, rename it to your new theme name, then you can edit the colors and fonts within *theme.json*, and change the icons and banners. Themes are selectable from the graphic design section of the profile screen of the administrator, or of any accounts having the *artist* role.
