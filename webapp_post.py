@@ -2039,8 +2039,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     if not is_pgp_encrypted(content_str):
         if not is_patch:
-            # append any edits
-            content_str += edits_str
             # Add bold text
             if bold_reading and \
                not displaying_ciphertext and \
@@ -2056,6 +2054,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 switch_words(base_dir, nickname, domain, object_content)
             object_content = html_replace_email_quote(object_content)
             object_content = html_replace_quote_marks(object_content)
+            # append any edits
+            object_content += edits_str
         else:
             object_content = content_str
     else:
