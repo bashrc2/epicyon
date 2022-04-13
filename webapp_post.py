@@ -92,7 +92,8 @@ from blocking import add_cw_from_lists
 from reaction import html_emoji_reactions
 
 
-def _html_post_metadata_open_graph(domain: str, post_json_object: {}) -> str:
+def _html_post_metadata_open_graph(domain: str, post_json_object: {},
+                                   system_language: str) -> str:
     """Returns html OpenGraph metadata for a post
     """
     metadata = \
@@ -122,7 +123,11 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {}) -> str:
             "\" property=\"og:published_time\" />\n"
     if not obj_json.get('attachment') or obj_json.get('sensitive'):
         if obj_json.get('content') and not obj_json.get('sensitive'):
-            description = remove_html(obj_json['content'])
+            obj_content = obj_json['content']
+            if obj_json.get('contentMap'):
+                if obj_json['contentMap'].get(system_language):
+                    obj_content = obj_json['contentMap'][system_language]
+            description = remove_html(obj_content)
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"description\">\n"
@@ -150,7 +155,11 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {}) -> str:
             description = 'Attached: 1 audio'
         if description:
             if obj_json.get('content') and not obj_json.get('sensitive'):
-                description += '\n\n' + remove_html(obj_json['content'])
+                obj_content = obj_json['content']
+                if obj_json.get('contentMap'):
+                    if obj_json['contentMap'].get(system_language):
+                        obj_content = obj_json['contentMap'][system_language]
+                description += '\n\n' + remove_html(obj_content)
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"description\">\n"
@@ -1490,7 +1499,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         edits_json = load_json(edits_filename, 0, 1)
         if edits_json:
             edits_str = create_edits_html(edits_json, post_json_object,
-                                          translate, timezone)
+                                          translate, timezone, system_language)
 
     message_id_str = ''
     if message_id:
@@ -1936,7 +1945,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
         container_class = 'container dm'
 
     # add any content warning from the cwlists directory
-    add_cw_from_lists(post_json_object, cw_lists, translate, lists_enabled)
+    add_cw_from_lists(post_json_object, cw_lists, translate, lists_enabled,
+                      system_language)
 
     post_is_sensitive = False
     if post_json_object['object'].get('sensitive'):
@@ -2029,8 +2039,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     if not is_pgp_encrypted(content_str):
         if not is_patch:
-            # append any edits
-            content_str += edits_str
             # Add bold text
             if bold_reading and \
                not displaying_ciphertext and \
@@ -2046,6 +2054,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 switch_words(base_dir, nickname, domain, object_content)
             object_content = html_replace_email_quote(object_content)
             object_content = html_replace_quote_marks(object_content)
+            # append any edits
+            object_content += edits_str
         else:
             object_content = content_str
     else:
@@ -2330,7 +2340,8 @@ def html_individual_post(css_cache: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    metadata_str = _html_post_metadata_open_graph(domain, original_post_json)
+    metadata_str = _html_post_metadata_open_graph(domain, original_post_json,
+                                                  system_language)
     header_str = html_header_with_external_style(css_filename,
                                                  instance_title, metadata_str)
     return header_str + post_str + html_footer()

@@ -228,7 +228,7 @@ def _event_text_match(content: str, text_match: str) -> bool:
 def get_todays_events(base_dir: str, nickname: str, domain: str,
                       curr_year: int, curr_month_number: int,
                       curr_day_of_month: int,
-                      text_match: str) -> {}:
+                      text_match: str, system_language: str) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
@@ -268,8 +268,16 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                 continue
 
             if post_json_object.get('object'):
-                if post_json_object['object'].get('content'):
-                    content = post_json_object['object']['content']
+                content = None
+                if post_json_object['object'].get('contentMap'):
+                    sys_lang = system_language
+                    if post_json_object['object']['contentMap'].get(sys_lang):
+                        content = \
+                            post_json_object['object']['contentMap'][sys_lang]
+                if not content:
+                    if post_json_object['object'].get('content'):
+                        content = post_json_object['object']['content']
+                if content:
                     if not _event_text_match(content, text_match):
                         continue
 
@@ -465,14 +473,14 @@ def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
                                 year: int, month_number: int,
                                 day_number: int, person_cache: {},
                                 http_prefix: str,
-                                text_match: str) -> str:
+                                text_match: str, system_language: str) -> str:
     """Returns today's events in icalendar format
     """
     day_events = None
     events = \
         get_todays_events(base_dir, nickname, domain,
                           year, month_number, day_number,
-                          text_match)
+                          text_match, system_language)
     if events:
         if events.get(str(day_number)):
             day_events = events[str(day_number)]
@@ -1010,7 +1018,7 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                         depth: int, xml_str: str,
                         person_cache: {}, http_prefix: str,
                         curr_etag: str, recent_dav_etags: {},
-                        domain_full: str) -> str:
+                        domain_full: str, system_language: str) -> str:
     """Returns the response to caldav REPORT
     """
     if '<c:calendar-query' not in xml_str or \
@@ -1083,7 +1091,8 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                                 search_date.year,
                                                 search_date.month,
                                                 search_date.day, person_cache,
-                                                http_prefix, text_match)
+                                                http_prefix, text_match,
+                                                system_language)
                 events_href = \
                     http_prefix + '://' + domain_full + '/users/' + \
                     nickname + '/calendar?year=' + \
@@ -1201,7 +1210,8 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
             get_todays_events_icalendar(base_dir, nickname, domain,
                                         search_date.year, search_date.month,
                                         search_date.day, person_cache,
-                                        http_prefix, text_match)
+                                        http_prefix, text_match,
+                                        system_language)
         events_href = \
             http_prefix + '://' + domain_full + '/users/' + \
             nickname + '/calendar?year=' + \

@@ -6504,6 +6504,7 @@ def _test_word_similarity() -> None:
 def _test_add_cw_lists(base_dir: str) -> None:
     print('test_add_CW_from_lists')
     translate = {}
+    system_language = "en"
     cw_lists = load_cw_lists(base_dir, True)
     assert cw_lists
 
@@ -6514,7 +6515,8 @@ def _test_add_cw_lists(base_dir: str) -> None:
             "content": ""
         }
     }
-    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press')
+    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press',
+                      system_language)
     assert post_json_object['object']['sensitive'] is False
     assert post_json_object['object']['summary'] is None
 
@@ -6522,10 +6524,13 @@ def _test_add_cw_lists(base_dir: str) -> None:
         "object": {
             "sensitive": False,
             "summary": None,
-            "content": "Blah blah news.co.uk blah blah"
+            "contentMap": {
+                "en": "Blah blah news.co.uk blah blah"
+            }
         }
     }
-    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press')
+    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press',
+                      system_language)
     assert post_json_object['object']['sensitive'] is True
     assert post_json_object['object']['summary'] == "Murdoch Press"
 
@@ -6536,7 +6541,8 @@ def _test_add_cw_lists(base_dir: str) -> None:
             "content": "Blah blah news.co.uk blah blah"
         }
     }
-    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press')
+    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press',
+                      system_language)
     assert post_json_object['object']['sensitive'] is True
     assert post_json_object['object']['summary'] == \
         "Murdoch Press / Existing CW"
@@ -6945,6 +6951,7 @@ def _test_diff_content() -> None:
         '<label class="diff_remove">- This is another line</label></p>'
     assert result == expected
 
+    system_language = "en"
     translate = {
         "SHOW EDITS": "SHOW EDITS"
     }
@@ -6973,13 +6980,16 @@ def _test_diff_content() -> None:
         },
         "2020-12-14T00:07:34Z": {
             "object": {
-                "content": content2,
+                "contentMap": {
+                    "en": content2
+                },
                 "published": "2020-12-14T00:07:34Z"
             }
         }
     }
     html_str = \
-        create_edits_html(edits_json, post_json_object, translate, timezone)
+        create_edits_html(edits_json, post_json_object, translate,
+                          timezone, system_language)
     assert html_str
     expected = \
         '<details><summary class="cw">SHOW EDITS</summary>' + \

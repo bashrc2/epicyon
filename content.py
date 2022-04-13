@@ -1463,7 +1463,8 @@ def content_diff(content: str, prev_content: str) -> str:
 
 
 def create_edits_html(edits_json: {}, post_json_object: {},
-                      translate: {}, timezone: str) -> str:
+                      translate: {}, timezone: str,
+                      system_language: str) -> str:
     """ Creates html showing historical edits made to a post
     """
     if not edits_json:
@@ -1471,20 +1472,42 @@ def create_edits_html(edits_json: {}, post_json_object: {},
     if not has_object_dict(post_json_object):
         return ''
     if not post_json_object['object'].get('content'):
-        return ''
+        if not post_json_object['object'].get('contentMap'):
+            return ''
     edit_dates_list = []
     for modified, item in edits_json.items():
         edit_dates_list.append(modified)
     edit_dates_list.sort(reverse=True)
     edits_str = ''
-    content = remove_html(post_json_object['object']['content'])
+    content = None
+    if post_json_object['object'].get('contentMap'):
+        if post_json_object['object']['contentMap'].get(system_language):
+            content = \
+                post_json_object['object']['contentMap'][system_language]
+    if not content:
+        if post_json_object['object'].get('content'):
+            content = post_json_object['object']['content']
+    if not content:
+        return ''
+    content = remove_html(content)
     for modified in edit_dates_list:
         prev_json = edits_json[modified]
         if not has_object_dict(prev_json):
             continue
+        prev_content = None
         if not prev_json['object'].get('content'):
+            if not prev_json['object'].get('contentMap'):
+                continue
+        if prev_json['object'].get('contentMap'):
+            if prev_json['object']['contentMap'].get(system_language):
+                prev_content = \
+                    prev_json['object']['contentMap'][system_language]
+        if not prev_content:
+            if prev_json['object'].get('content'):
+                prev_content = prev_json['object']['content']
+        if not prev_content:
             continue
-        prev_content = remove_html(prev_json['object']['content'])
+        prev_content = remove_html(prev_content)
         if content == prev_content:
             continue
         diff = content_diff(content, prev_content)

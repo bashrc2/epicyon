@@ -265,7 +265,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                   base_dir: str, path: str,
                   http_prefix: str, domain_full: str,
                   text_mode_banner: str, access_keys: {},
-                  icalendar: bool) -> str:
+                  icalendar: bool, system_language: str) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -327,12 +327,13 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                                                day_number,
                                                person_cache,
                                                http_prefix,
-                                               text_match)
+                                               text_match,
+                                               system_language)
         day_events = None
         events = \
             get_todays_events(base_dir, nickname, domain,
                               year, month_number, day_number,
-                              text_match)
+                              text_match, system_language)
         if events:
             if events.get(str(day_number)):
                 day_events = events[str(day_number)]
