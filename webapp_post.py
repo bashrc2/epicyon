@@ -1936,7 +1936,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
         container_class = 'container dm'
 
     # add any content warning from the cwlists directory
-    add_cw_from_lists(post_json_object, cw_lists, translate, lists_enabled)
+    add_cw_from_lists(post_json_object, cw_lists, translate, lists_enabled,
+                      system_language)
 
     post_is_sensitive = False
     if post_json_object['object'].get('sensitive'):

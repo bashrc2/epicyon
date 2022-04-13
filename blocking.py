@@ -1016,19 +1016,29 @@ def load_cw_lists(base_dir: str, verbose: bool) -> {}:
 
 
 def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
-                      lists_enabled: str) -> None:
+                      lists_enabled: str, system_language: str) -> None:
     """Adds content warnings by matching the post content
     against domains or keywords
     """
     if not lists_enabled:
         return
     if not post_json_object['object'].get('content'):
-        return
+        if not post_json_object['object'].get('contentMap'):
+            return
     cw_text = ''
     if post_json_object['object'].get('summary'):
         cw_text = post_json_object['object']['summary']
 
-    content = post_json_object['object']['content']
+    content = None
+    if post_json_object['object'].get('contentMap'):
+        if post_json_object['object']['contentMap'].get(system_language):
+            content = \
+                post_json_object['object']['contentMap'][system_language]
+    if not content:
+        if post_json_object['object'].get('content'):
+            content = post_json_object['object']['content']
+    if not content:
+        return
     for name, item in cw_lists.items():
         if name not in lists_enabled:
             continue
