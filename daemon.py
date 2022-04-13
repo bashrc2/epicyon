@@ -16911,7 +16911,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domain_full,
                                     self.server.text_mode_banner,
                                     access_keys,
-                                    False)
+                                    False, self.server.system_language)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -16952,12 +16952,17 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domain_full,
                                     self.server.text_mode_banner,
                                     access_keys,
-                                    True).encode('utf-8')
-                msglen = len(msg)
-                self._set_headers('text/calendar',
-                                  msglen, cookie, calling_domain,
-                                  False)
-                self._write(msg)
+                                    True,
+                                    self.server.system_language)
+                if msg:
+                    msg = msg.encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/calendar',
+                                      msglen, cookie, calling_domain,
+                                      False)
+                    self._write(msg)
+                else:
+                    self._404()
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', 'icalendar shown',
                                     self.server.debug)
@@ -18362,7 +18367,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.http_prefix,
                                     curr_etag,
                                     self.server.recent_dav_etags,
-                                    self.server.domain_full)
+                                    self.server.domain_full,
+                                    self.server.system_language)
         elif endpoint_type == 'delete':
             response_str = \
                 dav_delete_response(self.server.base_dir,
