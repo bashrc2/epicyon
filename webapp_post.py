@@ -1490,7 +1490,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         edits_json = load_json(edits_filename, 0, 1)
         if edits_json:
             edits_str = create_edits_html(edits_json, post_json_object,
-                                          translate, timezone)
+                                          translate, timezone, system_language)
 
     message_id_str = ''
     if message_id:

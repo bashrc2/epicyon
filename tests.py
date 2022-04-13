@@ -6945,6 +6945,7 @@ def _test_diff_content() -> None:
         '<label class="diff_remove">- This is another line</label></p>'
     assert result == expected
 
+    system_language = "en"
     translate = {
         "SHOW EDITS": "SHOW EDITS"
     }
@@ -6973,13 +6974,16 @@ def _test_diff_content() -> None:
         },
         "2020-12-14T00:07:34Z": {
             "object": {
-                "content": content2,
+                "contentMap": {
+                    "en": content2
+                },
                 "published": "2020-12-14T00:07:34Z"
             }
         }
     }
     html_str = \
-        create_edits_html(edits_json, post_json_object, translate, timezone)
+        create_edits_html(edits_json, post_json_object, translate,
+                          timezone, system_language)
     assert html_str
     expected = \
         '<details><summary class="cw">SHOW EDITS</summary>' + \
