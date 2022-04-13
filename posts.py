@@ -4944,6 +4944,11 @@ def download_announce(session, base_dir: str, http_prefix: str,
             return None
         # Check the content of the announce
         content_str = announced_json['content']
+        using_content_map = False
+        if announced_json.get('contentMap'):
+            if announced_json['contentMap'].get(system_language):
+                content_str = announced_json['contentMap'][system_language]
+                using_content_map = True
         if dangerous_markup(content_str, allow_local_network_access):
             print('WARN: announced post contains dangerous markup ' +
                   str(announced_json))
@@ -4980,6 +4985,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
         content_str = remove_text_formatting(content_str, bold_reading)
 
         # set the content after santitization
+        if using_content_map:
+            announced_json['contentMap'][system_language] = content_str
         announced_json['content'] = content_str
 
         # wrap in create to be consistent with other posts
@@ -5476,7 +5483,8 @@ def seconds_between_published(published1: str, published2: str) -> int:
 
 def edited_post_filename(base_dir: str, nickname: str, domain: str,
                          post_json_object: {}, debug: bool,
-                         max_time_diff_seconds: int) -> (str, {}):
+                         max_time_diff_seconds: int,
+                         system_language: str) -> (str, {}):
     """Returns the filename of the edited post
     """
     if not has_object_dict(post_json_object):
@@ -5545,8 +5553,17 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
         return '', None
     if debug:
         print(post_id + ' might be an edit of ' + lastpost_id)
-    if words_similarity(lastpost_json['object']['content'],
-                        post_json_object['object']['content'], 10) < 70:
+    lastpost_content = lastpost_json['object']['content']
+    if lastpost_json['object'].get('contentMap'):
+        if lastpost_json['object']['contentMap'].get(system_language):
+            lastpost_content = \
+                lastpost_json['object']['contentMap'][system_language]
+    content = post_json_object['object']['content']
+    if post_json_object['object'].get('contentMap'):
+        if post_json_object['object']['contentMap'].get(system_language):
+            content = \
+                post_json_object['object']['contentMap'][system_language]
+    if words_similarity(lastpost_content, content, 10) < 70:
         return '', None
     print(post_id + ' is an edit of ' + lastpost_id)
     return lastpost_filename, lastpost_json

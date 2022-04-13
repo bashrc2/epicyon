@@ -3937,7 +3937,8 @@ def _inbox_after_initial(server,
             # NOTE: this must be done before update_conversation is called
             edited_filename, edited_json = \
                 edited_post_filename(base_dir, handle_name, domain,
-                                     post_json_object, debug, 300)
+                                     post_json_object, debug, 300,
+                                     system_language)
 
             # If this was an edit then update the edits json file and
             # delete the previous version of the post
