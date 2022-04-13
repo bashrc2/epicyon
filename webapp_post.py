@@ -92,7 +92,8 @@ from blocking import add_cw_from_lists
 from reaction import html_emoji_reactions
 
 
-def _html_post_metadata_open_graph(domain: str, post_json_object: {}) -> str:
+def _html_post_metadata_open_graph(domain: str, post_json_object: {},
+                                   system_language: str) -> str:
     """Returns html OpenGraph metadata for a post
     """
     metadata = \
@@ -122,7 +123,11 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {}) -> str:
             "\" property=\"og:published_time\" />\n"
     if not obj_json.get('attachment') or obj_json.get('sensitive'):
         if obj_json.get('content') and not obj_json.get('sensitive'):
-            description = remove_html(obj_json['content'])
+            obj_content = obj_json['content']
+            if obj_json.get('contentMap'):
+                if obj_json['contentMap'].get(system_language):
+                    obj_content = obj_json['contentMap'][system_language]
+            description = remove_html(obj_content)
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"description\">\n"
@@ -150,7 +155,11 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {}) -> str:
             description = 'Attached: 1 audio'
         if description:
             if obj_json.get('content') and not obj_json.get('sensitive'):
-                description += '\n\n' + remove_html(obj_json['content'])
+                obj_content = obj_json['content']
+                if obj_json.get('contentMap'):
+                    if obj_json['contentMap'].get(system_language):
+                        obj_content = obj_json['contentMap'][system_language]
+                description += '\n\n' + remove_html(obj_content)
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"description\">\n"
@@ -2331,7 +2340,8 @@ def html_individual_post(css_cache: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    metadata_str = _html_post_metadata_open_graph(domain, original_post_json)
+    metadata_str = _html_post_metadata_open_graph(domain, original_post_json,
+                                                  system_language)
     header_str = html_header_with_external_style(css_filename,
                                                  instance_title, metadata_str)
     return header_str + post_str + html_footer()

@@ -87,7 +87,11 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                                post_json_object['license']['name']):
                     return None
                 content += '<p>' + post_json_object['license']['name'] + '</p>'
-    content += post_json_object['content']
+    post_content = post_json_object['content']
+    if post_json_object.get('contentMap'):
+        if post_json_object['contentMap'].get(system_language):
+            post_content = post_json_object['contentMap'][system_language]
+    content += post_content
 
     conversation_id = remove_id_ending(post_json_object['id'])
 
