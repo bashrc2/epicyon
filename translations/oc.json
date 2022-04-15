@@ -517,5 +517,6 @@
     "mitm": "Message could have been read or modified by a third party",
     "Bold reading": "Bold reading",
     "SHOW EDITS": "SHOW EDITS",
-    "Attach an image, video or audio file": "Attach an image, video or audio file"
+    "Attach an image, video or audio file": "Attach an image, video or audio file",
+    "Set a place and time": "Set a place and time"
 }

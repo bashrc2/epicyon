@@ -632,6 +632,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             replies_section += '</div>\n'
 
             date_and_location = \
+                begin_edit_section(translate['Set a place and time'])
+            date_and_location += \
                 '<div class="container">\n'
             if endpoint == 'newpost':
                 date_and_location += \
@@ -651,6 +653,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         date_and_location += \
             edit_text_field(translate['Location'], 'location', '')
         date_and_location += '</div>\n'
+        date_and_location += end_edit_section()
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     new_post_form = html_header_with_external_style(css_filename,

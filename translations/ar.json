@@ -521,5 +521,6 @@
     "mitm": "يمكن قراءة الرسالة أو تعديلها من قبل طرف ثالث",
     "Bold reading": "قراءة جريئة",
     "SHOW EDITS": "عرض التعديلات",
-    "Attach an image, video or audio file": "إرفاق صورة أو فيديو أو ملف صوتي"
+    "Attach an image, video or audio file": "إرفاق صورة أو فيديو أو ملف صوتي",
+    "Set a place and time": "حدد المكان والزمان"
 }

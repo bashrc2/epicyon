@@ -521,5 +521,6 @@
     "mitm": "Le message a pu être lu ou modifié par un tiers",
     "Bold reading": "Lecture audacieuse",
     "SHOW EDITS": "AFFICHER LES MODIFICATIONS",
-    "Attach an image, video or audio file": "Joindre une image, une vidéo ou un fichier audio"
+    "Attach an image, video or audio file": "Joindre une image, une vidéo ou un fichier audio",
+    "Set a place and time": "Fixez un lieu et une heure"    
 }

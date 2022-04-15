@@ -521,5 +521,6 @@
     "mitm": "メッセージが第三者によって読み取られたり変更されたりした可能性があります",
     "Bold reading": "大胆な読書",
     "SHOW EDITS": "編集を表示",
-    "Attach an image, video or audio file": "画像、ビデオ、またはオーディオファイルを添付します"
+    "Attach an image, video or audio file": "画像、ビデオ、またはオーディオファイルを添付します",
+    "Set a place and time": "場所と時間を設定する"
 }
