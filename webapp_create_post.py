@@ -376,7 +376,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     new_post_image_section += \
         '            accept="' + formats_string + '">\n'
     new_post_image_section += \
-        edit_text_field(translate['Image description'], 'imageDescription', '')    
+        edit_text_field(translate['Describe your attachment'],
+                        'imageDescription', '')
     new_post_image_section += end_edit_section()
 
     scope_icon = 'scope_public.png'
