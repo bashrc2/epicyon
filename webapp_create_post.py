@@ -368,7 +368,6 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
     new_post_image_section = \
         begin_edit_section(translate['Attach an image, video or audio file'])
-    new_post_image_section += '    <div class="container">\n'
     new_post_image_section += \
         edit_text_field(translate['Image description'], 'imageDescription', '')
 
@@ -379,7 +378,6 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     formats_string = formats_string.replace(', .svg', '').replace('.svg, ', '')
     new_post_image_section += \
         '            accept="' + formats_string + '">\n'
-    new_post_image_section += '    </div>\n'
     new_post_image_section += end_edit_section()
 
     scope_icon = 'scope_public.png'
@@ -633,8 +631,6 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
             date_and_location = \
                 begin_edit_section(translate['Set a place and time'])
-            date_and_location += \
-                '<div class="container">\n'
             if endpoint == 'newpost':
                 date_and_location += \
                     '<p><input type="checkbox" class="profilecheckbox" ' + \
@@ -652,7 +648,6 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
         date_and_location += \
             edit_text_field(translate['Location'], 'location', '')
-        date_and_location += '</div>\n'
         date_and_location += end_edit_section()
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
