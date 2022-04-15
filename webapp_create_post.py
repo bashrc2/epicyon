@@ -18,6 +18,8 @@ from utils import acct_dir
 from utils import get_currencies
 from utils import get_category_types
 from utils import get_account_timezone
+from webapp_utils import begin_edit_section
+from webapp_utils import end_edit_section
 from webapp_utils import get_banner_file
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -364,7 +366,9 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     for curr_post_type in new_post_endpoints:
         path_base = path_base.replace('/' + curr_post_type, '')
 
-    new_post_image_section = '    <div class="container">\n'
+    new_post_image_section = \
+        begin_edit_section(translate['Attach an image, video or audio file'])
+    new_post_image_section += '    <div class="container">\n'
     new_post_image_section += \
         edit_text_field(translate['Image description'], 'imageDescription', '')
 
@@ -376,6 +380,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     new_post_image_section += \
         '            accept="' + formats_string + '">\n'
     new_post_image_section += '    </div>\n'
+    new_post_image_section += end_edit_section()
 
     scope_icon = 'scope_public.png'
     scope_description = translate['Public']
