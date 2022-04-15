@@ -366,8 +366,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     for curr_post_type in new_post_endpoints:
         path_base = path_base.replace('/' + curr_post_type, '')
 
-    new_post_image_section = \
-        begin_edit_section(translate['Attach an image, video or audio file'])
+    attach_str = 'Attach an image, video or audio file'
+    new_post_image_section = begin_edit_section('📷 ' + translate[attach_str])
     new_post_image_section += \
         '      <input type="file" id="attachpic" name="attachpic"'
     formats_string = get_media_formats()
@@ -630,7 +630,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             replies_section += '</div>\n'
 
             date_and_location = \
-                begin_edit_section(translate['Set a place and time'])
+                begin_edit_section('🗓️ ' + translate['Set a place and time'])
             if endpoint == 'newpost':
                 date_and_location += \
                     '<p><input type="checkbox" class="profilecheckbox" ' + \
