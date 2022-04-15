@@ -369,15 +369,14 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     new_post_image_section = \
         begin_edit_section(translate['Attach an image, video or audio file'])
     new_post_image_section += \
-        edit_text_field(translate['Image description'], 'imageDescription', '')
-
-    new_post_image_section += \
         '      <input type="file" id="attachpic" name="attachpic"'
     formats_string = get_media_formats()
     # remove svg as a permitted format
     formats_string = formats_string.replace(', .svg', '').replace('.svg, ', '')
     new_post_image_section += \
         '            accept="' + formats_string + '">\n'
+    new_post_image_section += \
+        edit_text_field(translate['Image description'], 'imageDescription', '')    
     new_post_image_section += end_edit_section()
 
     scope_icon = 'scope_public.png'
