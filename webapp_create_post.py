@@ -612,23 +612,27 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             citations_str += '  </ul>\n'
             citations_str += '</div>\n'
 
+    replies_section = ''
     date_and_location = ''
     if endpoint not in ('newshare', 'newwanted', 'newreport', 'newquestion'):
 
         if not is_new_reminder:
-            date_and_location = \
+            replies_section = \
                 '<div class="container">\n'
             if category != 'accommodation':
-                date_and_location += \
+                replies_section += \
                     '<p><input type="checkbox" class="profilecheckbox" ' + \
                     'name="commentsEnabled" ' + \
                     'checked><label class="labels"> ' + \
                     translate['Allow replies.'] + '</label></p>\n'
             else:
-                date_and_location += \
+                replies_section += \
                     '<input type="hidden" name="commentsEnabled" ' + \
                     'value="true">\n'
+            replies_section += '</div>\n'
 
+            date_and_location = \
+                '<div class="container">\n'
             if endpoint == 'newpost':
                 date_and_location += \
                     '<p><input type="checkbox" class="profilecheckbox" ' + \
@@ -643,9 +647,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                     translate['This is a scheduled post.'] + '</label></p>\n'
 
             date_and_location += date_and_time_str
-            date_and_location += '</div>\n'
 
-        date_and_location += '<div class="container">\n'
         date_and_location += \
             edit_text_field(translate['Location'], 'location', '')
         date_and_location += '</div>\n'
@@ -854,7 +856,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         str(message_box_height) + 'px"' + selected_str + \
         ' spellcheck="true" autocomplete="on">' + \
         '</textarea>\n'
-    new_post_form += extra_fields + citations_str + date_and_location
+    new_post_form += \
+        extra_fields + citations_str + replies_section + date_and_location
     if not media_instance or reply_str:
         new_post_form += new_post_image_section
 
