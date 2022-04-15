@@ -18,6 +18,9 @@ from utils import acct_dir
 from utils import get_currencies
 from utils import get_category_types
 from utils import get_account_timezone
+from utils import get_supported_languages
+from webapp_utils import begin_edit_section
+from webapp_utils import end_edit_section
 from webapp_utils import get_banner_file
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -364,10 +367,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     for curr_post_type in new_post_endpoints:
         path_base = path_base.replace('/' + curr_post_type, '')
 
-    new_post_image_section = '    <div class="container">\n'
-    new_post_image_section += \
-        edit_text_field(translate['Image description'], 'imageDescription', '')
-
+    attach_str = 'Attach an image, video or audio file'
+    new_post_image_section = begin_edit_section('📷 ' + translate[attach_str])
     new_post_image_section += \
         '      <input type="file" id="attachpic" name="attachpic"'
     formats_string = get_media_formats()
@@ -375,7 +376,10 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     formats_string = formats_string.replace(', .svg', '').replace('.svg, ', '')
     new_post_image_section += \
         '            accept="' + formats_string + '">\n'
-    new_post_image_section += '    </div>\n'
+    new_post_image_section += \
+        edit_text_field(translate['Describe your attachment'],
+                        'imageDescription', '')
+    new_post_image_section += end_edit_section()
 
     scope_icon = 'scope_public.png'
     scope_description = translate['Public']
@@ -607,23 +611,48 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             citations_str += '  </ul>\n'
             citations_str += '</div>\n'
 
+    replies_section = ''
     date_and_location = ''
     if endpoint not in ('newshare', 'newwanted', 'newreport', 'newquestion'):
 
         if not is_new_reminder:
-            date_and_location = \
+            replies_section = \
                 '<div class="container">\n'
             if category != 'accommodation':
-                date_and_location += \
+                replies_section += \
                     '<p><input type="checkbox" class="profilecheckbox" ' + \
                     'name="commentsEnabled" ' + \
                     'checked><label class="labels"> ' + \
                     translate['Allow replies.'] + '</label></p>\n'
             else:
-                date_and_location += \
+                replies_section += \
                     '<input type="hidden" name="commentsEnabled" ' + \
                     'value="true">\n'
+            supported_languages = get_supported_languages(base_dir)
+            languages_dropdown = '<select id="themeDropdown" ' + \
+                'name="languagesDropdown" class="theme">'
+            for lang_name in supported_languages:
+                translated_lang_name = lang_name
+                if translate.get('lang_' + lang_name):
+                    translated_lang_name = translate['lang_' + lang_name]
+                languages_dropdown += '    <option value="' + \
+                    lang_name.lower() + '">' + \
+                    translated_lang_name + '</option>'
+            languages_dropdown += '  </select><br>'
+            languages_dropdown = \
+                languages_dropdown.replace('<option value="' +
+                                           system_language + '">',
+                                           '<option value="' +
+                                           system_language +
+                                           '" selected>')
+            replies_section += \
+                '      <label class="labels">' + \
+                translate['Language used'] + '</label>\n'
+            replies_section += languages_dropdown
+            replies_section += '</div>\n'
 
+            date_and_location = \
+                begin_edit_section('🗓️ ' + translate['Set a place and time'])
             if endpoint == 'newpost':
                 date_and_location += \
                     '<p><input type="checkbox" class="profilecheckbox" ' + \
@@ -638,12 +667,10 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                     translate['This is a scheduled post.'] + '</label></p>\n'
 
             date_and_location += date_and_time_str
-            date_and_location += '</div>\n'
 
-        date_and_location += '<div class="container">\n'
         date_and_location += \
             edit_text_field(translate['Location'], 'location', '')
-        date_and_location += '</div>\n'
+        date_and_location += end_edit_section()
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     new_post_form = html_header_with_external_style(css_filename,
@@ -849,7 +876,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         str(message_box_height) + 'px"' + selected_str + \
         ' spellcheck="true" autocomplete="on">' + \
         '</textarea>\n'
-    new_post_form += extra_fields + citations_str + date_and_location
+    new_post_form += \
+        extra_fields + citations_str + replies_section + date_and_location
     if not media_instance or reply_str:
         new_post_form += new_post_image_section
 

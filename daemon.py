@@ -18623,6 +18623,8 @@ class PubServer(BaseHTTPRequestHandler):
                 fields['eventTime'] = None
             if not fields.get('location'):
                 fields['location'] = None
+            if not fields.get('languagesDropdown'):
+                fields['languagesDropdown'] = self.server.system_language
 
             if not citations_button_press:
                 # Store a file which contains the time in seconds
@@ -18690,7 +18692,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['eventDate'],
                                        fields['eventTime'],
                                        fields['location'], False,
-                                       self.server.system_language,
+                                       fields['languagesDropdown'],
                                        conversation_id,
                                        self.server.low_bandwidth,
                                        self.server.content_license_url,
@@ -18784,7 +18786,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['eventDate'],
                                      fields['eventTime'],
                                      fields['location'],
-                                     self.server.system_language,
+                                     fields['languagesDropdown'],
                                      conversation_id,
                                      self.server.low_bandwidth,
                                      self.server.content_license_url,
@@ -18946,7 +18948,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['eventDate'],
                                          fields['eventTime'],
                                          fields['location'],
-                                         self.server.system_language,
+                                         fields['languagesDropdown'],
                                          conversation_id,
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
@@ -19007,7 +19009,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                fields['eventDate'],
                                                fields['eventTime'],
                                                fields['location'],
-                                               self.server.system_language,
+                                               fields['languagesDropdown'],
                                                conversation_id,
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
@@ -19080,7 +19082,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    fields['eventDate'],
                                                    fields['eventTime'],
                                                    fields['location'],
-                                                   self.server.system_language,
+                                                   fields['languagesDropdown'],
                                                    conversation_id,
                                                    self.server.low_bandwidth,
                                                    content_license_url,
@@ -19145,7 +19147,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                fields['eventDate'],
                                                fields['eventTime'],
                                                fields['location'],
-                                               self.server.system_language,
+                                               fields['languagesDropdown'],
                                                conversation_id,
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
@@ -19191,7 +19193,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['imageDescription'],
                                        city,
                                        self.server.debug, fields['subject'],
-                                       self.server.system_language,
+                                       fields['languagesDropdown'],
                                        self.server.low_bandwidth,
                                        self.server.content_license_url,
                                        languages_understood)
@@ -19240,7 +19242,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          city,
                                          fields['subject'],
                                          int_duration,
-                                         self.server.system_language,
+                                         fields['languagesDropdown'],
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
                                          languages_understood)
@@ -19314,7 +19316,7 @@ class PubServer(BaseHTTPRequestHandler):
                           duration_str,
                           self.server.debug,
                           city, item_price, item_currency,
-                          self.server.system_language,
+                          fields['languagesDropdown'],
                           self.server.translate, shares_file_type,
                           self.server.low_bandwidth,
                           self.server.content_license_url)
