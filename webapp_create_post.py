@@ -18,6 +18,7 @@ from utils import acct_dir
 from utils import get_currencies
 from utils import get_category_types
 from utils import get_account_timezone
+from utils import get_supported_languages
 from webapp_utils import begin_edit_section
 from webapp_utils import end_edit_section
 from webapp_utils import get_banner_file
@@ -627,6 +628,27 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                 replies_section += \
                     '<input type="hidden" name="commentsEnabled" ' + \
                     'value="true">\n'
+            supported_languages = get_supported_languages(base_dir)
+            languages_dropdown = '<select id="themeDropdown" ' + \
+                'name="languagesDropdown" class="theme">'
+            for lang_name in supported_languages:
+                translated_lang_name = lang_name
+                if translate.get('lang_' + lang_name):
+                    translated_lang_name = translate['lang_' + lang_name]
+                languages_dropdown += '    <option value="' + \
+                    lang_name.lower() + '">' + \
+                    translated_lang_name + '</option>'
+            languages_dropdown += '  </select><br>'
+            languages_dropdown = \
+                languages_dropdown.replace('<option value="' +
+                                           system_language + '">',
+                                           '<option value="' +
+                                           system_language +
+                                           '" selected>')
+            replies_section += \
+                '      <label class="labels">' + \
+                translate['Language used'] + '</label>\n'
+            replies_section += languages_dropdown
             replies_section += '</div>\n'
 
             date_and_location = \
