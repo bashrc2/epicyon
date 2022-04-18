@@ -355,7 +355,8 @@ def _html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
             # NOTE: deliberately no alt text, so that without graphics only
             # the emoji name shows
             html_str += \
-                '<figure><img src="/emoji/' + emoji_name + '.png" ' + \
+                '<figure><img class="common_emoji" ' + \
+                'src="/emoji/' + emoji_name + '.png" ' + \
                 'alt="" title="">' + \
                 '<figcaption>:' + emoji_name + ':</figcaption></figure>\n'
             ctr += 1

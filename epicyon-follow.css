@@ -246,6 +246,12 @@ input[type=text] {
 	padding: 10px;
 	margin: 20px 30px;
     }
+    figure img.common_emoji {
+	width: 5%;
+    }
+    figcaption {
+        font-size: var(--font-size);
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -292,6 +298,12 @@ input[type=text] {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+    }
+    figure img.common_emoji {
+	width: 5%;
+    }
+    figcaption {
+        font-size: var(--font-size);
     }
 }
 
@@ -342,5 +354,11 @@ input[type=text] {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+    }
+    figure img.common_emoji {
+	width: 5%;
+    }
+    figcaption {
+        font-size: var(--font-size);
     }
 }
