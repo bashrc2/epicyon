@@ -225,9 +225,9 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
 
 
 def _add_embedded_audio(translate: {}, content: str) -> str:
-    """Adds embedded audio for mp3/ogg
+    """Adds embedded audio for mp3/ogg/opus
     """
-    if not ('.mp3' in content or '.ogg' in content):
+    if not ('.mp3' in content or '.ogg' in content or '.opus' in content):
         return content
 
     if '<audio ' in content:
@@ -236,6 +236,8 @@ def _add_embedded_audio(translate: {}, content: str) -> str:
     extension = '.mp3'
     if '.ogg' in content:
         extension = '.ogg'
+    elif '.opus' in content:
+        extension = '.opus'
 
     words = content.strip('\n').split(' ')
     for wrd in words:

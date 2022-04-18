@@ -1105,6 +1105,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
+        'opus': 'audio/opus',
         'flac': 'audio/flac',
         'zip': 'application/zip'
     }
