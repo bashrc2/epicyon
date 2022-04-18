@@ -211,6 +211,8 @@ def html_podcast_episode(css_cache: {}, translate: {},
             audio_extension = 'mpeg'
         elif '.opus' in link_url:
             audio_extension = 'opus'
+        elif '.flac' in link_url:
+            audio_extension = 'flac'
         else:
             audio_extension = 'ogg'
     else:
