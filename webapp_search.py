@@ -330,6 +330,42 @@ def html_search_shared_items(css_cache: {}, translate: {},
     return shared_items_form
 
 
+def _html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
+    """Shows common emoji
+    """
+    common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
+    if not os.path.isfile(common_emoji_filename):
+        return ''
+    common_emoji = None
+    try:
+        with open(common_emoji_filename, 'r') as fp_emoji:
+            common_emoji = fp_emoji.readlines()
+    except OSError:
+        print('EX: html_common_emoji unable to load file')
+        return ''
+    if not common_emoji:
+        return ''
+    line_ctr = 0
+    ctr = 0
+    html_str = ''
+    while ctr < no_of_emoji and ctr < len(common_emoji):
+        emoji_name = common_emoji[ctr].split(' ')[1].replace('\n', '')
+        emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
+        if os.path.isfile(emoji_filename):
+            # NOTE: deliberately no alt text, so that without graphics only
+            # the emoji name shows
+            html_str += \
+                '<figure><img src="/emoji/' + emoji_name + '.png" ' + \
+                'alt="" title="">' + \
+                '<figcaption>:' + emoji_name + ':</figcaption></figure>\n'
+            ctr += 1
+        line_ctr += 1
+    if html_str:
+        html_str = \
+            '<div class="container">' + html_str + '</div>\n'
+    return html_str
+
+
 def html_search_emoji_text_entry(css_cache: {}, translate: {},
                                  base_dir: str, path: str) -> str:
     """Search for an emoji by name
@@ -367,6 +403,7 @@ def html_search_emoji_text_entry(css_cache: {}, translate: {},
         '    <button type="submit" class="button" name="submitSearch">' + \
         translate['Submit'] + '</button>\n'
     emoji_str += '  </form>\n'
+    emoji_str += _html_common_emoji(base_dir, 8)
     emoji_str += '  </center>\n'
     emoji_str += '  </div>\n'
     emoji_str += '</div>\n'
