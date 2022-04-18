@@ -406,8 +406,8 @@ def html_search_emoji_text_entry(css_cache: {}, translate: {},
     emoji_str += '  </form>\n'
     emoji_str += '  </center>\n'
     emoji_str += '  </div>\n'
-    emoji_str += '</div>\n'
     emoji_str += _html_common_emoji(base_dir, 8)
+    emoji_str += '</div>\n'
     emoji_str += html_footer()
     return emoji_str
 

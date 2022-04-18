@@ -114,6 +114,10 @@ a:focus {
     background-color: var(--main-bg-color);
 }
 
+.follow container {
+    width: 100%;
+}
+
 .followAvatar {
     margin: 0% 0;
 }
