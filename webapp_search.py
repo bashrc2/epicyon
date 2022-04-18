@@ -363,7 +363,7 @@ def _html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
         line_ctr += 1
     if html_str:
         html_str = \
-            '<div class="container">' + html_str + '</div>\n'
+            '<center><div class="container">' + html_str + '</div></center>\n'
     return html_str
 
 
@@ -404,10 +404,10 @@ def html_search_emoji_text_entry(css_cache: {}, translate: {},
         '    <button type="submit" class="button" name="submitSearch">' + \
         translate['Submit'] + '</button>\n'
     emoji_str += '  </form>\n'
-    emoji_str += _html_common_emoji(base_dir, 8)
     emoji_str += '  </center>\n'
     emoji_str += '  </div>\n'
     emoji_str += '</div>\n'
+    emoji_str += _html_common_emoji(base_dir, 8)
     emoji_str += html_footer()
     return emoji_str
 

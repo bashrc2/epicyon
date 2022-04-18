@@ -201,6 +201,10 @@ input[type=text] {
     width: 15%;
 }
 
+.container {
+    width: 100%;
+}
+
 @media screen and (min-width: 400px) {
     .hashtagswarm {
         font-size: var(--hashtag-size1);
@@ -246,8 +250,9 @@ input[type=text] {
 	padding: 10px;
 	margin: 20px 30px;
     }
-    figure img.common_emoji {
+    .container img {
 	width: 5%;
+	min-width: 5%;
     }
     figcaption {
         font-size: var(--font-size);
@@ -299,8 +304,9 @@ input[type=text] {
         padding: 20px;
         margin: 30px 40px;
     }
-    figure img.common_emoji {
+    .container img {
 	width: 5%;
+	min-width: 5%;
     }
     figcaption {
         font-size: var(--font-size);
@@ -355,8 +361,9 @@ input[type=text] {
         padding: 20px;
         margin: 30px 40px;
     }
-    figure img.common_emoji {
+    .container img {
 	width: 5%;
+	min-width: 5%;
     }
     figcaption {
         font-size: var(--font-size);
