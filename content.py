@@ -322,6 +322,55 @@ def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
         print('EX: cusom emoji already saved')
 
 
+def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
+    """Updates the list of commonly used emoji
+    """
+    emoji_content = emoji_content.replace(':', '')
+    common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
+    common_emoji = None
+    if os.path.isfile(common_emoji_filename):
+        try:
+            with open(common_emoji_filename, 'r') as fp_emoji:
+                common_emoji = fp_emoji.readlines()
+        except OSError:
+            print('EX: unable to load common emoji file')
+            pass
+    if common_emoji:
+        new_common_emoji = []
+        emoji_found = False
+        for line in common_emoji:
+            if ' ' + emoji_content in line:
+                if not emoji_found:
+                    emoji_found = True
+                    counter = 1
+                    count_str = line.split(' ')[0]
+                    if count_str.isdigit():
+                        counter = int(count_str) + 1
+                    count_str = str(counter).zfill(16)
+                    line = count_str + ' ' + emoji_content
+                    new_common_emoji.append(line)
+            else:
+                new_common_emoji.append(line.replace('\n', ''))
+        if not emoji_found:
+            new_common_emoji.append(str(1).zfill(16) + ' ' + emoji_content)
+        new_common_emoji.sort(reverse=True)
+        try:
+            with open(common_emoji_filename, 'w+') as fp_emoji:
+                for line in new_common_emoji:
+                    fp_emoji.write(line + '\n')
+        except OSError:
+            print('EX: error writing common emoji 1')
+            return
+    else:
+        line = str(1).zfill(16) + ' ' + emoji_content + '\n'
+        try:
+            with open(common_emoji_filename, 'w+') as fp_emoji:
+                fp_emoji.write(line)
+        except OSError:
+            print('EX: error writing common emoji 2')
+            return
+
+
 def replace_emoji_from_tags(session, base_dir: str,
                             content: str, tag: [], message_type: str,
                             debug: bool) -> str:
@@ -345,6 +394,7 @@ def replace_emoji_from_tags(session, base_dir: str,
         icon_name = tag_item['icon']['url'].split('/')[-1]
         if icon_name:
             if len(icon_name) > 1:
+                _update_common_emoji(base_dir, icon_name)
                 if icon_name[0].isdigit():
                     if '.' in icon_name:
                         icon_name = icon_name.split('.')[0]
