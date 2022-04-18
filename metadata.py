@@ -193,6 +193,7 @@ def meta_data_instance(showAccounts: bool,
                     'video/mp4',
                     'video/ogv',
                     'audio/ogg',
+                    'audio/opus',
                     'audio/flac',
                     'audio/mpeg'
                 ],

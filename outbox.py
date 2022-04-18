@@ -313,6 +313,7 @@ def post_message_to_outbox(session, translate: {},
                     "avif": "avif",
                     "audio/mpeg": "mp3",
                     "ogg": "ogg",
+                    "opus": "opus",
                     "mp4": "mp4",
                     "webm": "webm",
                     "ogv": "ogv"

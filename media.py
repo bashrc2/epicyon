@@ -415,6 +415,7 @@ def path_is_audio(path: str) -> bool:
     """Is the given path an audio file?
     """
     if path.endswith('.ogg') or \
+       path.endswith('.opus') or \
        path.endswith('.mp3'):
         return True
     return False
