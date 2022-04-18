@@ -1219,6 +1219,8 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
                 extension = '.ogg'
             elif attach['url'].endswith('.opus'):
                 extension = '.opus'
+            elif attach['url'].endswith('.flac'):
+                extension = '.flac'
             if attach['url'].endswith(extension):
                 if attachment_ctr > 0:
                     attachment_str += '<br>'
