@@ -1717,7 +1717,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not isinstance(message_json['object'][check_field], str):
                     print('INBOX: ' +
                           check_field + ' should be a string ' +
-                          str(message_json[check_field]))
+                          str(message_json['object'][check_field]))
                     self._400()
                     self.server.postreq_busy = False
                     return 3
@@ -1731,7 +1731,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not isinstance(message_json['object'][check_field], list):
                     print('INBOX: ' +
                           check_field + ' should be a list ' +
-                          str(message_json[check_field]))
+                          str(message_json['object'][check_field]))
                     self._400()
                     self.server.postreq_busy = False
                     return 3
