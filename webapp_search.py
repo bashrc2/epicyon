@@ -348,7 +348,7 @@ def _html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
     line_ctr = 0
     ctr = 0
     html_str = ''
-    while ctr < no_of_emoji and ctr < len(common_emoji):
+    while ctr < no_of_emoji and line_ctr < len(common_emoji):
         emoji_name = common_emoji[ctr].split(' ')[1].replace('\n', '')
         emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
         if os.path.isfile(emoji_filename):
