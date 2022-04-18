@@ -325,6 +325,8 @@ def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
 def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
     """Updates the list of commonly used emoji
     """
+    if '.' in emoji_content:
+        emoji_content = emoji_content.split('.')[0]
     emoji_content = emoji_content.replace(':', '')
     common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
     common_emoji = None
