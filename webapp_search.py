@@ -358,7 +358,7 @@ def _html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
                 '<label class="hashtagswarm"><img ' + \
                 'src="/emoji/' + emoji_name + '.png" ' + \
                 'alt="" title="">' + \
-                ':' + emoji_name + ':</label>\n'
+                '<textarea>:' + emoji_name + ':</textarea></label>\n'
             ctr += 1
         line_ctr += 1
     if html_str:

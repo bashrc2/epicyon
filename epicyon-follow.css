@@ -215,6 +215,9 @@ input[type=text] {
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing1);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
     }
     .hashtagswarm img {
 	width: 5%;
@@ -266,6 +269,9 @@ input[type=text] {
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing3);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
     }
     .hashtagswarm img {
 	width: 5%;
@@ -320,6 +326,9 @@ input[type=text] {
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing3);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
     }
     .hashtagswarm img {
 	width: 5%;
