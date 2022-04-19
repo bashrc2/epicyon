@@ -835,7 +835,6 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     new_post_form += reply_str
     if media_instance and not reply_str:
         new_post_form += new_post_image_section
-    new_post_form += new_post_emoji_section
 
     if not share_description:
         share_description = ''
