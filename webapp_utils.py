@@ -1699,6 +1699,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
     html_str = ''
     while ctr < no_of_emoji and line_ctr < len(common_emoji):
         emoji_name = common_emoji[line_ctr].split(' ')[1].replace('\n', '')
+        emoji_icon_name = emoji_name
         emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
         if not os.path.isfile(emoji_filename):
             emoji_filename = base_dir + '/customemoji/' + emoji_name + '.png'
@@ -1713,6 +1714,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
                             # get the filename based on the hex code
                             emoji_filename = \
                                 base_dir + '/emoji/' + emoji_code + '.png'
+                            emoji_icon_name = emoji_code
                             break
         if os.path.isfile(emoji_filename):
             # NOTE: deliberately no alt text, so that without graphics only
@@ -1721,7 +1723,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
                 '<label class="hashtagswarm">' + \
                 '<img id="commonemojilabel" ' + \
                 'loading="lazy" decoding="async" ' + \
-                'src="/emoji/' + emoji_name + '.png" ' + \
+                'src="/emoji/' + emoji_icon_name + '.png" ' + \
                 'alt="" title="">' + \
                 ':' + emoji_name + ':</label>\n'
             ctr += 1
