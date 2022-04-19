@@ -1700,7 +1700,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
             # the emoji name shows
             html_str += \
                 '<label class="hashtagswarm">' + \
-                '<img class="commonemojilabel" ' + \
+                '<img id="commonemojilabel" ' + \
                 'loading="lazy" decoding="async" ' + \
                 'src="/emoji/' + emoji_name + '.png" ' + \
                 'alt="" title="">' + \

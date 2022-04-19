@@ -1117,9 +1117,10 @@ h3 {
         -webkit-user-select: all;
         -ms-user-select: all;
         user-select: all;
-	white-space: nowrap;
+        white-space: nowrap;
     }
-    .hashtagswarm img.commonemojilabel {
+    .commonemojilabel {
+	float: none;
         width: 5%;
         min-width: 5%;
     }
@@ -1904,9 +1905,10 @@ h3 {
         -webkit-user-select: all;
         -ms-user-select: all;
         user-select: all;
-	white-space: nowrap;
+        white-space: nowrap;
     }
-    .hashtagswarm img.commonemojilabel {
+    .commonemojilabel {
+	float: none;
         width: 10%;
         min-width: 10%;
     }
@@ -2663,9 +2665,10 @@ h3 {
         -webkit-user-select: all;
         -ms-user-select: all;
         user-select: all;
-	white-space: nowrap;
+        white-space: nowrap;
     }
-    .hashtagswarm img.commonemojilabel {
+    .commonemojilabel {
+	float: none;
         width: 10%;
         min-width: 10%;
     }
