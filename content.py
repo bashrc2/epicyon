@@ -322,12 +322,35 @@ def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
         print('EX: cusom emoji already saved')
 
 
+def _get_emoji_name_from_code(base_dir: str, emoji_code: str) -> str:
+    """Returns the emoji name from its code
+    """
+    emojis_filename = base_dir + '/emoji/emoji.json'
+    if not os.path.isfile(emojis_filename):
+        emojis_filename = base_dir + '/emoji/default_emoji.json'
+        if not os.path.isfile(emojis_filename):
+            return None
+    emojis_json = load_json(emojis_filename)
+    if not emojis_json:
+        return None
+    for emoji_name, code in emojis_json.items():
+        if code == emoji_code:
+            return emoji_name
+    return None
+
+
 def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
     """Updates the list of commonly used emoji
     """
     if '.' in emoji_content:
         emoji_content = emoji_content.split('.')[0]
     emoji_content = emoji_content.replace(':', '')
+    if emoji_content.startswith('0x'):
+        # lookup the name for an emoji code
+        emoji_code = emoji_content[2:]
+        emoji_content = _get_emoji_name_from_code(base_dir, emoji_code)
+        if not emoji_content:
+            return
     common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
     common_emoji = None
     if os.path.isfile(common_emoji_filename):
@@ -396,7 +419,6 @@ def replace_emoji_from_tags(session, base_dir: str,
         icon_name = tag_item['icon']['url'].split('/')[-1]
         if icon_name:
             if len(icon_name) > 1:
-                _update_common_emoji(base_dir, icon_name)
                 if icon_name[0].isdigit():
                     if '.' in icon_name:
                         icon_name = icon_name.split('.')[0]
@@ -422,6 +444,11 @@ def replace_emoji_from_tags(session, base_dir: str,
                                                    tag_item['name'],
                                                    tag_item['icon']['url'],
                                                    debug)
+                                _update_common_emoji(base_dir,
+                                                     icon_name)
+                            else:
+                                _update_common_emoji(base_dir,
+                                                     "0x" + icon_name)
                         else:
                             # sequence of codes
                             icon_codes = icon_name.split('-')
@@ -446,6 +473,11 @@ def replace_emoji_from_tags(session, base_dir: str,
                                                        tag_item['name'],
                                                        tag_item['icon']['url'],
                                                        debug)
+                                    _update_common_emoji(base_dir,
+                                                         icon_name)
+                                else:
+                                    _update_common_emoji(base_dir,
+                                                         "0x" + icon_name)
                             if icon_code_sequence:
                                 content = content.replace(tag_item['name'],
                                                           icon_code_sequence)
