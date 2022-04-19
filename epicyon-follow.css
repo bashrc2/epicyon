@@ -274,8 +274,8 @@ input[type=text] {
         user-select: all;
     }
     .hashtagswarm img {
-        width: 5%;
-        min-width: 5%;
+        width: 10%;
+        min-width: 10%;
     }
     .followText {
         font-size: var(--follow-text-size2);
@@ -331,8 +331,8 @@ input[type=text] {
         user-select: all;
     }
     .hashtagswarm img {
-        width: 5%;
-        min-width: 5%;
+        width: 10%;
+        min-width: 10%;
     }
     .followText {
         font-size: var(--font-size2);
