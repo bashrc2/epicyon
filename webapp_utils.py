@@ -1680,7 +1680,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
     emojis_filename = base_dir + '/emoji/emoji.json'
     if not os.path.isfile(emojis_filename):
         emojis_filename = base_dir + '/emoji/default_emoji.json'
-    emojis_json = None
+    emojis_json = load_json(emojis_filename)
 
     common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
     if not os.path.isfile(common_emoji_filename):
@@ -1701,17 +1701,20 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
         emoji_name = common_emoji[line_ctr].split(' ')[1].replace('\n', '')
         emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
         if not os.path.isfile(emoji_filename):
-            # load the emojis index
-            if not emojis_json:
-                emojis_json = load_json(emojis_filename)
-            # lookup the name within the index to get the hex code
-            if emojis_json:
-                for emoji_tag, emoji_code in emojis_json.items():
-                    if emoji_tag == emoji_name:
-                        emoji_name = emoji_code
-                        # get the filename based on the hex code
-                        emoji_filename = \
-                            base_dir + '/emoji/' + emoji_name + '.png'
+            emoji_filename = base_dir + '/customemoji/' + emoji_name + '.png'
+            if not os.path.isfile(emoji_filename):
+                # load the emojis index
+                if not emojis_json:
+                    emojis_json = load_json(emojis_filename)
+                # lookup the name within the index to get the hex code
+                if emojis_json:
+                    for emoji_tag, emoji_code in emojis_json.items():
+                        if emoji_tag == emoji_name:
+                            emoji_name = emoji_code
+                            # get the filename based on the hex code
+                            emoji_filename = \
+                                base_dir + '/emoji/' + emoji_name + '.png'
+                            break
         if os.path.isfile(emoji_filename):
             # NOTE: deliberately no alt text, so that without graphics only
             # the emoji name shows
