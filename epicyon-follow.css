@@ -218,6 +218,7 @@ input[type=text] {
         -webkit-user-select: all;
         -ms-user-select: all;
         user-select: all;
+	white-space: nowrap;
     }
     .hashtagswarm img {
         width: 5%;
@@ -272,6 +273,7 @@ input[type=text] {
         -webkit-user-select: all;
         -ms-user-select: all;
         user-select: all;
+	white-space: nowrap;
     }
     .hashtagswarm img {
         width: 10%;
@@ -329,6 +331,7 @@ input[type=text] {
         -webkit-user-select: all;
         -ms-user-select: all;
         user-select: all;
+	white-space: nowrap;
     }
     .hashtagswarm img {
         width: 10%;
