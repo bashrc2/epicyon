@@ -1119,8 +1119,8 @@ h3 {
         user-select: all;
         white-space: nowrap;
     }
-    .commonemojilabel {
-	float: none;
+    #commonemojilabel {
+        float: none;
         width: 5%;
         min-width: 5%;
     }
@@ -1907,8 +1907,8 @@ h3 {
         user-select: all;
         white-space: nowrap;
     }
-    .commonemojilabel {
-	float: none;
+    #commonemojilabel {
+        float: none;
         width: 10%;
         min-width: 10%;
     }
@@ -2667,8 +2667,8 @@ h3 {
         user-select: all;
         white-space: nowrap;
     }
-    .commonemojilabel {
-	float: none;
+    #commonemojilabel {
+        float: none;
         width: 10%;
         min-width: 10%;
     }
