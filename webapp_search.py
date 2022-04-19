@@ -355,15 +355,16 @@ def _html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
             # NOTE: deliberately no alt text, so that without graphics only
             # the emoji name shows
             html_str += \
-                '<figure><img class="common_emoji" ' + \
+                '<label class="hashtagswarm"><img ' + \
                 'src="/emoji/' + emoji_name + '.png" ' + \
                 'alt="" title="">' + \
-                '<figcaption>:' + emoji_name + ':</figcaption></figure>\n'
+                ':' + emoji_name + ':</label>\n'
             ctr += 1
         line_ctr += 1
     if html_str:
         html_str = \
-            '<center><div class="container">' + html_str + '</div></center>\n'
+            '<center><div class="container"><p>' + html_str + \
+            '</p></div></center>\n'
     return html_str
 
 

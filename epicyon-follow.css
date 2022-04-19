@@ -216,6 +216,10 @@ input[type=text] {
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing1);
     }
+    .hashtagswarm img {
+	width: 5%;
+	min-width: 5%;
+    }
     .followText {
         font-size: var(--follow-text-size1);
         font-family: Arial, Helvetica, sans-serif;
@@ -254,13 +258,6 @@ input[type=text] {
 	padding: 10px;
 	margin: 20px 30px;
     }
-    .container img {
-	width: 5%;
-	min-width: 5%;
-    }
-    figcaption {
-        font-size: var(--font-size);
-    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -269,6 +266,10 @@ input[type=text] {
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing3);
+    }
+    .hashtagswarm img {
+	width: 5%;
+	min-width: 5%;
     }
     .followText {
         font-size: var(--follow-text-size2);
@@ -308,13 +309,6 @@ input[type=text] {
         padding: 20px;
         margin: 30px 40px;
     }
-    .container img {
-	width: 5%;
-	min-width: 5%;
-    }
-    figcaption {
-        font-size: var(--font-size);
-    }
 }
 
 @media screen and (max-width: 480px) {
@@ -326,6 +320,10 @@ input[type=text] {
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing3);
+    }
+    .hashtagswarm img {
+	width: 5%;
+	min-width: 5%;
     }
     .followText {
         font-size: var(--font-size2);
@@ -364,12 +362,5 @@ input[type=text] {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
-    }
-    .container img {
-	width: 5%;
-	min-width: 5%;
-    }
-    figcaption {
-        font-size: var(--font-size);
     }
 }
