@@ -1710,10 +1710,9 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
                 if emojis_json:
                     for emoji_tag, emoji_code in emojis_json.items():
                         if emoji_tag == emoji_name:
-                            emoji_name = emoji_code
                             # get the filename based on the hex code
                             emoji_filename = \
-                                base_dir + '/emoji/' + emoji_name + '.png'
+                                base_dir + '/emoji/' + emoji_code + '.png'
                             break
         if os.path.isfile(emoji_filename):
             # NOTE: deliberately no alt text, so that without graphics only
