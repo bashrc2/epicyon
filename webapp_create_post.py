@@ -382,6 +382,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                         'imageDescription', '')
     new_post_image_section += end_edit_section()
 
+    new_post_emoji_section = ''
     common_emoji_str = html_common_emoji(base_dir, 16)
     if common_emoji_str:
         new_post_emoji_section = \
