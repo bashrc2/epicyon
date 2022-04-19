@@ -382,13 +382,15 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                         'imageDescription', '')
     new_post_image_section += end_edit_section()
 
-    new_post_emoji_section = \
-        begin_edit_section('😀 ' + translate['Common emoji'])
-    new_post_emoji_section += \
-        '<label class="labels">' + \
-        translate['Copy and paste into your text'] + '</label><br>\n'
-    new_post_emoji_section += html_common_emoji(base_dir, 16)
-    new_post_emoji_section += end_edit_section()
+    common_emoji_str = html_common_emoji(base_dir, 16)
+    if common_emoji_str:
+        new_post_emoji_section = \
+            begin_edit_section('😀 ' + translate['Common emoji'])
+        new_post_emoji_section += \
+            '<label class="labels">' + \
+            translate['Copy and paste into your text'] + '</label><br>\n'
+        new_post_emoji_section += common_emoji_str
+        new_post_emoji_section += end_edit_section()
 
     scope_icon = 'scope_public.png'
     scope_description = translate['Public']
