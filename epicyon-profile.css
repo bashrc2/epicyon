@@ -1,6 +1,11 @@
 @charset "UTF-8";
 
 :root {
+    --hashtag-margin: 2%;
+    --hashtag-size1: 30px;
+    --hashtag-size2: 40px;
+    --hashtag-vertical-spacing1: 50px;
+    --hashtag-vertical-spacing3: 100px;
     --likes-names-margin: 2%;
     --likes-names-size1: 30px;
     --likes-names-size2: 40px;
@@ -1104,6 +1109,20 @@ h3 {
         font-size: var(--font-size);
         color: var(--title-color);
     }
+    .hashtagswarm {
+        font-size: var(--hashtag-size1);
+        font-family: Arial, Helvetica, sans-serif;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing1);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
+	white-space: nowrap;
+    }
+    .hashtagswarm img {
+        width: 5%;
+        min-width: 5%;
+    }
     .likerNames {
         font-size: var(--liker-names-size1);
         font-family: Arial, Helvetica, sans-serif;
@@ -1877,6 +1896,20 @@ h3 {
     blockquote {
         font-size: var(--quote-font-size-mobile);
     }
+    .hashtagswarm {
+        font-size: var(--hashtag-size2);
+        font-family: Arial, Helvetica, sans-serif;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing3);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
+	white-space: nowrap;
+    }
+    .hashtagswarm img {
+        width: 10%;
+        min-width: 10%;
+    }
     .likerNames {
         font-size: var(--liker-names-size2);
         font-family: Arial, Helvetica, sans-serif;
@@ -2621,6 +2654,20 @@ h3 {
     }
     blockquote {
         font-size: var(--quote-font-size-tiny);
+    }
+    .hashtagswarm {
+        font-size: var(--font-size2);
+        font-family: Arial, Helvetica, sans-serif;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing3);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
+	white-space: nowrap;
+    }
+    .hashtagswarm img {
+        width: 10%;
+        min-width: 10%;
     }
     .likerNames {
         font-size: var(--font-size2);
