@@ -1119,7 +1119,7 @@ h3 {
         user-select: all;
 	white-space: nowrap;
     }
-    .hashtagswarm img {
+    .hashtagswarm img.commonemojilabel {
         width: 5%;
         min-width: 5%;
     }
@@ -1906,7 +1906,7 @@ h3 {
         user-select: all;
 	white-space: nowrap;
     }
-    .hashtagswarm img {
+    .hashtagswarm img.commonemojilabel {
         width: 10%;
         min-width: 10%;
     }
@@ -2665,7 +2665,7 @@ h3 {
         user-select: all;
 	white-space: nowrap;
     }
-    .hashtagswarm img {
+    .hashtagswarm img.commonemojilabel {
         width: 10%;
         min-width: 10%;
     }

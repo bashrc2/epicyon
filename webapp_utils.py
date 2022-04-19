@@ -1699,7 +1699,8 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
             # NOTE: deliberately no alt text, so that without graphics only
             # the emoji name shows
             html_str += \
-                '<label class="hashtagswarm"><img ' + \
+                '<label class="hashtagswarm" id="commonemojilabel">' + \
+                '<img loading="lazy" decoding="async" ' + \
                 'src="/emoji/' + emoji_name + '.png" ' + \
                 'alt="" title="">' + \
                 ':' + emoji_name + ':</label>\n'
