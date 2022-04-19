@@ -19,6 +19,7 @@ from utils import get_currencies
 from utils import get_category_types
 from utils import get_account_timezone
 from utils import get_supported_languages
+from webapp_utils import html_common_emoji
 from webapp_utils import begin_edit_section
 from webapp_utils import end_edit_section
 from webapp_utils import get_banner_file
@@ -380,6 +381,17 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         edit_text_field(translate['Describe your attachment'],
                         'imageDescription', '')
     new_post_image_section += end_edit_section()
+
+    new_post_emoji_section = ''
+    common_emoji_str = html_common_emoji(base_dir, 16)
+    if common_emoji_str:
+        new_post_emoji_section = \
+            begin_edit_section('😀 ' + translate['Common emoji'])
+        new_post_emoji_section += \
+            '<label class="labels">' + \
+            translate['Copy and paste into your text'] + '</label><br>\n'
+        new_post_emoji_section += common_emoji_str
+        new_post_emoji_section += end_edit_section()
 
     scope_icon = 'scope_public.png'
     scope_description = translate['Public']
@@ -880,6 +892,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         extra_fields + citations_str + replies_section + date_and_location
     if not media_instance or reply_str:
         new_post_form += new_post_image_section
+    new_post_form += new_post_emoji_section
 
     new_post_form += \
         '    <div class="container">\n' + \

@@ -1672,3 +1672,60 @@ def set_custom_background(base_dir: str, background: str,
                      base_dir + '/accounts/' + new_background + '.' + ext)
         return ext
     return None
+
+
+def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
+    """Shows common emoji
+    """
+    emojis_filename = base_dir + '/emoji/emoji.json'
+    if not os.path.isfile(emojis_filename):
+        emojis_filename = base_dir + '/emoji/default_emoji.json'
+    emojis_json = load_json(emojis_filename)
+
+    common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
+    if not os.path.isfile(common_emoji_filename):
+        return ''
+    common_emoji = None
+    try:
+        with open(common_emoji_filename, 'r') as fp_emoji:
+            common_emoji = fp_emoji.readlines()
+    except OSError:
+        print('EX: html_common_emoji unable to load file')
+        return ''
+    if not common_emoji:
+        return ''
+    line_ctr = 0
+    ctr = 0
+    html_str = ''
+    while ctr < no_of_emoji and line_ctr < len(common_emoji):
+        emoji_name = common_emoji[line_ctr].split(' ')[1].replace('\n', '')
+        emoji_icon_name = emoji_name
+        emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
+        if not os.path.isfile(emoji_filename):
+            emoji_filename = base_dir + '/customemoji/' + emoji_name + '.png'
+            if not os.path.isfile(emoji_filename):
+                # load the emojis index
+                if not emojis_json:
+                    emojis_json = load_json(emojis_filename)
+                # lookup the name within the index to get the hex code
+                if emojis_json:
+                    for emoji_tag, emoji_code in emojis_json.items():
+                        if emoji_tag == emoji_name:
+                            # get the filename based on the hex code
+                            emoji_filename = \
+                                base_dir + '/emoji/' + emoji_code + '.png'
+                            emoji_icon_name = emoji_code
+                            break
+        if os.path.isfile(emoji_filename):
+            # NOTE: deliberately no alt text, so that without graphics only
+            # the emoji name shows
+            html_str += \
+                '<label class="hashtagswarm">' + \
+                '<img id="commonemojilabel" ' + \
+                'loading="lazy" decoding="async" ' + \
+                'src="/emoji/' + emoji_icon_name + '.png" ' + \
+                'alt="" title="">' + \
+                ':' + emoji_name + ':</label>\n'
+            ctr += 1
+        line_ctr += 1
+    return html_str

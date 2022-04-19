@@ -30,6 +30,7 @@ from skills import get_skills_from_list
 from categories import get_hashtag_category
 from feeds import rss2tag_header
 from feeds import rss2tag_footer
+from webapp_utils import html_common_emoji
 from webapp_utils import set_custom_background
 from webapp_utils import html_keyboard_navigation
 from webapp_utils import html_header_with_external_style
@@ -369,6 +370,11 @@ def html_search_emoji_text_entry(css_cache: {}, translate: {},
     emoji_str += '  </form>\n'
     emoji_str += '  </center>\n'
     emoji_str += '  </div>\n'
+    emoji_str += '  <center>\n'
+    emoji_str += '    <div class="container"><p>\n'
+    emoji_str += html_common_emoji(base_dir, 16) + '\n'
+    emoji_str += '    </p></div>\n'
+    emoji_str += '  </center>\n'
     emoji_str += '</div>\n'
     emoji_str += html_footer()
     return emoji_str

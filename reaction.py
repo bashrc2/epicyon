@@ -446,6 +446,54 @@ def outbox_undo_reaction(recent_posts_cache: {},
         print('DEBUG: post undo reaction via c2s - ' + post_filename)
 
 
+def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
+    """Updates the list of commonly used reactions
+    """
+    common_reactions_filename = base_dir + '/accounts/common_reactions.txt'
+    common_reactions = None
+    if os.path.isfile(common_reactions_filename):
+        try:
+            with open(common_reactions_filename, 'r') as fp_react:
+                common_reactions = fp_react.readlines()
+        except OSError:
+            print('EX: unable to load common reactions file')
+            pass
+    if common_reactions:
+        new_common_reactions = []
+        reaction_found = False
+        for line in common_reactions:
+            if ' ' + emoji_content in line:
+                if not reaction_found:
+                    reaction_found = True
+                    counter = 1
+                    count_str = line.split(' ')[0]
+                    if count_str.isdigit():
+                        counter = int(count_str) + 1
+                    count_str = str(counter).zfill(16)
+                    line = count_str + ' ' + emoji_content
+                    new_common_reactions.append(line)
+            else:
+                new_common_reactions.append(line.replace('\n', ''))
+        if not reaction_found:
+            new_common_reactions.append(str(1).zfill(16) + ' ' + emoji_content)
+        new_common_reactions.sort(reverse=True)
+        try:
+            with open(common_reactions_filename, 'w+') as fp_react:
+                for line in new_common_reactions:
+                    fp_react.write(line + '\n')
+        except OSError:
+            print('EX: error writing common reactions 1')
+            return
+    else:
+        line = str(1).zfill(16) + ' ' + emoji_content + '\n'
+        try:
+            with open(common_reactions_filename, 'w+') as fp_react:
+                fp_react.write(line)
+        except OSError:
+            print('EX: error writing common reactions 2')
+            return
+
+
 def update_reaction_collection(recent_posts_cache: {},
                                base_dir: str, post_filename: str,
                                object_url: str, actor: str,
@@ -514,6 +562,8 @@ def update_reaction_collection(recent_posts_cache: {},
         obj['reactions']['items'].append(new_reaction)
         itlen = len(obj['reactions']['items'])
         obj['reactions']['totalItems'] = itlen
+
+    _update_common_reactions(base_dir, emoji_content)
 
     if debug:
         print('DEBUG: saving post with emoji reaction added')
