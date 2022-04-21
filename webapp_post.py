@@ -2109,7 +2109,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         content_str = \
             replace_emoji_from_tags(session, base_dir, content_str,
                                     post_json_object['object']['tag'],
-                                    'content', False)
+                                    'content', False, True)
 
     if is_muted:
         content_str = ''

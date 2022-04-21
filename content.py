@@ -398,7 +398,7 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
 
 def replace_emoji_from_tags(session, base_dir: str,
                             content: str, tag: [], message_type: str,
-                            debug: bool) -> str:
+                            debug: bool, screen_readable: bool) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
     for tag_item in tag:
@@ -429,8 +429,13 @@ def replace_emoji_from_tags(session, base_dir: str,
                             replaced = False
                             try:
                                 replace_char = chr(int("0x" + icon_name, 16))
-                                content = content.replace(tag_item['name'],
-                                                          replace_char)
+                                if not screen_readable:
+                                    replace_char = \
+                                        '<span aria-hidden="true">' + \
+                                        replace_char + '</span>'
+                                content = \
+                                    content.replace(tag_item['name'],
+                                                    replace_char)
                                 replaced = True
                             except BaseException:
                                 if debug:
@@ -479,6 +484,10 @@ def replace_emoji_from_tags(session, base_dir: str,
                                     _update_common_emoji(base_dir,
                                                          "0x" + icon_name)
                             if icon_code_sequence:
+                                if not screen_readable:
+                                    icon_code_sequence = \
+                                        '<span aria-hidden="true">' + \
+                                        icon_code_sequence + '</span>'
                                 content = content.replace(tag_item['name'],
                                                           icon_code_sequence)
 
@@ -487,8 +496,12 @@ def replace_emoji_from_tags(session, base_dir: str,
             html_class = 'emojiheader'
         if message_type == 'profile':
             html_class = 'emojiprofile'
+        if screen_readable:
+            emoji_tag_name = tag_item['name'].replace(':', '')
+        else:
+            emoji_tag_name = ''
         emoji_html = "<img src=\"" + tag_item['icon']['url'] + "\" alt=\"" + \
-            tag_item['name'].replace(':', '') + \
+            emoji_tag_name + \
             "\" align=\"middle\" class=\"" + html_class + "\"/>"
         content = content.replace(tag_item['name'], emoji_html)
     return content

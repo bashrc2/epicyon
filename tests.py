@@ -3673,9 +3673,23 @@ def _test_addemoji(base_dir: str):
         tags.append(tag)
     content = content_modified
     content_modified = \
-        replace_emoji_from_tags(None, base_dir, content, tags, 'content', True)
-    # print('content_modified: ' + content_modified)
-    assert content_modified == '<p>Emoji 🍋 🍓 🍌</p>'
+        replace_emoji_from_tags(None, base_dir, content, tags, 'content',
+                                True, True)
+    expected_content = '<p>Emoji 🍋 🍓 🍌</p>'
+    if content_modified != expected_content:
+        print('expected_content: ' + expected_content)
+        print('content_modified: ' + content_modified)
+    assert content_modified == expected_content
+    content_modified = \
+        replace_emoji_from_tags(None, base_dir, content, tags, 'content',
+                                True, False)
+    expected_content = '<p>Emoji <span aria-hidden="true">🍋</span>' + \
+        ' <span aria-hidden="true">🍓</span> ' + \
+        '<span aria-hidden="true">🍌</span></p>'
+    if content_modified != expected_content:
+        print('expected_content: ' + expected_content)
+        print('content_modified: ' + content_modified)
+    assert content_modified == expected_content
 
     os.chdir(base_dir_original)
     shutil.rmtree(base_dir_original + '/.tests',

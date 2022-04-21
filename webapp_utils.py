@@ -984,12 +984,12 @@ def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
         display_name = \
             replace_emoji_from_tags(session, base_dir,
                                     display_name, emoji_tags_list,
-                                    'post header', False)
+                                    'post header', False, False)
     else:
         display_name = \
             replace_emoji_from_tags(session, base_dir,
                                     display_name, emoji_tags_list, 'profile',
-                                    False)
+                                    False, False)
 #    print('TAG: display_name after tags 2: ' + display_name)
 
     # remove any stray emoji

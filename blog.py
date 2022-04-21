@@ -284,7 +284,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
             content_str = replace_emoji_from_tags(session, base_dir,
                                                   content_str,
                                                   post_json_object_tags,
-                                                  'content', debug)
+                                                  'content', debug, True)
         if article_added:
             blog_str += '<br>' + content_str + '</article>\n'
         else:

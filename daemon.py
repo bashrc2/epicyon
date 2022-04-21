@@ -18856,7 +18856,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.base_dir,
                                                     fields['message'],
                                                     tags, 'content',
-                                                    self.server.debug)
+                                                    self.server.debug,
+                                                    True)
 
                         post_json_object['object']['content'] = \
                             fields['message']
