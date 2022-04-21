@@ -30,9 +30,14 @@ def _html_podcast_social_interactions(podcast_properties: {},
         return ''
     if not podcast_properties.get('socialInteract'):
         return ''
-    if not podcast_properties['socialInteract'].get('text'):
+    if podcast_properties['socialInteract'].get('uri'):
+        episode_post_url = podcast_properties['socialInteract']['uri']
+    elif podcast_properties['socialInteract'].get('url'):
+        episode_post_url = podcast_properties['socialInteract']['url']
+    elif podcast_properties['socialInteract'].get('text'):
+        episode_post_url = podcast_properties['socialInteract']['text']
+    else:
         return ''
-    episode_post_url = podcast_properties['socialInteract']['text']
     actor_str = ''
     podcast_account_id = None
     if podcast_properties['socialInteract'].get('accountId'):

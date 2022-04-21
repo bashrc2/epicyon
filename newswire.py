@@ -473,11 +473,18 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
     if key == 'socialInteract':
         if not entry.get('protocol'):
             return False
-        if not entry.get('text'):
-            return False
+        if not entry.get('uri'):
+            if not entry.get('text'):
+                if not entry.get('url'):
+                    return False
         if entry['protocol'].tolower() != 'activitypub':
             return False
-        post_url = entry['text']
+        if entry.get('uri'):
+            post_url = entry['uri']
+        elif entry.get('url'):
+            post_url = entry['uri']
+        else:
+            post_url = entry['text']
         if '://' not in post_url:
             return False
         post_domain, post_port = get_domain_from_actor(post_url)
