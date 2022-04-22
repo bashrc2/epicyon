@@ -1148,7 +1148,7 @@ if args.podcast_formats:
     podcast_formats_str = args.podcast_formats
 else:
     podcast_formats_str = \
-        get_config_param(base_dir, 'preferred_podcast_formats')
+        get_config_param(base_dir, 'preferredPodcastFormats')
 if podcast_formats_str:
     podcast_formats = podcast_formats_str.split(',')
     preferred_podcast_formats = []
