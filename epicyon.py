@@ -1142,9 +1142,16 @@ if args.domain:
     domain = args.domain
     set_config_param(base_dir, 'domain', domain)
 
+# comma separated list of preferred audio formats. eg. "opus", "mp3"
 preferred_podcast_formats = None
 if args.podcast_formats:
-    podcast_formats = args.podcast_formats.split(',')
+    podcast_formats_str = args.podcast_formats
+else:
+    podcast_formats_str = \
+        get_config_param(base_dir, 'preferred_podcast_formats')
+if podcast_formats_str:
+    podcast_formats = podcast_formats_str.split(',')
+    preferred_podcast_formats = []
     for pod_format in podcast_formats:
         pod_format = pod_format.lower().strip()
         if '/' not in pod_format:
