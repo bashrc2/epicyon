@@ -20628,7 +20628,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(check_actor_timeout: int,
+def run_daemon(preferred_podcast_formats: [],
+               check_actor_timeout: int,
                crawlers_allowed: [],
                dyslexic_font: bool,
                content_license_url: str,
@@ -20719,6 +20720,10 @@ def run_daemon(check_actor_timeout: int,
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)
+
+    # list of preferred podcast formats
+    # eg ['audio/opus', 'audio/mp3']
+    httpd.preferred_podcast_formats = preferred_podcast_formats
 
     # for each account, whether bold reading is enabled
     httpd.bold_reading = load_bold_reading(base_dir)

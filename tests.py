@@ -827,8 +827,10 @@ def create_server_alice(path: str, domain: str, port: int,
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
+    preferred_podcast_formats = None
     print('Server running: Alice')
-    run_daemon(check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
                content_license_url,
@@ -984,8 +986,10 @@ def create_server_bob(path: str, domain: str, port: int,
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
+    preferred_podcast_formats = None
     print('Server running: Bob')
-    run_daemon(check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
                content_license_url,
@@ -1064,8 +1068,10 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
+    preferred_podcast_formats = None
     print('Server running: Eve')
-    run_daemon(check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
                content_license_url,
@@ -1146,8 +1152,10 @@ def create_server_group(path: str, domain: str, port: int,
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
+    preferred_podcast_formats = None
     print('Server running: Group')
-    run_daemon(check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
                content_license_url,
@@ -6789,7 +6797,7 @@ def _test_xml_podcast_dict(base_dir: str) -> None:
     assert len(podcast_properties['locations']) == 1
 
 
-def _test_get_link_from_rss_item() -> None:
+def _test_link_from_rss_item() -> None:
     print('test_get_link_from_rssitem')
     rss_item = \
         '<link>' + \
@@ -6844,7 +6852,7 @@ def _test_get_link_from_rss_item() -> None:
         'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
         '</link>' + \
         '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>'
-    link, mime_type = get_link_from_rss_item(rss_item)
+    link, mime_type = get_link_from_rss_item(rss_item, None, None)
     assert link
     assert link.startswith('https://anchor.fm')
     assert not mime_type
@@ -6855,7 +6863,7 @@ def _test_get_link_from_rss_item() -> None:
         'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
         '"/>' + \
         '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>'
-    link, mime_type = get_link_from_rss_item(rss_item)
+    link, mime_type = get_link_from_rss_item(rss_item, None, None)
     assert link
     assert link.startswith('https://test.link/creativecommons')
 
@@ -7071,7 +7079,7 @@ def run_all_tests():
     _test_bold_reading()
     _test_published_to_local_timezone()
     _test_safe_webtext()
-    _test_get_link_from_rss_item()
+    _test_link_from_rss_item()
     _test_xml_podcast_dict(base_dir)
     _test_get_actor_from_in_reply_to()
     _test_valid_emoji_content()

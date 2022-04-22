@@ -267,6 +267,10 @@ parser.add_argument('--proxy', dest='proxy_port', type=int, default=None,
 parser.add_argument('--path', dest='base_dir',
                     type=str, default=os.getcwd(),
                     help='Directory in which to store posts')
+parser.add_argument('--podcast-formats', dest='podcast_formats',
+                    type=str, default=None,
+                    help='Preferred podcast formats separated by commas. ' +
+                    'eg. "opus, mp3"')
 parser.add_argument('--ytdomain', dest='yt_replace_domain',
                     type=str, default=None,
                     help='Domain used to replace youtube.com')
@@ -1138,10 +1142,22 @@ if args.domain:
     domain = args.domain
     set_config_param(base_dir, 'domain', domain)
 
+preferred_podcast_formats = None
+if args.podcast_formats:
+    podcast_formats = args.podcast_formats.split(',')
+    for pod_format in podcast_formats:
+        pod_format = pod_format.lower().strip()
+        if '/' not in pod_format:
+            pod_format = 'audio/' + pod_format
+        if pod_format in preferred_podcast_formats:
+            continue
+        preferred_podcast_formats.append(pod_format)
+
 if args.rss:
     session = create_session(None)
     testRSS = get_rss(base_dir, domain, session, args.rss,
-                      False, False, 1000, 1000, 1000, 1000, debug)
+                      False, False, 1000, 1000, 1000, 1000, debug,
+                      preferred_podcast_formats)
     pprint(testRSS)
     sys.exit()
 
@@ -3429,7 +3445,8 @@ if args.defaultCurrency:
 
 if __name__ == "__main__":
     print('allowdeletion: ' + str(args.allowdeletion))
-    run_daemon(args.check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               args.check_actor_timeout,
                crawlers_allowed,
                args.dyslexic_font,
                content_license_url,
