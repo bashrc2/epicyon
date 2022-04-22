@@ -6830,6 +6830,18 @@ def _test_link_from_rss_item() -> None:
     assert mime_type
     assert mime_type == 'audio/mpeg'
 
+    link, mime_type = get_link_from_rss_item(rss_item, ['audio/mp3'], None)
+    assert link
+    assert link.endswith('1.mp3')
+    assert mime_type
+    assert mime_type == 'audio/mpeg'
+
+    link, mime_type = get_link_from_rss_item(rss_item, ['audio/mpeg'], None)
+    assert link
+    assert link == 'https://whoframed.rodger/rabbit.mp3'
+    assert mime_type
+    assert mime_type == 'audio/mpeg'
+
     link, mime_type = get_link_from_rss_item(rss_item, ['audio/opus'], None)
     assert mime_type
     if mime_type != 'audio/opus':

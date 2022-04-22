@@ -1143,7 +1143,8 @@ if args.domain:
     set_config_param(base_dir, 'domain', domain)
 
 # comma separated list of preferred audio formats. eg. "opus", "mp3"
-preferred_podcast_formats = None
+# in order of preference
+preferred_podcast_formats = ['ogg', 'mpeg', 'opus']
 if args.podcast_formats:
     podcast_formats_str = args.podcast_formats
 else:
