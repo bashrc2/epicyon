@@ -623,10 +623,60 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
     return podcast_properties
 
 
-def get_link_from_rss_item(rss_item: str) -> (str, str):
+def get_link_from_rss_item(rss_item: str,
+                           preferred_mime_types: [],
+                           proxy_type: str) -> (str, str):
     """Extracts rss link from rss item string
     """
     mime_type = None
+
+    if preferred_mime_types and '<podcast:alternateEnclosure ' in rss_item:
+        enclosures = rss_item.split('<podcast:alternateEnclosure ')
+        ctr = 0
+        for enclosure in enclosures:
+            if ctr == 0:
+                ctr += 1
+                continue
+            ctr += 1
+            if '</podcast:alternateEnclosure' not in enclosure:
+                continue
+            enclosure = enclosure.split('</podcast:alternateEnclosure')[0]
+            if 'type="' not in enclosure:
+                continue
+            mime_type = enclosure.split('type="')[1]
+            if '"' in mime_type:
+                mime_type = mime_type.split('"')[0]
+            if mime_type not in preferred_mime_types:
+                continue
+            if 'uri="' not in enclosure:
+                continue
+            uris = enclosure.split('uri="')
+            ctr2 = 0
+            for uri in uris:
+                if ctr2 == 0:
+                    ctr2 += 1
+                    continue
+                ctr2 += 1
+                if '"' not in uri:
+                    continue
+                link = uri.split('"')[0]
+                if '://' not in link:
+                    continue
+                if proxy_type:
+                    if proxy_type == 'tor' and \
+                       '.onion/' not in link:
+                        continue
+                    if proxy_type == 'onion' and \
+                       '.onion/' not in link:
+                        continue
+                    if proxy_type == 'i2p' and \
+                       '.i2p/' not in link:
+                        continue
+                    return link, mime_type
+                else:
+                    if '.onion/' not in link and \
+                       '.i2p/' not in link:
+                        return link, mime_type
 
     if '<enclosure ' in rss_item:
         # get link from audio or video enclosure
@@ -667,7 +717,8 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                      max_posts_per_source: int,
                      max_feed_item_size_kb: int,
                      max_categories_feedItem_size_kb: int,
-                     session, debug: bool) -> {}:
+                     session, debug: bool,
+                     preferred_podcast_formats: []) -> {}:
     """Converts an xml RSS 2.0 string to a dictionary
     """
     if '<item>' not in xml_str:
@@ -719,7 +770,15 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link, link_mime_type = get_link_from_rss_item(rss_item)
+        proxy_type = None
+        if domain.endswith('.onion'):
+            proxy_type = 'tor'
+        elif domain.endswith('.i2p'):
+            proxy_type = 'i2p'
+
+        link, link_mime_type = \
+            get_link_from_rss_item(rss_item, preferred_podcast_formats,
+                                   proxy_type)
         if not link:
             continue
 
@@ -762,7 +821,8 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                      max_posts_per_source: int,
                      max_feed_item_size_kb: int,
                      max_categories_feedItem_size_kb: int,
-                     session, debug: bool) -> {}:
+                     session, debug: bool,
+                     preferred_podcast_formats: []) -> {}:
     """Converts an xml RSS 1.0 string to a dictionary
     https://validator.w3.org/feed/docs/rss1.html
     """
@@ -816,7 +876,15 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link, link_mime_type = get_link_from_rss_item(rss_item)
+        proxy_type = None
+        if domain.endswith('.onion'):
+            proxy_type = 'tor'
+        elif domain.endswith('.i2p'):
+            proxy_type = 'i2p'
+
+        link, link_mime_type = \
+            get_link_from_rss_item(rss_item, preferred_podcast_formats,
+                                   proxy_type)
         if not link:
             continue
 
@@ -858,7 +926,8 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                        moderated: bool, mirrored: bool,
                        max_posts_per_source: int,
                        max_feed_item_size_kb: int,
-                       session, debug: bool) -> {}:
+                       session, debug: bool,
+                       preferred_podcast_formats: []) -> {}:
     """Converts an atom feed string to a dictionary
     """
     if '<entry>' not in xml_str:
@@ -901,7 +970,15 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
 
-        link, link_mime_type = get_link_from_rss_item(atom_item)
+        proxy_type = None
+        if domain.endswith('.onion'):
+            proxy_type = 'tor'
+        elif domain.endswith('.i2p'):
+            proxy_type = 'i2p'
+
+        link, link_mime_type = \
+            get_link_from_rss_item(atom_item, preferred_podcast_formats,
+                                   proxy_type)
         if not link:
             continue
 
@@ -1105,7 +1182,7 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
             description = description.split('</summary>')[0]
             description = remove_html(description)
 
-        link, _ = get_link_from_rss_item(atom_item)
+        link, _ = get_link_from_rss_item(atom_item, None, None)
         if not link:
             link = atom_item.split('<yt:videoId>')[1]
             link = link.split('</yt:videoId>')[0]
@@ -1146,7 +1223,8 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                      max_posts_per_source: int,
                      max_feed_item_size_kb: int,
                      max_categories_feedItem_size_kb: int,
-                     session, debug: bool) -> {}:
+                     session, debug: bool,
+                     preferred_podcast_formats: []) -> {}:
     """Converts an xml string to a dictionary
     """
     if '<yt:videoId>' in xml_str and '<yt:channelId>' in xml_str:
@@ -1161,18 +1239,19 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
                                 max_categories_feedItem_size_kb,
-                                session, debug)
+                                session, debug,
+                                preferred_podcast_formats)
     if '<?xml version="1.0"' in xml_str:
         return _xml1str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
                                 max_categories_feedItem_size_kb,
-                                session, debug)
+                                session, debug, preferred_podcast_formats)
     if 'xmlns="http://www.w3.org/2005/Atom"' in xml_str:
         return _atom_feed_to_dict(base_dir, domain,
                                   xml_str, moderated, mirrored,
                                   max_posts_per_source, max_feed_item_size_kb,
-                                  session, debug)
+                                  session, debug, preferred_podcast_formats)
     if 'https://jsonfeed.org/version/1' in xml_str:
         return _json_feed_v1to_dict(base_dir, domain,
                                     xml_str, moderated, mirrored,
@@ -1198,7 +1277,8 @@ def get_rss(base_dir: str, domain: str, session, url: str,
             moderated: bool, mirrored: bool,
             max_posts_per_source: int, max_feed_size_kb: int,
             max_feed_item_size_kb: int,
-            max_categories_feedItem_size_kb: int, debug: bool) -> {}:
+            max_categories_feedItem_size_kb: int, debug: bool,
+            preferred_podcast_formats: []) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -1231,7 +1311,8 @@ def get_rss(base_dir: str, domain: str, session, url: str,
                                         max_posts_per_source,
                                         max_feed_item_size_kb,
                                         max_categories_feedItem_size_kb,
-                                        session, debug)
+                                        session, debug,
+                                        preferred_podcast_formats)
             else:
                 print('WARN: feed is too large, ' +
                       'or contains invalid characters: ' + url)
@@ -1476,7 +1557,8 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                            max_tags: int, max_feed_item_size_kb: int,
                            max_newswire_posts: int,
                            max_categories_feedItem_size_kb: int,
-                           system_language: str, debug: bool) -> {}:
+                           system_language: str, debug: bool,
+                           preferred_podcast_formats: []) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptions_filename = base_dir + '/accounts/newswire.txt'
@@ -1517,7 +1599,8 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                              moderated, mirrored,
                              max_posts_per_source, max_feed_size_kb,
                              max_feed_item_size_kb,
-                             max_categories_feedItem_size_kb, debug)
+                             max_categories_feedItem_size_kb, debug,
+                             preferred_podcast_formats)
         if items_list:
             for date_str, item in items_list.items():
                 result[date_str] = item

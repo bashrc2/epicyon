@@ -827,8 +827,10 @@ def create_server_alice(path: str, domain: str, port: int,
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
+    preferred_podcast_formats = None
     print('Server running: Alice')
-    run_daemon(check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
                content_license_url,
@@ -984,8 +986,10 @@ def create_server_bob(path: str, domain: str, port: int,
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
+    preferred_podcast_formats = None
     print('Server running: Bob')
-    run_daemon(check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
                content_license_url,
@@ -1064,8 +1068,10 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
+    preferred_podcast_formats = None
     print('Server running: Eve')
-    run_daemon(check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
                content_license_url,
@@ -1146,8 +1152,10 @@ def create_server_group(path: str, domain: str, port: int,
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
+    preferred_podcast_formats = None
     print('Server running: Group')
-    run_daemon(check_actor_timeout,
+    run_daemon(preferred_podcast_formats,
+               check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
                content_license_url,
@@ -3673,9 +3681,23 @@ def _test_addemoji(base_dir: str):
         tags.append(tag)
     content = content_modified
     content_modified = \
-        replace_emoji_from_tags(None, base_dir, content, tags, 'content', True)
-    # print('content_modified: ' + content_modified)
-    assert content_modified == '<p>Emoji 🍋 🍓 🍌</p>'
+        replace_emoji_from_tags(None, base_dir, content, tags, 'content',
+                                True, True)
+    expected_content = '<p>Emoji 🍋 🍓 🍌</p>'
+    if content_modified != expected_content:
+        print('expected_content: ' + expected_content)
+        print('content_modified: ' + content_modified)
+    assert content_modified == expected_content
+    content_modified = \
+        replace_emoji_from_tags(None, base_dir, content, tags, 'content',
+                                True, False)
+    expected_content = '<p>Emoji <span aria-hidden="true">🍋</span>' + \
+        ' <span aria-hidden="true">🍓</span> ' + \
+        '<span aria-hidden="true">🍌</span></p>'
+    if content_modified != expected_content:
+        print('expected_content: ' + expected_content)
+        print('content_modified: ' + content_modified)
+    assert content_modified == expected_content
 
     os.chdir(base_dir_original)
     shutil.rmtree(base_dir_original + '/.tests',
@@ -6775,23 +6797,66 @@ def _test_xml_podcast_dict(base_dir: str) -> None:
     assert len(podcast_properties['locations']) == 1
 
 
-def _test_get_link_from_rss_item() -> None:
+def _test_link_from_rss_item() -> None:
     print('test_get_link_from_rssitem')
     rss_item = \
         '<link>' + \
         'https://anchor.fm/creativecommons/episodes/' + \
         'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
-        '</link>' + \
-        '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>' + \
+        '</link>\n' + \
+        '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>\n' + \
         '<enclosure url="https://anchor.fm/s/4d70d828/podcast/' + \
         'play/46054222/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net' + \
         '%2Fstaging%2F2022-0-12%2F7352f28c-a928-ea7a-65ae-' + \
-        'ccb5edffbac1.mp3" length="67247880" type="audio/mpeg"/>'
-    link, mime_type = get_link_from_rss_item(rss_item)
+        'ccb5edffbac1.mp3" length="67247880" type="audio/mpeg"/>\n' + \
+        '<podcast:alternateEnclosure type="audio/mpeg" ' + \
+        'length="27800000" bitrate="128000" default="true" ' + \
+        'title="Standard">\n' + \
+        '<podcast:source uri="https://whoframed.rodger/rabbit.mp3" />\n' + \
+        '<podcast:source uri="http://randomaddress.onion/rabbit.mp3" />\n' + \
+        '<podcast:source uri="http://randomaddress.i2p/rabbit.mp3" />\n' + \
+        '</podcast:alternateEnclosure>\n' + \
+        '<podcast:alternateEnclosure type="audio/opus" ' + \
+        'length="19200000" bitrate="128000" ' + \
+        'title="High Quality">\n' + \
+        '<podcast:source uri="https://whoframed.rodger/rabbit.opus" />\n' + \
+        '<podcast:source uri="http://randomaddress.onion/rabbit.opus" />\n' + \
+        '<podcast:source uri="http://randomaddress.i2p/rabbit.opus" />\n' + \
+        '</podcast:alternateEnclosure>\n'
+
+    link, mime_type = get_link_from_rss_item(rss_item, None, None)
     assert link
-    assert link.endswith('.mp3')
+    assert link.endswith('1.mp3')
     assert mime_type
     assert mime_type == 'audio/mpeg'
+
+    link, mime_type = get_link_from_rss_item(rss_item, ['audio/mp3'], None)
+    assert link
+    assert link.endswith('1.mp3')
+    assert mime_type
+    assert mime_type == 'audio/mpeg'
+
+    link, mime_type = get_link_from_rss_item(rss_item, ['audio/mpeg'], None)
+    assert link
+    assert link == 'https://whoframed.rodger/rabbit.mp3'
+    assert mime_type
+    assert mime_type == 'audio/mpeg'
+
+    link, mime_type = get_link_from_rss_item(rss_item, ['audio/opus'], None)
+    assert mime_type
+    if mime_type != 'audio/opus':
+        print('mime_type: ' + mime_type)
+    assert mime_type == 'audio/opus'
+    assert link
+    assert link == 'https://whoframed.rodger/rabbit.opus'
+
+    link, mime_type = get_link_from_rss_item(rss_item, ['audio/opus'], 'tor')
+    assert mime_type
+    if mime_type != 'audio/opus':
+        print('mime_type: ' + mime_type)
+    assert mime_type == 'audio/opus'
+    assert link
+    assert link == 'http://randomaddress.onion/rabbit.opus'
 
     rss_item = \
         '<link>' + \
@@ -6799,7 +6864,7 @@ def _test_get_link_from_rss_item() -> None:
         'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
         '</link>' + \
         '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>'
-    link, mime_type = get_link_from_rss_item(rss_item)
+    link, mime_type = get_link_from_rss_item(rss_item, None, None)
     assert link
     assert link.startswith('https://anchor.fm')
     assert not mime_type
@@ -6810,7 +6875,7 @@ def _test_get_link_from_rss_item() -> None:
         'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
         '"/>' + \
         '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>'
-    link, mime_type = get_link_from_rss_item(rss_item)
+    link, mime_type = get_link_from_rss_item(rss_item, None, None)
     assert link
     assert link.startswith('https://test.link/creativecommons')
 
@@ -7026,7 +7091,7 @@ def run_all_tests():
     _test_bold_reading()
     _test_published_to_local_timezone()
     _test_safe_webtext()
-    _test_get_link_from_rss_item()
+    _test_link_from_rss_item()
     _test_xml_podcast_dict(base_dir)
     _test_get_actor_from_in_reply_to()
     _test_valid_emoji_content()

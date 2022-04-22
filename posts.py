@@ -1445,7 +1445,7 @@ def _create_post_base(base_dir: str,
     if nickname != 'news':
         content = \
             replace_emoji_from_tags(None, base_dir, content, tags, 'content',
-                                    False)
+                                    False, True)
     # remove replaced emoji
     hashtags_dict_copy = hashtags_dict.copy()
     for tag_name, tag in hashtags_dict_copy.items():
