@@ -6795,17 +6795,48 @@ def _test_get_link_from_rss_item() -> None:
         '<link>' + \
         'https://anchor.fm/creativecommons/episodes/' + \
         'Hessel-van-Oorschot-of-Tribe-of-Noise--Free-Music-Archive-e1crvce' + \
-        '</link>' + \
-        '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>' + \
+        '</link>\n' + \
+        '<pubDate>Wed, 12 Jan 2022 14:28:46 GMT</pubDate>\n' + \
         '<enclosure url="https://anchor.fm/s/4d70d828/podcast/' + \
         'play/46054222/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net' + \
         '%2Fstaging%2F2022-0-12%2F7352f28c-a928-ea7a-65ae-' + \
-        'ccb5edffbac1.mp3" length="67247880" type="audio/mpeg"/>'
-    link, mime_type = get_link_from_rss_item(rss_item)
+        'ccb5edffbac1.mp3" length="67247880" type="audio/mpeg"/>\n' + \
+        '<podcast:alternateEnclosure type="audio/mpeg" ' + \
+        'length="27800000" bitrate="128000" default="true" ' + \
+        'title="Standard">\n' + \
+        '<podcast:source uri="https://whoframed.rodger/rabbit.mp3" />\n' + \
+        '<podcast:source uri="http://randomaddress.onion/rabbit.mp3" />\n' + \
+        '<podcast:source uri="http://randomaddress.i2p/rabbit.mp3" />\n' + \
+        '</podcast:alternateEnclosure>\n' + \
+        '<podcast:alternateEnclosure type="audio/opus" ' + \
+        'length="19200000" bitrate="128000" ' + \
+        'title="High Quality">\n' + \
+        '<podcast:source uri="https://whoframed.rodger/rabbit.opus" />\n' + \
+        '<podcast:source uri="http://randomaddress.onion/rabbit.opus" />\n' + \
+        '<podcast:source uri="http://randomaddress.i2p/rabbit.opus" />\n' + \
+        '</podcast:alternateEnclosure>\n'
+
+    link, mime_type = get_link_from_rss_item(rss_item, None, None)
     assert link
-    assert link.endswith('.mp3')
+    assert link.endswith('1.mp3')
     assert mime_type
     assert mime_type == 'audio/mpeg'
+
+    link, mime_type = get_link_from_rss_item(rss_item, ['audio/opus'], None)
+    assert mime_type
+    if mime_type != 'audio/opus':
+        print('mime_type: ' + mime_type)
+    assert mime_type == 'audio/opus'
+    assert link
+    assert link == 'https://whoframed.rodger/rabbit.opus'
+
+    link, mime_type = get_link_from_rss_item(rss_item, ['audio/opus'], 'tor')
+    assert mime_type
+    if mime_type != 'audio/opus':
+        print('mime_type: ' + mime_type)
+    assert mime_type == 'audio/opus'
+    assert link
+    assert link == 'http://randomaddress.onion/rabbit.opus'
 
     rss_item = \
         '<link>' + \

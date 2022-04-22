@@ -623,10 +623,60 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
     return podcast_properties
 
 
-def get_link_from_rss_item(rss_item: str) -> (str, str):
+def get_link_from_rss_item(rss_item: str,
+                           preferred_mime_types: [] = None,
+                           proxy_type: str = None) -> (str, str):
     """Extracts rss link from rss item string
     """
     mime_type = None
+
+    if preferred_mime_types and '<podcast:alternateEnclosure ' in rss_item:
+        enclosures = rss_item.split('<podcast:alternateEnclosure ')
+        ctr = 0
+        for enclosure in enclosures:
+            if ctr == 0:
+                ctr += 1
+                continue
+            ctr += 1
+            if '</podcast:alternateEnclosure' not in enclosure:
+                continue
+            enclosure = enclosure.split('</podcast:alternateEnclosure')[0]
+            if 'type="' not in enclosure:
+                continue
+            mime_type = enclosure.split('type="')[1]
+            if '"' in mime_type:
+                mime_type = mime_type.split('"')[0]
+            if mime_type not in preferred_mime_types:
+                continue
+            if 'uri="' not in enclosure:
+                continue
+            uris = enclosure.split('uri="')
+            ctr2 = 0
+            for uri in uris:
+                if ctr2 == 0:
+                    ctr2 += 1
+                    continue
+                ctr2 += 1
+                if '"' not in uri:
+                    continue
+                link = uri.split('"')[0]
+                if '://' not in link:
+                    continue
+                if proxy_type:
+                    if proxy_type == 'tor' and \
+                       '.onion/' not in link:
+                        continue
+                    if proxy_type == 'onion' and \
+                       '.onion/' not in link:
+                        continue
+                    if proxy_type == 'i2p' and \
+                       '.i2p/' not in link:
+                        continue
+                    return link, mime_type
+                else:
+                    if '.onion/' not in link and \
+                       '.i2p/' not in link:
+                        return link, mime_type
 
     if '<enclosure ' in rss_item:
         # get link from audio or video enclosure
