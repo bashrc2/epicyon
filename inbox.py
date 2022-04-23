@@ -4767,6 +4767,7 @@ def run_inbox_queue(server,
                         'INBOX', 'while_loop_start', debug)
     while True:
         time.sleep(1)
+        inbox_start_time = time.time()
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'while_loop_itteration', debug)
 
