@@ -4183,7 +4183,7 @@ def _inbox_after_initial(server, inbox_start_time,
         return False
     fitness_performance(inbox_start_time,
                         server.fitness,
-                        'INBOX', 'end_inbox_after_initial',
+                        'INBOX', 'end_after_initial',
                         debug)
 
     return True
@@ -5281,7 +5281,7 @@ def run_inbox_queue(server,
                                  languages_understood, mitm,
                                  bold_reading)
             fitness_performance(inbox_start_time, server.fitness,
-                                'INBOX', 'inbox_after_initial',
+                                'INBOX', 'handle_after_initial',
                                 debug)
             if debug:
                 pprint(queue_json['post'])
