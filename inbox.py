@@ -5187,10 +5187,10 @@ def run_inbox_queue(server,
                           str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
-            fitness_performance(inbox_start_time, server.fitness,
-                                'INBOX', '_inbox_post_recipients',
-                                debug)
             continue
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_post_recipients',
+                            debug)
 
         # if there are only a small number of followers then
         # process them as if they were specifically
@@ -5229,6 +5229,10 @@ def run_inbox_queue(server,
 
         lists_enabled = get_config_param(base_dir, "listsEnabled")
         content_license_url = get_config_param(base_dir, "contentLicenseUrl")
+
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'distribute_post',
+                            debug)
 
         # for posts addressed to specific accounts
         for handle, _ in recipients_dict.items():
