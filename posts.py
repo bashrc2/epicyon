@@ -3097,6 +3097,9 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
     if debug:
         print('DEBUG: Sending individually addressed posts: ' +
               str(recipients))
+    # randomize the recipients list order, so that we are not favoring
+    # any particular account in terms of delivery time
+    random.shuffle(recipients)
     # this is after the message has arrived at the server
     client_to_server = False
     for address in recipients:
@@ -3433,6 +3436,9 @@ def send_to_followers(server, session, session_onion, session_i2p,
                              signing_priv_key_pem, 639342,
                              domain, onion_domain, i2p_domain)
         else:
+            # randomize the order of handles, so that we are not
+            # favoring any particular account in terms of its delivery time
+            random.shuffle(follower_handles)
             # send to individual followers without using a shared inbox
             for handle in follower_handles:
                 print('Sending post to followers ' + handle)
