@@ -3581,6 +3581,7 @@ def _inbox_after_initial(server, inbox_start_time,
     fitness_performance(inbox_start_time, server.fitness,
                         'INBOX', '_group_handle',
                         debug)
+    inbox_start_time = time.time()
 
     handle_name = handle.split('@')[0]
 
@@ -3609,6 +3610,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_like',
                             debug)
+        inbox_start_time = time.time()
         return False
 
     if _receive_undo_like(recent_posts_cache,
@@ -3635,6 +3637,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_undo_like',
                             debug)
+        inbox_start_time = time.time()
         return False
 
     if _receive_reaction(recent_posts_cache,
@@ -3662,6 +3665,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_reaction',
                             debug)
+        inbox_start_time = time.time()
         return False
 
     if _receive_undo_reaction(recent_posts_cache,
@@ -3688,6 +3692,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_undo_reaction',
                             debug)
+        inbox_start_time = time.time()
         return False
 
     if _receive_bookmark(recent_posts_cache,
@@ -3714,6 +3719,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_bookmark',
                             debug)
+        inbox_start_time = time.time()
         return False
 
     if _receive_undo_bookmark(recent_posts_cache,
@@ -3740,6 +3746,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_undo_bookmark',
                             debug)
+        inbox_start_time = time.time()
         return False
 
     if is_create_inside_announce(message_json):
@@ -3747,6 +3754,7 @@ def _inbox_after_initial(server, inbox_start_time,
     fitness_performance(inbox_start_time, server.fitness,
                         'INBOX', 'is_create_inside_announce',
                         debug)
+    inbox_start_time = time.time()
 
     if _receive_announce(recent_posts_cache,
                          session, handle, is_group,
@@ -3773,6 +3781,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_announce',
                             debug)
+        inbox_start_time = time.time()
 
     if _receive_undo_announce(recent_posts_cache,
                               session, handle, is_group,
@@ -3789,6 +3798,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_undo_announce',
                             debug)
+        inbox_start_time = time.time()
         return False
 
     if _receive_delete(session, handle, is_group,
@@ -3806,6 +3816,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_delete',
                             debug)
+        inbox_start_time = time.time()
         return False
 
     if debug:
@@ -3832,6 +3843,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_valid_post_content',
                             debug)
+        inbox_start_time = time.time()
         # is the sending actor valid?
         if not valid_sending_actor(session, base_dir, nickname, domain,
                                    person_cache, post_json_object,
@@ -3842,10 +3854,12 @@ def _inbox_after_initial(server, inbox_start_time,
                 fitness_performance(inbox_start_time, server.fitness,
                                     'INBOX', 'not_valid_sending_actor',
                                     debug)
+                inbox_start_time = time.time()
             return False
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'valid_sending_actor',
                             debug)
+        inbox_start_time = time.time()
 
         if post_json_object.get('object'):
             json_obj = post_json_object['object']
@@ -3859,6 +3873,7 @@ def _inbox_after_initial(server, inbox_start_time,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_check_for_git_patches',
                                 debug)
+            inbox_start_time = time.time()
             return False
 
         # replace YouTube links, so they get less tracking data
@@ -3866,6 +3881,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'replace_you_tube',
                             debug)
+        inbox_start_time = time.time()
         # replace twitter link domains, so that you can view twitter posts
         # without having an account
         replace_twitter(post_json_object, twitter_replacement_domain,
@@ -3873,6 +3889,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'replace_you_twitter',
                             debug)
+        inbox_start_time = time.time()
 
         # list of indexes to be updated
         update_index_list = ['inbox']
@@ -3881,6 +3898,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'populate_replies',
                             debug)
+        inbox_start_time = time.time()
 
         _receive_question_vote(server, base_dir, nickname, domain,
                                http_prefix, handle, debug,
@@ -3903,6 +3921,7 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_question_vote',
                             debug)
+        inbox_start_time = time.time()
 
         is_reply_to_muted_post = False
 
@@ -3931,12 +3950,14 @@ def _inbox_after_initial(server, inbox_start_time,
                 fitness_performance(inbox_start_time, server.fitness,
                                     'INBOX', '_is_valid_dm',
                                     debug)
+                inbox_start_time = time.time()
 
             # get the actor being replied to
             actor = local_actor_url(http_prefix, nickname, domain_full)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'local_actor_url',
                                 debug)
+            inbox_start_time = time.time()
 
             # create a reply notification file if needed
             is_reply_to_muted_post = \
@@ -3948,6 +3969,7 @@ def _inbox_after_initial(server, inbox_start_time,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_create_reply_notification_file',
                                 debug)
+            inbox_start_time = time.time()
 
             if is_image_media(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
@@ -3963,6 +3985,7 @@ def _inbox_after_initial(server, inbox_start_time,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'is_image_media',
                                 debug)
+            inbox_start_time = time.time()
             if is_blog_post(post_json_object):
                 # blogs index will be updated
                 update_index_list.append('tlblogs')
@@ -3976,12 +3999,14 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_obtain_avatar_for_reply_post',
                             debug)
+        inbox_start_time = time.time()
 
         # save the post to file
         if save_json(post_json_object, destination_filename):
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'save_json',
                                 debug)
+            inbox_start_time = time.time()
             if mitm:
                 # write a file to indicate that this post was delivered
                 # via a third party
@@ -3999,6 +4024,7 @@ def _inbox_after_initial(server, inbox_start_time,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_low_frequency_post_notification',
                                 debug)
+            inbox_start_time = time.time()
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
@@ -4021,6 +4047,7 @@ def _inbox_after_initial(server, inbox_start_time,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'edited_post_filename',
                                 debug)
+            inbox_start_time = time.time()
 
             # If this was an edit then update the edits json file and
             # delete the previous version of the post
@@ -4065,12 +4092,14 @@ def _inbox_after_initial(server, inbox_start_time,
                                     server.fitness,
                                     'INBOX', 'box_' + boxname,
                                     debug)
+                inbox_start_time = time.time()
                 if not inbox_update_index(boxname, base_dir, handle,
                                           destination_filename, debug):
                     fitness_performance(inbox_start_time,
                                         server.fitness,
                                         'INBOX', 'inbox_update_index',
                                         debug)
+                    inbox_start_time = time.time()
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if boxname == 'inbox':
@@ -4084,6 +4113,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                                 server.fitness,
                                                 'INBOX', 'update_speaker',
                                                 debug)
+                            inbox_start_time = time.time()
                     if not unit_test:
                         if debug:
                             print('Saving inbox post as html to cache')
@@ -4097,6 +4127,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                             server.fitness,
                                             'INBOX', 'get_account_timezone',
                                             debug)
+                        inbox_start_time = time.time()
                         _inbox_store_post_to_html_cache(recent_posts_cache,
                                                         max_recent_posts,
                                                         translate, base_dir,
@@ -4125,6 +4156,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                             'INBOX',
                                             '_inbox_store_post_to_html_cache',
                                             debug)
+                        inbox_start_time = time.time()
                         if debug:
                             time_diff = \
                                 str(int((time.time() - html_cache_start_time) *
@@ -4139,6 +4171,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                 server.fitness,
                                 'INBOX', 'update_conversation',
                                 debug)
+            inbox_start_time = time.time()
 
             # store the id of the last post made by this actor
             _store_last_post_id(base_dir, nickname, domain, post_json_object)
@@ -4146,12 +4179,14 @@ def _inbox_after_initial(server, inbox_start_time,
                                 server.fitness,
                                 'INBOX', '_store_last_post_id',
                                 debug)
+            inbox_start_time = time.time()
 
             _inbox_update_calendar(base_dir, handle, post_json_object)
             fitness_performance(inbox_start_time,
                                 server.fitness,
                                 'INBOX', '_inbox_update_calendar',
                                 debug)
+            inbox_start_time = time.time()
 
             store_hash_tags(base_dir, handle_name, domain,
                             http_prefix, domain_full,
@@ -4160,6 +4195,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                 server.fitness,
                                 'INBOX', 'store_hash_tags',
                                 debug)
+            inbox_start_time = time.time()
 
             # send the post out to group members
             if is_group:
@@ -4178,12 +4214,14 @@ def _inbox_after_initial(server, inbox_start_time,
                                     server.fitness,
                                     'INBOX', '_send_to_group_members',
                                     debug)
+                inbox_start_time = time.time()
     else:
         if debug:
             print("Inbox post is not valid " + str(post_json_object))
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'invalid_post',
                             debug)
+        inbox_start_time = time.time()
 
     # if the post wasn't saved
     if not os.path.isfile(destination_filename):
@@ -4194,6 +4232,7 @@ def _inbox_after_initial(server, inbox_start_time,
                         server.fitness,
                         'INBOX', 'end_after_initial',
                         debug)
+    inbox_start_time = time.time()
 
     return True
 
@@ -4722,6 +4761,7 @@ def run_inbox_queue(server,
     print('Starting new session when starting inbox queue')
     fitness_performance(inbox_start_time, server.fitness,
                         'INBOX', 'start', debug)
+    inbox_start_time = time.time()
 
     curr_session_time = int(time.time())
     session_last_update = 0
@@ -4755,6 +4795,7 @@ def run_inbox_queue(server,
     _restore_queue_items(base_dir, queue)
     fitness_performance(inbox_start_time, server.fitness,
                         'INBOX', '_restore_queue_items', debug)
+    inbox_start_time = time.time()
 
     # keep track of numbers of incoming posts per day
     quotas_last_update_daily = int(time.time())
@@ -4781,11 +4822,13 @@ def run_inbox_queue(server,
 
     fitness_performance(inbox_start_time, server.fitness,
                         'INBOX', 'while_loop_start', debug)
+    inbox_start_time = time.time()
     while True:
         time.sleep(1)
         inbox_start_time = time.time()
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'while_loop_itteration', debug)
+        inbox_start_time = time.time()
 
         # heartbeat to monitor whether the inbox queue is running
         heart_beat_ctr += 1
@@ -4795,6 +4838,7 @@ def run_inbox_queue(server,
                 broch_lapse_days = random.randrange(7, 14)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'broch_modeLapses', debug)
+            inbox_start_time = time.time()
             print('>>> Heartbeat Q:' + str(len(queue)) + ' ' +
                   '{:%F %T}'.format(datetime.datetime.now()))
             heart_beat_ctr = 0
@@ -4807,6 +4851,7 @@ def run_inbox_queue(server,
                 _restore_queue_items(base_dir, queue)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'restore_queue', debug)
+            inbox_start_time = time.time()
             continue
 
         # oldest item first
@@ -4826,6 +4871,7 @@ def run_inbox_queue(server,
         queue_json = load_json(queue_filename, 1)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'load_queue_json', debug)
+        inbox_start_time = time.time()
         if not queue_json:
             print('Queue: run_inbox_queue failed to load inbox queue item ' +
                   queue_filename)
@@ -4871,6 +4917,7 @@ def run_inbox_queue(server,
             continue
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_inbox_quota_exceeded', debug)
+        inbox_start_time = time.time()
 
         # recreate the session periodically
         if not session or curr_time - session_last_update > 21600:
@@ -4902,6 +4949,7 @@ def run_inbox_queue(server,
                     continue
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'recreate_session', debug)
+        inbox_start_time = time.time()
 
         curr_session = session
         curr_proxy_type = proxy_type
@@ -4922,6 +4970,7 @@ def run_inbox_queue(server,
 
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'start_get_pubkey', debug)
+        inbox_start_time = time.time()
         # Try a few times to obtain the public key
         pub_key = None
         key_id = None
@@ -4948,6 +4997,7 @@ def run_inbox_queue(server,
                                    signing_priv_key_pem)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'get_person_pub_key', debug)
+            inbox_start_time = time.time()
             if pub_key:
                 if debug:
                     print('DEBUG: public key: ' + str(pub_key))
@@ -4974,6 +5024,7 @@ def run_inbox_queue(server,
         # check the http header signature
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'begin_check_signature', debug)
+        inbox_start_time = time.time()
         if debug:
             print('DEBUG: checking http header signature')
             pprint(queue_json['httpHeaders'])
@@ -4992,12 +5043,14 @@ def run_inbox_queue(server,
                 print('DEBUG: http header signature check success')
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'verify_post_headers', debug)
+        inbox_start_time = time.time()
 
         # check if a json signature exists on this post
         has_json_signature, jwebsig_type = \
             _check_json_signature(base_dir, queue_json)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_check_json_signature', debug)
+        inbox_start_time = time.time()
 
         # strict enforcement of json signatures
         if not has_json_signature:
@@ -5051,6 +5104,7 @@ def run_inbox_queue(server,
                     fitness_performance(inbox_start_time, server.fitness,
                                         'INBOX', 'not_verify_signature',
                                         debug)
+                    inbox_start_time = time.time()
                     continue
                 else:
                     if http_signature_failed:
@@ -5061,6 +5115,7 @@ def run_inbox_queue(server,
                     fitness_performance(inbox_start_time, server.fitness,
                                         'INBOX', 'verify_signature_success',
                                         debug)
+                    inbox_start_time = time.time()
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
@@ -5087,6 +5142,7 @@ def run_inbox_queue(server,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_receive_undo',
                                 debug)
+            inbox_start_time = time.time()
             continue
 
         if debug:
@@ -5115,6 +5171,7 @@ def run_inbox_queue(server,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_receive_follow_request',
                                 debug)
+            inbox_start_time = time.time()
             continue
         else:
             if debug:
@@ -5139,6 +5196,7 @@ def run_inbox_queue(server,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'receive_accept_reject',
                                 debug)
+            inbox_start_time = time.time()
             continue
 
         if _receive_update_activity(recent_posts_cache, curr_session,
@@ -5176,6 +5234,7 @@ def run_inbox_queue(server,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_receive_update_activity',
                                 debug)
+            inbox_start_time = time.time()
             continue
 
         # get recipients list
@@ -5200,6 +5259,7 @@ def run_inbox_queue(server,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_post_recipients',
                             debug)
+        inbox_start_time = time.time()
 
         # if there are only a small number of followers then
         # process them as if they were specifically
@@ -5235,6 +5295,7 @@ def run_inbox_queue(server,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'shared_inbox_save',
                                 debug)
+            inbox_start_time = time.time()
 
         lists_enabled = get_config_param(base_dir, "listsEnabled")
         content_license_url = get_config_param(base_dir, "contentLicenseUrl")
@@ -5242,6 +5303,7 @@ def run_inbox_queue(server,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'distribute_post',
                             debug)
+        inbox_start_time = time.time()
 
         # for posts addressed to specific accounts
         for handle, _ in recipients_dict.items():
@@ -5292,6 +5354,7 @@ def run_inbox_queue(server,
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'handle_after_initial',
                                 debug)
+            inbox_start_time = time.time()
             if debug:
                 pprint(queue_json['post'])
                 print('Queue: Queue post accepted')
