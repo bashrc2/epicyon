@@ -4055,6 +4055,10 @@ def _inbox_after_initial(server, inbox_start_time,
 
             # update the indexes for different timelines
             for boxname in update_index_list:
+                fitness_performance(inbox_start_time,
+                                    server.fitness,
+                                    'INBOX', 'box_' + boxname,
+                                    debug)
                 if not inbox_update_index(boxname, base_dir, handle,
                                           destination_filename, debug):
                     fitness_performance(inbox_start_time,
