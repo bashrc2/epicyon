@@ -3307,12 +3307,21 @@ def send_to_followers(server, session, session_onion, session_i2p,
     elif domain.endswith('.i2p'):
         curr_proxy_type = 'i2p'
 
-    # for each instance
     sending_start_time = datetime.datetime.utcnow()
     print('Sending post to followers begins ' +
           sending_start_time.strftime("%Y-%m-%dT%H:%M:%SZ"))
     sending_ctr = 0
+
+    # randomize the order of sending to instances
+    randomized_instances = []
     for follower_domain, follower_handles in grouped.items():
+        randomized_instances.append([follower_domain, follower_handles])
+    random.shuffle(randomized_instances)
+
+    # send out to each instance
+    for group_send in randomized_instances:
+        follower_domain = group_send[0]
+        follower_handles = group_send[1]
         print('Sending post to followers progress ' +
               str(int(sending_ctr * 100 / len(grouped.items()))) + '% ' +
               follower_domain)
