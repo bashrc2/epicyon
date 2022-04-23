@@ -3578,6 +3578,9 @@ def _inbox_after_initial(server, inbox_start_time,
 
     post_is_dm = False
     is_group = _group_handle(base_dir, handle)
+    fitness_performance(inbox_start_time, server.fitness,
+                        'INBOX', '_group_handle',
+                        debug)
 
     handle_name = handle.split('@')[0]
 
@@ -3741,6 +3744,9 @@ def _inbox_after_initial(server, inbox_start_time,
 
     if is_create_inside_announce(message_json):
         message_json = message_json['object']
+    fitness_performance(inbox_start_time, server.fitness,
+                        'INBOX', 'is_create_inside_announce',
+                        debug)
 
     if _receive_announce(recent_posts_cache,
                          session, handle, is_group,
@@ -4175,6 +4181,9 @@ def _inbox_after_initial(server, inbox_start_time,
     else:
         if debug:
             print("Inbox post is not valid " + str(post_json_object))
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'invalid_post',
+                            debug)
 
     # if the post wasn't saved
     if not os.path.isfile(destination_filename):
