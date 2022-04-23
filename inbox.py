@@ -3921,13 +3921,16 @@ def _inbox_after_initial(server, inbox_start_time,
                                     onion_domain, i2p_domain):
                     if debug:
                         print('Invalid DM ' + str(post_json_object))
-                    fitness_performance(inbox_start_time, server.fitness,
-                                        'INBOX', '_is_valid_dm',
-                                        debug)
                     return False
+                fitness_performance(inbox_start_time, server.fitness,
+                                    'INBOX', '_is_valid_dm',
+                                    debug)
 
             # get the actor being replied to
             actor = local_actor_url(http_prefix, nickname, domain_full)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'local_actor_url',
+                                debug)
 
             # create a reply notification file if needed
             is_reply_to_muted_post = \
