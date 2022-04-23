@@ -3097,6 +3097,9 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
     if debug:
         print('DEBUG: Sending individually addressed posts: ' +
               str(recipients))
+    # randomize the recipients list order, so that we are not favoring
+    # any particular account in terms of delivery time
+    random.shuffle(recipients)
     # this is after the message has arrived at the server
     client_to_server = False
     for address in recipients:
@@ -3304,12 +3307,21 @@ def send_to_followers(server, session, session_onion, session_i2p,
     elif domain.endswith('.i2p'):
         curr_proxy_type = 'i2p'
 
-    # for each instance
     sending_start_time = datetime.datetime.utcnow()
     print('Sending post to followers begins ' +
           sending_start_time.strftime("%Y-%m-%dT%H:%M:%SZ"))
     sending_ctr = 0
+
+    # randomize the order of sending to instances
+    randomized_instances = []
     for follower_domain, follower_handles in grouped.items():
+        randomized_instances.append([follower_domain, follower_handles])
+    random.shuffle(randomized_instances)
+
+    # send out to each instance
+    for group_send in randomized_instances:
+        follower_domain = group_send[0]
+        follower_handles = group_send[1]
         print('Sending post to followers progress ' +
               str(int(sending_ctr * 100 / len(grouped.items()))) + '% ' +
               follower_domain)
@@ -3433,6 +3445,9 @@ def send_to_followers(server, session, session_onion, session_i2p,
                              signing_priv_key_pem, 639342,
                              domain, onion_domain, i2p_domain)
         else:
+            # randomize the order of handles, so that we are not
+            # favoring any particular account in terms of its delivery time
+            random.shuffle(follower_handles)
             # send to individual followers without using a shared inbox
             for handle in follower_handles:
                 print('Sending post to followers ' + handle)
