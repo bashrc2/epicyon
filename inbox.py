@@ -125,6 +125,7 @@ from notifyOnPost import notify_when_person_posts
 from conversation import update_conversation
 from webapp_hashtagswarm import html_hash_tag_swarm
 from person import valid_sending_actor
+from fitnessFunctions import fitness_performance
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -3526,7 +3527,7 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
     return 0
 
 
-def _inbox_after_initial(server,
+def _inbox_after_initial(server, inbox_start_time,
                          recent_posts_cache: {}, max_recent_posts: int,
                          session, session_onion, session_i2p,
                          key_id: str, handle: str, message_json: {},
@@ -3602,6 +3603,9 @@ def _inbox_after_initial(server,
                      bold_reading):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_like',
+                            debug)
         return False
 
     if _receive_undo_like(recent_posts_cache,
@@ -3625,6 +3629,9 @@ def _inbox_after_initial(server,
                           bold_reading):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_undo_like',
+                            debug)
         return False
 
     if _receive_reaction(recent_posts_cache,
@@ -3649,6 +3656,9 @@ def _inbox_after_initial(server,
                          bold_reading):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_reaction',
+                            debug)
         return False
 
     if _receive_undo_reaction(recent_posts_cache,
@@ -3672,6 +3682,9 @@ def _inbox_after_initial(server,
                               bold_reading):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_undo_reaction',
+                            debug)
         return False
 
     if _receive_bookmark(recent_posts_cache,
@@ -3695,6 +3708,9 @@ def _inbox_after_initial(server,
                          bold_reading):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_bookmark',
+                            debug)
         return False
 
     if _receive_undo_bookmark(recent_posts_cache,
@@ -3718,6 +3734,9 @@ def _inbox_after_initial(server,
                               bold_reading):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_undo_bookmark',
+                            debug)
         return False
 
     if is_create_inside_announce(message_json):
@@ -3745,6 +3764,9 @@ def _inbox_after_initial(server,
                          bold_reading):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_announce',
+                            debug)
 
     if _receive_undo_announce(recent_posts_cache,
                               session, handle, is_group,
@@ -3758,6 +3780,9 @@ def _inbox_after_initial(server,
                               debug):
         if debug:
             print('DEBUG: Undo announce accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_undo_announce',
+                            debug)
         return False
 
     if _receive_delete(session, handle, is_group,
@@ -3772,6 +3797,9 @@ def _inbox_after_initial(server,
                        recent_posts_cache):
         if debug:
             print('DEBUG: Delete accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_delete',
+                            debug)
         return False
 
     if debug:
@@ -3795,6 +3823,9 @@ def _inbox_after_initial(server,
                            allow_local_network_access, debug,
                            system_language, http_prefix,
                            domain_full, person_cache):
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_valid_post_content',
+                            debug)
         # is the sending actor valid?
         if not valid_sending_actor(session, base_dir, nickname, domain,
                                    person_cache, post_json_object,
@@ -3802,7 +3833,13 @@ def _inbox_after_initial(server,
             if debug:
                 print('Inbox sending actor is not valid ' +
                       str(post_json_object))
+                fitness_performance(inbox_start_time, server.fitness,
+                                    'INBOX', 'not_valid_sending_actor',
+                                    debug)
             return False
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'valid_sending_actor',
+                            debug)
 
         if post_json_object.get('object'):
             json_obj = post_json_object['object']
@@ -3813,19 +3850,31 @@ def _inbox_after_initial(server,
 
         if _check_for_git_patches(base_dir, nickname, domain,
                                   handle, json_obj) == 2:
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', '_check_for_git_patches',
+                                debug)
             return False
 
         # replace YouTube links, so they get less tracking data
         replace_you_tube(post_json_object, yt_replace_domain, system_language)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'replace_you_tube',
+                            debug)
         # replace twitter link domains, so that you can view twitter posts
         # without having an account
         replace_twitter(post_json_object, twitter_replacement_domain,
                         system_language)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'replace_you_twitter',
+                            debug)
 
         # list of indexes to be updated
         update_index_list = ['inbox']
         populate_replies(base_dir, http_prefix, domain, post_json_object,
                          max_replies, debug)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'populate_replies',
+                            debug)
 
         _receive_question_vote(server, base_dir, nickname, domain,
                                http_prefix, handle, debug,
@@ -3845,6 +3894,9 @@ def _inbox_after_initial(server,
                                max_like_count,
                                cw_lists, lists_enabled,
                                bold_reading)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_question_vote',
+                            debug)
 
         is_reply_to_muted_post = False
 
@@ -3869,6 +3921,9 @@ def _inbox_after_initial(server,
                                     onion_domain, i2p_domain):
                     if debug:
                         print('Invalid DM ' + str(post_json_object))
+                    fitness_performance(inbox_start_time, server.fitness,
+                                        'INBOX', '_is_valid_dm',
+                                        debug)
                     return False
 
             # get the actor being replied to
@@ -3881,6 +3936,9 @@ def _inbox_after_initial(server,
                                                 post_json_object, actor,
                                                 update_index_list, http_prefix,
                                                 default_reply_interval_hrs)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', '_create_reply_notification_file',
+                                debug)
 
             if is_image_media(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
@@ -3893,6 +3951,9 @@ def _inbox_after_initial(server,
                               bold_reading):
                 # media index will be updated
                 update_index_list.append('tlmedia')
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'is_image_media',
+                                debug)
             if is_blog_post(post_json_object):
                 # blogs index will be updated
                 update_index_list.append('tlblogs')
@@ -3903,9 +3964,15 @@ def _inbox_after_initial(server,
                                       onion_domain, i2p_domain,
                                       person_cache, post_json_object, debug,
                                       signing_priv_key_pem)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_obtain_avatar_for_reply_post',
+                            debug)
 
         # save the post to file
         if save_json(post_json_object, destination_filename):
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'save_json',
+                                debug)
             if mitm:
                 # write a file to indicate that this post was delivered
                 # via a third party
@@ -3920,6 +3987,9 @@ def _inbox_after_initial(server,
             _low_frequency_post_notification(base_dir, http_prefix,
                                              nickname, domain, port,
                                              handle, post_is_dm, json_obj)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', '_low_frequency_post_notification',
+                                debug)
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
@@ -3939,6 +4009,9 @@ def _inbox_after_initial(server,
                 edited_post_filename(base_dir, handle_name, domain,
                                      post_json_object, debug, 300,
                                      system_language)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'edited_post_filename',
+                                debug)
 
             # If this was an edit then update the edits json file and
             # delete the previous version of the post
@@ -3981,6 +4054,10 @@ def _inbox_after_initial(server,
             for boxname in update_index_list:
                 if not inbox_update_index(boxname, base_dir, handle,
                                           destination_filename, debug):
+                    fitness_performance(inbox_start_time,
+                                        server.fitness,
+                                        'INBOX', 'inbox_update_index',
+                                        debug)
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if boxname == 'inbox':
@@ -3990,6 +4067,10 @@ def _inbox_after_initial(server,
                                            nickname, domain, domain_full,
                                            post_json_object, person_cache,
                                            translate, None, theme_name)
+                            fitness_performance(inbox_start_time,
+                                                server.fitness,
+                                                'INBOX', 'update_speaker',
+                                                debug)
                     if not unit_test:
                         if debug:
                             print('Saving inbox post as html to cache')
@@ -3999,6 +4080,10 @@ def _inbox_after_initial(server,
                         show_pub_date_only = show_published_date_only
                         timezone = \
                             get_account_timezone(base_dir, handle_name, domain)
+                        fitness_performance(inbox_start_time,
+                                            server.fitness,
+                                            'INBOX', 'get_account_timezone',
+                                            debug)
                         _inbox_store_post_to_html_cache(recent_posts_cache,
                                                         max_recent_posts,
                                                         translate, base_dir,
@@ -4022,6 +4107,11 @@ def _inbox_after_initial(server,
                                                         lists_enabled,
                                                         timezone, mitm,
                                                         bold_reading)
+                        fitness_performance(inbox_start_time,
+                                            server.fitness,
+                                            'INBOX',
+                                            '_inbox_store_post_to_html_cache',
+                                            debug)
                         if debug:
                             time_diff = \
                                 str(int((time.time() - html_cache_start_time) *
@@ -4032,15 +4122,31 @@ def _inbox_after_initial(server,
 
             update_conversation(base_dir, handle_name, domain,
                                 post_json_object)
+            fitness_performance(inbox_start_time,
+                                server.fitness,
+                                'INBOX', 'update_conversation',
+                                debug)
 
             # store the id of the last post made by this actor
             _store_last_post_id(base_dir, nickname, domain, post_json_object)
+            fitness_performance(inbox_start_time,
+                                server.fitness,
+                                'INBOX', '_store_last_post_id',
+                                debug)
 
             _inbox_update_calendar(base_dir, handle, post_json_object)
+            fitness_performance(inbox_start_time,
+                                server.fitness,
+                                'INBOX', '_inbox_update_calendar',
+                                debug)
 
             store_hash_tags(base_dir, handle_name, domain,
                             http_prefix, domain_full,
                             post_json_object, translate)
+            fitness_performance(inbox_start_time,
+                                server.fitness,
+                                'INBOX', 'store_hash_tags',
+                                debug)
 
             # send the post out to group members
             if is_group:
@@ -4055,6 +4161,10 @@ def _inbox_after_initial(server,
                                        debug, system_language,
                                        domain, onion_domain, i2p_domain,
                                        signing_priv_key_pem)
+                fitness_performance(inbox_start_time,
+                                    server.fitness,
+                                    'INBOX', '_send_to_group_members',
+                                    debug)
     else:
         if debug:
             print("Inbox post is not valid " + str(post_json_object))
@@ -4064,6 +4174,10 @@ def _inbox_after_initial(server,
         if debug:
             print("Inbox post was not saved " + destination_filename)
         return False
+    fitness_performance(inbox_start_time,
+                        server.fitness,
+                        'INBOX', 'end_inbox_after_initial',
+                        debug)
 
     return True
 
@@ -4588,7 +4702,11 @@ def run_inbox_queue(server,
     """Processes received items and moves them to the appropriate
     directories
     """
+    inbox_start_time = time.time()
     print('Starting new session when starting inbox queue')
+    fitness_performance(inbox_start_time, server.fitness,
+                        'INBOX', 'start', debug)
+
     curr_session_time = int(time.time())
     session_last_update = 0
     session = create_session(proxy_type)
@@ -4619,6 +4737,8 @@ def run_inbox_queue(server,
     # if queue processing was interrupted (eg server crash)
     # then this loads any outstanding items back into the queue
     _restore_queue_items(base_dir, queue)
+    fitness_performance(inbox_start_time, server.fitness,
+                        'INBOX', '_restore_queue_items', debug)
 
     # keep track of numbers of incoming posts per day
     quotas_last_update_daily = int(time.time())
@@ -4643,8 +4763,12 @@ def run_inbox_queue(server,
     # how long it takes for broch mode to lapse
     broch_lapse_days = random.randrange(7, 14)
 
+    fitness_performance(inbox_start_time, server.fitness,
+                        'INBOX', 'while_loop_start', debug)
     while True:
         time.sleep(1)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'while_loop_itteration', debug)
 
         # heartbeat to monitor whether the inbox queue is running
         heart_beat_ctr += 1
@@ -4652,6 +4776,8 @@ def run_inbox_queue(server,
             # turn off broch mode after it has timed out
             if broch_modeLapses(base_dir, broch_lapse_days):
                 broch_lapse_days = random.randrange(7, 14)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'broch_modeLapses', debug)
             print('>>> Heartbeat Q:' + str(len(queue)) + ' ' +
                   '{:%F %T}'.format(datetime.datetime.now()))
             heart_beat_ctr = 0
@@ -4662,6 +4788,8 @@ def run_inbox_queue(server,
             if queue_restore_ctr >= 30:
                 queue_restore_ctr = 0
                 _restore_queue_items(base_dir, queue)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'restore_queue', debug)
             continue
 
         # oldest item first
@@ -4679,6 +4807,8 @@ def run_inbox_queue(server,
 
         # Load the queue json
         queue_json = load_json(queue_filename, 1)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'load_queue_json', debug)
         if not queue_json:
             print('Queue: run_inbox_queue failed to load inbox queue item ' +
                   queue_filename)
@@ -4722,6 +4852,8 @@ def run_inbox_queue(server,
                                  domain_max_posts_per_day,
                                  account_max_posts_per_day, debug):
             continue
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_inbox_quota_exceeded', debug)
 
         # recreate the session periodically
         if not session or curr_time - session_last_update > 21600:
@@ -4751,6 +4883,8 @@ def run_inbox_queue(server,
                 else:
                     print('WARN: inbox i2p session not created')
                     continue
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'recreate_session', debug)
 
         curr_session = session
         curr_proxy_type = proxy_type
@@ -4769,6 +4903,8 @@ def run_inbox_queue(server,
         if debug and queue_json.get('actor'):
             print('Obtaining public key for actor ' + queue_json['actor'])
 
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'start_get_pubkey', debug)
         # Try a few times to obtain the public key
         pub_key = None
         key_id = None
@@ -4793,6 +4929,8 @@ def run_inbox_queue(server,
                                    project_version, http_prefix,
                                    domain, onion_domain, i2p_domain,
                                    signing_priv_key_pem)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'get_person_pub_key', debug)
             if pub_key:
                 if debug:
                     print('DEBUG: public key: ' + str(pub_key))
@@ -4817,6 +4955,8 @@ def run_inbox_queue(server,
             continue
 
         # check the http header signature
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'begin_check_signature', debug)
         if debug:
             print('DEBUG: checking http header signature')
             pprint(queue_json['httpHeaders'])
@@ -4833,10 +4973,14 @@ def run_inbox_queue(server,
         else:
             if debug:
                 print('DEBUG: http header signature check success')
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', 'verify_post_headers', debug)
 
         # check if a json signature exists on this post
         has_json_signature, jwebsig_type = \
             _check_json_signature(base_dir, queue_json)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_check_json_signature', debug)
 
         # strict enforcement of json signatures
         if not has_json_signature:
@@ -4887,6 +5031,9 @@ def run_inbox_queue(server,
                                   str(queue_filename))
                     if len(queue) > 0:
                         queue.pop(0)
+                    fitness_performance(inbox_start_time, server.fitness,
+                                        'INBOX', 'not_verify_signature',
+                                        debug)
                     continue
                 else:
                     if http_signature_failed:
@@ -4894,6 +5041,9 @@ def run_inbox_queue(server,
                               'via relay ' + key_id)
                     else:
                         print('jsonld inbox signature check success ' + key_id)
+                    fitness_performance(inbox_start_time, server.fitness,
+                                        'INBOX', 'verify_signature_success',
+                                        debug)
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
@@ -4917,6 +5067,9 @@ def run_inbox_queue(server,
                           str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', '_receive_undo',
+                                debug)
             continue
 
         if debug:
@@ -4942,6 +5095,9 @@ def run_inbox_queue(server,
                 queue.pop(0)
             print('Queue: Follow activity for ' + key_id +
                   ' removed from queue')
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', '_receive_follow_request',
+                                debug)
             continue
         else:
             if debug:
@@ -4963,6 +5119,9 @@ def run_inbox_queue(server,
                           str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'receive_accept_reject',
+                                debug)
             continue
 
         if _receive_update_activity(recent_posts_cache, curr_session,
@@ -4997,6 +5156,9 @@ def run_inbox_queue(server,
                           str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', '_receive_update_activity',
+                                debug)
             continue
 
         # get recipients list
@@ -5017,6 +5179,9 @@ def run_inbox_queue(server,
                           str(queue_filename))
             if len(queue) > 0:
                 queue.pop(0)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', '_inbox_post_recipients',
+                                debug)
             continue
 
         # if there are only a small number of followers then
@@ -5050,6 +5215,9 @@ def run_inbox_queue(server,
                 queue_json['destination'].replace(inbox_handle, inbox_handle)
             if not os.path.isfile(shared_inbox_post_filename):
                 save_json(queue_json['post'], shared_inbox_post_filename)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'shared_inbox_save',
+                                debug)
 
         lists_enabled = get_config_param(base_dir, "listsEnabled")
         content_license_url = get_config_param(base_dir, "contentLicenseUrl")
@@ -5067,7 +5235,7 @@ def run_inbox_queue(server,
                 base_dir + '/accounts/' + handle + '/.boldReading'
             if os.path.isfile(bold_reading_filename):
                 bold_reading = True
-            _inbox_after_initial(server,
+            _inbox_after_initial(server, inbox_start_time,
                                  recent_posts_cache,
                                  max_recent_posts,
                                  session, session_onion, session_i2p,
@@ -5100,6 +5268,9 @@ def run_inbox_queue(server,
                                  content_license_url,
                                  languages_understood, mitm,
                                  bold_reading)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'inbox_after_initial',
+                                debug)
             if debug:
                 pprint(queue_json['post'])
                 print('Queue: Queue post accepted')

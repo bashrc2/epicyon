@@ -1552,6 +1552,8 @@ def _html_system_monitor(nickname: str, translate: {}) -> str:
     system_monitor_str += '<p><a href="/users/' + nickname + \
         '/performance?graph=get">📊 GET</a></p>'
     system_monitor_str += '<p><a href="/users/' + nickname + \
+        '/performance?graph=inbox">📊 INBOX</a></p>'
+    system_monitor_str += '<p><a href="/users/' + nickname + \
         '/performance?graph=post">📊 POST</a></p>'
     system_monitor_str += end_edit_section()
     return system_monitor_str

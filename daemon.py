@@ -15710,6 +15710,8 @@ class PubServer(BaseHTTPRequestHandler):
             if html_getreq and not graph.endswith('.json'):
                 if graph == 'post':
                     graph = '_POST'
+                elif graph == 'inbox':
+                    graph = 'INBOX'
                 elif graph == 'get':
                     graph = '_GET'
                 msg = \
@@ -15728,6 +15730,8 @@ class PubServer(BaseHTTPRequestHandler):
                 graph = graph.replace('.json', '')
                 if graph == 'post':
                     graph = '_POST'
+                elif graph == 'inbox':
+                    graph = 'INBOX'
                 elif graph == 'get':
                     graph = '_GET'
                 watch_points_json = \
