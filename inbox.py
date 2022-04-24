@@ -179,10 +179,11 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
             curr_date = datetime.datetime.utcnow()
             time_diff = curr_date - modified_date
             diff_mins = int(time_diff.total_seconds() / 60)
-            if diff_mins < 10:
+            if diff_mins < 30:
                 # was saved recently, so don't save again
                 # This avoids too much disk I/O
                 save_swarm = False
+                print('Not updating hashtag swarm')
             else:
                 print('Updating cached hashtag swarm, last changed ' +
                       str(diff_mins) + ' minutes ago')
