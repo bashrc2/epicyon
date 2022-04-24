@@ -20804,6 +20804,9 @@ def run_daemon(preferred_podcast_formats: [],
         'Reminder': 'r'
     }
 
+    # timeout used when getting rss feeds
+    httpd.rss_timeout_sec = 20
+
     # timeout used when checking for actor changes when clicking an avatar
     # and entering person options screen
     if check_actor_timeout < 2:

@@ -818,7 +818,8 @@ def run_newswire_daemon(base_dir: str, httpd,
                                    httpd.maxCategoriesFeedItemSizeKb,
                                    httpd.system_language,
                                    httpd.debug,
-                                   httpd.preferred_podcast_formats)
+                                   httpd.preferred_podcast_formats,
+                                   httpd.rss_timeout_sec)
 
         if not httpd.newswire:
             print('Newswire feeds not updated')
