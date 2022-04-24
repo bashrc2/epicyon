@@ -200,6 +200,7 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
             except OSError:
                 print('EX: unable to write cached hashtag swarm ' +
                       cached_hashtag_swarm_filename)
+        remove_old_hashtags(base_dir, 3)
     return False
 
 
@@ -270,7 +271,6 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                 except OSError as ex:
                     print('EX: Failed to write entry to tags file ' +
                           tags_filename + ' ' + str(ex))
-                remove_old_hashtags(base_dir, 3)
 
         # automatically assign a category to the tag if possible
         category_filename = tags_dir + '/' + tag_name + '.category'
