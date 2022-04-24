@@ -71,7 +71,8 @@ def url_exists(session, url: str, timeout_sec: int = 3,
     try:
         result = session.get(url, headers=session_headers,
                              params=session_params,
-                             timeout=timeout_sec)
+                             timeout=timeout_sec,
+                             allow_redirects=False)
         if result:
             if result.status_code == 200 or \
                result.status_code == 304:
@@ -91,7 +92,8 @@ def _get_json_request(session, url: str, domain_full: str, session_headers: {},
     """
     try:
         result = session.get(url, headers=session_headers,
-                             params=session_params, timeout=timeout_sec)
+                             params=session_params, timeout=timeout_sec,
+                             allow_redirects=False)
         if result.status_code != 200:
             if result.status_code == 401:
                 print("WARN: get_json " + url + ' rejected by secure mode')
@@ -284,7 +286,8 @@ def get_vcard(xml_format: bool,
 
     try:
         result = session.get(url, headers=session_headers,
-                             params=session_params, timeout=timeout_sec)
+                             params=session_params, timeout=timeout_sec,
+                             allow_redirects=False)
         if result.status_code != 200:
             if result.status_code == 401:
                 print("WARN: get_vcard " + url + ' rejected by secure mode')
@@ -592,7 +595,8 @@ def download_image(session, base_dir: str, url: str,
                 print('Downloading image url: ' + url)
             result = session.get(url,
                                  headers=session_headers,
-                                 params=None)
+                                 params=None,
+                                 allow_redirects=False)
             if result.status_code < 200 or \
                result.status_code > 202:
                 if debug:
@@ -635,7 +639,9 @@ def download_image_any_mime_type(session, url: str,
         'Accept': 'image/x-icon, image/png, image/webp, image/jpeg, image/gif'
     }
     try:
-        result = session.get(url, headers=session_headers, timeout=timeout_sec)
+        result = session.get(url, headers=session_headers,
+                             timeout=timeout_sec,
+                             allow_redirects=False)
     except requests.exceptions.RequestException as ex:
         print('EX: download_image_any_mime_type failed1: ' +
               str(url) + ', ' + str(ex))

@@ -1305,7 +1305,8 @@ def get_rss(base_dir: str, domain: str, session, url: str,
         result = \
             session.get(url, headers=session_headers,
                         params=session_params,
-                        timeout=timeout_sec)
+                        timeout=timeout_sec,
+                        allow_redirects=False)
         if result:
             if int(len(result.text) / 1024) < max_feed_size_kb and \
                not contains_invalid_chars(result.text):
