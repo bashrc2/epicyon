@@ -868,7 +868,7 @@ def run_newswire_daemon(base_dir: str, httpd,
                                      httpd.max_news_posts)
 
         # wait a while before the next feeds update
-        for _ in range(120):
+        for _ in range(360):
             time.sleep(10)
             # if a new blog post has been created then stop
             # waiting and recalculate the newswire
