@@ -249,11 +249,12 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         days_since_epoch = days_diff.days
         tag_line = \
             str(days_since_epoch) + '  ' + nickname + '  ' + post_url + '\n'
-        hashtags_ctr += 1
+        hashtag_added = False
         if not os.path.isfile(tags_filename):
             try:
                 with open(tags_filename, 'w+') as tags_file:
                     tags_file.write(tag_line)
+                    hashtag_added = True
             except OSError:
                 print('EX: unable to write ' + tags_filename)
         else:
@@ -268,17 +269,22 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                 try:
                     with open(tags_filename, 'w+') as tags_file:
                         tags_file.write(content)
+                        hashtag_added = True
                 except OSError as ex:
                     print('EX: Failed to write entry to tags file ' +
                           tags_filename + ' ' + str(ex))
 
-        # automatically assign a category to the tag if possible
-        category_filename = tags_dir + '/' + tag_name + '.category'
-        if not os.path.isfile(category_filename):
-            category_str = \
-                guess_hashtag_category(tag_name, hashtag_categories)
-            if category_str:
-                set_hashtag_category(base_dir, tag_name, category_str, False)
+        if hashtag_added:
+            hashtags_ctr += 1
+
+            # automatically assign a category to the tag if possible
+            category_filename = tags_dir + '/' + tag_name + '.category'
+            if not os.path.isfile(category_filename):
+                category_str = \
+                    guess_hashtag_category(tag_name, hashtag_categories)
+                if category_str:
+                    set_hashtag_category(base_dir, tag_name,
+                                         category_str, False)
 
     # if some hashtags were found then recalculate the swarm
     # ready for later display
