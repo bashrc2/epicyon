@@ -15710,6 +15710,8 @@ class PubServer(BaseHTTPRequestHandler):
             if html_getreq and not graph.endswith('.json'):
                 if graph == 'post':
                     graph = '_POST'
+                elif graph == 'inbox':
+                    graph = 'INBOX'
                 elif graph == 'get':
                     graph = '_GET'
                 msg = \
@@ -15728,6 +15730,8 @@ class PubServer(BaseHTTPRequestHandler):
                 graph = graph.replace('.json', '')
                 if graph == 'post':
                     graph = '_POST'
+                elif graph == 'inbox':
+                    graph = 'INBOX'
                 elif graph == 'get':
                     graph = '_GET'
                 watch_points_json = \
@@ -20799,6 +20803,9 @@ def run_daemon(preferred_podcast_formats: [],
         'Public': 'p',
         'Reminder': 'r'
     }
+
+    # timeout used when getting rss feeds
+    httpd.rss_timeout_sec = 20
 
     # timeout used when checking for actor changes when clicking an avatar
     # and entering person options screen

@@ -59,8 +59,8 @@ def sorted_watch_points(fitness: {}, fitness_id: str) -> []:
     for watch_point, item in fitness['performance'][fitness_id].items():
         if not item.get('total'):
             continue
-        average_time = item['total'] * 1000 / item['ctr']
-        average_time_str = str(average_time).zfill(8)
+        average_time = int(item['total'] * 1000 / item['ctr'])
+        average_time_str = str(average_time).zfill(16)
         result.append(average_time_str + ' ' + watch_point)
     result.sort(reverse=True)
     return result

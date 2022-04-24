@@ -1278,7 +1278,8 @@ def get_rss(base_dir: str, domain: str, session, url: str,
             max_posts_per_source: int, max_feed_size_kb: int,
             max_feed_item_size_kb: int,
             max_categories_feedItem_size_kb: int, debug: bool,
-            preferred_podcast_formats: []) -> {}:
+            preferred_podcast_formats: [],
+            timeout_sec: int) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -1302,7 +1303,10 @@ def get_rss(base_dir: str, domain: str, session, url: str,
     url = _yt_channel_to_atom_feed(url)
     try:
         result = \
-            session.get(url, headers=session_headers, params=session_params)
+            session.get(url, headers=session_headers,
+                        params=session_params,
+                        timeout=timeout_sec,
+                        allow_redirects=False)
         if result:
             if int(len(result.text) / 1024) < max_feed_size_kb and \
                not contains_invalid_chars(result.text):
@@ -1558,7 +1562,8 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                            max_newswire_posts: int,
                            max_categories_feedItem_size_kb: int,
                            system_language: str, debug: bool,
-                           preferred_podcast_formats: []) -> {}:
+                           preferred_podcast_formats: [],
+                           timeout_sec: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptions_filename = base_dir + '/accounts/newswire.txt'
@@ -1600,7 +1605,8 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                              max_posts_per_source, max_feed_size_kb,
                              max_feed_item_size_kb,
                              max_categories_feedItem_size_kb, debug,
-                             preferred_podcast_formats)
+                             preferred_podcast_formats,
+                             timeout_sec)
         if items_list:
             for date_str, item in items_list.items():
                 result[date_str] = item

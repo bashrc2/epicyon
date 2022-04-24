@@ -1162,10 +1162,11 @@ if podcast_formats_str:
         preferred_podcast_formats.append(pod_format)
 
 if args.rss:
+    timeout_sec = 20
     session = create_session(None)
     testRSS = get_rss(base_dir, domain, session, args.rss,
                       False, False, 1000, 1000, 1000, 1000, debug,
-                      preferred_podcast_formats)
+                      preferred_podcast_formats, timeout_sec)
     pprint(testRSS)
     sys.exit()
 

@@ -277,7 +277,8 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                 print('avatar image url: ' + avatar_url)
             result = session.get(avatar_url,
                                  headers=session_headers,
-                                 params=None)
+                                 params=None,
+                                 allow_redirects=False)
             if result.status_code < 200 or \
                result.status_code > 202:
                 if debug:
