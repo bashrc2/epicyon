@@ -256,13 +256,17 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
             except OSError:
                 print('EX: unable to write ' + tags_filename)
         else:
-            if post_url not in open(tags_filename).read():
+            content = ''
+            try:
+                with open(tags_filename, 'r') as tags_file:
+                    content = tags_file.read()
+            except OSError:
+                pass
+            if post_url not in content:
+                content = tag_line + content
                 try:
-                    with open(tags_filename, 'r+') as tags_file:
-                        content = tags_file.read()
-                        if tag_line not in content:
-                            tags_file.seek(0, 0)
-                            tags_file.write(tag_line + content)
+                    with open(tags_filename, 'w+') as tags_file:
+                        tags_file.write(content)
                 except OSError as ex:
                     print('EX: Failed to write entry to tags file ' +
                           tags_filename + ' ' + str(ex))
