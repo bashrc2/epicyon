@@ -1610,6 +1610,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
         if items_list:
             for date_str, item in items_list.items():
                 result[date_str] = item
+        time.sleep(4)
 
     # add blogs from each user account
     _add_blogs_to_newswire(base_dir, domain, result,
