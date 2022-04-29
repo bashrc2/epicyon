@@ -547,5 +547,6 @@
     "lang_zh": "中国人",
     "Common emoji": "常见表情符号",
     "Copy and paste into your text": "复制并粘贴到您的文本中",
-    "shrug": "耸耸肩"
+    "shrug": "耸耸肩",
+    "DM warning": "直接消息不是端到端加密的。 不要在这里分享任何高度敏感的信息。"
 }
