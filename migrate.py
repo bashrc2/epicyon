@@ -87,8 +87,15 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     gnunet = False
     if http_prefix == 'gnunet':
         gnunet = True
+    ipfs = False
+    if http_prefix == 'ipfs':
+        ipfs = True
+    ipns = False
+    if http_prefix == 'ipns':
+        ipns = True
     person_json = \
-        get_actor_json(domain, person_url, http_prefix, gnunet, debug, False,
+        get_actor_json(domain, person_url, http_prefix, gnunet, ipfs, ipns,
+                       debug, False,
                        signing_priv_key_pem, None)
     if not person_json:
         return ctr

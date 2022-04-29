@@ -471,7 +471,7 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
     https://github.com/Podcastindex-org/podcast-namespace/
     blob/main/proposal-docs/social/social.md#socialinteract-element
     """
-    if key == 'socialInteract':
+    if key == 'socialInteract' or key == 'discussion':
         if not entry.get('protocol'):
             return False
         if not entry.get('uri'):
@@ -515,7 +515,9 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
         "transcripts": [],
         "valueRecipients": [],
         "trailers": [],
-        "socialInteract": []
+        "discussion": [],
+        "episode": '',
+        "socialInteract": [],
     }
 
     pod_lines = xml_item.split('<podcast:')
@@ -529,7 +531,8 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
             pod_val = pod_line.split('>', 1)[1].strip()
             if '<' in pod_val:
                 pod_val = pod_val.split('<')[0]
-            podcast_properties[pod_key] = pod_val
+            if pod_key in podcast_properties:
+                podcast_properties[pod_key] = pod_val
             ctr += 1
             continue
         pod_key = pod_line.split(' ')[0]

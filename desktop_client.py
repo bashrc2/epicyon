@@ -882,9 +882,12 @@ def _desktop_show_profile(session, nickname: str, domain: str,
     is_http = False
     if 'http://' in actor:
         is_http = True
+    is_gnunet = False
+    is_ipfs = False
+    is_ipns = False
     actor_json, _ = \
-        get_actor_json(domain, actor, is_http, False, False, True,
-                       signing_priv_key_pem, session)
+        get_actor_json(domain, actor, is_http, is_gnunet, is_ipfs, is_ipns,
+                       False, True, signing_priv_key_pem, session)
 
     _desktop_show_actor(base_dir, actor_json, translate,
                         system_language, screenreader, espeak)
@@ -904,7 +907,8 @@ def _desktop_show_profile_from_handle(session, nickname: str, domain: str,
     Returns the actor json
     """
     actor_json, _ = \
-        get_actor_json(domain, handle, False, False, False, True,
+        get_actor_json(domain, handle, False, False, False, False,
+                       False, True,
                        signing_priv_key_pem, session)
 
     _desktop_show_actor(base_dir, actor_json, translate,

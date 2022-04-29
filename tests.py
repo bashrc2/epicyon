@@ -6779,7 +6779,7 @@ def _test_xml_podcast_dict(base_dir: str) -> None:
         '</rss>'
     podcast_properties = xml_podcast_to_dict(base_dir, xml_str, xml_str)
     assert podcast_properties
-    # pprint(podcast_properties)
+    pprint(podcast_properties)
     assert podcast_properties.get('valueRecipients')
     assert podcast_properties.get('persons')
     assert podcast_properties.get('soundbites')

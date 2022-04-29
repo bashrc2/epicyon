@@ -2219,7 +2219,9 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 search_handle = ''
                         if '@' not in search_handle:
-                            if search_handle.startswith('http'):
+                            if search_handle.startswith('http') or \
+                               search_handle.startswith('ipfs') or \
+                               search_handle.startswith('ipns'):
                                 search_nickname = \
                                     get_nickname_from_actor(search_handle)
                                 if search_nickname:
@@ -2286,6 +2288,8 @@ class PubServer(BaseHTTPRequestHandler):
                     print('moderation_text: ' + moderation_text)
                 nickname = moderation_text
                 if nickname.startswith('http') or \
+                   nickname.startswith('ipfs') or \
+                   nickname.startswith('ipns') or \
                    nickname.startswith('hyper'):
                     nickname = get_nickname_from_actor(nickname)
                 if '@' in nickname:
@@ -2301,6 +2305,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if moderation_button == 'block':
                     full_block_domain = None
                     if moderation_text.startswith('http') or \
+                       moderation_text.startswith('ipfs') or \
+                       moderation_text.startswith('ipns') or \
                        moderation_text.startswith('hyper'):
                         # https://domain
                         block_domain, block_port = \
@@ -2320,6 +2326,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if moderation_button == 'unblock':
                     full_block_domain = None
                     if moderation_text.startswith('http') or \
+                       moderation_text.startswith('ipfs') or \
+                       moderation_text.startswith('ipns') or \
                        moderation_text.startswith('hyper'):
                         # https://domain
                         block_domain, block_port = \

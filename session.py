@@ -49,6 +49,9 @@ def create_session(proxy_type: str):
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:7777'
         session.proxies['https'] = 'socks5h://localhost:7777'
+    elif proxy_type == 'ipfs' or proxy_type == 'ipns':
+        session.proxies = {}
+        session.proxies['ipfs'] = 'socks5h://localhost:4001'
     # print('New session created with proxy ' + str(proxy_type))
     return session
 

@@ -503,6 +503,12 @@ parser.add_argument("--http", type=str2bool, nargs='?',
 parser.add_argument("--gnunet", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Use gnunet protocol only")
+parser.add_argument("--ipfs", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Use ipfs protocol only")
+parser.add_argument("--ipns", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Use ipns protocol only")
 parser.add_argument("--dat", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Use dat protocol only")
@@ -736,6 +742,10 @@ if args.testsnetwork:
 http_prefix = 'https'
 if args.http or args.i2p:
     http_prefix = 'http'
+elif args.ipfs:
+    http_prefix = 'ipfs'
+elif args.ipns:
+    http_prefix = 'ipns'
 elif args.gnunet:
     http_prefix = 'gnunet'
 
@@ -2282,6 +2292,10 @@ if args.gnunet:
     http_prefix = 'gnunet'
 if args.dat or args.hyper:
     http_prefix = 'hyper'
+if args.ipfs:
+    http_prefix = 'ipfs'
+if args.ipns:
+    http_prefix = 'ipns'
 if args.i2p:
     http_prefix = 'http'
 
@@ -2295,6 +2309,14 @@ if args.migrations:
         http_prefix = 'http'
         port = 80
         proxy_type = 'i2p'
+    elif args.ipfs:
+        http_prefix = 'ipfs'
+        port = 80
+        proxy_type = 'ipfs'
+    elif args.ipns:
+        http_prefix = 'ipns'
+        port = 80
+        proxy_type = 'ipfs'
     elif args.gnunet:
         http_prefix = 'gnunet'
         port = 80
@@ -2328,6 +2350,7 @@ if args.actor:
         else:
             print('Did not obtain instance actor key for ' + domain)
     get_actor_json(domain, args.actor, args.http, args.gnunet,
+                   args.ipfs, args.ipns,
                    debug, False, signing_priv_key_pem, None)
     sys.exit()
 
@@ -2336,6 +2359,8 @@ if args.followers:
     if '/@' in args.followers or \
        '/users/' in args.followers or \
        args.followers.startswith('http') or \
+       args.followers.startswith('ipfs') or \
+       args.followers.startswith('ipns') or \
        args.followers.startswith('hyper'):
         # format: https://domain/@nick
         prefixes = get_protocol_prefixes()
@@ -2400,6 +2425,14 @@ if args.followers:
         http_prefix = 'gnunet'
         port = 80
         proxy_type = 'gnunet'
+    elif args.ipfs:
+        http_prefix = 'ipfs'
+        port = 80
+        proxy_type = 'ipfs'
+    elif args.ipns:
+        http_prefix = 'ipns'
+        port = 80
+        proxy_type = 'ipfs'
     else:
         http_prefix = 'https'
         port = 443
@@ -2512,6 +2545,12 @@ if args.addaccount:
        domain.endswith('.i2p'):
         port = 80
         http_prefix = 'http'
+    if domain.endswith('.ipfs'):
+        port = 80
+        http_prefix = 'ipfs'
+    if domain.endswith('.ipns'):
+        port = 80
+        http_prefix = 'ipns'
     create_person(base_dir, nickname, domain, port, http_prefix,
                   True, not args.noapproval, args.password.strip())
     if os.path.isdir(account_dir):
