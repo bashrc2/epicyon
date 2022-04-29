@@ -439,7 +439,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         scope_icon = 'scope_dm.png'
         scope_description = translate['DM']
         endpoint = 'newdm'
-        placeholder_message = '⚠ ' + translate['DM warning']
+        placeholder_message = '⚠️ ' + translate['DM warning']
     elif is_new_reminder:
         scope_icon = 'scope_reminder.png'
         scope_description = translate['Reminder']
