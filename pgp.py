@@ -439,8 +439,8 @@ def _get_pgp_public_key_from_actor(signing_priv_key_pem: str,
     """
     if not actor_json:
         actor_json, _ = \
-            get_actor_json(domain, handle, False, False, False, True,
-                           signing_priv_key_pem, None)
+            get_actor_json(domain, handle, False, False, False, False,
+                           False, True, signing_priv_key_pem, None)
     if not actor_json:
         return None
     if not actor_json.get('attachment'):
@@ -498,8 +498,8 @@ def pgp_public_key_upload(base_dir: str, session,
         print('Getting actor for ' + handle)
 
     actor_json, _ = \
-        get_actor_json(domain_full, handle, False, False, debug, True,
-                       signing_priv_key_pem, session)
+        get_actor_json(domain_full, handle, False, False, False, False,
+                       debug, True, signing_priv_key_pem, session)
     if not actor_json:
         if debug:
             print('No actor returned for ' + handle)

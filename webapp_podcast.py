@@ -28,23 +28,26 @@ def _html_podcast_social_interactions(podcast_properties: {},
     """
     if not podcast_properties:
         return ''
-    if not podcast_properties.get('socialInteract'):
-        return ''
-    if podcast_properties['socialInteract'].get('uri'):
-        episode_post_url = podcast_properties['socialInteract']['uri']
-    elif podcast_properties['socialInteract'].get('url'):
-        episode_post_url = podcast_properties['socialInteract']['url']
-    elif podcast_properties['socialInteract'].get('text'):
-        episode_post_url = podcast_properties['socialInteract']['text']
+    key = 'discussion'
+    if not podcast_properties.get(key):
+        key = 'socialInteract'
+        if not podcast_properties.get(key):
+            return ''
+    if podcast_properties[key].get('uri'):
+        episode_post_url = podcast_properties[key]['uri']
+    elif podcast_properties[key].get('url'):
+        episode_post_url = podcast_properties[key]['url']
+    elif podcast_properties[key].get('text'):
+        episode_post_url = podcast_properties[key]['text']
     else:
         return ''
     actor_str = ''
     podcast_account_id = None
-    if podcast_properties['socialInteract'].get('accountId'):
-        podcast_account_id = podcast_properties['socialInteract']['accountId']
-    elif podcast_properties['socialInteract'].get('podcastAccountUrl'):
+    if podcast_properties[key].get('accountId'):
+        podcast_account_id = podcast_properties[key]['accountId']
+    elif podcast_properties[key].get('podcastAccountUrl'):
         podcast_account_id = \
-            podcast_properties['socialInteract']['podcastAccountUrl']
+            podcast_properties[key]['podcastAccountUrl']
     if podcast_account_id:
         actor_handle = podcast_account_id
         if actor_handle.startswith('@'):

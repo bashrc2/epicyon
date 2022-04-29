@@ -1478,6 +1478,7 @@ def _detect_users_path(url: str) -> str:
 
 
 def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
+                   ipfs: bool, ipns: bool,
                    debug: bool, quiet: bool,
                    signing_priv_key_pem: str,
                    existing_session) -> ({}, {}):
@@ -1493,6 +1494,8 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     if '/@' in handle or \
        detected_users_path in handle or \
        handle.startswith('http') or \
+       handle.startswith('ipfs') or \
+       handle.startswith('ipns') or \
        handle.startswith('hyper'):
         group_paths = get_group_paths()
         if detected_users_path in group_paths:
@@ -1558,6 +1561,12 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     elif gnunet:
         http_prefix = 'gnunet'
         proxy_type = 'gnunet'
+    elif ipfs:
+        http_prefix = 'ipfs'
+        proxy_type = 'ipfs'
+    elif ipns:
+        http_prefix = 'ipns'
+        proxy_type = 'ipfs'
     else:
         if '127.0.' not in domain and '192.168.' not in domain:
             http_prefix = 'https'
@@ -1741,8 +1750,12 @@ def valid_sending_actor(session, base_dir: str,
     # NOTE: the actor should not be obtained from the local cache,
     # because they may have changed fields which are being tested here,
     # such as the bio length
+    gnunet = False
+    ipfs = False
+    ipns = False
     actor_json, _ = get_actor_json(domain, sending_actor,
-                                   True, False, debug, True,
+                                   True, gnunet, ipfs, ipns,
+                                   debug, True,
                                    signing_priv_key_pem, session)
     if not actor_json:
         # if the actor couldn't be obtained then proceed anyway

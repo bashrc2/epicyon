@@ -66,7 +66,7 @@ def _site_active_parse_url(url):
     return loc
 
 
-def _site_a_ctive_http_connect(loc, timeout: int):
+def _site_active_http_connect(loc, timeout: int):
     """Connects to the host and returns an HTTP or HTTPS connections."""
     if loc.scheme == "https":
         ssl_context = ssl.SSLContext()
@@ -78,7 +78,7 @@ def _site_a_ctive_http_connect(loc, timeout: int):
 def _site_active_http_request(loc, timeout: int):
     """Performs a HTTP request and return response in a Result object.
     """
-    conn = _site_a_ctive_http_connect(loc, timeout)
+    conn = _site_active_http_connect(loc, timeout)
     method = 'HEAD'
 
     conn.request(method, loc.path)
@@ -98,7 +98,9 @@ def site_is_active(url: str, timeout: int) -> bool:
     This can be used to check that an instance is online before
     trying to send posts to it.
     """
-    if not url.startswith('http'):
+    if not url.startswith('http') and \
+       not url.startswith('ipfs') and \
+       not url.startswith('ipns'):
         return False
     if '.onion/' in url or '.i2p/' in url or \
        url.endswith('.onion') or \

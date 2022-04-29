@@ -2196,7 +2196,10 @@ def create_report_post(base_dir: str,
                     if moderator_actor not in moderators_list:
                         moderators_list.append(moderator_actor)
                     continue
-                if line.startswith('http') or line.startswith('hyper'):
+                if line.startswith('http') or \
+                   line.startswith('ipfs') or \
+                   line.startswith('ipns') or \
+                   line.startswith('hyper'):
                     # must be a local address - no remote moderators
                     if '://' + domain_full + '/' in line:
                         if line not in moderators_list:

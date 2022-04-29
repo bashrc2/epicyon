@@ -654,6 +654,7 @@ def get_protocol_prefixes() -> []:
     """
     return ('https://', 'http://', 'ftp://',
             'dat://', 'i2p://', 'gnunet://',
+            'ipfs://', 'ipns://',
             'hyper://', 'gemini://', 'gopher://')
 
 
@@ -1963,7 +1964,7 @@ def _get_reserved_words() -> str:
             'ignores', 'linksmobile', 'newswiremobile',
             'minimal', 'search', 'eventdelete',
             'searchemoji', 'catalog', 'conversationId',
-            'mention', 'http', 'https',
+            'mention', 'http', 'https', 'ipfs', 'ipns',
             'ontologies', 'data')
 
 

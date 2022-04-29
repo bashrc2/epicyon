@@ -45,6 +45,7 @@ The following are considered anti-features of other social network systems, sinc
  * Algorithmic timelines (i.e. non-chronological)
  * Direct payment mechanisms, although integration with other services may be possible
  * Any variety of blockchain
+ * Non Fungible Token (NFT) features
  * Anything based upon "proof of stake". The "people who have more, get more" principle should be rejected.
  * Like counts above some small maximum number. The aim is to avoid people getting addicted to making numbers go up, and especially to avoid the dark market in fake likes.
  * Sponsored posts

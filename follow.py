@@ -414,6 +414,8 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
                not line.startswith('http'):
                 ctr += 1
             elif ((line.startswith('http') or
+                   line.startswith('ipfs') or
+                   line.startswith('ipns') or
                    line.startswith('hyper')) and
                   has_users_path(line)):
                 ctr += 1
@@ -542,6 +544,8 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
                         url = http_prefix + '://' + dom + '/c/' + nick
                     following['orderedItems'].append(url)
             elif ((line.startswith('http') or
+                   line.startswith('ipfs') or
+                   line.startswith('ipns') or
                    line.startswith('hyper')) and
                   has_users_path(line)):
                 # https://domain/users/nickname

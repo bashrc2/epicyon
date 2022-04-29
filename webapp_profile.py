@@ -152,10 +152,16 @@ def html_profile_after_search(css_cache: {},
     """
     http = False
     gnunet = False
+    ipfs = False
+    ipns = False
     if http_prefix == 'http':
         http = True
     elif http_prefix == 'gnunet':
         gnunet = True
+    elif http_prefix == 'ipfs':
+        ipfs = True
+    elif http_prefix == 'ipns':
+        ipns = True
     from_domain = domain
     if onion_domain:
         if '.onion/' in profile_handle or profile_handle.endswith('.onion'):
@@ -166,7 +172,8 @@ def html_profile_after_search(css_cache: {},
             from_domain = i2p_domain
             http = True
     profile_json, as_header = \
-        get_actor_json(from_domain, profile_handle, http, gnunet, debug, False,
+        get_actor_json(from_domain, profile_handle, http,
+                       gnunet, ipfs, ipns, debug, False,
                        signing_priv_key_pem, session)
     if not profile_json:
         return None

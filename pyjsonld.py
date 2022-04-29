@@ -374,7 +374,7 @@ def load_document(url):
         # validate URL
         pieces = urllib_parse.urlparse(url)
         if (not all([pieces.scheme, pieces.netloc]) or
-            pieces.scheme not in ['http', 'https', 'hyper'] or
+            pieces.scheme not in ['http', 'https', 'hyper', 'ipfs', 'ipns'] or
             set(pieces.netloc) > set(
                 string.ascii_letters + string.digits + '-.:')):
             raise JsonLdError(

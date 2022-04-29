@@ -234,7 +234,9 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
             if ctr > 0:
                 if ')' in url_str:
                     url_str = url_str.split(')')[0]
-                    if 'http' in url_str:
+                    if 'http' in url_str or \
+                       'ipfs' in url_str or \
+                       'ipns' in url_str:
                         print('ERROR: non-local web link in CSS ' +
                               filename)
                         return True
@@ -1114,6 +1116,8 @@ def get_mentions_from_html(html_text: str, match_str: str) -> []:
         if actor_str.startswith('http') or \
            actor_str.startswith('gnunet') or \
            actor_str.startswith('i2p') or \
+           actor_str.startswith('ipfs') or \
+           actor_str.startswith('ipns') or \
            actor_str.startswith('hyper') or \
            actor_str.startswith('dat:'):
             if actor_str not in mentions:
