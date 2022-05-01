@@ -1063,8 +1063,9 @@ aside .toggle-inside li {
     }
     .timeline-avatar-reply img {
         opacity: 1.0;
-        width: 100%;
+        width: 90%;
         padding: 0px 0px;
+	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
@@ -1548,8 +1549,9 @@ aside .toggle-inside li {
     }
     .timeline-avatar-reply img {
         opacity: 1.0;
-        width: 100%;
+        width: 90%;
         padding: 0px 0px;
+	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
@@ -2025,8 +2027,9 @@ aside .toggle-inside li {
     }
     .timeline-avatar-reply img {
         opacity: 1.0;
-        width: 100%;
+        width: 90%;
         padding: 0px 0px;
+	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
