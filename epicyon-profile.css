@@ -1482,7 +1482,7 @@ h3 {
     }
     .timeline-avatar-reply img {
         opacity: 1.0;
-        width: 90%;
+        width: 80%;
         padding: 0px 0px;
 	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
@@ -2254,7 +2254,7 @@ h3 {
     }
     .timeline-avatar-reply img {
         opacity: 1.0;
-        width: 90%;
+        width: 80%;
         padding: 0px 0px;
 	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
@@ -3029,7 +3029,7 @@ h3 {
     }
     .timeline-avatar-reply img {
         opacity: 1.0;
-        width: 90%;
+        width: 80%;
         padding: 0px 0px;
 	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
