@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer, HTTPServer
+import copy
 import sys
 import json
 import time
@@ -19398,12 +19399,9 @@ class PubServer(BaseHTTPRequestHandler):
                 np_thread.kill()
 
         # make a copy of self.headers
-        headers = {}
-        headers_without_cookie = {}
-        for dict_entry_name, header_line in self.headers.items():
-            headers[dict_entry_name] = header_line
-            if dict_entry_name.lower() != 'cookie':
-                headers_without_cookie[dict_entry_name] = header_line
+        headers = copy.deepcopy(self.headers)
+        headers_without_cookie = copy.deepcopy(headers)
+        del headers_without_cookie['cookie']
         print('New post headers: ' + str(headers_without_cookie))
 
         length = int(headers['Content-Length'])
