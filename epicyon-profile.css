@@ -887,6 +887,8 @@ input[type=submit]:hover {
 .timeline-avatar {
     margin: 10px auto;
     padding: 0px 0px;
+    width: 8%;
+    float: left;
 }
 
 .timeline-avatar:hover {
@@ -1473,11 +1475,8 @@ h3 {
     }
     .timeline-avatar img {
         opacity: 1.0;
-        width: 8%;
-        height: 8%;
+        width: 100%;
         padding: 0px 0px;
-        -ms-transform: translateY(-10%);
-        transform: translateY(-10%);
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
@@ -2230,11 +2229,8 @@ h3 {
     }
     .timeline-avatar img {
         opacity: 1.0;
-        width: 15%;
-        height: 15%;
+        width: 100%;
         padding: 0px 0px;
-        -ms-transform: translateY(-10%);
-        transform: translateY(-10%);
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
@@ -2990,11 +2986,8 @@ h3 {
     }
     .timeline-avatar img {
         opacity: 1.0;
-        width: 15%;
-        height: 15%;
+        width: 100%;
         padding: 0px 0px;
-        -ms-transform: translateY(-10%);
-        transform: translateY(-10%);
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
