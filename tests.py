@@ -3419,10 +3419,12 @@ def test_client_to_server(base_dir: str):
                 if os.path.isfile(os.path.join(inbox_path, name))])
     assert test == bob_posts_before - 1
     print(">>> post was deleted from Bob's inbox")
-#    test = len([name for name in os.listdir(outbox_path)
-#                if os.path.isfile(os.path.join(outbox_path, name))])
-#    assert test == alice_posts_before - 1
-#    print(">>> post deleted from Alice's outbox")
+    test = len([name for name in os.listdir(outbox_path)
+                if os.path.isfile(os.path.join(outbox_path, name))])
+    # this should be unchanged because a delete post was added
+    # at the outbox and one was removed
+    assert test == alice_posts_before
+    print(">>> post deleted from Alice's outbox")
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
