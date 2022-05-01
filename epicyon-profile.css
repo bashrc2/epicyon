@@ -885,7 +885,7 @@ input[type=submit]:hover {
 }
 
 .timeline-avatar {
-    margin: 10px auto;
+    margin: 0px 0px;
     padding: 0px 0px;
     width: 8%;
     float: left;
@@ -2235,15 +2235,15 @@ h3 {
         border-radius: 0%;
     }
     .timeline-avatar {
-	margin: 10px auto;
-	padding: 0px 0px;
-	width: 15%;
-	float: left;
+        margin: 0px 0px;
+        padding: 0px 0px;
+        width: 15%;
+        float: left;
     }
     .timeline-avatar-reply {
-	padding: 0px 0px;
-	width: 7.5%;
-	float: left;
+        padding: 0px 0px;
+        width: 12%;
+        float: left;
     }
     .timeline-avatar img {
         opacity: 1.0;
@@ -3009,15 +3009,15 @@ h3 {
         border-radius: 0%;
     }
     .timeline-avatar {
-	margin: 10px auto;
-	padding: 0px 0px;
-	width: 15%;
-	float: left;
+        margin: 0px 0px;
+        padding: 0px 0px;
+        width: 15%;
+        float: left;
     }
     .timeline-avatar-reply {
-	padding: 0px 0px;
-	width: 7.5%;
-	float: left;
+        padding: 0px 0px;
+        width: 12%;
+        float: left;
     }
     .timeline-avatar img {
         opacity: 1.0;

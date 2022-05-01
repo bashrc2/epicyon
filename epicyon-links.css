@@ -582,7 +582,7 @@ input[type=submit]:hover {
 }
 
 .timeline-avatar {
-    margin: 10px auto;
+    margin: 0px 0px;
     padding: 0px 0px;
     width: 8%;
     float: left;
@@ -594,7 +594,8 @@ input[type=submit]:hover {
 
 .timeline-avatar-reply {
     padding: 0px 0px;
-    width: 80%;
+    width: 4%;
+    float: left;
 }
 
 .search-result-text {
@@ -1055,6 +1056,12 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     .timeline-avatar img {
+        opacity: 1.0;
+        width: 100%;
+        padding: 0px 0px;
+        border-radius: var(--avatar-rounding);
+    }
+    .timeline-avatar-reply img {
         opacity: 1.0;
         width: 100%;
         padding: 0px 0px;
@@ -1523,12 +1530,23 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     .timeline-avatar {
-	margin: 10px auto;
-	padding: 0px 0px;
-	width: 15%;
-	float: left;
+        margin: 0px 0px;
+        padding: 0px 0px;
+        width: 15%;
+        float: left;
+    }
+    .timeline-avatar-reply {
+        padding: 0px 0px;
+        width: 12%;
+        float: left;
     }
     .timeline-avatar img {
+        opacity: 1.0;
+        width: 100%;
+        padding: 0px 0px;
+        border-radius: var(--avatar-rounding);
+    }
+    .timeline-avatar-reply img {
         opacity: 1.0;
         width: 100%;
         padding: 0px 0px;
@@ -1989,12 +2007,23 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     .timeline-avatar {
-	margin: 10px auto;
-	padding: 0px 0px;
-	width: 15%;
-	float: left;
+        margin: 0px 0px;
+        padding: 0px 0px;
+        width: 15%;
+        float: left;
+    }
+    .timeline-avatar-reply {
+        padding: 0px 0px;
+        width: 12%;
+        float: left;
     }
     .timeline-avatar img {
+        opacity: 1.0;
+        width: 100%;
+        padding: 0px 0px;
+        border-radius: var(--avatar-rounding);
+    }
+    .timeline-avatar-reply img {
         opacity: 1.0;
         width: 100%;
         padding: 0px 0px;
