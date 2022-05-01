@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer, HTTPServer
+import copy
 import sys
 import json
 import time
@@ -2362,7 +2363,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             nickname, domain,
                                             post_filename,
                                             debug,
-                                            self.server.recent_posts_cache)
+                                            self.server.recent_posts_cache,
+                                            True)
                         if nickname != 'news':
                             # if this is a local blog post then also remove it
                             # from the news actor
@@ -2378,7 +2380,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 'news', domain,
                                                 post_filename,
                                                 debug,
-                                                self.server.recent_posts_cache)
+                                                self.server.recent_posts_cache,
+                                                True)
 
         self._redirect_headers(actor_str + '/moderation',
                                cookie, calling_domain)
@@ -8654,7 +8657,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.iconsCache.get('repeat_inactive.png'):
             del self.server.iconsCache['repeat_inactive.png']
 
-        # delete  the announce post
+        # delete the announce post
         if '?unannounce=' in path:
             announce_url = path.split('?unannounce=')[1]
             if '?' in announce_url:
@@ -8668,7 +8671,7 @@ class PubServer(BaseHTTPRequestHandler):
             if post_filename:
                 delete_post(base_dir, http_prefix,
                             nickname, domain, post_filename,
-                            debug, recent_posts_cache)
+                            debug, recent_posts_cache, True)
 
         self._post_to_outbox(new_undo_announce,
                              self.server.project_version,
@@ -19398,12 +19401,12 @@ class PubServer(BaseHTTPRequestHandler):
                 np_thread.kill()
 
         # make a copy of self.headers
-        headers = {}
-        headers_without_cookie = {}
-        for dict_entry_name, header_line in self.headers.items():
-            headers[dict_entry_name] = header_line
-            if dict_entry_name.lower() != 'cookie':
-                headers_without_cookie[dict_entry_name] = header_line
+        headers = copy.deepcopy(self.headers)
+        headers_without_cookie = copy.deepcopy(headers)
+        if 'cookie' in headers_without_cookie:
+            del headers_without_cookie['cookie']
+        if 'Cookie' in headers_without_cookie:
+            del headers_without_cookie['Cookie']
         print('New post headers: ' + str(headers_without_cookie))
 
         length = int(headers['Content-Length'])

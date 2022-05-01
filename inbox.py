@@ -2058,7 +2058,7 @@ def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
         return True
     delete_post(base_dir, http_prefix, handle_nickname,
                 handle_domain, post_filename, debug,
-                recent_posts_cache)
+                recent_posts_cache, True)
     if debug:
         print('DEBUG: post deleted - ' + post_filename)
 
@@ -2069,7 +2069,7 @@ def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
         if post_filename:
             delete_post(base_dir, http_prefix, 'news',
                         handle_domain, post_filename, debug,
-                        recent_posts_cache)
+                        recent_posts_cache, True)
             if debug:
                 print('DEBUG: blog post deleted - ' + post_filename)
     return True
@@ -4094,7 +4094,7 @@ def _inbox_after_initial(server, inbox_start_time,
                 if edited_filename != destination_filename:
                     delete_post(base_dir, http_prefix,
                                 nickname, domain, edited_filename,
-                                debug, recent_posts_cache)
+                                debug, recent_posts_cache, True)
 
             # update the indexes for different timelines
             for boxname in update_index_list:

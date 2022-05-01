@@ -581,13 +581,16 @@ input[type=submit]:hover {
 }
 
 .timeline-avatar {
-    margin: 10px auto;
+    margin: 0px 0px;
     padding: 0px 0px;
+    width: 8%;
+    float: left;
 }
 
 .timeline-avatar-reply {
     padding: 0px 0px;
-    width: 80%;
+    width: 6%;
+    float: left;
 }
 
 .search-result-text {
@@ -795,11 +798,15 @@ div.gallery img {
     }
     .timeline-avatar img {
         opacity: 1.0;
-        width: 8%;
-        height: 8%;
+        width: 100%;
         padding: 0px 0px;
-        -ms-transform: translateY(-10%);
-        transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
+    }
+    .timeline-avatar-reply img {
+        opacity: 1.0;
+        width: 80%;
+        padding: 0px 0px;
+	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .cwButton {
@@ -1149,13 +1156,28 @@ div.gallery img {
         margin: 1% 3%;
         border-radius: 0%;
     }
+    .timeline-avatar {
+        margin: 0px 0px;
+        padding: 0px 0px;
+        width: 15%;
+        float: left;
+    }
+    .timeline-avatar-reply {
+        padding: 0px 0px;
+        width: 12%;
+        float: left;
+    }
     .timeline-avatar img {
         opacity: 1.0;
-        width: 15%;
-        height: 15%;
+        width: 100%;
         padding: 0px 0px;
-        -ms-transform: translateY(-10%);
-        transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
+    }
+    .timeline-avatar-reply img {
+        opacity: 1.0;
+        width: 80%;
+        padding: 0px 0px;
+	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .cwButton {
@@ -1496,13 +1518,28 @@ div.gallery img {
         margin: 1% 3%;
         border-radius: 0%;
     }
+    .timeline-avatar {
+        margin: 0px 0px;
+        padding: 0px 0px;
+        width: 15%;
+        float: left;
+    }
+    .timeline-avatar-reply {
+        padding: 0px 0px;
+        width: 12%;
+        float: left;
+    }
     .timeline-avatar img {
         opacity: 1.0;
-        width: 15%;
-        height: 15%;
+        width: 100%;
         padding: 0px 0px;
-        -ms-transform: translateY(-10%);
-        transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
+    }
+    .timeline-avatar-reply img {
+        opacity: 1.0;
+        width: 80%;
+        padding: 0px 0px;
+	margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .cwButton {

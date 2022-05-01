@@ -4294,7 +4294,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                                                        '.json.' + ext))
         else:
             delete_post(base_dir, http_prefix, nickname, domain,
-                        file_path, False, recent_posts_cache)
+                        file_path, False, recent_posts_cache, False)
 
         # remove cached html posts
         post_cache_filename = \
