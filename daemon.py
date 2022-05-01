@@ -2363,7 +2363,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             nickname, domain,
                                             post_filename,
                                             debug,
-                                            self.server.recent_posts_cache)
+                                            self.server.recent_posts_cache,
+                                            True)
                         if nickname != 'news':
                             # if this is a local blog post then also remove it
                             # from the news actor
@@ -2379,7 +2380,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 'news', domain,
                                                 post_filename,
                                                 debug,
-                                                self.server.recent_posts_cache)
+                                                self.server.recent_posts_cache,
+                                                True)
 
         self._redirect_headers(actor_str + '/moderation',
                                cookie, calling_domain)
@@ -8655,7 +8657,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.iconsCache.get('repeat_inactive.png'):
             del self.server.iconsCache['repeat_inactive.png']
 
-        # delete  the announce post
+        # delete the announce post
         if '?unannounce=' in path:
             announce_url = path.split('?unannounce=')[1]
             if '?' in announce_url:
@@ -8669,7 +8671,7 @@ class PubServer(BaseHTTPRequestHandler):
             if post_filename:
                 delete_post(base_dir, http_prefix,
                             nickname, domain, post_filename,
-                            debug, recent_posts_cache)
+                            debug, recent_posts_cache, True)
 
         self._post_to_outbox(new_undo_announce,
                              self.server.project_version,

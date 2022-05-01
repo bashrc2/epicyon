@@ -1276,7 +1276,7 @@ def dav_delete_response(base_dir: str, nickname: str, domain: str,
                           token_post_id)
     delete_post(base_dir, http_prefix,
                 nickname, domain, post_filename,
-                debug, recent_posts_cache)
+                debug, recent_posts_cache, True)
     return 'Ok'
 
 

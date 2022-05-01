@@ -170,7 +170,7 @@ def outbox_delete(base_dir: str, http_prefix: str,
             print(message_id)
         return True
     delete_post(base_dir, http_prefix, delete_nickname, delete_domain,
-                post_filename, debug, recent_posts_cache)
+                post_filename, debug, recent_posts_cache, True)
     if debug:
         print('DEBUG: post deleted via c2s - ' + post_filename)
 

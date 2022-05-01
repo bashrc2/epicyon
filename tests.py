@@ -3393,11 +3393,14 @@ def test_client_to_server(base_dir: str):
 
     inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
     outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
-    posts_before = \
+    bob_posts_before = \
         len([name for name in os.listdir(inbox_path)
              if os.path.isfile(os.path.join(inbox_path, name))])
+    alice_posts_before = \
+        len([name for name in os.listdir(outbox_path)
+             if os.path.isfile(os.path.join(outbox_path, name))])
     print('\n\nEVENT: Alice deletes her post: ' + outbox_post_id + ' ' +
-          str(posts_before))
+          str(alice_posts_before))
     password = 'alicepass'
     send_delete_via_server(alice_dir, session_alice, 'alice', password,
                            alice_domain, alice_port,
@@ -3408,14 +3411,18 @@ def test_client_to_server(base_dir: str):
         if os.path.isdir(inbox_path):
             test = len([name for name in os.listdir(inbox_path)
                         if os.path.isfile(os.path.join(inbox_path, name))])
-            if test == posts_before-1:
+            if test == bob_posts_before-1:
                 break
         time.sleep(1)
 
     test = len([name for name in os.listdir(inbox_path)
                 if os.path.isfile(os.path.join(inbox_path, name))])
-    assert test == posts_before - 1
-    print(">>> post deleted from Alice's outbox and Bob's inbox")
+    assert test == bob_posts_before - 1
+    print(">>> post was deleted from Bob's inbox")
+#    test = len([name for name in os.listdir(outbox_path)
+#                if os.path.isfile(os.path.join(outbox_path, name))])
+#    assert test == alice_posts_before - 1
+#    print(">>> post deleted from Alice's outbox")
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)

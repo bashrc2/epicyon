@@ -1619,7 +1619,8 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
 
 def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
                                 http_prefix: str, post_filename: str,
-                                recent_posts_cache: {}, debug: bool) -> None:
+                                recent_posts_cache: {}, debug: bool,
+                                manual: bool) -> None:
     """Removes replies when deleting a post
     """
     replies_filename = post_filename.replace('.json', '.replies')
@@ -1635,7 +1636,7 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
             if os.path.isfile(reply_file):
                 delete_post(base_dir, http_prefix,
                             nickname, domain, reply_file, debug,
-                            recent_posts_cache)
+                            recent_posts_cache, manual)
     # remove the replies file
     try:
         os.remove(replies_filename)
@@ -1841,14 +1842,15 @@ def _is_remote_dm(domain_full: str, post_json_object: {}) -> bool:
         this_post_json = post_json_object['object']
     if this_post_json.get('attributedTo'):
         if isinstance(this_post_json['attributedTo'], str):
-            if '://' + domain_full + '/' not in this_post_json['attributedTo']:
+            if '://' + domain_full not in this_post_json['attributedTo']:
                 return True
     return False
 
 
 def delete_post(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, post_filename: str,
-                debug: bool, recent_posts_cache: {}) -> None:
+                debug: bool, recent_posts_cache: {},
+                manual: bool) -> None:
     """Recursively deletes a post and its replies and attachments
     """
     post_json_object = load_json(post_filename, 1)
@@ -1856,7 +1858,7 @@ def delete_post(base_dir: str, http_prefix: str,
         # remove any replies
         _delete_post_remove_replies(base_dir, nickname, domain,
                                     http_prefix, post_filename,
-                                    recent_posts_cache, debug)
+                                    recent_posts_cache, debug, manual)
         # finally, remove the post itself
         try:
             os.remove(post_filename)
@@ -1868,8 +1870,10 @@ def delete_post(base_dir: str, http_prefix: str,
 
     # don't allow DMs to be deleted if they came from a different instance
     # otherwise this breaks expectations about how DMs should operate
-    if _is_remote_dm(domain, post_json_object):
-        return
+    # i.e. DMs should only be removed if they are manually deleted
+    if not manual:
+        if _is_remote_dm(domain, post_json_object):
+            return
 
     # don't allow deletion of bookmarked posts
     if _is_bookmarked(base_dir, nickname, domain, post_filename):
@@ -1931,7 +1935,7 @@ def delete_post(base_dir: str, http_prefix: str,
     # remove any replies
     _delete_post_remove_replies(base_dir, nickname, domain,
                                 http_prefix, post_filename,
-                                recent_posts_cache, debug)
+                                recent_posts_cache, debug, manual)
     # finally, remove the post itself
     try:
         os.remove(post_filename)
