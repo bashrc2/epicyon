@@ -19401,7 +19401,10 @@ class PubServer(BaseHTTPRequestHandler):
         # make a copy of self.headers
         headers = copy.deepcopy(self.headers)
         headers_without_cookie = copy.deepcopy(headers)
-        del headers_without_cookie['cookie']
+        if 'cookie' in headers_without_cookie:
+            del headers_without_cookie['cookie']
+        if 'Cookie' in headers_without_cookie:
+            del headers_without_cookie['Cookie']
         print('New post headers: ' + str(headers_without_cookie))
 
         length = int(headers['Content-Length'])
