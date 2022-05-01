@@ -2227,6 +2227,12 @@ h3 {
         margin-right: 0px;
         border-radius: 0%;
     }
+    .timeline-avatar {
+	margin: 10px auto;
+	padding: 0px 0px;
+	width: 15%;
+	float: left;
+    }
     .timeline-avatar img {
         opacity: 1.0;
         width: 100%;
@@ -2983,6 +2989,12 @@ h3 {
         margin: var(--containericons-vertical-align-tiny) var(--containericons-horizontal-spacing-tiny);
         margin-right: 0px;
         border-radius: 0%;
+    }
+    .timeline-avatar {
+	margin: 10px auto;
+	padding: 0px 0px;
+	width: 15%;
+	float: left;
     }
     .timeline-avatar img {
         opacity: 1.0;
