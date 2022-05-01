@@ -91,6 +91,15 @@ def get_actor_languages_list(actor_json: {}) -> []:
     return []
 
 
+def has_object_dict(post_json_object: {}) -> bool:
+    """Returns true if the given post has an object dict
+    """
+    if post_json_object.get('object'):
+        if isinstance(post_json_object['object'], dict):
+            return True
+    return False
+
+
 def get_content_from_post(post_json_object: {}, system_language: str,
                           languages_understood: [],
                           contentType: str = "content") -> str:
@@ -1794,6 +1803,49 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
                   str(conversation_filename))
 
 
+def is_dm(post_json_object: {}) -> bool:
+    """Returns true if the given post is a DM
+    """
+    if post_json_object['type'] != 'Create':
+        return False
+    if not has_object_dict(post_json_object):
+        return False
+    if post_json_object['object']['type'] != 'ChatMessage':
+        if post_json_object['object']['type'] != 'Note' and \
+           post_json_object['object']['type'] != 'Page' and \
+           post_json_object['object']['type'] != 'Patch' and \
+           post_json_object['object']['type'] != 'EncryptedMessage' and \
+           post_json_object['object']['type'] != 'Article':
+            return False
+    if post_json_object['object'].get('moderationStatus'):
+        return False
+    fields = ('to', 'cc')
+    for field_name in fields:
+        if not post_json_object['object'].get(field_name):
+            continue
+        for to_address in post_json_object['object'][field_name]:
+            if to_address.endswith('#Public'):
+                return False
+            if to_address.endswith('followers'):
+                return False
+    return True
+
+
+def _is_remote_dm(domain_full: str, post_json_object: {}) -> bool:
+    """Is the given post a DM from a different domain?
+    """
+    if not is_dm(post_json_object):
+        return False
+    this_post_json = post_json_object
+    if has_object_dict(post_json_object):
+        this_post_json = post_json_object['object']
+    if this_post_json.get('attributedTo'):
+        if isinstance(this_post_json['attributedTo'], str):
+            if '://' + domain_full + '/' not in this_post_json['attributedTo']:
+                return True
+    return False
+
+
 def delete_post(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, post_filename: str,
                 debug: bool, recent_posts_cache: {}) -> None:
@@ -1812,6 +1864,11 @@ def delete_post(base_dir: str, http_prefix: str,
             if debug:
                 print('EX: delete_post unable to delete post ' +
                       str(post_filename))
+        return
+
+    # don't allow DMs to be deleted if they came from a different instance
+    # otherwise this breaks expectations about how DMs should operate
+    if _is_remote_dm(domain, post_json_object):
         return
 
     # don't allow deletion of bookmarked posts
@@ -2769,34 +2826,6 @@ def is_chat_message(post_json_object: {}) -> bool:
     return True
 
 
-def is_dm(post_json_object: {}) -> bool:
-    """Returns true if the given post is a DM
-    """
-    if post_json_object['type'] != 'Create':
-        return False
-    if not has_object_dict(post_json_object):
-        return False
-    if post_json_object['object']['type'] != 'ChatMessage':
-        if post_json_object['object']['type'] != 'Note' and \
-           post_json_object['object']['type'] != 'Page' and \
-           post_json_object['object']['type'] != 'Patch' and \
-           post_json_object['object']['type'] != 'EncryptedMessage' and \
-           post_json_object['object']['type'] != 'Article':
-            return False
-    if post_json_object['object'].get('moderationStatus'):
-        return False
-    fields = ('to', 'cc')
-    for field_name in fields:
-        if not post_json_object['object'].get(field_name):
-            continue
-        for to_address in post_json_object['object'][field_name]:
-            if to_address.endswith('#Public'):
-                return False
-            if to_address.endswith('followers'):
-                return False
-    return True
-
-
 def is_reply(post_json_object: {}, actor: str) -> bool:
     """Returns true if the given post is a reply to the given actor
     """
@@ -3035,15 +3064,6 @@ def user_agent_domain(user_agent: str, debug: bool) -> str:
     if debug:
         print('User-Agent Domain: ' + agent_domain)
     return agent_domain
-
-
-def has_object_dict(post_json_object: {}) -> bool:
-    """Returns true if the given post has an object dict
-    """
-    if post_json_object.get('object'):
-        if isinstance(post_json_object['object'], dict):
-            return True
-    return False
 
 
 def get_alt_path(actor: str, domain_full: str, calling_domain: str) -> str:
