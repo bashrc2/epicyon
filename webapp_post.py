@@ -1025,7 +1025,9 @@ def _announce_with_display_name_html(translate: {},
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + post_id + '" ' + \
-        'class="announceOrReply">' + announce_display_name + '</a>\n'
+        'class="announceOrReply">' + \
+        '<span itemprop="author">' + \
+        announce_display_name + '</span></a>\n'
 
 
 def _get_post_title_announce_html(base_dir: str,
@@ -1210,7 +1212,8 @@ def _get_reply_html(translate: {},
         'class="announceOrReply"/>\n' + \
         '        <a href="' + in_reply_to + \
         '" class="announceOrReply">' + \
-        reply_display_name + '</a>\n'
+        '<span itemprop="recipient">' + \
+        reply_display_name + '</span></a>\n'
 
 
 def _get_post_title_reply_html(base_dir: str,
@@ -1419,11 +1422,13 @@ def _get_footer_with_icons(show_icons: bool,
     footer_str += delete_str + mute_str + edit_str
     if not is_news_post(post_json_object):
         footer_str += '        <a href="' + published_link + '" class="' + \
-            time_class + '">' + published_str + '</a>\n'
+            time_class + '"><span itemprop="dateSent">' + \
+            published_str + '</span></a>\n'
     else:
         footer_str += '        <a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
-            '" class="' + time_class + '">' + published_str + '</a>\n'
+            '" class="' + time_class + '"><span itemprop="dateSent">' + \
+            published_str + '</span></a>\n'
     footer_str += '      </div>\n'
     footer_str += '      </nav>\n'
     return footer_str
@@ -1718,7 +1723,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
-            '">' + display_name + '</a>\n'
+            '">' + \
+            '<span itemprop="sender">' + display_name + '</span>' + \
+            '</a>\n'
     else:
         if not message_id:
             # pprint(post_json_object)
@@ -1729,11 +1736,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not actor_domain:
             # pprint(post_json_object)
             print('ERROR: no actor_domain')
+        actor_handle = actor_nickname + '@' + actor_domain
         title_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
-            '">@' + actor_nickname + '@' + actor_domain + '</a>\n'
+            '">@<span itemprop="sender">' + actor_handle + '</span></a>\n'
 
     # benchmark 9
     _log_post_timing(enable_timing_log, post_start_time, '9')
@@ -2137,7 +2145,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      box_name, page_number)
             if post_is_sensitive and reaction_str:
                 reaction_str = '<br>' + reaction_str
-        post_html = '    <div id="' + timeline_post_bookmark + \
+        post_html = '    <div ' + \
+            'itemscope itemtype="http://schema.org/Message" ' + \
+            'id="' + timeline_post_bookmark + \
             '" class="' + container_class + '">\n'
         post_html += avatar_image_in_post
         post_html += '      <div class="post-title">\n' + \
