@@ -2149,6 +2149,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if post_is_sensitive and reaction_str:
                 reaction_str = '<br>' + reaction_str
         post_html = '    <div ' + \
+            'itemprop="hasPart" ' + \
             'itemscope itemtype="http://schema.org/SocialMediaPosting" ' + \
             'id="' + timeline_post_bookmark + \
             '" class="' + container_class + '">\n'

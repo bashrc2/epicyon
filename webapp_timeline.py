@@ -787,7 +787,9 @@ def html_timeline(css_cache: {}, default_timeline: str,
                                     calendar_image, follow_approvals,
                                     icons_as_buttons, access_keys)
 
-    tl_str += '  <div id="timelineposts" class="timeline-posts">\n'
+    tl_str += \
+        '  <div id="timelineposts" class="timeline-posts" ' + \
+        'itemscope itemtype="http://schema.org/Collection">\n'
 
     # second row of buttons for moderator actions
     tl_str += \
