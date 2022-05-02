@@ -1212,7 +1212,7 @@ def _get_reply_html(translate: {},
         'class="announceOrReply"/>\n' + \
         '        <a href="' + in_reply_to + \
         '" class="announceOrReply">' + \
-        '<span itemprop="recipient">' + \
+        '<span itemprop="audience">' + \
         reply_display_name + '</span></a>\n'
 
 
@@ -1422,12 +1422,12 @@ def _get_footer_with_icons(show_icons: bool,
     footer_str += delete_str + mute_str + edit_str
     if not is_news_post(post_json_object):
         footer_str += '        <a href="' + published_link + '" class="' + \
-            time_class + '"><span itemprop="dateSent">' + \
+            time_class + '"><span itemprop="datePublished">' + \
             published_str + '</span></a>\n'
     else:
         footer_str += '        <a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
-            '" class="' + time_class + '"><span itemprop="dateSent">' + \
+            '" class="' + time_class + '"><span itemprop="datePublished">' + \
             published_str + '</span></a>\n'
     footer_str += '      </div>\n'
     footer_str += '      </nav>\n'
@@ -1724,7 +1724,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
             '">' + \
-            '<span itemprop="sender">' + display_name + '</span>' + \
+            '<span itemprop="author">' + display_name + '</span>' + \
             '</a>\n'
     else:
         if not message_id:
@@ -1741,7 +1741,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
-            '">@<span itemprop="sender">' + actor_handle + '</span></a>\n'
+            '">@<span itemprop="author">' + actor_handle + '</span></a>\n'
 
     # benchmark 9
     _log_post_timing(enable_timing_log, post_start_time, '9')
@@ -2146,7 +2146,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if post_is_sensitive and reaction_str:
                 reaction_str = '<br>' + reaction_str
         post_html = '    <div ' + \
-            'itemscope itemtype="http://schema.org/Message" ' + \
+            'itemscope itemtype="http://schema.org/SocialMediaPosting" ' + \
             'id="' + timeline_post_bookmark + \
             '" class="' + container_class + '">\n'
         post_html += avatar_image_in_post
