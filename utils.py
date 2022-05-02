@@ -1021,6 +1021,20 @@ def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
     return name_found
 
 
+def display_name_is_emoji(display_name: str) -> bool:
+    """Returns true if the given display name is an emoji
+    """
+    if ' ' in display_name:
+        return False
+    if len(display_name) < 2:
+        return False
+    if not display_name.startswith(':'):
+        return False
+    if not display_name.endswith(':'):
+        return False
+    return True
+
+
 def _gender_from_string(translate: {}, text: str) -> str:
     """Given some text, does it contain a gender description?
     """

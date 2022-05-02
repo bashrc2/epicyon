@@ -50,6 +50,7 @@ from utils import get_protocol_prefixes
 from utils import is_news_post
 from utils import is_blog_post
 from utils import get_display_name
+from utils import display_name_is_emoji
 from utils import is_public_post
 from utils import update_recent_posts_cache
 from utils import remove_id_ending
@@ -1088,7 +1089,8 @@ def _get_post_title_announce_html(base_dir: str,
     announce_display_name = \
         get_display_name(base_dir, attributed_to, person_cache)
     if announce_display_name:
-        if len(announce_display_name) < 2:
+        if len(announce_display_name) < 2 or \
+           display_name_is_emoji(announce_display_name):
             announce_display_name = None
     if not announce_display_name:
         announce_display_name = announce_nickname + '@' + announce_domain
@@ -1265,7 +1267,8 @@ def _get_post_title_reply_html(base_dir: str,
         self_display_name = \
             get_display_name(base_dir, post_actor, person_cache)
         if self_display_name:
-            if len(self_display_name) < 2:
+            if len(self_display_name) < 2 or \
+               display_name_is_emoji(self_display_name):
                 self_display_name = None
         if not self_display_name:
             self_nickname = get_nickname_from_actor(post_actor)
@@ -1318,7 +1321,8 @@ def _get_post_title_reply_html(base_dir: str,
     reply_display_name = \
         get_display_name(base_dir, reply_actor, person_cache)
     if reply_display_name:
-        if len(reply_display_name) < 2:
+        if len(reply_display_name) < 2 or \
+           display_name_is_emoji(reply_display_name):
             reply_display_name = None
     if not reply_display_name:
         reply_display_name = reply_nickname + '@' + reply_domain
@@ -1747,7 +1751,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     display_name = get_display_name(base_dir, post_actor, person_cache)
     if display_name:
-        if len(display_name) < 2:
+        if len(display_name) < 2 or \
+           display_name_is_emoji(display_name):
             display_name = None
     if display_name:
         if ':' in display_name:
