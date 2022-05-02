@@ -50,6 +50,7 @@ from utils import get_protocol_prefixes
 from utils import is_news_post
 from utils import is_blog_post
 from utils import get_display_name
+from utils import display_name_is_emoji
 from utils import is_public_post
 from utils import update_recent_posts_cache
 from utils import remove_id_ending
@@ -1025,7 +1026,9 @@ def _announce_with_display_name_html(translate: {},
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + post_id + '" ' + \
-        'class="announceOrReply">' + announce_display_name + '</a>\n'
+        'class="announceOrReply">' + \
+        '<span itemprop="author">' + \
+        announce_display_name + '</span></a>\n'
 
 
 def _get_post_title_announce_html(base_dir: str,
@@ -1085,6 +1088,10 @@ def _get_post_title_announce_html(base_dir: str,
                           person_cache, allow_downloads)
     announce_display_name = \
         get_display_name(base_dir, attributed_to, person_cache)
+    if announce_display_name:
+        if len(announce_display_name) < 2 or \
+           display_name_is_emoji(announce_display_name):
+            announce_display_name = None
     if not announce_display_name:
         announce_display_name = announce_nickname + '@' + announce_domain
 
@@ -1136,17 +1143,23 @@ def _get_post_title_announce_html(base_dir: str,
             container_class_icons, container_class)
 
 
-def _reply_to_yourself_html(translate: {}) -> str:
+def _reply_to_yourself_html(actor: str, display_name: str,
+                            translate: {}) -> str:
     """Returns html for a title which is a reply to yourself
     """
     replying_to_themselves_str = 'replying to themselves'
     if translate.get(replying_to_themselves_str):
         replying_to_themselves_str = translate[replying_to_themselves_str]
-    return '    <img loading="lazy" decoding="async" title="' + \
+    title_str = \
+        '    <a href="' + actor + \
+        '" class="announceOrReply"><span itemprop="author">' + \
+        display_name + '</span></a>\n' + \
+        '    <img loading="lazy" decoding="async" title="' + \
         replying_to_themselves_str + \
         '" alt="' + replying_to_themselves_str + \
         '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n'
+    return title_str
 
 
 def _reply_to_unknown_html(translate: {},
@@ -1210,7 +1223,8 @@ def _get_reply_html(translate: {},
         'class="announceOrReply"/>\n' + \
         '        <a href="' + in_reply_to + \
         '" class="announceOrReply">' + \
-        reply_display_name + '</a>\n'
+        '<span itemprop="audience">' + \
+        reply_display_name + '</span></a>\n'
 
 
 def _get_post_title_reply_html(base_dir: str,
@@ -1249,7 +1263,28 @@ def _get_post_title_reply_html(base_dir: str,
 
     # reply to self
     if obj_json['inReplyTo'].startswith(post_actor):
-        title_str += _reply_to_yourself_html(translate)
+        # get the display name for the poster replying to themselves
+        self_display_name = \
+            get_display_name(base_dir, post_actor, person_cache)
+        if self_display_name:
+            if len(self_display_name) < 2 or \
+               display_name_is_emoji(self_display_name):
+                self_display_name = None
+        if not self_display_name:
+            self_nickname = get_nickname_from_actor(post_actor)
+            self_domain, _ = get_domain_from_actor(post_actor)
+            if self_nickname and self_domain:
+                self_display_name = self_nickname + '@' + self_domain
+            else:
+                self_display_name = ''
+        # add emoji to the display name
+        if ':' in self_display_name:
+            self_display_name = \
+                add_emoji_to_display_name(None, base_dir, http_prefix,
+                                          nickname, domain,
+                                          self_display_name, False)
+        title_str += \
+            _reply_to_yourself_html(post_actor, self_display_name, translate)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1283,7 +1318,12 @@ def _get_post_title_reply_html(base_dir: str,
                 container_class_icons, container_class)
 
     get_person_from_cache(base_dir, reply_actor, person_cache, allow_downloads)
-    reply_display_name = get_display_name(base_dir, reply_actor, person_cache)
+    reply_display_name = \
+        get_display_name(base_dir, reply_actor, person_cache)
+    if reply_display_name:
+        if len(reply_display_name) < 2 or \
+           display_name_is_emoji(reply_display_name):
+            reply_display_name = None
     if not reply_display_name:
         reply_display_name = reply_nickname + '@' + reply_domain
 
@@ -1419,11 +1459,13 @@ def _get_footer_with_icons(show_icons: bool,
     footer_str += delete_str + mute_str + edit_str
     if not is_news_post(post_json_object):
         footer_str += '        <a href="' + published_link + '" class="' + \
-            time_class + '">' + published_str + '</a>\n'
+            time_class + '"><span itemprop="datePublished">' + \
+            published_str + '</span></a>\n'
     else:
         footer_str += '        <a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
-            '" class="' + time_class + '">' + published_str + '</a>\n'
+            '" class="' + time_class + '"><span itemprop="datePublished">' + \
+            published_str + '</span></a>\n'
     footer_str += '      </div>\n'
     footer_str += '      </nav>\n'
     return footer_str
@@ -1709,6 +1751,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     display_name = get_display_name(base_dir, post_actor, person_cache)
     if display_name:
+        if len(display_name) < 2 or \
+           display_name_is_emoji(display_name):
+            display_name = None
+    if display_name:
         if ':' in display_name:
             display_name = \
                 add_emoji_to_display_name(session, base_dir, http_prefix,
@@ -1718,7 +1764,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
-            '">' + display_name + '</a>\n'
+            '">' + \
+            '<span itemprop="author">' + display_name + '</span>' + \
+            '</a>\n'
     else:
         if not message_id:
             # pprint(post_json_object)
@@ -1729,11 +1777,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not actor_domain:
             # pprint(post_json_object)
             print('ERROR: no actor_domain')
+        actor_handle = actor_nickname + '@' + actor_domain
         title_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
-            '">@' + actor_nickname + '@' + actor_domain + '</a>\n'
+            '">@<span itemprop="author">' + actor_handle + '</span></a>\n'
 
     # benchmark 9
     _log_post_timing(enable_timing_log, post_start_time, '9')
@@ -2064,7 +2113,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             encrypted_str = translate[encrypted_str]
         object_content = '🔒 ' + encrypted_str
 
-    object_content = '<article>' + object_content + '</article>'
+    object_content = \
+        '<article><span itemprop="articleBody">' + \
+        object_content + '</span></article>'
 
     if not post_is_sensitive:
         content_str = object_content + attachment_str
@@ -2083,7 +2134,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                           nickname, domain,
                                           summary_str, False)
             content_str += \
-                '<label class="cw">' + cw_str + '</label>\n '
+                '<label class="cw"><span itemprop="description">' + \
+                cw_str + '</span></label>\n'
             if is_moderation_post:
                 container_class = 'container report'
         # get the content warning text
@@ -2137,7 +2189,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      box_name, page_number)
             if post_is_sensitive and reaction_str:
                 reaction_str = '<br>' + reaction_str
-        post_html = '    <div id="' + timeline_post_bookmark + \
+        post_html = '    <div ' + \
+            'itemprop="hasPart" ' + \
+            'itemscope itemtype="http://schema.org/SocialMediaPosting" ' + \
+            'id="' + timeline_post_bookmark + \
             '" class="' + container_class + '">\n'
         post_html += avatar_image_in_post
         post_html += '      <div class="post-title">\n' + \

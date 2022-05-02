@@ -239,7 +239,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
 
     new_tab_str = ' target="_blank" rel="nofollow noopener noreferrer"'
     if links_list:
-        html_str += '<nav>\n'
+        html_str += '<nav itemscope itemtype="http://schema.org/Collection">\n'
         for line_str in links_list:
             if ' ' not in line_str:
                 if '#' not in line_str:

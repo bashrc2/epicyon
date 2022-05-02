@@ -40,12 +40,14 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         if '<' in url:
             url = url.split('<')[0]
             content += \
-                "<center>\n<iframe loading=\"lazy\" decoding=\"async\" " + \
+                "<center>\n<span itemprop=\"video\">\n" + \
+                "<iframe loading=\"lazy\" decoding=\"async\" " + \
                 "src=\"https://player.vimeo.com/video/" + \
                 url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"" + \
-                "fullscreen\" allowfullscreen></iframe>\n</center>\n"
+                "fullscreen\" allowfullscreen></iframe>\n" + \
+                "</span>\n</center>\n"
             return content
 
     video_site = 'https://www.youtube.com'
@@ -62,12 +64,14 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 if '?utm_' in url:
                     url = url.split('?utm_')[0]
                 content += \
-                    "<center>\n<iframe loading=\"lazy\" " + \
+                    "<center>\n<span itemprop=\"video\">\n" + \
+                    "<iframe loading=\"lazy\" " + \
                     "decoding=\"async\" src=\"" + \
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen></iframe>\n</center>\n"
+                    "allowfullscreen></iframe>\n" + \
+                    "</span></center>\n"
                 return content
 
     video_site = 'https://youtu.be/'
@@ -83,12 +87,14 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     url = url.split('?utm_')[0]
                 video_site = 'https://www.youtube.com/'
                 content += \
-                    "<center>\n<iframe loading=\"lazy\" " + \
+                    "<center>\n<span itemprop=\"video\">\n" + \
+                    "<iframe loading=\"lazy\" " + \
                     "decoding=\"async\" src=\"" + \
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen></iframe>\n</center>\n"
+                    "allowfullscreen></iframe>\n" + \
+                    "</span></center>\n"
                 return content
 
     invidious_sites = (
@@ -126,12 +132,14 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     else:
                         url = url.replace('?autoplay=1', '?autoplay=0')
                 content += \
-                    "<center>\n<iframe loading=\"lazy\" " + \
+                    "<center>\n<span itemprop=\"video\">\n" + \
+                    "<iframe loading=\"lazy\" " + \
                     "decoding=\"async\" src=\"" + \
                     video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen></iframe>\n</center>\n"
+                    "allowfullscreen></iframe>\n" + \
+                    "</span>\n</center>\n"
                 return content
 
     video_site = 'https://media.ccc.de'
@@ -147,12 +155,14 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 url = url + '/oembed'
             url += video_site_settings
             content += \
-                "<center>\n<iframe loading=\"lazy\" " + \
+                "<center>\n<span itemprop=\"video\">\n" + \
+                "<iframe loading=\"lazy\" " + \
                 "decoding=\"async\" src=\"" + \
                 video_site + url + "\" width=\"" + \
                 str(width) + "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                "allowfullscreen></iframe>\n</center>\n"
+                "allowfullscreen></iframe>\n" + \
+                "</span>\n</center>\n"
             return content
 
     if '"https://' in content:
@@ -213,13 +223,15 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             url = url.replace('/watch/', '/embed/')
 
             content += \
-                "<center>\n<iframe loading=\"lazy\" decoding=\"async\" " + \
+                "<center>\n<span itemprop=\"video\">\n" + \
+                "<iframe loading=\"lazy\" decoding=\"async\" " + \
                 "sandbox=\"allow-same-origin " + \
                 "allow-scripts\" src=\"https://" + \
                 site + url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"" + \
-                "fullscreen\" allowfullscreen></iframe>\n</center>\n"
+                "fullscreen\" allowfullscreen></iframe>\n" + \
+                "</span>\n</center>\n"
             return content
     return content
 
@@ -263,11 +275,12 @@ def _add_embedded_audio(translate: {}, content: str) -> str:
         if not valid_url_prefix(wrd):
             continue
         content += \
-            '<center>\n<audio controls>\n' + \
+            '<center>\n<span itemprop="audio">' + \
+            '<audio controls>\n' + \
             '<source src="' + wrd + '" type="audio/' + \
             extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
-            '</audio>\n</center>\n'
+            '</audio>\n</span>\n</center>\n'
     return content
 
 
@@ -304,14 +317,15 @@ def _add_embedded_video(translate: {}, content: str) -> str:
         if not valid_url_prefix(wrd):
             continue
         content += \
-            '<center><figure id="videoContainer" ' + \
+            '<center><span itemprop="video">\n' + \
+            '<figure id="videoContainer" ' + \
             'data-fullscreen="false">\n' + \
             '    <video id="video" controls ' + \
             'preload="metadata">\n' + \
             '<source src="' + wrd + '" type="video/' + \
             extension.replace('.', '') + '">\n' + \
             translate['Your browser does not support the video element.'] + \
-            '</video>\n</figure>\n</center>\n'
+            '</video>\n</figure>\n</span>\n</center>\n'
     return content
 
 
