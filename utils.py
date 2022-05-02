@@ -1025,7 +1025,13 @@ def display_name_is_emoji(display_name: str) -> bool:
     """Returns true if the given display name is an emoji
     """
     if ' ' in display_name:
-        return False
+        words = display_name.split(' ')
+        for wrd in words:
+            if not wrd.startswith(':'):
+                return False
+            if not wrd.endswith(':'):
+                return False
+        return True
     if len(display_name) < 2:
         return False
     if not display_name.startswith(':'):
