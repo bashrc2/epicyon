@@ -341,7 +341,9 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 html_str += date_shown + '</span></p>\n'
 
     if html_str:
-        html_str = '<nav>\n' + html_str + '</nav>\n'
+        html_str = \
+            '<nav itemscope itemtype="http://schema.org/webFeed">\n' + \
+            html_str + '</nav>\n'
     return html_str
 
 
