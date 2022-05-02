@@ -1138,17 +1138,22 @@ def _get_post_title_announce_html(base_dir: str,
             container_class_icons, container_class)
 
 
-def _reply_to_yourself_html(translate: {}) -> str:
+def _reply_to_yourself_html(actor: str, display_name: str,
+                            translate: {}) -> str:
     """Returns html for a title which is a reply to yourself
     """
     replying_to_themselves_str = 'replying to themselves'
     if translate.get(replying_to_themselves_str):
         replying_to_themselves_str = translate[replying_to_themselves_str]
-    return '    <img loading="lazy" decoding="async" title="' + \
+    title_str = \
+        '    <a href="' + actor + \
+        '" class="announceOrReply">' + display_name + '</a>\n' + \
+        '    <img loading="lazy" decoding="async" title="' + \
         replying_to_themselves_str + \
         '" alt="' + replying_to_themselves_str + \
         '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n'
+    return title_str
 
 
 def _reply_to_unknown_html(translate: {},
@@ -1252,7 +1257,24 @@ def _get_post_title_reply_html(base_dir: str,
 
     # reply to self
     if obj_json['inReplyTo'].startswith(post_actor):
-        title_str += _reply_to_yourself_html(translate)
+        # get the display name for the poster replying to themselves
+        self_display_name = \
+            get_display_name(base_dir, post_actor, person_cache)
+        if not self_display_name:
+            self_nickname = get_nickname_from_actor(post_actor)
+            self_domain, _ = get_domain_from_actor(post_actor)
+            if self_nickname and self_domain:
+                self_display_name = self_nickname + '@' + self_domain
+            else:
+                self_display_name = ''
+        # add emoji to the display name
+        if ':' in self_display_name:
+            self_display_name = \
+                add_emoji_to_display_name(None, base_dir, http_prefix,
+                                          nickname, domain,
+                                          self_display_name, False)
+        title_str += \
+            _reply_to_yourself_html(post_actor, self_display_name, translate)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
