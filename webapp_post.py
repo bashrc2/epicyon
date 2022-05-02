@@ -2072,7 +2072,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             encrypted_str = translate[encrypted_str]
         object_content = '🔒 ' + encrypted_str
 
-    object_content = '<article>' + object_content + '</article>'
+    object_content = \
+        '<article><span itemprop="articleBody">' + \
+        object_content + '</span></article>'
 
     if not post_is_sensitive:
         content_str = object_content + attachment_str
@@ -2091,7 +2093,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                           nickname, domain,
                                           summary_str, False)
             content_str += \
-                '<label class="cw">' + cw_str + '</label>\n '
+                '<label class="cw"><span itemprop="description">' + \
+                cw_str + '</span></label>\n'
             if is_moderation_post:
                 container_class = 'container report'
         # get the content warning text
