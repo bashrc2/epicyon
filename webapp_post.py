@@ -1087,6 +1087,9 @@ def _get_post_title_announce_html(base_dir: str,
                           person_cache, allow_downloads)
     announce_display_name = \
         get_display_name(base_dir, attributed_to, person_cache)
+    if announce_display_name:
+        if len(announce_display_name) < 2:
+            announce_display_name = None
     if not announce_display_name:
         announce_display_name = announce_nickname + '@' + announce_domain
 
@@ -1147,7 +1150,8 @@ def _reply_to_yourself_html(actor: str, display_name: str,
         replying_to_themselves_str = translate[replying_to_themselves_str]
     title_str = \
         '    <a href="' + actor + \
-        '" class="announceOrReply">' + display_name + '</a>\n' + \
+        '" class="announceOrReply"><span itemprop="author">' + \
+        display_name + '</span></a>\n' + \
         '    <img loading="lazy" decoding="async" title="' + \
         replying_to_themselves_str + \
         '" alt="' + replying_to_themselves_str + \
@@ -1260,6 +1264,9 @@ def _get_post_title_reply_html(base_dir: str,
         # get the display name for the poster replying to themselves
         self_display_name = \
             get_display_name(base_dir, post_actor, person_cache)
+        if self_display_name:
+            if len(self_display_name) < 2:
+                self_display_name = None
         if not self_display_name:
             self_nickname = get_nickname_from_actor(post_actor)
             self_domain, _ = get_domain_from_actor(post_actor)
@@ -1308,7 +1315,11 @@ def _get_post_title_reply_html(base_dir: str,
                 container_class_icons, container_class)
 
     get_person_from_cache(base_dir, reply_actor, person_cache, allow_downloads)
-    reply_display_name = get_display_name(base_dir, reply_actor, person_cache)
+    reply_display_name = \
+        get_display_name(base_dir, reply_actor, person_cache)
+    if reply_display_name:
+        if len(reply_display_name) < 2:
+            reply_display_name = None
     if not reply_display_name:
         reply_display_name = reply_nickname + '@' + reply_domain
 
@@ -1735,6 +1746,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
     actor_domain, _ = get_domain_from_actor(post_actor)
 
     display_name = get_display_name(base_dir, post_actor, person_cache)
+    if display_name:
+        if len(display_name) < 2:
+            display_name = None
     if display_name:
         if ':' in display_name:
             display_name = \
