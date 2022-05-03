@@ -15626,7 +15626,12 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.theme_name,
                                          self.server.default_timeline,
                                          self.server.text_mode_banner,
-                                         self.server.access_keys)
+                                         self.server.access_keys,
+                                         self.server.session,
+                                         self.server.session_onion,
+                                         self.server.session_i2p,
+                                         self.server.http_prefix,
+                                         self.server.debug)
                 if html_str:
                     msg = html_str.encode('utf-8')
                     msglen = len(msg)

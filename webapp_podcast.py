@@ -9,6 +9,7 @@ __module_group__ = "Web Interface Columns"
 
 import os
 import html
+import datetime
 import urllib.parse
 from shutil import copyfile
 from utils import get_config_param
@@ -19,6 +20,88 @@ from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
+from session import get_json
+
+
+def _html_podcast_chapters(link_url: str,
+                           session, session_onion, session_i2p,
+                           http_prefix: str, domain: str,
+                           podcast_properties: {}, translate: {},
+                           debug: bool) -> str:
+    """Returns html for chapters of a podcast
+    """
+    if not podcast_properties:
+        return ''
+    key = 'chapters'
+    if not podcast_properties.get(key):
+        return ''
+    if not isinstance(podcast_properties[key], dict):
+        return ''
+    if podcast_properties[key].get('url'):
+        chapters_url = podcast_properties[key]['url']
+    elif podcast_properties[key].get('uri'):
+        chapters_url = podcast_properties[key]['uri']
+    else:
+        return ''
+    html_str = ''
+    if podcast_properties[key].get('type'):
+        url_type = podcast_properties[key]['type']
+
+        curr_session = session
+        if chapters_url.endswith('.onion'):
+            curr_session = session_onion
+        elif chapters_url.endswith('.i2p'):
+            curr_session = session_i2p
+
+        as_header = {
+            'Accept': url_type
+        }
+
+        if 'json' in url_type:
+            chapters_json = \
+                get_json(None, curr_session, chapters_url,
+                         as_header, None, debug, __version__,
+                         http_prefix, domain)
+            if not chapters_json:
+                return ''
+            if not chapters_json.get('chapters'):
+                return ''
+            if not isinstance(chapters_json['chapters'], list):
+                return ''
+            chapters_html = ''
+            for chapter in chapters_json['chapters']:
+                if not isinstance(chapter, dict):
+                    continue
+                if not chapter.get('title'):
+                    continue
+                if not chapter.get('startTime'):
+                    continue
+                chapter_title = chapter['title']
+                chapter_url = ''
+                if chapter.get('url'):
+                    chapter_url = chapter['url']
+                    chapter_title = \
+                        '<a href="' + chapter_url + '">' + \
+                        chapter['title'] + '<\a>'
+                start_sec = chapter['startTime']
+                skip_url = link_url + '#t=' + str(start_sec)
+                start_time_str = \
+                    '<a href="' + skip_url + '">' + \
+                    str(datetime.timedelta(seconds=start_sec)) + \
+                    '</a>'
+                if chapter.get('img'):
+                    chapters_html += \
+                        '  <li>\n' + \
+                        '    ' + start_time_str + '\n' + \
+                        '    <img loading="lazy" ' + \
+                        'decoding="async" ' + \
+                        'src="' + chapter['img'] + \
+                        '" alt="" class="chapter-image" />\n' + \
+                        '    ' + chapter_title + '\n' + \
+                        '  </li>\n'
+            if chapters_html:
+                html_str = '<ul>\n' + chapters_html + '</ul>\n'
+    return html_str
 
 
 def _html_podcast_transcripts(podcast_properties: {}, translate: {}) -> str:
@@ -28,6 +111,8 @@ def _html_podcast_transcripts(podcast_properties: {}, translate: {}) -> str:
         return ''
     key = 'transcripts'
     if not podcast_properties.get(key):
+        return ''
+    if not isinstance(podcast_properties[key], list):
         return ''
     ctr = 1
     html_str = ''
@@ -62,6 +147,8 @@ def _html_podcast_social_interactions(podcast_properties: {},
         key = 'socialInteract'
         if not podcast_properties.get(key):
             return ''
+    if not isinstance(podcast_properties[key], dict):
+        return ''
     if podcast_properties[key].get('uri'):
         episode_post_url = podcast_properties[key]['uri']
     elif podcast_properties[key].get('url'):
@@ -102,21 +189,27 @@ def _html_podcast_performers(podcast_properties: {}) -> str:
     """
     if not podcast_properties:
         return ''
-    if not podcast_properties.get('persons'):
+    key = 'persons'
+    if not podcast_properties.get(key):
+        return ''
+    if not isinstance(podcast_properties[key], list):
         return ''
 
     # list of performers
     podcast_str = '<div class="performers">\n'
     podcast_str += '  <center>\n'
     podcast_str += '<ul>\n'
-    for performer in podcast_properties['persons']:
+    for performer in podcast_properties[key]:
         if not performer.get('text'):
             continue
-        performer_name = performer['text']
+        performer_name = \
+            '<span itemprop="name">' + performer['text'] + '</span>'
         performer_title = performer_name
 
         if performer.get('role'):
-            performer_title += ' (' + performer['role'] + ')'
+            performer_title += \
+                ' (<span itemprop="hasOccupation">' + \
+                performer['role'] + '</span>)'
         if performer.get('group'):
             performer_title += ', <i>' + performer['group'] + '</i>'
         performer_title = remove_html(performer_title)
@@ -131,14 +224,17 @@ def _html_podcast_performers(podcast_properties: {}) -> str:
 
         podcast_str += '  <li>\n'
         podcast_str += '    <figure>\n'
-        podcast_str += '      <a href="' + performer_url + '">\n'
+        podcast_str += '    <span itemprop="creator" ' + \
+            'itemscope itemtype="https://schema.org/Person">\n'
+        podcast_str += \
+            '      <a href="' + performer_url + '" itemprop="url">\n'
         podcast_str += \
             '        <img loading="lazy" decoding="async" ' + \
-            'src="' + performer_img + '" alt="" />\n'
+            'src="' + performer_img + '" alt="" itemprop="image" />\n'
         podcast_str += \
             '      <figcaption>' + performer_title + '</figcaption>\n'
         podcast_str += '      </a>\n'
-        podcast_str += '    </figure>\n'
+        podcast_str += '    </span></figure>\n'
         podcast_str += '  </li>\n'
 
     podcast_str += '</ul>\n'
@@ -198,7 +294,9 @@ def html_podcast_episode(css_cache: {}, translate: {},
                          base_dir: str, nickname: str, domain: str,
                          newswire_item: [], theme: str,
                          default_timeline: str,
-                         text_mode_banner: str, access_keys: {}) -> str:
+                         text_mode_banner: str, access_keys: {},
+                         session, session_onion, session_i2p,
+                         http_prefix: str, debug: bool) -> str:
     """Returns html for a podcast episode, giebn an item from the newswire
     """
     css_filename = base_dir + '/epicyon-podcast.css'
@@ -347,6 +445,11 @@ def html_podcast_episode(css_cache: {}, translate: {},
     podcast_str += \
         _html_podcast_social_interactions(podcast_properties, translate,
                                           nickname)
+    podcast_str += \
+        _html_podcast_chapters(link_url,
+                               session, session_onion, session_i2p,
+                               http_prefix, domain,
+                               podcast_properties, translate, debug)
 
     podcast_str += '  </center>\n'
     podcast_str += '</div>\n'
