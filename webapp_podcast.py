@@ -149,12 +149,13 @@ def _html_podcast_soundbites(link_url: str, extension: str,
         if ctr > 0:
             soundbite_title += ' ' + str(ctr)
         podcast_str += \
+            '    <span itemprop="trailer">\n' + \
             '    <audio controls>\n' + \
             '    <p>' + soundbite_title + '</p>\n' + \
             '    <source src="' + preview_url + '" type="audio/' + \
             extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
-            '</audio>\n'
+            '</audio>\n    </span>\n'
         podcast_str += '  </li>\n'
         ctr += 1
 
@@ -197,18 +198,22 @@ def html_podcast_episode(css_cache: {}, translate: {},
 
     podcast_str += html_keyboard_navigation(text_mode_banner, {}, {})
     podcast_str += '<br><br>\n'
-    podcast_str += '<div class="options">\n'
+    podcast_str += \
+        '<div class="options" itemscope ' + \
+        'itemtype="http://schema.org/PodcastEpisode">\n'
     podcast_str += '  <div class="optionsAvatar">\n'
     podcast_str += '  <center>\n'
-    podcast_str += '  <a href="' + link_url + '">\n'
+    podcast_str += '  <a href="' + link_url + '" itemprop="url">\n'
+    podcast_str += '  <span itemprop="image">\n'
     if image_src == 'srcset':
         podcast_str += '  <img loading="lazy" decoding="async" ' + \
             'srcset="' + image_url + \
-            '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
+            '" alt="" ' + get_broken_link_substitute() + '/>\n'
     else:
         podcast_str += '  <img loading="lazy" decoding="async" ' + \
             'src="' + image_url + \
-            '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
+            '" alt="" ' + get_broken_link_substitute() + '/>\n'
+    podcast_str += '  </span></a>\n'
     podcast_str += '  </center>\n'
     podcast_str += '  </div>\n'
 
@@ -236,11 +241,12 @@ def html_podcast_episode(css_cache: {}, translate: {},
 
         # podcast player widget
         podcast_str += \
+            '  <span itemprop="audio">\n' + \
             '  <audio controls>\n' + \
             '    <source src="' + link_url + '" type="audio/' + \
             audio_extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
-            '\n  </audio>\n'
+            '\n  </audio>\n  </span>\n'
     elif podcast_properties.get('linkMimeType'):
         if '/youtube' in podcast_properties['linkMimeType']:
             url = link_url.replace('/watch?v=', '/embed/')
@@ -249,50 +255,60 @@ def html_podcast_episode(css_cache: {}, translate: {},
             if '?utm_' in url:
                 url = url.split('?utm_')[0]
             podcast_str += \
+                '  <span itemprop="video">\n' + \
                 "  <iframe loading=\"lazy\" decoding=\"async\" src=\"" + \
                 url + "\" width=\"400\" height=\"300\" " + \
                 "frameborder=\"0\" allow=\"fullscreen\" " + \
-                "allowfullscreen>\n  </iframe>\n"
+                "allowfullscreen>\n  </iframe>\n  </span>\n"
         elif 'video' in podcast_properties['linkMimeType']:
             video_mime_type = podcast_properties['linkMimeType']
             video_msg = 'Your browser does not support the video element.'
             podcast_str += \
+                '  <span itemprop="video">\n' + \
                 '  <figure id="videoContainer" ' + \
                 'data-fullscreen="false">\n' + \
                 '    <video id="video" controls preload="metadata">\n' + \
                 '<source src="' + link_url + '" ' + \
                 'type="' + video_mime_type + '">' + \
-                translate[video_msg] + '</video>\n  </figure>\n'
+                translate[video_msg] + \
+                '</video>\n  </figure>\n  </span>\n'
 
     podcast_title = \
         remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
     if podcast_title:
         podcast_str += \
-            '<p><label class="podcast-title">' + podcast_title + \
-            '</label></p>\n'
+            '<p><label class="podcast-title">' + \
+            '<span itemprop="headline">' + \
+            podcast_title + \
+            '</span></label></p>\n'
     if newswire_item[4]:
         podcast_description = \
             html.unescape(urllib.parse.unquote_plus(newswire_item[4]))
         podcast_description = safe_web_text(podcast_description)
         if podcast_description:
-            podcast_str += '<p>' + podcast_description + '</p>\n'
+            podcast_str += \
+                '<p><span itemprop="description">' + \
+                podcast_description + '</span></p>\n'
 
     # donate button
     if podcast_properties.get('funding'):
         if podcast_properties['funding'].get('url'):
             donate_url = podcast_properties['funding']['url']
             podcast_str += \
-                '<p><a href="' + donate_url + \
+                '<p><span itemprop="funding"><a href="' + donate_url + \
                 '"><button class="donateButton">' + translate['Donate'] + \
-                '</button></a></p>\n'
+                '</button></a></span></p>\n'
 
     if podcast_properties['categories']:
-        podcast_str += '<p>'
         tags_str = ''
         for tag in podcast_properties['categories']:
-            tag_link = '/users/' + nickname + '/tags/' + tag.replace('#', '')
-            tags_str += '<a href="' + tag_link + '">' + tag + '</a> '
-        podcast_str += tags_str.strip() + '</p>\n'
+            tag = tag.replace('#', '')
+            tag_link = '/users/' + nickname + '/tags/' + tag
+            tags_str += \
+                '#<a href="' + tag_link + '">' + \
+                '<span itemprop="keywords">' + tag + '</span>' + \
+                '</a> '
+        podcast_str += '<p>' + tags_str.strip() + '</p>\n'
 
     podcast_str += _html_podcast_performers(podcast_properties)
     podcast_str += \
