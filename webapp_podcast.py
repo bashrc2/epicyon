@@ -9,6 +9,7 @@ __module_group__ = "Web Interface Columns"
 
 import os
 import html
+import datetime
 import urllib.parse
 from shutil import copyfile
 from utils import get_config_param
@@ -19,6 +20,121 @@ from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
+from session import get_json
+
+
+def _html_podcast_chapters(link_url: str,
+                           session, session_onion, session_i2p,
+                           http_prefix: str, domain: str,
+                           podcast_properties: {}, translate: {},
+                           debug: bool) -> str:
+    """Returns html for chapters of a podcast
+    """
+    if not podcast_properties:
+        return ''
+    key = 'chapters'
+    if not podcast_properties.get(key):
+        return ''
+    if not isinstance(podcast_properties[key], dict):
+        return ''
+    if podcast_properties[key].get('url'):
+        chapters_url = podcast_properties[key]['url']
+    elif podcast_properties[key].get('uri'):
+        chapters_url = podcast_properties[key]['uri']
+    else:
+        return ''
+    html_str = ''
+    if podcast_properties[key].get('type'):
+        url_type = podcast_properties[key]['type']
+
+        curr_session = session
+        if chapters_url.endswith('.onion'):
+            curr_session = session_onion
+        elif chapters_url.endswith('.i2p'):
+            curr_session = session_i2p
+
+        as_header = {
+            'Accept': url_type
+        }
+
+        if 'json' in url_type:
+            chapters_json = \
+                get_json(None, curr_session, chapters_url,
+                         as_header, None, debug, __version__,
+                         http_prefix, domain)
+            if not chapters_json:
+                return ''
+            if not chapters_json.get('chapters'):
+                return ''
+            if not isinstance(chapters_json['chapters'], list):
+                return ''
+            chapters_html = ''
+            for chapter in chapters_json['chapters']:
+                if not isinstance(chapter, dict):
+                    continue
+                if not chapter.get('title'):
+                    continue
+                if not chapter.get('startTime'):
+                    continue
+                chapter_title = chapter['title']
+                chapter_url = ''
+                if chapter.get('url'):
+                    chapter_url = chapter['url']
+                    chapter_title = \
+                        '<a href="' + chapter_url + '">' + \
+                        chapter['title'] + '<\a>'
+                start_sec = chapter['startTime']
+                skip_url = link_url + '#t=' + str(start_sec)
+                start_time_str = \
+                    '<a href="' + skip_url + '">' + \
+                    str(datetime.timedelta(seconds=start_sec)) + \
+                    '</a>'
+                if chapter.get('img'):
+                    chapters_html += \
+                        '    <li>\n' + \
+                        '      ' + start_time_str + '\n' + \
+                        '      <img loading="lazy" ' + \
+                        'decoding="async" ' + \
+                        'src="' + chapter['img'] + \
+                        '" alt="" />\n' + \
+                        '      ' + chapter_title + '\n' + \
+                        '    </li>\n'
+            if chapters_html:
+                html_str = \
+                    '<div class="chapters">\n' + \
+                    '  <ul>\n' + chapters_html + '  </ul>\n</div>\n'
+    return html_str
+
+
+def _html_podcast_transcripts(podcast_properties: {}, translate: {}) -> str:
+    """Returns html for transcripts of a podcast
+    """
+    if not podcast_properties:
+        return ''
+    key = 'transcripts'
+    if not podcast_properties.get(key):
+        return ''
+    if not isinstance(podcast_properties[key], list):
+        return ''
+    ctr = 1
+    html_str = ''
+    for transcript in podcast_properties[key]:
+        transcript_url = None
+        if podcast_properties[key].get('url'):
+            transcript_url = podcast_properties[key]['url']
+        elif podcast_properties[key].get('uri'):
+            transcript_url = podcast_properties[key]['uri']
+        if not transcript_url:
+            continue
+        if ctr > 1:
+            html_str += '<br>'
+        html_str += '<a href="' + transcript_url + '">'
+        html_str += translate['Transcript']
+        if ctr > 1:
+            html_str += ' ' + str(ctr)
+        html_str += '</a>\n'
+        ctr += 1
+    return html_str
 
 
 def _html_podcast_social_interactions(podcast_properties: {},
@@ -33,6 +149,8 @@ def _html_podcast_social_interactions(podcast_properties: {},
         key = 'socialInteract'
         if not podcast_properties.get(key):
             return ''
+    if not isinstance(podcast_properties[key], dict):
+        return ''
     if podcast_properties[key].get('uri'):
         episode_post_url = podcast_properties[key]['uri']
     elif podcast_properties[key].get('url'):
@@ -60,9 +178,10 @@ def _html_podcast_social_interactions(podcast_properties: {},
         '?replyto=' + episode_post_url + actor_str + '" target="_blank" ' + \
         'rel="nofollow noopener noreferrer">💬 ' + \
         translate['Leave a comment'] + '</a>\n' + \
+        '  <span itemprop="comment">\n' + \
         '  <a href="' + episode_post_url + '" target="_blank" ' + \
         'rel="nofollow noopener noreferrer">' + \
-        translate['View comments'] + '</a>\n' + \
+        translate['View comments'] + '</a>\n  </span>\n' + \
         '</center>\n'
     return podcast_str
 
@@ -72,21 +191,27 @@ def _html_podcast_performers(podcast_properties: {}) -> str:
     """
     if not podcast_properties:
         return ''
-    if not podcast_properties.get('persons'):
+    key = 'persons'
+    if not podcast_properties.get(key):
+        return ''
+    if not isinstance(podcast_properties[key], list):
         return ''
 
     # list of performers
     podcast_str = '<div class="performers">\n'
     podcast_str += '  <center>\n'
     podcast_str += '<ul>\n'
-    for performer in podcast_properties['persons']:
+    for performer in podcast_properties[key]:
         if not performer.get('text'):
             continue
-        performer_name = performer['text']
+        performer_name = \
+            '<span itemprop="name">' + performer['text'] + '</span>'
         performer_title = performer_name
 
         if performer.get('role'):
-            performer_title += ' (' + performer['role'] + ')'
+            performer_title += \
+                ' (<span itemprop="hasOccupation">' + \
+                performer['role'] + '</span>)'
         if performer.get('group'):
             performer_title += ', <i>' + performer['group'] + '</i>'
         performer_title = remove_html(performer_title)
@@ -101,14 +226,17 @@ def _html_podcast_performers(podcast_properties: {}) -> str:
 
         podcast_str += '  <li>\n'
         podcast_str += '    <figure>\n'
-        podcast_str += '      <a href="' + performer_url + '">\n'
+        podcast_str += '    <span itemprop="creator" ' + \
+            'itemscope itemtype="https://schema.org/Person">\n'
+        podcast_str += \
+            '      <a href="' + performer_url + '" itemprop="url">\n'
         podcast_str += \
             '        <img loading="lazy" decoding="async" ' + \
-            'src="' + performer_img + '" alt="" />\n'
+            'src="' + performer_img + '" alt="" itemprop="image" />\n'
         podcast_str += \
             '      <figcaption>' + performer_title + '</figcaption>\n'
         podcast_str += '      </a>\n'
-        podcast_str += '    </figure>\n'
+        podcast_str += '    </span></figure>\n'
         podcast_str += '  </li>\n'
 
     podcast_str += '</ul>\n'
@@ -149,12 +277,13 @@ def _html_podcast_soundbites(link_url: str, extension: str,
         if ctr > 0:
             soundbite_title += ' ' + str(ctr)
         podcast_str += \
+            '    <span itemprop="trailer">\n' + \
             '    <audio controls>\n' + \
             '    <p>' + soundbite_title + '</p>\n' + \
             '    <source src="' + preview_url + '" type="audio/' + \
             extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
-            '</audio>\n'
+            '</audio>\n    </span>\n'
         podcast_str += '  </li>\n'
         ctr += 1
 
@@ -167,7 +296,9 @@ def html_podcast_episode(css_cache: {}, translate: {},
                          base_dir: str, nickname: str, domain: str,
                          newswire_item: [], theme: str,
                          default_timeline: str,
-                         text_mode_banner: str, access_keys: {}) -> str:
+                         text_mode_banner: str, access_keys: {},
+                         session, session_onion, session_i2p,
+                         http_prefix: str, debug: bool) -> str:
     """Returns html for a podcast episode, giebn an item from the newswire
     """
     css_filename = base_dir + '/epicyon-podcast.css'
@@ -197,18 +328,22 @@ def html_podcast_episode(css_cache: {}, translate: {},
 
     podcast_str += html_keyboard_navigation(text_mode_banner, {}, {})
     podcast_str += '<br><br>\n'
-    podcast_str += '<div class="options">\n'
+    podcast_str += \
+        '<div class="options" itemscope ' + \
+        'itemtype="http://schema.org/PodcastEpisode">\n'
     podcast_str += '  <div class="optionsAvatar">\n'
     podcast_str += '  <center>\n'
-    podcast_str += '  <a href="' + link_url + '">\n'
+    podcast_str += '  <a href="' + link_url + '" itemprop="url">\n'
+    podcast_str += '  <span itemprop="image">\n'
     if image_src == 'srcset':
         podcast_str += '  <img loading="lazy" decoding="async" ' + \
             'srcset="' + image_url + \
-            '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
+            '" alt="" ' + get_broken_link_substitute() + '/>\n'
     else:
         podcast_str += '  <img loading="lazy" decoding="async" ' + \
             'src="' + image_url + \
-            '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
+            '" alt="" ' + get_broken_link_substitute() + '/>\n'
+    podcast_str += '  </span></a>\n'
     podcast_str += '  </center>\n'
     podcast_str += '  </div>\n'
 
@@ -236,11 +371,12 @@ def html_podcast_episode(css_cache: {}, translate: {},
 
         # podcast player widget
         podcast_str += \
+            '  <span itemprop="audio">\n' + \
             '  <audio controls>\n' + \
             '    <source src="' + link_url + '" type="audio/' + \
             audio_extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
-            '\n  </audio>\n'
+            '\n  </audio>\n  </span>\n'
     elif podcast_properties.get('linkMimeType'):
         if '/youtube' in podcast_properties['linkMimeType']:
             url = link_url.replace('/watch?v=', '/embed/')
@@ -249,55 +385,73 @@ def html_podcast_episode(css_cache: {}, translate: {},
             if '?utm_' in url:
                 url = url.split('?utm_')[0]
             podcast_str += \
+                '  <span itemprop="video">\n' + \
                 "  <iframe loading=\"lazy\" decoding=\"async\" src=\"" + \
                 url + "\" width=\"400\" height=\"300\" " + \
                 "frameborder=\"0\" allow=\"fullscreen\" " + \
-                "allowfullscreen>\n  </iframe>\n"
+                "allowfullscreen>\n  </iframe>\n  </span>\n"
         elif 'video' in podcast_properties['linkMimeType']:
             video_mime_type = podcast_properties['linkMimeType']
             video_msg = 'Your browser does not support the video element.'
             podcast_str += \
+                '  <span itemprop="video">\n' + \
                 '  <figure id="videoContainer" ' + \
                 'data-fullscreen="false">\n' + \
                 '    <video id="video" controls preload="metadata">\n' + \
                 '<source src="' + link_url + '" ' + \
                 'type="' + video_mime_type + '">' + \
-                translate[video_msg] + '</video>\n  </figure>\n'
+                translate[video_msg] + \
+                '</video>\n  </figure>\n  </span>\n'
 
     podcast_title = \
         remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
     if podcast_title:
         podcast_str += \
-            '<p><label class="podcast-title">' + podcast_title + \
-            '</label></p>\n'
+            '<p><label class="podcast-title">' + \
+            '<span itemprop="headline">' + \
+            podcast_title + \
+            '</span></label></p>\n'
+    transcripts = _html_podcast_transcripts(podcast_properties, translate)
+    if transcripts:
+        podcast_str += '<p>' + transcripts + '</p>\n'
     if newswire_item[4]:
         podcast_description = \
             html.unescape(urllib.parse.unquote_plus(newswire_item[4]))
         podcast_description = safe_web_text(podcast_description)
         if podcast_description:
-            podcast_str += '<p>' + podcast_description + '</p>\n'
+            podcast_str += \
+                '<p><span itemprop="description">' + \
+                podcast_description + '</span></p>\n'
 
     # donate button
     if podcast_properties.get('funding'):
         if podcast_properties['funding'].get('url'):
             donate_url = podcast_properties['funding']['url']
             podcast_str += \
-                '<p><a href="' + donate_url + \
+                '<p><span itemprop="funding"><a href="' + donate_url + \
                 '"><button class="donateButton">' + translate['Donate'] + \
-                '</button></a></p>\n'
+                '</button></a></span></p>\n'
 
     if podcast_properties['categories']:
-        podcast_str += '<p>'
         tags_str = ''
         for tag in podcast_properties['categories']:
-            tag_link = '/users/' + nickname + '/tags/' + tag.replace('#', '')
-            tags_str += '<a href="' + tag_link + '">' + tag + '</a> '
-        podcast_str += tags_str.strip() + '</p>\n'
+            tag = tag.replace('#', '')
+            tag_link = '/users/' + nickname + '/tags/' + tag
+            tags_str += \
+                '#<a href="' + tag_link + '">' + \
+                '<span itemprop="keywords">' + tag + '</span>' + \
+                '</a> '
+        podcast_str += '<p>' + tags_str.strip() + '</p>\n'
 
     podcast_str += _html_podcast_performers(podcast_properties)
     podcast_str += \
         _html_podcast_social_interactions(podcast_properties, translate,
                                           nickname)
+    podcast_str += \
+        _html_podcast_chapters(link_url,
+                               session, session_onion, session_i2p,
+                               http_prefix, domain,
+                               podcast_properties, translate, debug)
 
     podcast_str += '  </center>\n'
     podcast_str += '</div>\n'

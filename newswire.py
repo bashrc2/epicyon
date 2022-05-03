@@ -515,6 +515,7 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
         "transcripts": [],
         "valueRecipients": [],
         "trailers": [],
+        "chapters": [],
         "discussion": [],
         "episode": '',
         "socialInteract": [],
