@@ -158,6 +158,10 @@ a:focus {
     width: 15%;
 }
 
+.performers {
+    display: flex;
+}
+
 @media screen and (min-width: 400px) {
     textarea {
         font-family: Arial, Helvetica, sans-serif;
@@ -232,6 +236,9 @@ a:focus {
         transform: scale(2);
         padding: 10px;
         margin: 20px 30px;
+    }
+    .performers img {
+        width: 20%;
     }
     .chapters img {
         width: 10%;
@@ -313,6 +320,9 @@ a:focus {
         padding: 20px;
         margin: 30px 40px;
     }
+    .performers img {
+        width: 30%;
+    }
     .chapters img {
         width: 15%;
     }
@@ -392,6 +402,9 @@ a:focus {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+    }
+    .performers img {
+        width: 30%;
     }
     .chapters img {
         width: 15%;

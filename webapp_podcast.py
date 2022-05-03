@@ -91,17 +91,18 @@ def _html_podcast_chapters(link_url: str,
                     '</a>'
                 if chapter.get('img'):
                     chapters_html += \
-                        '  <li>\n' + \
-                        '    ' + start_time_str + '\n' + \
-                        '    <img loading="lazy" ' + \
+                        '    <li>\n' + \
+                        '      ' + start_time_str + '\n' + \
+                        '      <img loading="lazy" ' + \
                         'decoding="async" ' + \
                         'src="' + chapter['img'] + \
                         '" alt="" />\n' + \
-                        '    ' + chapter_title + '\n' + \
-                        '  </li>\n'
+                        '      ' + chapter_title + '\n' + \
+                        '    </li>\n'
             if chapters_html:
                 html_str = \
-                    '<ul class="chapters">\n' + chapters_html + '</ul>\n'
+                    '<div class="chapters">\n' + \
+                    '  <ul>\n' + chapters_html + '  </ul>\n</div>\n'
     return html_str
 
 
