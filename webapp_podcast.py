@@ -21,6 +21,35 @@ from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
 
 
+def _html_podcast_transcripts(podcast_properties: {}, translate: {}) -> str:
+    """Returns html for transcripts of a podcast
+    """
+    if not podcast_properties:
+        return ''
+    key = 'transcripts'
+    if not podcast_properties.get(key):
+        return ''
+    ctr = 1
+    html_str = ''
+    for transcript in podcast_properties[key]:
+        transcript_url = None
+        if podcast_properties[key].get('url'):
+            transcript_url = podcast_properties[key]['url']
+        elif podcast_properties[key].get('uri'):
+            transcript_url = podcast_properties[key]['uri']
+        if not transcript_url:
+            continue
+        if ctr > 1:
+            html_str += '<br>'
+        html_str += '<a href="' + transcript_url + '">'
+        html_str += translate['Transcript']
+        if ctr > 1:
+            html_str += ' ' + str(ctr)
+        html_str += '</a>\n'
+        ctr += 1
+    return html_str
+
+
 def _html_podcast_social_interactions(podcast_properties: {},
                                       translate: {},
                                       nickname: str) -> str:
@@ -282,6 +311,9 @@ def html_podcast_episode(css_cache: {}, translate: {},
             '<span itemprop="headline">' + \
             podcast_title + \
             '</span></label></p>\n'
+    transcripts = _html_podcast_transcripts(podcast_properties, translate)
+    if transcripts:
+        podcast_str += '<p>' + transcripts + '</p>\n'
     if newswire_item[4]:
         podcast_description = \
             html.unescape(urllib.parse.unquote_plus(newswire_item[4]))
