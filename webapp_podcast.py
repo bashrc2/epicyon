@@ -60,9 +60,10 @@ def _html_podcast_social_interactions(podcast_properties: {},
         '?replyto=' + episode_post_url + actor_str + '" target="_blank" ' + \
         'rel="nofollow noopener noreferrer">💬 ' + \
         translate['Leave a comment'] + '</a>\n' + \
+        '  <span itemprop="comment">\n' + \
         '  <a href="' + episode_post_url + '" target="_blank" ' + \
         'rel="nofollow noopener noreferrer">' + \
-        translate['View comments'] + '</a>\n' + \
+        translate['View comments'] + '</a>\n  </span>\n' + \
         '</center>\n'
     return podcast_str
 
