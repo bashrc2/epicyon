@@ -233,6 +233,9 @@ a:focus {
         padding: 10px;
         margin: 20px 30px;
     }
+    .chapters img {
+        width: 10%;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -310,6 +313,9 @@ a:focus {
         padding: 20px;
         margin: 30px 40px;
     }
+    .chapters img {
+        width: 15%;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -386,5 +392,8 @@ a:focus {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+    }
+    .chapters img {
+        width: 15%;
     }
 }
