@@ -529,9 +529,41 @@ def _add_music_tag(content: str, tag: str) -> str:
     return ':music: ' + content + ' ' + tag + ' '
 
 
+def _shorten_linked_urls(content: str) -> str:
+    """If content comes with a web link included then make sure
+    that it is short enough
+    """
+    if 'href=' not in content:
+        return content
+    if '>' not in content:
+        return content
+    if '<' not in content:
+        return content
+    sections = content.split('>')
+    ctr = 0
+    for section_text in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        if '<' not in section_text:
+            ctr += 1
+            continue
+        section_text = section_text.split('<')[0]
+        if ' ' in section_text:
+            continue
+        if len(section_text) > MAX_LINK_LENGTH:
+            content = content.replace('>' + section_text + '<',
+                                      '>' +
+                                      section_text[:MAX_LINK_LENGTH-1] + '<')
+        ctr += 1
+    return content
+
+
 def add_web_links(content: str) -> str:
     """Adds markup for web links
     """
+    content = _shorten_linked_urls(content)
+
     if ':' not in content:
         return content
 

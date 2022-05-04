@@ -3524,6 +3524,18 @@ def _test_web_links():
     print('test_web_links')
 
     example_text = \
+        '<p>Some text!</p><p><a href=\"https://videosite.whatever/video' + \
+        '/A3JpZMovL25kci1kZS32MGE0NCg4YB1lMLQwLTRkMGEtYkYxMS5kNmQ1MjJqY' + \
+        'WZjKzd\">https://videosite.whatever/video/A3JpZMovL25kci1kZS32' + \
+        'MGE0NCg4YB1lMLQwLTRkMGEtYkYxMS5kNmQ1MjJqYWZjKzd</a></p>'
+    linked_text = add_web_links(example_text)
+    expected_text = \
+        '<p>Some text!</p><p><a href="https://videosite.whatever/video/' + \
+        'A3JpZMovL25kci1kZS32MGE0NCg4YB1lMLQwLTRkMGEtYkYxMS5kNmQ1MjJqYW' + \
+        'ZjKzd">https://videosite.whatever/video/A3JpZM</a></p>'
+    assert linked_text == expected_text
+
+    example_text = \
         "<p>Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
