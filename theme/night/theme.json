@@ -74,5 +74,6 @@
     "header-font": "'solidaric'",
     "*font-family": "'solidaric'",
     "*src": "url('./fonts/solidaric.woff2') format('woff2')",
-    "**src": "url('./fonts/solidaric-italic.woff2') format('woff2')"
+    "**src": "url('./fonts/solidaric-italic.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }

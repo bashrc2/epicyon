@@ -98,5 +98,6 @@
     "time-color": "#9ad791",
     "place-color": "#9ad791",
     "event-color": "#9ad791",
-    "image-corners": "0%"
+    "image-corners": "0%",
+    "reply-icon-direction": "-1"
 }

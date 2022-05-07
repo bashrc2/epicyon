@@ -99,5 +99,6 @@
     "header-font": "'NimbusSanL'",
     "*font-family": "'NimbusSanL'",
     "*src": "url('./fonts/NimbusSanL.otf') format('opentype')",
-    "**src": "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
+    "**src": "url('./fonts/NimbusSanL-italic.otf') format('opentype')",
+    "reply-icon-direction": "-1"
 }

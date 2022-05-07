@@ -63,5 +63,6 @@
     "dropdown-bg-color": "#504e41",
     "header-font": "'Barlow-Regular'",
     "*font-family": "'Barlow-Regular'",
-    "*src": "url('fonts/Barlow-Regular.woff2') format('woff2')"
+    "*src": "url('fonts/Barlow-Regular.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }

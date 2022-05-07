@@ -87,5 +87,6 @@
     "search-banner-height-mobile": "15vh",
     "header-font": "'rainyhearts'",
     "*font-family": "'rainyhearts'",
-    "*src": "url('./fonts/rainyhearts.ttf') format('truetype')"
+    "*src": "url('./fonts/rainyhearts.ttf') format('truetype')",
+    "reply-icon-direction": "-1"
 }

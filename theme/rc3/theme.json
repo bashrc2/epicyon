@@ -99,5 +99,6 @@
     "*font-family": "'Montserrat-Regular'",
     "*src": "url('./fonts/Montserrat-Regular.ttf') format('truetype')",
     "**font-family": "'Orbitron'",
-    "**src": "url('./fonts/Orbitron.ttf') format('truetype')"
+    "**src": "url('./fonts/Orbitron.ttf') format('truetype')",
+    "reply-icon-direction": "-1"
 }
