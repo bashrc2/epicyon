@@ -36,5 +36,6 @@
     "time-vertical-align": "-10px",
     "header-font": "'Domestic_Manners'",
     "*font-family": "'Domestic_Manners'",
-    "*src": "url('./fonts/Domestic_Manners.woff2') format('woff2')"
+    "*src": "url('./fonts/Domestic_Manners.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }

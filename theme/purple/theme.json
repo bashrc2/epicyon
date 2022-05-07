@@ -79,5 +79,6 @@
     "event-color": "#f98bb0",
     "header-font": "'CheGuevaraTextSans-Regular'",
     "*font-family": "'CheGuevaraTextSans-Regular'",
-    "*src": "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
+    "*src": "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }

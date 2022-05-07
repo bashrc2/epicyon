@@ -85,5 +85,6 @@
     "gallery-text-color": "black",
     "header-font": "'ElectrumADFExp-Regular'",
     "*font-family": "'ElectrumADFExp-Regular'",
-    "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
+    "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')",
+    "reply-icon-direction": "-1"
 }

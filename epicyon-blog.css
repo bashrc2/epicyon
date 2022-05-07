@@ -54,6 +54,7 @@
     --header-font: 'Arial, Helvetica, sans-serif';
     --main-link-color-hover: #bbb;
     --rendering: normal;
+    --reply-icon-direction: -1;
 }
 
 @font-face {
@@ -402,6 +403,8 @@ a:focus {
     padding: 0 0;
     border-radius: 0;
     vertical-align: middle;
+    -ms-transform: scaleX(var(--reply-icon-direction));
+    transform: scaleX(var(--reply-icon-direction));
 }
 
 .container img.DMicon {
@@ -806,7 +809,7 @@ div.gallery img {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .cwButton {
@@ -1177,7 +1180,7 @@ div.gallery img {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .cwButton {
@@ -1539,7 +1542,7 @@ div.gallery img {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .cwButton {

@@ -216,6 +216,7 @@
     --vcard-icon-size-tiny: 80px;
     --diff-add: #FFFFFF;
     --diff-remove: #aaa;
+    --reply-icon-direction: -1;
 }
 
 @font-face {
@@ -682,7 +683,7 @@ a:focus {
 }
 
 .announceOrReply {
-    font-family:   var(--header-font);
+    font-family: var(--header-font);
 }
 
 .container img.announceOrReply {
@@ -692,6 +693,8 @@ a:focus {
     padding: 0 0;
     border-radius: 0;
     vertical-align: middle;
+    -ms-transform: scaleX(var(--reply-icon-direction));
+    transform: scaleX(var(--reply-icon-direction));
 }
 
 .container img.DMicon {
@@ -1484,7 +1487,7 @@ h3 {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
@@ -2256,7 +2259,7 @@ h3 {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
@@ -3031,7 +3034,7 @@ h3 {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {

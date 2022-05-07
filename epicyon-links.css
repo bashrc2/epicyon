@@ -75,6 +75,7 @@
     --banner-height-tiny: 10vh;
     --header-font: 'Arial, Helvetica, sans-serif';
     --rendering: normal;
+    --reply-icon-direction: -1;
 }
 
 @font-face {
@@ -398,6 +399,8 @@ h1 {
     padding: 0 0;
     border-radius: 0;
     vertical-align: middle;
+    -ms-transform: scaleX(var(--reply-icon-direction));
+    transform: scaleX(var(--reply-icon-direction));
 }
 
 .container img.DMicon {
@@ -1065,7 +1068,7 @@ aside .toggle-inside li {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
@@ -1551,7 +1554,7 @@ aside .toggle-inside li {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {
@@ -2029,7 +2032,7 @@ aside .toggle-inside li {
         opacity: 1.0;
         width: 80%;
         padding: 0px 0px;
-	margin: 0px 10%;
+        margin: 0px 10%;
         border-radius: var(--avatar-rounding);
     }
     .buttonevent {

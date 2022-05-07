@@ -89,5 +89,6 @@
     "event-color": "#33390d",
     "header-font": "'LcdSolid'",
     "*font-family": "'LcdSolid'",
-    "*src": "url('./fonts/LcdSolid.woff2') format('woff2')"
+    "*src": "url('./fonts/LcdSolid.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }

@@ -256,5 +256,6 @@
     "post-separator-margin-bottom": "0",
     "header-font": "Arial, Helvetica, sans-serif",
     "diff-add": "#FFFFFF",
-    "diff-remove": "#aaa"
+    "diff-remove": "#aaa",
+    "reply-icon-direction": "-1"
 }

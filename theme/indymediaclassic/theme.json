@@ -91,5 +91,6 @@
     "login-button-color": "red",
     "welcome-button-color": "red",
     "login-button-fg-color": "white",
-    "welcome-button-fg-color": "white"
+    "welcome-button-fg-color": "white",
+    "reply-icon-direction": "-1"
 }
