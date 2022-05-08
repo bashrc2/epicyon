@@ -2025,7 +2025,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
            ':noboosts:' in content_str or \
            ':no_boost:' in content_str or \
            ':no_boosts:' in content_str or \
-           ':boosts_no:' in content_str:
+           ':boosts_no:' in content_str or \
+           'dont_repeat' in content_str or \
+           'dont_announce' in content_str or \
+           'dont_boost' in content_str:
             announce_str = ''
         # does an emoji indicate a no replies preference?
         # if so then don't show the reply icon
@@ -2034,7 +2037,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
            ':noreplies:' in content_str or \
            ':no_reply:' in content_str or \
            ':no_replies:' in content_str or \
-           ':replies_no:' in content_str:
+           ':replies_no:' in content_str or \
+           'dont_at_me' in content_str:
             reply_str = ''
 
     new_footer_str = \
