@@ -1664,11 +1664,17 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       screenreader, system_language, espeak,
                                       page_number,
                                       new_replies_exist, new_dms_exist)
-            elif command_str.startswith('read ') or command_str == 'read':
-                if command_str == 'read':
+            elif (command_str.startswith('read ') or
+                  command_str == 'read' or
+                  command_str == 'show'):
+                if command_str == 'read' or \
+                   command_str == 'show':
                     post_index_str = '1'
                 else:
-                    post_index_str = command_str.split('read ')[1]
+                    if 'read ' in command_str:
+                        post_index_str = command_str.split('read ')[1]
+                    else:
+                        post_index_str = command_str.split('show ')[1]
                 if box_json and post_index_str.isdigit():
                     _desktop_clear_screen()
                     _desktop_show_banner()
