@@ -16,6 +16,8 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import disallow_announce
+from utils import disallow_reply
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import get_full_domain
@@ -1757,27 +1759,34 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 print('')
             elif command_str in ('reply', 'r'):
                 if post_json_object:
-                    if post_json_object.get('id'):
-                        post_id = post_json_object['id']
-                        subject = None
-                        if post_json_object['object'].get('summary'):
-                            subject = post_json_object['object']['summary']
-                        conversation_id = None
-                        if post_json_object['object'].get('conversation'):
-                            conversation_id = \
-                                post_json_object['object']['conversation']
-                        session_reply = create_session(proxy_type)
-                        _desktop_reply_to_post(session_reply, post_id,
-                                               base_dir, nickname, password,
-                                               domain, port, http_prefix,
-                                               cached_webfingers, person_cache,
-                                               debug, subject,
-                                               screenreader, system_language,
-                                               languages_understood,
-                                               espeak, conversation_id,
-                                               low_bandwidth,
-                                               content_license_url,
-                                               signing_priv_key_pem)
+                    post_content = ''
+                    if post_json_object['object'].get('content'):
+                        post_content = post_json_object['object']['content']
+                    if not disallow_reply(post_content):
+                        if post_json_object.get('id'):
+                            post_id = post_json_object['id']
+                            subject = None
+                            if post_json_object['object'].get('summary'):
+                                subject = post_json_object['object']['summary']
+                            conversation_id = None
+                            if post_json_object['object'].get('conversation'):
+                                conversation_id = \
+                                    post_json_object['object']['conversation']
+                            session_reply = create_session(proxy_type)
+                            _desktop_reply_to_post(session_reply, post_id,
+                                                   base_dir, nickname,
+                                                   password,
+                                                   domain, port, http_prefix,
+                                                   cached_webfingers,
+                                                   person_cache,
+                                                   debug, subject,
+                                                   screenreader,
+                                                   system_language,
+                                                   languages_understood,
+                                                   espeak, conversation_id,
+                                                   low_bandwidth,
+                                                   content_license_url,
+                                                   signing_priv_key_pem)
                 refresh_timeline = True
                 print('')
             elif (command_str == 'post' or command_str == 'p' or
@@ -2130,25 +2139,30 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_json_object = \
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
-                    if post_json_object.get('id'):
-                        post_id = post_json_object['id']
-                        announce_actor = \
-                            post_json_object['object']['attributedTo']
-                        say_str = 'Announcing post by ' + \
-                            get_nickname_from_actor(announce_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        session_announce = create_session(proxy_type)
-                        send_announce_via_server(base_dir, session_announce,
-                                                 nickname, password,
-                                                 domain, port,
-                                                 http_prefix, post_id,
-                                                 cached_webfingers,
-                                                 person_cache,
-                                                 True, __version__,
-                                                 signing_priv_key_pem)
-                        refresh_timeline = True
+                    post_content = ''
+                    if post_json_object['object'].get('content'):
+                        post_content = post_json_object['object']['content']
+                    if not disallow_announce(post_content):
+                        if post_json_object.get('id'):
+                            post_id = post_json_object['id']
+                            announce_actor = \
+                                post_json_object['object']['attributedTo']
+                            say_str = 'Announcing post by ' + \
+                                get_nickname_from_actor(announce_actor)
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            session_announce = create_session(proxy_type)
+                            send_announce_via_server(base_dir,
+                                                     session_announce,
+                                                     nickname, password,
+                                                     domain, port,
+                                                     http_prefix, post_id,
+                                                     cached_webfingers,
+                                                     person_cache,
+                                                     True, __version__,
+                                                     signing_priv_key_pem)
+                    refresh_timeline = True
                 print('')
             elif (command_str.startswith('unannounce') or
                   command_str.startswith('undo announce') or

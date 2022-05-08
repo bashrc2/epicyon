@@ -3614,3 +3614,41 @@ def is_i2p_request(calling_domain: str, referer_domain: str,
     if referer_domain.endswith('.i2p'):
         return True
     return False
+
+
+def disallow_announce(content: str) -> bool:
+    """Are announces/boosts not allowed for the given post?
+    """
+    disallow_strings = (
+        ':boost_no:',
+        ':noboost:',
+        ':noboosts:',
+        ':no_boost:',
+        ':no_boosts:',
+        ':boosts_no:',
+        'dont_repeat',
+        'dont_announce',
+        'dont_boost'
+    )
+    for diss in disallow_strings:
+        if diss in content:
+            return True
+    return False
+
+
+def disallow_reply(content: str) -> bool:
+    """Are replies not allowed for the given post?
+    """
+    disallow_strings = (
+        ':reply_no:',
+        ':noreply:',
+        ':noreplies:',
+        ':no_reply:',
+        ':no_replies:',
+        ':replies_no:',
+        'dont_at_me'
+    )
+    for diss in disallow_strings:
+        if diss in content:
+            return True
+    return False
