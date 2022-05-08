@@ -2505,6 +2505,8 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     if 'T' not in published:
         return False
     if 'Z' not in published:
+        print('REJECT inbox post does not use Zulu time format. ' +
+              published)
         return False
     if '.' in published:
         # converts 2022-03-30T17:37:58.734Z into 2022-03-30T17:37:58Z

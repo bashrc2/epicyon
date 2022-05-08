@@ -2753,6 +2753,8 @@ def is_recent_post(post_json_object: {}, max_days: int) -> bool:
     recently = days_since_epoch - max_days
 
     published_date_str = post_json_object['object']['published']
+    if '.' in published_date_str:
+        published_date_str = published_date_str.split('.')[0] + 'Z'
     try:
         published_date = \
             datetime.datetime.strptime(published_date_str,
