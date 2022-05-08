@@ -2443,8 +2443,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 notification_sounds = False
             elif command_str in ('speak',
                                  'screen reader on',
+                                 'speak on',
                                  'speaker on',
                                  'talker on',
+                                 'talk on',
                                  'reader on'):
                 if original_screen_reader:
                     screenreader = original_screen_reader
