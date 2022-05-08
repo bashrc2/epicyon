@@ -119,6 +119,8 @@ def _desktop_help() -> None:
           'Previous page in the timeline')
     print(indent + 'read [post number]                    ' +
           'Read a post from a timeline')
+    print(indent + 'show [post number]                    ' +
+          'Read a post from a timeline')
     print(indent + 'open [post number]                    ' +
           'Open web links within a timeline post')
     print(indent + 'profile [post number or handle]       ' +
@@ -1665,6 +1667,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       page_number,
                                       new_replies_exist, new_dms_exist)
             elif (command_str.startswith('read ') or
+                  command_str.startswith('show ') or
                   command_str == 'read' or
                   command_str == 'show'):
                 if command_str == 'read' or \
