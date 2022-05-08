@@ -16,6 +16,8 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import disallow_announce
+from utils import disallow_reply
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import get_full_domain
@@ -116,6 +118,8 @@ def _desktop_help() -> None:
     print(indent + 'prev                                  ' +
           'Previous page in the timeline')
     print(indent + 'read [post number]                    ' +
+          'Read a post from a timeline')
+    print(indent + 'show [post number]                    ' +
           'Read a post from a timeline')
     print(indent + 'open [post number]                    ' +
           'Open web links within a timeline post')
@@ -1662,11 +1666,18 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       screenreader, system_language, espeak,
                                       page_number,
                                       new_replies_exist, new_dms_exist)
-            elif command_str.startswith('read ') or command_str == 'read':
-                if command_str == 'read':
+            elif (command_str.startswith('read ') or
+                  command_str.startswith('show ') or
+                  command_str == 'read' or
+                  command_str == 'show'):
+                if command_str == 'read' or \
+                   command_str == 'show':
                     post_index_str = '1'
                 else:
-                    post_index_str = command_str.split('read ')[1]
+                    if 'read ' in command_str:
+                        post_index_str = command_str.split('read ')[1]
+                    else:
+                        post_index_str = command_str.split('show ')[1]
                 if box_json and post_index_str.isdigit():
                     _desktop_clear_screen()
                     _desktop_show_banner()
@@ -1757,27 +1768,34 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 print('')
             elif command_str in ('reply', 'r'):
                 if post_json_object:
-                    if post_json_object.get('id'):
-                        post_id = post_json_object['id']
-                        subject = None
-                        if post_json_object['object'].get('summary'):
-                            subject = post_json_object['object']['summary']
-                        conversation_id = None
-                        if post_json_object['object'].get('conversation'):
-                            conversation_id = \
-                                post_json_object['object']['conversation']
-                        session_reply = create_session(proxy_type)
-                        _desktop_reply_to_post(session_reply, post_id,
-                                               base_dir, nickname, password,
-                                               domain, port, http_prefix,
-                                               cached_webfingers, person_cache,
-                                               debug, subject,
-                                               screenreader, system_language,
-                                               languages_understood,
-                                               espeak, conversation_id,
-                                               low_bandwidth,
-                                               content_license_url,
-                                               signing_priv_key_pem)
+                    post_content = ''
+                    if post_json_object['object'].get('content'):
+                        post_content = post_json_object['object']['content']
+                    if not disallow_reply(post_content):
+                        if post_json_object.get('id'):
+                            post_id = post_json_object['id']
+                            subject = None
+                            if post_json_object['object'].get('summary'):
+                                subject = post_json_object['object']['summary']
+                            conversation_id = None
+                            if post_json_object['object'].get('conversation'):
+                                conversation_id = \
+                                    post_json_object['object']['conversation']
+                            session_reply = create_session(proxy_type)
+                            _desktop_reply_to_post(session_reply, post_id,
+                                                   base_dir, nickname,
+                                                   password,
+                                                   domain, port, http_prefix,
+                                                   cached_webfingers,
+                                                   person_cache,
+                                                   debug, subject,
+                                                   screenreader,
+                                                   system_language,
+                                                   languages_understood,
+                                                   espeak, conversation_id,
+                                                   low_bandwidth,
+                                                   content_license_url,
+                                                   signing_priv_key_pem)
                 refresh_timeline = True
                 print('')
             elif (command_str == 'post' or command_str == 'p' or
@@ -2130,25 +2148,30 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_json_object = \
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
-                    if post_json_object.get('id'):
-                        post_id = post_json_object['id']
-                        announce_actor = \
-                            post_json_object['object']['attributedTo']
-                        say_str = 'Announcing post by ' + \
-                            get_nickname_from_actor(announce_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        session_announce = create_session(proxy_type)
-                        send_announce_via_server(base_dir, session_announce,
-                                                 nickname, password,
-                                                 domain, port,
-                                                 http_prefix, post_id,
-                                                 cached_webfingers,
-                                                 person_cache,
-                                                 True, __version__,
-                                                 signing_priv_key_pem)
-                        refresh_timeline = True
+                    post_content = ''
+                    if post_json_object['object'].get('content'):
+                        post_content = post_json_object['object']['content']
+                    if not disallow_announce(post_content):
+                        if post_json_object.get('id'):
+                            post_id = post_json_object['id']
+                            announce_actor = \
+                                post_json_object['object']['attributedTo']
+                            say_str = 'Announcing post by ' + \
+                                get_nickname_from_actor(announce_actor)
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            session_announce = create_session(proxy_type)
+                            send_announce_via_server(base_dir,
+                                                     session_announce,
+                                                     nickname, password,
+                                                     domain, port,
+                                                     http_prefix, post_id,
+                                                     cached_webfingers,
+                                                     person_cache,
+                                                     True, __version__,
+                                                     signing_priv_key_pem)
+                    refresh_timeline = True
                 print('')
             elif (command_str.startswith('unannounce') or
                   command_str.startswith('undo announce') or
@@ -2420,8 +2443,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 notification_sounds = False
             elif command_str in ('speak',
                                  'screen reader on',
+                                 'speak on',
                                  'speaker on',
                                  'talker on',
+                                 'talk on',
                                  'reader on'):
                 if original_screen_reader:
                     screenreader = original_screen_reader

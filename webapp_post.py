@@ -25,6 +25,8 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import disallow_announce
+from utils import disallow_reply
 from utils import convert_published_to_local_timezone
 from utils import remove_hash_from_post_id
 from utils import remove_html
@@ -2020,21 +2022,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if content_str:
         # does an emoji indicate a no boost preference?
         # if so then don't show the repeat/announce icon
-        if ':boost_no:' in content_str or \
-           ':noboost:' in content_str or \
-           ':noboosts:' in content_str or \
-           ':no_boost:' in content_str or \
-           ':no_boosts:' in content_str or \
-           ':boosts_no:' in content_str:
+        if disallow_announce(content_str):
             announce_str = ''
         # does an emoji indicate a no replies preference?
         # if so then don't show the reply icon
-        if ':reply_no:' in content_str or \
-           ':noreply:' in content_str or \
-           ':noreplies:' in content_str or \
-           ':no_reply:' in content_str or \
-           ':no_replies:' in content_str or \
-           ':replies_no:' in content_str:
+        if disallow_reply(content_str):
             reply_str = ''
 
     new_footer_str = \
