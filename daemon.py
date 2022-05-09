@@ -14049,7 +14049,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _get_style_sheet(self, calling_domain: str, path: str,
+    def _get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
                          getreq_start_time) -> bool:
         """Returns the content of a css file
         """
@@ -14057,6 +14057,7 @@ class PubServer(BaseHTTPRequestHandler):
         # eg. /my/path/file.css becomes file.css
         if '/' in path:
             path = path.split('/')[-1]
+        path = base_dir + '/' + path
         if os.path.isfile(path):
             tries = 0
             while tries < 5:
@@ -15431,7 +15432,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
-            if self._get_style_sheet(calling_domain, self.path,
+            if self._get_style_sheet(self.server.base_dir,
+                                     calling_domain, self.path,
                                      getreq_start_time):
                 return
 
