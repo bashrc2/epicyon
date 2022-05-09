@@ -2055,6 +2055,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     if not is_pgp_encrypted(content_str):
         if not is_patch:
+            # remove any tabs
+            content_str = \
+                content_str.replace('\t', '').replace('\r', '')
             # Add bold text
             if bold_reading and \
                not displaying_ciphertext and \
