@@ -302,17 +302,20 @@ def auto_translate_post(base_dir: str, post_json_object: {},
     lang_list = \
         libretranslate_languages(libretranslate_url, libretranslate_api_key)
     for lang in lang_list:
+        content = None
         if msg_object['contentMap'].get(lang):
             content = msg_object['contentMap'][lang]
+        if not content:
+            continue
+        translated_text = \
+            libretranslate(libretranslate_url, content,
+                           lang, system_language,
+                           libretranslate_api_key)
+        if translated_text:
+            if remove_html(translated_text) == remove_html(content):
+                return content
             translated_text = \
-                libretranslate(libretranslate_url, content,
-                               lang, system_language,
-                               libretranslate_api_key)
-            if translated_text:
-                if remove_html(translated_text) == remove_html(content):
-                    return content
-                translated_text = \
-                    '<p>' + translate['Translated'].upper() + '</p>' + \
-                    translated_text
-            return translated_text
+                '<p>' + translate['Translated'].upper() + '</p>' + \
+                translated_text
+        return translated_text
     return ''
