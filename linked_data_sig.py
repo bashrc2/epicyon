@@ -9,6 +9,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Security"
 
+import random
 import base64
 import hashlib
 from datetime import datetime
@@ -100,6 +101,7 @@ def generate_json_signature(doc: {}, private_key_pem: str) -> None:
         return
     options = {
         "type": "RsaSignature2017",
+        "nonce": '%030x' % random.randrange(16**64),
         "creator": doc["actor"] + "#main-key",
         "created": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
     }
