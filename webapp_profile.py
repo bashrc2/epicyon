@@ -254,7 +254,7 @@ def html_profile_after_search(css_cache: {},
             if len(profile_description.split('<br>')) > 2:
                 profile_description_short = ''
     # keep the profile description short
-    if len(profile_description_short) > 256:
+    if len(profile_description_short) > 2048:
         profile_description_short = ''
     # remove formatting from profile description used on title
     avatar_description = ''
@@ -833,7 +833,7 @@ def html_profile(signing_priv_key_pem: str,
                 profile_description_short = ''
                 profile_description = profile_description.replace('<br>', '\n')
     # keep the profile description short
-    if len(profile_description_short) > 256:
+    if len(profile_description_short) > 2048:
         profile_description_short = ''
     # remove formatting from profile description used on title
     avatar_description = ''
