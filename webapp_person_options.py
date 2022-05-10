@@ -203,9 +203,11 @@ def html_person_options(default_timeline: str,
             ': <a href="mailto:' + \
             email_address + '">' + remove_html(email_address) + '</a></p>\n'
     if web_address:
+        web_str = remove_html(web_address)
+        if '://' not in web_str:
+            web_str = 'https://' + web_str
         options_str += \
-            '<p class="imText">🌐 ' + \
-            '<a href="' + remove_html(web_address) + '">' + \
+            '<p class="imText">🌐 <a href="' + web_str + '">' + \
             web_address + '</a></p>\n'
     if xmpp_address:
         options_str += \
