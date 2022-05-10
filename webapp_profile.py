@@ -254,7 +254,7 @@ def html_profile_after_search(css_cache: {},
             if len(profile_description.split('<br>')) > 2:
                 profile_description_short = ''
     # keep the profile description short
-    if len(profile_description_short) > 256:
+    if len(profile_description_short) > 2048:
         profile_description_short = ''
     # remove formatting from profile description used on title
     avatar_description = ''
@@ -833,7 +833,7 @@ def html_profile(signing_priv_key_pem: str,
                 profile_description_short = ''
                 profile_description = profile_description.replace('<br>', '\n')
     # keep the profile description short
-    if len(profile_description_short) > 256:
+    if len(profile_description_short) > 2048:
         profile_description_short = ''
     # remove formatting from profile description used on title
     avatar_description = ''
@@ -2237,6 +2237,7 @@ def html_edit_profile(server, css_cache: {}, translate: {},
                 actor_json['summary'].replace('<p>', '').replace('</p>', '')
             if is_filtered(base_dir, nickname, domain, bio_str):
                 bio_str = ''
+            bio_str = remove_html(bio_str)
         if actor_json.get('manuallyApprovesFollowers'):
             if actor_json['manuallyApprovesFollowers']:
                 manually_approves_followers = 'checked'

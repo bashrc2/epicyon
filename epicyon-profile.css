@@ -1115,6 +1115,15 @@ h3 {
         font-size: var(--font-size);
         color: var(--title-color);
     }
+    figcaption img.emojiheader {
+        float: none;
+        width: 25px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: top;
+    }
     .hashtagswarm {
         font-size: var(--hashtag-size1);
         font-family: Arial, Helvetica, sans-serif;
@@ -1907,6 +1916,15 @@ h3 {
     blockquote {
         font-size: var(--quote-font-size-mobile);
     }
+    figcaption img.emojiheader {
+        float: none;
+        width: 50px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: top;
+    }
     .hashtagswarm {
         font-size: var(--hashtag-size2);
         font-family: Arial, Helvetica, sans-serif;
@@ -2681,6 +2699,15 @@ h3 {
     }
     blockquote {
         font-size: var(--quote-font-size-tiny);
+    }
+    figcaption img.emojiheader {
+        float: none;
+        width: 50px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: top;
     }
     .hashtagswarm {
         font-size: var(--font-size2);
