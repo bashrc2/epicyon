@@ -3880,9 +3880,9 @@ def _test_jsonld():
     assert signed_document
     assert signed_document.get('signature')
     assert signed_document['signature'].get('signatureValue')
+    assert signed_document['signature'].get('nonce')
     assert signed_document['signature'].get('type')
     assert len(signed_document['signature']['signatureValue']) > 50
-    # print str(signed_document['signature'])
     assert signed_document['signature']['type'] == 'RsaSignature2017'
     assert verify_json_signature(signed_document, public_key_pem)
 
@@ -3912,6 +3912,7 @@ def _test_jsonld():
     assert len(str(signed_document['signature']['signatureValue'])) > 340
     assert (signed_document['signature']['signatureValue'] !=
             signed_document2['signature']['signatureValue'])
+    print('json-ld tests passed')
 
 
 def _test_site_active():
