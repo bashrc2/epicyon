@@ -2237,6 +2237,7 @@ def html_edit_profile(server, css_cache: {}, translate: {},
                 actor_json['summary'].replace('<p>', '').replace('</p>', '')
             if is_filtered(base_dir, nickname, domain, bio_str):
                 bio_str = ''
+            bio_str = remove_html(bio_str)
         if actor_json.get('manuallyApprovesFollowers'):
             if actor_json['manuallyApprovesFollowers']:
                 manually_approves_followers = 'checked'
