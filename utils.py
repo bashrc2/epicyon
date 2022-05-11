@@ -3689,9 +3689,9 @@ def get_attachment_property_value(property_value: {}) -> (str, str):
         prop_value = property_value['value']
         prop_value_name = 'value'
     elif property_value.get('http://schema.org#value'):
-        prop_value = property_value['http://schema.org#value']
         prop_value_name = 'http://schema.org#value'
+        prop_value = property_value[prop_value_name]
     elif property_value.get('https://schema.org#value'):
-        prop_value = property_value['https://schema.org#value']
         prop_value_name = 'https://schema.org#value'
+        prop_value = property_value[prop_value_name]
     return prop_value_name, prop_value
