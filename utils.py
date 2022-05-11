@@ -1118,10 +1118,10 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
                     continue
                 if name_value.lower() == \
                    translate['gender'].lower():
-                    bio_found = name_value
+                    bio_found = tag[prop_value_name]
                     break
                 if name_value.lower().startswith(pronoun_str):
-                    bio_found = name_value
+                    bio_found = tag[prop_value_name]
                     break
             # the field name could be anything,
             # just look at the value
