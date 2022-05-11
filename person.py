@@ -232,7 +232,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
                     "@id": "as:movedTo",
                     "@type": "@id"
                 },
-                "schema": "http://schema.org#",
+                "schema": "http://schema.org/",
                 "PropertyValue": "schema:PropertyValue",
                 "value": "schema:value",
                 "IdentityProof": "toot:IdentityProof",
@@ -338,7 +338,7 @@ def get_default_person_context() -> str:
         'messageType': 'toot:messageType',
         'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
         'publicKeyBase64': 'toot:publicKeyBase64',
-        'schema': 'http://schema.org#',
+        'schema': 'http://schema.org/',
         'suspended': 'toot:suspended',
         'toot': 'http://joinmastodon.org/ns#',
         'value': 'schema:value',
