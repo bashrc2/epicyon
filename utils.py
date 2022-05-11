@@ -1106,14 +1106,22 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
             for tag in tags_list:
                 if not isinstance(tag, dict):
                     continue
-                if not tag.get('name') or not tag.get('value'):
+                name_value = None
+                if tag.get('name'):
+                    name_value = tag['name']
+                if tag.get('schema:name'):
+                    name_value = tag['schema:name']
+                if not name_value:
                     continue
-                if tag['name'].lower() == \
+                prop_value_name, _ = get_attachment_property_value(tag)
+                if not prop_value_name:
+                    continue
+                if name_value.lower() == \
                    translate['gender'].lower():
-                    bio_found = tag['value']
+                    bio_found = name_value
                     break
-                if tag['name'].lower().startswith(pronoun_str):
-                    bio_found = tag['value']
+                if name_value.lower().startswith(pronoun_str):
+                    bio_found = name_value
                     break
             # the field name could be anything,
             # just look at the value
@@ -1121,9 +1129,13 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
                 for tag in tags_list:
                     if not isinstance(tag, dict):
                         continue
-                    if not tag.get('name') or not tag.get('value'):
+                    if not tag.get('name') and not tag.get('schema:name'):
                         continue
-                    gender = _gender_from_string(translate, tag['value'])
+                    prop_value_name, _ = get_attachment_property_value(tag)
+                    if not prop_value_name:
+                        continue
+                    gender = \
+                        _gender_from_string(translate, tag[prop_value_name])
                     if gender:
                         return gender
     # if not then use the bio

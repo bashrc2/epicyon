@@ -802,11 +802,16 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         )
         for attach_json in actor_json['attachment']:
             if not attach_json.get('name'):
+                if not attach_json.get('schema:name'):
+                    continue
+            prop_value_name, _ = get_attachment_property_value(attach_json)
+            if not prop_value_name:
                 continue
-            if not attach_json.get('value'):
-                continue
-            name = attach_json['name'].lower()
-            value = attach_json['value']
+            if attach_json.get('name'):
+                name = attach_json['name'].lower()
+            else:
+                name = attach_json['schema:name'].lower()
+            value = attach_json[prop_value_name]
             for og_tag in og_tags:
                 if name != og_tag:
                     continue

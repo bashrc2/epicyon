@@ -238,7 +238,11 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = pgp_pub_key
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = pgp_pub_key
         return
 
     newpgp_pub_key = {
@@ -297,7 +301,11 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = fingerprint.strip()
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = fingerprint.strip()
         return
 
     newpgp_fingerprint = {
@@ -509,12 +517,13 @@ def _get_pgp_public_key_from_actor(signing_priv_key_pem: str,
     for tag in actor_json['attachment']:
         if not isinstance(tag, dict):
             continue
-        if not tag.get('value'):
+        prop_value_name, _ = get_attachment_property_value(tag)
+        if not prop_value_name:
             continue
-        if not isinstance(tag['value'], str):
+        if not isinstance(tag[prop_value_name], str):
             continue
-        if contains_pgp_public_key(tag['value']):
-            return tag['value']
+        if contains_pgp_public_key(tag[prop_value_name]):
+            return tag[prop_value_name]
     return None
 
 
