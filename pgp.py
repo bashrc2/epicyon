@@ -30,6 +30,9 @@ from cwtch import get_cwtch_address
 from blog import get_blog_address
 
 
+from utils import get_attachment_property_value
+
+
 def get_email_address(actor_json: {}) -> str:
     """Returns the email address for the given actor
     """
@@ -47,15 +50,17 @@ def get_email_address(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '@' not in property_value['value']:
+        if '@' not in property_value[prop_value_name]:
             continue
-        if '.' not in property_value['value']:
+        if '.' not in property_value[prop_value_name]:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -76,13 +81,15 @@ def get_pgp_pub_key(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        if not contains_pgp_public_key(property_value['value']):
+        if not contains_pgp_public_key(property_value[prop_value_name]):
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -103,13 +110,15 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        if len(property_value['value']) < 10:
+        if len(property_value[prop_value_name]) < 10:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -164,7 +173,11 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = email_address
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = email_address
         return
 
     new_email_address = {

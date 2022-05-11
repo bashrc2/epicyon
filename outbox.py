@@ -15,6 +15,7 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from utils import get_attachment_property_value
 from utils import get_account_timezone
 from utils import has_object_string_type
 from utils import get_base_content_from_post
@@ -141,7 +142,9 @@ def _person_receive_update_outbox(recent_posts_cache: {},
                 continue
             if not new_property_value.get('type'):
                 continue
-            if not new_property_value.get('value'):
+            prop_value_name, _ = \
+                get_attachment_property_value(new_property_value)
+            if not prop_value_name:
                 continue
             if new_property_value['type'] != 'PropertyValue':
                 continue
@@ -161,10 +164,10 @@ def _person_receive_update_outbox(recent_posts_cache: {},
                         actor_json['attachment'][attach_idx]['schema:name']
                 if attach_name != name_value:
                     continue
-                if actor_json['attachment'][attach_idx]['value'] != \
-                   new_property_value['value']:
-                    actor_json['attachment'][attach_idx]['value'] = \
-                        new_property_value['value']
+                if actor_json['attachment'][attach_idx][prop_value_name] != \
+                   new_property_value[prop_value_name]:
+                    actor_json['attachment'][attach_idx][prop_value_name] = \
+                        new_property_value[prop_value_name]
                     actor_changed = True
                 found = True
                 break
@@ -172,7 +175,7 @@ def _person_receive_update_outbox(recent_posts_cache: {},
                 actor_json['attachment'].append({
                     "name": name_value,
                     "type": "PropertyValue",
-                    "value": new_property_value['value']
+                    "value": new_property_value[prop_value_name]
                 })
                 actor_changed = True
     # save actor to file

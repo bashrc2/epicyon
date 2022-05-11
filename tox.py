@@ -8,6 +8,9 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
+from utils import get_attachment_property_value
+
+
 def get_tox_address(actor_json: {}) -> str:
     """Returns tox address for the given actor
     """
@@ -25,24 +28,28 @@ def get_tox_address(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = property_value['value'].strip()
-        if len(property_value['value']) != 76:
+        property_value[prop_value_name] = \
+            property_value[prop_value_name].strip()
+        if len(property_value[prop_value_name]) != 76:
             continue
-        if property_value['value'].upper() != property_value['value']:
+        if property_value[prop_value_name].upper() != \
+           property_value[prop_value_name]:
             continue
-        if '"' in property_value['value']:
+        if '"' in property_value[prop_value_name]:
             continue
-        if ' ' in property_value['value']:
+        if ' ' in property_value[prop_value_name]:
             continue
-        if ',' in property_value['value']:
+        if ',' in property_value[prop_value_name]:
             continue
-        if '.' in property_value['value']:
+        if '.' in property_value[prop_value_name]:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -104,7 +111,11 @@ def set_tox_address(actor_json: {}, tox_address: str) -> None:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = tox_address
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = tox_address
         return
 
     new_tox_address = {

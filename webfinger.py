@@ -12,6 +12,7 @@ import urllib.parse
 from session import get_json
 from cache import store_webfinger_in_cache
 from cache import get_webfinger_from_cache
+from utils import get_attachment_property_value
 from utils import get_full_domain
 from utils import load_json
 from utils import load_json_onionify
@@ -433,12 +434,14 @@ def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
 
-        new_value = property_value['value'].strip()
+        new_value = property_value[prop_value_name].strip()
         if '://' in new_value:
             new_value = new_value.split('://')[1]
 

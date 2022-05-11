@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from utils import get_attachment_property_value
 from utils import is_account_dir
 from utils import remove_html
 from utils import get_protocol_prefixes
@@ -228,7 +229,11 @@ def _set_actor_property_url(actor_json: {},
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = url
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = url
         return
 
     new_address = {

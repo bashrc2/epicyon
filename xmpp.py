@@ -8,6 +8,9 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
+from utils import get_attachment_property_value
+
+
 def get_xmpp_address(actor_json: {}) -> str:
     """Returns xmpp address for the given actor
     """
@@ -26,15 +29,17 @@ def get_xmpp_address(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '@' not in property_value['value']:
+        if '@' not in property_value[prop_value_name]:
             continue
-        if '"' in property_value['value']:
+        if '"' in property_value[prop_value_name]:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -92,7 +97,11 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = xmpp_address
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = xmpp_address
         return
 
     new_xmpp_address = {

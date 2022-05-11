@@ -8,6 +8,9 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
+from utils import get_attachment_property_value
+
+
 def get_enigma_pub_key(actor_json: {}) -> str:
     """Returns Enigma public key for the given actor
     """
@@ -25,11 +28,13 @@ def get_enigma_pub_key(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -78,7 +83,11 @@ def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = enigma_pub_key
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = enigma_pub_key
         return
 
     new_enigma_pub_key = {

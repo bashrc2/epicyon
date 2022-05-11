@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import re
+from utils import get_attachment_property_value
 
 
 def get_cwtch_address(actor_json: {}) -> str:
@@ -27,22 +28,25 @@ def get_cwtch_address(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, prop_value = \
+            get_attachment_property_value(property_value)
+        if not prop_value:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = property_value['value'].strip()
-        if len(property_value['value']) < 2:
+        property_value[prop_value_name] = \
+            property_value[prop_value_name].strip()
+        if len(property_value[prop_value_name]) < 2:
             continue
-        if '"' in property_value['value']:
+        if '"' in property_value[prop_value_name]:
             continue
-        if ' ' in property_value['value']:
+        if ' ' in property_value[prop_value_name]:
             continue
-        if ',' in property_value['value']:
+        if ',' in property_value[prop_value_name]:
             continue
-        if '.' in property_value['value']:
+        if '.' in property_value[prop_value_name]:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -96,7 +100,11 @@ def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = cwtch_address
+        prop_value_name, prop_value = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = cwtch_address
         return
 
     new_cwtch_address = {
