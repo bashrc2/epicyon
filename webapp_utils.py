@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from utils import get_attachment_property_value
 from utils import is_account_dir
 from utils import remove_html
 from utils import get_protocol_prefixes
@@ -183,11 +184,16 @@ def _set_actor_property_url(actor_json: {},
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith(property_name_lower):
+        if not name_value.lower().startswith(property_name_lower):
             continue
         property_found = property_value
         break
@@ -210,15 +216,24 @@ def _set_actor_property_url(actor_json: {},
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith(property_name_lower):
+        if not name_value.lower().startswith(property_name_lower):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = url
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = url
         return
 
     new_address = {
@@ -787,11 +802,16 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         )
         for attach_json in actor_json['attachment']:
             if not attach_json.get('name'):
+                if not attach_json.get('schema:name'):
+                    continue
+            prop_value_name, _ = get_attachment_property_value(attach_json)
+            if not prop_value_name:
                 continue
-            if not attach_json.get('value'):
-                continue
-            name = attach_json['name'].lower()
-            value = attach_json['value']
+            if attach_json.get('name'):
+                name = attach_json['name'].lower()
+            else:
+                name = attach_json['schema:name'].lower()
+            value = attach_json[prop_value_name]
             for og_tag in og_tags:
                 if name != og_tag:
                     continue

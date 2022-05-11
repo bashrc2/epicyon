@@ -15,6 +15,7 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from utils import get_attachment_property_value
 from utils import get_account_timezone
 from utils import has_object_string_type
 from utils import get_base_content_from_post
@@ -130,38 +131,51 @@ def _person_receive_update_outbox(recent_posts_cache: {},
     # update fields within actor
     if 'attachment' in updated_actor_json:
         for new_property_value in updated_actor_json['attachment']:
-            if not new_property_value.get('name'):
+            name_value = None
+            if new_property_value.get('name'):
+                name_value = new_property_value['name']
+            elif new_property_value.get('schema:name'):
+                name_value = new_property_value['schema:name']
+            if not name_value:
                 continue
-            if new_property_value['name'] not in updatable_attachments:
+            if name_value not in updatable_attachments:
                 continue
             if not new_property_value.get('type'):
                 continue
-            if not new_property_value.get('value'):
+            prop_value_name, _ = \
+                get_attachment_property_value(new_property_value)
+            if not prop_value_name:
                 continue
-            if new_property_value['type'] != 'PropertyValue':
+            if not new_property_value['type'].endswith('PropertyValue'):
                 continue
             if 'attachment' not in actor_json:
                 continue
             found = False
             for attach_idx, _ in enumerate(actor_json['attachment']):
-                if actor_json['attachment'][attach_idx]['type'] != \
-                   'PropertyValue':
+                attach_type = actor_json['attachment'][attach_idx]['type']
+                if not attach_type.endswith('PropertyValue'):
                     continue
-                if actor_json['attachment'][attach_idx]['name'] != \
-                   new_property_value['name']:
+                attach_name = ''
+                if actor_json['attachment'][attach_idx].get('name'):
+                    attach_name = \
+                        actor_json['attachment'][attach_idx]['name']
+                elif actor_json['attachment'][attach_idx].get('schema:name'):
+                    attach_name = \
+                        actor_json['attachment'][attach_idx]['schema:name']
+                if attach_name != name_value:
                     continue
-                if actor_json['attachment'][attach_idx]['value'] != \
-                   new_property_value['value']:
-                    actor_json['attachment'][attach_idx]['value'] = \
-                        new_property_value['value']
+                if actor_json['attachment'][attach_idx][prop_value_name] != \
+                   new_property_value[prop_value_name]:
+                    actor_json['attachment'][attach_idx][prop_value_name] = \
+                        new_property_value[prop_value_name]
                     actor_changed = True
                 found = True
                 break
             if not found:
                 actor_json['attachment'].append({
-                    "name": new_property_value['name'],
+                    "name": name_value,
                     "type": "PropertyValue",
-                    "value": new_property_value['value']
+                    "value": new_property_value[prop_value_name]
                 })
                 actor_changed = True
     # save actor to file

@@ -38,6 +38,7 @@ from roles import set_role
 from roles import set_rolesFromList
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import get_attachment_property_value
 from utils import get_nickname_from_actor
 from utils import remove_html
 from utils import contains_invalid_chars
@@ -232,7 +233,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
                     "@id": "as:movedTo",
                     "@type": "@id"
                 },
-                "schema": "http://schema.org#",
+                "schema": "http://schema.org/",
                 "PropertyValue": "schema:PropertyValue",
                 "value": "schema:value",
                 "IdentityProof": "toot:IdentityProof",
@@ -338,7 +339,7 @@ def get_default_person_context() -> str:
         'messageType': 'toot:messageType',
         'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
         'publicKeyBase64': 'toot:publicKeyBase64',
-        'schema': 'http://schema.org#',
+        'schema': 'http://schema.org/',
         'suspended': 'toot:suspended',
         'toot': 'http://joinmastodon.org/ns#',
         'value': 'schema:value',
@@ -1789,10 +1790,14 @@ def valid_sending_actor(session, base_dir: str,
                         continue
                     if isinstance(tag['name'], str):
                         bio_str += ' ' + tag['name']
-                    if tag.get('value'):
+                    prop_value_name, _ = \
+                        get_attachment_property_value(tag)
+                    if not prop_value_name:
                         continue
-                    if isinstance(tag['value'], str):
-                        bio_str += ' ' + tag['value']
+                    if tag.get(prop_value_name):
+                        continue
+                    if isinstance(tag[prop_value_name], str):
+                        bio_str += ' ' + tag[prop_value_name]
 
         if actor_json.get('name'):
             bio_str += ' ' + remove_html(actor_json['name'])
@@ -1814,19 +1819,20 @@ def valid_sending_actor(session, base_dir: str,
             for tag in actor_json['attachment']:
                 if not isinstance(tag, dict):
                     continue
-                if not tag.get('name'):
+                if not tag.get('name') and not tag.get('schema:name'):
                     continue
                 no_of_tags += 1
-                if not tag.get('value'):
+                prop_value_name, _ = get_attachment_property_value(tag)
+                if not prop_value_name:
                     tags_without_value += 1
                     continue
-                if not isinstance(tag['value'], str):
+                if not isinstance(tag[prop_value_name], str):
                     tags_without_value += 1
                     continue
-                if not tag['value'].strip():
+                if not tag[prop_value_name].strip():
                     tags_without_value += 1
                     continue
-                if len(tag['value']) < 2:
+                if len(tag[prop_value_name]) < 2:
                     tags_without_value += 1
                     continue
             if no_of_tags > 0:

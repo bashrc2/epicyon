@@ -52,22 +52,29 @@ def get_actor_languages_list(actor_json: {}) -> []:
     if not actor_json.get('attachment'):
         return []
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('languages'):
+        if not name_value.lower().startswith('languages'):
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        if isinstance(property_value['value'], list):
-            lang_list = property_value['value']
+        if isinstance(property_value[prop_value_name], list):
+            lang_list = property_value[prop_value_name]
             lang_list.sort()
             return lang_list
-        if isinstance(property_value['value'], str):
-            lang_str = property_value['value']
+        if isinstance(property_value[prop_value_name], str):
+            lang_str = property_value[prop_value_name]
             lang_list_temp = []
             if ',' in lang_str:
                 lang_list_temp = lang_str.split(',')
@@ -1099,14 +1106,22 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
             for tag in tags_list:
                 if not isinstance(tag, dict):
                     continue
-                if not tag.get('name') or not tag.get('value'):
+                name_value = None
+                if tag.get('name'):
+                    name_value = tag['name']
+                if tag.get('schema:name'):
+                    name_value = tag['schema:name']
+                if not name_value:
                     continue
-                if tag['name'].lower() == \
+                prop_value_name, _ = get_attachment_property_value(tag)
+                if not prop_value_name:
+                    continue
+                if name_value.lower() == \
                    translate['gender'].lower():
-                    bio_found = tag['value']
+                    bio_found = tag[prop_value_name]
                     break
-                if tag['name'].lower().startswith(pronoun_str):
-                    bio_found = tag['value']
+                if name_value.lower().startswith(pronoun_str):
+                    bio_found = tag[prop_value_name]
                     break
             # the field name could be anything,
             # just look at the value
@@ -1114,9 +1129,13 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
                 for tag in tags_list:
                     if not isinstance(tag, dict):
                         continue
-                    if not tag.get('name') or not tag.get('value'):
+                    if not tag.get('name') and not tag.get('schema:name'):
                         continue
-                    gender = _gender_from_string(translate, tag['value'])
+                    prop_value_name, _ = get_attachment_property_value(tag)
+                    if not prop_value_name:
+                        continue
+                    gender = \
+                        _gender_from_string(translate, tag[prop_value_name])
                     if gender:
                         return gender
     # if not then use the bio
@@ -3113,32 +3132,39 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
         return ''
     property_name = property_name.lower()
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith(property_name):
+        if not name_value.lower().startswith(property_name):
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = property_value['value'].strip()
+        property_value['value'] = property_value[prop_value_name].strip()
         prefixes = get_protocol_prefixes()
         prefix_found = False
         for prefix in prefixes:
-            if property_value['value'].startswith(prefix):
+            if property_value[prop_value_name].startswith(prefix):
                 prefix_found = True
                 break
         if not prefix_found:
             continue
-        if '.' not in property_value['value']:
+        if '.' not in property_value[prop_value_name]:
             continue
-        if ' ' in property_value['value']:
+        if ' ' in property_value[prop_value_name]:
             continue
-        if ',' in property_value['value']:
+        if ',' in property_value[prop_value_name]:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -3652,3 +3678,20 @@ def disallow_reply(content: str) -> bool:
         if diss in content:
             return True
     return False
+
+
+def get_attachment_property_value(property_value: {}) -> (str, str):
+    """Returns the fieldname and value for an attachment property
+    """
+    prop_value = None
+    prop_value_name = None
+    if property_value.get('value'):
+        prop_value = property_value['value']
+        prop_value_name = 'value'
+    elif property_value.get('http://schema.org#value'):
+        prop_value_name = 'http://schema.org#value'
+        prop_value = property_value[prop_value_name]
+    elif property_value.get('https://schema.org#value'):
+        prop_value_name = 'https://schema.org#value'
+        prop_value = property_value[prop_value_name]
+    return prop_value_name, prop_value

@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import re
+from utils import get_attachment_property_value
 
 
 def get_cwtch_address(actor_json: {}) -> str:
@@ -16,28 +17,36 @@ def get_cwtch_address(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('cwtch'):
+        if not name_value.lower().startswith('cwtch'):
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, prop_value = \
+            get_attachment_property_value(property_value)
+        if not prop_value:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = property_value['value'].strip()
-        if len(property_value['value']) < 2:
+        property_value[prop_value_name] = \
+            property_value[prop_value_name].strip()
+        if len(property_value[prop_value_name]) < 2:
             continue
-        if '"' in property_value['value']:
+        if '"' in property_value[prop_value_name]:
             continue
-        if ' ' in property_value['value']:
+        if ' ' in property_value[prop_value_name]:
             continue
-        if ',' in property_value['value']:
+        if ',' in property_value[prop_value_name]:
             continue
-        if '.' in property_value['value']:
+        if '.' in property_value[prop_value_name]:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -59,11 +68,16 @@ def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('cwtch'):
+        if not name_value.lower().startswith('cwtch'):
             continue
         property_found = property_value
         break
@@ -73,15 +87,24 @@ def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('cwtch'):
+        if not name_value.lower().startswith('cwtch'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = cwtch_address
+        prop_value_name, prop_value = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = cwtch_address
         return
 
     new_cwtch_address = {

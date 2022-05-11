@@ -12,6 +12,7 @@ import urllib.parse
 from session import get_json
 from cache import store_webfinger_in_cache
 from cache import get_webfinger_from_cache
+from utils import get_attachment_property_value
 from utils import get_full_domain
 from utils import load_json
 from utils import load_json_onionify
@@ -414,9 +415,14 @@ def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
         aliases_not_found.append(alias)
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        property_name = property_value['name'].lower()
+        property_name = name_value.lower()
         found = False
         for name, alias in webfinger_property_name.items():
             if name == property_name:
@@ -428,12 +434,14 @@ def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
 
-        new_value = property_value['value'].strip()
+        new_value = property_value[prop_value_name].strip()
         if '://' in new_value:
             new_value = new_value.split('://')[1]
 

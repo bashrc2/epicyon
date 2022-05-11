@@ -30,27 +30,37 @@ from cwtch import get_cwtch_address
 from blog import get_blog_address
 
 
+from utils import get_attachment_property_value
+
+
 def get_email_address(actor_json: {}) -> str:
     """Returns the email address for the given actor
     """
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('email'):
+        if not name_value.lower().startswith('email'):
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '@' not in property_value['value']:
+        if '@' not in property_value[prop_value_name]:
             continue
-        if '.' not in property_value['value']:
+        if '.' not in property_value[prop_value_name]:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -60,19 +70,26 @@ def get_pgp_pub_key(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('pgp'):
+        if not name_value.lower().startswith('pgp'):
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        if not contains_pgp_public_key(property_value['value']):
+        if not contains_pgp_public_key(property_value[prop_value_name]):
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -82,19 +99,26 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('openpgp'):
+        if not name_value.lower().startswith('openpgp'):
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        if len(property_value['value']) < 10:
+        if len(property_value[prop_value_name]) < 10:
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -117,11 +141,16 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('email'):
+        if not name_value.lower().startswith('email'):
             continue
         property_found = property_value
         break
@@ -131,15 +160,24 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('email'):
+        if not name_value.lower().startswith('email'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = email_address
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = email_address
         return
 
     new_email_address = {
@@ -168,11 +206,16 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('pgp'):
+        if not name_value.lower().startswith('pgp'):
             continue
         property_found = property_value
         break
@@ -182,15 +225,24 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('pgp'):
+        if not name_value.lower().startswith('pgp'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = pgp_pub_key
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = pgp_pub_key
         return
 
     newpgp_pub_key = {
@@ -217,11 +269,16 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('openpgp'):
+        if not name_value.lower().startswith('openpgp'):
             continue
         property_found = property_value
         break
@@ -231,15 +288,24 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('openpgp'):
+        if not name_value.lower().startswith('openpgp'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = fingerprint.strip()
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = fingerprint.strip()
         return
 
     newpgp_fingerprint = {
@@ -451,12 +517,13 @@ def _get_pgp_public_key_from_actor(signing_priv_key_pem: str,
     for tag in actor_json['attachment']:
         if not isinstance(tag, dict):
             continue
-        if not tag.get('value'):
+        prop_value_name, _ = get_attachment_property_value(tag)
+        if not prop_value_name:
             continue
-        if not isinstance(tag['value'], str):
+        if not isinstance(tag[prop_value_name], str):
             continue
-        if contains_pgp_public_key(tag['value']):
-            return tag['value']
+        if contains_pgp_public_key(tag[prop_value_name]):
+            return tag[prop_value_name]
     return None
 
 

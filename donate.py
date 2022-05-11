@@ -8,6 +8,9 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
+from utils import get_attachment_property_value
+
+
 def _get_donation_types() -> []:
     return ('patreon', 'paypal', 'gofundme', 'liberapay',
             'kickstarter', 'indiegogo', 'crowdsupply',
@@ -25,19 +28,26 @@ def get_donation_url(actor_json: {}) -> str:
         return ''
     donation_type = _get_donation_types()
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if property_value['name'].lower() not in donation_type:
+        if name_value.lower() not in donation_type:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, prop_value = \
+            get_attachment_property_value(property_value)
+        if not prop_value:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '<a href="' not in property_value['value']:
+        if '<a href="' not in property_value[prop_value_name]:
             continue
-        donate_url = property_value['value'].split('<a href="')[1]
+        donate_url = property_value[prop_value_name].split('<a href="')[1]
         if '"' in donate_url:
             return donate_url.split('"')[0]
     return ''
@@ -51,17 +61,24 @@ def get_website(actor_json: {}, translate: {}) -> str:
     match_strings = _get_website_strings()
     match_strings.append(translate['Website'].lower())
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if property_value['name'].lower() not in match_strings:
+        if name_value.lower() not in match_strings:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -92,11 +109,16 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower() != donate_name:
+        if not name_value.lower() != donate_name:
             continue
         property_found = property_value
         break
@@ -111,15 +133,24 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
         donate_url + '</a>'
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if property_value['name'].lower() != donate_name:
+        if name_value.lower() != donate_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = donate_value
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = donate_value
         return
 
     new_donate = {

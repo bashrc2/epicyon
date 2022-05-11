@@ -8,23 +8,33 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
+from utils import get_attachment_property_value
+
+
 def get_enigma_pub_key(actor_json: {}) -> str:
     """Returns Enigma public key for the given actor
     """
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('enigma'):
+        if not name_value.lower().startswith('enigma'):
             continue
         if not property_value.get('type'):
             continue
-        if not property_value.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        return property_value['value']
+        return property_value[prop_value_name]
     return ''
 
 
@@ -41,11 +51,16 @@ def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('enigma'):
+        if not name_value.lower().startswith('enigma'):
             continue
         property_found = property_value
         break
@@ -55,15 +70,24 @@ def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('enigma'):
+        if not name_value.lower().startswith('enigma'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value['value'] = enigma_pub_key
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = enigma_pub_key
         return
 
     new_enigma_pub_key = {
