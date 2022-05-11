@@ -38,7 +38,7 @@ def get_donation_url(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         if '<a href="' not in property_value['value']:
             continue
@@ -69,7 +69,7 @@ def get_website(actor_json: {}, translate: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         return property_value['value']
     return ''
@@ -137,7 +137,7 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
             continue
         if name_value.lower() != donate_name:
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = donate_value
         return

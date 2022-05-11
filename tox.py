@@ -27,7 +27,7 @@ def get_tox_address(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = property_value['value'].strip()
         if len(property_value['value']) != 76:
@@ -102,7 +102,7 @@ def set_tox_address(actor_json: {}, tox_address: str) -> None:
             continue
         if not name_value.lower().startswith('tox'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = tox_address
         return

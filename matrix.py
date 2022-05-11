@@ -27,7 +27,7 @@ def get_matrix_address(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         if '@' not in property_value['value']:
             continue
@@ -91,7 +91,7 @@ def set_matrix_address(actor_json: {}, matrix_address: str) -> None:
             continue
         if not name_value.lower().startswith('matrix'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = matrix_address
         return

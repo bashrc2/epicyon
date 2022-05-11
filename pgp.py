@@ -49,7 +49,7 @@ def get_email_address(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         if '@' not in property_value['value']:
             continue
@@ -78,7 +78,7 @@ def get_pgp_pub_key(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         if not contains_pgp_public_key(property_value['value']):
             continue
@@ -105,7 +105,7 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         if len(property_value['value']) < 10:
             continue
@@ -162,7 +162,7 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
             continue
         if not name_value.lower().startswith('email'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = email_address
         return
@@ -223,7 +223,7 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
             continue
         if not name_value.lower().startswith('pgp'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = pgp_pub_key
         return
@@ -282,7 +282,7 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
             continue
         if not name_value.lower().startswith('openpgp'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = fingerprint.strip()
         return

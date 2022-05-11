@@ -27,7 +27,7 @@ def get_enigma_pub_key(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         return property_value['value']
     return ''
@@ -76,7 +76,7 @@ def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
             continue
         if not name_value.lower().startswith('enigma'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = enigma_pub_key
         return

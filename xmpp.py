@@ -28,7 +28,7 @@ def get_xmpp_address(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         if '@' not in property_value['value']:
             continue
@@ -90,7 +90,7 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
         if not (name_value.startswith('xmpp') or
                 name_value.startswith('jabber')):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = xmpp_address
         return

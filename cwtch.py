@@ -29,7 +29,7 @@ def get_cwtch_address(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = property_value['value'].strip()
         if len(property_value['value']) < 2:
@@ -94,7 +94,7 @@ def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
             continue
         if not name_value.lower().startswith('cwtch'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = cwtch_address
         return

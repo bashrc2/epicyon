@@ -27,7 +27,7 @@ def get_ssb_address(actor_json: {}) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = property_value['value'].strip()
         if not property_value['value'].startswith('@'):
@@ -97,7 +97,7 @@ def set_ssb_address(actor_json: {}, ssb_address: str) -> None:
             continue
         if not name_value.lower().startswith('ssb'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = ssb_address
         return

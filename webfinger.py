@@ -435,7 +435,7 @@ def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
 
         new_value = property_value['value'].strip()

@@ -226,7 +226,7 @@ def _set_actor_property_url(actor_json: {},
             continue
         if not name_value.lower().startswith(property_name_lower):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = url
         return

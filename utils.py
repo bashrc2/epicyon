@@ -65,7 +65,7 @@ def get_actor_languages_list(actor_json: {}) -> []:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         if isinstance(property_value['value'], list):
             lang_list = property_value['value']
@@ -3131,7 +3131,7 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
             continue
         if not property_value.get('value'):
             continue
-        if property_value['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
         property_value['value'] = property_value['value'].strip()
         prefixes = get_protocol_prefixes()
