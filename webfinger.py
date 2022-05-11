@@ -414,9 +414,14 @@ def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
         aliases_not_found.append(alias)
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        property_name = property_value['name'].lower()
+        property_name = name_value.lower()
         found = False
         for name, alias in webfinger_property_name.items():
             if name == property_name:

@@ -25,9 +25,14 @@ def get_donation_url(actor_json: {}) -> str:
         return ''
     donation_type = _get_donation_types()
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if property_value['name'].lower() not in donation_type:
+        if name_value.lower() not in donation_type:
             continue
         if not property_value.get('type'):
             continue
@@ -51,9 +56,14 @@ def get_website(actor_json: {}, translate: {}) -> str:
     match_strings = _get_website_strings()
     match_strings.append(translate['Website'].lower())
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if property_value['name'].lower() not in match_strings:
+        if name_value.lower() not in match_strings:
             continue
         if not property_value.get('type'):
             continue
@@ -92,11 +102,16 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower() != donate_name:
+        if not name_value.lower() != donate_name:
             continue
         property_found = property_value
         break
@@ -111,11 +126,16 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
         donate_url + '</a>'
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if property_value['name'].lower() != donate_name:
+        if name_value.lower() != donate_name:
             continue
         if property_value['type'] != 'PropertyValue':
             continue

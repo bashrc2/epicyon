@@ -183,11 +183,16 @@ def _set_actor_property_url(actor_json: {},
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith(property_name_lower):
+        if not name_value.lower().startswith(property_name_lower):
             continue
         property_found = property_value
         break
@@ -210,11 +215,16 @@ def _set_actor_property_url(actor_json: {},
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith(property_name_lower):
+        if not name_value.lower().startswith(property_name_lower):
             continue
         if property_value['type'] != 'PropertyValue':
             continue

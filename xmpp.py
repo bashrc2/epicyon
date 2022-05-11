@@ -14,11 +14,15 @@ def get_xmpp_address(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name'].lower()
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name'].lower()
+        if not name_value:
             continue
-        name_lower = property_value['name'].lower()
-        if not (name_lower.startswith('xmpp') or
-                name_lower.startswith('jabber')):
+        if not (name_value.startswith('xmpp') or
+                name_value.startswith('jabber')):
             continue
         if not property_value.get('type'):
             continue
@@ -53,12 +57,17 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not (property_value['name'].lower().startswith('xmpp') or
-                property_value['name'].lower().startswith('jabber')):
+        if not (name_value.lower().startswith('xmpp') or
+                name_value.lower().startswith('jabber')):
             continue
         property_found = property_value
         break
@@ -68,13 +77,18 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        name_lower = property_value['name'].lower()
-        if not (name_lower.startswith('xmpp') or
-                name_lower.startswith('jabber')):
+        name_value = name_value.lower()
+        if not (name_value.startswith('xmpp') or
+                name_value.startswith('jabber')):
             continue
         if property_value['type'] != 'PropertyValue':
             continue

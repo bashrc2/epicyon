@@ -52,9 +52,14 @@ def get_actor_languages_list(actor_json: {}) -> []:
     if not actor_json.get('attachment'):
         return []
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('languages'):
+        if not name_value.lower().startswith('languages'):
             continue
         if not property_value.get('type'):
             continue
@@ -3113,9 +3118,14 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
         return ''
     property_name = property_name.lower()
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith(property_name):
+        if not name_value.lower().startswith(property_name):
             continue
         if not property_value.get('type'):
             continue

@@ -36,9 +36,14 @@ def get_email_address(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('email'):
+        if not name_value.lower().startswith('email'):
             continue
         if not property_value.get('type'):
             continue
@@ -60,9 +65,14 @@ def get_pgp_pub_key(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('pgp'):
+        if not name_value.lower().startswith('pgp'):
             continue
         if not property_value.get('type'):
             continue
@@ -82,9 +92,14 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('openpgp'):
+        if not name_value.lower().startswith('openpgp'):
             continue
         if not property_value.get('type'):
             continue
@@ -117,11 +132,16 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('email'):
+        if not name_value.lower().startswith('email'):
             continue
         property_found = property_value
         break
@@ -131,11 +151,16 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('email'):
+        if not name_value.lower().startswith('email'):
             continue
         if property_value['type'] != 'PropertyValue':
             continue
@@ -168,11 +193,16 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('pgp'):
+        if not name_value.lower().startswith('pgp'):
             continue
         property_found = property_value
         break
@@ -182,11 +212,16 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('pgp'):
+        if not name_value.lower().startswith('pgp'):
             continue
         if property_value['type'] != 'PropertyValue':
             continue
@@ -217,11 +252,16 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('openpgp'):
+        if not name_value.lower().startswith('openpgp'):
             continue
         property_found = property_value
         break
@@ -231,11 +271,16 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('openpgp'):
+        if not name_value.lower().startswith('openpgp'):
             continue
         if property_value['type'] != 'PropertyValue':
             continue

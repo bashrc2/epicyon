@@ -14,9 +14,14 @@ def get_briar_address(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not property_value['name'].lower().startswith('briar'):
+        if not name_value.lower().startswith('briar'):
             continue
         if not property_value.get('type'):
             continue
@@ -71,11 +76,16 @@ def set_briar_address(actor_json: {}, briar_address: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('briar'):
+        if not name_value.lower().startswith('briar'):
             continue
         property_found = property_value
         break
@@ -85,11 +95,16 @@ def set_briar_address(actor_json: {}, briar_address: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
-        if not property_value.get('name'):
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith('briar'):
+        if not name_value.lower().startswith('briar'):
             continue
         if property_value['type'] != 'PropertyValue':
             continue

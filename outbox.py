@@ -130,9 +130,14 @@ def _person_receive_update_outbox(recent_posts_cache: {},
     # update fields within actor
     if 'attachment' in updated_actor_json:
         for new_property_value in updated_actor_json['attachment']:
-            if not new_property_value.get('name'):
+            name_value = None
+            if new_property_value.get('name'):
+                name_value = new_property_value['name']
+            elif new_property_value.get('schema:name'):
+                name_value = new_property_value['schema:name']
+            if not name_value:
                 continue
-            if new_property_value['name'] not in updatable_attachments:
+            if name_value not in updatable_attachments:
                 continue
             if not new_property_value.get('type'):
                 continue
@@ -147,8 +152,14 @@ def _person_receive_update_outbox(recent_posts_cache: {},
                 if actor_json['attachment'][attach_idx]['type'] != \
                    'PropertyValue':
                     continue
-                if actor_json['attachment'][attach_idx]['name'] != \
-                   new_property_value['name']:
+                attach_name = ''
+                if actor_json['attachment'][attach_idx].get('name'):
+                    attach_name = \
+                        actor_json['attachment'][attach_idx]['name']
+                elif actor_json['attachment'][attach_idx].get('schema:name'):
+                    attach_name = \
+                        actor_json['attachment'][attach_idx]['schema:name']
+                if attach_name != name_value:
                     continue
                 if actor_json['attachment'][attach_idx]['value'] != \
                    new_property_value['value']:
@@ -159,7 +170,7 @@ def _person_receive_update_outbox(recent_posts_cache: {},
                 break
             if not found:
                 actor_json['attachment'].append({
-                    "name": new_property_value['name'],
+                    "name": name_value,
                     "type": "PropertyValue",
                     "value": new_property_value['value']
                 })
