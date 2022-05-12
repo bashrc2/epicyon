@@ -11381,7 +11381,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.getreq_busy = False
         return True
 
-    def _show_individual_post(self, authorized: bool,
+    def _show_individual_post(self, ssml_getreq: bool, authorized: bool,
                               calling_domain: str, referer_domain: str,
                               path: str,
                               base_dir: str, http_prefix: str,
@@ -11422,6 +11422,30 @@ class PubServer(BaseHTTPRequestHandler):
         status_number = post_sections[2]
         if len(status_number) <= 10 or (not status_number.isdigit()):
             return False
+
+        if ssml_getreq:
+            ssml_filename = \
+                acct_dir(base_dir, nickname, domain) + '/postcache/' + \
+                http_prefix + ':##' + domain_full + '#users#' + nickname + \
+                '#statuses#' + status_number + '.ssml'
+            if not os.path.isfile(ssml_filename):
+                self._404()
+                return True
+            ssml_str = None
+            try:
+                with open(ssml_filename, 'r') as fp_ssml:
+                    ssml_str = fp_ssml.read()
+            except OSError:
+                pass
+            if ssml_str:
+                msg = ssml_str.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('application/ssml+xml', msglen,
+                                  cookie, calling_domain, False)
+                self._write(msg)
+                return True
+            self._404()
+            return True
 
         post_filename = \
             acct_dir(base_dir, nickname, domain) + '/outbox/' + \
@@ -17811,7 +17835,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get an individual post from the path
         # /users/nickname/statuses/number
         if '/statuses/' in self.path and users_in_path:
-            if self._show_individual_post(authorized,
+            if self._show_individual_post(ssml_getreq, authorized,
                                           calling_domain, referer_domain,
                                           self.path,
                                           self.server.base_dir,
