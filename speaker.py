@@ -554,6 +554,8 @@ def update_speaker(base_dir: str, http_prefix: str,
                               post_json_object, person_cache,
                               translate, announcing_actor,
                               theme_name)
+    if not speaker_json:
+        return
     account_dir = acct_dir(base_dir, nickname, domain)
     speaker_filename = account_dir + '/speaker.json'
     save_json(speaker_json, speaker_filename)

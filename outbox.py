@@ -57,6 +57,7 @@ from delete import outbox_delete
 from shares import outbox_share_upload
 from shares import outbox_undo_share_upload
 from webapp_post import individual_post_as_html
+from speaker import update_speaker
 
 
 def _person_receive_update_outbox(recent_posts_cache: {},
@@ -399,6 +400,13 @@ def post_message_to_outbox(session, translate: {},
         if not saved_filename:
             print('WARN: post not saved to outbox ' + outbox_name)
             return False
+
+        update_speaker(base_dir, http_prefix,
+                       post_to_nickname, domain, domain_full,
+                       message_json, person_cache,
+                       translate, message_json['actor'],
+                       theme, system_language,
+                       outbox_name)
 
         # save all instance blogs to the news actor
         if post_to_nickname != 'news' and outbox_name == 'tlblogs':
