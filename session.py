@@ -373,6 +373,45 @@ def download_html(signing_priv_key_pem: str,
                              None, quiet, debug, False)
 
 
+def download_ssml(signing_priv_key_pem: str,
+                  session, url: str, headers: {}, params: {}, debug: bool,
+                  version: str = __version__, http_prefix: str = 'https',
+                  domain: str = 'testdomain',
+                  timeout_sec: int = 20, quiet: bool = False) -> {}:
+    if not isinstance(url, str):
+        if debug and not quiet:
+            print('url: ' + str(url))
+            print('ERROR: download_ssml failed, url should be a string')
+        return None
+    session_params = {}
+    session_headers = {}
+    if headers:
+        session_headers = headers
+    if params:
+        session_params = params
+    session_headers['Accept'] = 'application/ssml+xml'
+    session_headers['User-Agent'] = 'Epicyon/' + version
+    if domain:
+        session_headers['User-Agent'] += \
+            '; +' + http_prefix + '://' + domain + '/'
+    if not session:
+        if not quiet:
+            print('WARN: download_ssml failed, no session specified')
+        return None
+
+    if debug:
+        HTTPConnection.debuglevel = 1
+
+    if signing_priv_key_pem:
+        return _get_json_signed(session, url, domain,
+                                session_headers, session_params,
+                                timeout_sec, signing_priv_key_pem,
+                                quiet, debug)
+    return _get_json_request(session, url, domain, session_headers,
+                             session_params, timeout_sec,
+                             None, quiet, debug, False)
+
+
 def _set_user_agent(session, http_prefix: str, domain_full: str) -> None:
     """Sets the user agent
     """
