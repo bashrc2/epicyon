@@ -1698,7 +1698,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                        nickname, domain, domain_full,
                                        post_json_object, person_cache,
                                        translate, post_json_object['actor'],
-                                       theme_name)
+                                       theme_name, system_language)
                         with open(announce_filename + '.tts', 'w+') as ttsfile:
                             ttsfile.write('\n')
 

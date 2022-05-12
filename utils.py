@@ -1744,6 +1744,14 @@ def delete_cached_html(base_dir: str, nickname: str, domain: str,
                 print('EX: delete_cached_html ' +
                       'unable to delete cached post file ' +
                       str(cached_post_filename))
+        cached_post_filename = cached_post_filename.replace('.html', '.ssml')
+        if os.path.isfile(cached_post_filename):
+            try:
+                os.remove(cached_post_filename)
+            except OSError:
+                print('EX: delete_cached_html ' +
+                      'unable to delete cached ssml post file ' +
+                      str(cached_post_filename))
 
 
 def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
