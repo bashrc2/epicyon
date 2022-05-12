@@ -302,9 +302,11 @@ def _speaker_endpoint_json(display_name: str, summary: str,
     return speaker_json
 
 
-def _ssml_header(system_language: str, box_name: str) -> str:
+def _ssml_header(system_language: str, box_name: str, summary: str) -> str:
     """Returns a header for an SSML document
     """
+    if summary:
+        summary = ': ' + summary
     return '<?xml version="1.0"?>\n' + \
         '<speak xmlns="http://www.w3.org/2001/10/synthesis"\n' + \
         '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + \
@@ -313,7 +315,7 @@ def _ssml_header(system_language: str, box_name: str) -> str:
         '       version="1.1">\n' + \
         '  <metadata>\n' + \
         '    <dc:title xml:lang="' + system_language + '">' + \
-        box_name + '</dc:title>\n' + \
+        box_name + summary + '</dc:title>\n' + \
         '  </metadata>\n'
 
 
@@ -342,7 +344,9 @@ def _speaker_endpoint_ssml(display_name: str, summary: str,
 
     content = _add_ssm_lemphasis(content)
     voice_params = 'name="' + display_name + '" gender="' + gender + '"'
-    return _ssml_header(lang_short, box_name) + \
+    if summary is None:
+        summary = ''
+    return _ssml_header(lang_short, box_name, summary) + \
         '  <p>\n' + \
         '    <s xml:lang="' + language + '">\n' + \
         '      <voice ' + voice_params + '>\n' + \
