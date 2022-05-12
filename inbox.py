@@ -2282,7 +2282,8 @@ def _receive_announce(recent_posts_cache: {},
                                        nickname, domain, domain_full,
                                        post_json_object, person_cache,
                                        translate, lookup_actor,
-                                       theme_name, system_language)
+                                       theme_name, system_language,
+                                       'inbox')
                         try:
                             with open(post_filename + '.tts', 'w+') as ttsfile:
                                 ttsfile.write('\n')
@@ -4121,7 +4122,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                            nickname, domain, domain_full,
                                            post_json_object, person_cache,
                                            translate, None, theme_name,
-                                           system_language)
+                                           system_language, boxname)
                             fitness_performance(inbox_start_time,
                                                 server.fitness,
                                                 'INBOX', 'update_speaker',

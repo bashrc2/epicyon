@@ -302,7 +302,7 @@ def _speaker_endpoint_json(display_name: str, summary: str,
     return speaker_json
 
 
-def _ssml_header(system_language: str) -> str:
+def _ssml_header(system_language: str, box_name: str) -> str:
     """Returns a header for an SSML document
     """
     return '<?xml version="1.0"?>\n' + \
@@ -313,14 +313,14 @@ def _ssml_header(system_language: str) -> str:
         '       version="1.1">\n' + \
         '  <metadata>\n' + \
         '    <dc:title xml:lang="' + system_language + '">' + \
-        'inbox</dc:title>\n' + \
+        box_name + '</dc:title>\n' + \
         '  </metadata>\n'
 
 
 def _speaker_endpoint_ssml(display_name: str, summary: str,
                            content: str, image_description: str,
                            links: [], language: str,
-                           gender: str) -> str:
+                           gender: str, box_name: str) -> str:
     """Returns an SSML endpoint for the TTS speaker
     https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language
     https://www.w3.org/TR/speech-synthesis/
@@ -342,7 +342,7 @@ def _speaker_endpoint_ssml(display_name: str, summary: str,
 
     content = _add_ssm_lemphasis(content)
     voice_params = 'name="' + display_name + '" gender="' + gender + '"'
-    return _ssml_header(lang_short) + \
+    return _ssml_header(lang_short, box_name) + \
         '  <p>\n' + \
         '    <s xml:lang="' + language + '">\n' + \
         '      <voice ' + voice_params + '>\n' + \
@@ -378,7 +378,7 @@ def get_ssml_box(base_dir: str, path: str,
                                   speaker_json['imageDescription'],
                                   speaker_json['detectedLinks'],
                                   system_language,
-                                  gender)
+                                  gender, box_name)
 
 
 def speakable_text(base_dir: str, content: str, translate: {}) -> (str, []):
@@ -544,7 +544,7 @@ def update_speaker(base_dir: str, http_prefix: str,
                    post_json_object: {}, person_cache: {},
                    translate: {}, announcing_actor: str,
                    theme_name: str,
-                   system_language: str) -> None:
+                   system_language: str, box_name: str) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
@@ -565,6 +565,9 @@ def update_speaker(base_dir: str, http_prefix: str,
     if not cached_ssml_filename:
         return
     cached_ssml_filename = cached_ssml_filename.replace('.html', '.ssml')
+    if box_name == 'outbox':
+        cached_ssml_filename = \
+            cached_ssml_filename.replace('/postcache/', '/outbox/')
     gender = None
     if speaker_json.get('gender'):
         gender = speaker_json['gender']
@@ -575,7 +578,7 @@ def update_speaker(base_dir: str, http_prefix: str,
                                speaker_json['imageDescription'],
                                speaker_json['detectedLinks'],
                                system_language,
-                               gender)
+                               gender, box_name)
     try:
         with open(cached_ssml_filename, 'w+') as fp_ssml:
             fp_ssml.write(ssml_str)

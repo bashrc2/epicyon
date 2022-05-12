@@ -1744,6 +1744,7 @@ def delete_cached_html(base_dir: str, nickname: str, domain: str,
                 print('EX: delete_cached_html ' +
                       'unable to delete cached post file ' +
                       str(cached_post_filename))
+
         cached_post_filename = cached_post_filename.replace('.html', '.ssml')
         if os.path.isfile(cached_post_filename):
             try:
@@ -1751,6 +1752,16 @@ def delete_cached_html(base_dir: str, nickname: str, domain: str,
             except OSError:
                 print('EX: delete_cached_html ' +
                       'unable to delete cached ssml post file ' +
+                      str(cached_post_filename))
+
+        cached_post_filename = \
+            cached_post_filename.replace('/postcache/', '/outbox/')
+        if os.path.isfile(cached_post_filename):
+            try:
+                os.remove(cached_post_filename)
+            except OSError:
+                print('EX: delete_cached_html ' +
+                      'unable to delete cached outbox ssml post file ' +
                       str(cached_post_filename))
 
 

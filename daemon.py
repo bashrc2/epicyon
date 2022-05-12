@@ -11086,9 +11086,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         if ssml_getreq:
             ssml_filename = \
-                acct_dir(base_dir, nickname, domain) + '/postcache/' + \
+                acct_dir(base_dir, nickname, domain) + '/outbox/' + \
                 http_prefix + ':##' + domain_full + '#users#' + nickname + \
                 '#statuses#' + status_number + '.ssml'
+            if not os.path.isfile(ssml_filename):
+                ssml_filename = \
+                    acct_dir(base_dir, nickname, domain) + '/postcache/' + \
+                    http_prefix + ':##' + domain_full + '#users#' + \
+                    nickname + '#statuses#' + status_number + '.ssml'
             if not os.path.isfile(ssml_filename):
                 self._404()
                 return True
@@ -11425,9 +11430,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         if ssml_getreq:
             ssml_filename = \
-                acct_dir(base_dir, nickname, domain) + '/postcache/' + \
+                acct_dir(base_dir, nickname, domain) + '/outbox/' + \
                 http_prefix + ':##' + domain_full + '#users#' + nickname + \
                 '#statuses#' + status_number + '.ssml'
+            if not os.path.isfile(ssml_filename):
+                ssml_filename = \
+                    acct_dir(base_dir, nickname, domain) + '/postcache/' + \
+                    http_prefix + ':##' + domain_full + '#users#' + \
+                    nickname + '#statuses#' + status_number + '.ssml'
             if not os.path.isfile(ssml_filename):
                 self._404()
                 return True
