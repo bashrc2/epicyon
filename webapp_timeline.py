@@ -423,12 +423,17 @@ def _page_number_buttons(users_path: str, box_name: str,
         page_str = str(page)
         if page == page_number:
             page_str = '<mark>' + str(page) + '</mark>'
-            aria_page_str = ' aria-current="page"'
+            aria_page_str = ' aria-current="true"'
         num_str += \
             '<a href="' + users_path + '/' + box_name + '?page=' + \
-            str(page) + '" class="pageslist"' + aria_page_str + \
-            '>' + page_str + '</a>'
-    return '<center>' + num_str + '</center>'
+            str(page) + '" class="pageslist" ' + \
+            'aria-label="Current Page, Page ' + str(page) + \
+            '"' + aria_page_str + '>' + page_str + '</a>'
+    return '<center>\n' + \
+        '  <nav role="navigation" aria-label="Pagination Navigation">\n' + \
+        '    ' + num_str + '\n' + \
+        '  </nav>\n' + \
+        '</center>\n'
 
 
 def html_timeline(css_cache: {}, default_timeline: str,
