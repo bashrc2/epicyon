@@ -3503,6 +3503,42 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domain,
                                     self.server.onion_domain,
                                     self.server.i2p_domain)
+
+        if '&submitUnblock=' in follow_confirm_params:
+            blocking_actor = \
+                urllib.parse.unquote_plus(follow_confirm_params)
+            blocking_actor = blocking_actor.split('actor=')[1]
+            if '&' in blocking_actor:
+                blocking_actor = blocking_actor.split('&')[0]
+            blocking_nickname = get_nickname_from_actor(blocking_actor)
+            if not blocking_nickname:
+                if calling_domain.endswith('.onion') and onion_domain:
+                    origin_path_str = 'http://' + onion_domain + users_path
+                elif (calling_domain.endswith('.i2p') and i2p_domain):
+                    origin_path_str = 'http://' + i2p_domain + users_path
+                print('WARN: unable to find blocked nickname in ' +
+                      blocking_actor)
+                self._redirect_headers(origin_path_str,
+                                       cookie, calling_domain)
+                self.server.postreq_busy = False
+                return
+            blocking_domain, blocking_port = \
+                get_domain_from_actor(blocking_actor)
+            blocking_domain_full = \
+                get_full_domain(blocking_domain, blocking_port)
+            if follower_nickname == blocking_nickname and \
+               blocking_domain == domain and \
+               blocking_port == port:
+                if debug:
+                    print('You cannot unblock yourself!')
+            else:
+                if debug:
+                    print(follower_nickname + ' stops blocking ' +
+                          blocking_actor)
+                remove_block(base_dir,
+                             follower_nickname, domain,
+                             blocking_nickname, blocking_domain_full)
+
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -20864,6 +20900,7 @@ def run_daemon(preferred_podcast_formats: [],
         'snoozeButton': 's',
         'reportButton': '[',
         'viewButton': 'v',
+        'unblockButton': 'u',
         'enterPetname': 'p',
         'enterNotes': 'n',
         'menuTimeline': 't',
@@ -20881,7 +20918,7 @@ def run_daemon(preferred_podcast_formats: [],
         'menuShares': 'h',
         'menuWanted': 'w',
         'menuBlogs': 'b',
-        'menuNewswire': 'u',
+        'menuNewswire': '#',
         'menuLinks': 'l',
         'menuMedia': 'm',
         'menuModeration': 'o',
