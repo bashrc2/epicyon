@@ -16256,7 +16256,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.translate,
                                  access_keys,
                                  self.server.access_keys,
-                                 self.server.default_timeline)
+                                 self.server.default_timeline,
+                                 self.server.theme_name)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)

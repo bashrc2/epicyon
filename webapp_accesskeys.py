@@ -14,6 +14,7 @@ from utils import get_config_param
 from utils import acct_dir
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
+from webapp_utils import get_banner_file
 
 
 def load_access_keys_for_accounts(base_dir: str, key_shortcuts: {},
@@ -43,7 +44,7 @@ def html_access_keys(css_cache: {}, base_dir: str,
                      nickname: str, domain: str,
                      translate: {}, access_keys: {},
                      default_access_keys: {},
-                     default_timeline: str) -> str:
+                     default_timeline: str, theme: str) -> str:
     """Show and edit key shortcuts
     """
     access_keys_filename = \
@@ -52,6 +53,9 @@ def html_access_keys(css_cache: {}, base_dir: str,
         access_keys_from_file = load_json(access_keys_filename)
         if access_keys_from_file:
             access_keys = access_keys_from_file
+
+    timeline_key = access_keys['menuTimeline']
+    submit_key = access_keys['submitButton']
 
     access_keys_form = ''
     css_filename = base_dir + '/epicyon-profile.css'
@@ -62,6 +66,21 @@ def html_access_keys(css_cache: {}, base_dir: str,
         get_config_param(base_dir, 'instanceTitle')
     access_keys_form = \
         html_header_with_external_style(css_filename, instance_title, None)
+
+    access_keys_form += \
+        '<header>\n' + \
+        '<a href="/users/' + nickname + '/' + \
+        default_timeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + timeline_key + '">\n'
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    access_keys_form += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n'
+
     access_keys_form += '<div class="container">\n'
 
     access_keys_form += \
@@ -73,8 +92,6 @@ def html_access_keys(css_cache: {}, base_dir: str,
     access_keys_form += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeAccessKeys">\n'
 
-    timeline_key = access_keys['menuTimeline']
-    submit_key = access_keys['submitButton']
     access_keys_form += \
         '    <center>\n' + \
         '    <button type="submit" class="button" ' + \
