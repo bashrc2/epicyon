@@ -46,6 +46,7 @@ from session import create_session
 from session import get_json
 from session import get_vcard
 from session import download_html
+from session import download_ssml
 from newswire import get_rss
 from filters import add_filter
 from filters import remove_filter
@@ -341,6 +342,8 @@ parser.add_argument('--xmlvcard', dest='xmlvcard', type=str, default=None,
                     'activitypub actor url')
 parser.add_argument('--json', dest='json', type=str, default=None,
                     help='Show the json for a given activitypub url')
+parser.add_argument('--ssml', dest='ssml', type=str, default=None,
+                    help='Show the SSML for a given activitypub url')
 parser.add_argument('--htmlpost', dest='htmlpost', type=str, default=None,
                     help='Show the html for a given activitypub url')
 parser.add_argument('--rss', dest='rss', type=str, default=None,
@@ -1040,6 +1043,31 @@ if args.json:
         pprint(test_json)
     sys.exit()
 
+if args.ssml:
+    session = create_session(None)
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'application/ssml+xml; profile="' + profile_str + '"'
+    }
+    if not args.domain:
+        args.domain = get_config_param(base_dir, 'domain')
+    domain = ''
+    if args.domain:
+        domain = args.domain
+    signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    if debug:
+        print('base_dir: ' + str(base_dir))
+        if signing_priv_key_pem:
+            print('Obtained instance actor signing key')
+        else:
+            print('Did not obtain instance actor key for ' + domain)
+    test_ssml = download_ssml(signing_priv_key_pem, session, args.ssml,
+                              as_header, None, debug, __version__,
+                              http_prefix, domain)
+    if test_ssml:
+        print(str(test_ssml))
+    sys.exit()
+
 if args.vcard:
     session = create_session(None)
     if not args.domain:
@@ -1084,11 +1112,11 @@ if args.htmlpost:
             print('Obtained instance actor signing key')
         else:
             print('Did not obtain instance actor key for ' + domain)
-    testHtml = download_html(signing_priv_key_pem, session, args.htmlpost,
-                             as_header, None, debug, __version__,
-                             http_prefix, domain)
-    if testHtml:
-        print(testHtml)
+    test_html = download_html(signing_priv_key_pem, session, args.htmlpost,
+                              as_header, None, debug, __version__,
+                              http_prefix, domain)
+    if test_html:
+        print(test_html)
     sys.exit()
 
 # create cache for actors

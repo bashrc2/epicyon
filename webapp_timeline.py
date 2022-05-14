@@ -419,13 +419,21 @@ def _page_number_buttons(users_path: str, box_name: str,
     for page in range(min_page_number, max_page_number):
         if num_str:
             num_str += ' ⸻ '
+        aria_page_str = ''
         page_str = str(page)
         if page == page_number:
             page_str = '<mark>' + str(page) + '</mark>'
+            aria_page_str = ' aria-current="true"'
         num_str += \
             '<a href="' + users_path + '/' + box_name + '?page=' + \
-            str(page) + '" class="pageslist">' + page_str + '</a>'
-    return '<center>' + num_str + '</center>'
+            str(page) + '" class="pageslist" ' + \
+            'aria-label="Current Page, Page ' + str(page) + \
+            '"' + aria_page_str + '>' + page_str + '</a>'
+    return '<center>\n' + \
+        '  <nav role="navigation" aria-label="Pagination Navigation">\n' + \
+        '    ' + num_str + '\n' + \
+        '  </nav>\n' + \
+        '</center>\n'
 
 
 def html_timeline(css_cache: {}, default_timeline: str,
@@ -656,8 +664,11 @@ def html_timeline(css_cache: {}, default_timeline: str,
     moderation_button_str = ''
     if moderator and not minimal:
         moderation_button_str = \
-            '<a href="' + users_path + \
-            '/moderation"><button class="' + \
+            '<a href="' + users_path + '/moderation"'
+        if box_name == 'moderation':
+            moderation_button_str += ' aria-current="location"'
+        moderation_button_str += \
+            '><button class="' + \
             moderation_button + '"><span>' + \
             html_highlight_label(translate['Mod'], new_report) + \
             ' </span></button></a>'
@@ -669,19 +680,30 @@ def html_timeline(css_cache: {}, default_timeline: str,
     events_button_str = ''
     if not minimal:
         shares_button_str = \
-            '<a href="' + users_path + '/tlshares"><button class="' + \
-            shares_button + '"><span>' + \
+            '<a href="' + users_path + '/tlshares"'
+        if box_name == 'tlshares':
+            shares_button_str += ' aria-current="location"'
+        shares_button_str += \
+            '><button class="' + shares_button + '"><span>' + \
             html_highlight_label(translate['Shares'], new_share) + \
             '</span></button></a>'
 
         wanted_button_str = \
             '<a href="' + users_path + '/tlwanted"><button class="' + \
-            wanted_button + '"><span>' + \
+            wanted_button + '"'
+        if box_name == 'tlwanted':
+            wanted_button_str += ' aria-current="location"'
+        wanted_button_str += \
+            '><span>' + \
             html_highlight_label(translate['Wanted'], new_wanted) + \
             '</span></button></a>'
 
         bookmarks_button_str = \
-            '<a href="' + users_path + '/tlbookmarks"><button class="' + \
+            '<a href="' + users_path + '/tlbookmarks"'
+        if box_name == 'tlbookmarks':
+            bookmarks_button_str += ' aria-current="location"'
+        bookmarks_button_str += \
+            '><button class="' + \
             bookmarks_button + '"><span>' + translate['Bookmarks'] + \
             '</span></button></a>'
 

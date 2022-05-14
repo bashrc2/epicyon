@@ -11,6 +11,7 @@ import os
 import html
 import random
 import urllib.parse
+from utils import get_cached_post_filename
 from utils import remove_id_ending
 from utils import is_dm
 from utils import is_reply
@@ -301,9 +302,11 @@ def _speaker_endpoint_json(display_name: str, summary: str,
     return speaker_json
 
 
-def _ssm_lheader(system_language: str, instance_title: str) -> str:
+def _ssml_header(system_language: str, box_name: str, summary: str) -> str:
     """Returns a header for an SSML document
     """
+    if summary:
+        summary = ': ' + summary
     return '<?xml version="1.0"?>\n' + \
         '<speak xmlns="http://www.w3.org/2001/10/synthesis"\n' + \
         '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + \
@@ -312,15 +315,14 @@ def _ssm_lheader(system_language: str, instance_title: str) -> str:
         '       version="1.1">\n' + \
         '  <metadata>\n' + \
         '    <dc:title xml:lang="' + system_language + '">' + \
-        instance_title + ' inbox</dc:title>\n' + \
+        box_name + summary + '</dc:title>\n' + \
         '  </metadata>\n'
 
 
 def _speaker_endpoint_ssml(display_name: str, summary: str,
                            content: str, image_description: str,
                            links: [], language: str,
-                           instance_title: str,
-                           gender: str) -> str:
+                           gender: str, box_name: str) -> str:
     """Returns an SSML endpoint for the TTS speaker
     https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language
     https://www.w3.org/TR/speech-synthesis/
@@ -342,7 +344,9 @@ def _speaker_endpoint_ssml(display_name: str, summary: str,
 
     content = _add_ssm_lemphasis(content)
     voice_params = 'name="' + display_name + '" gender="' + gender + '"'
-    return _ssm_lheader(lang_short, instance_title) + \
+    if summary is None:
+        summary = ''
+    return _ssml_header(lang_short, box_name, summary) + \
         '  <p>\n' + \
         '    <s xml:lang="' + language + '">\n' + \
         '      <voice ' + voice_params + '>\n' + \
@@ -356,7 +360,6 @@ def _speaker_endpoint_ssml(display_name: str, summary: str,
 def get_ssml_box(base_dir: str, path: str,
                  domain: str,
                  system_language: str,
-                 instance_title: str,
                  box_name: str) -> str:
     """Returns SSML for the given timeline
     """
@@ -379,7 +382,7 @@ def get_ssml_box(base_dir: str, path: str,
                                   speaker_json['imageDescription'],
                                   speaker_json['detectedLinks'],
                                   system_language,
-                                  instance_title, gender)
+                                  gender, box_name)
 
 
 def speakable_text(base_dir: str, content: str, translate: {}) -> (str, []):
@@ -544,7 +547,8 @@ def update_speaker(base_dir: str, http_prefix: str,
                    nickname: str, domain: str, domain_full: str,
                    post_json_object: {}, person_cache: {},
                    translate: {}, announcing_actor: str,
-                   theme_name: str) -> None:
+                   theme_name: str,
+                   system_language: str, box_name: str) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
@@ -554,5 +558,35 @@ def update_speaker(base_dir: str, http_prefix: str,
                               post_json_object, person_cache,
                               translate, announcing_actor,
                               theme_name)
-    speaker_filename = acct_dir(base_dir, nickname, domain) + '/speaker.json'
+    if not speaker_json:
+        return
+    account_dir = acct_dir(base_dir, nickname, domain)
+    speaker_filename = account_dir + '/speaker.json'
     save_json(speaker_json, speaker_filename)
+
+    # save the ssml
+    cached_ssml_filename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
+    if not cached_ssml_filename:
+        return
+    cached_ssml_filename = cached_ssml_filename.replace('.html', '.ssml')
+    if box_name == 'outbox':
+        cached_ssml_filename = \
+            cached_ssml_filename.replace('/postcache/', '/outbox/')
+    gender = None
+    if speaker_json.get('gender'):
+        gender = speaker_json['gender']
+    ssml_str = \
+        _speaker_endpoint_ssml(speaker_json['name'],
+                               speaker_json['summary'],
+                               speaker_json['say'],
+                               speaker_json['imageDescription'],
+                               speaker_json['detectedLinks'],
+                               system_language,
+                               gender, box_name)
+    try:
+        with open(cached_ssml_filename, 'w+') as fp_ssml:
+            fp_ssml.write(ssml_str)
+    except OSError:
+        print('EX: unable to write ssml ' + cached_ssml_filename)

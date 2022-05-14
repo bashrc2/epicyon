@@ -617,6 +617,17 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _request_ssml(self) -> bool:
+        """Should a ssml response be given?
+        """
+        if not self.headers.get('Accept'):
+            return False
+        accept_str = self.headers['Accept']
+        if 'application/ssml' in accept_str:
+            if 'text/html' not in accept_str:
+                return True
+        return False
+
     def _request_http(self) -> bool:
         """Should a http response be given?
         """
@@ -11025,7 +11036,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(actor_absolute, cookie, calling_domain)
         return True
 
-    def _show_individual_at_post(self, authorized: bool,
+    def _show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                  calling_domain: str, referer_domain: str,
                                  path: str,
                                  base_dir: str, http_prefix: str,
@@ -11072,6 +11083,35 @@ class PubServer(BaseHTTPRequestHandler):
         status_number = post_sections[1]
         if len(status_number) <= 10 or not status_number.isdigit():
             return False
+
+        if ssml_getreq:
+            ssml_filename = \
+                acct_dir(base_dir, nickname, domain) + '/outbox/' + \
+                http_prefix + ':##' + domain_full + '#users#' + nickname + \
+                '#statuses#' + status_number + '.ssml'
+            if not os.path.isfile(ssml_filename):
+                ssml_filename = \
+                    acct_dir(base_dir, nickname, domain) + '/postcache/' + \
+                    http_prefix + ':##' + domain_full + '#users#' + \
+                    nickname + '#statuses#' + status_number + '.ssml'
+            if not os.path.isfile(ssml_filename):
+                self._404()
+                return True
+            ssml_str = None
+            try:
+                with open(ssml_filename, 'r') as fp_ssml:
+                    ssml_str = fp_ssml.read()
+            except OSError:
+                pass
+            if ssml_str:
+                msg = ssml_str.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('application/ssml+xml', msglen,
+                                  cookie, calling_domain, False)
+                self._write(msg)
+                return True
+            self._404()
+            return True
 
         post_filename = \
             acct_dir(base_dir, nickname, domain) + '/outbox/' + \
@@ -11346,7 +11386,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.getreq_busy = False
         return True
 
-    def _show_individual_post(self, authorized: bool,
+    def _show_individual_post(self, ssml_getreq: bool, authorized: bool,
                               calling_domain: str, referer_domain: str,
                               path: str,
                               base_dir: str, http_prefix: str,
@@ -11387,6 +11427,35 @@ class PubServer(BaseHTTPRequestHandler):
         status_number = post_sections[2]
         if len(status_number) <= 10 or (not status_number.isdigit()):
             return False
+
+        if ssml_getreq:
+            ssml_filename = \
+                acct_dir(base_dir, nickname, domain) + '/outbox/' + \
+                http_prefix + ':##' + domain_full + '#users#' + nickname + \
+                '#statuses#' + status_number + '.ssml'
+            if not os.path.isfile(ssml_filename):
+                ssml_filename = \
+                    acct_dir(base_dir, nickname, domain) + '/postcache/' + \
+                    http_prefix + ':##' + domain_full + '#users#' + \
+                    nickname + '#statuses#' + status_number + '.ssml'
+            if not os.path.isfile(ssml_filename):
+                self._404()
+                return True
+            ssml_str = None
+            try:
+                with open(ssml_filename, 'r') as fp_ssml:
+                    ssml_str = fp_ssml.read()
+            except OSError:
+                pass
+            if ssml_str:
+                msg = ssml_str.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('application/ssml+xml', msglen,
+                                  cookie, calling_domain, False)
+                self._write(msg)
+                return True
+            self._404()
+            return True
 
         post_filename = \
             acct_dir(base_dir, nickname, domain) + '/outbox/' + \
@@ -15387,12 +15456,15 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', 'create session',
                             self.server.debug)
 
-        # is this a html request?
+        # is this a html/ssml/icalendar request?
         html_getreq = False
+        ssml_getreq = False
         icalendar_getreq = False
         if self._has_accept(calling_domain):
             if self._request_http():
                 html_getreq = True
+            elif self._request_ssml():
+                ssml_getreq = True
             elif self._request_icalendar():
                 icalendar_getreq = True
         else:
@@ -16184,7 +16256,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.translate,
                                  access_keys,
                                  self.server.access_keys,
-                                 self.server.default_timeline)
+                                 self.server.default_timeline,
+                                 self.server.theme_name)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
@@ -17628,7 +17701,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         # get an individual post from the path /@nickname/statusnumber
-        if self._show_individual_at_post(authorized,
+        if self._show_individual_at_post(ssml_getreq, authorized,
                                          calling_domain, referer_domain,
                                          self.path,
                                          self.server.base_dir,
@@ -17773,7 +17846,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get an individual post from the path
         # /users/nickname/statuses/number
         if '/statuses/' in self.path and users_in_path:
-            if self._show_individual_post(authorized,
+            if self._show_individual_post(ssml_getreq, authorized,
                                           calling_domain, referer_domain,
                                           self.path,
                                           self.server.base_dir,
