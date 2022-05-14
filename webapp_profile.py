@@ -74,6 +74,7 @@ from blog import get_blog_address
 from webapp_post import individual_post_as_html
 from webapp_timeline import html_individual_share
 from blocking import get_cw_list_variable
+from blocking import is_blocked
 from content import bold_reading_string
 
 THEME_FORMATS = '.zip, .gz'
@@ -307,6 +308,9 @@ def html_profile_after_search(css_cache: {},
         # don't follow yourself!
         follow_is_permitted = False
 
+    blocked = \
+        is_blocked(base_dir, nickname, domain, search_nickname, search_domain)
+
     if follow_is_permitted:
         follow_str = 'Follow'
         if is_group:
@@ -316,15 +320,24 @@ def html_profile_after_search(css_cache: {},
             '<div class="container">\n' + \
             '  <form method="POST" action="' + \
             back_url + '/followconfirm">\n' + \
-            '    <center>\n' + \
+            '    <center>\n'
+        profile_str += \
             '      <input type="hidden" name="actor" value="' + \
             person_url + '">\n' + \
             '      <button type="submit" class="button" name="submitYes" ' + \
             'accesskey="' + access_keys['followButton'] + '">' + \
-            translate[follow_str] + '</button>\n' + \
+            translate[follow_str] + '</button>\n'
+        profile_str += \
             '      <button type="submit" class="button" name="submitView" ' + \
             'accesskey="' + access_keys['viewButton'] + '">' + \
-            translate['View'] + '</button>\n' + \
+            translate['View'] + '</button>\n'
+        if blocked:
+            profile_str += \
+                '      <button type="submit" ' + \
+                'class="button" name="submitUnblock" ' + \
+                'accesskey="' + access_keys['unblockButton'] + '">' + \
+                translate['Unblock'] + '</button>\n'
+        profile_str += \
             '    </center>\n' + \
             '  </form>\n' + \
             '</div>\n'
