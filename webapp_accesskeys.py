@@ -72,8 +72,7 @@ def html_access_keys(css_cache: {}, base_dir: str,
         '<a href="/users/' + nickname + '/' + \
         default_timeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + timeline_key + '">\n'
+        translate['Switch to timeline view'] + '">\n'
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
     access_keys_form += '<img loading="lazy" decoding="async" ' + \
