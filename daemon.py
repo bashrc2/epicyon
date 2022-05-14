@@ -3717,6 +3717,10 @@ class PubServer(BaseHTTPRequestHandler):
                 remove_block(base_dir,
                              blocker_nickname, domain,
                              blocking_nickname, blocking_domain_full)
+                if is_moderator(base_dir, blocker_nickname):
+                    remove_global_block(base_dir,
+                                        blocking_nickname,
+                                        blocking_domain_full)
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
