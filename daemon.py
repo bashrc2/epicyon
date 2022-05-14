@@ -3538,6 +3538,10 @@ class PubServer(BaseHTTPRequestHandler):
                 remove_block(base_dir,
                              follower_nickname, domain,
                              blocking_nickname, blocking_domain_full)
+                if is_moderator(base_dir, follower_nickname):
+                    remove_global_block(base_dir,
+                                        blocking_nickname,
+                                        blocking_domain_full)
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
