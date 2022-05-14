@@ -419,12 +419,15 @@ def _page_number_buttons(users_path: str, box_name: str,
     for page in range(min_page_number, max_page_number):
         if num_str:
             num_str += ' ⸻ '
+        aria_page_str = ''
         page_str = str(page)
         if page == page_number:
             page_str = '<mark>' + str(page) + '</mark>'
+            aria_page_str = ' aria-current="page"'
         num_str += \
             '<a href="' + users_path + '/' + box_name + '?page=' + \
-            str(page) + '" class="pageslist">' + page_str + '</a>'
+            str(page) + '" class="pageslist"' + aria_page_str + \
+            '>' + page_str + '</a>'
     return '<center>' + num_str + '</center>'
 
 
