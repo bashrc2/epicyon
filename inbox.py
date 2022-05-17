@@ -126,6 +126,7 @@ from conversation import update_conversation
 from webapp_hashtagswarm import html_hash_tag_swarm
 from person import valid_sending_actor
 from fitnessFunctions import fitness_performance
+from content import valid_url_lengths
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -2586,6 +2587,12 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                                     http_prefix, domain_full,
                                     person_cache):
         return False
+
+    # check for urls which are too long
+    if not valid_url_lengths(content_str, 2048):
+        print('REJECT: url within content too long')
+        return False
+
     # check for filtered content
     if is_filtered(base_dir, nickname, domain, content_str):
         print('REJECT: content filtered')

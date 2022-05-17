@@ -322,6 +322,7 @@ from utils import has_group_type
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
+from content import valid_url_lengths
 from content import contains_invalid_local_links
 from content import get_price_from_string
 from content import replace_emoji_from_tags
@@ -1744,6 +1745,31 @@ class PubServer(BaseHTTPRequestHandler):
                     print('INBOX: ' +
                           check_field + ' should be a list ' +
                           str(message_json['object'][check_field]))
+                    self._400()
+                    self.server.postreq_busy = False
+                    return 3
+            # check that the content does not contain impossibly long urls
+            if message_json['object'].get('content'):
+                content_str = message_json['object']['content']
+                if not valid_url_lengths(content_str, 2048):
+                    print('INBOX: content contains urls which are too long ' +
+                          message_json['actor'])
+                    self._400()
+                    self.server.postreq_busy = False
+                    return 3
+            # check that the summary does not contain links
+            if message_json['object'].get('summary'):
+                if len(message_json['object']['summary']) > 1024:
+                    print('INBOX: summary is too long ' +
+                          message_json['actor'] + ' ' +
+                          message_json['object']['summary'])
+                    self._400()
+                    self.server.postreq_busy = False
+                    return 3
+                if '://' in message_json['object']['summary']:
+                    print('INBOX: summary should not contain links ' +
+                          message_json['actor'] + ' ' +
+                          message_json['object']['summary'])
                     self._400()
                     self.server.postreq_busy = False
                     return 3
