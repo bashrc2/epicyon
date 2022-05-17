@@ -59,6 +59,25 @@ INVALID_CONTENT_STRINGS = (
 )
 
 
+def valid_url_lengths(content: str, max_url_length: int) -> bool:
+    """Returns true if the given content contains urls which are too long
+    """
+    if '://' not in content:
+        return True
+    sections = content.split('://')
+    ctr = 0
+    for text in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        if '"' in text:
+            url = text.split('"')[0]
+            if '<' not in url and '>' not in url:
+                if len(url) > max_url_length:
+                    return False
+    return True
+
+
 def remove_html_tag(html_str: str, tag: str) -> str:
     """Removes a given tag from a html string
     """
