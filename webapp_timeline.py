@@ -380,7 +380,7 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
     tl_str = '  </div>\n'
 
     # end of column-center
-    tl_str += '  </section>\n  </td>\n'
+    tl_str += '  </td>\n'
 
     # right column
     right_column_str = \
@@ -799,8 +799,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
         '  </td>\n'
 
     # center column containing posts
-    tl_str += '  <td valign="top" class="col-center">\n' + \
-        '  <section>\n'
+    tl_str += '  <td valign="top" class="col-center">\n'
 
     if not full_width_tl_button_header:
         tl_str += \
