@@ -380,7 +380,7 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
     tl_str = '  </div>\n'
 
     # end of column-center
-    tl_str += '  </td>\n'
+    tl_str += '  </section>\n  </td>\n'
 
     # right column
     right_column_str = \
@@ -395,14 +395,18 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
                                  authorized, True, theme,
                                  default_timeline, access_keys)
     tl_str += '  <td valign="top" class="col-right" ' + \
-        'id="newswire" tabindex="-1">' + \
-        right_column_str + '  </td>\n'
-    tl_str += '  </tr>\n'
+        'id="newswire" tabindex="-1">\n' + \
+        '  <section>\n' + \
+        right_column_str + \
+        '  </section>\n' + \
+        '  </td>\n' + \
+        '  </tr>\n'
 
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '9')
 
     tl_str += '  </tbody>\n'
     tl_str += '</table>\n'
+    tl_str += '</main>\n'
     return tl_str
 
 
@@ -768,6 +772,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
 
     # start the timeline
     tl_str += \
+        '<main>\n' + \
         '<table class="timeline">\n' + \
         '  <colgroup>\n' + \
         '    <col span="1" class="column-left">\n' + \
@@ -787,10 +792,15 @@ def html_timeline(css_cache: {}, default_timeline: str,
                                 True, False, theme, access_keys,
                                 shared_items_federated_domains)
     tl_str += '  <td valign="top" class="col-left" ' + \
-        'id="links" tabindex="-1">' + \
-        left_column_str + '  </td>\n'
+        'id="links" tabindex="-1">\n' + \
+        '  <section>\n' + \
+        left_column_str + \
+        '  </section>\n' + \
+        '  </td>\n'
+
     # center column containing posts
-    tl_str += '  <td valign="top" class="col-center">\n'
+    tl_str += '  <td valign="top" class="col-center">\n' + \
+        '  <section>\n'
 
     if not full_width_tl_button_header:
         tl_str += \
