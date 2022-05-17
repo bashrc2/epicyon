@@ -396,9 +396,9 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
                                  default_timeline, access_keys)
     tl_str += '  <td valign="top" class="col-right" ' + \
         'id="newswire" tabindex="-1">\n' + \
-        '  <section>\n' + \
+        '  <aside>\n' + \
         right_column_str + \
-        '  </section>\n' + \
+        '  </aside>\n' + \
         '  </td>\n' + \
         '  </tr>\n'
 
@@ -793,9 +793,9 @@ def html_timeline(css_cache: {}, default_timeline: str,
                                 shared_items_federated_domains)
     tl_str += '  <td valign="top" class="col-left" ' + \
         'id="links" tabindex="-1">\n' + \
-        '  <section>\n' + \
+        '  <aside>\n' + \
         left_column_str + \
-        '  </section>\n' + \
+        '  </aside>\n' + \
         '  </td>\n'
 
     # center column containing posts
