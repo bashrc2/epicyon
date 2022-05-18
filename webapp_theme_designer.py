@@ -331,3 +331,52 @@ def html_theme_designer(css_cache: {}, base_dir: str,
     theme_form += '</div>\n'
     theme_form += html_footer()
     return theme_form
+
+
+def _relative_luminance(color: str) -> float:
+    """ Returns the relative luminance for the given color
+    """
+    color = color.lstrip('#')
+    rgb = list(int(color[i:i+2], 16) for i in (0, 2, 4))
+    srgb = (
+        rgb[0] / 255.0,
+        rgb[1] / 255.0,
+        rgb[2] / 255.0
+    )
+    if srgb[0] <= 0.03928:
+        rgb[0] = srgb[0] / 12.92
+    else:
+        rgb[0] = pow(((srgb[0] + 0.055) / 1.055), 2.4)
+    if srgb[1] <= 0.03928:
+        rgb[1] = srgb[1] / 12.92
+    else:
+        rgb[1] = pow(((srgb[1] + 0.055) / 1.055), 2.4)
+    if srgb[2] <= 0.03928:
+        rgb[2] = srgb[2] / 12.92
+    else:
+        rgb[2] = pow(((srgb[2] + 0.055) / 1.055), 2.4)
+
+    return \
+        0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
+
+
+def color_contrast(background: str, foreground: str) -> float:
+    """returns the color contrast
+    """
+    if not background.startswith('#'):
+        if color_to_hex.get(background):
+            background = color_to_hex[background]
+        else:
+            return None
+    if not foreground.startswith('#'):
+        if color_to_hex.get(foreground):
+            foreground = color_to_hex[foreground]
+        else:
+            return None
+    background_luminance = _relative_luminance(background)
+    foreground_luminance = _relative_luminance(foreground)
+    if background_luminance > foreground_luminance:
+        return (0.05 + background_luminance) / (0.05 + foreground_luminance)
+    else:
+        return (0.05 + foreground_luminance) / (0.05 + background_luminance)
+    return None
