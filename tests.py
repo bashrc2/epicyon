@@ -148,6 +148,7 @@ from content import remove_long_words
 from content import replace_content_duplicates
 from content import remove_text_formatting
 from content import remove_html_tag
+from theme import get_themes_list
 from theme import update_default_themes_list
 from theme import set_css_param
 from theme import scan_themes_for_scripts
@@ -182,6 +183,7 @@ from blocking import load_cw_lists
 from blocking import add_cw_from_lists
 from happening import dav_month_via_server
 from happening import dav_day_via_server
+from webapp_theme_designer import color_contrast
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -7092,6 +7094,44 @@ def _test_diff_content() -> None:
     assert html_str == expected
 
 
+def _test_color_contrast_value(base_dir: str) -> None:
+    print('test_color_contrast_value')
+    minimum_color_contrast = 4.5
+    background = 'black'
+    foreground = 'white'
+    contrast = color_contrast(background, foreground)
+    assert contrast
+    assert contrast > 20
+    assert contrast < 22
+    foreground = 'grey'
+    contrast = color_contrast(background, foreground)
+    assert contrast
+    assert contrast > 5
+    assert contrast < 6
+    themes = get_themes_list(base_dir)
+    for theme_name in themes:
+        theme_filename = base_dir + '/theme/' + theme_name + '/theme.json'
+        if not os.path.isfile(theme_filename):
+            continue
+        theme_json = load_json(theme_filename)
+        if not theme_json:
+            continue
+        if not theme_json.get('main-fg-color'):
+            continue
+        if not theme_json.get('main-bg-color'):
+            continue
+        foreground = theme_json['main-fg-color']
+        background = theme_json['main-bg-color']
+        contrast = color_contrast(background, foreground)
+        if contrast is None:
+            continue
+        if contrast < minimum_color_contrast:
+            print('Theme ' + theme_name + ' has not enough color contrast ' +
+                  str(contrast) + ' < ' + str(minimum_color_contrast))
+        assert contrast >= minimum_color_contrast
+    print('Color contrast is ok for all themes')
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7109,6 +7149,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_color_contrast_value(base_dir)
     _test_diff_content()
     _test_bold_reading()
     _test_published_to_local_timezone()
