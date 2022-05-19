@@ -223,11 +223,9 @@ def html_theme_designer(css_cache: {}, base_dir: str,
         'name="submitThemeDesigner" accesskey="' + submit_key + '">' + \
         translate['Submit'] + '</button>\n    </center>\n'
 
-    background = None
     contrast_warning = ''
     if theme_json.get('main-bg-color'):
         background = theme_json['main-bg-color']
-        foreground = None
         if theme_json.get('main-fg-color'):
             foreground = theme_json['main-fg-color']
             contrast = color_contrast(background, foreground)
