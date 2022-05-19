@@ -233,10 +233,10 @@ def html_theme_designer(css_cache: {}, base_dir: str,
                 if contrast < 4.5:
                     contrast_warning = '⚠️ '
                     theme_form += \
-                        '    <p><label class="labels">' + \
+                        '    <center><label class="labels">' + \
                         contrast_warning + '<b>' + \
                         translate['Color contrast is too low'] + \
-                        '</b></label></p>\n'
+                        '</b></label></center>\n'
 
     table_str = '    <table class="accesskeys">\n'
     table_str += '      <colgroup>\n'
