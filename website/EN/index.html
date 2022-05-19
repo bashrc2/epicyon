@@ -1378,6 +1378,26 @@
       Restart=always<br>
       StandardError=syslog<br>
       CPUQuota=80%<br>
+      ProtectHome=true<br>
+      ProtectKernelTunables=true<br>
+      ProtectKernelModules=true<br>
+      ProtectControlGroups=true<br>
+      ProtectKernelLogs=true<br>
+      ProtectHostname=true<br>
+      ProtectClock=true<br>
+      ProtectProc=invisible<br>
+      ProcSubset=pid<br>
+      PrivateTmp=true<br>
+      PrivateUsers=true<br>
+      PrivateDevices=true<br>
+      PrivateIPC=true<br>
+      MemoryDenyWriteExecute=true<br>
+      NoNewPrivileges=true<br>
+      LockPersonality=true<br>
+      RestrictRealtime=true<br>
+      RestrictSUIDSGID=true<br>
+      RestrictNamespaces=true<br>
+      SystemCallArchitectures=native<br>      
       <br>
       [Install]<br>
       WantedBy=multi-user.target
