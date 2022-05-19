@@ -223,6 +223,21 @@ def html_theme_designer(css_cache: {}, base_dir: str,
         'name="submitThemeDesigner" accesskey="' + submit_key + '">' + \
         translate['Submit'] + '</button>\n    </center>\n'
 
+    contrast_warning = ''
+    if theme_json.get('main-bg-color'):
+        background = theme_json['main-bg-color']
+        if theme_json.get('main-fg-color'):
+            foreground = theme_json['main-fg-color']
+            contrast = color_contrast(background, foreground)
+            if contrast:
+                if contrast < 4.5:
+                    contrast_warning = '⚠️ '
+                    theme_form += \
+                        '    <center><label class="labels">' + \
+                        contrast_warning + '<b>' + \
+                        translate['Color contrast is too low'] + \
+                        '</b></label></center>\n'
+
     table_str = '    <table class="accesskeys">\n'
     table_str += '      <colgroup>\n'
     table_str += '        <col span="1" class="accesskeys-left">\n'
@@ -238,9 +253,14 @@ def html_theme_designer(css_cache: {}, base_dir: str,
         if 'font-size' in variable_name:
             variable_name_str = variable_name.replace('-', ' ')
             variable_name_str = variable_name_str.title()
+            variable_name_label = variable_name_str
+            if contrast_warning:
+                if variable_name == 'main-bg-color' or \
+                   variable_name == 'main-fg-color':
+                    variable_name_label = contrast_warning + variable_name_str
             font_str += \
                 '      <tr><td><label class="labels">' + \
-                variable_name_str + '</label></td>'
+                variable_name_label + '</label></td>'
             font_str += \
                 '<td><input type="text" name="themeSetting_' + \
                 variable_name + '" value="' + str(value) + \
