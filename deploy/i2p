@@ -218,6 +218,27 @@ echo 'Creating Epicyon daemon'
   echo 'Environment=PYTHONUNBUFFERED=true';
   echo 'Restart=always';
   echo 'StandardError=syslog';
+  echo 'CPUQuota=80%';
+  echo 'ProtectHome=true';
+  echo 'ProtectKernelTunables=true';
+  echo 'ProtectKernelModules=true';
+  echo 'ProtectControlGroups=true';
+  echo 'ProtectKernelLogs=true';
+  echo 'ProtectHostname=true';
+  echo 'ProtectClock=true';
+  echo 'ProtectProc=invisible';
+  echo 'ProcSubset=pid';
+  echo 'PrivateTmp=true';
+  echo 'PrivateUsers=true';
+  echo 'PrivateDevices=true';
+  echo 'PrivateIPC=true';
+  echo 'MemoryDenyWriteExecute=true';
+  echo 'NoNewPrivileges=true';
+  echo 'LockPersonality=true';
+  echo 'RestrictRealtime=true';
+  echo 'RestrictSUIDSGID=true';
+  echo 'RestrictNamespaces=true';
+  echo 'SystemCallArchitectures=native';
   echo '';
   echo '[Install]';
   echo 'WantedBy=multi-user.target'; } > "/etc/systemd/system/${username}.service"

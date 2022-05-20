@@ -85,6 +85,27 @@ Environment=USER=epicyon
 Environment=PYTHONUNBUFFERED=true
 Restart=always
 StandardError=syslog
+CPUQuota=80%
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectKernelLogs=true
+ProtectHostname=true
+ProtectClock=true
+ProtectProc=invisible
+ProcSubset=pid
+PrivateTmp=true
+PrivateUsers=true
+PrivateDevices=true
+PrivateIPC=true
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+SystemCallArchitectures=native
 
 [Install]
 WantedBy=multi-user.target
