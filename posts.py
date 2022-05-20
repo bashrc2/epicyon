@@ -1439,9 +1439,12 @@ def _create_post_base(base_dir: str,
             for audio_tag, audio_value in music_metadata.items():
                 if audio_tag == 'title' or audio_tag == 'track':
                     continue
+                # capitalize and remove any spaces
                 audio_value = audio_value.title().replace(' ', '')
+                # check that the tag is valid
                 if valid_hash_tag(audio_value) and \
                    '#' + audio_value not in content:
+                    # check that it hasn't been blocked
                     if not is_blocked_hashtag(base_dir, audio_value):
                         content += ' #' + audio_value
 
