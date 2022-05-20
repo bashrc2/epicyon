@@ -84,6 +84,7 @@ from content import add_html_tags
 from content import replace_emoji_from_tags
 from content import remove_text_formatting
 from auth import create_basic_auth_header
+from blocking import is_blocked_hashtag
 from blocking import is_blocked
 from blocking import is_blocked_domain
 from filters import is_filtered
@@ -1441,7 +1442,8 @@ def _create_post_base(base_dir: str,
                 audio_value = audio_value.title().replace(' ', '')
                 if valid_hash_tag(audio_value) and \
                    '#' + audio_value not in content:
-                    content += ' #' + audio_value
+                    if not is_blocked_hashtag(base_dir, audio_value):
+                        content += ' #' + audio_value
 
     tags = []
     hashtags_dict = {}
