@@ -3535,6 +3535,9 @@ def valid_hash_tag(hashtag: str) -> bool:
     # long hashtags are not valid
     if len(hashtag) >= 32:
         return False
+    # numbers are not permitted to be hashtags
+    if hashtag.isdigit():
+        return False
     if set(hashtag).issubset(VALID_HASHTAG_CHARS):
         return True
     if _is_valid_language(hashtag):

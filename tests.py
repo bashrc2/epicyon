@@ -5573,6 +5573,7 @@ def _test_valid_hash_tag():
     assert valid_hash_tag('한국어')
     assert valid_hash_tag('테스트')
     assert valid_hash_tag('테_스트')
+    assert valid_hash_tag('c99')
     assert not valid_hash_tag('this-is-invalid')
     assert not valid_hash_tag('ThisIsNotValid!')
     assert not valid_hash_tag('#ThisIsAlsoNotValid')
@@ -5581,6 +5582,7 @@ def _test_valid_hash_tag():
     assert not valid_hash_tag('ThisIsAlsoNotValid"')
     assert not valid_hash_tag('This Is Also Not Valid"')
     assert not valid_hash_tag('This=IsAlsoNotValid"')
+    assert not valid_hash_tag('12345')
 
 
 def _test_markdown_to_html():
