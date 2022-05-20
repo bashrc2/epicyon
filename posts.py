@@ -32,6 +32,8 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import valid_hash_tag
+from utils import get_audio_extensions
 from utils import get_summary_from_post
 from utils import get_user_paths
 from utils import invalid_ciphertext
@@ -70,6 +72,7 @@ from utils import remove_html
 from utils import dangerous_markup
 from utils import acct_dir
 from utils import local_actor_url
+from media import get_music_metadata
 from media import attach_media
 from media import replace_you_tube
 from media import replace_twitter
@@ -1422,6 +1425,23 @@ def _create_post_base(base_dir: str,
             get_mentioned_people(base_dir, http_prefix, content, domain, False)
     else:
         mentioned_recipients = ''
+
+    # add hashtags from audio file ID3 tags, such as Artist, Album, etc
+    if attach_image_filename and media_type:
+        audio_types = get_audio_extensions()
+        music_metadata = None
+        for ext in audio_types:
+            if ext in media_type:
+                music_metadata = get_music_metadata(attach_image_filename)
+                break
+        if music_metadata:
+            for audio_tag, audio_value in music_metadata.items():
+                if audio_tag == 'title' or audio_tag == 'track':
+                    continue
+                audio_value = audio_value.title().replace(' ', '')
+                if valid_hash_tag(audio_value) and \
+                   '#' + audio_value not in content:
+                    content += ' #' + audio_value
 
     tags = []
     hashtags_dict = {}

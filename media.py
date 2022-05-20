@@ -162,6 +162,38 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
         return
 
 
+def get_music_metadata(filename: str) -> {}:
+    """Returns metadata for a music file
+    """
+    result = None
+    try:
+        result = subprocess.run(['exiftool', '-v3', filename],
+                                stdout=subprocess.PIPE)
+    except BaseException as ex:
+        print('EX: get_music_metadata failed ' + str(ex))
+    if not result:
+        return {}
+    if not result.stdout:
+        return {}
+    try:
+        id3_lines = result.stdout.decode('utf-8').split('\n')
+    except BaseException:
+        print('EX: get_music_metadata unable to decode output')
+        return {}
+    fieldnames = (
+        'Title', 'Artist', 'Genre', 'Track', 'Album', 'Length', 'Band'
+    )
+    music_metadata = {}
+    for line in id3_lines:
+        for field in fieldnames:
+            if field + ' = ' in line:
+                field_value = line.split(field + ' = ')[1]
+                if '>' in field_value:
+                    field_value = field_value.split('>')[0].strip()
+                music_metadata[field.lower()] = field_value
+    return music_metadata
+
+
 def convert_image_to_low_bandwidth(image_filename: str) -> None:
     """Converts an image to a low bandwidth version
     """
