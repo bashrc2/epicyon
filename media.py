@@ -186,18 +186,19 @@ def get_music_metadata(filename: str) -> {}:
     music_metadata = {}
     for line in id3_lines:
         for field in fieldnames:
-            if field + ' = ' in line:
-                field_value = line.split(field + ' = ')[1]
-                if '>' in field_value:
-                    field_value = field_value.split('>')[0].strip()
-                if ':' in field_value and ' ' in field_value:
-                    words = field_value.split(' ')
-                    new_value = ''
-                    for wrd in words:
-                        if ':' not in wrd:
-                            new_value += wrd + ' '
-                    field_value = new_value.strip()
-                music_metadata[field.lower()] = field_value
+            if field + ' = ' not in line:
+                continue
+            field_value = line.split(field + ' = ')[1]
+            if '>' in field_value:
+                field_value = field_value.split('>')[0].strip()
+            if ':' in field_value and ' ' in field_value:
+                words = field_value.split(' ')
+                new_value = ''
+                for wrd in words:
+                    if ':' not in wrd:
+                        new_value += wrd + ' '
+                field_value = new_value.strip()
+            music_metadata[field.lower()] = field_value
     return music_metadata
 
 
