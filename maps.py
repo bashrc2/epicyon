@@ -233,6 +233,6 @@ def html_open_street_map(url: str,
         str(latitude + bounding_box_degrees) + \
         '&amp;layer=mapnik" style="border: 1px solid black"></iframe>' + \
         '<br/><small><a href="https://www.' + osm_domain + '/#map=' + \
-        zoom + '/' + latitude + '/' + longitude + \
+        str(zoom) + '/' + str(latitude) + '/' + str(longitude) + \
         '">' + translate['View Larger Map'] + '</a></small>\n'
     return html_str
