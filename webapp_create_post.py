@@ -682,7 +682,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             date_and_location += date_and_time_str
 
         date_and_location += \
-            edit_text_field(translate['Location'], 'location',
+            edit_text_field(translate['Location'], 'location', '',
                             'https://www.openstreetmap.org/#map=')
         date_and_location += end_edit_section()
 
