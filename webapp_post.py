@@ -93,6 +93,21 @@ from languages import auto_translate_post
 from blocking import is_blocked
 from blocking import add_cw_from_lists
 from reaction import html_emoji_reactions
+from maps import html_open_street_map
+
+
+def _get_location_from_tags(tags: []) -> str:
+    """Returns the location from the tags list
+    """
+    for tag_item in tags:
+        if not tag_item.get('type'):
+            continue
+        if tag_item['type'] != 'Place':
+            continue
+        if not tag_item.get('name'):
+            continue
+        return tag_item['name'].replace('\n', ' ')
+    return None
 
 
 def _html_post_metadata_open_graph(domain: str, post_json_object: {},
@@ -2128,11 +2143,23 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '17')
 
-    if post_json_object['object'].get('tag') and not is_patch:
-        content_str = \
-            replace_emoji_from_tags(session, base_dir, content_str,
-                                    post_json_object['object']['tag'],
-                                    'content', False, True)
+    if post_json_object['object'].get('tag'):
+        if not is_patch:
+            content_str = \
+                replace_emoji_from_tags(session, base_dir, content_str,
+                                        post_json_object['object']['tag'],
+                                        'content', False, True)
+
+        # show embedded map if the location contains a map url
+        location_str = \
+            _get_location_from_tags(post_json_object['object']['tag'])
+        if location_str:
+            if '://' in location_str and '.' in location_str:
+                bounding_box_degrees = 0.01
+                content_str += \
+                    html_open_street_map(location_str,
+                                         bounding_box_degrees,
+                                         translate)
 
     if is_muted:
         content_str = ''
