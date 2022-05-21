@@ -221,7 +221,7 @@ def html_open_street_map(url: str,
         return ''
 
     html_str = \
-        '<iframe width="625" height="550" frameborder="0" ' + \
+        '<iframe width="725" height="650" frameborder="0" ' + \
         'scrolling="no" marginheight="0" marginwidth="0" ' + \
         'src="https://www.' + osm_domain + '/export/embed.html?' + \
         'bbox=' + str(longitude - bounding_box_degrees) + \
