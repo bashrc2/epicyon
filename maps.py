@@ -8,13 +8,16 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 
+from utils import is_float
+
+
 def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
     """Returns geocoordinates from an OSM map link
     """
     if osm_domain + '/#map=' not in url:
         return None, None, None
 
-    coords_str = url.split('openstreetmap.org/#map=')[1]
+    coords_str = url.split(osm_domain + '/#map=')[1]
     if '/' not in coords_str:
         return None, None, None
 
@@ -25,10 +28,10 @@ def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
     if not zoom.isdigit():
         return None, None, None
     latitude = coords[1]
-    if not latitude.isdigit():
+    if not is_float(latitude):
         return None, None, None
     longitude = coords[2]
-    if not longitude.isdigit():
+    if not is_float(longitude):
         return None, None, None
     zoom = int(zoom)
     latitude = float(latitude)
@@ -53,10 +56,10 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     if not zoom.isdigit():
         return None, None, None
     latitude = coords[0]
-    if not latitude.isdigit():
+    if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
-    if not longitude.isdigit():
+    if not is_float(longitude):
         return None, None, None
     zoom = int(zoom)
     latitude = float(latitude)
@@ -89,10 +92,10 @@ def _geocoords_from_bmaps_link(url: str) -> (int, float, float):
     if len(coords) != 2:
         return None, None, None
     latitude = coords[0]
-    if not latitude.isdigit():
+    if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
-    if not longitude.isdigit():
+    if not is_float(longitude):
         return None, None, None
     zoom = 17
     if 'lvl=' in orig_coords_str:
@@ -135,10 +138,10 @@ def _geocoords_from_waze_link(url: str) -> (int, float, float):
     if len(coords) != 2:
         return None, None, None
     latitude = coords[0]
-    if not latitude.isdigit():
+    if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
-    if not longitude.isdigit():
+    if not is_float(longitude):
         return None, None, None
     zoom = 17
     if 'zoom=' in orig_coords_str:
@@ -173,10 +176,10 @@ def _geocoords_from_wego_link(url: str) -> (int, float, float):
     if len(coords) < 3:
         return None, None, None
     latitude = coords[0]
-    if not latitude.isdigit():
+    if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
-    if not longitude.isdigit():
+    if not is_float(longitude):
         return None, None, None
     zoom = coords[2]
     if not zoom.isdigit():
