@@ -2158,7 +2158,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             _get_location_from_tags(post_json_object['object']['tag'])
         if location_str:
             if '://' in location_str and '.' in location_str:
-                bounding_box_degrees = 0.01
+                bounding_box_degrees = 0.001
                 map_str = \
                     html_open_street_map(location_str,
                                          bounding_box_degrees,
