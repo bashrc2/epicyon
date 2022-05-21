@@ -2159,7 +2159,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if location_str:
             if '://' in location_str and '.' in location_str:
                 bounding_box_degrees = 0.001
-                map_str = \                    
+                map_str = \
                     html_open_street_map(location_str,
                                          bounding_box_degrees,
                                          translate)
