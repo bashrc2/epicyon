@@ -2143,6 +2143,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '17')
 
+    map_str = ''
     if post_json_object['object'].get('tag'):
         if not is_patch:
             content_str = \
@@ -2156,7 +2157,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if location_str:
             if '://' in location_str and '.' in location_str:
                 bounding_box_degrees = 0.01
-                content_str += \
+                map_str = \
                     html_open_street_map(location_str,
                                          bounding_box_degrees,
                                          translate)
@@ -2197,7 +2198,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             '        ' + title_str + \
             reply_avatar_image_in_post + '      </div>\n'
         post_html += \
-            content_str + citations_str + reaction_str + footer_str + '\n'
+            content_str + citations_str + map_str + \
+            reaction_str + footer_str + '\n'
         post_html += '    </div>\n'
     else:
         post_html = gallery_str
