@@ -1283,9 +1283,8 @@ def _create_post_place_and_time(event_date: str, end_date: str,
     if location and not event_uuid:
         latitude = longitude = None
         if '://' in location:
-            osm_domain = 'openstreetmap.org'
             _, latitude, longitude = \
-                geocoords_from_map_link(location, osm_domain)
+                geocoords_from_map_link(location)
         if latitude and longitude:
             tags.append({
                 "@context": "https://www.w3.org/ns/activitystreams",
