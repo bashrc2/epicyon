@@ -681,8 +681,15 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
             date_and_location += date_and_time_str
 
+        maps_url = get_config_param(base_dir, 'mapsUrl')
+        if not maps_url:
+            maps_url = 'https://www.openstreetmap.org'
+        location_label_with_link = \
+            '<a href="' + maps_url + '" ' + \
+            'rel="nofollow noopener noreferrer" target="_blank">' + \
+            translate['Location'] + '</a>'
         date_and_location += \
-            edit_text_field(translate['Location'], 'location', '',
+            edit_text_field(location_label_with_link, 'location', '',
                             'https://www.openstreetmap.org/#map=')
         date_and_location += end_edit_section()
 
