@@ -871,11 +871,15 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _set_headers_head(self, file_format: str, length: int, etag: str,
-                          calling_domain: str, permissive: bool) -> None:
+                          calling_domain: str, permissive: bool,
+                          last_modified_time_str: str) -> None:
         self._set_headers_base(file_format, length, None, calling_domain,
                                permissive)
         if etag:
             self.send_header('ETag', '"' + etag + '"')
+        if last_modified_time_str:
+            self.send_header('last-modified',
+                             last_modified_time_str)
         self.end_headers()
 
     def _set_headers_etag(self, media_filename: str, file_format: str,
@@ -18597,17 +18601,58 @@ class PubServer(BaseHTTPRequestHandler):
         check_path = self.path
         etag = None
         file_length = -1
+        last_modified_time_str = None
 
-        if '/media/' in self.path:
+        if '/media/' in self.path or \
+           '/accounts/avatars/' in self.path or \
+           '/accounts/headers/' in self.path:
             if is_image_file(self.path) or \
                path_is_video(self.path) or \
                path_is_audio(self.path):
-                media_str = self.path.split('/media/')[1]
-                media_filename = \
-                    self.server.base_dir + '/media/' + media_str
+                if '/media/' in self.path:
+                    media_str = self.path.split('/media/')[1]
+                    media_filename = \
+                        self.server.base_dir + '/media/' + media_str
+                elif '/accounts/avatars/' in self.path:
+                    avatar_file = self.path.split('/accounts/avatars/')[1]
+                    if '/' not in avatar_file:
+                        self._404()
+                        return
+                    nickname = avatar_file.split('/')[0]
+                    avatar_file = avatar_file.split('/')[1]
+                    avatar_file_ext = avatar_file.split('.')[-1]
+                    # remove any numbers, eg. avatar123.png becomes avatar.png
+                    if avatar_file.startswith('avatar'):
+                        avatar_file = 'avatar.' + avatar_file_ext
+                    media_filename = \
+                        self.server.base_dir + '/accounts/' + \
+                        nickname + '@' + self.server.domain + '/' + \
+                        avatar_file
+                else:
+                    banner_file = self.path.split('/accounts/headers/')[1]
+                    if '/' not in banner_file:
+                        self._404()
+                        return
+                    nickname = banner_file.split('/')[0]
+                    banner_file = banner_file.split('/')[1]
+                    banner_file_ext = banner_file.split('.')[-1]
+                    # remove any numbers, eg. banner123.png becomes banner.png
+                    if banner_file.startswith('banner'):
+                        banner_file = 'banner.' + banner_file_ext
+                    media_filename = \
+                        self.server.base_dir + '/accounts/' + \
+                        nickname + '@' + self.server.domain + '/' + \
+                        banner_file
+
                 if os.path.isfile(media_filename):
                     check_path = media_filename
                     file_length = os.path.getsize(media_filename)
+                    media_tm = os.path.getmtime(media_filename)
+                    last_modified_time = \
+                        datetime.datetime.fromtimestamp(media_tm)
+                    time_format_str = '%a, %d %b %Y %H:%M:%S GMT'
+                    last_modified_time_str = \
+                        last_modified_time.strftime(time_format_str)
                     media_tag_filename = media_filename + '.etag'
                     if os.path.isfile(media_tag_filename):
                         try:
@@ -18632,10 +18677,14 @@ class PubServer(BaseHTTPRequestHandler):
                             except OSError:
                                 print('EX: do_HEAD unable to write ' +
                                       media_tag_filename)
+                else:
+                    self._404()
+                    return
 
         media_file_type = media_file_mime_type(check_path)
         self._set_headers_head(media_file_type, file_length,
-                               etag, calling_domain, False)
+                               etag, calling_domain, False,
+                               last_modified_time_str)
 
     def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   length: int, post_bytes, boundary: str,
