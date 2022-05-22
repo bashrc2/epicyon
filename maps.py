@@ -8,7 +8,11 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 
+import os
 from utils import is_float
+from utils import acct_dir
+from utils import load_json
+from utils import save_json
 
 
 def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
@@ -190,7 +194,7 @@ def _geocoords_from_wego_link(url: str) -> (int, float, float):
     return zoom, latitude, longitude
 
 
-def _geocoords_from_map_link(url: str, osm_domain: str) -> (int, float, float):
+def geocoords_from_map_link(url: str, osm_domain: str) -> (int, float, float):
     """Returns geocoordinates from a map link url
     """
     if osm_domain in url:
@@ -212,7 +216,7 @@ def html_open_street_map(url: str,
     """Returns embed html for an OSM link
     """
     osm_domain = 'openstreetmap.org'
-    zoom, latitude, longitude = _geocoords_from_map_link(url, osm_domain)
+    zoom, latitude, longitude = geocoords_from_map_link(url, osm_domain)
     if not latitude:
         return ''
     if not longitude:
@@ -236,3 +240,70 @@ def html_open_street_map(url: str,
         str(zoom) + '/' + str(latitude) + '/' + str(longitude) + \
         '">' + translate['View Larger Map'] + '</a></small>\n'
     return html_str
+
+
+def set_map_preferences_url(base_dir: str, nickname: str, domain: str,
+                            maps_website_url: str) -> None:
+    """Sets the preferred maps website for an account
+    """
+    maps_filename = \
+        acct_dir(base_dir, nickname, domain) + '/map_preferences.json'
+    if os.path.isfile(maps_filename):
+        maps_json = load_json(maps_filename)
+        maps_json['url'] = maps_website_url
+    else:
+        maps_json = {
+            'url': maps_website_url
+        }
+    save_json(maps_json, maps_filename)
+
+
+def get_map_preferences_url(base_dir: str, nickname: str, domain: str) -> str:
+    """Gets the preferred maps website for an account
+    """
+    maps_filename = \
+        acct_dir(base_dir, nickname, domain) + '/map_preferences.json'
+    if os.path.isfile(maps_filename):
+        maps_json = load_json(maps_filename)
+        if maps_json.get('url'):
+            return maps_json['url']
+    return None
+
+
+def set_map_preferences_coords(base_dir: str, nickname: str, domain: str,
+                               latitude: float, longitude: float,
+                               zoom: int) -> None:
+    """Sets the preferred maps website coordinates for an account
+    """
+    maps_filename = \
+        acct_dir(base_dir, nickname, domain) + '/map_preferences.json'
+    if os.path.isfile(maps_filename):
+        maps_json = load_json(maps_filename)
+        maps_json['latitude'] = latitude
+        maps_json['longitude'] = longitude
+        maps_json['zoom'] = zoom
+    else:
+        maps_json = {
+            'latitude': latitude,
+            'longitude': longitude,
+            'zoom': zoom
+        }
+    save_json(maps_json, maps_filename)
+
+
+def get_map_preferences_coords(base_dir: str,
+                               nickname: str,
+                               domain: str) -> (float, float, int):
+    """Gets the preferred maps website coordinates for an account
+    """
+    maps_filename = \
+        acct_dir(base_dir, nickname, domain) + '/map_preferences.json'
+    if os.path.isfile(maps_filename):
+        maps_json = load_json(maps_filename)
+        if maps_json.get('latitude') and \
+           maps_json.get('longitude') and \
+           maps_json.get('zoom'):
+            return maps_json['latitude'], \
+                maps_json['longitude'], \
+                maps_json['zoom']
+    return None, None, None

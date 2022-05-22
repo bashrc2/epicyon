@@ -94,6 +94,9 @@ from blocking import is_blocked
 from blocking import add_cw_from_lists
 from reaction import html_emoji_reactions
 from maps import html_open_street_map
+from maps import set_map_preferences_coords
+from maps import set_map_preferences_url
+from maps import geocoords_from_map_link
 
 
 def _get_location_from_tags(tags: []) -> str:
@@ -2165,6 +2168,32 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                          translate)
                 if map_str:
                     map_str = '<center>\n' + map_str + '</center>\n'
+        if map_str and post_json_object['object'].get('attributedTo'):
+            attrib = post_json_object['object']['attributedTo']
+            # is this being sent by the author?
+            if '://' + domain_full + '/users/' + nickname in attrib:
+                location_domain = location_str
+                if '://' in location_str:
+                    location_domain = location_str.split('://')[1]
+                    if '/' in location_domain:
+                        location_domain = location_domain.split('/')[0]
+                    location_domain = \
+                        location_str.split('://')[0] + '://' + location_domain
+                else:
+                    if '/' in location_domain:
+                        location_domain = location_domain.split('/')[0]
+                    location_domain = 'https://' + location_domain
+                # remember the map site used
+                set_map_preferences_url(base_dir, nickname, domain,
+                                        location_domain)
+                # remember the coordinates
+                osm_domain = 'openstreetmap.org'
+                map_zoom, map_latitude, map_longitude = \
+                    geocoords_from_map_link(location_str, osm_domain)
+                if map_zoom and map_latitude and map_longitude:
+                    set_map_preferences_coords(base_dir, nickname, domain,
+                                               map_latitude, map_longitude,
+                                               map_zoom)
 
     if is_muted:
         content_str = ''
