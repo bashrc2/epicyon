@@ -684,6 +684,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         maps_url = get_config_param(base_dir, 'mapsUrl')
         if not maps_url:
             maps_url = 'https://www.openstreetmap.org'
+        if '://' not in maps_url:
+            maps_url = 'https://' + maps_url
         location_label_with_link = \
             '<a href="' + maps_url + '" ' + \
             'rel="nofollow noopener noreferrer" target="_blank">' + \
