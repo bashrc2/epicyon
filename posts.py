@@ -93,6 +93,7 @@ from linked_data_sig import generate_json_signature
 from petnames import resolve_petnames
 from video import convert_video_to_note
 from context import get_individual_post_context
+from maps import geocoords_from_map_link
 
 
 def is_moderator(base_dir: str, nickname: str) -> bool:
@@ -1280,11 +1281,25 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 "endTime": end_date_str
             })
     if location and not event_uuid:
-        tags.append({
-            "@context": "https://www.w3.org/ns/activitystreams",
-            "type": "Place",
-            "name": location
-        })
+        latitude = longitude = None
+        if '://' in location:
+            osm_domain = 'openstreetmap.org'
+            _, latitude, longitude = \
+                geocoords_from_map_link(location, osm_domain)
+        if latitude and longitude:
+            tags.append({
+                "@context": "https://www.w3.org/ns/activitystreams",
+                "type": "Place",
+                "name": location,
+                "latitude": latitude,
+                "longitude": longitude
+            })
+        else:
+            tags.append({
+                "@context": "https://www.w3.org/ns/activitystreams",
+                "type": "Place",
+                "name": location
+            })
     return event_date_str
 
 
