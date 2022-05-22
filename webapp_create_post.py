@@ -29,6 +29,8 @@ from webapp_utils import edit_text_field
 from webapp_utils import edit_number_field
 from webapp_utils import edit_currency_field
 from webapp_post import individual_post_as_html
+from maps import get_map_preferences_url
+from maps import get_map_preferences_coords
 
 
 def _html_following_data_list(base_dir: str, nickname: str,
@@ -681,11 +683,44 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
             date_and_location += date_and_time_str
 
-        maps_url = get_config_param(base_dir, 'mapsUrl')
+        maps_url = get_map_preferences_url(base_dir, nickname, domain)
         if not maps_url:
             maps_url = 'https://www.openstreetmap.org'
         if '://' not in maps_url:
             maps_url = 'https://' + maps_url
+        maps_latitude, maps_longitude, maps_zoom = \
+            get_map_preferences_coords(base_dir, nickname, domain)
+        if maps_latitude and maps_longitude and maps_zoom:
+            if 'openstreetmap.org' in maps_url:
+                maps_url = \
+                    'https://www.openstreetmap.org/#map=' + \
+                    str(maps_zoom) + '/' + \
+                    str(maps_latitude) + '/' + \
+                    str(maps_longitude)
+            elif '.google.co' in maps_url:
+                maps_url = \
+                    'https://www.google.com/maps/@' + \
+                    str(maps_latitude) + ',' + \
+                    str(maps_longitude) + ',' + \
+                    str(maps_zoom) + 'z'
+            elif '.bing.co' in maps_url:
+                maps_url = \
+                    'https://www.bing.com/maps?cp=' + \
+                    str(maps_latitude) + '~' + \
+                    str(maps_longitude) + '&amp;lvl=' + \
+                    str(maps_zoom)
+            elif '.waze.co' in maps_url:
+                maps_url = \
+                    'https://ul.waze.com/ul?ll=' + \
+                    str(maps_latitude) + '%2C' + \
+                    str(maps_longitude) + '&zoom=' + \
+                    str(maps_zoom)
+            elif 'wego.here.co' in maps_url:
+                maps_url = \
+                    'https://wego.here.com/?x=ep&map=' + \
+                    str(maps_latitude) + ',' + \
+                    str(maps_longitude) + ',' + \
+                    str(maps_zoom) + ',normal'
         location_label_with_link = \
             '<a href="' + maps_url + '" ' + \
             'rel="nofollow noopener noreferrer" target="_blank">' + \
