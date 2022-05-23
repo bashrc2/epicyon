@@ -499,7 +499,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                     # accessibility menu links
                     menu_option_str = \
                         html_hide_from_screen_reader('📅') + ' ' + \
-                        day_description
+                        '<time datetime="' + datetime_str + '">' + \
+                        day_description + '</time>'
                     nav_links[menu_option_str] = url
                     # there are events for this day
                     if not is_today:
