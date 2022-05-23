@@ -133,9 +133,11 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(year) + \
         '?month=' + str(month_number) + '">\n'
+    datetime_str = str(year) + '-' + str(month_number) + '-' + str(day_number)
     calendar_str += \
-        '  <h1>' + str(day_number) + ' ' + month_name + \
-        '</h1></a><br><span class="year">' + str(year) + '</span>\n'
+        '  <h1><time datetime="' + datetime_str + '">' + \
+        str(day_number) + ' ' + month_name + \
+        '</time></h1></a><br><span class="year">' + str(year) + '</span>\n'
     calendar_str += '</caption>\n'
     calendar_str += '<tbody>\n'
 
@@ -436,7 +438,10 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     calendar_str += '  <a href="' + cal_actor + '/inbox" title="'
     calendar_str += translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">'
-    calendar_str += '  <h1>' + month_name + '</h1></a>\n'
+    calendar_str += \
+        '  <h1><time datetime="' + \
+        str(year) + '-' + str(month_number) + '">' + month_name + \
+        '</time></h1></a>\n'
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(next_year) + \
         '?month=' + str(next_month_number) + '" ' + \
@@ -484,13 +489,18 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                         str(year) + '?month=' + \
                         str(month_number) + '?day=' + str(day_of_month)
                     day_description = month_name + ' ' + str(day_of_month)
+                    datetime_str = \
+                        str(year) + '-' + str(month_number) + '-' + \
+                        str(day_of_month)
                     day_link = '<a href="' + url + '" ' + \
                         'title="' + day_description + '">' + \
-                        str(day_of_month) + '</a>'
+                        '<time datetime="' + datetime_str + '">' + \
+                        str(day_of_month) + '</time></a>'
                     # accessibility menu links
                     menu_option_str = \
                         html_hide_from_screen_reader('📅') + ' ' + \
-                        day_description
+                        '<time datetime="' + datetime_str + '">' + \
+                        day_description + '</time>'
                     nav_links[menu_option_str] = url
                     # there are events for this day
                     if not is_today:
