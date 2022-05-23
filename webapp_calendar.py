@@ -193,7 +193,8 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                             event_map = \
                                 html_open_street_map(event_place,
                                                      bounding_box_degrees,
-                                                     translate)
+                                                     translate,
+                                                     '30vw', '30vw')
                             if event_map:
                                 event_place = event_map
 
