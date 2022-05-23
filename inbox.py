@@ -3185,6 +3185,7 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     schedule_post = False
     event_date = None
     event_time = None
+    event_end_time = None
     location = None
     conversation_id = None
     low_bandwidth = False
@@ -3197,8 +3198,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
                                    image_description, city,
                                    in_reply_to, in_reply_to_atom_uri,
                                    subject, debug, schedule_post,
-                                   event_date, event_time, location,
-                                   system_language, conversation_id,
+                                   event_date, event_time, event_end_time,
+                                   location, system_language, conversation_id,
                                    low_bandwidth,
                                    content_license_url,
                                    languages_understood, bounce_is_chat)

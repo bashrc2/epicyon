@@ -555,5 +555,7 @@
     "DM warning": "Nid yw negeseuon uniongyrchol wedi'u hamgryptio o'r dechrau i'r diwedd. Peidiwch â rhannu unrhyw wybodaeth hynod sensitif yma.",
     "Transcript": "Trawsgrifiad",
     "Color contrast is too low": "Mae cyferbyniad lliw yn rhy isel",
-    "View Larger Map": "Gweld Map Mwy"
+    "View Larger Map": "Gweld Map Mwy",
+    "Start Time": "Amser Dechrau",
+    "End Time": "Amser Gorffen"
 }

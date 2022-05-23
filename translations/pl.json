@@ -555,5 +555,7 @@
     "DM warning": "Wiadomości na czacie nie są szyfrowane metodą end-to-end. Nie udostępniaj tutaj żadnych wysoce wrażliwych informacji.",
     "Transcript": "Transkrypcja",
     "Color contrast is too low": "Kontrast kolorów jest zbyt niski",
-    "View Larger Map": "Wyświetl Większą Mapę"
+    "View Larger Map": "Wyświetl Większą Mapę",
+    "Start Time": "Czas rozpoczęcia",
+    "End Time": "Koniec czasu"
 }
