@@ -31,6 +31,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import html_keyboard_navigation
+from maps import html_open_street_map
 
 
 def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
@@ -141,6 +142,9 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     if day_events:
         for event_post in day_events:
             event_time = None
+            event_end_time = None
+            start_time_str = ''
+            end_time_str = ''
             event_description = None
             event_place = None
             post_id = None
@@ -153,10 +157,18 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                     if evnt.get('post_id'):
                         post_id = evnt['post_id']
                     if evnt.get('startTime'):
+                        start_time_str = evnt['startTime']
                         event_date = \
-                            datetime.strptime(evnt['startTime'],
+                            datetime.strptime(start_time_str,
                                               "%Y-%m-%dT%H:%M:%S%z")
                         event_time = event_date.strftime("%H:%M").strip()
+                    if evnt.get('endTime'):
+                        end_time_str = evnt['endTime']
+                        event_end_date = \
+                            datetime.strptime(end_time_str,
+                                              "%Y-%m-%dT%H:%M:%S%z")
+                        event_end_time = \
+                            event_end_date.strftime("%H:%M").strip()
                     if 'public' in evnt:
                         if evnt['public'] is True:
                             event_is_public = True
@@ -176,6 +188,15 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                 elif evnt['type'] == 'Place':
                     if evnt.get('name'):
                         event_place = evnt['name']
+                        if '://' in event_place:
+                            bounding_box_degrees = 0.001
+                            event_map = \
+                                html_open_street_map(event_place,
+                                                     bounding_box_degrees,
+                                                     translate,
+                                                     '320', '320')
+                            if event_map:
+                                event_place = event_map
 
             # prepend a link to the sender of the calendar item
             if sender_name and event_description:
@@ -210,6 +231,17 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
             if event_is_public:
                 event_class = 'calendar__day__event__public'
                 cal_item_class = 'calItemPublic'
+            if event_time:
+                if event_end_time:
+                    event_time = \
+                        '<time datetime="' + start_time_str + '">' + \
+                        event_time + '</time> - ' + \
+                        '<time datetime="' + end_time_str + '">' + \
+                        event_end_time + '</time>'
+                else:
+                    event_time = \
+                        '<time datetime="' + start_time_str + '">' + \
+                        event_time + '</time>'
             if event_time and event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \

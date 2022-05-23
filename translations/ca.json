@@ -555,5 +555,7 @@
     "DM warning": "Els missatges directes no estan xifrats d'extrem a extrem. No compartiu cap informació molt sensible aquí.",
     "Transcript": "Transcripció",
     "Color contrast is too low": "El contrast de color és massa baix",
-    "View Larger Map": "Veure mapa més gran"
+    "View Larger Map": "Veure mapa més gran",
+    "Start Time": "L'hora d'inici",
+    "End Time": "Temps esgotat"
 }

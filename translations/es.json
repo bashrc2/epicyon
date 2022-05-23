@@ -555,5 +555,7 @@
     "DM warning": "Los mensajes directos no están cifrados de extremo a extremo. No comparta ninguna información altamente confidencial aquí.",
     "Transcript": "Transcripción",
     "Color contrast is too low": "El contraste de color es demasiado bajo",
-    "View Larger Map": "Ver mapa más grande"
+    "View Larger Map": "Ver mapa más grande",
+    "Start Time": "Hora de inicio",
+    "End Time": "Hora de finalización"
 }

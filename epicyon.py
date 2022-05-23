@@ -130,6 +130,10 @@ parser.add_argument('--eventTime', type=str,
                     default=None,
                     help='Time for an event when sending a c2s post' +
                     ' HH:MM')
+parser.add_argument('--eventEndTime', type=str,
+                    default=None,
+                    help='Time when an event ends when sending a c2s post' +
+                    ' HH:MM')
 parser.add_argument('--eventLocation', type=str,
                     default=None,
                     help='Location for an event when sending a c2s post')
@@ -1445,7 +1449,12 @@ if args.message:
 
     if args.eventTime:
         if ':' not in args.eventTime or len(args.eventTime) != 5:
-            print('Event time format should be HH:MM')
+            print('Event start time format should be HH:MM')
+            sys.exit()
+
+    if args.eventEndTime:
+        if ':' not in args.eventEndTime or len(args.eventEndTime) != 5:
+            print('Event end time format should be HH:MM')
             sys.exit()
 
     if not args.password:
@@ -1523,7 +1532,8 @@ if args.message:
                          args.language, languages_understood,
                          args.low_bandwidth,
                          args.content_license_url,
-                         args.eventDate, args.eventTime, args.eventLocation,
+                         args.eventDate, args.eventTime, args.eventEndTime,
+                         args.eventLocation,
                          args.debug,
                          reply_to, reply_to, args.conversationId, subject)
     for i in range(10):
@@ -3155,6 +3165,7 @@ if args.testdata:
     test_schedule_post = False
     test_event_date = None
     test_event_time = None
+    test_event_end_time = None
     test_location = None
     test_is_article = False
     conversation_id = None
@@ -3171,7 +3182,8 @@ if args.testdata:
                        test_media_type, test_image_description, test_city,
                        test_in_reply_to, test_in_reply_to_atom_uri,
                        test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
+                       test_event_date, test_event_time, test_event_end_time,
+                       test_location,
                        test_is_article, args.language, conversation_id,
                        low_bandwidth, args.content_license_url,
                        languages_understood)
@@ -3185,7 +3197,8 @@ if args.testdata:
                        test_media_type, test_image_description, test_city,
                        test_in_reply_to, test_in_reply_to_atom_uri,
                        test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
+                       test_event_date, test_event_time, test_event_end_time,
+                       test_location,
                        test_is_article, args.language, conversation_id,
                        low_bandwidth, args.content_license_url,
                        languages_understood)
@@ -3199,7 +3212,8 @@ if args.testdata:
                        test_media_type, test_image_description, test_city,
                        test_in_reply_to, test_in_reply_to_atom_uri,
                        test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
+                       test_event_date, test_event_time, test_event_end_time,
+                       test_location,
                        test_is_article, args.language, conversation_id,
                        low_bandwidth, args.content_license_url,
                        languages_understood)
@@ -3213,7 +3227,8 @@ if args.testdata:
                        test_media_type, test_image_description, test_city,
                        'someone', test_in_reply_to_atom_uri,
                        test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
+                       test_event_date, test_event_time, test_event_end_time,
+                       test_location,
                        test_is_article, args.language, conversation_id,
                        low_bandwidth, args.content_license_url,
                        languages_understood)
@@ -3228,7 +3243,8 @@ if args.testdata:
                        'Description of image', test_city,
                        test_in_reply_to, test_in_reply_to_atom_uri,
                        test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
+                       test_event_date, test_event_time, test_event_end_time,
+                       test_location,
                        test_is_article, args.language, conversation_id,
                        low_bandwidth, args.content_license_url,
                        languages_understood)
@@ -3242,7 +3258,8 @@ if args.testdata:
                        test_media_type, test_image_description, test_city,
                        test_in_reply_to, test_in_reply_to_atom_uri,
                        test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
+                       test_event_date, test_event_time, test_event_end_time,
+                       test_location,
                        test_is_article, args.language, conversation_id,
                        low_bandwidth, args.content_license_url,
                        languages_understood)
@@ -3256,7 +3273,8 @@ if args.testdata:
                        test_media_type, test_image_description, test_city,
                        test_in_reply_to, test_in_reply_to_atom_uri,
                        test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
+                       test_event_date, test_event_time, test_event_end_time,
+                       test_location,
                        test_is_article, args.language, conversation_id,
                        low_bandwidth, args.content_license_url,
                        languages_understood)
@@ -3270,7 +3288,8 @@ if args.testdata:
                        test_media_type, test_image_description, test_city,
                        test_in_reply_to, test_in_reply_to_atom_uri,
                        test_subject, test_schedule_post,
-                       test_event_date, test_event_time, test_location,
+                       test_event_date, test_event_time, test_event_end_time,
+                       test_location,
                        test_is_article, args.language, conversation_id,
                        low_bandwidth, args.content_license_url,
                        languages_understood)

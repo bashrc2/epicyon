@@ -555,5 +555,7 @@
     "DM warning": "Direktnachrichten sind nicht Ende-zu-Ende verschlüsselt. Geben Sie hier keine hochsensiblen Informationen weiter.",
     "Transcript": "Abschrift",
     "Color contrast is too low": "Der Farbkontrast ist zu gering",
-    "View Larger Map": "größere Karte ansehen"
+    "View Larger Map": "größere Karte ansehen",
+    "Start Time": "Startzeit",
+    "End Time": "Endzeit"
 }

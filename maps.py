@@ -215,7 +215,9 @@ def geocoords_from_map_link(url: str,
 
 def html_open_street_map(url: str,
                          bounding_box_degrees: float,
-                         translate: {}) -> str:
+                         translate: {},
+                         width: str = "725",
+                         height: str = "650") -> str:
     """Returns embed html for an OSM link
     """
     osm_domain = 'openstreetmap.org'
@@ -228,7 +230,8 @@ def html_open_street_map(url: str,
         return ''
 
     html_str = \
-        '<iframe width="725" height="650" frameborder="0" ' + \
+        '<iframe width="' + width + '" height="' + height + \
+        '" frameborder="0" ' + \
         'scrolling="no" marginheight="0" marginwidth="0" ' + \
         'src="https://www.' + osm_domain + '/export/embed.html?' + \
         'bbox=' + str(longitude - bounding_box_degrees) + \

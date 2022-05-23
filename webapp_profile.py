@@ -914,27 +914,26 @@ def html_profile(signing_priv_key_pem: str,
         translate['Switch to timeline view']
     menu_edit = \
         html_hide_from_screen_reader('✍') + ' ' + translate['Edit']
-    if not is_group:
-        menu_following = \
-            html_hide_from_screen_reader('👥') + ' ' + translate['Following']
     menu_followers = \
         html_hide_from_screen_reader('👪') + ' ' + followers_str
-    if not is_group:
-        menu_roles = \
-            html_hide_from_screen_reader('🤚') + ' ' + translate['Roles']
-        menu_skills = \
-            html_hide_from_screen_reader('🛠') + ' ' + translate['Skills']
     menu_logout = \
         html_hide_from_screen_reader('❎') + ' ' + translate['Logout']
     nav_links = {
         menu_timeline: user_path_str + '/' + deft,
         menu_edit: user_path_str + '/editprofile',
-        menu_following: user_path_str + '/following#timeline',
         menu_followers: user_path_str + '/followers#timeline',
-        menu_roles: user_path_str + '/roles#timeline',
-        menu_skills: user_path_str + '/skills#timeline',
         menu_logout: '/logout'
     }
+    if not is_group:
+        menu_following = \
+            html_hide_from_screen_reader('👥') + ' ' + translate['Following']
+        nav_links[menu_following] = user_path_str + '/following#timeline'
+        menu_roles = \
+            html_hide_from_screen_reader('🤚') + ' ' + translate['Roles']
+        nav_links[menu_roles] = user_path_str + '/roles#timeline'
+        menu_skills = \
+            html_hide_from_screen_reader('🛠') + ' ' + translate['Skills']
+        nav_links[menu_skills] = user_path_str + '/skills#timeline'
     if is_artist(base_dir, nickname):
         menu_theme_designer = \
             html_hide_from_screen_reader('🎨') + ' ' + \

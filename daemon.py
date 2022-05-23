@@ -526,6 +526,7 @@ class PubServer(BaseHTTPRequestHandler):
         schedule_post = False
         event_date = None
         event_time = None
+        event_end_time = None
         location = None
         conversation_id = None
         city = get_spoofed_city(self.server.city,
@@ -552,7 +553,7 @@ class PubServer(BaseHTTPRequestHandler):
                                subject,
                                schedule_post,
                                event_date,
-                               event_time,
+                               event_time, event_end_time,
                                location, False,
                                self.server.system_language,
                                conversation_id,
@@ -18835,6 +18836,8 @@ class PubServer(BaseHTTPRequestHandler):
                 fields['eventDate'] = None
             if not fields.get('eventTime'):
                 fields['eventTime'] = None
+            if not fields.get('eventEndTime'):
+                fields['eventEndTime'] = None
             if not fields.get('location'):
                 fields['location'] = None
             if not fields.get('languagesDropdown'):
@@ -18905,6 +18908,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['schedulePost'],
                                        fields['eventDate'],
                                        fields['eventTime'],
+                                       fields['eventEndTime'],
                                        fields['location'], False,
                                        fields['languagesDropdown'],
                                        conversation_id,
@@ -18999,6 +19003,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['schedulePost'],
                                      fields['eventDate'],
                                      fields['eventTime'],
+                                     fields['eventEndTime'],
                                      fields['location'],
                                      fields['languagesDropdown'],
                                      conversation_id,
@@ -19162,6 +19167,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['schedulePost'],
                                          fields['eventDate'],
                                          fields['eventTime'],
+                                         fields['eventEndTime'],
                                          fields['location'],
                                          fields['languagesDropdown'],
                                          conversation_id,
@@ -19223,6 +19229,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                fields['schedulePost'],
                                                fields['eventDate'],
                                                fields['eventTime'],
+                                               fields['eventEndTime'],
                                                fields['location'],
                                                fields['languagesDropdown'],
                                                conversation_id,
@@ -19296,6 +19303,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    fields['schedulePost'],
                                                    fields['eventDate'],
                                                    fields['eventTime'],
+                                                   fields['eventEndTime'],
                                                    fields['location'],
                                                    fields['languagesDropdown'],
                                                    conversation_id,
@@ -19361,6 +19369,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                True, fields['schedulePost'],
                                                fields['eventDate'],
                                                fields['eventTime'],
+                                               fields['eventEndTime'],
                                                fields['location'],
                                                fields['languagesDropdown'],
                                                conversation_id,

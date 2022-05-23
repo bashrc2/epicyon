@@ -243,9 +243,13 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         translate['Date'] + ': </label>\n'
     date_and_time_str += '<input type="date" name="eventDate">\n'
     date_and_time_str += '<label class="labelsright">' + \
-        translate['Time'] + ': '
+        translate['Start Time'] + ': '
     date_and_time_str += \
-        '<input type="time" name="eventTime"></label>\n</p>\n'
+        '<input type="time" name="eventTime"></label>\n<br>\n'
+    date_and_time_str += '<label class="labelsright">' + \
+        translate['End Time'] + ': '
+    date_and_time_str += \
+        '<input type="time" name="eventEndTime"></label>\n</p>\n'
 
     show_public_on_dropdown = True
     message_box_height = 400
