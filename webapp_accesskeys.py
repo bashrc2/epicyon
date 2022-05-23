@@ -98,7 +98,7 @@ def html_access_keys(css_cache: {}, base_dir: str,
         translate['Go Back'] + '</button>\n' + \
         '    <button type="submit" class="button" ' + \
         'name="submitAccessKeys" accesskey="' + submit_key + '">' + \
-        translate['Submit'] + '</button>\n    </center>\n'
+        translate['Publish'] + '</button>\n    </center>\n'
 
     access_keys_form += '    <table class="accesskeys">\n'
     access_keys_form += '      <colgroup>\n'

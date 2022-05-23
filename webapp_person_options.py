@@ -272,7 +272,7 @@ def html_person_options(default_timeline: str,
                     'accesskey="' + access_keys['enterPetname'] + '">\n' \
                     '    <button type="submit" class="buttonsmall" ' + \
                     'name="submitPetname">' + \
-                    translate['Submit'] + '</button><br>\n'
+                    translate['Publish'] + '</button><br>\n'
 
             # Notify when a post arrives from this person
             if is_following_actor(base_dir, nickname, domain, options_actor):
@@ -282,7 +282,7 @@ def html_person_options(default_timeline: str,
                     translate['Notify me when this account posts'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitNotifyOnPost">' + \
-                    translate['Submit'] + '</button><br>\n'
+                    translate['Publish'] + '</button><br>\n'
                 if not notify_when_person_posts(base_dir, nickname, domain,
                                                 options_nickname,
                                                 options_domain_full):
@@ -295,7 +295,7 @@ def html_person_options(default_timeline: str,
                     translate['Receive calendar events from this account'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitOnCalendar">' + \
-                    translate['Submit'] + '</button><br>\n'
+                    translate['Publish'] + '</button><br>\n'
                 if not receiving_calendar_events(base_dir, nickname, domain,
                                                  options_nickname,
                                                  options_domain_full):
@@ -320,7 +320,7 @@ def html_person_options(default_timeline: str,
                         translate['Allow news posts'] + \
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToNews">' + \
-                        translate['Submit'] + '</button><br>\n'
+                        translate['Publish'] + '</button><br>\n'
                     if os.path.isfile(newswire_blocked_filename):
                         checkbox_str = checkbox_str.replace(' checked>', '>')
                     else:
@@ -340,7 +340,7 @@ def html_person_options(default_timeline: str,
                     translate['News posts are moderated'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitModNewsPosts">' + \
-                    translate['Submit'] + '</button><br>\n'
+                    translate['Publish'] + '</button><br>\n'
                 if not os.path.isfile(moderated_filename):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
@@ -358,7 +358,7 @@ def html_person_options(default_timeline: str,
                         translate['Featured writer'] + \
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToFeatures">' + \
-                        translate['Submit'] + '</button><br>\n'
+                        translate['Publish'] + '</button><br>\n'
                     if not is_featured_writer(base_dir, options_nickname,
                                               options_domain):
                         checkbox_str = checkbox_str.replace(' checked>', '>')
@@ -434,7 +434,7 @@ def html_person_options(default_timeline: str,
             '    <br><br>' + translate['Notes'] + ': \n'
         options_str += '    <button type="submit" class="buttonsmall" ' + \
             'name="submitPersonNotes">' + \
-            translate['Submit'] + '</button><br>\n'
+            translate['Publish'] + '</button><br>\n'
         options_str += \
             '    <textarea id="message" ' + \
             'name="optionnotes" style="height:400px" spellcheck="true" ' + \

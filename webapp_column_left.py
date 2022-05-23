@@ -476,7 +476,7 @@ def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
         '      <h1>' + translate['Edit Links'] + '</h1>'
     edit_links_form += \
         '      <input type="submit" name="submitLinks" value="' + \
-        translate['Submit'] + '" ' + \
+        translate['Publish'] + '" ' + \
         'accesskey="' + access_keys['submitButton'] + '">\n'
     edit_links_form += \
         '    </div>\n'

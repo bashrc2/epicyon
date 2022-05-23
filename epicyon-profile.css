@@ -1916,6 +1916,9 @@ h3 {
     blockquote {
         font-size: var(--quote-font-size-mobile);
     }
+    input[type=time] {
+        width: 5ch;
+    }
     figcaption img.emojiheader {
         float: none;
         width: 50px;
@@ -2699,6 +2702,9 @@ h3 {
     }
     blockquote {
         font-size: var(--quote-font-size-tiny);
+    }
+    input[type=time] {
+        width: 5ch;
     }
     figcaption img.emojiheader {
         float: none;

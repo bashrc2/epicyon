@@ -729,9 +729,9 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             '<a href="' + maps_url + '" ' + \
             'rel="nofollow noopener noreferrer" target="_blank">' + \
             translate['Location'] + '</a>'
-        date_and_location += \
+        date_and_location += '<p>\n' + \
             edit_text_field(location_label_with_link, 'location', '',
-                            'https://www.openstreetmap.org/#map=')
+                            'https://www.openstreetmap.org/#map=') + '</p>\n'
         date_and_location += end_edit_section()
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
@@ -870,7 +870,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             '      <td><input type="submit" name="submitCitations" value="' + \
             translate['Citations'] + '"></td>\n'
 
-    submit_text = translate['Submit']
+    submit_text = translate['Publish']
     if custom_submit_text:
         submit_text = custom_submit_text
     new_post_form += \
@@ -951,10 +951,6 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         '    </div>\n' + \
         '  </div>\n' + \
         '</form>\n'
-
-    if not report_url:
-        new_post_form = \
-            new_post_form.replace('<body>', '<body onload="focusOnMessage()">')
 
     new_post_form += html_footer()
     return new_post_form

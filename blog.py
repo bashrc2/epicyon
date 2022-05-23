@@ -892,7 +892,7 @@ def html_edit_blog(media_instance: bool, translate: {},
         translate['Cancel'] + '</button></a>'
     edit_blog_form += \
         '      <input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '">'
+        translate['Publish'] + '">'
     edit_blog_form += '    </center></div>'
     if media_instance:
         edit_blog_form += edit_blog_image_section
@@ -918,10 +918,6 @@ def html_edit_blog(media_instance: bool, translate: {},
         edit_blog_form += edit_blog_image_section
     edit_blog_form += '  </div>'
     edit_blog_form += '</form>'
-
-    edit_blog_form = \
-        edit_blog_form.replace('<body>',
-                               '<body onload="focusOnMessage()">')
 
     edit_blog_form += html_footer()
     return edit_blog_form

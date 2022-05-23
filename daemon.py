@@ -18806,7 +18806,7 @@ class PubServer(BaseHTTPRequestHandler):
                    not fields.get('pinToProfile'):
                     print('WARN: no message, image description or pin')
                     return -1
-                submit_text = self.server.translate['Submit']
+                submit_text = self.server.translate['Publish']
                 custom_submit_text = \
                     get_config_param(self.server.base_dir, 'customSubmitText')
                 if custom_submit_text:
