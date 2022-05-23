@@ -1378,10 +1378,6 @@ h3 {
         background: var(--link-bg-color);
         font-family: 'Arial, Helvetica, sans-serif';
     }
-    body, html {
-        font-size: var(--font-size4);
-        font-family: 'Arial, Helvetica, sans-serif';
-    }
     .galleryContainer {
         display: grid;
         grid-template-columns: 50% 50%;
@@ -2148,10 +2144,6 @@ h3 {
         font-size: var(--font-size-pgp-key2);
         color: var(--main-link-color);
         background: var(--link-bg-color);
-        font-family: 'Arial, Helvetica, sans-serif';
-    }
-    body, html {
-        font-size: var(--font-size3);
         font-family: 'Arial, Helvetica, sans-serif';
     }
     div.gallerytext {
@@ -2932,10 +2924,6 @@ h3 {
         font-size: var(--font-size-pgp-key2);
         color: var(--main-link-color);
         background: var(--link-bg-color);
-        font-family: 'Arial, Helvetica, sans-serif';
-    }
-    body, html {
-        font-size: var(--font-size4);
         font-family: 'Arial, Helvetica, sans-serif';
     }
     div.gallerytext {
