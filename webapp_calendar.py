@@ -484,9 +484,13 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                         str(year) + '?month=' + \
                         str(month_number) + '?day=' + str(day_of_month)
                     day_description = month_name + ' ' + str(day_of_month)
+                    datetime_str = \
+                        str(year) + '-' + str(month_number) + '-' + \
+                        str(day_of_month)
                     day_link = '<a href="' + url + '" ' + \
                         'title="' + day_description + '">' + \
-                        str(day_of_month) + '</a>'
+                        '<time datetime="' + datetime_str + '">' + \
+                        str(day_of_month) + '</time></a>'
                     # accessibility menu links
                     menu_option_str = \
                         html_hide_from_screen_reader('📅') + ' ' + \
