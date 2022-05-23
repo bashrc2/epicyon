@@ -226,8 +226,17 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
             if event_is_public:
                 event_class = 'calendar__day__event__public'
                 cal_item_class = 'calItemPublic'
-            if event_time and event_end_time:
-                event_time += ' - ' + event_end_time
+            if event_time:
+                if event_end_time:
+                    event_time = \
+                        '<time datetime="' + evnt['startTime'] + '">' + \
+                        event_time + '</time> - ' + \
+                        '<time datetime="' + evnt['endTime'] + '">' + \
+                        event_end_time + '</time>'
+                else:
+                    event_time = \
+                        '<time datetime="' + evnt['startTime'] + '">' + \
+                        event_time + '</time>'
             if event_time and event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
