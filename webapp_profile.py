@@ -2168,7 +2168,7 @@ def _html_edit_profile_top_banner(base_dir: str,
         '      <center>\n' + \
         '        <input type="submit" name="submitProfile" ' + \
         'accesskey="' + access_keys['submitButton'] + '" ' + \
-        'value="' + translate['Submit'] + '">\n' + \
+        'value="' + translate['Publish'] + '">\n' + \
         '      </center>\n'
     edit_profile_form += '    </div>\n'
 
@@ -2431,7 +2431,7 @@ def html_edit_profile(server, css_cache: {}, translate: {},
     edit_profile_form += \
         '      <center>\n' + \
         '        <input type="submit" name="submitProfile" value="' + \
-        translate['Submit'] + '">\n' + \
+        translate['Publish'] + '">\n' + \
         '      </center>\n'
     edit_profile_form += '    </div>\n'
 

@@ -418,7 +418,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     # submit button
     html_str += \
         '    <input type="submit" name="submitCitations" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Publish'] + '">\n'
     html_str += '  </center>\n'
 
     citations_separator = '#####'
@@ -596,7 +596,7 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
         '    <div class="containerSubmitNewPost">\n'
     edit_newswire_form += \
         '      <input type="submit" name="submitNewswire" value="' + \
-        translate['Submit'] + '" ' + \
+        translate['Publish'] + '" ' + \
         'accesskey="' + access_keys['submitButton'] + '">\n'
     edit_newswire_form += \
         '    </div>\n'
@@ -712,7 +712,7 @@ def html_edit_news_post(css_cache: {}, translate: {}, base_dir: str, path: str,
         '<button class="cancelbtn">' + translate['Go Back'] + '</button></a>\n'
     edit_news_post_form += \
         '      <input type="submit" name="submitEditedNewsPost" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Publish'] + '">\n'
     edit_news_post_form += \
         '    </div>\n'
 

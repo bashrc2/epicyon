@@ -892,7 +892,7 @@ def html_edit_blog(media_instance: bool, translate: {},
         translate['Cancel'] + '</button></a>'
     edit_blog_form += \
         '      <input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '">'
+        translate['Publish'] + '">'
     edit_blog_form += '    </center></div>'
     if media_instance:
         edit_blog_form += edit_blog_image_section

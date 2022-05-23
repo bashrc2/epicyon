@@ -870,7 +870,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             '      <td><input type="submit" name="submitCitations" value="' + \
             translate['Citations'] + '"></td>\n'
 
-    submit_text = translate['Submit']
+    submit_text = translate['Publish']
     if custom_submit_text:
         submit_text = custom_submit_text
     new_post_form += \
