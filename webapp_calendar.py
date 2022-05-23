@@ -31,6 +31,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import html_keyboard_navigation
+from maps import html_open_street_map
 
 
 def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
@@ -183,6 +184,14 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                 elif evnt['type'] == 'Place':
                     if evnt.get('name'):
                         event_place = evnt['name']
+                        if '://' in event_place:
+                            bounding_box_degrees = 0.001
+                            event_map = \
+                                html_open_street_map(event_place,
+                                                     bounding_box_degrees,
+                                                     translate)
+                            if event_map:
+                                event_place = event_map
 
             # prepend a link to the sender of the calendar item
             if sender_name and event_description:
