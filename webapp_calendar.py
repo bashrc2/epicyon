@@ -141,6 +141,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     if day_events:
         for event_post in day_events:
             event_time = None
+            event_end_time = None
             event_description = None
             event_place = None
             post_id = None
@@ -157,6 +158,11 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                             datetime.strptime(evnt['startTime'],
                                               "%Y-%m-%dT%H:%M:%S%z")
                         event_time = event_date.strftime("%H:%M").strip()
+                    if evnt.get('endTime'):
+                        event_end_date = \
+                            datetime.strptime(evnt['endTime'],
+                                              "%Y-%m-%dT%H:%M:%S%z")
+                        event_end_time = event_date.strftime("%H:%M").strip()
                     if 'public' in evnt:
                         if evnt['public'] is True:
                             event_is_public = True
@@ -210,6 +216,8 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
             if event_is_public:
                 event_class = 'calendar__day__event__public'
                 cal_item_class = 'calItemPublic'
+            if event_time and event_end_time:
+                event_time += ' - ' + event_end_time
             if event_time and event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
