@@ -143,6 +143,8 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
         for event_post in day_events:
             event_time = None
             event_end_time = None
+            start_time_str = ''
+            end_time_str = ''
             event_description = None
             event_place = None
             post_id = None
@@ -155,13 +157,15 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                     if evnt.get('post_id'):
                         post_id = evnt['post_id']
                     if evnt.get('startTime'):
+                        start_time_str = evnt['startTime']
                         event_date = \
-                            datetime.strptime(evnt['startTime'],
+                            datetime.strptime(start_time_str,
                                               "%Y-%m-%dT%H:%M:%S%z")
                         event_time = event_date.strftime("%H:%M").strip()
                     if evnt.get('endTime'):
+                        end_time_str = evnt['endTime']
                         event_end_date = \
-                            datetime.strptime(evnt['endTime'],
+                            datetime.strptime(end_time_str,
                                               "%Y-%m-%dT%H:%M:%S%z")
                         event_end_time = \
                             event_end_date.strftime("%H:%M").strip()
@@ -229,13 +233,13 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
             if event_time:
                 if event_end_time:
                     event_time = \
-                        '<time datetime="' + evnt['startTime'] + '">' + \
+                        '<time datetime="' + start_time_str + '">' + \
                         event_time + '</time> - ' + \
-                        '<time datetime="' + evnt['endTime'] + '">' + \
+                        '<time datetime="' + end_time_str + '">' + \
                         event_end_time + '</time>'
                 else:
                     event_time = \
-                        '<time datetime="' + evnt['startTime'] + '">' + \
+                        '<time datetime="' + start_time_str + '">' + \
                         event_time + '</time>'
             if event_time and event_description and event_place:
                 calendar_str += \
