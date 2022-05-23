@@ -162,7 +162,8 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                         event_end_date = \
                             datetime.strptime(evnt['endTime'],
                                               "%Y-%m-%dT%H:%M:%S%z")
-                        event_end_time = event_date.strftime("%H:%M").strip()
+                        event_end_time = \
+                            event_end_date.strftime("%H:%M").strip()
                     if 'public' in evnt:
                         if evnt['public'] is True:
                             event_is_public = True
