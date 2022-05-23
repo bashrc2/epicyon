@@ -919,10 +919,6 @@ def html_edit_blog(media_instance: bool, translate: {},
     edit_blog_form += '  </div>'
     edit_blog_form += '</form>'
 
-    edit_blog_form = \
-        edit_blog_form.replace('<body>',
-                               '<body onload="focusOnMessage()">')
-
     edit_blog_form += html_footer()
     return edit_blog_form
 

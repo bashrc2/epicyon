@@ -952,9 +952,5 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         '  </div>\n' + \
         '</form>\n'
 
-    if not report_url:
-        new_post_form = \
-            new_post_form.replace('<body>', '<body onload="focusOnMessage()">')
-
     new_post_form += html_footer()
     return new_post_form
