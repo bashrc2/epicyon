@@ -72,8 +72,8 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += ' aria-current="location"'
         tl_str += \
             '><button class="' + \
-            blogs_button + '"><span>' + translate['Blogs'] + \
-            '</span></button></a>'
+            blogs_button + '" accesskey="' + access_keys['menuBlogs'] + \
+            '"><span>' + translate['Blogs'] + '</span></button></a>'
     elif default_timeline == 'tlfeatures':
         tl_str += \
             '<a href="' + users_path + \
@@ -162,8 +162,8 @@ def header_buttons_timeline(default_timeline: str,
                 if box_name == 'tlblogs':
                     tl_str += ' aria-current="location"'
                 tl_str += \
-                    '><button class="' + \
-                    blogs_button + '"><span>' + title_str + \
+                    '><button class="' + blogs_button + '" accesskey="' + \
+                    access_keys['menuBlogs'] + '"><span>' + title_str + \
                     '</span></button></a>'
         else:
             if not minimal:
