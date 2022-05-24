@@ -299,6 +299,7 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += \
                 '      <a class="imageAnchor" href="' + \
                 users_path + calendar_path + \
+                '" accesskey="' + access_keys['menuCalendar'] + \
                 '"><img loading="lazy" decoding="async" src="/icons/' + \
                 calendar_image + '" title="' + translate['Calendar'] + \
                 '" alt="| ' + calendar_alt_text + \
@@ -306,7 +307,8 @@ def header_buttons_timeline(default_timeline: str,
         else:
             tl_str += \
                 '<a href="' + users_path + calendar_path + \
-                '" tabindex="-1"><button class="button">' + \
+                '" tabindex="-1"><button class="button" accesskey="' + \
+                access_keys['menuCalendar'] + '">' + \
                 '<span>' + translate['Calendar'] + \
                 '</span></button></a>'
 
