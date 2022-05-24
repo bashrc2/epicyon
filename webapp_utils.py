@@ -1383,7 +1383,8 @@ def html_keyboard_navigation(banner: str, links: {}, access_keys: {},
     # show new follower approvals
     if users_path and translate and follow_approvals:
         html_str += '<strong><label class="transparent">' + \
-            '<a href="' + users_path + '/followers#timeline">' + \
+            '<a href="' + users_path + '/followers#timeline" ' + \
+            'tabindex="-1">' + \
             translate['Approve follow requests'] + '</a>' + \
             '</label></strong><br><br>\n'
 
@@ -1394,7 +1395,8 @@ def html_keyboard_navigation(banner: str, links: {}, access_keys: {},
             access_key_str = 'accesskey="' + access_keys[title] + '"'
 
         html_str += '<li><label class="transparent">' + \
-            '<a href="' + str(url) + '" ' + access_key_str + '>' + \
+            '<a href="' + str(url) + '" ' + access_key_str + \
+            ' tabindex="-1">' + \
             str(title) + '</a></label></li>\n'
     html_str += '</ul></div>\n'
     return html_str
