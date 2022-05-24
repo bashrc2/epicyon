@@ -4168,6 +4168,48 @@ def _test_valid_content_warning():
     assert result_str == 'Invalid content warning'
 
 
+def _test_translation_labels() -> None:
+    print('test_translation_labels')
+    lang_json = load_json('translations/en.json')
+    assert lang_json
+    for _, _, files in os.walk('.'):
+        for source_file in files:
+            if not source_file.endswith('.py'):
+                continue
+            if source_file.startswith('.#'):
+                continue
+            if source_file.startswith('flycheck_'):
+                continue
+            source_str = ''
+            with open(source_file, 'r') as file_source:
+                source_str = file_source.read()
+            if not source_str:
+                continue
+            if 'translate[' not in source_str:
+                continue
+            sections = source_str.split('translate[')
+            ctr = 0
+            for text in sections:
+                if ctr == 0:
+                    ctr += 1
+                    continue
+                if ']' not in text:
+                    continue
+                label_str = text.split(']')[0]
+                if '"' not in label_str and "'" not in label_str:
+                    continue
+                if '+' in label_str:
+                    continue
+                label_str = label_str[1:]
+                label_str = label_str[:len(label_str)-1]
+                assert label_str
+                if not lang_json.get(label_str):
+                    print("Translation for label '" + label_str + "' " +
+                          "in module " + source_file + " was not found")
+                    assert False
+        break
+
+
 def _test_translations(base_dir: str) -> None:
     print('test_translations')
     languages_str = get_supported_languages(base_dir)
@@ -7170,6 +7212,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_translation_labels()
     _test_color_contrast_value(base_dir)
     _test_diff_content()
     _test_bold_reading()
