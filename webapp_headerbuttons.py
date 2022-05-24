@@ -92,7 +92,8 @@ def header_buttons_timeline(default_timeline: str,
         if box_name == 'inbox':
             tl_str += ' aria-current="location"'
         tl_str += \
-            '><span>' + translate['Inbox'] + '</span></button></a>'
+            ' accesskey="' + access_keys['menuInbox'] + '">' + \
+            '<span>' + translate['Inbox'] + '</span></button></a>'
 
     # if this is a news instance and we are viewing the news timeline
     features_header = False
@@ -106,7 +107,8 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += ' aria-current="location"'
         tl_str += \
             '><button class="' + dm_button + \
-            '"><span>' + html_highlight_label(translate['DM'], new_dm) + \
+            '" accesskey="' + access_keys['menuDM'] + '">' + \
+            '<span>' + html_highlight_label(translate['DM'], new_dm) + \
             '</span></button></a>'
 
         replies_index_filename = \
@@ -117,7 +119,8 @@ def header_buttons_timeline(default_timeline: str,
             if box_name == 'tlreplies':
                 tl_str += ' aria-current="location"'
             tl_str += \
-                '><button class="' + replies_button + '"><span>' + \
+                '><button class="' + replies_button + '" ' + \
+                'accesskey="' + access_keys['menuReplies'] + '"><span>' + \
                 html_highlight_label(translate['Replies'], new_reply) + \
                 '</span></button></a>'
 
@@ -185,7 +188,8 @@ def header_buttons_timeline(default_timeline: str,
                 tl_str += ' aria-current="location"'
             tl_str += \
                 '><button class="' + \
-                inbox_button + '"><span>' + translate['Inbox'] + \
+                inbox_button + '" accesskey="' + \
+                access_keys['menuInbox'] + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
 
     # show todays events buttons on the first inbox page
@@ -249,8 +253,9 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += ' aria-current="location"'
         tl_str += \
             '><button class="' + \
-            sent_button + '" tabindex="-1"><span>' + translate['Sent'] + \
-            '</span></button></a>'
+            sent_button + '" tabindex="-1" accesskey="' + \
+            access_keys['menuOutbox'] + '">' + \
+            '<span>' + translate['Sent'] + '</span></button></a>'
 
         # add other buttons
         tl_str += \
