@@ -268,7 +268,8 @@ def header_buttons_timeline(default_timeline: str,
             # the search icon
             tl_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/search"><img loading="lazy" decoding="async" src="/' + \
+                '/search" accesskey="' + access_keys['menuSearch'] + \
+                '"><img loading="lazy" decoding="async" src="/' + \
                 'icons/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
                 translate['Search and follow'] + \
@@ -277,7 +278,9 @@ def header_buttons_timeline(default_timeline: str,
             # the search button
             tl_str += \
                 '<a href="' + users_path + \
-                '/search" tabindex="-1"><button class="button">' + \
+                '/search" tabindex="-1">' + \
+                '<button class="button" ' + \
+                'accesskey="' + access_keys['menuSearch'] + '>' + \
                 '<span>' + translate['Search'] + \
                 '</span></button></a>'
 
