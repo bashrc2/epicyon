@@ -158,7 +158,7 @@ def html_front_screen(signing_priv_key_pem: str,
         '  </colgroup>\n' + \
         '  <tbody>\n' + \
         '    <tr>\n' + \
-        '      <td valign="top" class="col-left">\n'
+        '      <td valign="top" class="col-left" tabindex="2">\n'
     profile_header_str += \
         get_left_column_content(base_dir, 'news', domain_full,
                                 http_prefix, translate,
@@ -168,7 +168,7 @@ def html_front_screen(signing_priv_key_pem: str,
                                 shared_items_federated_domains)
     profile_header_str += \
         '      </td>\n' + \
-        '      <td valign="top" class="col-center">\n'
+        '      <td valign="top" class="col-center" tabindex="1">\n'
 
     profile_str = profile_header_str
 
@@ -199,7 +199,8 @@ def html_front_screen(signing_priv_key_pem: str,
 
     # Footer which is only used for system accounts
     profile_footer_str = '      </td>\n'
-    profile_footer_str += '      <td valign="top" class="col-right">\n'
+    profile_footer_str += \
+        '      <td valign="top" class="col-right" tabindex="3">\n'
     profile_footer_str += \
         get_right_column_content(base_dir, 'news', domain_full,
                                  http_prefix, translate,

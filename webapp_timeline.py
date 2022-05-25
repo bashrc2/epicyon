@@ -395,7 +395,7 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
                                  authorized, True, theme,
                                  default_timeline, access_keys)
     tl_str += '  <td valign="top" class="col-right" ' + \
-        'id="newswire" tabindex="-1">\n' + \
+        'id="newswire" tabindex="3">\n' + \
         '  <aside>\n' + \
         right_column_str + \
         '  </aside>\n' + \
@@ -792,14 +792,14 @@ def html_timeline(css_cache: {}, default_timeline: str,
                                 True, False, theme, access_keys,
                                 shared_items_federated_domains)
     tl_str += '  <td valign="top" class="col-left" ' + \
-        'id="links" tabindex="-1">\n' + \
+        'id="links" tabindex="2">\n' + \
         '  <aside>\n' + \
         left_column_str + \
         '  </aside>\n' + \
         '  </td>\n'
 
     # center column containing posts
-    tl_str += '  <td valign="top" class="col-center">\n'
+    tl_str += '  <td valign="top" class="col-center" tabindex="1">\n'
 
     if not full_width_tl_button_header:
         tl_str += \
