@@ -616,8 +616,8 @@ def add_web_links(content: str) -> str:
         # the word contains a prefix
         if wrd.endswith('.') or wrd.endswith(';'):
             wrd = wrd[:-1]
-        markup = '<a href="' + wrd + \
-            '" rel="nofollow noopener noreferrer" target="_blank">'
+        markup = '<a href="' + wrd + '" tabindex="10" ' + \
+            'rel="nofollow noopener noreferrer" target="_blank">'
         for prefix in prefixes:
             if wrd.startswith(prefix):
                 markup += '<span class="invisible">' + prefix + '</span>'
@@ -768,7 +768,7 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                 replace_mentions[word_str] = \
                     "<span class=\"h-card\"><a href=\"" + http_prefix + \
                     "://" + replace_domain + "/@" + possible_nickname + \
-                    "\" class=\"u-url mention\">@<span>" + \
+                    "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
                     possible_nickname + "</span></a></span>"
                 return True
         # try replacing petnames with mentions
@@ -795,7 +795,8 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                     replace_mentions[word_str] = \
                         "<span class=\"h-card\"><a href=\"" + http_prefix + \
                         "://" + replace_domain + "/@" + replace_nickname + \
-                        "\" class=\"u-url mention\">@<span>" + \
+                        "\" tabindex=\"10\" " + \
+                        "class=\"u-url mention\">@<span>" + \
                         replace_nickname + "</span></a></span>"
                     return True
             follow_ctr += 1
@@ -827,8 +828,8 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
             replace_mentions[word_str] = \
                 "<span class=\"h-card\"><a href=\"" + http_prefix + \
                 "://" + possible_domain + "/@" + possible_nickname + \
-                "\" class=\"u-url mention\">@<span>" + possible_nickname + \
-                "</span></a></span>"
+                "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
+                possible_nickname + "</span></a></span>"
             return True
     # @nick@domain
     if not (possible_domain == 'localhost' or '.' in possible_domain):
@@ -845,8 +846,8 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
     replace_mentions[word_str] = \
         "<span class=\"h-card\"><a href=\"" + http_prefix + \
         "://" + possible_domain + "/@" + possible_nickname + \
-        "\" class=\"u-url mention\">@<span>" + possible_nickname + \
-        "</span></a></span>"
+        "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
+        possible_nickname + "</span></a></span>"
     return True
 
 
