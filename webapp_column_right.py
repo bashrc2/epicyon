@@ -78,13 +78,14 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             '/users/' + nickname + '/newblog?nodropdown" ' + \
             'title="' + title_str + '" ' + \
             'accesskey="' + access_keys['menuNewPost'] + '">' + \
-            '<button class="publishbtn">' + \
+            '<button class="publishbtn" tabindex="4">' + \
             translate['Publish'] + '</button></a>\n'
     else:
         # if not logged in then replace the publish button with
         # a login button
         publish_button_str = \
-            '        <a href="/login"><button class="publishbtn">' + \
+            '        <a href="/login">' + \
+            '<button class="publishbtn" tabindex="4">' + \
             translate['Login'] + '</button></a>\n'
 
     # show publish button at the top if needed
@@ -134,7 +135,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/editnewswire" ' + \
-                'accesskey="' + access_keys['menuEdit'] + '">' + \
+                'accesskey="' + access_keys['menuEdit'] + '" tabindex="4">' + \
                 '<img class="' + edit_image_class + \
                 '" loading="lazy" decoding="async" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -145,7 +146,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/editnewswire" ' + \
-                'accesskey="' + access_keys['menuEdit'] + '">' + \
+                'accesskey="' + access_keys['menuEdit'] + '" tabindex="4">' + \
                 '<img class="' + edit_image_class + \
                 '" loading="lazy" decoding="async" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -154,14 +155,14 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
 
     # show the RSS icons
     rss_icon_str = \
-        '        <a href="/categories.xml">' + \
+        '        <a href="/categories.xml" tabindex="4">' + \
         '<img class="' + edit_image_class + \
         '" loading="lazy" decoding="async" alt="' + \
         translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
         translate['Hashtag Categories RSS Feed'] + '" src="/' + \
         'icons/categoriesrss.png" /></a>\n'
     rss_icon_str += \
-        '        <a href="/newswire.xml">' + \
+        '        <a href="/newswire.xml" tabindex="4">' + \
         '<img class="' + edit_image_class + \
         '" loading="lazy" decoding="async" alt="' + \
         translate['Newswire RSS Feed'] + ' | " title="' + \
