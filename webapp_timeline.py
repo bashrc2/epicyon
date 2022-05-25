@@ -894,7 +894,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
             '  <center>\n' + \
             '    <a href="' + users_path + '/' + box_name + \
             '?page=' + str(page_number - 1) + \
-            '" accesskey="' + access_keys['Page up'] + '">' + \
+            '" accesskey="' + access_keys['Page up'] + '" ' + \
+            'class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
             translate['Page up'] + '" alt="' + \
@@ -1006,7 +1007,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
             '      <center>\n' + \
             '        <a href="' + users_path + '/' + box_name + '?page=' + \
             str(page_number + 1) + \
-            '" accesskey="' + access_keys['Page down'] + '">' + \
+            '" accesskey="' + access_keys['Page down'] + '" ' + \
+            'class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
@@ -1135,7 +1137,8 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(page_number - 1) + \
-            '"><img loading="lazy" decoding="async" ' + \
+            '" class="imageAnchor" tabindex="9">' + \
+            '<img loading="lazy" decoding="async" ' + \
             'class="pageicon" src="/' + \
             'icons/pageup.png" title="' + translate['Page up'] + \
             '" alt="' + translate['Page up'] + '"></a>\n' + \
@@ -1176,7 +1179,8 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(page_number + 1) + \
-            '"><img loading="lazy" decoding="async" ' + \
+            '" class="imageAnchor" tabindex="9">' + \
+            '<img loading="lazy" decoding="async" ' + \
             'class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>\n' + \
