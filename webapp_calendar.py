@@ -67,9 +67,9 @@ def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
     delete_post_str = \
         html_header_with_external_style(css_filename, instance_title, None)
     delete_post_str += \
-        '<center><h1>' + post_time + ' ' + str(year) + '/' + \
+        '<center>\n<h1>' + post_time + ' ' + str(year) + '/' + \
         str(month_number) + \
-        '/' + str(day_number) + '</h1></center>'
+        '/' + str(day_number) + '</h1>\n</center>\n'
     delete_post_str += '<center>'
     delete_post_str += '  <p class="followText">' + \
         translate['Delete this event'] + '</p>'
@@ -128,19 +128,22 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     instance_title = get_config_param(base_dir, 'instanceTitle')
     calendar_str = \
         html_header_with_external_style(css_filename, instance_title, None)
-    calendar_str += '<main><table class="calendar">\n'
-    calendar_str += '<caption class="calendar__banner--month">\n'
+    calendar_str += '<main>\n'
+    # day header
     calendar_str += \
-        '  <a href="' + cal_actor + '/calendar?year=' + str(year) + \
-        '?month=' + str(month_number) + '">\n'
+        '  <center>\n<p>\n<a href="' + cal_actor + \
+        '/calendar?year=' + str(year) + \
+        '?month=' + str(month_number) + '" tabindex="1" class="imageAnchor">\n'
     datetime_str = str(year) + '-' + str(month_number) + '-' + str(day_number)
     calendar_str += \
-        '  <h1><time datetime="' + datetime_str + '">' + \
+        '  <label class="calheader">' + \
+        '<time datetime="' + datetime_str + '">' + \
         str(day_number) + ' ' + month_name + \
-        '</time></h1></a><br><span class="year">' + str(year) + '</span>\n'
-    calendar_str += '</caption>\n'
+        '</time></label></a><br><span class="year">' + str(year) + '</span>\n'
+    calendar_str += '</p>\n</center>\n'
+    calendar_str += '<table class="calendar">\n'
+    # day events list
     calendar_str += '<tbody>\n'
-
     if day_events:
         for event_post in day_events:
             event_time = None
@@ -281,12 +284,12 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                     delete_button_str + '</tr>\n'
 
     calendar_str += '</tbody>\n'
-    calendar_str += '</table></main>\n'
+    calendar_str += '</table>\n</main>\n'
 
     # icalendar download link
     calendar_str += \
         '    <a href="' + path + '?ical=true" ' + \
-        'download="icalendar.ics">' + \
+        'download="icalendar.ics" class="imageAnchor" tabindex="3">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
 
@@ -299,7 +302,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                   base_dir: str, path: str,
                   http_prefix: str, domain_full: str,
                   text_mode_banner: str, access_keys: {},
-                  icalendar: bool, system_language: str) -> str:
+                  icalendar: bool, system_language: str,
+                  default_timeline: str) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -424,34 +428,41 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         html_header_with_external_style(css_filename, instance_title, None)
 
     # the main graphical calendar as a table
-    calendar_str = '<main><table class="calendar">\n'
-    calendar_str += '<caption class="calendar__banner--month">\n'
+    calendar_str = '<main>\n<center>\n<p class="calendar__banner--month">\n'
+    # previous month
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
         '?month=' + str(prev_month_number) + '" ' + \
-        'accesskey="' + access_keys['Page up'] + '">'
+        'accesskey="' + access_keys['Page up'] + \
+        '" tabindex="2" class="imageAnchor">'
     calendar_str += \
         '  <img loading="lazy" decoding="async" ' + \
         'alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
-    calendar_str += '  <a href="' + cal_actor + '/inbox" title="'
-    calendar_str += translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + access_keys['menuTimeline'] + '">'
+    # header
     calendar_str += \
-        '  <h1><time datetime="' + \
+        '  <a href="' + cal_actor + '/' + default_timeline + '" title="'
+    calendar_str += translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + access_keys['menuTimeline'] + \
+        '" tabindex="1" class="imageAnchor">'
+    calendar_str += \
+        '  <label class="calheader"><time datetime="' + \
         str(year) + '-' + str(month_number) + '">' + month_name + \
-        '</time></h1></a>\n'
+        '</time></label></a>\n'
+    # next month
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(next_year) + \
         '?month=' + str(next_month_number) + '" ' + \
-        'accesskey="' + access_keys['Page down'] + '">'
+        'accesskey="' + access_keys['Page down'] + \
+        '" tabindex="2" class="imageAnchor">'
     calendar_str += \
         '  <img loading="lazy" decoding="async" ' + \
         'alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \
         '/prev.png" class="buttonnext"/></a>\n'
-    calendar_str += '</caption>\n'
+    # calendar table
+    calendar_str += '</p>\n</center>\n<table class="calendar">\n'
     calendar_str += '<thead>\n'
     calendar_str += '<tr>\n'
     days = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
@@ -493,7 +504,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                         str(year) + '-' + str(month_number) + '-' + \
                         str(day_of_month)
                     day_link = '<a href="' + url + '" ' + \
-                        'title="' + day_description + '">' + \
+                        'title="' + day_description + '" tabindex="2">' + \
                         '<time datetime="' + datetime_str + '">' + \
                         str(day_of_month) + '</time></a>'
                     # accessibility menu links
@@ -528,7 +539,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         calendar_str += '  </tr>\n'
 
     calendar_str += '</tbody>\n'
-    calendar_str += '</table></main>\n'
+    calendar_str += '</table>\n</main>\n'
 
     # end of the links used for accessibility
     next_month_str = \
@@ -549,12 +560,12 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
 
     new_event_str = \
         '<br><center>\n<p>\n' + \
-        '<a href="' + cal_actor + '/newreminder">➕ ' + \
+        '<a href="' + cal_actor + '/newreminder" tabindex="2">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
     calendar_icon_str = \
         '    <a href="' + path + '?ical=true" ' + \
-        'download="icalendar.ics">' + \
+        'download="icalendar.ics" class="imageAnchor" tabindex="3">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
 

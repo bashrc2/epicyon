@@ -66,6 +66,14 @@ main {
     flex-basis: 980px;
 }
 
+.imageAnchor {
+    font-family: var(--calendar-header-font);
+}
+
+.imageAnchor:focus img{
+    border: 2px solid var(--focus-color);
+}
+
 a:visited{
     color: var(--day-number);
     text-decoration: none;
@@ -124,7 +132,7 @@ a:focus {
     text-align: center;
     padding: .75rem;
 }
-.calendar__banner--month h1 {
+.calheader {
     background-color: var(--title-background);
     color: var(--title-text);
     display: inline-block;

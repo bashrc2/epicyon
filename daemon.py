@@ -17081,7 +17081,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domain_full,
                                     self.server.text_mode_banner,
                                     access_keys,
-                                    False, self.server.system_language)
+                                    False, self.server.system_language,
+                                    self.server.default_timeline)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -17123,7 +17124,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     access_keys,
                                     True,
-                                    self.server.system_language)
+                                    self.server.system_language,
+                                    self.server.default_timeline)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -21002,6 +21004,7 @@ def run_daemon(preferred_podcast_formats: [],
         'menuInbox': 'i',
         'menuSearch': '/',
         'menuNewPost': 'n',
+        'menuNewBlog': '0',
         'menuCalendar': 'c',
         'menuDM': 'd',
         'menuReplies': 'r',
