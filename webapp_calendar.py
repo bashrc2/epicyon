@@ -425,7 +425,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         html_header_with_external_style(css_filename, instance_title, None)
 
     # the main graphical calendar as a table
-    calendar_str = '<main>\n<p class="calendar__banner--month">\n'
+    calendar_str = '<main>\n<center>\n<p class="calendar__banner--month">\n'
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
         '?month=' + str(prev_month_number) + '" ' + \
@@ -455,7 +455,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         'alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \
         '/prev.png" class="buttonnext"/></a>\n'
-    calendar_str += '</p>\n<table class="calendar">\n'
+    calendar_str += '</p>\n</center>\n<table class="calendar">\n'
     calendar_str += '<thead>\n'
     calendar_str += '<tr>\n'
     days = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
