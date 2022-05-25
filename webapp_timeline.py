@@ -107,7 +107,7 @@ def _html_timeline_new_post(manually_approve_followers: bool,
         if not icons_as_buttons:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newdm?nodropdown"><img loading="lazy" ' + \
+                '/newdm?nodropdown" tabindex="9"><img loading="lazy" ' + \
                 'decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new DM'] + \
@@ -115,28 +115,30 @@ def _html_timeline_new_post(manually_approve_followers: bool,
                 '" class="timelineicon"/></a>\n'
         else:
             new_post_button_str += \
-                '<a href="' + users_path + '/newdm?nodropdown">' + \
+                '<a href="' + users_path + \
+                '/newdm?nodropdown" tabindex="9">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + ' </span></button></a>'
     elif box_name in ('tlblogs', 'tlnews', 'tlfeatures'):
         if not icons_as_buttons:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newblog"><img loading="lazy" decoding="async" src="/' + \
+                '/newblog" tabindex="9">' + \
+                '<img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
                 translate['Create a new post'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             new_post_button_str += \
-                '<a href="' + users_path + '/newblog">' + \
+                '<a href="' + users_path + '/newblog" tabindex="9">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif box_name == 'tlshares':
         if not icons_as_buttons:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newshare?nodropdown">' + \
+                '/newshare?nodropdown" tabindex="9">' + \
                 '<img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new shared item'] + '" alt="| ' + \
@@ -144,14 +146,15 @@ def _html_timeline_new_post(manually_approve_followers: bool,
                 '" class="timelineicon"/></a>\n'
         else:
             new_post_button_str += \
-                '<a href="' + users_path + '/newshare?nodropdown">' + \
+                '<a href="' + users_path + \
+                '/newshare?nodropdown" tabindex="9">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif box_name == 'tlwanted':
         if not icons_as_buttons:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newwanted?nodropdown">' + \
+                '/newwanted?nodropdown" tabindex="9">' + \
                 '<img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new wanted item'] + '" alt="| ' + \
@@ -159,7 +162,8 @@ def _html_timeline_new_post(manually_approve_followers: bool,
                 '" class="timelineicon"/></a>\n'
         else:
             new_post_button_str += \
-                '<a href="' + users_path + '/newwanted?nodropdown">' + \
+                '<a href="' + users_path + \
+                '/newwanted?nodropdown" tabindex="9">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     else:
@@ -167,7 +171,7 @@ def _html_timeline_new_post(manually_approve_followers: bool,
             if not icons_as_buttons:
                 new_post_button_str += \
                     '<a class="imageAnchor" href="' + users_path + \
-                    '/newpost">' + \
+                    '/newpost" tabindex="9">' + \
                     '<img loading="lazy" decoding="async" src="/' + \
                     'icons/newpost.png" title="' + \
                     translate['Create a new post'] + '" alt="| ' + \
@@ -175,14 +179,14 @@ def _html_timeline_new_post(manually_approve_followers: bool,
                     '" class="timelineicon"/></a>\n'
             else:
                 new_post_button_str += \
-                    '<a href="' + users_path + '/newpost">' + \
+                    '<a href="' + users_path + '/newpost" tabindex="9">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
         else:
             if not icons_as_buttons:
                 new_post_button_str += \
                     '<a class="imageAnchor" href="' + users_path + \
-                    '/newfollowers">' + \
+                    '/newfollowers" tabindex="9">' + \
                     '<img loading="lazy" decoding="async" src="/' + \
                     'icons/newpost.png" title="' + \
                     translate['Create a new post'] + \
@@ -190,7 +194,8 @@ def _html_timeline_new_post(manually_approve_followers: bool,
                     '" class="timelineicon"/></a>\n'
             else:
                 new_post_button_str += \
-                    '<a href="' + users_path + '/newfollowers">' + \
+                    '<a href="' + users_path + \
+                    '/newfollowers" tabindex="9">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
     return new_post_button_str
@@ -747,7 +752,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
         '<header>\n' + \
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
-        translate['Switch to profile view'] + '" aria-flowto="containerHeader">\n'
+        translate['Switch to profile view'] + '" ' + \
+        'aria-flowto="containerHeader" tabindex="1">\n'
     tl_str += '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" ' + \
         'src="' + users_path + '/' + banner_file + '" /></a>\n' + \

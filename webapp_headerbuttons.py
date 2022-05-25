@@ -56,7 +56,7 @@ def header_buttons_timeline(default_timeline: str,
     # first button
     if default_timeline == 'tlmedia':
         tl_str += \
-            '<a href="' + users_path + '/tlmedia" tabindex="-1" ' + \
+            '<a href="' + users_path + '/tlmedia" tabindex="2" ' + \
             'accesskey="' + access_keys['menuMedia'] + '"'
         if box_name == 'tlmedia':
             tl_str += ' aria-current="location"'
@@ -67,7 +67,7 @@ def header_buttons_timeline(default_timeline: str,
     elif default_timeline == 'tlblogs':
         tl_str += \
             '<a href="' + users_path + \
-            '/tlblogs" tabindex="-1"'
+            '/tlblogs" tabindex="2"'
         if box_name == 'tlblogs':
             tl_str += ' aria-current="location"'
         tl_str += \
@@ -77,7 +77,7 @@ def header_buttons_timeline(default_timeline: str,
     elif default_timeline == 'tlfeatures':
         tl_str += \
             '<a href="' + users_path + \
-            '/tlfeatures" tabindex="-1"'
+            '/tlfeatures" tabindex="2"'
         if box_name == 'tlfeatures':
             tl_str += ' aria-current="location"'
         tl_str += \
@@ -87,7 +87,7 @@ def header_buttons_timeline(default_timeline: str,
     else:
         tl_str += \
             '<a href="' + users_path + \
-            '/inbox" tabindex="-1"><button class="' + \
+            '/inbox" tabindex="2"><button class="' + \
             inbox_button + '"'
         if box_name == 'inbox':
             tl_str += ' aria-current="location"'
@@ -102,7 +102,7 @@ def header_buttons_timeline(default_timeline: str,
 
     if not features_header:
         tl_str += \
-            '<a href="' + users_path + '/dm" tabindex="-1"'
+            '<a href="' + users_path + '/dm" tabindex="3"'
         if box_name == 'dm':
             tl_str += ' aria-current="location"'
         tl_str += \
@@ -115,7 +115,7 @@ def header_buttons_timeline(default_timeline: str,
             acct_dir(base_dir, nickname, domain) + '/tlreplies.index'
         if os.path.isfile(replies_index_filename):
             tl_str += \
-                '<a href="' + users_path + '/tlreplies" tabindex="-1"'
+                '<a href="' + users_path + '/tlreplies" tabindex="4"'
             if box_name == 'tlreplies':
                 tl_str += ' aria-current="location"'
             tl_str += \
@@ -253,7 +253,7 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += ' aria-current="location"'
         tl_str += \
             '><button class="' + \
-            sent_button + '" tabindex="-1" accesskey="' + \
+            sent_button + '" tabindex="5" accesskey="' + \
             access_keys['menuOutbox'] + '">' + \
             '<span>' + translate['Sent'] + '</span></button></a>'
 
@@ -269,7 +269,8 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += \
                 '<a class="imageAnchor" href="' + users_path + \
                 '/search" accesskey="' + access_keys['menuSearch'] + \
-                '"><img loading="lazy" decoding="async" src="/' + \
+                '" tabindex="8">' + \
+                '<img loading="lazy" decoding="async" src="/' + \
                 'icons/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
                 translate['Search and follow'] + \
@@ -278,7 +279,7 @@ def header_buttons_timeline(default_timeline: str,
             # the search button
             tl_str += \
                 '<a href="' + users_path + \
-                '/search" tabindex="-1">' + \
+                '/search" tabindex="8">' + \
                 '<button class="button" ' + \
                 'accesskey="' + access_keys['menuSearch'] + '>' + \
                 '<span>' + translate['Search'] + \
@@ -300,14 +301,15 @@ def header_buttons_timeline(default_timeline: str,
                 '      <a class="imageAnchor" href="' + \
                 users_path + calendar_path + \
                 '" accesskey="' + access_keys['menuCalendar'] + \
-                '"><img loading="lazy" decoding="async" src="/icons/' + \
+                '" tabindex="7">' + \
+                '<img loading="lazy" decoding="async" src="/icons/' + \
                 calendar_image + '" title="' + translate['Calendar'] + \
                 '" alt="| ' + calendar_alt_text + \
                 '" class="timelineicon"/></a>\n'
         else:
             tl_str += \
                 '<a href="' + users_path + calendar_path + \
-                '" tabindex="-1"><button class="button" accesskey="' + \
+                '" tabindex="7"><button class="button" accesskey="' + \
                 access_keys['menuCalendar'] + '">' + \
                 '<span>' + translate['Calendar'] + \
                 '</span></button></a>'
@@ -317,15 +319,15 @@ def header_buttons_timeline(default_timeline: str,
         if not icons_as_buttons:
             tl_str += \
                 '      <a class="imageAnchor" href="' + \
-                users_path + '/minimal' + \
-                '"><img loading="lazy" decoding="async" src="/icons' + \
+                users_path + '/minimal" tabindex="6">' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
                 '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
                 '" alt="| ' + translate['Show/Hide Buttons'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             tl_str += \
                 '<a href="' + users_path + '/minimal' + \
-                '" tabindex="-1"><button class="button">' + \
+                '" tabindex="6"><button class="button">' + \
                 '<span>' + translate['Show/Hide Buttons'] + \
                 '</span></button></a>'
 
