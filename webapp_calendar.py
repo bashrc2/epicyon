@@ -131,7 +131,8 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     calendar_str += '<main>\n'
     # day header
     calendar_str += \
-        '  <p>\n<a href="' + cal_actor + '/calendar?year=' + str(year) + \
+        '  <center>\n<p>\n<a href="' + cal_actor + \
+        '/calendar?year=' + str(year) + \
         '?month=' + str(month_number) + '" tabindex="1" class="imageAnchor">\n'
     datetime_str = str(year) + '-' + str(month_number) + '-' + str(day_number)
     calendar_str += \
@@ -139,7 +140,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
         '<time datetime="' + datetime_str + '">' + \
         str(day_number) + ' ' + month_name + \
         '</time></label></a><br><span class="year">' + str(year) + '</span>\n'
-    calendar_str += '</p>\n'
+    calendar_str += '</p>\n</center>\n'
     calendar_str += '<table class="calendar">\n'
     # day events list
     calendar_str += '<tbody>\n'
