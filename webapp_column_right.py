@@ -184,7 +184,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                 '        <a href="' + \
                 '/users/' + nickname + '/newblog?nodropdown" ' + \
                 'accesskey="' + access_keys['menuNewPost'] + \
-                '" class="imageAnchor">' + \
+                '" class="imageAnchor" tabindex="4">' + \
                 '<img class="' + edit_image_class + \
                 '" loading="lazy" decoding="async" alt="' + \
                 title_str + '" title="' + \
