@@ -67,9 +67,9 @@ def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
     delete_post_str = \
         html_header_with_external_style(css_filename, instance_title, None)
     delete_post_str += \
-        '<center><h1>' + post_time + ' ' + str(year) + '/' + \
+        '<center>\n<h1>' + post_time + ' ' + str(year) + '/' + \
         str(month_number) + \
-        '/' + str(day_number) + '</h1></center>'
+        '/' + str(day_number) + '</h1>\n</center>\n'
     delete_post_str += '<center>'
     delete_post_str += '  <p class="followText">' + \
         translate['Delete this event'] + '</p>'
@@ -128,19 +128,21 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     instance_title = get_config_param(base_dir, 'instanceTitle')
     calendar_str = \
         html_header_with_external_style(css_filename, instance_title, None)
-    calendar_str += '<main>\n<table class="calendar">\n'
-    calendar_str += '<caption class="calendar__banner--month">\n'
+    calendar_str += '<main>\n'
+    # day header
     calendar_str += \
-        '  <a href="' + cal_actor + '/calendar?year=' + str(year) + \
+        '  <p>\n<a href="' + cal_actor + '/calendar?year=' + str(year) + \
         '?month=' + str(month_number) + '" tabindex="1" class="imageAnchor">\n'
     datetime_str = str(year) + '-' + str(month_number) + '-' + str(day_number)
     calendar_str += \
-        '  <h1><time datetime="' + datetime_str + '">' + \
+        '  <label class="calheader">' + \
+        '<time datetime="' + datetime_str + '">' + \
         str(day_number) + ' ' + month_name + \
-        '</time></h1></a><br><span class="year">' + str(year) + '</span>\n'
-    calendar_str += '</caption>\n'
+        '</time></label></a><br><span class="year">' + str(year) + '</span>\n'
+    calendar_str += '</p>\n'
+    calendar_str += '<table class="calendar">\n'
+    # day events list
     calendar_str += '<tbody>\n'
-
     if day_events:
         for event_post in day_events:
             event_time = None
