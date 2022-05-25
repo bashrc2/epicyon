@@ -128,11 +128,11 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     instance_title = get_config_param(base_dir, 'instanceTitle')
     calendar_str = \
         html_header_with_external_style(css_filename, instance_title, None)
-    calendar_str += '<main><table class="calendar">\n'
+    calendar_str += '<main>\n<table class="calendar">\n'
     calendar_str += '<caption class="calendar__banner--month">\n'
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(year) + \
-        '?month=' + str(month_number) + '">\n'
+        '?month=' + str(month_number) + '" tabindex="1" class="imageAnchor">\n'
     datetime_str = str(year) + '-' + str(month_number) + '-' + str(day_number)
     calendar_str += \
         '  <h1><time datetime="' + datetime_str + '">' + \
@@ -281,7 +281,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                     delete_button_str + '</tr>\n'
 
     calendar_str += '</tbody>\n'
-    calendar_str += '</table></main>\n'
+    calendar_str += '</table>\n</main>\n'
 
     # icalendar download link
     calendar_str += \
@@ -425,8 +425,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         html_header_with_external_style(css_filename, instance_title, None)
 
     # the main graphical calendar as a table
-    calendar_str = '<main><table class="calendar">\n'
-    calendar_str += '<caption class="calendar__banner--month">\n'
+    calendar_str = '<main>\n<p class="calendar__banner--month">\n'
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
         '?month=' + str(prev_month_number) + '" ' + \
@@ -456,7 +455,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         'alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \
         '/prev.png" class="buttonnext"/></a>\n'
-    calendar_str += '</caption>\n'
+    calendar_str += '</p>\n<table class="calendar">\n'
     calendar_str += '<thead>\n'
     calendar_str += '<tr>\n'
     days = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
@@ -533,7 +532,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         calendar_str += '  </tr>\n'
 
     calendar_str += '</tbody>\n'
-    calendar_str += '</table></main>\n'
+    calendar_str += '</table>\n</main>\n'
 
     # end of the links used for accessibility
     next_month_str = \
