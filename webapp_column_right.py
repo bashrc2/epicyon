@@ -77,7 +77,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             '        <a href="' + \
             '/users/' + nickname + '/newblog?nodropdown" ' + \
             'title="' + title_str + '" ' + \
-            'accesskey="' + access_keys['menuNewPost'] + '">' + \
+            'accesskey="' + access_keys['menuNewBlog'] + '">' + \
             '<button class="publishbtn" tabindex="4">' + \
             translate['Publish'] + '</button></a>\n'
     else:
@@ -183,7 +183,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/newblog?nodropdown" ' + \
-                'accesskey="' + access_keys['menuNewPost'] + \
+                'accesskey="' + access_keys['menuNewBlog'] + \
                 '" class="imageAnchor" tabindex="4">' + \
                 '<img class="' + edit_image_class + \
                 '" loading="lazy" decoding="async" alt="' + \
