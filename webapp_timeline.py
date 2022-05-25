@@ -678,7 +678,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
             moderation_button_str += ' aria-current="location"'
         moderation_button_str += \
             '><button class="' + \
-            moderation_button + '"><span>' + \
+            moderation_button + '" tabindex="2"><span>' + \
             html_highlight_label(translate['Mod'], new_report) + \
             ' </span></button></a>'
 
@@ -693,13 +693,13 @@ def html_timeline(css_cache: {}, default_timeline: str,
         if box_name == 'tlshares':
             shares_button_str += ' aria-current="location"'
         shares_button_str += \
-            '><button class="' + shares_button + '"><span>' + \
+            '><button class="' + shares_button + '" tabindex="2"><span>' + \
             html_highlight_label(translate['Shares'], new_share) + \
             '</span></button></a>'
 
         wanted_button_str = \
             '<a href="' + users_path + '/tlwanted"><button class="' + \
-            wanted_button + '"'
+            wanted_button + '" tabindex="2"'
         if box_name == 'tlwanted':
             wanted_button_str += ' aria-current="location"'
         wanted_button_str += \
@@ -713,8 +713,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
             bookmarks_button_str += ' aria-current="location"'
         bookmarks_button_str += \
             '><button class="' + \
-            bookmarks_button + '"><span>' + translate['Bookmarks'] + \
-            '</span></button></a>'
+            bookmarks_button + '" tabindex="2">' + \
+            '<span>' + translate['Bookmarks'] + '</span></button></a>'
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
