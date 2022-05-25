@@ -559,7 +559,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
 
     calendar_icon_str = \
         '    <a href="' + path + '?ical=true" ' + \
-        'download="icalendar.ics">' + \
+        'download="icalendar.ics" class="imageAnchor" tabindex="3">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
 
