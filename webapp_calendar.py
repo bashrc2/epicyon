@@ -429,7 +429,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
         '?month=' + str(prev_month_number) + '" ' + \
-        'accesskey="' + access_keys['Page up'] + '">'
+        'accesskey="' + access_keys['Page up'] + '" tabindex="2">'
     calendar_str += \
         '  <img loading="lazy" decoding="async" ' + \
         'alt="' + translate['Previous month'] + \
@@ -437,7 +437,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '/prev.png" class="buttonprev"/></a>\n'
     calendar_str += '  <a href="' + cal_actor + '/inbox" title="'
     calendar_str += translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + access_keys['menuTimeline'] + '">'
+        'accesskey="' + access_keys['menuTimeline'] + '" tabindex="1">'
     calendar_str += \
         '  <h1><time datetime="' + \
         str(year) + '-' + str(month_number) + '">' + month_name + \
@@ -445,7 +445,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(next_year) + \
         '?month=' + str(next_month_number) + '" ' + \
-        'accesskey="' + access_keys['Page down'] + '">'
+        'accesskey="' + access_keys['Page down'] + '" tabindex="2">'
     calendar_str += \
         '  <img loading="lazy" decoding="async" ' + \
         'alt="' + translate['Next month'] + \
@@ -493,7 +493,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                         str(year) + '-' + str(month_number) + '-' + \
                         str(day_of_month)
                     day_link = '<a href="' + url + '" ' + \
-                        'title="' + day_description + '">' + \
+                        'title="' + day_description + '" tabindex="2">' + \
                         '<time datetime="' + datetime_str + '">' + \
                         str(day_of_month) + '</time></a>'
                     # accessibility menu links
@@ -549,7 +549,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
 
     new_event_str = \
         '<br><center>\n<p>\n' + \
-        '<a href="' + cal_actor + '/newreminder">➕ ' + \
+        '<a href="' + cal_actor + '/newreminder" tabindex="2">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
     calendar_icon_str = \
