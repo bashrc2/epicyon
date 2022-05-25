@@ -286,7 +286,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     # icalendar download link
     calendar_str += \
         '    <a href="' + path + '?ical=true" ' + \
-        'download="icalendar.ics">' + \
+        'download="icalendar.ics" class="imageAnchor" tabindex="3">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
 
