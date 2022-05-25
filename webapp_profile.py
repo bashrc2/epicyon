@@ -422,7 +422,8 @@ def _get_profile_header(base_dir: str, http_prefix: str,
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
         nickname + '/' + default_timeline + '" title="' + \
-        translate['Switch to timeline view'] + '" tabindex="1">\n' + \
+        translate['Switch to timeline view'] + '" tabindex="1" ' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">\n' + \
         '        <img class="profileBackground" ' + \
         'alt="" ' + \
         'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n' + \
