@@ -127,7 +127,7 @@ def _html_timeline_new_post(manually_approve_followers: bool,
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
                 '/newblog" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
+                access_keys['menuNewBlog'] + '">' + \
                 '<img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -137,7 +137,7 @@ def _html_timeline_new_post(manually_approve_followers: bool,
             new_post_button_str += \
                 '<a href="' + users_path + \
                 '/newblog" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
+                access_keys['menuNewBlog'] + '">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif box_name == 'tlshares':
