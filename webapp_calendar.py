@@ -131,13 +131,15 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     calendar_str += '<main><table class="calendar">\n'
     calendar_str += '<caption class="calendar__banner--month">\n'
     calendar_str += \
-        '  <a href="' + cal_actor + '/calendar?year=' + str(year) + \
-        '?month=' + str(month_number) + '">\n'
+        '  <h1><a href="' + cal_actor + '/calendar?year=' + str(year) + \
+        '?month=' + str(month_number) + \
+        '" class="imageAnchor" tabindex="1" ' + \
+        'accesskey="' + access_keys['menuCalendar'] + '">\n'
     datetime_str = str(year) + '-' + str(month_number) + '-' + str(day_number)
     calendar_str += \
-        '  <h1><time datetime="' + datetime_str + '">' + \
+        '  <time datetime="' + datetime_str + '">' + \
         str(day_number) + ' ' + month_name + \
-        '</time></h1></a><br><span class="year">' + str(year) + '</span>\n'
+        '</time></a></h1><br><span class="year">' + str(year) + '</span>\n'
     calendar_str += '</caption>\n'
     calendar_str += '<tbody>\n'
 
@@ -438,14 +440,14 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
     calendar_str += \
-        '  <a href="' + cal_actor + '/' + default_timeline + '" title="'
+        '  <h1><a href="' + cal_actor + '/' + default_timeline + '" title="'
     calendar_str += translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + \
         '" tabindex="1" class="imageAnchor">'
     calendar_str += \
-        '  <h1><time datetime="' + \
+        '  <time datetime="' + \
         str(year) + '-' + str(month_number) + '">' + month_name + \
-        '</time></h1></a>\n'
+        '</time></a></h1>\n'
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(next_year) + \
         '?month=' + str(next_month_number) + '" ' + \
