@@ -426,6 +426,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
 
     # the main graphical calendar as a table
     calendar_str = '<main>\n<center>\n<p class="calendar__banner--month">\n'
+    # previous month
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
         '?month=' + str(prev_month_number) + '" ' + \
@@ -436,15 +437,17 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         'alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
+    # header
     calendar_str += \
         '  <a href="' + cal_actor + '/' + default_timeline + '" title="'
     calendar_str += translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + \
-        '" tabindex="-1">'
+        '" tabindex="1" class="imageAnchor">'
     calendar_str += \
-        '  <h1><time datetime="' + \
+        '  <label class="calheader"><time datetime="' + \
         str(year) + '-' + str(month_number) + '">' + month_name + \
-        '</time></h1></a>\n'
+        '</time></label></a>\n'
+    # next month
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(next_year) + \
         '?month=' + str(next_month_number) + '" ' + \
@@ -455,6 +458,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         'alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \
         '/prev.png" class="buttonnext"/></a>\n'
+    # calendar table
     calendar_str += '</p>\n</center>\n<table class="calendar">\n'
     calendar_str += '<thead>\n'
     calendar_str += '<tr>\n'
