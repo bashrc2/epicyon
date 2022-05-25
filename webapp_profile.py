@@ -422,7 +422,8 @@ def _get_profile_header(base_dir: str, http_prefix: str,
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
         nickname + '/' + default_timeline + '" title="' + \
-        translate['Switch to timeline view'] + '">\n' + \
+        translate['Switch to timeline view'] + '" tabindex="1" ' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">\n' + \
         '        <img class="profileBackground" ' + \
         'alt="" ' + \
         'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n' + \
@@ -470,7 +471,8 @@ def _get_profile_header(base_dir: str, http_prefix: str,
                 ctr += 1
                 alt_domain, _ = get_domain_from_actor(alt_actor)
                 other_accounts_html += \
-                    '<a href="' + alt_actor + '">' + alt_domain + '</a>'
+                    '<a href="' + alt_actor + \
+                    '" tabindex="1">' + alt_domain + '</a>'
         elif isinstance(also_known_as, str):
             if also_known_as != actor:
                 ctr += 1
@@ -483,7 +485,7 @@ def _get_profile_header(base_dir: str, http_prefix: str,
     html_str += \
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
-        translate['QR Code'] + '">' + \
+        translate['QR Code'] + '" tabindex="1">' + \
         '<img class="qrcode" alt="' + translate['QR Code'] + \
         '" src="/icons/qrcode.png" /></a></p>\n' + \
         '        <p>' + profile_description_short + '</p>\n' + login_button
@@ -493,7 +495,8 @@ def _get_profile_header(base_dir: str, http_prefix: str,
     # show vcard download link
     html_str += \
         '    <a href="/users/' + nickname + '.vcf" ' + \
-        'download="contact_' + nickname + '@' + domain_full + '.vcf">' + \
+        'download="contact_' + nickname + '@' + domain_full + \
+        '.vcf" tabindex="1" class="imageAnchor">' + \
         '<img class="vcard" src="/icons/vcard.png" ' + \
         'title="vCard" alt="vCard" /></a>\n'
 
@@ -526,7 +529,7 @@ def _get_profile_header_after_search(base_dir: str,
         '      <a href="/users/' + \
         nickname + '/' + default_timeline + '" title="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + access_keys['menuTimeline'] + '">\n' + \
+        'accesskey="' + access_keys['menuTimeline'] + '" tabindex="1">\n' + \
         '        <img class="profileBackground" ' + \
         'alt="" ' + \
         'src="' + image_url + '" /></a>\n' + \
@@ -571,7 +574,8 @@ def _get_profile_header_after_search(base_dir: str,
                 ctr += 1
                 alt_domain, _ = get_domain_from_actor(alt_actor)
                 other_accounts_html += \
-                    '<a href="' + alt_actor + '">' + alt_domain + '</a>'
+                    '<a href="' + alt_actor + \
+                    '" tabindex="1">' + alt_domain + '</a>'
         elif isinstance(also_known_as, str):
             if also_known_as != actor:
                 ctr += 1
@@ -703,25 +707,26 @@ def html_profile(signing_priv_key_pem: str,
         donate_section += '  <center>\n'
         if donate_url and not is_system_account(nickname):
             donate_section += \
-                '    <p><a href="' + donate_url + \
-                '"><button class="donateButton">' + translate['Donate'] + \
+                '    <p><a href="' + donate_url + '" tabindex="1">' + \
+                '<button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
         if website_url:
             donate_section += \
                 '<p>' + translate['Website'] + ': <a href="' + \
-                website_url + '">' + website_url + '</a></p>\n'
+                website_url + '" tabindex="1">' + website_url + '</a></p>\n'
         if email_address:
             donate_section += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
-                email_address + '">' + email_address + '</a></p>\n'
+                email_address + '" tabindex="1">' + \
+                email_address + '</a></p>\n'
         if blog_address:
             donate_section += \
                 '<p>Blog: <a href="' + \
-                blog_address + '">' + blog_address + '</a></p>\n'
+                blog_address + '" tabindex="1">' + blog_address + '</a></p>\n'
         if xmpp_address:
             donate_section += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
-                xmpp_address + '">' + xmpp_address + '</a></p>\n'
+                xmpp_address + '" tabindex="1">' + xmpp_address + '</a></p>\n'
         if matrix_address:
             donate_section += \
                 '<p>' + translate['Matrix'] + ': ' + matrix_address + '</p>\n'
@@ -763,13 +768,14 @@ def html_profile(signing_priv_key_pem: str,
 
     if authorized:
         edit_profile_str = \
-            '<a class="imageAnchor" href="' + users_path + '/editprofile">' + \
+            '<a class="imageAnchor" href="' + users_path + \
+            '/editprofile" tabindex="1">' + \
             '<img loading="lazy" decoding="async" src="/icons' + \
             '/edit.png" title="' + translate['Edit'] + \
             '" alt="| ' + translate['Edit'] + '" class="timelineicon"/></a>\n'
 
         logout_str = \
-            '<a class="imageAnchor" href="/logout">' + \
+            '<a class="imageAnchor" href="/logout" tabindex="1">' + \
             '<img loading="lazy" decoding="async" src="/icons' + \
             '/logout.png" title="' + translate['Logout'] + \
             '" alt="| ' + translate['Logout'] + \
@@ -815,7 +821,8 @@ def html_profile(signing_priv_key_pem: str,
                             follow_approvals_section += \
                                 '<div class="container">'
                             follow_approvals_section += \
-                                '<a href="' + follower_actor + '">'
+                                '<a href="' + follower_actor + \
+                                '" tabindex="2">'
                             follow_approvals_section += \
                                 '<span class="followRequestHandle">' + \
                                 follower_handle + \
@@ -824,13 +831,15 @@ def html_profile(signing_priv_key_pem: str,
                             # show Approve and Deny buttons
                             follow_approvals_section += \
                                 '<a href="' + base_path + \
-                                '/followapprove=' + follower_handle + '">'
+                                '/followapprove=' + follower_handle + \
+                                '" tabindex="2">'
                             follow_approvals_section += \
                                 '<button class="followApprove">' + \
                                 translate['Approve'] + '</button></a><br><br>'
                             follow_approvals_section += \
                                 '<a href="' + base_path + \
-                                '/followdeny=' + follower_handle + '">'
+                                '/followdeny=' + follower_handle + \
+                                '" tabindex="3">'
                             follow_approvals_section += \
                                 '<button class="followDeny">' + \
                                 translate['Deny'] + '</button></a>'
@@ -952,34 +961,41 @@ def html_profile(signing_priv_key_pem: str,
     profile_str += '<div class="container" id="buttonheader">\n'
     profile_str += '  <center>'
     profile_str += \
-        '    <a href="' + users_path + '#buttonheader"><button class="' + \
+        '    <a href="' + users_path + '#buttonheader" tabindex="2">' + \
+        '<button class="' + \
         posts_button + '"><span>' + translate['Posts'] + \
         ' </span></button></a>'
     if not is_group:
         profile_str += \
-            '    <a href="' + users_path + '/following#buttonheader">' + \
+            '    <a href="' + users_path + \
+            '/following#buttonheader" tabindex="2">' + \
             '<button class="' + following_button + '"><span>' + \
             translate['Following'] + ' </span></button></a>'
     profile_str += \
-        '    <a href="' + users_path + '/followers#buttonheader">' + \
+        '    <a href="' + users_path + \
+        '/followers#buttonheader" tabindex="2">' + \
         '<button class="' + followers_button + \
         '"><span>' + followers_str + ' </span></button></a>'
     if not is_group:
         profile_str += \
-            '    <a href="' + users_path + '/roles#buttonheader">' + \
+            '    <a href="' + users_path + \
+            '/roles#buttonheader" tabindex="2">' + \
             '<button class="' + roles_button + '"><span>' + \
             translate['Roles'] + \
             ' </span></button></a>'
         profile_str += \
-            '    <a href="' + users_path + '/skills#buttonheader">' + \
+            '    <a href="' + users_path + \
+            '/skills#buttonheader" tabindex="2">' + \
             '<button class="' + skills_button + '"><span>' + \
             translate['Skills'] + ' </span></button></a>'
 #    profile_str += \
-#        '    <a href="' + users_path + '/shares#buttonheader">' + \
+#        '    <a href="' + users_path + \
+#             '/shares#buttonheader" tabindex="2">' + \
 #        '<button class="' + shares_button + '"><span>' + \
 #        translate['Shares'] + ' </span></button></a>'
 #    profile_str += \
-#        '    <a href="' + users_path + '/wanted#buttonheader">' + \
+#        '    <a href="' + users_path + \
+#        '/wanted#buttonheader" tabindex="2">' + \
 #        '<button class="' + wanted_button + '"><span>' + \
 #        translate['Wanted'] + ' </span></button></a>'
     profile_str += logout_str + edit_profile_str
@@ -996,7 +1012,7 @@ def html_profile(signing_priv_key_pem: str,
         css_filename = base_dir + '/epicyon.css'
 
     license_str = \
-        '<a href="https://gitlab.com/bashrc2/epicyon">' + \
+        '<a href="https://gitlab.com/bashrc2/epicyon" tabindex="2">' + \
         '<img loading="lazy" decoding="async" class="license" alt="' + \
         translate['Get the source code'] + '" title="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'

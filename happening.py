@@ -877,7 +877,7 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
     next_str = post_id + "/replies?only_other_accounts=true&page=true"
     content = \
         '<p><span class=\"h-card\"><a href=\"' + actor2 + \
-        '\" class=\"u-url mention\">@<span>' + nickname + \
+        '\" class=\"u-url mention\" tabindex="10">@<span>' + nickname + \
         '</span></a></span>' + remove_html(description) + '</p>'
     event_json = {
         "@context": post_context,

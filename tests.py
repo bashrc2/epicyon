@@ -3583,10 +3583,15 @@ def _test_web_links():
     example_text = \
         'This post has a web links https://somesite.net\n\nAnd some other text'
     linked_text = add_web_links(example_text)
-    assert \
-        '<a href="https://somesite.net" rel="nofollow noopener noreferrer"' + \
+    expected_text = \
+        '<a href="https://somesite.net" tabindex="10" ' + \
+        'rel="nofollow noopener noreferrer"' + \
         ' target="_blank"><span class="invisible">https://' + \
-        '</span><span class="ellipsis">somesite.net</span></a' in linked_text
+        '</span><span class="ellipsis">somesite.net</span></a'
+    if expected_text not in linked_text:
+        print(expected_text + '\n')
+        print(linked_text)
+    assert expected_text in linked_text
 
     example_text = \
         'This post has a very long web link\n\nhttp://' + \
@@ -4613,11 +4618,15 @@ def _test_reply_to_public_post(base_dir: str) -> None:
                            low_bandwidth, content_license_url,
                            languages_understood)
     # print(str(reply))
-    assert reply['object']['content'] == \
+    expected_str = \
         '<p><span class=\"h-card\">' + \
-        '<a href=\"https://rat.site/@ninjarodent\" ' + \
+        '<a href=\"https://rat.site/@ninjarodent\" tabindex="10" ' + \
         'class=\"u-url mention\">@<span>ninjarodent</span>' + \
         '</a></span> This is a test.</p>'
+    if reply['object']['content'] != expected_str:
+        print(expected_str + '\n')
+        print(reply['object']['content'])
+    assert reply['object']['content'] == expected_str
     reply['object']['contentMap'][system_language] = reply['object']['content']
     assert reply['object']['tag'][0]['type'] == 'Mention'
     assert reply['object']['tag'][0]['name'] == '@ninjarodent@rat.site'
@@ -5541,17 +5550,22 @@ def _test_links_within_post(base_dir: str) -> None:
                            low_bandwidth, content_license_url,
                            languages_understood)
 
-    assert post_json_object['object']['content'] == \
+    expected_str = \
         '<p>This is a test post with links.<br><br>' + \
         '<a href="ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/" ' + \
+        'tabindex="10" ' + \
         'rel="nofollow noopener noreferrer" target="_blank">' + \
         '<span class="invisible">ftp://</span>' + \
         '<span class="ellipsis">' + \
         'ftp.ncdc.noaa.gov/pub/data/ghcn/v4/</span>' + \
-        '</a><br><br><a href="https://libreserver.org" ' + \
+        '</a><br><br><a href="https://libreserver.org" tabindex="10" ' + \
         'rel="nofollow noopener noreferrer" target="_blank">' + \
         '<span class="invisible">https://</span>' + \
         '<span class="ellipsis">libreserver.org</span></a></p>'
+    if post_json_object['object']['content'] != expected_str:
+        print(expected_str + '\n')
+        print(post_json_object['object']['content'])
+    assert post_json_object['object']['content'] == expected_str
     assert post_json_object['object']['content'] == \
         post_json_object['object']['contentMap'][system_language]
 

@@ -384,7 +384,8 @@ def _get_avatar_image_html(showAvatarOptions: bool,
     avatar_link = ''
     if '/users/news/' not in avatar_url:
         avatar_link = \
-            '        <a class="imageAnchor" href="' + post_actor + '">'
+            '        <a class="imageAnchor" href="' + \
+            post_actor + '" tabindex="10">'
         show_profile_str = 'Show profile'
         if translate.get(show_profile_str):
             show_profile_str = translate[show_profile_str]
@@ -405,7 +406,7 @@ def _get_avatar_image_html(showAvatarOptions: bool,
                 '        <a class="imageAnchor" href="/users/' + \
                 nickname + '?options=' + post_actor + \
                 ';' + str(page_number) + ';' + \
-                avatar_url + message_id_str + '">\n'
+                avatar_url + message_id_str + '" tabindex="10">\n'
             avatar_link += \
                 '        <img loading="lazy" decoding="async" title="' + \
                 show_options_for_this_person_str + '" ' + \
@@ -484,14 +485,14 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
             nickname + '?replyto=' + reply_to_link + \
             '?actor=' + post_json_object['actor'] + \
             conversation_str + \
-            '" title="' + reply_to_this_post_str + '">\n'
+            '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
     elif is_unlisted_reply:
         reply_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyunlisted=' + reply_to_link + \
             '?actor=' + post_json_object['actor'] + \
             conversation_str + \
-            '" title="' + reply_to_this_post_str + '">\n'
+            '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
     else:
         if is_dm(post_json_object):
             reply_type = 'replydm'
@@ -503,7 +504,7 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
                 '?' + reply_type + '=' + reply_to_link + \
                 '?actor=' + post_json_object['actor'] + \
                 conversation_str + \
-                '" title="' + reply_to_this_post_str + '">\n'
+                '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
         else:
             reply_str += \
                 '        ' + \
@@ -511,7 +512,7 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
                 '?replyfollowers=' + reply_to_link + \
                 '?actor=' + post_json_object['actor'] + \
                 conversation_str + \
-                '" title="' + reply_to_this_post_str + '">\n'
+                '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
 
     reply_str += \
         '        ' + \
@@ -553,7 +554,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                     '/tlblogs?editblogpost=' + \
                     post_id.split('/statuses/')[1] + \
                     ';actor=' + actor_nickname + \
-                    '" title="' + edit_blog_post_str + '">' + \
+                    '" title="' + edit_blog_post_str + '" tabindex="10">' + \
                     '<img loading="lazy" decoding="async" title="' + \
                     edit_blog_post_str + '" alt="' + edit_blog_post_str + \
                     ' |" src="/icons/edit.png"/></a>\n'
@@ -564,7 +565,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                     nickname + '/editnewspost=' + \
                     post_id.split('/statuses/')[1] + \
                     '?actor=' + actor_nickname + \
-                    '" title="' + edit_blog_post_str + '">' + \
+                    '" title="' + edit_blog_post_str + '" tabindex="10">' + \
                     '<img loading="lazy" decoding="async" title="' + \
                     edit_blog_post_str + '" alt="' + edit_blog_post_str + \
                     ' |" src="/icons/edit.png"/></a>\n'
@@ -578,7 +579,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '/tlblogs?editeventpost=' + \
                 post_id.split('/statuses/')[1] + \
                 '?actor=' + actor_nickname + \
-                '" title="' + edit_event_str + '">' + \
+                '" title="' + edit_event_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_event_str + '" alt="' + edit_event_str + \
                 ' |" src="/icons/edit.png"/></a>\n'
@@ -658,7 +659,8 @@ def _get_announce_icon_html(is_announced: bool,
         # show the number of announces next to icon
         announce_str += '<label class="likesCount">'
         announce_str += '<a href="' + announcers_screen_link + '" ' + \
-            'title="' + translate['Show who repeated this post'] + '">'
+            'title="' + translate['Show who repeated this post'] + \
+            '" tabindex="10">'
         announce_str += \
             announce_count_str.replace('(', '').replace(')', '').strip()
         announce_str += '</a></label>\n'
@@ -670,7 +672,7 @@ def _get_announce_icon_html(is_announced: bool,
         nickname + announce_link_str + unannounce_link_str + \
         '?actor=' + post_json_object['actor'] + \
         '?bm=' + timeline_post_bookmark + \
-        '?tl=' + box_name + '" title="' + announce_title + '">\n'
+        '?tl=' + box_name + '" title="' + announce_title + '" tabindex="10">\n'
 
     announce_str += \
         '          ' + \
@@ -736,7 +738,8 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         # show the number of likes next to icon
         like_str += '<label class="likesCount">'
         like_str += '<a href="' + likers_screen_link + '" ' + \
-            'title="' + translate['Show who liked this post'] + '">'
+            'title="' + translate['Show who liked this post'] + \
+            '" tabindex="10">'
         like_str += like_count_str.replace('(', '').replace(')', '').strip()
         like_str += '</a></label>\n'
 
@@ -746,7 +749,8 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         page_number_param + \
         '?actor=' + post_json_object['actor'] + \
         '?bm=' + timeline_post_bookmark + \
-        '?tl=' + box_name + '" title="' + like_title + like_count_str + '">\n'
+        '?tl=' + box_name + '" title="' + like_title + like_count_str + \
+        '" tabindex="10">\n'
     like_str += \
         '          ' + \
         '<img loading="lazy" decoding="async" title="' + \
@@ -794,7 +798,8 @@ def _get_bookmark_icon_html(nickname: str, domain_full: str,
         page_number_param + \
         '?actor=' + post_json_object['actor'] + \
         '?bm=' + timeline_post_bookmark + \
-        '?tl=' + box_name + '" title="' + bookmark_title + '">\n'
+        '?tl=' + box_name + '" title="' + bookmark_title + \
+        '" tabindex="10">\n'
     bookmark_str += \
         '        ' + \
         '<img loading="lazy" decoding="async" title="' + \
@@ -833,7 +838,8 @@ def _get_reaction_icon_html(nickname: str, domain_full: str,
         '?selreact=' + reaction_post_id + page_number_param + \
         '?actor=' + post_json_object['actor'] + \
         '?bm=' + timeline_post_reaction + \
-        '?tl=' + box_name + '" title="' + reaction_title + '">\n'
+        '?tl=' + box_name + '" title="' + reaction_title + \
+        '" tabindex="10">\n'
     reaction_str += \
         '        ' + \
         '<img loading="lazy" decoding="async" title="' + \
@@ -868,7 +874,7 @@ def _get_mute_icon_html(is_muted: bool,
             '        <a class="imageAnchor" href="/users/' + nickname + \
             '?mute=' + message_id + page_number_param + '?tl=' + box_name + \
             '?bm=' + timeline_post_bookmark + \
-            '" title="' + mute_this_post_str + '">\n'
+            '" title="' + mute_this_post_str + '" tabindex="10">\n'
         mute_str += \
             '          ' + \
             '<img loading="lazy" decoding="async" alt="' + \
@@ -883,7 +889,8 @@ def _get_mute_icon_html(is_muted: bool,
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?unmute=' + message_id + \
             page_number_param + '?tl=' + box_name + '?bm=' + \
-            timeline_post_bookmark + '" title="' + undo_mute_str + '">\n'
+            timeline_post_bookmark + '" title="' + undo_mute_str + \
+            '" tabindex="10">\n'
         mute_str += \
             '          ' + \
             '<img loading="lazy" decoding="async" ' + \
@@ -915,7 +922,7 @@ def _get_delete_icon_html(nickname: str, domain_full: str,
                     '        <a class="imageAnchor" href="/users/' + \
                     nickname + \
                     '?delete=' + message_id + page_number_param + \
-                    '" title="' + delete_this_post_str + '">\n'
+                    '" title="' + delete_this_post_str + '" tabindex="10">\n'
                 delete_str += \
                     '          ' + \
                     '<img loading="lazy" decoding="async" alt="' + \
@@ -990,7 +997,7 @@ def _get_blog_citations_html(box_name: str,
         if not tag_json.get('url'):
             continue
         citations_str += \
-            '<li><a href="' + tag_json['url'] + '">' + \
+            '<li><a href="' + tag_json['url'] + '" tabindex="10">' + \
             '<cite>' + tag_json['name'] + '</cite></a></li>\n'
 
     if citations_str:
@@ -1030,7 +1037,7 @@ def _announce_unattributed_html(translate: {},
         '/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
         '      <a href="' + post_id + \
-        '" class="announceOrReply">@unattributed</a>\n'
+        '" class="announceOrReply" tabindex="10">@unattributed</a>\n'
 
 
 def _announce_with_display_name_html(translate: {},
@@ -1048,7 +1055,7 @@ def _announce_with_display_name_html(translate: {},
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + post_id + '" ' + \
-        'class="announceOrReply">' + \
+        'class="announceOrReply" tabindex="10">' + \
         '<span itemprop="author">' + \
         announce_display_name + '</span></a>\n'
 
@@ -1154,7 +1161,8 @@ def _get_post_title_announce_html(base_dir: str,
             '            <a class="imageAnchor" ' + \
             'href="/users/' + nickname + '?options=' + \
             announce_actor + ';' + str(page_number) + \
-            ';' + announce_avatar_url + message_id_str + '">' \
+            ';' + announce_avatar_url + message_id_str + \
+            '" tabindex="10">' \
             '<img loading="lazy" decoding="async" src="' + \
             announce_avatar_url + '" ' + \
             'title="' + show_options_for_this_person_str + \
@@ -1193,7 +1201,7 @@ def _reply_to_unknown_html(translate: {},
         '/reply.png" class="announceOrReply"/>\n' + \
         '        <a href="' + \
         post_json_object['object']['inReplyTo'] + \
-        '" class="announceOrReply">@unknown</a>\n'
+        '" class="announceOrReply" tabindex="10">@unknown</a>\n'
 
 
 def _mitm_warning_html(translate: {}) -> str:
@@ -1222,7 +1230,7 @@ def _reply_with_unknown_path_html(translate: {},
         'class="announceOrReply"/>\n' + \
         '        <a href="' + \
         post_json_object['object']['inReplyTo'] + \
-        '" class="announceOrReply">' + \
+        '" class="announceOrReply" tabindex="10">' + \
         post_domain + '</a>\n'
 
 
@@ -1240,7 +1248,7 @@ def _get_reply_html(translate: {},
         'icons/reply.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + in_reply_to + \
-        '" class="announceOrReply">' + \
+        '" class="announceOrReply" tabindex="10">' + \
         '<span itemprop="audience">' + \
         reply_display_name + '</span></a>\n'
 
@@ -1357,7 +1365,7 @@ def _get_post_title_reply_html(base_dir: str,
             '          <a class="imageAnchor" ' + \
             'href="/users/' + nickname + '?options=' + reply_actor + \
             ';' + str(page_number) + ';' + reply_avatar_url + \
-            message_id_str + '">\n' + \
+            message_id_str + '" tabindex="10">\n' + \
             '          <img loading="lazy" decoding="async" ' + \
             'src="' + reply_avatar_url + '" ' + \
             'title="' + show_profile_str + \
@@ -1456,13 +1464,13 @@ def _get_footer_with_icons(show_icons: bool,
     footer_str += delete_str + mute_str + edit_str
     if not is_news_post(post_json_object):
         footer_str += '        <a href="' + published_link + '" class="' + \
-            time_class + '"><span itemprop="datePublished">' + \
+            time_class + '" tabindex="10"><span itemprop="datePublished">' + \
             published_str + '</span></a>\n'
     else:
         footer_str += '        <a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
-            '" class="' + time_class + '"><span itemprop="datePublished">' + \
-            published_str + '</span></a>\n'
+            '" class="' + time_class + '" tabindex="10">' + \
+            '<span itemprop="datePublished">' + published_str + '</span></a>\n'
     footer_str += '      </div>\n'
     footer_str += '      </nav>\n'
     return footer_str
@@ -1762,7 +1770,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
-            '">' + \
+            '" tabindex="10">' + \
             '<span itemprop="author">' + display_name + '</span>' + \
             '</a>\n'
     else:
@@ -1780,7 +1788,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
-            '">@<span itemprop="author">' + actor_handle + '</span></a>\n'
+            '" tabindex="10">' + \
+            '@<span itemprop="author">' + actor_handle + '</span></a>\n'
 
     # benchmark 9
     _log_post_timing(enable_timing_log, post_start_time, '9')
@@ -1980,11 +1989,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     if not is_news_post(post_json_object):
         footer_str = '<a href="' + published_link + \
-            '" class="' + time_class + '">' + published_str + '</a>\n'
+            '" class="' + time_class + '" tabindex="10">' + \
+            published_str + '</a>\n'
     else:
         footer_str = '<a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
-            '" class="' + time_class + '">' + published_str + '</a>\n'
+            '" class="' + time_class + '" tabindex="10">' + \
+            published_str + '</a>\n'
 
     # change the background color for DMs in inbox timeline
     if post_is_dm:
@@ -2297,7 +2308,7 @@ def html_individual_post(css_cache: {},
         if translate.get(by_text):
             by_text = translate[by_text]
         post_str += \
-            '<p>' + by_text + ' <a href="' + by_str + '">@' + \
+            '<p>' + by_text + ' <a href="' + by_str + '" tabindex="10">@' + \
             by_str_handle + '</a>' + by_text_extra + '\n'
 
         domain_full = get_full_domain(domain, port)
@@ -2551,7 +2562,8 @@ def html_emoji_reaction_picker(css_cache: {},
                 '?emojreact=' + emoji_content_encoded
             emoji_label = '<label class="rlab">' + emoji_content + '</label>'
             emoji_picks_str += \
-                '  <a href="' + emoji_url + '">' + emoji_label + '</a>\n'
+                '  <a href="' + emoji_url + '" tabindex="10">' + \
+                emoji_label + '</a>\n'
         emoji_picks_str += '</div>\n'
 
     css_filename = base_dir + '/epicyon-profile.css'
@@ -2573,7 +2585,7 @@ def html_emoji_reaction_picker(css_cache: {},
         '<a href="/users/' + nickname + '/' + box_name + \
         '?page=' + str(page_number) + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" tabindex="10">\n'
     header_str += '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \

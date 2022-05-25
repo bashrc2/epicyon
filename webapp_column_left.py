@@ -162,7 +162,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         # show the edit icon
         html_str += \
             '      <a href="/users/' + nickname + '/editlinks" ' + \
-            'accesskey="' + access_keys['menuEdit'] + '">' + \
+            'accesskey="' + access_keys['menuEdit'] + '" tabindex="5" ' + \
+            'class="imageAnchor">' + \
             '<img class="' + edit_image_class + \
             '" loading="lazy" decoding="async" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
@@ -172,7 +173,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         # show the theme designer icon
         html_str += \
             '      <a href="/users/' + nickname + '/themedesigner" ' + \
-            'accesskey="' + access_keys['menuThemeDesigner'] + '">' + \
+            'accesskey="' + access_keys['menuThemeDesigner'] + \
+            '" tabindex="5" class="imageAnchor">' + \
             '<img class="' + edit_image_class + \
             '" loading="lazy" decoding="async" alt="' + \
             translate['Theme Designer'] + ' | " title="' + \
@@ -191,7 +193,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     else:
         rss_title = translate['RSS feed for this site']
     rss_icon_str = \
-        '      <a href="' + rss_url + '"><img class="' + edit_image_class + \
+        '      <a href="' + rss_url + '" tabindex="5" class="imageAnchor">' + \
+        '<img class="' + edit_image_class + \
         '" loading="lazy" decoding="async" alt="' + \
         rss_title + '" title="' + rss_title + \
         '" src="/icons/logorss.png" /></a>\n'

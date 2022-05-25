@@ -78,13 +78,14 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             '/users/' + nickname + '/newblog?nodropdown" ' + \
             'title="' + title_str + '" ' + \
             'accesskey="' + access_keys['menuNewPost'] + '">' + \
-            '<button class="publishbtn">' + \
+            '<button class="publishbtn" tabindex="4">' + \
             translate['Publish'] + '</button></a>\n'
     else:
         # if not logged in then replace the publish button with
         # a login button
         publish_button_str = \
-            '        <a href="/login"><button class="publishbtn">' + \
+            '        <a href="/login">' + \
+            '<button class="publishbtn" tabindex="4">' + \
             translate['Login'] + '</button></a>\n'
 
     # show publish button at the top if needed
@@ -134,7 +135,8 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/editnewswire" ' + \
-                'accesskey="' + access_keys['menuEdit'] + '">' + \
+                'accesskey="' + access_keys['menuEdit'] + \
+                '" tabindex="4" class="imageAnchor">' + \
                 '<img class="' + edit_image_class + \
                 '" loading="lazy" decoding="async" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -145,7 +147,8 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/editnewswire" ' + \
-                'accesskey="' + access_keys['menuEdit'] + '">' + \
+                'accesskey="' + access_keys['menuEdit'] + \
+                '" tabindex="4" class="imageAnchor">' + \
                 '<img class="' + edit_image_class + \
                 '" loading="lazy" decoding="async" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -154,14 +157,15 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
 
     # show the RSS icons
     rss_icon_str = \
-        '        <a href="/categories.xml">' + \
+        '        <a href="/categories.xml" tabindex="4" ' + \
+        'class="imageAnchor">' + \
         '<img class="' + edit_image_class + \
         '" loading="lazy" decoding="async" alt="' + \
         translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
         translate['Hashtag Categories RSS Feed'] + '" src="/' + \
         'icons/categoriesrss.png" /></a>\n'
     rss_icon_str += \
-        '        <a href="/newswire.xml">' + \
+        '        <a href="/newswire.xml" tabindex="4" class="imageAnchor">' + \
         '<img class="' + edit_image_class + \
         '" loading="lazy" decoding="async" alt="' + \
         translate['Newswire RSS Feed'] + ' | " title="' + \
@@ -179,7 +183,8 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             html_str += \
                 '        <a href="' + \
                 '/users/' + nickname + '/newblog?nodropdown" ' + \
-                'accesskey="' + access_keys['menuNewPost'] + '">' + \
+                'accesskey="' + access_keys['menuNewPost'] + \
+                '" class="imageAnchor" tabindex="4">' + \
                 '<img class="' + edit_image_class + \
                 '" loading="lazy" decoding="async" alt="' + \
                 title_str + '" title="' + \
@@ -298,7 +303,8 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 html_str += \
                     ' ' + date_shown + '<a href="/users/' + nickname + \
                     '/newswireunvote=' + date_str_link + '" ' + \
-                    'title="' + translate['Remove Vote'] + '">'
+                    'title="' + translate['Remove Vote'] + \
+                    '" class="imageAnchor">'
                 html_str += '<img loading="lazy" decoding="async" ' + \
                     'class="voteicon" src="/' + \
                     'alt="' + translate['Remove Vote'] + '" ' + \
@@ -327,7 +333,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 html_str += ' ' + date_shown
                 html_str += '<a href="/users/' + nickname + \
                     '/newswirevote=' + date_str_link + '" ' + \
-                    'title="' + translate['Vote'] + '">'
+                    'title="' + translate['Vote'] + '" class="imageAnchor">'
                 html_str += '<img class="voteicon" ' + \
                     'alt="' + translate['Vote'] + '" ' + \
                     'src="/icons/vote.png" /></a>'
@@ -393,7 +399,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     html_str += \
         '<a href="/users/' + nickname + '/newblog" title="' + \
         translate['Go Back'] + '" alt="' + \
-        translate['Go Back'] + '">\n'
+        translate['Go Back'] + '" class="imageAnchor">\n'
     html_str += '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" src="' + \
         '/users/' + nickname + '/' + banner_file + '" /></a>\n'
@@ -507,7 +513,8 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
         get_banner_file(base_dir, nickname, domain, theme)
     html_str += \
         '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
-        'accesskey="' + access_keys['menuTimeline'] + '">' + \
+        'accesskey="' + access_keys['menuTimeline'] + '" ' + \
+        'class="imageAnchor">' + \
         '<img loading="lazy" decoding="async" class="timeline-banner" ' + \
         'alt="' + translate['Timeline banner image'] + '" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
