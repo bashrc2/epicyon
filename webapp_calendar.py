@@ -299,7 +299,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                   base_dir: str, path: str,
                   http_prefix: str, domain_full: str,
                   text_mode_banner: str, access_keys: {},
-                  icalendar: bool, system_language: str) -> str:
+                  icalendar: bool, system_language: str,
+                  default_timeline: str) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -429,15 +430,18 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
         '?month=' + str(prev_month_number) + '" ' + \
-        'accesskey="' + access_keys['Page up'] + '" tabindex="2">'
+        'accesskey="' + access_keys['Page up'] + \
+        '" tabindex="2" class="imageAnchor">'
     calendar_str += \
         '  <img loading="lazy" decoding="async" ' + \
         'alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
-    calendar_str += '  <a href="' + cal_actor + '/inbox" title="'
+    calendar_str += \
+        '  <a href="' + cal_actor + '/' + default_timeline + '" title="'
     calendar_str += translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + access_keys['menuTimeline'] + '" tabindex="1">'
+        'accesskey="' + access_keys['menuTimeline'] + \
+        '" tabindex="1" class="imageAnchor">'
     calendar_str += \
         '  <h1><time datetime="' + \
         str(year) + '-' + str(month_number) + '">' + month_name + \
@@ -445,7 +449,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(next_year) + \
         '?month=' + str(next_month_number) + '" ' + \
-        'accesskey="' + access_keys['Page down'] + '" tabindex="2">'
+        'accesskey="' + access_keys['Page down'] + \
+        '" tabindex="2" class="imageAnchor">'
     calendar_str += \
         '  <img loading="lazy" decoding="async" ' + \
         'alt="' + translate['Next month'] + \

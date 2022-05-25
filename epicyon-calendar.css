@@ -66,6 +66,14 @@ main {
     flex-basis: 980px;
 }
 
+.imageAnchor {
+    font-family: var(--calendar-header-font);
+}
+
+.imageAnchor:focus img{
+    border: 2px solid var(--focus-color);
+}
+
 a:visited{
     color: var(--day-number);
     text-decoration: none;
