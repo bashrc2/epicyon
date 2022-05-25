@@ -440,7 +440,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '  <a href="' + cal_actor + '/' + default_timeline + '" title="'
     calendar_str += translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + \
-        '" tabindex="1" class="imageAnchor">'
+        '" tabindex="-1">'
     calendar_str += \
         '  <h1><time datetime="' + \
         str(year) + '-' + str(month_number) + '">' + month_name + \
