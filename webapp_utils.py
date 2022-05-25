@@ -1165,7 +1165,7 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
                     gallery_str += '  </div>\n'
                     gallery_str += '</div>\n'
 
-                attachment_str += '<a href="' + image_url + '">'
+                attachment_str += '<a href="' + image_url + '" tabindex="10">'
                 attachment_str += \
                     '<img loading="lazy" decoding="async" ' + \
                     'src="' + image_url + \
@@ -1180,7 +1180,9 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
                 if box_name == 'tlmedia':
                     gallery_str += '<div class="gallery">\n'
                     if not is_muted:
-                        gallery_str += '  <a href="' + attach['url'] + '">\n'
+                        gallery_str += \
+                            '  <a href="' + attach['url'] + \
+                            '" tabindex="10">\n'
                         gallery_str += \
                             '    <figure id="videoContainer" ' + \
                             'data-fullscreen="false">\n' + \
@@ -1204,7 +1206,7 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
                     if image_description and not is_muted:
                         gallery_str += \
                             '  <a href="' + video_post_url + \
-                            '" class="gallerytext"><div ' + \
+                            '" class="gallerytext" tabindex="10"><div ' + \
                             'class="gallerytext">' + \
                             image_description + '</div></a>\n'
                     else:
@@ -1248,7 +1250,9 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
                 if box_name == 'tlmedia':
                     gallery_str += '<div class="gallery">\n'
                     if not is_muted:
-                        gallery_str += '  <a href="' + attach['url'] + '">\n'
+                        gallery_str += \
+                            '  <a href="' + attach['url'] + \
+                            '" tabindex="10">\n'
                         gallery_str += '    <audio controls>\n'
                         gallery_str += \
                             '      <source src="' + attach['url'] + \
