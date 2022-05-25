@@ -269,7 +269,7 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += \
                 '<a class="imageAnchor" href="' + users_path + \
                 '/search" accesskey="' + access_keys['menuSearch'] + \
-                '" tabindex="2">' + \
+                '" tabindex="3">' + \
                 '<img loading="lazy" decoding="async" src="/' + \
                 'icons/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
@@ -279,7 +279,7 @@ def header_buttons_timeline(default_timeline: str,
             # the search button
             tl_str += \
                 '<a href="' + users_path + \
-                '/search" tabindex="2">' + \
+                '/search" tabindex="3">' + \
                 '<button class="button" ' + \
                 'accesskey="' + access_keys['menuSearch'] + '>' + \
                 '<span>' + translate['Search'] + \
@@ -301,7 +301,7 @@ def header_buttons_timeline(default_timeline: str,
                 '      <a class="imageAnchor" href="' + \
                 users_path + calendar_path + \
                 '" accesskey="' + access_keys['menuCalendar'] + \
-                '" tabindex="2">' + \
+                '" tabindex="3">' + \
                 '<img loading="lazy" decoding="async" src="/icons/' + \
                 calendar_image + '" title="' + translate['Calendar'] + \
                 '" alt="| ' + calendar_alt_text + \
@@ -309,7 +309,7 @@ def header_buttons_timeline(default_timeline: str,
         else:
             tl_str += \
                 '<a href="' + users_path + calendar_path + \
-                '" tabindex="2"><button class="button" accesskey="' + \
+                '" tabindex="3"><button class="button" accesskey="' + \
                 access_keys['menuCalendar'] + '">' + \
                 '<span>' + translate['Calendar'] + \
                 '</span></button></a>'
@@ -319,7 +319,7 @@ def header_buttons_timeline(default_timeline: str,
         if not icons_as_buttons:
             tl_str += \
                 '      <a class="imageAnchor" href="' + \
-                users_path + '/minimal" tabindex="2">' + \
+                users_path + '/minimal" tabindex="3">' + \
                 '<img loading="lazy" decoding="async" src="/icons' + \
                 '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
                 '" alt="| ' + translate['Show/Hide Buttons'] + \
@@ -327,7 +327,7 @@ def header_buttons_timeline(default_timeline: str,
         else:
             tl_str += \
                 '<a href="' + users_path + '/minimal' + \
-                '" tabindex="2"><button class="button">' + \
+                '" tabindex="3"><button class="button">' + \
                 '<span>' + translate['Show/Hide Buttons'] + \
                 '</span></button></a>'
 
