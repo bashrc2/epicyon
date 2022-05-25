@@ -747,7 +747,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
         '<header>\n' + \
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
-        translate['Switch to profile view'] + '">\n'
+        translate['Switch to profile view'] + '" aria-flowto="containerHeader">\n'
     tl_str += '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" ' + \
         'src="' + users_path + '/' + banner_file + '" /></a>\n' + \

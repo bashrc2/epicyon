@@ -52,7 +52,7 @@ def header_buttons_timeline(default_timeline: str,
     buttons for inbox, outbox, search, calendar, etc
     """
     # start of the button header with inbox, outbox, etc
-    tl_str = '<div class="containerHeader"><nav>\n'
+    tl_str = '<div id="containerHeader" class="containerHeader"><nav>\n'
     # first button
     if default_timeline == 'tlmedia':
         tl_str += \
