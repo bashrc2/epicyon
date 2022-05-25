@@ -162,7 +162,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         # show the edit icon
         html_str += \
             '      <a href="/users/' + nickname + '/editlinks" ' + \
-            'accesskey="' + access_keys['menuEdit'] + '">' + \
+            'accesskey="' + access_keys['menuEdit'] + '" tabindex="4000">' + \
             '<img class="' + edit_image_class + \
             '" loading="lazy" decoding="async" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
@@ -172,7 +172,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         # show the theme designer icon
         html_str += \
             '      <a href="/users/' + nickname + '/themedesigner" ' + \
-            'accesskey="' + access_keys['menuThemeDesigner'] + '">' + \
+            'accesskey="' + access_keys['menuThemeDesigner'] + '" ' + \
+            'tabindex="4001">' + \
             '<img class="' + edit_image_class + \
             '" loading="lazy" decoding="async" alt="' + \
             translate['Theme Designer'] + ' | " title="' + \
@@ -190,8 +191,10 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         rss_title = translate['RSS feed for your blog']
     else:
         rss_title = translate['RSS feed for this site']
+    rss_icon_tab = 'tabindex="4002"'
     rss_icon_str = \
-        '      <a href="' + rss_url + '"><img class="' + edit_image_class + \
+        '      <a href="' + rss_url + '" ' + rss_icon_tab + '>' + \
+        '<img class="' + edit_image_class + \
         '" loading="lazy" decoding="async" alt="' + \
         rss_title + '" title="' + rss_title + \
         '" src="/icons/logorss.png" /></a>\n'
@@ -240,6 +243,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     new_tab_str = ' target="_blank" rel="nofollow noopener noreferrer"'
     if links_list:
         html_str += '<nav itemscope itemtype="http://schema.org/Collection">\n'
+        tab_ctr = 4010
         for line_str in links_list:
             if ' ' not in line_str:
                 if '#' not in line_str:
@@ -292,12 +296,15 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
                        '?showwarning=' not in link_str:
                         html_str += \
                             '      <p><a href="' + link_str + \
-                            '"' + new_tab_str + '>' + \
+                            '"' + new_tab_str + \
+                            ' tabindex="' + str(tab_ctr) + '">' + \
                             line_str + '</a></p>\n'
                     else:
                         html_str += \
                             '      <p><a href="' + link_str + \
-                            '">' + line_str + '</a></p>\n'
+                            '" tabindex="' + str(tab_ctr) + '">' + \
+                            line_str + '</a></p>\n'
+                    tab_ctr += 1
                     links_file_contains_entries = True
                 elif line_str.startswith('=> '):
                     # gemini style link
@@ -308,12 +315,15 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
                        '?showwarning=' not in link_str:
                         html_str += \
                             '      <p><a href="' + link_str + \
-                            '"' + new_tab_str + '>' + \
+                            '"' + new_tab_str + \
+                            ' tabindex="' + str(tab_ctr) + '">' + \
                             line_str.strip() + '</a></p>\n'
                     else:
                         html_str += \
                             '      <p><a href="' + link_str + \
-                            '">' + line_str.strip() + '</a></p>\n'
+                            '" tabindex="' + str(tab_ctr) + '">' + \
+                            line_str.strip() + '</a></p>\n'
+                    tab_ctr += 1
                     links_file_contains_entries = True
             else:
                 if line_str.startswith('#') or line_str.startswith('*'):
@@ -334,20 +344,32 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         html_str += separator_str
     html_str += \
         '<p class="login-text"><a href="/users/' + nickname + \
-        '/catalog.csv">' + translate['Shares Catalog'] + '</a></p>'
+        '/catalog.csv" ' + \
+        'tabindex="' + str(tab_ctr) + '">' + \
+        translate['Shares Catalog'] + '</a></p>'
+    tab_ctr += 1
     html_str += \
         '<p class="login-text"><a href="/users/' + \
         nickname + '/accesskeys" accesskey="' + \
-        access_keys['menuKeys'] + '">' + \
+        access_keys['menuKeys'] + '" ' + \
+        'tabindex="' + str(tab_ctr) + '">' + \
         translate['Key Shortcuts'] + '</a></p>'
+    tab_ctr += 1
     html_str += \
-        '<p class="login-text"><a href="/about">' + \
+        '<p class="login-text"><a href="/about" ' + \
+        'tabindex="' + str(tab_ctr) + '">' + \
         translate['About this Instance'] + '</a></p>'
+    tab_ctr += 1
     html_str += \
-        '<p class="login-text"><a href="/terms">' + \
+        '<p class="login-text"><a href="/terms" ' + \
+        'tabindex="' + str(tab_ctr) + '">' + \
         translate['Terms of Service'] + '</a></p>'
+    tab_ctr += 1
 
     if links_file_contains_entries and not rss_icon_at_top:
+        rss_icon_str = \
+            rss_icon_str.replace(rss_icon_tab,
+                                 'tabindex="' + str(tab_ctr) + '"')
         html_str += '<br><div class="columnIcons">' + rss_icon_str + '</div>'
 
     return html_str
