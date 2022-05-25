@@ -46,7 +46,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"" + \
-                "fullscreen\" allowfullscreen></iframe>\n" + \
+                "fullscreen\" allowfullscreen " + \
+                "tabindex=\"10\"></iframe>\n" + \
                 "</span>\n</center>\n"
             return content
 
@@ -70,7 +71,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen></iframe>\n" + \
+                    "allowfullscreen tabindex=\"10\"></iframe>\n" + \
                     "</span></center>\n"
                 return content
 
@@ -93,7 +94,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen></iframe>\n" + \
+                    "allowfullscreen tabindex=\"10\"></iframe>\n" + \
                     "</span></center>\n"
                 return content
 
@@ -138,7 +139,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen></iframe>\n" + \
+                    "allowfullscreen tabindex=\"10\"></iframe>\n" + \
                     "</span>\n</center>\n"
                 return content
 
@@ -161,7 +162,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 video_site + url + "\" width=\"" + \
                 str(width) + "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                "allowfullscreen></iframe>\n" + \
+                "allowfullscreen tabindex=\"10\"></iframe>\n" + \
                 "</span>\n</center>\n"
             return content
 
@@ -230,7 +231,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 site + url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"" + \
-                "fullscreen\" allowfullscreen></iframe>\n" + \
+                "fullscreen\" allowfullscreen tabindex=\"10\">' + \
+                '</iframe>\n" + \
                 "</span>\n</center>\n"
             return content
     return content
@@ -278,7 +280,7 @@ def _add_embedded_audio(translate: {}, content: str) -> str:
             '<center>\n<span itemprop="audio">' + \
             '<audio controls>\n' + \
             '<source src="' + wrd + '" type="audio/' + \
-            extension.replace('.', '') + '">' + \
+            extension.replace('.', '') + '" tabindex="10">' + \
             translate['Your browser does not support the audio element.'] + \
             '</audio>\n</span>\n</center>\n'
     return content
@@ -323,7 +325,7 @@ def _add_embedded_video(translate: {}, content: str) -> str:
             '    <video id="video" controls ' + \
             'preload="metadata">\n' + \
             '<source src="' + wrd + '" type="video/' + \
-            extension.replace('.', '') + '">\n' + \
+            extension.replace('.', '') + '" tabindex="10">\n' + \
             translate['Your browser does not support the video element.'] + \
             '</video>\n</figure>\n</span>\n</center>\n'
     return content
