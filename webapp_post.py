@@ -381,6 +381,10 @@ def _get_avatar_image_html(showAvatarOptions: bool,
                            page_number: int, message_id_str: str) -> str:
     """Get html for the avatar image
     """
+    # don't use svg images
+    if avatar_url.endswith('.svg'):
+        avatar_url = avatar_url.replace('.svg', '.png')
+
     avatar_link = ''
     if '/users/news/' not in avatar_url:
         avatar_link = \
