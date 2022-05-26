@@ -1717,4 +1717,6 @@ def remove_script(content: str, log_filename: str,
                         except OSError:
                             print('EX: cannot append to svg script log')
                 content = content.replace(text, '')
+    if 'script' in content:
+        return ''
     return content
