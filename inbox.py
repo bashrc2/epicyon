@@ -169,7 +169,10 @@ def _cache_svg_images(session, base_dir: str, http_prefix: str,
                 continue
             if '://' + i2p_domain in url:
                 continue
-            filename = url.split('/')[-1]
+            if '/' in filename:
+                filename = url.split('/')[-1]
+            else:
+                filename = url
             image_filename = \
                 base_dir + '/media/' + post_id + '_' + filename
             if not download_image(session, base_dir, url,
