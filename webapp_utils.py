@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from utils import remove_id_ending
 from utils import get_attachment_property_value
 from utils import is_account_dir
 from utils import remove_html
@@ -1096,7 +1097,8 @@ def _is_attached_video(attachment_filename: str) -> bool:
     return False
 
 
-def get_post_attachments_as_html(post_json_object: {}, box_name: str,
+def get_post_attachments_as_html(base_dir: str,
+                                 post_json_object: {}, box_name: str,
                                  translate: {},
                                  is_muted: bool, avatar_link: str,
                                  reply_str: str, announce_str: str,
@@ -1116,6 +1118,10 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
     attachment_ctr = 0
     attachment_str = ''
     media_style_added = False
+    post_id = None
+    if post_json_object['object'].get('id'):
+        post_id = post_json_object['object']['id']
+        post_id = remove_id_ending(post_id).replace('/', '--')
     for attach in post_json_object['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
@@ -1126,7 +1132,22 @@ def get_post_attachments_as_html(post_json_object: {}, box_name: str,
             image_description = attach['name'].replace('"', "'")
         if _is_image_mime_type(media_type):
             image_url = attach['url']
-            if _is_attached_image(attach['url']) and 'svg' not in media_type:
+
+            # display svg images if they have first been rendered harmless
+            svg_harmless = True
+            if 'svg' in media_type:
+                svg_harmless = False
+                if post_id:
+                    if '/' in image_url:
+                        im_filename = image_url.split('/')[-1]
+                    else:
+                        im_filename = image_url
+                    cached_svg_filename = \
+                        base_dir + '/media/' + post_id + '_' + im_filename
+                    if os.path.isfile(cached_svg_filename):
+                        svg_harmless = True
+
+            if _is_attached_image(attach['url']) and svg_harmless:
                 if not attachment_str:
                     attachment_str += '<div class="media">\n'
                     media_style_added = True
