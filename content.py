@@ -1681,3 +1681,28 @@ def create_edits_html(edits_json: {}, post_json_object: {},
     return '<details><summary class="cw">' + \
         translate['SHOW EDITS'] + '</summary>' + \
         edits_str + '</details>'
+
+
+def remove_script(content: str) -> str:
+    """Removes <script> from some content
+    """
+    separators = [['<', '>'], ['&lt;', '&gt;']]
+    for sep in separators:
+        prefix = sep[0] + 'script'
+        ending = '/script' + sep[1]
+        if prefix in content:
+            sections = content.split(prefix)
+            ctr = 0
+            for text in sections:
+                if ctr == 0:
+                    ctr += 1
+                    continue
+                if ending not in text:
+                    if '/' + sep[1] not in text:
+                        continue
+                if ending in text:
+                    text = prefix + text.split(ending)[0] + ending
+                else:
+                    text = prefix + text.split('/' + sep[1])[0] + '/' + sep[1]
+                content = content.replace(text, '')
+    return content

@@ -129,6 +129,7 @@ from inbox import json_post_allows_comments
 from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from categories import guess_hashtag_category
+from content import remove_script
 from content import create_edits_html
 from content import content_diff
 from content import bold_reading_string
@@ -3978,6 +3979,8 @@ def _test_danger_svg(base_dir: str) -> None:
         '  <circle cx="5" cy="5" r="4" />' + \
         '</svg>'
     assert not dangerous_svg(svg_content, False)
+    cleaned_up = remove_script(svg_content)
+    assert cleaned_up == svg_content
     svg_content = \
         '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
         '  <script>' + \
@@ -3999,6 +4002,17 @@ def _test_danger_svg(base_dir: str) -> None:
         '</svg>'
     assert dangerous_svg(svg_content, False)
 
+    svg_clean = \
+        '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
+        '    <circle cx="5" cy="5" r="4" />' + \
+        '</svg>'
+
+    cleaned_up = remove_script(svg_content)
+    assert '<script' not in cleaned_up
+    assert '/script>' not in cleaned_up
+    if cleaned_up != svg_clean:
+        print(cleaned_up)
+    assert cleaned_up == svg_clean
     assert not scan_themes_for_scripts(base_dir)
 
 
