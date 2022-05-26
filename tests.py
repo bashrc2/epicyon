@@ -3979,7 +3979,7 @@ def _test_danger_svg(base_dir: str) -> None:
         '  <circle cx="5" cy="5" r="4" />' + \
         '</svg>'
     assert not dangerous_svg(svg_content, False)
-    cleaned_up = remove_script(svg_content)
+    cleaned_up = remove_script(svg_content, None, None, None)
     assert cleaned_up == svg_content
     svg_content = \
         '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
@@ -4007,7 +4007,7 @@ def _test_danger_svg(base_dir: str) -> None:
         '    <circle cx="5" cy="5" r="4" />' + \
         '</svg>'
 
-    cleaned_up = remove_script(svg_content)
+    cleaned_up = remove_script(svg_content, None, None, None)
     assert '<script' not in cleaned_up
     assert '/script>' not in cleaned_up
     if cleaned_up != svg_clean:

@@ -1683,7 +1683,8 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         edits_str + '</details>'
 
 
-def remove_script(content: str) -> str:
+def remove_script(content: str, log_filename: str,
+                  actor: str, url: str) -> str:
     """Removes <script> from some content
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
@@ -1704,5 +1705,16 @@ def remove_script(content: str) -> str:
                     text = prefix + text.split(ending)[0] + ending
                 else:
                     text = prefix + text.split('/' + sep[1])[0] + '/' + sep[1]
+                    if log_filename and actor:
+                        # write the detected script to a log file
+                        log_str = actor + ' ' + url + ' ' + text + '\n'
+                        writeType = 'a+'
+                        if os.path.isfile(log_filename):
+                            writeType = 'w+'
+                        try:
+                            with open(log_filename, writeType) as fp_log:
+                                fp_log.write(log_str)
+                        except OSError:
+                            print('EX: cannot append to svg script log')
                 content = content.replace(text, '')
     return content

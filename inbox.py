@@ -150,6 +150,10 @@ def _cache_svg_images(session, base_dir: str, http_prefix: str,
         return False
     cached = False
     post_id = remove_id_ending(obj['id']).replace('/', '--')
+    actor = 'unknown'
+    if obj.get('attributedTo'):
+        actor = obj['attributedTo']
+    log_filename = base_dir + '/accounts/svg_scripts_log.txt'
     for index in range(len(obj['attachment'])):
         attach = obj['attachment'][index]
         if not attach.get('mediaType'):
@@ -169,7 +173,7 @@ def _cache_svg_images(session, base_dir: str, http_prefix: str,
                 continue
             if '://' + i2p_domain in url:
                 continue
-            if '/' in filename:
+            if '/' in url:
                 filename = url.split('/')[-1]
             else:
                 filename = url
@@ -186,8 +190,10 @@ def _cache_svg_images(session, base_dir: str, http_prefix: str,
                 print('EX: unable to read svg file data')
             if image_data:
                 image_data = image_data.decode()
-                cleaned_up = remove_script(image_data)
+                cleaned_up = \
+                    remove_script(image_data, log_filename, actor, url)
                 if cleaned_up != image_data:
+                    # write the cleaned up svg image
                     svg_written = False
                     cleaned_up = cleaned_up.encode('utf-8')
                     try:
