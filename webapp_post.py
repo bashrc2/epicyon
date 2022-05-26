@@ -383,7 +383,7 @@ def _get_avatar_image_html(showAvatarOptions: bool,
     """
     # don't use svg images
     if avatar_url.endswith('.svg'):
-        avatar_url = avatar_url.replace('.svg', '.png')
+        avatar_url = '/icons/avatar_default.png'
 
     avatar_link = ''
     if '/users/news/' not in avatar_url:
