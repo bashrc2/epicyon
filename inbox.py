@@ -131,11 +131,12 @@ from content import valid_url_lengths
 from content import remove_script
 
 
-def _cache_svg_images(session, base_dir: str, http_prefix: str,
-                      nickname: str, domain: str, domain_full: str,
-                      onion_domain: str, i2p_domain: str,
-                      post_json_object: {},
-                      federation_list: [], debug: bool) -> bool:
+def cache_svg_images(session, base_dir: str, http_prefix: str,
+                     nickname: str, domain: str, domain_full: str,
+                     onion_domain: str, i2p_domain: str,
+                     post_json_object: {},
+                     federation_list: [], debug: bool,
+                     test_image_filename: str) -> bool:
     """Creates a local copy of a remote svg file
     """
     if has_object_dict(post_json_object):
@@ -169,19 +170,24 @@ def _cache_svg_images(session, base_dir: str, http_prefix: str,
             # validated on upload
             if '://' + domain in url:
                 continue
-            if '://' + onion_domain in url:
-                continue
-            if '://' + i2p_domain in url:
-                continue
+            if onion_domain:
+                if '://' + onion_domain in url:
+                    continue
+            if i2p_domain:
+                if '://' + i2p_domain in url:
+                    continue
             if '/' in url:
                 filename = url.split('/')[-1]
             else:
                 filename = url
-            image_filename = \
-                base_dir + '/media/' + post_id + '_' + filename
-            if not download_image(session, base_dir, url,
-                                  image_filename, debug):
-                continue
+            if not test_image_filename:
+                image_filename = \
+                    base_dir + '/media/' + post_id + '_' + filename
+                if not download_image(session, base_dir, url,
+                                      image_filename, debug):
+                    continue
+            else:
+                image_filename = test_image_filename
             image_data = None
             try:
                 with open(image_filename, 'rb') as fp_svg:
@@ -4107,11 +4113,11 @@ def _inbox_after_initial(server, inbox_start_time,
 
         # cache any svg image attachments locally
         # This is so that any scripts can be removed
-        _cache_svg_images(session, base_dir, http_prefix,
-                          nickname, domain, domain_full,
-                          onion_domain, i2p_domain,
-                          post_json_object,
-                          federation_list, debug)
+        cache_svg_images(session, base_dir, http_prefix,
+                         nickname, domain, domain_full,
+                         onion_domain, i2p_domain,
+                         post_json_object,
+                         federation_list, debug, None)
 
         inbox_start_time = time.time()
 

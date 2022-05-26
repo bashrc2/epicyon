@@ -128,6 +128,7 @@ from delete import send_delete_via_server
 from inbox import json_post_allows_comments
 from inbox import valid_inbox
 from inbox import valid_inbox_filenames
+from inbox import cache_svg_images
 from categories import guess_hashtag_category
 from content import remove_script
 from content import create_edits_html
@@ -4013,6 +4014,50 @@ def _test_danger_svg(base_dir: str) -> None:
     if cleaned_up != svg_clean:
         print(cleaned_up)
     assert cleaned_up == svg_clean
+
+    session = None
+    http_prefix = 'https'
+    nickname = 'amplifier'
+    domain = 'ratsratsrats.live'
+    domain_full = domain
+    onion_domain = None
+    i2p_domain = None
+    federation_list = []
+    debug = True
+    svg_image_filename = base_dir + '/.unit_test_safe.svg'
+    post_json_object = {
+        "object": {
+            "id": "1234",
+            "attributedTo": "someactor",
+            "attachment": [
+                {
+                    "mediaType": "svg",
+                    "url": "https://somesiteorother.net/media/wibble.svg"
+                }
+            ]
+        }
+    }
+
+    with open(svg_image_filename, 'wb+') as fp_svg:
+        fp_svg.write(svg_content.encode('utf-8'))
+    assert os.path.isfile(svg_image_filename)
+    assert svg_content != svg_clean
+
+    assert cache_svg_images(session, base_dir, http_prefix,
+                            nickname, domain, domain_full,
+                            onion_domain, i2p_domain,
+                            post_json_object,
+                            federation_list, debug,
+                            svg_image_filename)
+
+    url = post_json_object['object']['attachment'][0]['url']
+    assert url == 'https://ratsratsrats.live/media/1234_wibble.svg'
+
+    with open(svg_image_filename, 'rb') as fp_svg:
+        cached_content = fp_svg.read().decode()
+    os.remove(svg_image_filename)
+    assert cached_content == svg_clean
+
     assert not scan_themes_for_scripts(base_dir)
 
 
