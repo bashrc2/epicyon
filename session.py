@@ -58,6 +58,8 @@ def create_session(proxy_type: str):
 
 def url_exists(session, url: str, timeout_sec: int = 3,
                http_prefix: str = 'https', domain: str = 'testdomain') -> bool:
+    """Is the given url resolvable?
+    """
     if not isinstance(url, str):
         print('url: ' + str(url))
         print('ERROR: url_exists failed, url should be a string')
@@ -738,6 +740,8 @@ def get_method(method_name: str, xml_str: str,
                version: str = __version__, http_prefix: str = 'https',
                domain: str = 'testdomain',
                timeout_sec: int = 20, quiet: bool = False) -> {}:
+    """Part of the vcard interface
+    """
     if method_name not in ("REPORT", "PUT", "PROPFIND"):
         print("Unrecognized method: " + method_name)
         return None
