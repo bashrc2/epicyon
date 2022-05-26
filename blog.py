@@ -259,7 +259,8 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     mute_str = ''
     is_muted = False
     attachment_str, _ = \
-        get_post_attachments_as_html(base_dir, post_json_object,
+        get_post_attachments_as_html(base_dir, domain_full,
+                                     post_json_object,
                                      'tlblogs', translate,
                                      is_muted, avatar_link,
                                      reply_str, announce_str,

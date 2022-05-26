@@ -1097,7 +1097,7 @@ def _is_attached_video(attachment_filename: str) -> bool:
     return False
 
 
-def get_post_attachments_as_html(base_dir: str,
+def get_post_attachments_as_html(base_dir: str, domain_full: str,
                                  post_json_object: {}, box_name: str,
                                  translate: {},
                                  is_muted: bool, avatar_link: str,
@@ -1137,15 +1137,18 @@ def get_post_attachments_as_html(base_dir: str,
             svg_harmless = True
             if 'svg' in media_type:
                 svg_harmless = False
-                if post_id:
-                    if '/' in image_url:
-                        im_filename = image_url.split('/')[-1]
-                    else:
-                        im_filename = image_url
-                    cached_svg_filename = \
-                        base_dir + '/media/' + post_id + '_' + im_filename
-                    if os.path.isfile(cached_svg_filename):
-                        svg_harmless = True
+                if '://' + domain_full + '/' in image_url:
+                    svg_harmless = True
+                else:
+                    if post_id:
+                        if '/' in image_url:
+                            im_filename = image_url.split('/')[-1]
+                        else:
+                            im_filename = image_url
+                        cached_svg_filename = \
+                            base_dir + '/media/' + post_id + '_' + im_filename
+                        if os.path.isfile(cached_svg_filename):
+                            svg_harmless = True
 
             if _is_attached_image(attach['url']) and svg_harmless:
                 if not attachment_str:
