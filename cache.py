@@ -143,6 +143,8 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
                        domain: str, onion_domain: str,
                        i2p_domain: str,
                        signing_priv_key_pem: str) -> str:
+    """Get the public key for an actor
+    """
     if not person_url:
         return None
     person_url = person_url.replace('#main-key', '')

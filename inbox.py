@@ -4748,7 +4748,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                   message_json['actor'],
                                   person_cache, debug, project_version,
                                   curr_http_prefix,
-                                  domain_to_follow, onion_domain,
+                                  this_domain, onion_domain,
                                   i2p_domain, signing_priv_key_pem):
             if debug:
                 print('Unable to obtain following actor: ' +
@@ -4792,7 +4792,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
             if not get_person_pub_key(base_dir, curr_session,
                                       message_json['actor'],
                                       person_cache, debug, project_version,
-                                      curr_http_prefix, domain_to_follow,
+                                      curr_http_prefix, this_domain,
                                       onion_domain, i2p_domain,
                                       signing_priv_key_pem):
                 if debug:
