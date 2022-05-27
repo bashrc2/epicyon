@@ -2802,10 +2802,17 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     if debug:
         print('DEBUG: handle - ' + handle + ' to_port ' + str(to_port))
 
+    # domain shown in the user agent
+    ua_domain = curr_domain
+    if to_domain.endswith('.onion'):
+        ua_domain = onion_domain
+    elif to_domain.endswith('.i2p'):
+        ua_domain = i2p_domain
+
     # lookup the inbox for the To handle
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
-                                  domain, project_version, debug,
+                                  ua_domain, project_version, debug,
                                   group_account, signing_priv_key_pem)
     if not wf_request:
         if debug:
