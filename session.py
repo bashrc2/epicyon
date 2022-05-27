@@ -58,6 +58,8 @@ def create_session(proxy_type: str):
 
 def url_exists(session, url: str, timeout_sec: int = 3,
                http_prefix: str = 'https', domain: str = 'testdomain') -> bool:
+    """Is the given url resolvable?
+    """
     if not isinstance(url, str):
         print('url: ' + str(url))
         print('ERROR: url_exists failed, url should be a string')
@@ -256,8 +258,7 @@ def get_json(signing_priv_key_pem: str,
 
 def get_vcard(xml_format: bool,
               session, url: str, params: {}, debug: bool,
-              version: str = __version__, http_prefix: str = 'https',
-              domain: str = 'testdomain',
+              version: str, http_prefix: str, domain: str,
               timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
         if debug and not quiet:
@@ -335,8 +336,7 @@ def get_vcard(xml_format: bool,
 
 def download_html(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
-                  version: str = __version__, http_prefix: str = 'https',
-                  domain: str = 'testdomain',
+                  version: str, http_prefix: str, domain: str,
                   timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
         if debug and not quiet:
@@ -375,8 +375,7 @@ def download_html(signing_priv_key_pem: str,
 
 def download_ssml(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
-                  version: str = __version__, http_prefix: str = 'https',
-                  domain: str = 'testdomain',
+                  version: str, http_prefix: str, domain: str,
                   timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
         if debug and not quiet:
@@ -735,9 +734,10 @@ def download_image_any_mime_type(session, url: str,
 
 def get_method(method_name: str, xml_str: str,
                session, url: str, params: {}, headers: {}, debug: bool,
-               version: str = __version__, http_prefix: str = 'https',
-               domain: str = 'testdomain',
+               version: str, http_prefix: str, domain: str,
                timeout_sec: int = 20, quiet: bool = False) -> {}:
+    """Part of the vcard interface
+    """
     if method_name not in ("REPORT", "PUT", "PROPFIND"):
         print("Unrecognized method: " + method_name)
         return None

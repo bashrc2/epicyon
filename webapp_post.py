@@ -381,6 +381,10 @@ def _get_avatar_image_html(showAvatarOptions: bool,
                            page_number: int, message_id_str: str) -> str:
     """Get html for the avatar image
     """
+    # don't use svg images
+    if avatar_url.endswith('.svg'):
+        avatar_url = '/icons/avatar_default.png'
+
     avatar_link = ''
     if '/users/news/' not in avatar_url:
         avatar_link = \
@@ -1962,7 +1966,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '14')
 
     attachment_str, gallery_str = \
-        get_post_attachments_as_html(post_json_object, box_name, translate,
+        get_post_attachments_as_html(base_dir, domain_full,
+                                     post_json_object,
+                                     box_name, translate,
                                      is_muted, avatar_link,
                                      reply_str, announce_str, like_str,
                                      bookmark_str, delete_str, mute_str)

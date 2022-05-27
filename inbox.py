@@ -70,6 +70,7 @@ from categories import set_hashtag_category
 from httpsig import get_digest_algorithm_from_headers
 from httpsig import verify_post_headers
 from session import create_session
+from session import download_image
 from follow import follower_approval_active
 from follow import is_following_actor
 from follow import get_followers_of_actor
@@ -127,6 +128,95 @@ from webapp_hashtagswarm import html_hash_tag_swarm
 from person import valid_sending_actor
 from fitnessFunctions import fitness_performance
 from content import valid_url_lengths
+from content import remove_script
+
+
+def cache_svg_images(session, base_dir: str, http_prefix: str,
+                     nickname: str, domain: str, domain_full: str,
+                     onion_domain: str, i2p_domain: str,
+                     post_json_object: {},
+                     federation_list: [], debug: bool,
+                     test_image_filename: str) -> bool:
+    """Creates a local copy of a remote svg file
+    """
+    if has_object_dict(post_json_object):
+        obj = post_json_object['object']
+    else:
+        obj = post_json_object
+    if not obj.get('id'):
+        return False
+    if not obj.get('attachment'):
+        return False
+    if not isinstance(obj['attachment'], list):
+        return False
+    cached = False
+    post_id = remove_id_ending(obj['id']).replace('/', '--')
+    actor = 'unknown'
+    if obj.get('attributedTo'):
+        actor = obj['attributedTo']
+    log_filename = base_dir + '/accounts/svg_scripts_log.txt'
+    for index in range(len(obj['attachment'])):
+        attach = obj['attachment'][index]
+        if not attach.get('mediaType'):
+            continue
+        if not attach.get('url'):
+            continue
+        if attach['url'].endswith('.svg') or \
+           'svg' in attach['mediaType']:
+            url = attach['url']
+            if not url_permitted(url, federation_list):
+                continue
+            # if this is a local image then it has already been
+            # validated on upload
+            if '://' + domain in url:
+                continue
+            if onion_domain:
+                if '://' + onion_domain in url:
+                    continue
+            if i2p_domain:
+                if '://' + i2p_domain in url:
+                    continue
+            if '/' in url:
+                filename = url.split('/')[-1]
+            else:
+                filename = url
+            if not test_image_filename:
+                image_filename = \
+                    base_dir + '/media/' + post_id + '_' + filename
+                if not download_image(session, base_dir, url,
+                                      image_filename, debug):
+                    continue
+            else:
+                image_filename = test_image_filename
+            image_data = None
+            try:
+                with open(image_filename, 'rb') as fp_svg:
+                    image_data = fp_svg.read()
+            except OSError:
+                print('EX: unable to read svg file data')
+            if image_data:
+                image_data = image_data.decode()
+                cleaned_up = \
+                    remove_script(image_data, log_filename, actor, url)
+                if cleaned_up != image_data:
+                    # write the cleaned up svg image
+                    svg_written = False
+                    cleaned_up = cleaned_up.encode('utf-8')
+                    try:
+                        with open(image_filename, 'wb') as im_file:
+                            im_file.write(cleaned_up)
+                            svg_written = True
+                    except OSError:
+                        print('EX: unable to write cleaned up svg ' + url)
+                    if svg_written:
+                        # change the url to be the local version
+                        obj['attachment'][index]['url'] = \
+                            http_prefix + '://' + domain_full + '/media/' + \
+                            post_id + '_' + filename
+                        cached = True
+                else:
+                    cached = True
+    return cached
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -4020,6 +4110,15 @@ def _inbox_after_initial(server, inbox_start_time,
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_obtain_avatar_for_reply_post',
                             debug)
+
+        # cache any svg image attachments locally
+        # This is so that any scripts can be removed
+        cache_svg_images(session, base_dir, http_prefix,
+                         nickname, domain, domain_full,
+                         onion_domain, i2p_domain,
+                         post_json_object,
+                         federation_list, debug, None)
+
         inbox_start_time = time.time()
 
         # save the post to file
@@ -4649,7 +4748,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                   message_json['actor'],
                                   person_cache, debug, project_version,
                                   curr_http_prefix,
-                                  domain_to_follow, onion_domain,
+                                  this_domain, onion_domain,
                                   i2p_domain, signing_priv_key_pem):
             if debug:
                 print('Unable to obtain following actor: ' +
@@ -4693,7 +4792,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
             if not get_person_pub_key(base_dir, curr_session,
                                       message_json['actor'],
                                       person_cache, debug, project_version,
-                                      curr_http_prefix, domain_to_follow,
+                                      curr_http_prefix, this_domain,
                                       onion_domain, i2p_domain,
                                       signing_priv_key_pem):
                 if debug:

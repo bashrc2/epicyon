@@ -238,7 +238,7 @@ def announce_public(session, base_dir: str, federation_list: [],
 
 
 def send_announce_via_server(base_dir: str, session,
-                             fromNickname: str, password: str,
+                             from_nickname: str, password: str,
                              from_domain: str, fromPort: int,
                              http_prefix: str, repeat_object_url: str,
                              cached_webfingers: {}, person_cache: {},
@@ -253,7 +253,7 @@ def send_announce_via_server(base_dir: str, session,
     from_domain_full = get_full_domain(from_domain, fromPort)
 
     to_url = 'https://www.w3.org/ns/activitystreams#Public'
-    actor_str = local_actor_url(http_prefix, fromNickname, from_domain_full)
+    actor_str = local_actor_url(http_prefix, from_nickname, from_domain_full)
     cc_url = actor_str + '/followers'
 
     status_number, published = get_status_number()
@@ -270,7 +270,7 @@ def send_announce_via_server(base_dir: str, session,
         'type': 'Announce'
     }
 
-    handle = http_prefix + '://' + from_domain_full + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
     wf_request = webfinger_handle(session, handle, http_prefix,
@@ -296,7 +296,7 @@ def send_announce_via_server(base_dir: str, session,
                                   base_dir, session, wf_request,
                                   person_cache,
                                   project_version, http_prefix,
-                                  fromNickname, from_domain,
+                                  from_nickname, from_domain,
                                   post_to_box, 73528)
 
     if not inbox_url:
@@ -309,7 +309,7 @@ def send_announce_via_server(base_dir: str, session,
             print('DEBUG: announce no actor was found for ' + handle)
         return 4
 
-    auth_header = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
         'host': from_domain,

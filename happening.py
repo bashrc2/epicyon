@@ -1319,7 +1319,8 @@ def dav_month_via_server(session, http_prefix: str,
         '  </c:filter>\n' + \
         '</c:calendar-query>'
     result = \
-        get_method("REPORT", xml_str, session, url, params, headers, debug)
+        get_method("REPORT", xml_str, session, url, params, headers, debug,
+                   __version__, http_prefix, domain)
     return result
 
 
@@ -1365,5 +1366,6 @@ def dav_day_via_server(session, http_prefix: str,
         '  </c:filter>\n' + \
         '</c:calendar-query>'
     result = \
-        get_method("REPORT", xml_str, session, url, params, headers, debug)
+        get_method("REPORT", xml_str, session, url, params, headers, debug,
+                   __version__, http_prefix, domain)
     return result

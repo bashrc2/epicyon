@@ -2802,10 +2802,17 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     if debug:
         print('DEBUG: handle - ' + handle + ' to_port ' + str(to_port))
 
+    # domain shown in the user agent
+    ua_domain = curr_domain
+    if to_domain.endswith('.onion'):
+        ua_domain = onion_domain
+    elif to_domain.endswith('.i2p'):
+        ua_domain = i2p_domain
+
     # lookup the inbox for the To handle
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
-                                  domain, project_version, debug,
+                                  ua_domain, project_version, debug,
                                   group_account, signing_priv_key_pem)
     if not wf_request:
         if debug:
@@ -3280,7 +3287,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
 
 
 def _has_shared_inbox(session, http_prefix: str, domain: str,
-                      debug: bool, signing_priv_key_pem: str) -> bool:
+                      debug: bool, signing_priv_key_pem: str,
+                      ua_domain: str) -> bool:
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
@@ -3290,7 +3298,7 @@ def _has_shared_inbox(session, http_prefix: str, domain: str,
     try_handles.append('inbox@' + domain)
     for handle in try_handles:
         wf_request = webfinger_handle(session, handle, http_prefix, {},
-                                      domain, __version__, debug, False,
+                                      ua_domain, __version__, debug, False,
                                       signing_priv_key_pem)
         if wf_request:
             if isinstance(wf_request, dict):
@@ -3404,9 +3412,16 @@ def send_to_followers(server, session, session_onion, session_i2p,
                 curr_session = session_i2p
                 curr_http_prefix = 'http'
 
+        # get the domain showin by the user agent
+        ua_domain = domain
+        if follower_domain.endswith('.onion'):
+            ua_domain = onion_domain
+        elif follower_domain.endswith('.i2p'):
+            ua_domain = i2p_domain
+
         with_shared_inbox = \
             _has_shared_inbox(curr_session, curr_http_prefix, follower_domain,
-                              debug, signing_priv_key_pem)
+                              debug, signing_priv_key_pem, ua_domain)
         if debug:
             if with_shared_inbox:
                 print(follower_domain + ' has shared inbox')
