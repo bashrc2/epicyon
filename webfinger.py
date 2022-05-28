@@ -124,8 +124,8 @@ def webfinger_handle(session, handle: str, http_prefix: str,
     if result:
         store_webfinger_in_cache(wf_handle, result, cached_webfingers)
     else:
-        print("WARN: Unable to webfinger " + url + ' ' +
-              'from_domain: ' + from_domain + ' ' +
+        print("WARN: Unable to webfinger " + str(url) + ' ' +
+              'from_domain: ' + str(from_domain) + ' ' +
               'nickname: ' + str(nickname) + ' ' +
               'handle: ' + str(handle) + ' ' +
               'wf_handle: ' + str(wf_handle) + ' ' +
