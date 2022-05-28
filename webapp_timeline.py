@@ -907,7 +907,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
             '  <center>\n' + \
             '    <a href="' + users_path + '/' + box_name + \
             '?page=' + str(page_number - 1) + \
-            '" accesskey="' + access_keys['Page up'] + '" ' + \
+            '#timelineposts" accesskey="' + access_keys['Page up'] + '" ' + \
             'class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
@@ -1020,7 +1020,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
             '      <center>\n' + \
             '        <a href="' + users_path + '/' + box_name + '?page=' + \
             str(page_number + 1) + \
-            '" accesskey="' + access_keys['Page down'] + '" ' + \
+            '#timelineposts" accesskey="' + access_keys['Page down'] + '" ' + \
             'class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + \
@@ -1150,7 +1150,7 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(page_number - 1) + \
-            '" class="imageAnchor" tabindex="9">' + \
+            '#timelineposts" class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" ' + \
             'class="pageicon" src="/' + \
             'icons/pageup.png" title="' + translate['Page up'] + \
@@ -1192,7 +1192,7 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(page_number + 1) + \
-            '" class="imageAnchor" tabindex="9">' + \
+            '#timelineposts" class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" ' + \
             'class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + translate['Page down'] + \
