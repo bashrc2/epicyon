@@ -442,13 +442,15 @@ def _page_number_buttons(users_path: str, box_name: str,
             num_str += ' ⸻ '
         aria_page_str = ''
         page_str = str(page)
+        curr_page_str = ''
         if page == page_number:
             page_str = '<mark>' + str(page) + '</mark>'
             aria_page_str = ' aria-current="true"'
+            curr_page_str = 'Current Page, '
         num_str += \
             '<a href="' + users_path + '/' + box_name + '?page=' + \
             str(page) + '#timelineposts" class="pageslist" ' + \
-            'aria-label="Current Page, Page ' + str(page) + \
+            'aria-label="' + curr_page_str + 'Page ' + str(page) + \
             '"' + aria_page_str + ' tabindex="11">' + page_str + '</a>'
     return '<center>\n' + \
         '  <nav role="navigation" aria-label="Pagination Navigation">\n' + \
