@@ -1848,7 +1848,8 @@ h3 {
     .columnIcons img {
         float: right;
     }
-    .pageslist {
+    .pageslist mark {
+        text-decoration: underline;
     }
     .voteresult {
         width: var(--voteresult-width);
@@ -2640,7 +2641,8 @@ h3 {
         float: right;
         margin-right: 1vw;
     }
-    .pageslist {
+    .pageslist mark {
+        text-decoration: underline;
     }
     .voteresult {
         width: var(--voteresult-width-mobile);
@@ -3428,7 +3430,8 @@ h3 {
         float: right;
         margin-right: 1vw;
     }
-    .pageslist {
+    .pageslist mark {
+        text-decoration: underline;
     }
     .voteresult {
         width: var(--voteresult-width-tiny);
