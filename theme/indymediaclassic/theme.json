@@ -26,6 +26,8 @@
     "button-corner-radius": "5px",
     "timeline-border-radius": "5px",
     "focus-color": "blue",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "26px",
     "font-size": "32px",
     "font-size2": "26px",

@@ -11,6 +11,8 @@
     "font-size-header": "18px",
     "font-size-header-mobile": "34px",
     "font-color-header": "#ccc",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "34px",
     "font-size-links": "18px",
     "font-size-publish-button": "18px",

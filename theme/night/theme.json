@@ -21,6 +21,8 @@
     "banner-height": "15vh",
     "banner-height-mobile": "10vh",
     "focus-color": "blue",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "26px",
     "font-size": "32px",
     "font-size2": "26px",

@@ -23,6 +23,8 @@
     "follow-text-size2": "30px",
     "hashtag-size1": "20px",
     "hashtag-size2": "30px",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-calendar-header": "2rem",
     "font-size-calendar-cell": "2rem",
     "time-vertical-align": "1.1%",

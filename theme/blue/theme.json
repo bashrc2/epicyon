@@ -9,6 +9,8 @@
     "banner-height": "20vh",
     "banner-height-mobile": "10vh",
     "newswire-date-color": "blue",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-header": "22px",
     "font-size-header-mobile": "32px",
     "font-size": "45px",

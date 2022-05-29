@@ -6,6 +6,8 @@
     "dropdown-bg-color-hover": "#444",
     "dropdown-fg-color-hover": "#9ad791",
     "column-left-header-background": "#035103",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-header": "12px",
     "font-size-header-mobile": "20px",
     "font-size-button-mobile": "20px",
