@@ -439,7 +439,7 @@ def _page_number_buttons(users_path: str, box_name: str,
     num_str = ''
     for page in range(min_page_number, max_page_number):
         if num_str:
-            num_str += html_hide_from_screen_reader('⸻')
+            num_str += html_hide_from_screen_reader('─────')
         aria_page_str = ''
         page_str = ' ' + str(page) + ' '
         curr_page_str = ''
