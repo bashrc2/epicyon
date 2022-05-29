@@ -436,7 +436,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+        'tabindex="1" accesskey="' + \
         access_keys['menuTimeline'] + '">\n'
     calendar_str += '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" ' + \
