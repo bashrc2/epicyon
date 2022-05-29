@@ -146,7 +146,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
         '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
-        '</header>\n'
+        '</header>\n<br>\n'
 
     calendar_str += '<main>\n'
     # day header
