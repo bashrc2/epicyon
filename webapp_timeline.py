@@ -447,7 +447,7 @@ def _page_number_buttons(users_path: str, box_name: str,
             aria_page_str = ' aria-current="true"'
         num_str += \
             '<a href="' + users_path + '/' + box_name + '?page=' + \
-            str(page) + '" class="pageslist" ' + \
+            str(page) + '#timelineposts" class="pageslist" ' + \
             'aria-label="Current Page, Page ' + str(page) + \
             '"' + aria_page_str + ' tabindex="11">' + page_str + '</a>'
     return '<center>\n' + \
