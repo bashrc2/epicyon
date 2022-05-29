@@ -444,7 +444,10 @@ def _page_number_buttons(users_path: str, box_name: str,
         page_str = ' ' + str(page) + ' '
         curr_page_str = ''
         if page == page_number:
-            page_str = '[<mark>' + str(page) + '</mark>]'
+            page_str = \
+                html_hide_from_screen_reader('[<mark>') + \
+                str(page) + \
+                html_hide_from_screen_reader('</mark>]')
             aria_page_str = ' aria-current="true"'
             curr_page_str = 'Current Page, '
         num_str += \
