@@ -439,16 +439,23 @@ def _page_number_buttons(users_path: str, box_name: str,
     num_str = ''
     for page in range(min_page_number, max_page_number):
         if num_str:
-            num_str += ' ⸻ '
+            separator_str = \
+                '<label class="pageslistDash">────</label>'
+            num_str += html_hide_from_screen_reader(separator_str)
         aria_page_str = ''
-        page_str = str(page)
+        page_str = ' ' + str(page) + ' '
+        curr_page_str = ''
         if page == page_number:
-            page_str = '<mark>' + str(page) + '</mark>'
+            page_str = \
+                html_hide_from_screen_reader('[<mark>') + \
+                str(page) + \
+                html_hide_from_screen_reader('</mark>]')
             aria_page_str = ' aria-current="true"'
+            curr_page_str = 'Current Page, '
         num_str += \
             '<a href="' + users_path + '/' + box_name + '?page=' + \
-            str(page) + '" class="pageslist" ' + \
-            'aria-label="Current Page, Page ' + str(page) + \
+            str(page) + '#timelineposts" class="pageslist" ' + \
+            'aria-label="' + curr_page_str + 'Page ' + str(page) + \
             '"' + aria_page_str + ' tabindex="11">' + page_str + '</a>'
     return '<center>\n' + \
         '  <nav role="navigation" aria-label="Pagination Navigation">\n' + \
@@ -1028,6 +1035,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
         tl_str += _page_number_buttons(users_path, box_name, page_number)
+        tl_str += '<br>'
         tl_str += text_mode_separator
     elif item_ctr == 0:
         tl_str += _get_help_for_timeline(base_dir, box_name)
@@ -1200,6 +1208,7 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  </center>\n'
         timeline_str += \
             _page_number_buttons(actor, 'tl' + sharesFileType, page_number)
+        timeline_str += '<br>'
 
     return timeline_str
 

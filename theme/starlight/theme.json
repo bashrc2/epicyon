@@ -17,6 +17,8 @@
     "column-left-image-width-mobile": "40vw",
     "line-spacing-newswire": "120%",
     "focus-color": "darkred",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "26px",
     "font-size": "32px",
     "font-size2": "26px",

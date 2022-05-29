@@ -44,6 +44,8 @@
     --border-color: #505050;
     --border-width: 2px;
     --border-width-header: 2px;
+    --font-page-dash-tiny: 16px;
+    --font-page-dash-mobile: 32px;
     --font-size-header: 18px;
     --font-size-header-mobile: 32px;
     --font-size-header-tiny: 13px;
@@ -1848,7 +1850,9 @@ h3 {
     .columnIcons img {
         float: right;
     }
-    .pageslist {
+    .pageslist mark {
+    }
+    .pageslistDash {
     }
     .voteresult {
         width: var(--voteresult-width);
@@ -2640,7 +2644,10 @@ h3 {
         float: right;
         margin-right: 1vw;
     }
-    .pageslist {
+    .pageslist mark {
+    }
+    .pageslistDash {
+        font-size: var(--font-page-dash-mobile);
     }
     .voteresult {
         width: var(--voteresult-width-mobile);
@@ -3428,7 +3435,10 @@ h3 {
         float: right;
         margin-right: 1vw;
     }
-    .pageslist {
+    .pageslist mark {
+    }
+    .pageslistDash {
+        font-size: var(--font-page-dash-tiny);
     }
     .voteresult {
         width: var(--voteresult-width-tiny);

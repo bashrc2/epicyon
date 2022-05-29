@@ -26,6 +26,7 @@ from happening import get_todays_events
 from happening import get_calendar_events
 from happening import get_todays_events_icalendar
 from happening import get_month_events_icalendar
+from webapp_utils import get_banner_file
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -106,7 +107,8 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
                        base_dir: str, path: str,
                        year: int, month_number: int, day_number: int,
                        nickname: str, domain: str, day_events: [],
-                       month_name: str, actor: str) -> str:
+                       month_name: str, actor: str,
+                       theme: str, access_keys: {}) -> str:
     """Show a day within the calendar
     """
     account_dir = acct_dir(base_dir, nickname, domain)
@@ -128,12 +130,29 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     instance_title = get_config_param(base_dir, 'instanceTitle')
     calendar_str = \
         html_header_with_external_style(css_filename, instance_title, None)
+
+    calendar_link = cal_actor + \
+        '/calendar?year=' + str(year) + '?month=' + str(month_number)
+
+    # show banner
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    calendar_str += \
+        '<header>\n<a href="' + calendar_link + '" title="' + \
+        translate['Switch to calendar view'] + '" alt="' + \
+        translate['Switch to calendar view'] + '" ' + \
+        'tabindex="1" accesskey="' + access_keys['menuCalendar'] + '">\n'
+    calendar_str += \
+        '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n<br>\n'
+
     calendar_str += '<main>\n'
     # day header
     calendar_str += \
-        '  <center>\n<p>\n<a href="' + cal_actor + \
-        '/calendar?year=' + str(year) + \
-        '?month=' + str(month_number) + '" tabindex="1" class="imageAnchor">\n'
+        '  <center>\n<p>\n<a href="' + calendar_link + \
+        '" tabindex="1" class="imageAnchor">\n'
     datetime_str = str(year) + '-' + str(month_number) + '-' + str(day_number)
     calendar_str += \
         '  <label class="calheader">' + \
@@ -303,7 +322,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                   http_prefix: str, domain_full: str,
                   text_mode_banner: str, access_keys: {},
                   icalendar: bool, system_language: str,
-                  default_timeline: str) -> str:
+                  default_timeline: str, theme: str) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -379,7 +398,8 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                                   translate, base_dir, path,
                                   year, month_number, day_number,
                                   nickname, domain, day_events,
-                                  month_name, actor)
+                                  month_name, actor,
+                                  theme, access_keys)
 
     if icalendar:
         return get_month_events_icalendar(base_dir, nickname, domain,
@@ -427,8 +447,23 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     header_str = \
         html_header_with_external_style(css_filename, instance_title, None)
 
+    # show banner
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    calendar_str = \
+        '<header>\n<a href="/users/' + \
+        nickname + '/' + default_timeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'tabindex="1" accesskey="' + \
+        access_keys['menuTimeline'] + '">\n'
+    calendar_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n'
+
     # the main graphical calendar as a table
-    calendar_str = '<main>\n<center>\n<p class="calendar__banner--month">\n'
+    calendar_str += '<main>\n<center>\n<p class="calendar__banner--month">\n'
     # previous month
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \

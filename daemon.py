@@ -17082,7 +17082,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     access_keys,
                                     False, self.server.system_language,
-                                    self.server.default_timeline)
+                                    self.server.default_timeline,
+                                    self.server.theme_name)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -17125,7 +17126,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     access_keys,
                                     True,
                                     self.server.system_language,
-                                    self.server.default_timeline)
+                                    self.server.default_timeline,
+                                    self.server.theme_name)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)

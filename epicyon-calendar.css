@@ -16,6 +16,9 @@
     --title-text: white;
     --title-background: grey;
     --focus-color: white;
+    --banner-height: 20vh;
+    --banner-height-mobile: 10vh;
+    --banner-height-tiny: 10vh;
     --calendar-horizontal-padding: 0;
     --calendar-cell-size: 1.5vw;
     --calendar-cell-size-mobile: 1.5vw;
@@ -250,6 +253,12 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 }
 
 @media screen and (min-width: 400px) {
+    .timeline-banner {
+        vertical-align: top;
+        object-fit: cover;
+        width: 100%;
+        max-height: var(--banner-height);
+    }
     .calendar {
         table-display: fixed;
         margin: 0 20%;
@@ -274,6 +283,12 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 }
 
 @media screen and (max-width: 1000px) {
+    .timeline-banner {
+        vertical-align: top;
+        object-fit: cover;
+        width: 98vw;
+        max-height: var(--banner-height-mobile);
+    }
     .calendar {
         table-display: fixed;
         margin: 0 0;
@@ -298,6 +313,12 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 }
 
 @media screen and (max-width: 480px) {
+    .timeline-banner {
+        vertical-align: top;
+        object-fit: cover;
+        width: 98vw;
+        max-height: var(--banner-height-tiny);
+    }
     .calendar {
         table-display: fixed;
         margin: 0 0;

@@ -64,5 +64,7 @@
     "header-font": "'Barlow-Regular'",
     "*font-family": "'Barlow-Regular'",
     "*src": "url('fonts/Barlow-Regular.woff2') format('woff2')",
-    "reply-icon-direction": "-1"
+    "reply-icon-direction": "-1",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px"
 }
