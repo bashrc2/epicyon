@@ -26,6 +26,7 @@ from happening import get_todays_events
 from happening import get_calendar_events
 from happening import get_todays_events_icalendar
 from happening import get_month_events_icalendar
+from webapp_utils import get_banner_file
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -303,7 +304,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                   http_prefix: str, domain_full: str,
                   text_mode_banner: str, access_keys: {},
                   icalendar: bool, system_language: str,
-                  default_timeline: str) -> str:
+                  default_timeline: str, theme: str) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -427,8 +428,23 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     header_str = \
         html_header_with_external_style(css_filename, instance_title, None)
 
+    # show banner
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    calendar_str = \
+        '<header>\n' + \
+        '<a href="/users/' + nickname + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+        access_keys['menuTimeline'] + '">\n'
+    calendar_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n'
+
     # the main graphical calendar as a table
-    calendar_str = '<main>\n<center>\n<p class="calendar__banner--month">\n'
+    calendar_str += '<main>\n<center>\n<p class="calendar__banner--month">\n'
     # previous month
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
