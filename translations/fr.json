@@ -558,5 +558,6 @@
     "Color contrast is too low": "Le contraste des couleurs est trop faible",
     "View Larger Map": "Agrandir le plan",
     "Start Time": "Heure de début",
-    "End Time": "Heure de fin"
+    "End Time": "Heure de fin",
+    "Switch to calendar view": "Basculer vers la vue calendrier"
 }
