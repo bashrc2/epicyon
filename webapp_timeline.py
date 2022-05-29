@@ -1035,6 +1035,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
         tl_str += _page_number_buttons(users_path, box_name, page_number)
+        tl_str += '<br>'
         tl_str += text_mode_separator
     elif item_ctr == 0:
         tl_str += _get_help_for_timeline(base_dir, box_name)
@@ -1207,6 +1208,7 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  </center>\n'
         timeline_str += \
             _page_number_buttons(actor, 'tl' + sharesFileType, page_number)
+        timeline_str += '<br>'
 
     return timeline_str
 
