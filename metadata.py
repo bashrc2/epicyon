@@ -35,7 +35,7 @@ def meta_data_node_info(base_dir: str,
                         about_url: str,
                         terms_of_service_url: str,
                         registration: bool, version: str,
-                        showAccounts: bool) -> {}:
+                        show_accounts: bool) -> {}:
     """ /nodeinfo/2.0 endpoint
     Also see https://socialhub.activitypub.rocks/t/
     fep-f1d5-nodeinfo-in-fediverse-software/1190/4
@@ -46,7 +46,7 @@ def meta_data_node_info(base_dir: str,
     Also exposure of the version number and number of accounts could be
     sensitive
     """
-    if showAccounts:
+    if show_accounts:
         active_accounts = no_of_accounts(base_dir)
         active_accounts_monthly = no_of_active_accounts_monthly(base_dir, 1)
         active_accounts_half_year = no_of_active_accounts_monthly(base_dir, 6)
@@ -81,7 +81,7 @@ def meta_data_node_info(base_dir: str,
     return nodeinfo
 
 
-def meta_data_instance(showAccounts: bool,
+def meta_data_instance(show_accounts: bool,
                        instance_title: str,
                        instance_description_short: str,
                        instance_description: str,
@@ -131,7 +131,7 @@ def meta_data_instance(showAccounts: bool,
         http_prefix + '://' + domain_full + '/@' + \
         admin_actor['preferredUsername']
 
-    if showAccounts:
+    if show_accounts:
         active_accounts = no_of_accounts(base_dir)
         local_posts = _get_status_count(base_dir)
     else:

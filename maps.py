@@ -202,13 +202,13 @@ def geocoords_from_map_link(url: str,
     """
     if osm_domain in url:
         return _geocoords_from_osm_link(url, osm_domain)
-    elif '.google.co' in url:
+    if '.google.co' in url:
         return _geocoords_from_gmaps_link(url)
-    elif '.bing.co' in url:
+    if '.bing.co' in url:
         return _geocoords_from_bmaps_link(url)
-    elif '.waze.co' in url:
+    if '.waze.co' in url:
         return _geocoords_from_waze_link(url)
-    elif 'wego.here.co' in url:
+    if 'wego.here.co' in url:
         return _geocoords_from_wego_link(url)
     return None, None, None
 

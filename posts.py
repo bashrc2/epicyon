@@ -1451,7 +1451,7 @@ def _create_post_base(base_dir: str,
                 break
         if music_metadata:
             for audio_tag, audio_value in music_metadata.items():
-                if audio_tag == 'title' or audio_tag == 'track':
+                if audio_tag in ('title', 'track'):
                     continue
                 # capitalize and remove any spaces
                 audio_value = audio_value.title().replace(' ', '')
@@ -1984,7 +1984,7 @@ def create_question_post(base_dir: str,
                          client_to_server: bool, comments_enabled: bool,
                          attach_image_filename: str, media_type: str,
                          image_description: str, city: str,
-                         subject: str, durationDays: int,
+                         subject: str, duration_days: int,
                          system_language: str, low_bandwidth: bool,
                          content_license_url: str,
                          languages_understood: []) -> {}:
@@ -2011,7 +2011,7 @@ def create_question_post(base_dir: str,
     message_json['object']['votersCount'] = 0
     curr_time = datetime.datetime.utcnow()
     days_since_epoch = \
-        int((curr_time - datetime.datetime(1970, 1, 1)).days + durationDays)
+        int((curr_time - datetime.datetime(1970, 1, 1)).days + duration_days)
     end_time = datetime.datetime(1970, 1, 1) + \
         datetime.timedelta(days_since_epoch)
     message_json['object']['endTime'] = end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -2559,7 +2559,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                          from_nickname: str, password: str,
                          from_domain: str, from_port: int,
                          to_nickname: str, to_domain: str, to_port: int,
-                         cc: str,
+                         cc_str: str,
                          http_prefix: str, content: str, followers_only: bool,
                          comments_enabled: bool,
                          attach_image_filename: str, media_type: str,
@@ -2631,7 +2631,8 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
     client_to_server = True
     if to_domain.lower().endswith('public'):
         to_person_id = 'https://www.w3.org/ns/activitystreams#Public'
-        cc = local_actor_url(http_prefix, from_nickname, from_domain_full) + \
+        cc_str = \
+            local_actor_url(http_prefix, from_nickname, from_domain_full) + \
             '/followers'
     else:
         if to_domain.lower().endswith('followers') or \
@@ -2648,7 +2649,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
     post_json_object = \
         _create_post_base(base_dir,
                           from_nickname, from_domain, from_port,
-                          to_person_id, cc, http_prefix, content,
+                          to_person_id, cc_str, http_prefix, content,
                           followers_only, save_to_file, client_to_server,
                           comments_enabled,
                           attach_image_filename, media_type,
@@ -2760,7 +2761,8 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
 
 def send_signed_json(post_json_object: {}, session, base_dir: str,
                      nickname: str, domain: str, port: int,
-                     to_nickname: str, to_domain: str, to_port: int, cc: str,
+                     to_nickname: str, to_domain: str,
+                     to_port: int, cc_str: str,
                      http_prefix: str, save_to_file: bool,
                      client_to_server: bool, federation_list: [],
                      send_threads: [], post_log: [], cached_webfingers: {},
