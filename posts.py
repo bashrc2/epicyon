@@ -2394,7 +2394,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
 
 def send_post(signing_priv_key_pem: str, project_version: str,
               session, base_dir: str, nickname: str, domain: str, port: int,
-              to_nickname: str, to_domain: str, to_port: int, cc: str,
+              to_nickname: str, to_domain: str, to_port: int, cc_str: str,
               http_prefix: str, content: str, followers_only: bool,
               save_to_file: bool, client_to_server: bool,
               comments_enabled: bool,
@@ -2462,7 +2462,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
 
     post_json_object = \
         _create_post_base(base_dir, nickname, domain, port,
-                          to_person_id, cc, http_prefix, content,
+                          to_person_id, cc_str, http_prefix, content,
                           followers_only, save_to_file, client_to_server,
                           comments_enabled,
                           attach_image_filename, media_type,
