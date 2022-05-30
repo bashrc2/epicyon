@@ -28,7 +28,7 @@ from posts import get_person_box
 
 def send_delete_via_server(base_dir: str, session,
                            from_nickname: str, password: str,
-                           from_domain: str, fromPort: int,
+                           from_domain: str, from_port: int,
                            http_prefix: str, delete_object_url: str,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
@@ -39,7 +39,7 @@ def send_delete_via_server(base_dir: str, session,
         print('WARN: No session for send_delete_via_server')
         return 6
 
-    from_domain_full = get_full_domain(from_domain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
     to_url = 'https://www.w3.org/ns/activitystreams#Public'
@@ -178,8 +178,7 @@ def outbox_delete(base_dir: str, http_prefix: str,
 def remove_old_hashtags(base_dir: str, max_months: int) -> str:
     """Remove old hashtags
     """
-    if max_months > 11:
-        max_months = 11
+    max_months = min(max_months, 11)
     max_days_since_epoch = \
         (datetime.utcnow() - datetime(1970, 1 + max_months, 1)).days
     remove_hashtags = []

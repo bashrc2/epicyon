@@ -54,7 +54,7 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
                         feeds_file.seek(0, 0)
                         feeds_file.write(post_id + '\n' + content)
                         print('DEBUG: feeds post added to index')
-            except BaseException as ex:
+            except OSError as ex:
                 print('EX: Failed to write entry to feeds posts index ' +
                       index_filename + ' ' + str(ex))
     else:
@@ -803,8 +803,7 @@ def run_newswire_daemon(base_dir: str, httpd,
                 print('Newswire daemon has no session')
                 time.sleep(60)
                 continue
-            else:
-                print('Newswire daemon session established')
+            print('Newswire daemon session established')
 
         # try to update the feeds
         print('Updating newswire feeds')

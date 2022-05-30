@@ -560,8 +560,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
             curr_page += 1
     following['totalItems'] = total_ctr
     last_page = int(total_ctr / follows_per_page)
-    if last_page < 1:
-        last_page = 1
+    last_page = max(last_page, 1)
     if next_page_number > last_page:
         following['next'] = \
             local_actor_url(http_prefix, nickname, domain) + \
@@ -731,10 +730,10 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                              port: int,
                              nickname: str, domain: str, from_port: int,
                              person_url: str, federation_list: [],
-                             follow_json: {}, send_threads: [], postLog: [],
+                             follow_json: {}, send_threads: [], post_log: [],
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
-                             removeFollowActivity: bool,
+                             remove_follow_activity: bool,
                              signing_priv_key_pem: str,
                              curr_domain: str,
                              onion_domain: str, i2p_domain: str):
@@ -759,7 +758,7 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
           accept_handle + ' port ' + str(from_port))
     client_to_server = False
 
-    if removeFollowActivity:
+    if remove_follow_activity:
         # remove the follow request json
         follow_activity_filename = \
             acct_dir(base_dir, nickname_to_follow, domain_to_follow) + \
@@ -783,7 +782,7 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                             nickname, domain, from_port, '',
                             http_prefix, True, client_to_server,
                             federation_list,
-                            send_threads, postLog, cached_webfingers,
+                            send_threads, post_log, cached_webfingers,
                             person_cache, debug, project_version, None,
                             group_account, signing_priv_key_pem,
                             7856837, curr_domain, onion_domain, i2p_domain)
@@ -796,7 +795,7 @@ def followed_account_rejects(session, session_onion, session_i2p,
                              port: int,
                              nickname: str, domain: str, from_port: int,
                              federation_list: [],
-                             send_threads: [], postLog: [],
+                             send_threads: [], post_log: [],
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              signing_priv_key_pem: str):
@@ -853,7 +852,7 @@ def followed_account_rejects(session, session_onion, session_i2p,
                             nickname, domain, from_port, '',
                             http_prefix, True, client_to_server,
                             federation_list,
-                            send_threads, postLog, cached_webfingers,
+                            send_threads, post_log, cached_webfingers,
                             person_cache, debug, project_version, None,
                             group_account, signing_priv_key_pem,
                             6393063,
@@ -865,10 +864,10 @@ def send_follow_request(session, base_dir: str,
                         sender_domain: str, sender_port: int,
                         http_prefix: str,
                         follow_nickname: str, follow_domain: str,
-                        followedActor: str,
-                        followPort: int, followHttpPrefix: str,
+                        followed_actor: str,
+                        follow_port: int, follow_http_prefix: str,
                         client_to_server: bool, federation_list: [],
-                        send_threads: [], postLog: [], cached_webfingers: {},
+                        send_threads: [], post_log: [], cached_webfingers: {},
                         person_cache: {}, debug: bool,
                         project_version: str, signing_priv_key_pem: str,
                         curr_domain: str,
@@ -885,22 +884,22 @@ def send_follow_request(session, base_dir: str,
     full_domain = get_full_domain(sender_domain, sender_port)
     follow_actor = local_actor_url(http_prefix, nickname, full_domain)
 
-    request_domain = get_full_domain(follow_domain, followPort)
+    request_domain = get_full_domain(follow_domain, follow_port)
 
     status_number, _ = get_status_number()
 
     group_account = False
     if follow_nickname:
-        followed_id = followedActor
+        followed_id = followed_actor
         follow_handle = follow_nickname + '@' + request_domain
-        group_account = has_group_type(base_dir, followedActor, person_cache)
+        group_account = has_group_type(base_dir, followed_actor, person_cache)
         if group_account:
             follow_handle = '!' + follow_handle
             print('Follow request being sent to group account')
     else:
         if debug:
             print('DEBUG: send_follow_request - assuming single user instance')
-        followed_id = followHttpPrefix + '://' + request_domain
+        followed_id = follow_http_prefix + '://' + request_domain
         single_user_nickname = 'dev'
         follow_handle = single_user_nickname + '@' + request_domain
 
@@ -947,11 +946,11 @@ def send_follow_request(session, base_dir: str,
 
     send_signed_json(new_follow_json, session, base_dir,
                      nickname, sender_domain, sender_port,
-                     follow_nickname, follow_domain, followPort,
+                     follow_nickname, follow_domain, follow_port,
                      'https://www.w3.org/ns/activitystreams#Public',
                      http_prefix, True, client_to_server,
                      federation_list,
-                     send_threads, postLog, cached_webfingers, person_cache,
+                     send_threads, post_log, cached_webfingers, person_cache,
                      debug, project_version, None, group_account,
                      signing_priv_key_pem, 8234389,
                      curr_domain, onion_domain, i2p_domain)
@@ -963,7 +962,7 @@ def send_follow_request_via_server(base_dir: str, session,
                                    from_nickname: str, password: str,
                                    from_domain: str, from_port: int,
                                    follow_nickname: str, follow_domain: str,
-                                   followPort: int,
+                                   follow_port: int,
                                    http_prefix: str,
                                    cached_webfingers: {}, person_cache: {},
                                    debug: bool, project_version: str,
@@ -976,7 +975,7 @@ def send_follow_request_via_server(base_dir: str, session,
 
     from_domain_full = get_full_domain(from_domain, from_port)
 
-    follow_domain_full = get_full_domain(follow_domain, followPort)
+    follow_domain_full = get_full_domain(follow_domain, follow_port)
 
     follow_actor = \
         local_actor_url(http_prefix, from_nickname, from_domain_full)
@@ -1055,7 +1054,7 @@ def send_unfollow_request_via_server(base_dir: str, session,
                                      from_nickname: str, password: str,
                                      from_domain: str, from_port: int,
                                      follow_nickname: str, follow_domain: str,
-                                     followPort: int,
+                                     follow_port: int,
                                      http_prefix: str,
                                      cached_webfingers: {}, person_cache: {},
                                      debug: bool, project_version: str,
@@ -1067,13 +1066,13 @@ def send_unfollow_request_via_server(base_dir: str, session,
         return 6
 
     from_domain_full = get_full_domain(from_domain, from_port)
-    follow_domain_full = get_full_domain(follow_domain, followPort)
+    follow_domain_full = get_full_domain(follow_domain, follow_port)
 
     follow_actor = \
         local_actor_url(http_prefix, from_nickname, from_domain_full)
     followed_id = \
         http_prefix + '://' + follow_domain_full + '/@' + follow_nickname
-    status_number, published = get_status_number()
+    status_number, _ = get_status_number()
 
     unfollow_json = {
         '@context': 'https://www.w3.org/ns/activitystreams',
@@ -1173,13 +1172,12 @@ def get_following_via_server(base_dir: str, session,
         'Authorization': auth_header
     }
 
-    if page_number < 1:
-        page_number = 1
+    page_number = max(page_number, 1)
     url = follow_actor + '/following?page=' + str(page_number)
-    followingJson = \
+    following_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
                  __version__, http_prefix, domain, 10, True)
-    if not followingJson:
+    if not following_json:
         if debug:
             print('DEBUG: GET following list failed for c2s to ' + url)
         return 5
@@ -1187,7 +1185,7 @@ def get_following_via_server(base_dir: str, session,
     if debug:
         print('DEBUG: c2s GET following list request success')
 
-    return followingJson
+    return following_json
 
 
 def get_followers_via_server(base_dir: str, session,
@@ -1255,8 +1253,7 @@ def get_follow_requests_via_server(base_dir: str, session,
         'Authorization': auth_header
     }
 
-    if page_number < 1:
-        page_number = 1
+    page_number = max(page_number, 1)
     url = follow_actor + '/followrequests?page=' + str(page_number)
     followers_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,

@@ -457,8 +457,7 @@ def shares_timeline_json(actor: str, pageNumber: int, items_per_page: int,
     if start_index >= max_index - items_per_page:
         last_page = True
         start_index = max_index - items_per_page
-        if start_index < 0:
-            start_index = 0
+        start_index = max(start_index, 0)
     ctr = 0
     result_json = {}
     for published, item in shares_json.items():

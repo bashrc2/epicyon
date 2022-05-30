@@ -22,7 +22,7 @@ def header_buttons_timeline(default_timeline: str,
                             page_number: int,
                             translate: {},
                             users_path: str,
-                            mediaButton: str,
+                            media_button: str,
                             blogs_button: str,
                             features_button: str,
                             news_button: str,
@@ -62,7 +62,7 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += ' aria-current="location"'
         tl_str += \
             '><button class="' + \
-            mediaButton + '"><span>' + translate['Media'] + \
+            media_button + '"><span>' + translate['Media'] + \
             '</span></button></a>'
     elif default_timeline == 'tlblogs':
         tl_str += \
@@ -134,7 +134,7 @@ def header_buttons_timeline(default_timeline: str,
                 tl_str += ' aria-current="location"'
             tl_str += \
                 '><button class="' + \
-                mediaButton + '"><span>' + translate['Media'] + \
+                media_button + '"><span>' + translate['Media'] + \
                 '</span></button></a>'
     else:
         if not minimal:

@@ -50,7 +50,7 @@ def get_hashtag_categories(base_dir: str,
         days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
         recently = days_since_epoch - 1
 
-    for subdir, dirs, files in os.walk(base_dir + '/tags'):
+    for _, _, files in os.walk(base_dir + '/tags'):
         for catfile in files:
             if not catfile.endswith('.category'):
                 continue

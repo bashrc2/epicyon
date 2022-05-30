@@ -380,7 +380,6 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
                 common_emoji = fp_emoji.readlines()
         except OSError:
             print('EX: unable to load common emoji file')
-            pass
     if common_emoji:
         new_common_emoji = []
         emoji_found = False
@@ -1579,7 +1578,7 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
 def content_diff(content: str, prev_content: str) -> str:
     """Returns a diff for the given content
     """
-    d = difflib.Differ()
+    cdiff = difflib.Differ()
     text1_lines = content.splitlines()
     text1_sentences = []
     for line in text1_lines:
@@ -1594,7 +1593,7 @@ def content_diff(content: str, prev_content: str) -> str:
         for sentence in sentences:
             text2_sentences.append(sentence.strip())
 
-    diff = d.compare(text1_sentences, text2_sentences)
+    diff = cdiff.compare(text1_sentences, text2_sentences)
 
     diff_text = ''
     for line in diff:
@@ -1629,7 +1628,7 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         if not post_json_object['object'].get('contentMap'):
             return ''
     edit_dates_list = []
-    for modified, item in edits_json.items():
+    for modified, _ in edits_json.items():
         edit_dates_list.append(modified)
     edit_dates_list.sort(reverse=True)
     edits_str = ''
@@ -1708,11 +1707,11 @@ def remove_script(content: str, log_filename: str,
                     if log_filename and actor:
                         # write the detected script to a log file
                         log_str = actor + ' ' + url + ' ' + text + '\n'
-                        writeType = 'a+'
+                        write_type = 'a+'
                         if os.path.isfile(log_filename):
-                            writeType = 'w+'
+                            write_type = 'w+'
                         try:
-                            with open(log_filename, writeType) as fp_log:
+                            with open(log_filename, write_type) as fp_log:
                                 fp_log.write(log_str)
                         except OSError:
                             print('EX: cannot append to svg script log')

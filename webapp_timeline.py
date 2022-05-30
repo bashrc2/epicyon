@@ -433,8 +433,7 @@ def _page_number_buttons(users_path: str, box_name: str,
     """
     pages_width = 3
     min_page_number = page_number - pages_width
-    if min_page_number < 1:
-        min_page_number = 1
+    min_page_number = max(min_page_number, 1)
     max_page_number = min_page_number + 1 + (pages_width * 2)
     num_str = ''
     for page in range(min_page_number, max_page_number):
@@ -1058,7 +1057,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
 def html_individual_share(domain: str, share_id: str,
                           actor: str, shared_item: {}, translate: {},
                           show_contact: bool, remove_button: bool,
-                          sharesFileType: str) -> str:
+                          shares_file_type: str) -> str:
     """Returns an individual shared item as html
     """
     profile_str = '<div class="container">\n'
@@ -1115,7 +1114,7 @@ def html_individual_share(domain: str, share_id: str,
                 '<a href="' + contact_actor + '"><button class="button">' + \
                 translate['Profile'] + '</button></a>\n'
         if remove_button and domain in share_id:
-            if sharesFileType == 'shares':
+            if shares_file_type == 'shares':
                 profile_str += \
                     ' <a href="' + actor + '?rmshare=' + share_id + \
                     '"><button class="button">' + \
@@ -1134,14 +1133,14 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
                           nickname: str, domain: str, port: int,
                           max_shares_per_account: int, http_prefix: str,
                           shared_items_federated_domains: [],
-                          sharesFileType: str) -> str:
+                          shares_file_type: str) -> str:
     """Show shared items timeline as html
     """
-    shares_json, lastPage = \
+    shares_json, last_page = \
         shares_timeline_json(actor, page_number, items_per_page,
                              base_dir, domain, nickname,
                              max_shares_per_account,
-                             shared_items_federated_domains, sharesFileType)
+                             shared_items_federated_domains, shares_file_type)
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     admin_nickname = get_config_param(base_dir, 'admin')
@@ -1153,10 +1152,10 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
 
     if page_number > 1:
         timeline_str += '<br>' + \
-            _page_number_buttons(actor, 'tl' + sharesFileType, page_number)
+            _page_number_buttons(actor, 'tl' + shares_file_type, page_number)
         timeline_str += \
             '  <center>\n' + \
-            '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
+            '    <a href="' + actor + '/tl' + shares_file_type + '?page=' + \
             str(page_number - 1) + \
             '#timelineposts" class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" ' + \
@@ -1188,17 +1187,18 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             html_individual_share(domain, shared_item['shareId'],
                                   actor, shared_item, translate,
                                   show_contact_button, show_remove_button,
-                                  sharesFileType)
+                                  shares_file_type)
         timeline_str += separator_str
         ctr += 1
 
     if ctr == 0:
-        timeline_str += _get_help_for_timeline(base_dir, 'tl' + sharesFileType)
+        timeline_str += \
+            _get_help_for_timeline(base_dir, 'tl' + shares_file_type)
 
-    if not lastPage:
+    if not last_page:
         timeline_str += \
             '  <center>\n' + \
-            '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
+            '    <a href="' + actor + '/tl' + shares_file_type + '?page=' + \
             str(page_number + 1) + \
             '#timelineposts" class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" ' + \
@@ -1207,7 +1207,7 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '" alt="' + translate['Page down'] + '"></a>\n' + \
             '  </center>\n'
         timeline_str += \
-            _page_number_buttons(actor, 'tl' + sharesFileType, page_number)
+            _page_number_buttons(actor, 'tl' + shares_file_type, page_number)
         timeline_str += '<br>'
 
     return timeline_str
@@ -1338,7 +1338,7 @@ def html_inbox(css_cache: {}, default_timeline: str,
                translate: {}, page_number: int, items_per_page: int,
                session, base_dir: str,
                cached_webfingers: {}, person_cache: {},
-               nickname: str, domain: str, port: int, inboxJson: {},
+               nickname: str, domain: str, port: int, inbox_json: {},
                allow_deletion: bool,
                http_prefix: str, project_version: str,
                minimal: bool,
@@ -1372,7 +1372,7 @@ def html_inbox(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, inboxJson,
+                         nickname, domain, port, inbox_json,
                          'inbox', allow_deletion,
                          http_prefix, project_version,
                          manually_approve_followers,
@@ -1399,7 +1399,7 @@ def html_bookmarks(css_cache: {}, default_timeline: str,
                    translate: {}, page_number: int, items_per_page: int,
                    session, base_dir: str,
                    cached_webfingers: {}, person_cache: {},
-                   nickname: str, domain: str, port: int, bookmarksJson: {},
+                   nickname: str, domain: str, port: int, bookmarks_json: {},
                    allow_deletion: bool,
                    http_prefix: str, project_version: str,
                    minimal: bool,
@@ -1433,7 +1433,7 @@ def html_bookmarks(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, bookmarksJson,
+                         nickname, domain, port, bookmarks_json,
                          'tlbookmarks', allow_deletion,
                          http_prefix, project_version,
                          manually_approve_followers,
@@ -1459,7 +1459,7 @@ def html_inbox_dms(css_cache: {}, default_timeline: str,
                    translate: {}, page_number: int, items_per_page: int,
                    session, base_dir: str,
                    cached_webfingers: {}, person_cache: {},
-                   nickname: str, domain: str, port: int, inboxJson: {},
+                   nickname: str, domain: str, port: int, inbox_json: {},
                    allow_deletion: bool,
                    http_prefix: str, project_version: str,
                    minimal: bool,
@@ -1490,7 +1490,7 @@ def html_inbox_dms(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, inboxJson,
+                         nickname, domain, port, inbox_json,
                          'dm', allow_deletion,
                          http_prefix, project_version, False, minimal,
                          yt_replace_domain,
@@ -1515,7 +1515,7 @@ def html_inbox_replies(css_cache: {}, default_timeline: str,
                        translate: {}, page_number: int, items_per_page: int,
                        session, base_dir: str,
                        cached_webfingers: {}, person_cache: {},
-                       nickname: str, domain: str, port: int, inboxJson: {},
+                       nickname: str, domain: str, port: int, inbox_json: {},
                        allow_deletion: bool,
                        http_prefix: str, project_version: str,
                        minimal: bool,
@@ -1546,7 +1546,7 @@ def html_inbox_replies(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, inboxJson, 'tlreplies',
+                         nickname, domain, port, inbox_json, 'tlreplies',
                          allow_deletion, http_prefix, project_version, False,
                          minimal,
                          yt_replace_domain,
@@ -1569,7 +1569,7 @@ def html_inbox_media(css_cache: {}, default_timeline: str,
                      translate: {}, page_number: int, items_per_page: int,
                      session, base_dir: str,
                      cached_webfingers: {}, person_cache: {},
-                     nickname: str, domain: str, port: int, inboxJson: {},
+                     nickname: str, domain: str, port: int, inbox_json: {},
                      allow_deletion: bool,
                      http_prefix: str, project_version: str,
                      minimal: bool,
@@ -1600,7 +1600,7 @@ def html_inbox_media(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, inboxJson, 'tlmedia',
+                         nickname, domain, port, inbox_json, 'tlmedia',
                          allow_deletion, http_prefix, project_version, False,
                          minimal,
                          yt_replace_domain,
@@ -1623,7 +1623,7 @@ def html_inbox_blogs(css_cache: {}, default_timeline: str,
                      translate: {}, page_number: int, items_per_page: int,
                      session, base_dir: str,
                      cached_webfingers: {}, person_cache: {},
-                     nickname: str, domain: str, port: int, inboxJson: {},
+                     nickname: str, domain: str, port: int, inbox_json: {},
                      allow_deletion: bool,
                      http_prefix: str, project_version: str,
                      minimal: bool,
@@ -1654,7 +1654,7 @@ def html_inbox_blogs(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, inboxJson, 'tlblogs',
+                         nickname, domain, port, inbox_json, 'tlblogs',
                          allow_deletion, http_prefix, project_version, False,
                          minimal,
                          yt_replace_domain,
@@ -1677,7 +1677,7 @@ def html_inbox_features(css_cache: {}, default_timeline: str,
                         translate: {}, page_number: int, items_per_page: int,
                         session, base_dir: str,
                         cached_webfingers: {}, person_cache: {},
-                        nickname: str, domain: str, port: int, inboxJson: {},
+                        nickname: str, domain: str, port: int, inbox_json: {},
                         allow_deletion: bool,
                         http_prefix: str, project_version: str,
                         minimal: bool,
@@ -1708,7 +1708,7 @@ def html_inbox_features(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, inboxJson, 'tlfeatures',
+                         nickname, domain, port, inbox_json, 'tlfeatures',
                          allow_deletion, http_prefix, project_version, False,
                          minimal,
                          yt_replace_domain,
@@ -1731,7 +1731,7 @@ def html_inbox_news(css_cache: {}, default_timeline: str,
                     translate: {}, page_number: int, items_per_page: int,
                     session, base_dir: str,
                     cached_webfingers: {}, person_cache: {},
-                    nickname: str, domain: str, port: int, inboxJson: {},
+                    nickname: str, domain: str, port: int, inbox_json: {},
                     allow_deletion: bool,
                     http_prefix: str, project_version: str,
                     minimal: bool,
@@ -1761,7 +1761,7 @@ def html_inbox_news(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, inboxJson, 'tlnews',
+                         nickname, domain, port, inbox_json, 'tlnews',
                          allow_deletion, http_prefix, project_version, False,
                          minimal,
                          yt_replace_domain,
@@ -1784,7 +1784,7 @@ def html_outbox(css_cache: {}, default_timeline: str,
                 translate: {}, page_number: int, items_per_page: int,
                 session, base_dir: str,
                 cached_webfingers: {}, person_cache: {},
-                nickname: str, domain: str, port: int, outboxJson: {},
+                nickname: str, domain: str, port: int, outbox_json: {},
                 allow_deletion: bool,
                 http_prefix: str, project_version: str,
                 minimal: bool,
@@ -1817,7 +1817,7 @@ def html_outbox(css_cache: {}, default_timeline: str,
                          translate, page_number,
                          items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
-                         nickname, domain, port, outboxJson, 'outbox',
+                         nickname, domain, port, outbox_json, 'outbox',
                          allow_deletion, http_prefix, project_version,
                          manually_approve_followers, minimal,
                          yt_replace_domain,

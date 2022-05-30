@@ -2050,7 +2050,7 @@ def _is_valid_language(text: str) -> bool:
         "Phonetic Extensions": [7467, 7544],
         "Combining Half Marks": [65070, 65071]
     }
-    for lang_name, lang_range in natural_languages.items():
+    for _, lang_range in natural_languages.items():
         ok_lang = True
         for char in text:
             if char.isdigit() or char == '_':
@@ -2134,7 +2134,7 @@ def no_of_accounts(base_dir: str) -> bool:
     """Returns the number of accounts on the system
     """
     account_ctr = 0
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
             if is_account_dir(account):
                 account_ctr += 1
@@ -2148,7 +2148,7 @@ def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
     account_ctr = 0
     curr_time = int(time.time())
     month_seconds = int(60*60*24*30*months)
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
             if not is_account_dir(account):
                 continue
@@ -2427,7 +2427,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
         search_words = [search_str]
 
     res = []
-    for root, dirs, fnames in os.walk(path):
+    for root, _, fnames in os.walk(path):
         for fname in fnames:
             file_path = os.path.join(root, fname)
             with open(file_path, 'r') as post_file:
@@ -3485,7 +3485,7 @@ def has_object_string_object(post_json_object: {}, debug: bool) -> bool:
     if post_json_object['object'].get('object'):
         if isinstance(post_json_object['object']['object'], str):
             return True
-        elif debug:
+        if debug:
             if post_json_object.get('type'):
                 print('DEBUG: ' + post_json_object['type'] +
                       ' object within dict is not a string')
@@ -3566,14 +3566,14 @@ def load_account_timezones(base_dir: str) -> {}:
     """Returns a dictionary containing the preferred timezone for each account
     """
     account_timezone = {}
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if acct.startswith('inbox@') or acct.startswith('Actor@'):
                 continue
-            acct_dir = os.path.join(base_dir + '/accounts', acct)
-            tz_filename = acct_dir + '/timezone.txt'
+            acct_directory = os.path.join(base_dir + '/accounts', acct)
+            tz_filename = acct_directory + '/timezone.txt'
             if not os.path.isfile(tz_filename):
                 continue
             timezone = None
@@ -3590,7 +3590,7 @@ def load_bold_reading(base_dir: str) -> {}:
     """Returns a dictionary containing the bold reading status for each account
     """
     bold_reading = {}
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue
@@ -3601,6 +3601,7 @@ def load_bold_reading(base_dir: str) -> {}:
             if os.path.isfile(bold_reading_filename):
                 nickname = acct.split('@')[0]
                 bold_reading[nickname] = True
+        break
     return bold_reading
 
 

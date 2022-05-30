@@ -117,7 +117,7 @@ def _get_left_column_wanted(base_dir: str,
 def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
                             http_prefix: str, translate: {},
                             editor: bool, artist: bool,
-                            show_back_button: bool, timelinePath: str,
+                            show_back_button: bool, timeline_path: str,
                             rss_icon_at_top: bool, show_header_image: bool,
                             front_page: bool, theme: str,
                             access_keys: {},
@@ -146,7 +146,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
 
     if show_back_button:
         html_str += \
-            '      <div>      <a href="' + timelinePath + '">' + \
+            '      <div>      <a href="' + timeline_path + '">' + \
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
@@ -359,7 +359,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
 def html_links_mobile(css_cache: {}, base_dir: str,
                       nickname: str, domain_full: str,
                       http_prefix: str, translate,
-                      timelinePath: str, authorized: bool,
+                      timeline_path: str, authorized: bool,
                       rss_icon_at_top: bool,
                       icons_as_buttons: bool,
                       default_timeline: str,
@@ -406,7 +406,7 @@ def html_links_mobile(css_cache: {}, base_dir: str,
         get_left_column_content(base_dir, nickname, domain_full,
                                 http_prefix, translate,
                                 editor, artist,
-                                False, timelinePath,
+                                False, timeline_path,
                                 rss_icon_at_top, False, False,
                                 theme, access_keys,
                                 shared_items_federated_domains)

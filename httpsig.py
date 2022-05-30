@@ -62,7 +62,7 @@ def get_digest_algorithm_from_headers(http_headers: {}) -> str:
     return 'rsa-sha256'
 
 
-def sign_post_headers(dateStr: str, private_key_pem: str,
+def sign_post_headers(date_str: str, private_key_pem: str,
                       nickname: str, domain: str, port: int,
                       to_domain: str, to_port: int,
                       path: str, http_prefix: str,
@@ -76,8 +76,8 @@ def sign_post_headers(dateStr: str, private_key_pem: str,
 
     to_domain = get_full_domain(to_domain, to_port)
 
-    if not dateStr:
-        dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    if not date_str:
+        date_str = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if nickname != domain and nickname.lower() != 'actor':
         key_id = local_actor_url(http_prefix, nickname, domain)
     else:
@@ -88,7 +88,7 @@ def sign_post_headers(dateStr: str, private_key_pem: str,
         headers = {
             '(request-target)': f'get {path}',
             'host': to_domain,
-            'date': dateStr,
+            'date': date_str,
             'accept': content_type
         }
     else:
@@ -99,7 +99,7 @@ def sign_post_headers(dateStr: str, private_key_pem: str,
         headers = {
             '(request-target)': f'post {path}',
             'host': to_domain,
-            'date': dateStr,
+            'date': date_str,
             'digest': f'{digest_prefix}={body_digest}',
             'content-type': 'application/activity+json',
             'content-length': str(content_length)
@@ -138,7 +138,7 @@ def sign_post_headers(dateStr: str, private_key_pem: str,
     return signature_header
 
 
-def sign_post_headers_new(dateStr: str, private_key_pem: str,
+def sign_post_headers_new(date_str: str, private_key_pem: str,
                           nickname: str,
                           domain: str, port: int,
                           to_domain: str, to_port: int,
@@ -157,11 +157,11 @@ def sign_post_headers_new(dateStr: str, private_key_pem: str,
     to_domain = get_full_domain(to_domain, to_port)
 
     time_format = "%a, %d %b %Y %H:%M:%S %Z"
-    if not dateStr:
+    if not date_str:
         curr_time = gmtime()
-        dateStr = strftime(time_format, curr_time)
+        date_str = strftime(time_format, curr_time)
     else:
-        curr_time = datetime.datetime.strptime(dateStr, time_format)
+        curr_time = datetime.datetime.strptime(date_str, time_format)
     seconds_since_epoch = \
         int((curr_time - datetime.datetime(1970, 1, 1)).total_seconds())
     key_id = local_actor_url(http_prefix, nickname, domain) + '#main-key'
@@ -170,7 +170,7 @@ def sign_post_headers_new(dateStr: str, private_key_pem: str,
             '@request-target': f'get {path}',
             '@created': str(seconds_since_epoch),
             'host': to_domain,
-            'date': dateStr
+            'date': date_str
         }
     else:
         body_digest = message_content_digest(message_body_json_str,
@@ -181,7 +181,7 @@ def sign_post_headers_new(dateStr: str, private_key_pem: str,
             '@request-target': f'post {path}',
             '@created': str(seconds_since_epoch),
             'host': to_domain,
-            'date': dateStr,
+            'date': date_str,
             'digest': f'{digest_prefix}={body_digest}',
             'content-type': 'application/activity+json',
             'content-length': str(content_length)
@@ -234,10 +234,10 @@ def sign_post_headers_new(dateStr: str, private_key_pem: str,
     return signature_index_header, signature_header
 
 
-def create_signed_header(dateStr: str, private_key_pem: str, nickname: str,
+def create_signed_header(date_str: str, private_key_pem: str, nickname: str,
                          domain: str, port: int,
                          to_domain: str, to_port: int,
-                         path: str, http_prefix: str, withDigest: bool,
+                         path: str, http_prefix: str, with_digest: bool,
                          message_body_json_str: str,
                          content_type: str) -> {}:
     """Note that the domain is the destination, not the sender
@@ -247,22 +247,22 @@ def create_signed_header(dateStr: str, private_key_pem: str, nickname: str,
     header_domain = get_full_domain(to_domain, to_port)
 
     # if no date is given then create one
-    if not dateStr:
-        dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    if not date_str:
+        date_str = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
 
     # Content-Type or Accept header
     if not content_type:
         content_type = 'application/activity+json'
 
-    if not withDigest:
+    if not with_digest:
         headers = {
             '(request-target)': f'get {path}',
             'host': header_domain,
-            'date': dateStr,
+            'date': date_str,
             'accept': content_type
         }
         signature_header = \
-            sign_post_headers(dateStr, private_key_pem, nickname,
+            sign_post_headers(date_str, private_key_pem, nickname,
                               domain, port, to_domain, to_port,
                               path, http_prefix, None, content_type,
                               algorithm, None)
@@ -274,13 +274,13 @@ def create_signed_header(dateStr: str, private_key_pem: str, nickname: str,
         headers = {
             '(request-target)': f'post {path}',
             'host': header_domain,
-            'date': dateStr,
+            'date': date_str,
             'digest': f'{digest_prefix}={body_digest}',
             'content-length': str(content_length),
             'content-type': content_type
         }
         signature_header = \
-            sign_post_headers(dateStr, private_key_pem, nickname,
+            sign_post_headers(date_str, private_key_pem, nickname,
                               domain, port,
                               to_domain, to_port,
                               path, http_prefix, message_body_json_str,
@@ -310,33 +310,33 @@ def _verify_recent_signature(signed_date_str: str) -> bool:
 
 
 def verify_post_headers(http_prefix: str,
-                        publicKeyPem: str, headers: dict,
-                        path: str, GETmethod: bool,
-                        messageBodyDigest: str,
+                        public_key_pem: str, headers: dict,
+                        path: str, get_method: bool,
+                        message_body_digest: str,
                         message_body_json_str: str, debug: bool,
-                        noRecencyCheck: bool = False) -> bool:
+                        no_recency_check: bool = False) -> bool:
     """Returns true or false depending on if the key that we plugged in here
     validates against the headers, method, and path.
-    publicKeyPem - the public key from an rsa key pair
+    public_key_pem - the public key from an rsa key pair
     headers - should be a dictionary of request headers
     path - the relative url that was requested from this site
-    GETmethod - GET or POST
+    get_method - GET or POST
     message_body_json_str - the received request body (used for digest)
     """
 
-    if GETmethod:
+    if get_method:
         method = 'GET'
     else:
         method = 'POST'
 
     if debug:
         print('DEBUG: verify_post_headers ' + method)
-        print('verify_post_headers publicKeyPem: ' + str(publicKeyPem))
+        print('verify_post_headers public_key_pem: ' + str(public_key_pem))
         print('verify_post_headers headers: ' + str(headers))
         print('verify_post_headers message_body_json_str: ' +
               str(message_body_json_str))
 
-    pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
+    pubkey = load_pem_public_key(public_key_pem.encode('utf-8'),
                                  backend=default_backend())
     # Build a dictionary of the signature values
     if headers.get('Signature-Input') or headers.get('signature-input'):
@@ -422,8 +422,8 @@ def verify_post_headers(http_prefix: str,
                 if debug:
                     print('http signature algorithm: ' + algorithm)
         elif signed_header == 'digest':
-            if messageBodyDigest:
-                body_digest = messageBodyDigest
+            if message_body_digest:
+                body_digest = message_body_digest
             else:
                 body_digest = \
                     message_content_digest(message_body_json_str,
@@ -446,7 +446,7 @@ def verify_post_headers(http_prefix: str,
                           ' not found in ' + str(headers))
         else:
             if headers.get(signed_header):
-                if signed_header == 'date' and not noRecencyCheck:
+                if signed_header == 'date' and not no_recency_check:
                     if not _verify_recent_signature(headers[signed_header]):
                         if debug:
                             print('DEBUG: ' +

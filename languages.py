@@ -153,7 +153,7 @@ def libretranslate_languages(url: str, api_key: str = None) -> []:
         else:
             url += "languages"
 
-    params = dict()
+    params = {}
 
     if api_key:
         params["api_key"] = api_key
@@ -162,9 +162,9 @@ def libretranslate_languages(url: str, api_key: str = None) -> []:
 
     req = request.Request(url, data=url_params.encode())
 
-    response = request.urlopen(req)
-
-    response_str = response.read().decode()
+    response_str = ''
+    with request.urlopen(req) as response:
+        response_str = response.read().decode()
 
     result = json.loads(response_str)
     if not result:
@@ -270,13 +270,16 @@ def libretranslate(url: str, text: str,
     url_params = parse.urlencode(lt_params)
 
     req = request.Request(url, data=url_params.encode())
+    response_str = None
     try:
-        response = request.urlopen(req)
-    except BaseException:
-        print('EX: Unable to translate: ' + text)
+        with request.urlopen(req) as response:
+            response_str = response.read().decode()
+    except BaseException as ex:
+        print('EX: Unable to translate: ' + text + ' ' + str(ex))
         return original_text
 
-    response_str = response.read().decode()
+    if not response_str:
+        return original_text
 
     translated_text = \
         '<p>' + json.loads(response_str)['translatedText'] + '</p>'

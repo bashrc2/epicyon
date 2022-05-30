@@ -613,7 +613,7 @@ def html_profile(signing_priv_key_pem: str,
                  debug: bool, access_keys: {}, city: str,
                  system_language: str, max_like_count: int,
                  shared_items_federated_domains: [],
-                 extraJson: {}, page_number: int,
+                 extra_json: {}, page_number: int,
                  max_items_per_page: int,
                  cw_lists: {}, lists_enabled: str,
                  content_license_url: str,
@@ -636,7 +636,7 @@ def html_profile(signing_priv_key_pem: str,
                                  yt_replace_domain,
                                  twitter_replacement_domain,
                                  show_published_date_only,
-                                 newswire, theme, extraJson,
+                                 newswire, theme, extra_json,
                                  allow_local_network_access, access_keys,
                                  system_language, max_like_count,
                                  shared_items_federated_domains, None,
@@ -1042,7 +1042,7 @@ def html_profile(signing_priv_key_pem: str,
                                         authorized, nickname,
                                         domain, port, session,
                                         cached_webfingers,
-                                        person_cache, extraJson,
+                                        person_cache, extra_json,
                                         project_version, ["unfollow"],
                                         selected,
                                         users_path, page_number,
@@ -1055,7 +1055,7 @@ def html_profile(signing_priv_key_pem: str,
                                     authorized, nickname,
                                     domain, port, session,
                                     cached_webfingers,
-                                    person_cache, extraJson,
+                                    person_cache, extra_json,
                                     project_version, ["block"],
                                     selected, users_path, page_number,
                                     max_items_per_page, dormant_months, debug,
@@ -1064,21 +1064,21 @@ def html_profile(signing_priv_key_pem: str,
         if selected == 'roles':
             profile_str += \
                 _html_profile_roles(translate, nickname, domain_full,
-                                    extraJson)
+                                    extra_json)
         elif selected == 'skills':
             profile_str += \
                 _html_profile_skills(translate, nickname, domain_full,
-                                     extraJson)
+                                     extra_json)
 #       elif selected == 'shares':
 #           profile_str += \
 #                _html_profile_shares(actor, translate,
 #                                   nickname, domain_full,
-#                                   extraJson, 'shares') + license_str
+#                                   extra_json, 'shares') + license_str
 #        elif selected == 'wanted':
 #            profile_str += \
 #                _html_profile_shares(actor, translate,
 #                                   nickname, domain_full,
-#                                   extraJson, 'wanted') + license_str
+#                                   extra_json, 'wanted') + license_str
     # end of #timeline
     profile_str += '</div>'
 
@@ -1174,7 +1174,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                             session, cached_webfingers: {}, person_cache: {},
                             following_json: {}, project_version: str,
                             buttons: [],
-                            feedName: str, actor: str,
+                            feed_name: str, actor: str,
                             page_number: int,
                             max_items_per_page: int,
                             dormant_months: int, debug: bool,
@@ -1188,7 +1188,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
             # page up arrow
             profile_str += \
                 '  <center>\n' + \
-                '    <a href="' + actor + '/' + feedName + \
+                '    <a href="' + actor + '/' + feed_name + \
                 '?page=' + str(page_number - 1) + '#buttonheader' + \
                 '"><img loading="lazy" decoding="async" ' + \
                 'class="pageicon" src="/' + \
@@ -1200,7 +1200,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
     for following_actor in following_json['orderedItems']:
         # is this a dormant followed account?
         dormant = False
-        if authorized and feedName == 'following':
+        if authorized and feed_name == 'following':
             dormant = \
                 is_dormant(base_dir, nickname, domain, following_actor,
                            dormant_months)
@@ -1219,7 +1219,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
             # page down arrow
             profile_str += \
                 '  <center>\n' + \
-                '    <a href="' + actor + '/' + feedName + \
+                '    <a href="' + actor + '/' + feed_name + \
                 '?page=' + str(page_number + 1) + '#buttonheader' + \
                 '"><img loading="lazy" decoding="async" ' + \
                 'class="pageicon" src="/' + \
@@ -1232,13 +1232,13 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
 
 
 def _html_profile_roles(translate: {}, nickname: str, domain: str,
-                        rolesList: []) -> str:
+                        roles_list: []) -> str:
     """Shows roles on the profile screen
     """
     profile_str = ''
     profile_str += \
         '<div class="roles">\n<div class="roles-inner">\n'
-    for role in rolesList:
+    for role in roles_list:
         if translate.get(role):
             profile_str += '<h3>' + translate[role] + '</h3>\n'
         else:
@@ -2462,7 +2462,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                base_dir: str, session,
                                cached_webfingers: {},
                                person_cache: {}, domain: str,
-                               followUrl: str,
+                               follow_url: str,
                                authorized: bool,
                                actor_nickname: str,
                                http_prefix: str,
@@ -2472,21 +2472,22 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
-    follow_url_nickname = get_nickname_from_actor(followUrl)
+    follow_url_nickname = get_nickname_from_actor(follow_url)
     if not follow_url_nickname:
         return ''
-    follow_url_domain, follow_url_port = get_domain_from_actor(followUrl)
+    follow_url_domain, follow_url_port = get_domain_from_actor(follow_url)
     follow_url_domain_full = \
         get_full_domain(follow_url_domain, follow_url_port)
     title_str = '@' + follow_url_nickname + '@' + follow_url_domain_full
-    avatar_url = get_person_avatar_url(base_dir, followUrl, person_cache, True)
+    avatar_url = \
+        get_person_avatar_url(base_dir, follow_url, person_cache, True)
     if not avatar_url:
-        avatar_url = followUrl + '/avatar.png'
+        avatar_url = follow_url + '/avatar.png'
 
-    display_name = get_display_name(base_dir, followUrl, person_cache)
+    display_name = get_display_name(base_dir, follow_url, person_cache)
     is_group = False
     if not display_name:
-        # lookup the correct webfinger for the followUrl
+        # lookup the correct webfinger for the follow_url
         follow_url_handle = follow_url_nickname + '@' + follow_url_domain_full
         follow_url_wf = \
             webfinger_handle(session, follow_url_handle, http_prefix,
@@ -2524,7 +2525,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
             if btn == 'block':
                 buttons_str += \
                     '<a href="/users/' + actor_nickname + \
-                    '?options=' + followUrl + \
+                    '?options=' + follow_url + \
                     ';1;' + avatar_url + \
                     '"><button class="buttonunfollow">' + \
                     translate['Block'] + '</button></a>\n'
@@ -2536,7 +2537,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                     unfollow_str = 'Leave'
                 buttons_str += \
                     '<a href="/users/' + actor_nickname + \
-                    '?options=' + followUrl + \
+                    '?options=' + follow_url + \
                     ';1;' + avatar_url + \
                     '"><button class="buttonunfollow">' + \
                     translate[unfollow_str] + '</button></a>\n'
@@ -2544,7 +2545,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
     result_str = '<div class="container">\n'
     result_str += \
         '<a href="/users/' + actor_nickname + '?options=' + \
-        followUrl + ';1;' + avatar_url + '">\n'
+        follow_url + ';1;' + avatar_url + '">\n'
     result_str += '<p><img loading="lazy" decoding="async" ' + \
         'src="' + avatar_url + '" alt=" ">'
     result_str += title_str + '</a>' + buttons_str + '</p>\n'

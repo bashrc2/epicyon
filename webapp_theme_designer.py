@@ -255,8 +255,7 @@ def html_theme_designer(css_cache: {}, base_dir: str,
             variable_name_str = variable_name_str.title()
             variable_name_label = variable_name_str
             if contrast_warning:
-                if variable_name == 'main-bg-color' or \
-                   variable_name == 'main-fg-color':
+                if variable_name in ('main-bg-color', 'main-fg-color'):
                     variable_name_label = contrast_warning + variable_name_str
             font_str += \
                 '      <tr><td><label class="labels">' + \
@@ -397,6 +396,4 @@ def color_contrast(background: str, foreground: str) -> float:
     foreground_luminance = _relative_luminance(foreground)
     if background_luminance > foreground_luminance:
         return (0.05 + background_luminance) / (0.05 + foreground_luminance)
-    else:
-        return (0.05 + foreground_luminance) / (0.05 + background_luminance)
-    return None
+    return (0.05 + foreground_luminance) / (0.05 + background_luminance)

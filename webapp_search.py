@@ -490,30 +490,31 @@ def html_skills_search(actor: str,
                 continue
             actor_filename = os.path.join(subdir, fname)
             actor_json = load_json(actor_filename)
-            if actor_json:
-                if actor_json.get('id') and \
-                   no_of_actor_skills(actor_json) > 0 and \
-                   actor_json.get('name') and \
-                   actor_json.get('icon'):
-                    actor = actor_json['id']
-                    actor_skills_list = actor_json['hasOccupation']['skills']
-                    skills = get_skills_from_list(actor_skills_list)
-                    for skill_name, skill_level in skills.items():
-                        skill_name = skill_name.lower()
-                        if not (skill_name in skillsearch or
-                                skillsearch in skill_name):
-                            continue
-                        skill_level_str = str(skill_level)
-                        if skill_level < 100:
-                            skill_level_str = '0' + skill_level_str
-                        if skill_level < 10:
-                            skill_level_str = '0' + skill_level_str
-                        index_str = \
-                            skill_level_str + ';' + actor + ';' + \
-                            actor_json['name'] + \
-                            ';' + actor_json['icon']['url']
-                        if index_str not in results:
-                            results.append(index_str)
+            if not actor_json:
+                continue
+            if actor_json.get('id') and \
+               no_of_actor_skills(actor_json) > 0 and \
+               actor_json.get('name') and \
+               actor_json.get('icon'):
+                actor = actor_json['id']
+                actor_skills_list = actor_json['hasOccupation']['skills']
+                skills = get_skills_from_list(actor_skills_list)
+                for skill_name, skill_level in skills.items():
+                    skill_name = skill_name.lower()
+                    if not (skill_name in skillsearch or
+                            skillsearch in skill_name):
+                        continue
+                    skill_level_str = str(skill_level)
+                    if skill_level < 100:
+                        skill_level_str = '0' + skill_level_str
+                    if skill_level < 10:
+                        skill_level_str = '0' + skill_level_str
+                    index_str = \
+                        skill_level_str + ';' + actor + ';' + \
+                        actor_json['name'] + \
+                        ';' + actor_json['icon']['url']
+                    if index_str not in results:
+                        results.append(index_str)
         break
     if not instance_only:
         # search actor cache
@@ -525,33 +526,34 @@ def html_skills_search(actor: str,
                     continue
                 actor_filename = os.path.join(subdir, fname)
                 cached_actor_json = load_json(actor_filename)
-                if cached_actor_json:
-                    if cached_actor_json.get('actor'):
-                        actor_json = cached_actor_json['actor']
-                        if actor_json.get('id') and \
-                           no_of_actor_skills(actor_json) > 0 and \
-                           actor_json.get('name') and \
-                           actor_json.get('icon'):
-                            actor = actor_json['id']
-                            actor_skills_list = \
-                                actor_json['hasOccupation']['skills']
-                            skills = get_skills_from_list(actor_skills_list)
-                            for skill_name, skill_level in skills.items():
-                                skill_name = skill_name.lower()
-                                if not (skill_name in skillsearch or
-                                        skillsearch in skill_name):
-                                    continue
-                                skill_level_str = str(skill_level)
-                                if skill_level < 100:
-                                    skill_level_str = '0' + skill_level_str
-                                if skill_level < 10:
-                                    skill_level_str = '0' + skill_level_str
-                                index_str = \
-                                    skill_level_str + ';' + actor + ';' + \
-                                    actor_json['name'] + \
-                                    ';' + actor_json['icon']['url']
-                                if index_str not in results:
-                                    results.append(index_str)
+                if not cached_actor_json:
+                    continue
+                if cached_actor_json.get('actor'):
+                    actor_json = cached_actor_json['actor']
+                    if actor_json.get('id') and \
+                       no_of_actor_skills(actor_json) > 0 and \
+                       actor_json.get('name') and \
+                       actor_json.get('icon'):
+                        actor = actor_json['id']
+                        actor_skills_list = \
+                            actor_json['hasOccupation']['skills']
+                        skills = get_skills_from_list(actor_skills_list)
+                        for skill_name, skill_level in skills.items():
+                            skill_name = skill_name.lower()
+                            if not (skill_name in skillsearch or
+                                    skillsearch in skill_name):
+                                continue
+                            skill_level_str = str(skill_level)
+                            if skill_level < 100:
+                                skill_level_str = '0' + skill_level_str
+                            if skill_level < 10:
+                                skill_level_str = '0' + skill_level_str
+                            index_str = \
+                                skill_level_str + ';' + actor + ';' + \
+                                actor_json['name'] + \
+                                ';' + actor_json['icon']['url']
+                            if index_str not in results:
+                                results.append(index_str)
             break
 
     results.sort(reverse=True)
@@ -616,7 +618,7 @@ def html_history_search(css_cache: {}, translate: {}, base_dir: str,
                         show_published_date_only: bool,
                         peertube_instances: [],
                         allow_local_network_access: bool,
-                        theme_name: str, boxName: str,
+                        theme_name: str, box_name: str,
                         system_language: str,
                         max_like_count: int,
                         signing_priv_key_pem: str,
@@ -632,7 +634,7 @@ def html_history_search(css_cache: {}, translate: {}, base_dir: str,
 
     box_filenames = \
         search_box_posts(base_dir, nickname, domain,
-                         historysearch, posts_per_page, boxName)
+                         historysearch, posts_per_page, box_name)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -647,7 +649,7 @@ def html_history_search(css_cache: {}, translate: {}, base_dir: str,
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     history_search_title = '🔍 ' + translate['Your Posts']
-    if boxName == 'bookmarks':
+    if box_name == 'bookmarks':
         history_search_title = '🔍 ' + translate['Bookmarks']
 
     history_search_form += \

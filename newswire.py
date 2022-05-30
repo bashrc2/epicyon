@@ -471,7 +471,7 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
     https://github.com/Podcastindex-org/podcast-namespace/
     blob/main/proposal-docs/social/social.md#socialinteract-element
     """
-    if key == 'socialInteract' or key == 'discussion':
+    if key in ('socialInteract', 'discussion'):
         if not entry.get('protocol'):
             return False
         if not entry.get('uri'):
@@ -678,10 +678,9 @@ def get_link_from_rss_item(rss_item: str,
                        '.i2p/' not in link:
                         continue
                     return link, mime_type
-                else:
-                    if '.onion/' not in link and \
-                       '.i2p/' not in link:
-                        return link, mime_type
+                if '.onion/' not in link and \
+                   '.i2p/' not in link:
+                    return link, mime_type
 
     if '<enclosure ' in rss_item:
         # get link from audio or video enclosure
@@ -1322,9 +1321,8 @@ def get_rss(base_dir: str, domain: str, session, url: str,
                                         max_categories_feedItem_size_kb,
                                         session, debug,
                                         preferred_podcast_formats)
-            else:
-                print('WARN: feed is too large, ' +
-                      'or contains invalid characters: ' + url)
+            print('WARN: feed is too large, ' +
+                  'or contains invalid characters: ' + url)
         else:
             print('WARN: no result returned for feed ' + url)
     except requests.exceptions.RequestException as ex:

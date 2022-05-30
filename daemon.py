@@ -2230,12 +2230,12 @@ class PubServer(BaseHTTPRequestHandler):
             moderation_text = None
             moderation_button = None
             # get the moderation text first
-            actStr = 'moderationAction='
+            act_str = 'moderationAction='
             for moderation_str in moderation_params.split('&'):
-                if moderation_str.startswith(actStr):
-                    if actStr in moderation_str:
+                if moderation_str.startswith(act_str):
+                    if act_str in moderation_str:
                         moderation_text = \
-                            moderation_str.split(actStr)[1].strip()
+                            moderation_str.split(act_str)[1].strip()
                         mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
@@ -4672,7 +4672,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('origin_path_str: ' + origin_path_str)
             print('remove_post_actor: ' + remove_post_actor)
             if origin_path_str in remove_post_actor:
-                toList = [
+                to_list = [
                     'https://www.w3.org/ns/activitystreams#Public',
                     remove_post_actor
                 ]
@@ -4680,7 +4680,7 @@ class PubServer(BaseHTTPRequestHandler):
                     "@context": "https://www.w3.org/ns/activitystreams",
                     'actor': remove_post_actor,
                     'object': remove_message_id,
-                    'to': toList,
+                    'to': to_list,
                     'cc': [remove_post_actor + '/followers'],
                     'type': 'Delete'
                 }
@@ -5461,7 +5461,7 @@ class PubServer(BaseHTTPRequestHandler):
                         acct_dir(base_dir, nickname, domain) + \
                         '/' + m_type + '.temp'
 
-                filename, attachment_media_type = \
+                filename, _ = \
                     save_media_in_form_post(media_bytes, debug,
                                             filename_base)
                 if filename:
@@ -14956,16 +14956,16 @@ class PubServer(BaseHTTPRequestHandler):
                             calling_domain: str, referer_domain: str,
                             http_prefix: str,
                             domain: str, port: int,
-                            followingItemsPerPage: int,
-                            debug: bool, listName='following') -> None:
+                            following_items_per_page: int,
+                            debug: bool, list_name: str = 'following') -> None:
         """Returns json collection for following.txt
         """
         following_json = \
             get_following_feed(base_dir, domain, port, path, http_prefix,
-                               True, followingItemsPerPage, listName)
+                               True, following_items_per_page, list_name)
         if not following_json:
             if debug:
-                print(listName + ' json feed not found for ' + path)
+                print(list_name + ' json feed not found for ' + path)
             self._404()
             return
         msg_str = json.dumps(following_json,
@@ -15280,7 +15280,6 @@ class PubServer(BaseHTTPRequestHandler):
             known_bots_str = ''
             for bot_name in self.server.known_bots:
                 known_bots_str += bot_name + '\n'
-            # TODO
             msg = known_bots_str.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/plain; charset=utf-8',
@@ -16395,8 +16394,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', 'show welcome screen',
                                     self.server.debug)
                 return
-            else:
-                self.path = self.path.replace('/welcome', '')
+            self.path = self.path.replace('/welcome', '')
 
         # the welcome screen which allows you to set an avatar image
         if html_getreq and authorized and \
@@ -18556,10 +18554,11 @@ class PubServer(BaseHTTPRequestHandler):
             return
         if response_str == 'Not modified':
             if endpoint_type == 'put':
-                return self._200()
-            else:
-                return self._304()
-        elif response_str.startswith('ETag:') and endpoint_type == 'put':
+                self._200()
+                return
+            self._304()
+            return
+        if response_str.startswith('ETag:') and endpoint_type == 'put':
             response_etag = response_str.split('ETag:', 1)[1]
             self._201(response_etag)
         elif response_str != 'Ok':
@@ -19483,7 +19482,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             curr_session, proxy_type):
                         return 1
                 return -1
-            elif post_type == 'newshare' or post_type == 'newwanted':
+            elif post_type in ('newshare', 'newwanted'):
                 if not fields.get('itemQty'):
                     print(post_type + ' no itemQty')
                     return -1
