@@ -1174,7 +1174,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                             session, cached_webfingers: {}, person_cache: {},
                             following_json: {}, project_version: str,
                             buttons: [],
-                            feedName: str, actor: str,
+                            feed_name: str, actor: str,
                             page_number: int,
                             max_items_per_page: int,
                             dormant_months: int, debug: bool,
@@ -1188,7 +1188,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
             # page up arrow
             profile_str += \
                 '  <center>\n' + \
-                '    <a href="' + actor + '/' + feedName + \
+                '    <a href="' + actor + '/' + feed_name + \
                 '?page=' + str(page_number - 1) + '#buttonheader' + \
                 '"><img loading="lazy" decoding="async" ' + \
                 'class="pageicon" src="/' + \
@@ -1200,7 +1200,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
     for following_actor in following_json['orderedItems']:
         # is this a dormant followed account?
         dormant = False
-        if authorized and feedName == 'following':
+        if authorized and feed_name == 'following':
             dormant = \
                 is_dormant(base_dir, nickname, domain, following_actor,
                            dormant_months)
@@ -1219,7 +1219,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
             # page down arrow
             profile_str += \
                 '  <center>\n' + \
-                '    <a href="' + actor + '/' + feedName + \
+                '    <a href="' + actor + '/' + feed_name + \
                 '?page=' + str(page_number + 1) + '#buttonheader' + \
                 '"><img loading="lazy" decoding="async" ' + \
                 'class="pageicon" src="/' + \
