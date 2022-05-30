@@ -2059,15 +2059,15 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     summary_str = ''
     if content_str:
-        # does an emoji indicate a no boost preference?
-        # if so then don't show the repeat/announce icon
-        if disallow_announce(content_str):
-            announce_str = ''
-        # does an emoji indicate a no replies preference?
-        # if so then don't show the reply icon
         summary_str = get_summary_from_post(post_json_object, system_language,
                                             languages_understood)
         content_all_str = str(summary_str) + ' ' + content_str
+        # does an emoji indicate a no boost preference?
+        # if so then don't show the repeat/announce icon
+        if disallow_announce(content_all_str):
+            announce_str = ''
+        # does an emoji indicate a no replies preference?
+        # if so then don't show the reply icon
         if disallow_reply(content_all_str):
             reply_str = ''
 
