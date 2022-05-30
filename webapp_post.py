@@ -214,14 +214,14 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
 
 
 def _log_post_timing(enable_timing_log: bool, post_start_time,
-                     debugId: str) -> None:
+                     debug_id: str) -> None:
     """Create a log of timings for performance tuning
     """
     if not enable_timing_log:
         return
     time_diff = int((time.time() - post_start_time) * 1000)
     if time_diff > 100:
-        print('TIMING INDIV ' + debugId + ' = ' + str(time_diff))
+        print('TIMING INDIV ' + debug_id + ' = ' + str(time_diff))
 
 
 def prepare_html_post_nickname(nickname: str, post_html: str) -> str:
@@ -374,7 +374,7 @@ def _get_post_from_recent_cache(session,
     return post_html
 
 
-def _get_avatar_image_html(showAvatarOptions: bool,
+def _get_avatar_image_html(show_avatar_options: bool,
                            nickname: str, domain_full: str,
                            avatar_url: str, post_actor: str,
                            translate: {}, avatar_position: str,
@@ -399,7 +399,7 @@ def _get_avatar_image_html(showAvatarOptions: bool,
             show_profile_str + '" alt=" "' + avatar_position + \
             get_broken_link_substitute() + '/></a>\n'
 
-    if showAvatarOptions and \
+    if show_avatar_options and \
        domain_full + '/users/' + nickname not in post_actor:
         show_options_for_this_person_str = 'Show options for this person'
         if translate.get(show_options_for_this_person_str):
@@ -528,7 +528,7 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
 
 def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                         post_json_object: {}, actor_nickname: str,
-                        translate: {}, isEvent: bool) -> str:
+                        translate: {}, is_event: bool) -> str:
     """Returns html for the edit icon/button
     """
     edit_str = ''
@@ -573,7 +573,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                     '<img loading="lazy" decoding="async" title="' + \
                     edit_blog_post_str + '" alt="' + edit_blog_post_str + \
                     ' |" src="/icons/edit.png"/></a>\n'
-        elif isEvent:
+        elif is_event:
             edit_event_str = 'Edit event'
             if translate.get(edit_event_str):
                 edit_event_str = translate[edit_event_str]
@@ -1488,7 +1488,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             session, cached_webfingers: {}, person_cache: {},
                             nickname: str, domain: str, port: int,
                             post_json_object: {},
-                            avatar_url: str, showAvatarOptions: bool,
+                            avatar_url: str, show_avatar_options: bool,
                             allow_deletion: bool,
                             http_prefix: str, project_version: str,
                             box_name: str,
@@ -1642,7 +1642,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '7')
 
     avatar_link = \
-        _get_avatar_image_html(showAvatarOptions,
+        _get_avatar_image_html(show_avatar_options,
                                nickname, domain_full,
                                avatar_url, post_actor,
                                translate, avatar_position,

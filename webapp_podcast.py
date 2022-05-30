@@ -118,7 +118,7 @@ def _html_podcast_transcripts(podcast_properties: {}, translate: {}) -> str:
         return ''
     ctr = 1
     html_str = ''
-    for transcript in podcast_properties[key]:
+    for _ in podcast_properties[key]:
         transcript_url = None
         if podcast_properties[key].get('url'):
             transcript_url = podcast_properties[key]['url']

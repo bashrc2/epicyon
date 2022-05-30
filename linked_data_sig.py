@@ -87,8 +87,8 @@ def verify_json_signature(doc: {}, public_key_pem: str) -> bool:
             padding.PKCS1v15(),
             hazutils.Prehashed(hashes.SHA256()))
         return True
-    except BaseException:
-        print('EX: verify_json_signature unable to verify')
+    except BaseException as ex:
+        print('EX: verify_json_signature unable to verify ' + str(ex))
         return False
 
 
