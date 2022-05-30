@@ -135,10 +135,10 @@ def announced_by_person(is_announced: bool, post_actor: str,
 
 def create_announce(session, base_dir: str, federation_list: [],
                     nickname: str, domain: str, port: int,
-                    to_url: str, ccUrl: str, http_prefix: str,
-                    object_url: str, saveToFile: bool,
+                    to_url: str, cc_url: str, http_prefix: str,
+                    object_url: str, save_to_file: bool,
                     client_to_server: bool,
-                    send_threads: [], postLog: [],
+                    send_threads: [], post_log: [],
                     person_cache: {}, cached_webfingers: {},
                     debug: bool, project_version: str,
                     signing_priv_key_pem: str,
@@ -146,7 +146,7 @@ def create_announce(session, base_dir: str, federation_list: [],
                     onion_domain: str, i2p_domain: str) -> {}:
     """Creates an announce message
     Typically to_url will be https://www.w3.org/ns/activitystreams#Public
-    and ccUrl might be a specific person favorited or repeated and the
+    and cc_url might be a specific person favorited or repeated and the
     followers url object_url is typically the url of the message,
     corresponding to url or atomUri in createPostBase
     """
@@ -172,10 +172,10 @@ def create_announce(session, base_dir: str, federation_list: [],
         'to': [to_url],
         'type': 'Announce'
     }
-    if ccUrl:
-        if len(ccUrl) > 0:
-            new_announce['cc'] = [ccUrl]
-    if saveToFile:
+    if cc_url:
+        if len(cc_url) > 0:
+            new_announce['cc'] = [cc_url]
+    if save_to_file:
         outbox_dir = create_outbox_dir(nickname, domain, base_dir)
         filename = \
             outbox_dir + '/' + new_announce_id.replace('/', '#') + '.json'
@@ -202,7 +202,7 @@ def create_announce(session, base_dir: str, federation_list: [],
                          announce_nickname, announce_domain,
                          announce_port, None,
                          http_prefix, True, client_to_server, federation_list,
-                         send_threads, postLog, cached_webfingers,
+                         send_threads, post_log, cached_webfingers,
                          person_cache,
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 639633,
@@ -214,7 +214,7 @@ def create_announce(session, base_dir: str, federation_list: [],
 def announce_public(session, base_dir: str, federation_list: [],
                     nickname: str, domain: str, port: int, http_prefix: str,
                     object_url: str, client_to_server: bool,
-                    send_threads: [], postLog: [],
+                    send_threads: [], post_log: [],
                     person_cache: {}, cached_webfingers: {},
                     debug: bool, project_version: str,
                     signing_priv_key_pem: str,
@@ -225,12 +225,12 @@ def announce_public(session, base_dir: str, federation_list: [],
     from_domain = get_full_domain(domain, port)
 
     to_url = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = local_actor_url(http_prefix, nickname, from_domain) + '/followers'
+    cc_url = local_actor_url(http_prefix, nickname, from_domain) + '/followers'
     return create_announce(session, base_dir, federation_list,
                            nickname, domain, port,
-                           to_url, ccUrl, http_prefix,
+                           to_url, cc_url, http_prefix,
                            object_url, True, client_to_server,
-                           send_threads, postLog,
+                           send_threads, post_log,
                            person_cache, cached_webfingers,
                            debug, project_version,
                            signing_priv_key_pem, curr_domain,
@@ -239,7 +239,7 @@ def announce_public(session, base_dir: str, federation_list: [],
 
 def send_announce_via_server(base_dir: str, session,
                              from_nickname: str, password: str,
-                             from_domain: str, fromPort: int,
+                             from_domain: str, from_port: int,
                              http_prefix: str, repeat_object_url: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
@@ -250,7 +250,7 @@ def send_announce_via_server(base_dir: str, session,
         print('WARN: No session for send_announce_via_server')
         return 6
 
-    from_domain_full = get_full_domain(from_domain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
     to_url = 'https://www.w3.org/ns/activitystreams#Public'
     actor_str = local_actor_url(http_prefix, from_nickname, from_domain_full)

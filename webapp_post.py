@@ -2057,14 +2057,18 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not content_str:
             return ''
 
+    summary_str = ''
     if content_str:
+        summary_str = get_summary_from_post(post_json_object, system_language,
+                                            languages_understood)
+        content_all_str = str(summary_str) + ' ' + content_str
         # does an emoji indicate a no boost preference?
         # if so then don't show the repeat/announce icon
-        if disallow_announce(content_str):
+        if disallow_announce(content_all_str):
             announce_str = ''
         # does an emoji indicate a no replies preference?
         # if so then don't show the reply icon
-        if disallow_reply(content_str):
+        if disallow_reply(content_all_str):
             reply_str = ''
 
     new_footer_str = \
@@ -2083,8 +2087,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if post_is_sensitive:
         footer_str = '<br>' + footer_str
 
-    summary_str = get_summary_from_post(post_json_object, system_language,
-                                        languages_understood)
+    if not summary_str:
+        summary_str = get_summary_from_post(post_json_object, system_language,
+                                            languages_understood)
     is_patch = is_git_patch(base_dir, nickname, domain,
                             post_json_object['object']['type'],
                             summary_str, content_str)

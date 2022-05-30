@@ -986,8 +986,8 @@ def _desktop_show_box(indent: str,
                       translate: {},
                       screenreader: str, system_language: str, espeak,
                       page_number: int,
-                      newReplies: bool,
-                      newDMs: bool) -> bool:
+                      new_replies: bool,
+                      new_dms: bool) -> bool:
     """Shows online timeline
     """
     number_width = 2
@@ -1004,9 +1004,9 @@ def _desktop_show_box(indent: str,
     else:
         box_name_str = box_name
     title_str = _highlight_text(box_name_str.upper())
-    # if newDMs:
+    # if new_dms:
     #     notification_icons += ' 📩'
-    # if newReplies:
+    # if new_replies:
     #     notification_icons += ' 📨'
 
     if notification_icons:
@@ -1086,8 +1086,7 @@ def _desktop_show_box(indent: str,
                         if i > 10:
                             break
         likes_count = no_of_likes(post_json_object)
-        if likes_count > 10:
-            likes_count = 10
+        likes_count = max(likes_count, 10)
         for _ in range(likes_count):
             if not space_added:
                 space_added = True
@@ -1654,8 +1653,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 refresh_timeline = True
             elif command_str.startswith('prev'):
                 page_number -= 1
-                if page_number < 1:
-                    page_number = 1
+                page_number = max(page_number, 1)
                 prev_timeline_first_id = ''
                 box_json = c2s_box_json(base_dir, session,
                                         nickname, password,
@@ -1673,8 +1671,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                   command_str.startswith('show ') or
                   command_str == 'read' or
                   command_str == 'show'):
-                if command_str == 'read' or \
-                   command_str == 'show':
+                if command_str in ('read', 'show'):
                     post_index_str = '1'
                 else:
                     if 'read ' in command_str:
@@ -1774,7 +1771,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_content = ''
                     if post_json_object['object'].get('content'):
                         post_content = post_json_object['object']['content']
-                    if not disallow_reply(post_content):
+                    post_summary = ''
+                    if post_json_object['object'].get('summary'):
+                        post_summary = post_json_object['object']['summary']
+                    if not disallow_reply(post_summary + ' ' + post_content):
                         if post_json_object.get('id'):
                             post_id = post_json_object['id']
                             subject = None
@@ -2154,7 +2154,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_content = ''
                     if post_json_object['object'].get('content'):
                         post_content = post_json_object['object']['content']
-                    if not disallow_announce(post_content):
+                    post_summary = ''
+                    if post_json_object['object'].get('summary'):
+                        post_summary = post_json_object['object']['summary']
+                    if not disallow_announce(post_summary + ' ' +
+                                             post_content):
                         if post_json_object.get('id'):
                             post_id = post_json_object['id']
                             announce_actor = \
