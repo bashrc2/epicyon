@@ -704,7 +704,7 @@ def _no_of_blog_accounts(base_dir: str) -> int:
     """Returns the number of blog accounts
     """
     ctr = 0
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
@@ -719,7 +719,7 @@ def _no_of_blog_accounts(base_dir: str) -> int:
 def _single_blog_account_nickname(base_dir: str) -> str:
     """Returns the nickname of a single blog account
     """
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue

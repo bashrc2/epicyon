@@ -9,6 +9,8 @@ __module_group__ = "RSS Feeds"
 
 
 def rss2tag_header(hashtag: str, http_prefix: str, domain_full: str) -> str:
+    """Header for rss 2
+    """
     return \
         "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + \
         "<rss version=\"2.0\">" + \
@@ -19,4 +21,6 @@ def rss2tag_header(hashtag: str, http_prefix: str, domain_full: str) -> str:
 
 
 def rss2tag_footer() -> str:
+    """Footer for rss 2
+    """
     return '</channel></rss>'

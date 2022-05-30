@@ -100,7 +100,7 @@ def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        prop_value_name, prop_value = \
+        prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
             continue

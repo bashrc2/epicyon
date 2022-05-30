@@ -543,8 +543,7 @@ def get_shares_feed_for_person(base_dir: str,
                 curr_page += 1
     shares['totalItems'] = total_ctr
     last_page = int(total_ctr / shares_per_page)
-    if last_page < 1:
-        last_page = 1
+    last_page = max(last_page, 1)
     if next_page_number > last_page:
         shares['next'] = \
             local_actor_url(http_prefix, nickname, domain) + \
@@ -554,14 +553,14 @@ def get_shares_feed_for_person(base_dir: str,
 
 def send_share_via_server(base_dir, session,
                           from_nickname: str, password: str,
-                          from_domain: str, fromPort: int,
+                          from_domain: str, from_port: int,
                           http_prefix: str, display_name: str,
                           summary: str, image_filename: str,
                           item_qty: float, item_type: str, item_category: str,
                           location: str, duration: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
-                          itemPrice: str, item_currency: str,
+                          item_price: str, item_currency: str,
                           signing_priv_key_pem: str) -> {}:
     """Creates an item share via c2s
     """
@@ -570,14 +569,14 @@ def send_share_via_server(base_dir, session,
         return 6
 
     # convert $4.23 to 4.23 USD
-    new_item_price, new_item_currency = get_price_from_string(itemPrice)
-    if new_item_price != itemPrice:
-        itemPrice = new_item_price
+    new_item_price, new_item_currency = get_price_from_string(item_price)
+    if new_item_price != item_price:
+        item_price = new_item_price
         if not item_currency:
             if new_item_currency != item_currency:
                 item_currency = new_item_currency
 
-    from_domain_full = get_full_domain(from_domain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
     to_url = 'https://www.w3.org/ns/activitystreams#Public'
@@ -597,7 +596,7 @@ def send_share_via_server(base_dir, session,
             "category": item_category,
             "location": location,
             "duration": duration,
-            "itemPrice": itemPrice,
+            "itemPrice": item_price,
             "itemCurrency": item_currency,
             'to': [to_url],
             'cc': [cc_url]
@@ -679,7 +678,7 @@ def send_share_via_server(base_dir, session,
 
 def send_undo_share_via_server(base_dir: str, session,
                                from_nickname: str, password: str,
-                               from_domain: str, fromPort: int,
+                               from_domain: str, from_port: int,
                                http_prefix: str, display_name: str,
                                cached_webfingers: {}, person_cache: {},
                                debug: bool, project_version: str,
@@ -690,7 +689,7 @@ def send_undo_share_via_server(base_dir: str, session,
         print('WARN: No session for send_undo_share_via_server')
         return 6
 
-    from_domain_full = get_full_domain(from_domain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
     to_url = 'https://www.w3.org/ns/activitystreams#Public'
@@ -774,14 +773,14 @@ def send_undo_share_via_server(base_dir: str, session,
 
 def send_wanted_via_server(base_dir, session,
                            from_nickname: str, password: str,
-                           from_domain: str, fromPort: int,
+                           from_domain: str, from_port: int,
                            http_prefix: str, display_name: str,
                            summary: str, image_filename: str,
                            item_qty: float, item_type: str, item_category: str,
                            location: str, duration: str,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
-                           itemMaxPrice: str, item_currency: str,
+                           item_max_price: str, item_currency: str,
                            signing_priv_key_pem: str) -> {}:
     """Creates a wanted item via c2s
     """
@@ -790,14 +789,15 @@ def send_wanted_via_server(base_dir, session,
         return 6
 
     # convert $4.23 to 4.23 USD
-    new_item_max_price, new_item_currency = get_price_from_string(itemMaxPrice)
-    if new_item_max_price != itemMaxPrice:
-        itemMaxPrice = new_item_max_price
+    new_item_max_price, new_item_currency = \
+        get_price_from_string(item_max_price)
+    if new_item_max_price != item_max_price:
+        item_max_price = new_item_max_price
         if not item_currency:
             if new_item_currency != item_currency:
                 item_currency = new_item_currency
 
-    from_domain_full = get_full_domain(from_domain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
     to_url = 'https://www.w3.org/ns/activitystreams#Public'
@@ -817,7 +817,7 @@ def send_wanted_via_server(base_dir, session,
             "category": item_category,
             "location": location,
             "duration": duration,
-            "itemPrice": itemMaxPrice,
+            "itemPrice": item_max_price,
             "itemCurrency": item_currency,
             'to': [to_url],
             'cc': [cc_url]
@@ -899,7 +899,7 @@ def send_wanted_via_server(base_dir, session,
 
 def send_undo_wanted_via_server(base_dir: str, session,
                                 from_nickname: str, password: str,
-                                from_domain: str, fromPort: int,
+                                from_domain: str, from_port: int,
                                 http_prefix: str, display_name: str,
                                 cached_webfingers: {}, person_cache: {},
                                 debug: bool, project_version: str,
@@ -910,7 +910,7 @@ def send_undo_wanted_via_server(base_dir: str, session,
         print('WARN: No session for send_undo_wanted_via_server')
         return 6
 
-    from_domain_full = get_full_domain(from_domain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
     to_url = 'https://www.w3.org/ns/activitystreams#Public'
@@ -1488,7 +1488,7 @@ def create_shared_item_federation_token(base_dir: str,
 def authorize_shared_items(shared_items_federated_domains: [],
                            base_dir: str,
                            origin_domain_full: str,
-                           calling_domainFull: str,
+                           calling_domain_full: str,
                            auth_header: str,
                            debug: bool,
                            tokens_json: {} = None) -> bool:
@@ -1528,16 +1528,16 @@ def authorize_shared_items(shared_items_federated_domains: [],
         tokens_json = load_json(tokens_filename, 1, 2)
     if not tokens_json:
         return False
-    if not tokens_json.get(calling_domainFull):
+    if not tokens_json.get(calling_domain_full):
         if debug:
             print('DEBUG: shared item federation token ' +
-                  'check failed for ' + calling_domainFull)
+                  'check failed for ' + calling_domain_full)
         return False
-    if not constant_time_string_check(tokens_json[calling_domainFull],
+    if not constant_time_string_check(tokens_json[calling_domain_full],
                                       provided_token):
         if debug:
             print('DEBUG: shared item federation token ' +
-                  'mismatch for ' + calling_domainFull)
+                  'mismatch for ' + calling_domain_full)
         return False
     return True
 

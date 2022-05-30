@@ -49,7 +49,7 @@ def create_session(proxy_type: str):
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:7777'
         session.proxies['https'] = 'socks5h://localhost:7777'
-    elif proxy_type == 'ipfs' or proxy_type == 'ipns':
+    elif proxy_type in ('ipfs', 'ipns'):
         session.proxies = {}
         session.proxies['ipfs'] = 'socks5h://localhost:4001'
     # print('New session created with proxy ' + str(proxy_type))
@@ -79,8 +79,7 @@ def url_exists(session, url: str, timeout_sec: int = 3,
                              timeout=timeout_sec,
                              allow_redirects=False)
         if result:
-            if result.status_code == 200 or \
-               result.status_code == 304:
+            if result.status_code in (200, 304):
                 return True
             print('url_exists for ' + url + ' returned ' +
                   str(result.status_code))
@@ -775,7 +774,7 @@ def get_method(method_name: str, xml_str: str,
         result = session.request(method_name, url, headers=session_headers,
                                  data=xml_str,
                                  params=session_params, timeout=timeout_sec)
-        if result.status_code != 200 and result.status_code != 207:
+        if result.status_code not in (200, 207):
             if result.status_code == 401:
                 print("WARN: get_method " + url + ' rejected by secure mode')
             elif result.status_code == 403:

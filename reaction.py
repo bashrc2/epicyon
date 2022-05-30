@@ -182,8 +182,8 @@ def reaction_post(recent_posts_cache: {},
 
 def send_reaction_via_server(base_dir: str, session,
                              from_nickname: str, password: str,
-                             from_domain: str, fromPort: int,
-                             http_prefix: str, reactionUrl: str,
+                             from_domain: str, from_port: int,
+                             http_prefix: str, reaction_url: str,
                              emoji_content: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
@@ -198,7 +198,7 @@ def send_reaction_via_server(base_dir: str, session,
               emoji_content + '"')
         return 7
 
-    from_domain_full = get_full_domain(from_domain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
 
@@ -206,7 +206,7 @@ def send_reaction_via_server(base_dir: str, session,
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'EmojiReact',
         'actor': actor,
-        'object': reactionUrl,
+        'object': reaction_url,
         'content': emoji_content
     }
 
@@ -272,8 +272,8 @@ def send_reaction_via_server(base_dir: str, session,
 
 def send_undo_reaction_via_server(base_dir: str, session,
                                   from_nickname: str, password: str,
-                                  from_domain: str, fromPort: int,
-                                  http_prefix: str, reactionUrl: str,
+                                  from_domain: str, from_port: int,
+                                  http_prefix: str, reaction_url: str,
                                   emoji_content: str,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
@@ -284,7 +284,7 @@ def send_undo_reaction_via_server(base_dir: str, session,
         print('WARN: No session for send_undo_reaction_via_server')
         return 6
 
-    from_domain_full = get_full_domain(from_domain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
 
@@ -295,7 +295,7 @@ def send_undo_reaction_via_server(base_dir: str, session,
         'object': {
             'type': 'EmojiReact',
             'actor': actor,
-            'object': reactionUrl,
+            'object': reaction_url,
             'content': emoji_content
         }
     }
@@ -457,7 +457,6 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
                 common_reactions = fp_react.readlines()
         except OSError:
             print('EX: unable to load common reactions file')
-            pass
     if common_reactions:
         new_common_reactions = []
         reaction_found = False

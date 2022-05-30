@@ -65,7 +65,7 @@ def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
         property_found = property_value
         break
     if property_found:
-        actor_json['attachment'].remove(property_value)
+        actor_json['attachment'].remove(property_found)
     if remove_key:
         return
 
