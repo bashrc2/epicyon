@@ -917,7 +917,7 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
         # generate instance allow list
         allowed_domains = [domain_full]
         follow_files = ('following.txt', 'followers.txt')
-        for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+        for _, dirs, _ in os.walk(base_dir + '/accounts'):
             for acct in dirs:
                 if not is_account_dir(acct):
                     continue
@@ -995,7 +995,7 @@ def load_cw_lists(base_dir: str, verbose: bool) -> {}:
     if not os.path.isdir(base_dir + '/cwlists'):
         return {}
     result = {}
-    for subdir, dirs, files in os.walk(base_dir + '/cwlists'):
+    for _, _, files in os.walk(base_dir + '/cwlists'):
         for fname in files:
             if not fname.endswith('.json'):
                 continue

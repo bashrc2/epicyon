@@ -25,54 +25,54 @@ from utils import has_object_string_type
 
 def _create_accept_reject(base_dir: str, federation_list: [],
                           nickname: str, domain: str, port: int,
-                          toUrl: str, ccUrl: str, http_prefix: str,
-                          objectJson: {}, acceptType: str) -> {}:
+                          to_url: str, cc_url: str, http_prefix: str,
+                          object_json: {}, accept_type: str) -> {}:
     """Accepts or rejects something (eg. a follow request or offer)
-    Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
-    and ccUrl might be a specific person favorited or repeated and
+    Typically to_url will be https://www.w3.org/ns/activitystreams#Public
+    and cc_url might be a specific person favorited or repeated and
     the followers url objectUrl is typically the url of the message,
     corresponding to url or atomUri in createPostBase
     """
-    if not objectJson.get('actor'):
+    if not object_json.get('actor'):
         return None
 
-    if not url_permitted(objectJson['actor'], federation_list):
+    if not url_permitted(object_json['actor'], federation_list):
         return None
 
     domain = get_full_domain(domain, port)
 
     new_accept = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'type': acceptType,
+        'type': accept_type,
         'actor': local_actor_url(http_prefix, nickname, domain),
-        'to': [toUrl],
+        'to': [to_url],
         'cc': [],
-        'object': objectJson
+        'object': object_json
     }
-    if ccUrl:
-        if len(ccUrl) > 0:
-            new_accept['cc'] = [ccUrl]
+    if cc_url:
+        if len(cc_url) > 0:
+            new_accept['cc'] = [cc_url]
     return new_accept
 
 
 def create_accept(base_dir: str, federation_list: [],
                   nickname: str, domain: str, port: int,
-                  toUrl: str, ccUrl: str, http_prefix: str,
-                  objectJson: {}) -> {}:
+                  to_url: str, cc_url: str, http_prefix: str,
+                  object_json: {}) -> {}:
     return _create_accept_reject(base_dir, federation_list,
                                  nickname, domain, port,
-                                 toUrl, ccUrl, http_prefix,
-                                 objectJson, 'Accept')
+                                 to_url, cc_url, http_prefix,
+                                 object_json, 'Accept')
 
 
 def create_reject(base_dir: str, federation_list: [],
                   nickname: str, domain: str, port: int,
-                  toUrl: str, ccUrl: str, http_prefix: str,
-                  objectJson: {}) -> {}:
+                  to_url: str, cc_url: str, http_prefix: str,
+                  object_json: {}) -> {}:
     return _create_accept_reject(base_dir, federation_list,
                                  nickname, domain, port,
-                                 toUrl, ccUrl,
-                                 http_prefix, objectJson, 'Reject')
+                                 to_url, cc_url,
+                                 http_prefix, object_json, 'Reject')
 
 
 def _accept_follow(base_dir: str, domain: str, message_json: {},
