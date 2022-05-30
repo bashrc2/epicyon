@@ -710,16 +710,16 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     return filename
 
 
-def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
+def _inbox_post_recipients_add(base_dir: str, http_prefix: str, to_list: [],
                                recipients_dict: {},
                                domain_match: str, domain: str,
                                actor: str, debug: bool,
                                onion_domain: str, i2p_domain: str) -> bool:
-    """Given a list of post recipients (toList) from 'to' or 'cc' parameters
+    """Given a list of post recipients (to_list) from 'to' or 'cc' parameters
     populate a recipients_dict with the handle for each
     """
     follower_recipients = False
-    for recipient in toList:
+    for recipient in to_list:
         if not recipient:
             continue
         # if the recipient is an onion or i2p address then
@@ -750,7 +750,7 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, toList: [],
                 else:
                     print('DEBUG: ' + recipient + ' is not local to ' +
                           domain_match)
-                print(str(toList))
+                print(str(to_list))
         if recipient.endswith('followers'):
             if debug:
                 print('DEBUG: followers detected as post recipients')
@@ -2251,12 +2251,11 @@ def _receive_announce(recent_posts_cache: {},
     if not announced_actor_nickname:
         print('WARN: _receive_announce no announced_actor_nickname')
         return False
-    announcedActorDomain, announcedActorPort = \
-        get_domain_from_actor(message_json['object'])
+    announced_actor_domain, _ = get_domain_from_actor(message_json['object'])
     if is_blocked(base_dir, nickname, domain,
-                  announced_actor_nickname, announcedActorDomain):
+                  announced_actor_nickname, announced_actor_domain):
         print('Receive announce object blocked for actor: ' +
-              announced_actor_nickname + '@' + announcedActorDomain)
+              announced_actor_nickname + '@' + announced_actor_domain)
         return False
 
     # is this post in the outbox of the person?
@@ -2770,7 +2769,7 @@ def _dm_notify(base_dir: str, handle: str, url: str) -> None:
 
 
 def _already_liked(base_dir: str, nickname: str, domain: str,
-                   post_url: str, likerActor: str) -> bool:
+                   post_url: str, liker_actor: str) -> bool:
     """Is the given post already liked by the given handle?
     """
     post_filename = \
@@ -2793,7 +2792,7 @@ def _already_liked(base_dir: str, nickname: str, domain: str,
             continue
         if like['type'] != 'Like':
             continue
-        if like['actor'] == likerActor:
+        if like['actor'] == liker_actor:
             return True
     return False
 
@@ -4496,8 +4495,7 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
         if quotas_per_min['accounts'].get(post_handle):
             account_max_posts_per_min = \
                 int(account_max_posts_per_day / (24 * 60))
-            if account_max_posts_per_min < 5:
-                account_max_posts_per_min = 5
+            account_max_posts_per_min = max(account_max_posts_per_min, 5)
             if quotas_per_min['accounts'][post_handle] > \
                account_max_posts_per_min:
                 print('Queue: Quota account posts per min -' +
@@ -4824,7 +4822,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                 else:
                                     followers_file.write('!' + approve_handle +
                                                          '\n' + content)
-                    except Exception as ex:
+                    except OSError as ex:
                         print('WARN: ' +
                               'Failed to write entry to followers file ' +
                               str(ex))
@@ -5227,16 +5225,16 @@ def run_inbox_queue(server,
                                         debug)
                     inbox_start_time = time.time()
                     continue
+
+                if http_signature_failed:
+                    print('jsonld inbox signature check success ' +
+                          'via relay ' + key_id)
                 else:
-                    if http_signature_failed:
-                        print('jsonld inbox signature check success ' +
-                              'via relay ' + key_id)
-                    else:
-                        print('jsonld inbox signature check success ' + key_id)
-                    fitness_performance(inbox_start_time, server.fitness,
-                                        'INBOX', 'verify_signature_success',
-                                        debug)
-                    inbox_start_time = time.time()
+                    print('jsonld inbox signature check success ' + key_id)
+                fitness_performance(inbox_start_time, server.fitness,
+                                    'INBOX', 'verify_signature_success',
+                                    debug)
+                inbox_start_time = time.time()
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
@@ -5294,9 +5292,9 @@ def run_inbox_queue(server,
                                 debug)
             inbox_start_time = time.time()
             continue
-        else:
-            if debug:
-                print('DEBUG: No follow requests')
+
+        if debug:
+            print('DEBUG: No follow requests')
 
         if receive_accept_reject(curr_session,
                                  base_dir, http_prefix, domain, port,
