@@ -1774,7 +1774,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_content = ''
                     if post_json_object['object'].get('content'):
                         post_content = post_json_object['object']['content']
-                    if not disallow_reply(post_content):
+                    post_summary = ''
+                    if post_json_object['object'].get('summary'):
+                        post_summary = post_json_object['object']['summary']
+                    if not disallow_reply(post_summary + ' ' + post_content):
                         if post_json_object.get('id'):
                             post_id = post_json_object['id']
                             subject = None
