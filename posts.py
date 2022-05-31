@@ -536,8 +536,7 @@ def is_create_inside_announce(item: {}) -> bool:
 def _get_posts(session, outbox_url: str, max_posts: int,
                max_mentions: int,
                max_emoji: int, max_attachments: int,
-               federation_list: [],
-               person_cache: {}, raw: bool,
+               federation_list: [], raw: bool,
                simple: bool, debug: bool,
                project_version: str, http_prefix: str,
                origin_domain: str, system_language: str,
@@ -663,6 +662,10 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                         in_reply_to = this_item['inReplyTo']
 
             if this_item.get('attachment'):
+                if len(this_item['attachment']) > max_attachments:
+                    if debug:
+                        print('max attachments reached')
+                    continue
                 if this_item['attachment']:
                     for attach in this_item['attachment']:
                         if attach.get('name') and attach.get('url'):
@@ -4437,8 +4440,7 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
     max_emoji = 10
     max_attachments = 5
     _get_posts(session, person_url, 30, max_mentions, max_emoji,
-               max_attachments, federation_list,
-               person_cache, raw, simple, debug,
+               max_attachments, federation_list, raw, simple, debug,
                project_version, http_prefix, origin_domain, system_language,
                signing_priv_key_pem)
 
