@@ -3256,7 +3256,6 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     if ':' in sender_domain:
         sender_port = get_port_from_domain(sender_domain)
         sender_domain = remove_domain_port(sender_domain)
-    cc_list = []
 
     # create the bounce DM
     subject = None
@@ -3299,8 +3298,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     print('Sending bounce DM to ' + sending_handle)
     send_signed_json(post_json_object, session, base_dir,
                      nickname, domain, port,
-                     sender_nickname, sender_domain, sender_port, cc_list,
-                     http_prefix, False, False, federation_list,
+                     sender_nickname, sender_domain, sender_port,
+                     http_prefix, False, federation_list,
                      send_threads, post_log, cached_webfingers,
                      person_cache, debug, __version__, None, group_account,
                      signing_priv_key_pem, 7238634,

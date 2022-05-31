@@ -2761,8 +2761,7 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
 def send_signed_json(post_json_object: {}, session, base_dir: str,
                      nickname: str, domain: str, port: int,
                      to_nickname: str, to_domain: str,
-                     to_port: int, cc_str: str,
-                     http_prefix: str, save_to_file: bool,
+                     to_port: int, http_prefix: str,
                      client_to_server: bool, federation_list: [],
                      send_threads: [], post_log: [], cached_webfingers: {},
                      person_cache: {}, debug: bool, project_version: str,
@@ -3203,7 +3202,6 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                 to_port = 80
                 curr_proxy_type = 'i2p'
                 session_type = 'i2p'
-        cc_list = []
 
         if debug:
             to_domain_full = get_full_domain(to_domain, to_port)
@@ -3235,7 +3233,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
         send_signed_json(post_json_object, curr_session, base_dir,
                          nickname, from_domain, port,
                          to_nickname, to_domain, to_port,
-                         cc_list, from_http_prefix, True, client_to_server,
+                         from_http_prefix, client_to_server,
                          federation_list,
                          send_threads, post_log, cached_webfingers,
                          person_cache, debug, project_version,
@@ -3437,8 +3435,6 @@ def send_to_followers(server, session, session_onion, session_i2p,
             to_port = get_port_from_domain(to_domain)
             to_domain = remove_domain_port(to_domain)
 
-        cc_list = ''
-
         # if we are sending to an onion domain and we
         # have an alt onion domain then use the alt
         from_domain = domain
@@ -3497,7 +3493,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
             send_signed_json(post_json_object, curr_session, base_dir,
                              nickname, from_domain, port,
                              to_nickname, to_domain, to_port,
-                             cc_list, from_http_prefix, True,
+                             from_http_prefix,
                              client_to_server, federation_list,
                              send_threads, post_log, cached_webfingers,
                              person_cache, debug, project_version,
@@ -3530,7 +3526,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                 send_signed_json(post_json_object, curr_session, base_dir,
                                  nickname, from_domain, port,
                                  to_nickname, to_domain, to_port,
-                                 cc_list, from_http_prefix, True,
+                                 from_http_prefix,
                                  client_to_server, federation_list,
                                  send_threads, post_log, cached_webfingers,
                                  person_cache, debug, project_version,
