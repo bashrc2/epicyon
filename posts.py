@@ -3589,7 +3589,7 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
 
 
 def create_inbox(recent_posts_cache: {},
-                 session, base_dir: str, nickname: str, domain: str, port: int,
+                 base_dir: str, nickname: str, domain: str, port: int,
                  http_prefix: str, items_per_page: int, header_only: bool,
                  page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
@@ -3599,7 +3599,7 @@ def create_inbox(recent_posts_cache: {},
                                0, False, 0, page_number)
 
 
-def create_bookmarks_timeline(session, base_dir: str,
+def create_bookmarks_timeline(base_dir: str,
                               nickname: str, domain: str,
                               port: int, http_prefix: str, items_per_page: int,
                               header_only: bool, page_number: int) -> {}:
@@ -3610,7 +3610,7 @@ def create_bookmarks_timeline(session, base_dir: str,
 
 
 def create_dm_timeline(recent_posts_cache: {},
-                       session, base_dir: str, nickname: str, domain: str,
+                       base_dir: str, nickname: str, domain: str,
                        port: int, http_prefix: str, items_per_page: int,
                        header_only: bool, page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
@@ -3620,7 +3620,7 @@ def create_dm_timeline(recent_posts_cache: {},
 
 
 def create_replies_timeline(recent_posts_cache: {},
-                            session, base_dir: str, nickname: str, domain: str,
+                            base_dir: str, nickname: str, domain: str,
                             port: int, http_prefix: str, items_per_page: int,
                             header_only: bool, page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
@@ -3630,7 +3630,7 @@ def create_replies_timeline(recent_posts_cache: {},
                                0, False, 0, page_number)
 
 
-def create_blogs_timeline(session, base_dir: str, nickname: str, domain: str,
+def create_blogs_timeline(base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, items_per_page: int,
                           header_only: bool, page_number: int) -> {}:
     return _create_box_indexed({}, base_dir, 'tlblogs', nickname,
@@ -3639,7 +3639,7 @@ def create_blogs_timeline(session, base_dir: str, nickname: str, domain: str,
                                0, False, 0, page_number)
 
 
-def create_features_timeline(session, base_dir: str,
+def create_features_timeline(base_dir: str,
                              nickname: str, domain: str,
                              port: int, http_prefix: str, items_per_page: int,
                              header_only: bool, page_number: int) -> {}:
@@ -3649,7 +3649,7 @@ def create_features_timeline(session, base_dir: str,
                                0, False, 0, page_number)
 
 
-def create_media_timeline(session, base_dir: str, nickname: str, domain: str,
+def create_media_timeline(base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, items_per_page: int,
                           header_only: bool, page_number: int) -> {}:
     return _create_box_indexed({}, base_dir, 'tlmedia', nickname,
@@ -3658,7 +3658,7 @@ def create_media_timeline(session, base_dir: str, nickname: str, domain: str,
                                0, False, 0, page_number)
 
 
-def create_news_timeline(session, base_dir: str, nickname: str, domain: str,
+def create_news_timeline(base_dir: str, domain: str,
                          port: int, http_prefix: str, items_per_page: int,
                          header_only: bool, newswire_votes_threshold: int,
                          positive_voting: bool, voting_time_mins: int,
@@ -3670,7 +3670,7 @@ def create_news_timeline(session, base_dir: str, nickname: str, domain: str,
                                voting_time_mins, page_number)
 
 
-def create_outbox(session, base_dir: str, nickname: str, domain: str,
+def create_outbox(base_dir: str, nickname: str, domain: str,
                   port: int, http_prefix: str,
                   items_per_page: int, header_only: bool, authorized: bool,
                   page_number: int) -> {}:
@@ -3723,12 +3723,10 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
             if len(lines) > 0:
                 end_line_number = \
                     len(lines) - 1 - int(items_per_page * page_number)
-                if end_line_number < 0:
-                    end_line_number = 0
+                end_line_number = max(end_line_number, 0)
                 start_line_number = \
                     len(lines) - 1 - int(items_per_page * (page_number - 1))
-                if start_line_number < 0:
-                    start_line_number = 0
+                start_line_number = max(start_line_number, 0)
                 line_number = start_line_number
                 while line_number >= end_line_number:
                     line_no_str = lines[line_number].strip('\n').strip('\r')
@@ -3750,7 +3748,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
 
 def is_image_media(session, base_dir: str, http_prefix: str,
                    nickname: str, domain: str,
-                   post_json_object: {}, translate: {},
+                   post_json_object: {},
                    yt_replace_domain: str,
                    twitter_replacement_domain: str,
                    allow_local_network_access: bool,
@@ -3992,8 +3990,7 @@ def _create_box_indexed(recent_posts_cache: {},
 
     page_str = '?page=true'
     if page_number:
-        if page_number < 1:
-            page_number = 1
+        page_number = max(page_number, 1)
         try:
             page_str = '?page=' + str(page_number)
         except BaseException:
@@ -4129,8 +4126,7 @@ def _create_box_indexed(recent_posts_cache: {},
     # Generate first and last entries within header
     if total_posts_count > 0:
         last_page = int(total_posts_count / items_per_page)
-        if last_page < 1:
-            last_page = 1
+        last_page = max(last_page, 1)
         box_header['last'] = \
             local_actor_url(http_prefix, nickname, domain) + \
             '/' + boxname + '?page=' + str(last_page)

@@ -541,7 +541,7 @@ def html_blog_page(authorized: bool, session,
         return blog_str + html_footer()
 
     timeline_json = \
-        create_blogs_timeline(session, base_dir,
+        create_blogs_timeline(base_dir,
                               nickname, domain, port, http_prefix,
                               no_of_items, False, page_number)
 
@@ -629,7 +629,7 @@ def html_blog_page_rss2(authorized: bool, session,
             return blog_rss2 + rss2footer()
         return blog_rss2
 
-    timeline_json = create_blogs_timeline(session, base_dir,
+    timeline_json = create_blogs_timeline(base_dir,
                                           nickname, domain, port,
                                           http_prefix,
                                           no_of_items, False,
@@ -677,7 +677,7 @@ def html_blog_page_rss3(authorized: bool, session,
         return blog_rss3
 
     timeline_json = \
-        create_blogs_timeline(session, base_dir,
+        create_blogs_timeline(base_dir,
                               nickname, domain, port, http_prefix,
                               no_of_items, False, page_number)
 

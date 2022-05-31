@@ -4082,7 +4082,6 @@ def _inbox_after_initial(server, inbox_start_time,
 
             if is_image_media(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
-                              translate,
                               yt_replace_domain,
                               twitter_replacement_domain,
                               allow_local_network_access,
