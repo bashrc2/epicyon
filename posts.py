@@ -5497,8 +5497,7 @@ def post_is_muted(base_dir: str, nickname: str, domain: str,
     return is_muted
 
 
-def c2s_box_json(base_dir: str, session,
-                 nickname: str, password: str,
+def c2s_box_json(session, nickname: str, password: str,
                  domain: str, port: int,
                  http_prefix: str,
                  box_name: str, page_number: int,

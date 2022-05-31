@@ -1681,8 +1681,7 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         session = create_session(proxy_type)
-        box_json = c2s_box_json(base_dir, session,
-                                argb.nickname, argb.password,
+        box_json = c2s_box_json(session, argb.nickname, argb.password,
                                 domain, port, http_prefix,
                                 argb.box, argb.pageNumber,
                                 argb.debug, signing_priv_key_pem)

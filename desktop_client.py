@@ -1482,8 +1482,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                              system_language, espeak)
             pgp_key_upload = True
 
-        box_json = c2s_box_json(base_dir, session,
-                                nickname, password,
+        box_json = c2s_box_json(session, nickname, password,
                                 domain, port, http_prefix,
                                 curr_timeline, page_number,
                                 debug, signing_priv_key_pem)
@@ -1499,8 +1498,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
 
         if not (curr_timeline == 'inbox' and page_number == 1):
             # monitor the inbox to generate notifications
-            inbox_json = c2s_box_json(base_dir, session,
-                                      nickname, password,
+            inbox_json = c2s_box_json(session, nickname, password,
                                       domain, port, http_prefix,
                                       'inbox', 1, debug,
                                       signing_priv_key_pem)
@@ -1575,8 +1573,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'dm'
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -1592,8 +1589,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'tlreplies'
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -1610,8 +1606,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'tlbookmarks'
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -1629,8 +1624,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'outbox'
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -1655,8 +1649,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number -= 1
                 page_number = max(page_number, 1)
                 prev_timeline_first_id = ''
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
