@@ -1667,8 +1667,7 @@ def outbox_message_create_wrap(http_prefix: str,
     return new_post
 
 
-def _post_is_addressed_to_followers(base_dir: str,
-                                    nickname: str, domain: str, port: int,
+def _post_is_addressed_to_followers(nickname: str, domain: str, port: int,
                                     http_prefix: str,
                                     post_json_object: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
@@ -3336,7 +3335,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
     """sends a post to the followers of the given nickname
     """
     print('send_to_followers')
-    if not _post_is_addressed_to_followers(base_dir, nickname, domain,
+    if not _post_is_addressed_to_followers(nickname, domain,
                                            port, http_prefix,
                                            post_json_object):
         if debug:
