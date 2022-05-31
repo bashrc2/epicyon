@@ -461,7 +461,6 @@ def _desktop_reply_to_post(session, post_id: str,
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     cc_url = None
-    followers_only = False
     attach = None
     media_type = None
     attached_image_description = None
@@ -479,7 +478,7 @@ def _desktop_reply_to_post(session, post_id: str,
                             base_dir, session, nickname, password,
                             domain, port,
                             to_nickname, to_domain, to_port, cc_url,
-                            http_prefix, reply_message, followers_only,
+                            http_prefix, reply_message,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,
@@ -534,7 +533,6 @@ def _desktop_new_post(session,
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     cc_url = None
-    followers_only = False
     attach = None
     media_type = None
     attached_image_description = None
@@ -553,7 +551,7 @@ def _desktop_new_post(session,
                             base_dir, session, nickname, password,
                             domain, port,
                             None, '#Public', port, cc_url,
-                            http_prefix, new_message, followers_only,
+                            http_prefix, new_message,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,
@@ -1229,7 +1227,6 @@ def _desktop_new_dm_base(session, to_handle: str,
     _say_command(new_message, new_message,
                  screenreader, system_language, espeak)
     cc_url = None
-    followers_only = False
     attach = None
     media_type = None
     attached_image_description = None
@@ -1288,7 +1285,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                             base_dir, session, nickname, password,
                             domain, port,
                             to_nickname, to_domain, to_port, cc_url,
-                            http_prefix, new_message, followers_only,
+                            http_prefix, new_message,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,

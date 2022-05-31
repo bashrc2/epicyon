@@ -1267,7 +1267,6 @@ def test_post_message_between_servers(base_dir: str) -> None:
     in_reply_to_atom_uri = None
     subject = None
     alice_post_log = []
-    followers_only = False
     save_to_file = True
     client_to_server = False
     cc_url = None
@@ -1296,7 +1295,6 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   'bob', bob_domain, bob_port, cc_url, http_prefix,
                   'Why is a mouse when it spins? ' +
                   'यह एक परीक्षण है #sillyquestion',
-                  followers_only,
                   save_to_file, client_to_server, True,
                   attached_image_filename, media_type,
                   attached_image_description, city, federation_list,
@@ -1605,7 +1603,6 @@ def test_follow_between_servers(base_dir: str) -> None:
     in_reply_to_atom_uri = None
     subject = None
     alice_post_log = []
-    followers_only = False
     save_to_file = True
     client_to_server = False
     cc_url = None
@@ -1667,7 +1664,7 @@ def test_follow_between_servers(base_dir: str) -> None:
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'bob', bob_domain, bob_port, cc_url,
-                  http_prefix, 'Alice message', followers_only, save_to_file,
+                  http_prefix, 'Alice message', save_to_file,
                   client_to_server, True,
                   None, None, None, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
@@ -1828,7 +1825,6 @@ def test_shared_items_federation(base_dir: str) -> None:
     in_reply_to_atom_uri = None
     subject = None
     alice_post_log = []
-    followers_only = False
     save_to_file = True
     client_to_server = False
     cc_url = None
@@ -2031,7 +2027,7 @@ def test_shared_items_federation(base_dir: str) -> None:
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'bob', bob_domain, bob_port, cc_url,
-                  http_prefix, 'Alice message', followers_only, save_to_file,
+                  http_prefix, 'Alice message', save_to_file,
                   client_to_server, True,
                   None, None, None, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
@@ -2278,7 +2274,6 @@ def test_group_follow(base_dir: str) -> None:
     in_reply_to_atom_uri = None
     subject = None
     alice_post_log = []
-    followers_only = False
     save_to_file = True
     client_to_server = False
     cc_url = None
@@ -2357,7 +2352,6 @@ def test_group_follow(base_dir: str) -> None:
     in_reply_to_atom_uri = None
     subject = None
     bob_post_log = []
-    followers_only = False
     save_to_file = True
     client_to_server = False
     cc_url = None
@@ -2462,7 +2456,7 @@ def test_group_follow(base_dir: str) -> None:
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'testgroup', testgroup_domain, testgroupPort, cc_url,
-                  http_prefix, "Alice group message", followers_only,
+                  http_prefix, "Alice group message",
                   save_to_file, client_to_server, True,
                   None, None, None, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
@@ -3043,7 +3037,6 @@ def test_client_to_server(base_dir: str):
     print('EVENT: Alice sends to Bob via c2s')
 
     session_alice = create_session(proxy_type)
-    followers_only = False
     attached_image_filename = base_dir + '/img/logo.png'
     media_type = get_attachment_media_type(attached_image_filename)
     attached_image_description = 'Logo'
@@ -3087,8 +3080,7 @@ def test_client_to_server(base_dir: str):
                              alice_domain, alice_port,
                              'bob', bob_domain, bob_port, None,
                              http_prefix, 'Sent from my ActivityPub client',
-                             followers_only, True,
-                             attached_image_filename, media_type,
+                             True, attached_image_filename, media_type,
                              attached_image_description, city,
                              cached_webfingers, person_cache, is_article,
                              system_language, languages_understood,

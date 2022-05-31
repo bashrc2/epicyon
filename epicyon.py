@@ -1519,7 +1519,6 @@ def _command_options() -> None:
 
         cc_url = None
         send_message = argb.message
-        followers_only = argb.followersonly
         # client_to_server = argb.client
         attached_image_description = argb.imageDescription
         city = 'London, England'
@@ -1533,7 +1532,6 @@ def _command_options() -> None:
         if attach:
             media_type = get_attachment_media_type(attach)
         reply_to = argb.replyto
-        followers_only = False
         is_article = False
         if not domain:
             domain = get_config_param(base_dir, 'domain')
@@ -1549,7 +1547,7 @@ def _command_options() -> None:
                              base_dir, session, argb.nickname, argb.password,
                              domain, port,
                              to_nickname, to_domain, to_port, cc_url,
-                             http_prefix, send_message, followers_only,
+                             http_prefix, send_message,
                              argb.commentsEnabled, attach, media_type,
                              attached_image_description, city,
                              cached_webfingers, person_cache, is_article,

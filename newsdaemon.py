@@ -631,7 +631,6 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
 #        if len(item) > 8:
 #            podcast_properties = item[8]
 
-        followers_only = False
         # NOTE: the id when the post is created will not be
         # consistent (it's based on the current time, not the
         # published time), so we change that later
@@ -645,7 +644,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         blog = create_news_post(base_dir,
                                 domain, port, http_prefix,
                                 rss_description,
-                                followers_only, save_to_file,
+                                save_to_file,
                                 attach_image_filename, media_type,
                                 image_description, city,
                                 rss_title, system_language,

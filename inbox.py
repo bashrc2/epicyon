@@ -3260,7 +3260,6 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     # create the bounce DM
     subject = None
     content = translate['DM bounce']
-    followers_only = False
     save_to_file = False
     client_to_server = False
     comments_enabled = False
@@ -3279,7 +3278,7 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     low_bandwidth = False
     post_json_object = \
         create_direct_message_post(base_dir, nickname, domain, port,
-                                   http_prefix, content, followers_only,
+                                   http_prefix, content,
                                    save_to_file, client_to_server,
                                    comments_enabled,
                                    attach_image_filename, media_type,
