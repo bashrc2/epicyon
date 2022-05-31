@@ -1676,7 +1676,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         post_json_announce = \
             download_announce(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
-                              project_version, translate,
+                              project_version,
                               yt_replace_domain,
                               twitter_replacement_domain,
                               allow_local_network_access,
