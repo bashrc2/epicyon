@@ -18928,8 +18928,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                        sys_language)
                         followers_only = False
                         pin_post(self.server.base_dir,
-                                 nickname, self.server.domain, content_str,
-                                 followers_only)
+                                 nickname, self.server.domain, content_str)
                         return 1
                     if self._post_to_outbox(message_json,
                                             self.server.project_version,

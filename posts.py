@@ -1703,7 +1703,7 @@ def _post_is_addressed_to_followers(nickname: str, domain: str, port: int,
 
 
 def pin_post(base_dir: str, nickname: str, domain: str,
-             pinned_content: str, followers_only: bool) -> None:
+             pinned_content: str) -> None:
     """Pins the given post Id to the profile of then given account
     """
     account_dir = acct_dir(base_dir, nickname, domain)
