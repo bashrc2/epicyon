@@ -738,10 +738,10 @@ def _update_word_frequency(content: str, word_frequency: {}) -> None:
     words_list = plain_text.split(' ')
     common_words = _get_common_words()
     for word in words_list:
-        wordLen = len(word)
-        if wordLen < 3:
+        word_len = len(word)
+        if word_len < 3:
             continue
-        if wordLen < 4:
+        if word_len < 4:
             if word.upper() != word:
                 continue
         if '&' in word or \
@@ -759,17 +759,10 @@ def _update_word_frequency(content: str, word_frequency: {}) -> None:
             word_frequency[word] = 1
 
 
-def get_post_domains(session, outbox_url: str, max_posts: int,
-                     max_mentions: int,
-                     max_emoji: int, max_attachments: int,
-                     federation_list: [],
-                     person_cache: {},
-                     debug: bool,
-                     project_version: str, http_prefix: str,
-                     domain: str,
-                     word_frequency: {},
-                     domain_list: [], system_language: str,
-                     signing_priv_key_pem: str) -> []:
+def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
+                     project_version: str, http_prefix: str, domain: str,
+                     word_frequency: {}, domain_list: [],
+                     system_language: str, signing_priv_key_pem: str) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outbox_url:
@@ -806,7 +799,7 @@ def get_post_domains(session, outbox_url: str, max_posts: int,
             _update_word_frequency(content_str, word_frequency)
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
-                post_domain, post_port = \
+                post_domain, _ = \
                     get_domain_from_actor(item['object']['inReplyTo'])
                 if post_domain not in post_domains:
                     post_domains.append(post_domain)
@@ -4450,7 +4443,6 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
         return domain_list
     person_cache = {}
     cached_webfingers = {}
-    federation_list = []
 
     domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
@@ -4473,13 +4465,8 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
                             92522)
-    max_mentions = 99
-    max_emoji = 99
-    max_attachments = 5
     post_domains = \
-        get_post_domains(session, person_url, 64, max_mentions, max_emoji,
-                         max_attachments, federation_list,
-                         person_cache, debug,
+        get_post_domains(session, person_url, 64, debug,
                          project_version, http_prefix, domain,
                          word_frequency, domain_list, system_language,
                          signing_priv_key_pem)
@@ -4575,10 +4562,7 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
     max_attachments = 5
     max_posts = 64
     post_domains = \
-        get_post_domains(session, person_url, max_posts,
-                         max_mentions, max_emoji,
-                         max_attachments, federation_list,
-                         person_cache, debug,
+        get_post_domains(session, person_url, max_posts, debug,
                          project_version, http_prefix, domain,
                          word_frequency, [], system_language,
                          signing_priv_key_pem)
