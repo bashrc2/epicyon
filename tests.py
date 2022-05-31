@@ -741,7 +741,6 @@ def create_server_alice(path: str, domain: str, port: int,
         add_follower_of_person(path, nickname, domain, 'bob', bob_address,
                                federation_list, False, False)
     if hasPosts:
-        test_followers_only = False
         test_save_to_file = True
         client_to_server = False
         test_comments_enabled = True
@@ -762,7 +761,6 @@ def create_server_alice(path: str, domain: str, port: int,
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
         create_public_post(path, nickname, domain, port, http_prefix,
                            "No wise fish would go anywhere without a porpoise",
-                           test_followers_only,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
@@ -778,7 +776,6 @@ def create_server_alice(path: str, domain: str, port: int,
                            languages_understood)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Curiouser and curiouser!",
-                           test_followers_only,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
@@ -795,7 +792,6 @@ def create_server_alice(path: str, domain: str, port: int,
         create_public_post(path, nickname, domain, port, http_prefix,
                            "In the gardens of memory, in the palace " +
                            "of dreams, that is where you and I shall meet",
-                           test_followers_only,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
@@ -905,7 +901,6 @@ def create_server_bob(path: str, domain: str, port: int,
                                'alice', alice_address, federation_list,
                                False, False)
     if hasPosts:
-        test_followers_only = False
         test_save_to_file = True
         test_comments_enabled = True
         test_attach_image_filename = None
@@ -925,7 +920,6 @@ def create_server_bob(path: str, domain: str, port: int,
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
         create_public_post(path, nickname, domain, port, http_prefix,
                            "It's your life, live it your way.",
-                           test_followers_only,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
@@ -942,7 +936,6 @@ def create_server_bob(path: str, domain: str, port: int,
         create_public_post(path, nickname, domain, port, http_prefix,
                            "One of the things I've realised is that " +
                            "I am very simple",
-                           test_followers_only,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
@@ -958,7 +951,6 @@ def create_server_bob(path: str, domain: str, port: int,
                            languages_understood)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Quantum physics is a bit of a passion of mine",
-                           test_followers_only,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
@@ -2838,7 +2830,6 @@ def _test_create_person_account(base_dir: str):
     test_event_end_time = None
     test_location = None
     test_is_article = False
-    followers_only = False
     save_to_file = True
     comments_enabled = True
     attach_image_filename = None
@@ -2853,7 +2844,7 @@ def _test_create_person_account(base_dir: str):
         "anything which challenges middle class sensibilities or incomes."
     test_post_json = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content, followers_only, save_to_file,
+                           content, save_to_file,
                            client_to_server,
                            comments_enabled, attach_image_filename, media_type,
                            'Not suitable for Vogons', 'London, England',
@@ -2879,7 +2870,7 @@ def _test_create_person_account(base_dir: str):
         'then email would be somequitelongword.\nAnotherlongwordhere sentence.'
     test_post_json = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content, followers_only, save_to_file,
+                           content, save_to_file,
                            client_to_server,
                            comments_enabled, attach_image_filename, media_type,
                            'Not suitable for Vogons', 'London, England',
@@ -4643,7 +4634,6 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     post_id = \
         http_prefix + '://rat.site/users/ninjarodent/statuses/63746173435'
     content = "@ninjarodent@rat.site This is a test."
-    followers_only = False
     save_to_file = False
     client_to_server = False
     comments_enabled = True
@@ -4665,7 +4655,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     reply = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content, followers_only, save_to_file,
+                           content, save_to_file,
                            client_to_server, comments_enabled,
                            attach_image_filename, media_type,
                            image_description, city, test_in_reply_to,
@@ -5574,7 +5564,6 @@ def _test_links_within_post(base_dir: str) -> None:
     http_prefix = 'https'
     content = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
-    followers_only = False
     save_to_file = False
     client_to_server = False
     comments_enabled = True
@@ -5597,7 +5586,7 @@ def _test_links_within_post(base_dir: str) -> None:
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content, followers_only, save_to_file,
+                           content, save_to_file,
                            client_to_server, comments_enabled,
                            attach_image_filename, media_type,
                            image_description, city,
@@ -5641,7 +5630,7 @@ def _test_links_within_post(base_dir: str) -> None:
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content,
-                           False, False,
+                           False,
                            False, True,
                            None, None,
                            False, None,
@@ -6590,7 +6579,6 @@ def _test_can_replyto(base_dir: str) -> None:
     http_prefix = 'https'
     content = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
-    followers_only = False
     save_to_file = False
     client_to_server = False
     comments_enabled = True
@@ -6613,7 +6601,7 @@ def _test_can_replyto(base_dir: str) -> None:
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content, followers_only, save_to_file,
+                           content, save_to_file,
                            client_to_server, comments_enabled,
                            attach_image_filename, media_type,
                            image_description, city,

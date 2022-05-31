@@ -3198,7 +3198,6 @@ def _command_options() -> None:
         delete_all_posts(base_dir, nickname, domain, 'inbox')
         delete_all_posts(base_dir, nickname, domain, 'outbox')
 
-        test_followers_only = False
         test_save_to_file = True
         test_c2s = False
         test_comments_enabled = True
@@ -3221,7 +3220,6 @@ def _command_options() -> None:
 
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "like this is totally just a #test man",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3236,7 +3234,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Zoiks!!!",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3251,7 +3248,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Hey scoob we need like a hundred more #milkshakes",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3266,7 +3262,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Getting kinda spooky around here",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3282,7 +3277,6 @@ def _command_options() -> None:
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "And they would have gotten away with it too" +
                            "if it wasn't for those pesky hackers",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3297,7 +3291,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "man these centralized sites are like the worst!",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3312,7 +3305,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "another mystery solved #test",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3327,7 +3319,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "let's go bowling",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
