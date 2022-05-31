@@ -3593,7 +3593,7 @@ def create_inbox(recent_posts_cache: {},
                  http_prefix: str, items_per_page: int, header_only: bool,
                  page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
-                               session, base_dir, 'inbox',
+                               base_dir, 'inbox',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
@@ -3603,7 +3603,7 @@ def create_bookmarks_timeline(session, base_dir: str,
                               nickname: str, domain: str,
                               port: int, http_prefix: str, items_per_page: int,
                               header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'tlbookmarks',
+    return _create_box_indexed({}, base_dir, 'tlbookmarks',
                                nickname, domain,
                                port, http_prefix, items_per_page, header_only,
                                True, 0, False, 0, page_number)
@@ -3614,7 +3614,7 @@ def create_dm_timeline(recent_posts_cache: {},
                        port: int, http_prefix: str, items_per_page: int,
                        header_only: bool, page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
-                               session, base_dir, 'dm', nickname,
+                               base_dir, 'dm', nickname,
                                domain, port, http_prefix, items_per_page,
                                header_only, True, 0, False, 0, page_number)
 
@@ -3623,7 +3623,7 @@ def create_replies_timeline(recent_posts_cache: {},
                             session, base_dir: str, nickname: str, domain: str,
                             port: int, http_prefix: str, items_per_page: int,
                             header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed(recent_posts_cache, session,
+    return _create_box_indexed(recent_posts_cache,
                                base_dir, 'tlreplies',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, True,
@@ -3633,7 +3633,7 @@ def create_replies_timeline(recent_posts_cache: {},
 def create_blogs_timeline(session, base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, items_per_page: int,
                           header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'tlblogs', nickname,
+    return _create_box_indexed({}, base_dir, 'tlblogs', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
@@ -3643,7 +3643,7 @@ def create_features_timeline(session, base_dir: str,
                              nickname: str, domain: str,
                              port: int, http_prefix: str, items_per_page: int,
                              header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'tlfeatures', nickname,
+    return _create_box_indexed({}, base_dir, 'tlfeatures', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
@@ -3652,7 +3652,7 @@ def create_features_timeline(session, base_dir: str,
 def create_media_timeline(session, base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, items_per_page: int,
                           header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'tlmedia', nickname,
+    return _create_box_indexed({}, base_dir, 'tlmedia', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
@@ -3663,7 +3663,7 @@ def create_news_timeline(session, base_dir: str, nickname: str, domain: str,
                          header_only: bool, newswire_votes_threshold: int,
                          positive_voting: bool, voting_time_mins: int,
                          page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'outbox', 'news',
+    return _create_box_indexed({}, base_dir, 'outbox', 'news',
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                newswire_votes_threshold, positive_voting,
@@ -3674,7 +3674,7 @@ def create_outbox(session, base_dir: str, nickname: str, domain: str,
                   port: int, http_prefix: str,
                   items_per_page: int, header_only: bool, authorized: bool,
                   page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'outbox',
+    return _create_box_indexed({}, base_dir, 'outbox',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, authorized,
                                0, False, 0, page_number)
@@ -3955,7 +3955,7 @@ def _passed_newswire_voting(newswire_votes_threshold: int,
 
 
 def _create_box_indexed(recent_posts_cache: {},
-                        session, base_dir: str, boxname: str,
+                        base_dir: str, boxname: str,
                         nickname: str, domain: str, port: int,
                         http_prefix: str,
                         items_per_page: int, header_only: bool,
