@@ -3835,8 +3835,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
                 hashtag_str = \
-                    html_hashtag_search(self.server.css_cache,
-                                        nickname, domain, port,
+                    html_hashtag_search(nickname, domain, port,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
@@ -3881,10 +3880,8 @@ class PubServer(BaseHTTPRequestHandler):
                 search_str = search_str.replace('*', '').strip()
                 skill_str = \
                     html_skills_search(actor_str,
-                                       self.server.css_cache,
                                        self.server.translate,
                                        base_dir,
-                                       http_prefix,
                                        search_str,
                                        self.server.instance_only_skills_search,
                                        64)
@@ -3940,8 +3937,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
                 history_str = \
-                    html_history_search(self.server.css_cache,
-                                        self.server.translate,
+                    html_history_search(self.server.translate,
                                         base_dir,
                                         http_prefix,
                                         nickname,
@@ -4021,8 +4017,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
                 bookmarks_str = \
-                    html_history_search(self.server.css_cache,
-                                        self.server.translate,
+                    html_history_search(self.server.translate,
                                         base_dir,
                                         http_prefix,
                                         nickname,
@@ -4187,8 +4182,7 @@ class PubServer(BaseHTTPRequestHandler):
                         bold_reading = True
 
                     profile_str = \
-                        html_profile_after_search(self.server.css_cache,
-                                                  recent_posts_cache,
+                        html_profile_after_search(recent_posts_cache,
                                                   self.server.max_recent_posts,
                                                   self.server.translate,
                                                   base_dir,
@@ -4243,10 +4237,8 @@ class PubServer(BaseHTTPRequestHandler):
                         search_str.replace(' emoji', '')
                 # emoji search
                 emoji_str = \
-                    html_search_emoji(self.server.css_cache,
-                                      self.server.translate,
+                    html_search_emoji(self.server.translate,
                                       base_dir,
-                                      http_prefix,
                                       search_str)
                 if emoji_str:
                     msg = emoji_str.encode('utf-8')
@@ -4261,8 +4253,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shared_items_federated_domains = \
                     self.server.shared_items_federated_domains
                 wanted_items_str = \
-                    html_search_shared_items(self.server.css_cache,
-                                             self.server.translate,
+                    html_search_shared_items(self.server.translate,
                                              base_dir,
                                              search_str[1:], page_number,
                                              MAX_POSTS_IN_FEED,
@@ -4284,8 +4275,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shared_items_federated_domains = \
                     self.server.shared_items_federated_domains
                 shared_items_str = \
-                    html_search_shared_items(self.server.css_cache,
-                                             self.server.translate,
+                    html_search_shared_items(self.server.translate,
                                              base_dir,
                                              search_str, page_number,
                                              MAX_POSTS_IN_FEED,
@@ -8353,7 +8343,7 @@ class PubServer(BaseHTTPRequestHandler):
         hashtag = urllib.parse.unquote_plus(hashtag)
         if is_blocked_hashtag(base_dir, hashtag):
             print('BLOCK: hashtag #' + hashtag)
-            msg = html_hashtag_blocked(self.server.css_cache, base_dir,
+            msg = html_hashtag_blocked(base_dir,
                                        self.server.translate).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
@@ -8374,8 +8364,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.bold_reading.get(nickname):
             bold_reading = True
         hashtag_str = \
-            html_hashtag_search(self.server.css_cache,
-                                nickname, domain, port,
+            html_hashtag_search(nickname, domain, port,
                                 self.server.recent_posts_cache,
                                 self.server.max_recent_posts,
                                 self.server.translate,
@@ -16226,17 +16215,14 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/terms'):
             if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
-                msg = html_terms_of_service(self.server.css_cache,
-                                            self.server.base_dir, 'http',
+                msg = html_terms_of_service(self.server.base_dir, 'http',
                                             self.server.onion_domain)
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
-                msg = html_terms_of_service(self.server.css_cache,
-                                            self.server.base_dir, 'http',
+                msg = html_terms_of_service(self.server.base_dir, 'http',
                                             self.server.i2p_domain)
             else:
-                msg = html_terms_of_service(self.server.css_cache,
-                                            self.server.base_dir,
+                msg = html_terms_of_service(self.server.base_dir,
                                             self.server.http_prefix,
                                             self.server.domain_full)
             msg = msg.encode('utf-8')
@@ -16265,8 +16251,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not os.path.isfile(following_filename):
                 self._404()
                 return
-            msg = html_following_list(self.server.css_cache,
-                                      self.server.base_dir, following_filename)
+            msg = html_following_list(self.server.base_dir, following_filename)
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
             self._write(msg.encode('utf-8'))
@@ -16435,9 +16420,6 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.domain):
                 msg = \
                     html_welcome_final(self.server.base_dir, nickname,
-                                       self.server.domain,
-                                       self.server.http_prefix,
-                                       self.server.domain_full,
                                        self.server.system_language,
                                        self.server.translate,
                                        self.server.theme_name)
@@ -17016,8 +16998,7 @@ class PubServer(BaseHTTPRequestHandler):
                     access_keys = self.server.key_shortcuts[nickname]
 
                 # show the search screen
-                msg = html_search(self.server.css_cache,
-                                  self.server.translate,
+                msg = html_search(self.server.translate,
                                   self.server.base_dir, self.path,
                                   self.server.domain,
                                   self.server.default_timeline,
@@ -17171,8 +17152,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.path.endswith('/searchemoji'):
                 # show the search screen
                 msg = \
-                    html_search_emoji_text_entry(self.server.css_cache,
-                                                 self.server.translate,
+                    html_search_emoji_text_entry(self.server.translate,
                                                  self.server.base_dir,
                                                  self.path).encode('utf-8')
                 msglen = len(msg)

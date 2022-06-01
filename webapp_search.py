@@ -42,9 +42,7 @@ from webapp_post import individual_post_as_html
 from webapp_hashtagswarm import html_hash_tag_swarm
 
 
-def html_search_emoji(css_cache: {}, translate: {},
-                      base_dir: str, http_prefix: str,
-                      search_str: str) -> str:
+def html_search_emoji(translate: {}, base_dir: str, search_str: str) -> str:
     """Search results for emoji
     """
     # emoji.json is generated so that it can be customized and the changes
@@ -221,7 +219,7 @@ def _html_shares_result(base_dir: str, shares_json: {}, page_number: int,
     return results_exist, curr_page, ctr, shared_items_form
 
 
-def html_search_shared_items(css_cache: {}, translate: {},
+def html_search_shared_items(translate: {},
                              base_dir: str, search_str: str,
                              page_number: int,
                              results_per_page: int,
@@ -331,7 +329,7 @@ def html_search_shared_items(css_cache: {}, translate: {},
     return shared_items_form
 
 
-def html_search_emoji_text_entry(css_cache: {}, translate: {},
+def html_search_emoji_text_entry(translate: {},
                                  base_dir: str, path: str) -> str:
     """Search for an emoji by name
     """
@@ -380,8 +378,7 @@ def html_search_emoji_text_entry(css_cache: {}, translate: {},
     return emoji_str
 
 
-def html_search(css_cache: {}, translate: {},
-                base_dir: str, path: str, domain: str,
+def html_search(translate: {}, base_dir: str, path: str, domain: str,
                 default_timeline: str, theme: str,
                 text_mode_banner: str, access_keys: {}) -> str:
     """Search called from the timeline icon
@@ -468,9 +465,7 @@ def html_search(css_cache: {}, translate: {},
     return follow_str
 
 
-def html_skills_search(actor: str,
-                       css_cache: {}, translate: {}, base_dir: str,
-                       http_prefix: str,
+def html_skills_search(actor: str, translate: {}, base_dir: str,
                        skillsearch: str, instance_only: bool,
                        posts_per_page: int) -> str:
     """Show a page containing search results for a skill
@@ -601,7 +596,7 @@ def html_skills_search(actor: str,
     return skill_search_form
 
 
-def html_history_search(css_cache: {}, translate: {}, base_dir: str,
+def html_history_search(translate: {}, base_dir: str,
                         http_prefix: str,
                         nickname: str, domain: str,
                         historysearch: str,
@@ -721,8 +716,7 @@ def html_history_search(css_cache: {}, translate: {}, base_dir: str,
     return history_search_form
 
 
-def html_hashtag_search(css_cache: {},
-                        nickname: str, domain: str, port: int,
+def html_hashtag_search(nickname: str, domain: str, port: int,
                         recent_posts_cache: {}, max_recent_posts: int,
                         translate: {},
                         base_dir: str, hashtag: str, page_number: int,

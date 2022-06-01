@@ -813,8 +813,7 @@ def _get_bookmark_icon_html(nickname: str, domain_full: str,
     return bookmark_str
 
 
-def _get_reaction_icon_html(nickname: str, domain_full: str,
-                            post_json_object: {},
+def _get_reaction_icon_html(nickname: str, post_json_object: {},
                             is_moderation_post: bool,
                             show_reaction_button: bool,
                             translate: {},
@@ -1900,8 +1899,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '12.9')
 
     reaction_str = \
-        _get_reaction_icon_html(nickname, domain_full,
-                                post_json_object,
+        _get_reaction_icon_html(nickname, post_json_object,
                                 is_moderation_post,
                                 show_reaction_button,
                                 translate,
@@ -2135,7 +2133,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         content_str = add_embedded_elements(translate, content_str,
                                             peertube_instances)
         content_str = insert_question(base_dir, translate,
-                                      nickname, domain, port,
+                                      nickname, domain,
                                       content_str, post_json_object,
                                       page_number)
     else:
@@ -2157,7 +2155,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             cw_content_str = add_embedded_elements(translate, cw_content_str,
                                                    peertube_instances)
             cw_content_str = \
-                insert_question(base_dir, translate, nickname, domain, port,
+                insert_question(base_dir, translate, nickname, domain,
                                 cw_content_str, post_json_object, page_number)
             cw_content_str = \
                 switch_words(base_dir, nickname, domain, cw_content_str)

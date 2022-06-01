@@ -14,8 +14,7 @@ from utils import acct_dir
 
 
 def insert_question(base_dir: str, translate: {},
-                    nickname: str, domain: str, port: int,
-                    content: str,
+                    nickname: str, domain: str, content: str,
                     post_json_object: {}, page_number: int) -> str:
     """ Inserts question selection into a post
     """
