@@ -386,7 +386,6 @@ def clear_followers(base_dir: str, nickname: str, domain: str) -> None:
 
 
 def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
-                       authenticated: bool,
                        follow_file='following.txt') -> int:
     """Returns the number of follows or followers
     """
@@ -422,13 +421,10 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
     return ctr
 
 
-def get_no_of_followers(base_dir: str,
-                        nickname: str, domain: str,
-                        authenticated: bool) -> int:
+def get_no_of_followers(base_dir: str, nickname: str, domain: str) -> int:
     """Returns the number of followers of the given person
     """
-    return _get_no_of_follows(base_dir, nickname, domain,
-                              authenticated, 'followers.txt')
+    return _get_no_of_follows(base_dir, nickname, domain, 'followers.txt')
 
 
 def get_following_feed(base_dir: str, domain: str, port: int, path: str,
@@ -482,7 +478,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
         id_str = \
             local_actor_url(http_prefix, nickname, domain) + '/' + follow_file
         total_str = \
-            _get_no_of_follows(base_dir, nickname, domain, authorized)
+            _get_no_of_follows(base_dir, nickname, domain)
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': first_str,
@@ -599,7 +595,6 @@ def follow_approval_required(base_dir: str, nickname_to_follow: str,
 
 def no_of_follow_requests(base_dir: str,
                           nickname_to_follow: str, domain_to_follow: str,
-                          nickname: str, domain: str, from_port: int,
                           follow_type: str) -> int:
     """Returns the current number of follow requests
     """
@@ -846,8 +841,13 @@ def followed_account_rejects(session, session_onion, session_i2p,
     except OSError:
         print('EX: followed_account_rejects unable to delete ' +
               follow_activity_filename)
+    curr_session = session
+    if domain.endswith('.onion') and session_onion:
+        curr_session = session_onion
+    elif domain.endswith('.i2p') and session_i2p:
+        curr_session = session_i2p
     # send the reject activity
-    return send_signed_json(reject_json, session, base_dir,
+    return send_signed_json(reject_json, curr_session, base_dir,
                             nickname_to_follow, domain_to_follow, port,
                             nickname, domain, from_port,
                             http_prefix, client_to_server,
@@ -981,7 +981,7 @@ def send_follow_request_via_server(base_dir: str, session,
     followed_id = \
         http_prefix + '://' + follow_domain_full + '/@' + follow_nickname
 
-    status_number, published = get_status_number()
+    status_number, _ = get_status_number()
     new_follow_json = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': follow_actor + '/statuses/' + str(status_number),

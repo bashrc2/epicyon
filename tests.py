@@ -6389,7 +6389,7 @@ def _test_set_actor_language():
     actor_json = {
         "attachment": []
     }
-    set_actor_languages(None, actor_json, 'es, fr, en')
+    set_actor_languages(actor_json, 'es, fr, en')
     assert len(actor_json['attachment']) == 1
     assert actor_json['attachment'][0]['name'] == 'Languages'
     assert actor_json['attachment'][0]['type'] == 'PropertyValue'

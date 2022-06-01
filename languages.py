@@ -46,8 +46,7 @@ def get_understood_languages(base_dir: str, http_prefix: str,
     return get_actor_languages_list(actor_json)
 
 
-def set_actor_languages(base_dir: str, actor_json: {},
-                        languages_str: str) -> None:
+def set_actor_languages(actor_json: {}, languages_str: str) -> None:
     """Sets the languages understood by the given actor
     """
     languages_str = languages_str.strip()

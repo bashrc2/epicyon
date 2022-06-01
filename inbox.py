@@ -4649,9 +4649,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                   nickname_to_follow)
         return True
     if max_followers > 0:
-        if get_no_of_followers(base_dir,
-                               nickname_to_follow, domain_to_follow,
-                               True) > max_followers:
+        if get_no_of_followers(base_dir, nickname_to_follow,
+                               domain_to_follow) > max_followers:
             print('WARN: ' + nickname_to_follow +
                   ' has reached their maximum number of followers')
             return True
@@ -4716,21 +4715,18 @@ def _receive_follow_request(session, session_onion, session_i2p,
         if domain.endswith('.onion'):
             if no_of_follow_requests(base_dir,
                                      nickname_to_follow, domain_to_follow,
-                                     nickname, domain, from_port,
                                      'onion') > 5:
                 print('Too many follow requests from onion addresses')
                 return False
         elif domain.endswith('.i2p'):
             if no_of_follow_requests(base_dir,
                                      nickname_to_follow, domain_to_follow,
-                                     nickname, domain, from_port,
                                      'i2p') > 5:
                 print('Too many follow requests from i2p addresses')
                 return False
         else:
             if no_of_follow_requests(base_dir,
                                      nickname_to_follow, domain_to_follow,
-                                     nickname, domain, from_port,
                                      '') > 10:
                 print('Too many follow requests')
                 return False

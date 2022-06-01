@@ -5998,12 +5998,12 @@ class PubServer(BaseHTTPRequestHandler):
                     current_show_languages = get_actor_languages(actor_json)
                     if fields.get('showLanguages'):
                         if fields['showLanguages'] != current_show_languages:
-                            set_actor_languages(base_dir, actor_json,
+                            set_actor_languages(actor_json,
                                                 fields['showLanguages'])
                             actor_changed = True
                     else:
                         if current_show_languages:
-                            set_actor_languages(base_dir, actor_json, '')
+                            set_actor_languages(actor_json, '')
                             actor_changed = True
 
                     # change time zone

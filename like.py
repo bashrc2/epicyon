@@ -351,8 +351,7 @@ def send_undo_like_via_server(base_dir: str, session,
 
 
 def outbox_like(recent_posts_cache: {},
-                base_dir: str, http_prefix: str,
-                nickname: str, domain: str, port: int,
+                base_dir: str, nickname: str, domain: str,
                 message_json: {}, debug: bool) -> None:
     """ When a like request is received by the outbox from c2s
     """
