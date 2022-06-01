@@ -1485,11 +1485,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                 debug, signing_priv_key_pem)
 
         follow_requests_json = \
-            get_follow_requests_via_server(base_dir, session,
+            get_follow_requests_via_server(session,
                                            nickname, password,
                                            domain, port,
                                            http_prefix, 1,
-                                           cached_webfingers, person_cache,
                                            debug, __version__,
                                            signing_priv_key_pem)
 
@@ -2214,12 +2213,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 follow_requests_json = \
-                    get_follow_requests_via_server(base_dir, session,
+                    get_follow_requests_via_server(session,
                                                    nickname, password,
                                                    domain, port,
                                                    http_prefix, curr_page,
-                                                   cached_webfingers,
-                                                   person_cache,
                                                    debug, __version__,
                                                    signing_priv_key_pem)
                 if follow_requests_json:
@@ -2235,11 +2232,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 following_json = \
-                    get_following_via_server(base_dir, session,
+                    get_following_via_server(session,
                                              nickname, password,
                                              domain, port,
                                              http_prefix, curr_page,
-                                             cached_webfingers, person_cache,
                                              debug, __version__,
                                              signing_priv_key_pem)
                 if following_json:
@@ -2256,11 +2252,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 followers_json = \
-                    get_followers_via_server(base_dir, session,
+                    get_followers_via_server(session,
                                              nickname, password,
                                              domain, port,
                                              http_prefix, curr_page,
-                                             cached_webfingers, person_cache,
                                              debug, __version__,
                                              signing_priv_key_pem)
                 if followers_json:
@@ -2359,14 +2354,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _say_command(say_str, say_str,
                                      screenreader, system_language, espeak)
                         session_approve = create_session(proxy_type)
-                        approve_follow_request_via_server(base_dir,
-                                                          session_approve,
+                        approve_follow_request_via_server(session_approve,
                                                           nickname, password,
                                                           domain, port,
                                                           http_prefix,
                                                           approve_handle,
-                                                          cached_webfingers,
-                                                          person_cache,
                                                           debug,
                                                           __version__,
                                                           signing_priv_key_pem)
@@ -2393,13 +2385,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _say_command(say_str, say_str,
                                      screenreader, system_language, espeak)
                         session_deny = create_session(proxy_type)
-                        deny_follow_request_via_server(base_dir, session_deny,
+                        deny_follow_request_via_server(session_deny,
                                                        nickname, password,
                                                        domain, port,
                                                        http_prefix,
                                                        deny_handle,
-                                                       cached_webfingers,
-                                                       person_cache,
                                                        debug,
                                                        __version__,
                                                        signing_priv_key_pem)

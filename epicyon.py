@@ -2268,11 +2268,10 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         following_json = \
-            get_following_via_server(base_dir, session,
+            get_following_via_server(session,
                                      argb.nickname, argb.password,
                                      domain, port,
                                      follow_http_prefix, argb.pageNumber,
-                                     cached_webfingers, person_cache,
                                      debug, __version__, signing_priv_key_pem)
         if following_json:
             pprint(following_json)
@@ -2302,11 +2301,10 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         followers_json = \
-            get_followers_via_server(base_dir, session,
+            get_followers_via_server(session,
                                      argb.nickname, argb.password,
                                      domain, port,
                                      follow_http_prefix, argb.pageNumber,
-                                     cached_webfingers, person_cache,
                                      debug, __version__,
                                      signing_priv_key_pem)
         if followers_json:
@@ -2337,11 +2335,10 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         follow_requests_json = \
-            get_follow_requests_via_server(base_dir, session,
+            get_follow_requests_via_server(session,
                                            argb.nickname, argb.password,
                                            domain, port,
                                            follow_http_prefix, argb.pageNumber,
-                                           cached_webfingers, person_cache,
                                            debug, __version__,
                                            signing_priv_key_pem)
         if follow_requests_json:
