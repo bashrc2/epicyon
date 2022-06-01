@@ -2272,16 +2272,15 @@ def individual_post_as_html(signing_priv_key_pem: str,
     return post_html
 
 
-def html_individual_post(css_cache: {},
-                         recent_posts_cache: {}, max_recent_posts: int,
+def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          translate: {},
                          base_dir: str, session, cached_webfingers: {},
                          person_cache: {},
                          nickname: str, domain: str, port: int,
                          authorized: bool,
                          post_json_object: {}, http_prefix: str,
-                         project_version: str, likedBy: str,
-                         reactBy: str, reactEmoji: str,
+                         project_version: str, liked_by: str,
+                         react_by: str, react_emoji: str,
                          yt_replace_domain: str,
                          twitter_replacement_domain: str,
                          show_published_date_only: bool,
@@ -2299,13 +2298,13 @@ def html_individual_post(css_cache: {},
     by_str = ''
     by_text = ''
     by_text_extra = ''
-    if likedBy:
-        by_str = likedBy
+    if liked_by:
+        by_str = liked_by
         by_text = 'Liked by'
-    elif reactBy and reactEmoji:
-        by_str = reactBy
+    elif react_by and react_emoji:
+        by_str = react_by
         by_text = 'Reaction by'
-        by_text_extra = ' ' + reactEmoji
+        by_text_extra = ' ' + react_emoji
 
     if by_str:
         by_str_nickname = get_nickname_from_actor(by_str)
@@ -2454,8 +2453,7 @@ def html_individual_post(css_cache: {},
     return header_str + post_str + html_footer()
 
 
-def html_post_replies(css_cache: {},
-                      recent_posts_cache: {}, max_recent_posts: int,
+def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       translate: {}, base_dir: str,
                       session, cached_webfingers: {}, person_cache: {},
                       nickname: str, domain: str, port: int, replies_json: {},
@@ -2509,8 +2507,7 @@ def html_post_replies(css_cache: {},
     return header_str + replies_str + html_footer()
 
 
-def html_emoji_reaction_picker(css_cache: {},
-                               recent_posts_cache: {}, max_recent_posts: int,
+def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                translate: {},
                                base_dir: str, session, cached_webfingers: {},
                                person_cache: {},

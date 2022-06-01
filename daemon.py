@@ -9866,8 +9866,7 @@ class PubServer(BaseHTTPRequestHandler):
             bold_reading = True
 
         msg = \
-            html_emoji_reaction_picker(self.server.css_cache,
-                                       self.server.recent_posts_cache,
+            html_emoji_reaction_picker(self.server.recent_posts_cache,
                                        self.server.max_recent_posts,
                                        self.server.translate,
                                        self.server.base_dir,
@@ -10670,8 +10669,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
                 msg = \
-                    html_post_replies(self.server.css_cache,
-                                      recent_posts_cache,
+                    html_post_replies(recent_posts_cache,
                                       max_recent_posts,
                                       translate,
                                       base_dir,
@@ -10775,8 +10773,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
                 msg = \
-                    html_post_replies(self.server.css_cache,
-                                      recent_posts_cache,
+                    html_post_replies(recent_posts_cache,
                                       max_recent_posts,
                                       translate,
                                       base_dir,
@@ -11386,8 +11383,7 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = True
 
             msg = \
-                html_individual_post(self.server.css_cache,
-                                     self.server.recent_posts_cache,
+                html_individual_post(self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      base_dir,
