@@ -42,8 +42,7 @@ def get_broken_link_substitute() -> str:
         "/icons/avatar_default.png'\""
 
 
-def html_following_list(css_cache: {}, base_dir: str,
-                        following_filename: str) -> str:
+def html_following_list(base_dir: str, following_filename: str) -> str:
     """Returns a list of handles being followed
     """
     with open(following_filename, 'r') as following_file:
@@ -70,7 +69,7 @@ def html_following_list(css_cache: {}, base_dir: str,
     return ''
 
 
-def html_hashtag_blocked(css_cache: {}, base_dir: str, translate: {}) -> str:
+def html_hashtag_blocked(base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blocked_hashtag_form = ''
@@ -492,7 +491,7 @@ def post_contains_public(post_json_object: {}) -> bool:
 
 
 def _get_image_file(base_dir: str, name: str, directory: str,
-                    nickname: str, domain: str, theme: str) -> (str, str):
+                    theme: str) -> (str, str):
     """
     returns the filenames for an image with the given name
     """
@@ -524,8 +523,7 @@ def get_banner_file(base_dir: str,
     """Gets the image for the timeline banner
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'banner', account_dir,
-                           nickname, domain, theme)
+    return _get_image_file(base_dir, 'banner', account_dir, theme)
 
 
 def get_search_banner_file(base_dir: str,
@@ -534,8 +532,7 @@ def get_search_banner_file(base_dir: str,
     """Gets the image for the search banner
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'search_banner', account_dir,
-                           nickname, domain, theme)
+    return _get_image_file(base_dir, 'search_banner', account_dir, theme)
 
 
 def get_left_image_file(base_dir: str,
@@ -543,8 +540,7 @@ def get_left_image_file(base_dir: str,
     """Gets the image for the left column
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'left_col_image', account_dir,
-                           nickname, domain, theme)
+    return _get_image_file(base_dir, 'left_col_image', account_dir, theme)
 
 
 def get_right_image_file(base_dir: str,
@@ -552,8 +548,7 @@ def get_right_image_file(base_dir: str,
     """Gets the image for the right column
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'right_col_image',
-                           account_dir, nickname, domain, theme)
+    return _get_image_file(base_dir, 'right_col_image', account_dir, theme)
 
 
 def _get_variable_from_css(css_str: str, variable: str) -> str:
@@ -1357,8 +1352,7 @@ def html_highlight_label(label: str, highlight: bool) -> str:
     return '*' + str(label) + '*'
 
 
-def get_avatar_image_url(session,
-                         base_dir: str, http_prefix: str,
+def get_avatar_image_url(session, base_dir: str, http_prefix: str,
                          post_actor: str, person_cache: {},
                          avatar_url: str, allow_downloads: bool,
                          signing_priv_key_pem: str) -> str:

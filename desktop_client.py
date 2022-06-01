@@ -461,7 +461,6 @@ def _desktop_reply_to_post(session, post_id: str,
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     cc_url = None
-    followers_only = False
     attach = None
     media_type = None
     attached_image_description = None
@@ -479,7 +478,7 @@ def _desktop_reply_to_post(session, post_id: str,
                             base_dir, session, nickname, password,
                             domain, port,
                             to_nickname, to_domain, to_port, cc_url,
-                            http_prefix, reply_message, followers_only,
+                            http_prefix, reply_message,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,
@@ -534,7 +533,6 @@ def _desktop_new_post(session,
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     cc_url = None
-    followers_only = False
     attach = None
     media_type = None
     attached_image_description = None
@@ -553,7 +551,7 @@ def _desktop_new_post(session,
                             base_dir, session, nickname, password,
                             domain, port,
                             None, '#Public', port, cc_url,
-                            http_prefix, new_message, followers_only,
+                            http_prefix, new_message,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,
@@ -722,7 +720,7 @@ def _read_local_box_post(session, nickname: str, domain: str,
                               http_prefix,
                               nickname, domain,
                               post_json_object,
-                              __version__, translate,
+                              __version__,
                               yt_replace_domain,
                               twitter_replacement_domain,
                               allow_local_network_access,
@@ -1229,7 +1227,6 @@ def _desktop_new_dm_base(session, to_handle: str,
     _say_command(new_message, new_message,
                  screenreader, system_language, espeak)
     cc_url = None
-    followers_only = False
     attach = None
     media_type = None
     attached_image_description = None
@@ -1288,7 +1285,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                             base_dir, session, nickname, password,
                             domain, port,
                             to_nickname, to_domain, to_port, cc_url,
-                            http_prefix, new_message, followers_only,
+                            http_prefix, new_message,
                             comments_enabled, attach, media_type,
                             attached_image_description, city,
                             cached_webfingers, person_cache, is_article,
@@ -1482,25 +1479,22 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                              system_language, espeak)
             pgp_key_upload = True
 
-        box_json = c2s_box_json(base_dir, session,
-                                nickname, password,
+        box_json = c2s_box_json(session, nickname, password,
                                 domain, port, http_prefix,
                                 curr_timeline, page_number,
                                 debug, signing_priv_key_pem)
 
         follow_requests_json = \
-            get_follow_requests_via_server(base_dir, session,
+            get_follow_requests_via_server(session,
                                            nickname, password,
                                            domain, port,
                                            http_prefix, 1,
-                                           cached_webfingers, person_cache,
                                            debug, __version__,
                                            signing_priv_key_pem)
 
         if not (curr_timeline == 'inbox' and page_number == 1):
             # monitor the inbox to generate notifications
-            inbox_json = c2s_box_json(base_dir, session,
-                                      nickname, password,
+            inbox_json = c2s_box_json(session, nickname, password,
                                       domain, port, http_prefix,
                                       'inbox', 1, debug,
                                       signing_priv_key_pem)
@@ -1575,8 +1569,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'dm'
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -1592,8 +1585,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'tlreplies'
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -1610,8 +1602,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'tlbookmarks'
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -1629,8 +1620,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'outbox'
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -1655,8 +1645,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 page_number -= 1
                 page_number = max(page_number, 1)
                 prev_timeline_first_id = ''
-                box_json = c2s_box_json(base_dir, session,
-                                        nickname, password,
+                box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
                                         debug, signing_priv_key_pem)
@@ -2224,12 +2213,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 follow_requests_json = \
-                    get_follow_requests_via_server(base_dir, session,
+                    get_follow_requests_via_server(session,
                                                    nickname, password,
                                                    domain, port,
                                                    http_prefix, curr_page,
-                                                   cached_webfingers,
-                                                   person_cache,
                                                    debug, __version__,
                                                    signing_priv_key_pem)
                 if follow_requests_json:
@@ -2245,11 +2232,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 following_json = \
-                    get_following_via_server(base_dir, session,
+                    get_following_via_server(session,
                                              nickname, password,
                                              domain, port,
                                              http_prefix, curr_page,
-                                             cached_webfingers, person_cache,
                                              debug, __version__,
                                              signing_priv_key_pem)
                 if following_json:
@@ -2266,11 +2252,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 followers_json = \
-                    get_followers_via_server(base_dir, session,
+                    get_followers_via_server(session,
                                              nickname, password,
                                              domain, port,
                                              http_prefix, curr_page,
-                                             cached_webfingers, person_cache,
                                              debug, __version__,
                                              signing_priv_key_pem)
                 if followers_json:
@@ -2369,14 +2354,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _say_command(say_str, say_str,
                                      screenreader, system_language, espeak)
                         session_approve = create_session(proxy_type)
-                        approve_follow_request_via_server(base_dir,
-                                                          session_approve,
+                        approve_follow_request_via_server(session_approve,
                                                           nickname, password,
                                                           domain, port,
                                                           http_prefix,
                                                           approve_handle,
-                                                          cached_webfingers,
-                                                          person_cache,
                                                           debug,
                                                           __version__,
                                                           signing_priv_key_pem)
@@ -2403,13 +2385,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _say_command(say_str, say_str,
                                      screenreader, system_language, espeak)
                         session_deny = create_session(proxy_type)
-                        deny_follow_request_via_server(base_dir, session_deny,
+                        deny_follow_request_via_server(session_deny,
                                                        nickname, password,
                                                        domain, port,
                                                        http_prefix,
                                                        deny_handle,
-                                                       cached_webfingers,
-                                                       person_cache,
                                                        debug,
                                                        __version__,
                                                        signing_priv_key_pem)
@@ -2494,7 +2474,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               http_prefix,
                                               nickname, domain,
                                               post_json_object,
-                                              __version__, translate,
+                                              __version__,
                                               yt_replace_domain,
                                               twitter_replacement_domain,
                                               allow_local_network_access,

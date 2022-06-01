@@ -1000,45 +1000,44 @@ def person_box_json(recent_posts_cache: {},
         return None
     if boxname == 'inbox':
         return create_inbox(recent_posts_cache,
-                            session, base_dir, nickname, domain, port,
+                            base_dir, nickname, domain, port,
                             http_prefix,
                             no_of_items, header_only, page_number)
     if boxname == 'dm':
         return create_dm_timeline(recent_posts_cache,
-                                  session, base_dir, nickname, domain, port,
+                                  base_dir, nickname, domain, port,
                                   http_prefix,
                                   no_of_items, header_only, page_number)
     if boxname in ('tlbookmarks', 'bookmarks'):
-        return create_bookmarks_timeline(session, base_dir, nickname, domain,
+        return create_bookmarks_timeline(base_dir, nickname, domain,
                                          port, http_prefix,
                                          no_of_items, header_only,
                                          page_number)
     if boxname == 'tlreplies':
         return create_replies_timeline(recent_posts_cache,
-                                       session, base_dir, nickname, domain,
+                                       base_dir, nickname, domain,
                                        port, http_prefix,
                                        no_of_items, header_only,
                                        page_number)
     if boxname == 'tlmedia':
-        return create_media_timeline(session, base_dir, nickname, domain, port,
+        return create_media_timeline(base_dir, nickname, domain, port,
                                      http_prefix, no_of_items, header_only,
                                      page_number)
     if boxname == 'tlnews':
-        return create_news_timeline(session, base_dir, nickname, domain, port,
+        return create_news_timeline(base_dir, domain, port,
                                     http_prefix, no_of_items, header_only,
                                     newswire_votes_threshold, positive_voting,
                                     voting_time_mins, page_number)
     if boxname == 'tlfeatures':
-        return create_features_timeline(session, base_dir,
-                                        nickname, domain, port,
+        return create_features_timeline(base_dir, nickname, domain, port,
                                         http_prefix, no_of_items, header_only,
                                         page_number)
     if boxname == 'tlblogs':
-        return create_blogs_timeline(session, base_dir, nickname, domain, port,
+        return create_blogs_timeline(base_dir, nickname, domain, port,
                                      http_prefix, no_of_items, header_only,
                                      page_number)
     if boxname == 'outbox':
-        return create_outbox(session, base_dir, nickname, domain, port,
+        return create_outbox(base_dir, nickname, domain, port,
                              http_prefix,
                              no_of_items, header_only, authorized,
                              page_number)

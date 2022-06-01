@@ -536,8 +536,7 @@ def is_create_inside_announce(item: {}) -> bool:
 def _get_posts(session, outbox_url: str, max_posts: int,
                max_mentions: int,
                max_emoji: int, max_attachments: int,
-               federation_list: [],
-               person_cache: {}, raw: bool,
+               federation_list: [], raw: bool,
                simple: bool, debug: bool,
                project_version: str, http_prefix: str,
                origin_domain: str, system_language: str,
@@ -663,6 +662,10 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                         in_reply_to = this_item['inReplyTo']
 
             if this_item.get('attachment'):
+                if len(this_item['attachment']) > max_attachments:
+                    if debug:
+                        print('max attachments reached')
+                    continue
                 if this_item['attachment']:
                     for attach in this_item['attachment']:
                         if attach.get('name') and attach.get('url'):
@@ -735,10 +738,10 @@ def _update_word_frequency(content: str, word_frequency: {}) -> None:
     words_list = plain_text.split(' ')
     common_words = _get_common_words()
     for word in words_list:
-        wordLen = len(word)
-        if wordLen < 3:
+        word_len = len(word)
+        if word_len < 3:
             continue
-        if wordLen < 4:
+        if word_len < 4:
             if word.upper() != word:
                 continue
         if '&' in word or \
@@ -756,17 +759,10 @@ def _update_word_frequency(content: str, word_frequency: {}) -> None:
             word_frequency[word] = 1
 
 
-def get_post_domains(session, outbox_url: str, max_posts: int,
-                     max_mentions: int,
-                     max_emoji: int, max_attachments: int,
-                     federation_list: [],
-                     person_cache: {},
-                     debug: bool,
-                     project_version: str, http_prefix: str,
-                     domain: str,
-                     word_frequency: {},
-                     domain_list: [], system_language: str,
-                     signing_priv_key_pem: str) -> []:
+def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
+                     project_version: str, http_prefix: str, domain: str,
+                     word_frequency: {}, domain_list: [],
+                     system_language: str, signing_priv_key_pem: str) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outbox_url:
@@ -803,7 +799,7 @@ def get_post_domains(session, outbox_url: str, max_posts: int,
             _update_word_frequency(content_str, word_frequency)
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
-                post_domain, post_port = \
+                post_domain, _ = \
                     get_domain_from_actor(item['object']['inReplyTo'])
                 if post_domain not in post_domains:
                     post_domains.append(post_domain)
@@ -1069,6 +1065,7 @@ def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
     """If this is a reply and the original post has a CW
     then use the same CW
     """
+    reply_to_json = None
     if in_reply_to and not sensitive:
         # locate the post which this is a reply to and check if
         # it has a content warning. If it does then reproduce
@@ -1077,16 +1074,16 @@ def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
             locate_post(base_dir, nickname, domain, in_reply_to)
         if reply_post_filename:
             reply_to_json = load_json(reply_post_filename)
-            if reply_to_json:
-                if reply_to_json.get('object'):
-                    if reply_to_json['object'].get('sensitive'):
-                        if reply_to_json['object']['sensitive']:
-                            sensitive = True
-                            if reply_to_json['object'].get('summary'):
-                                summary = \
-                                    get_summary_from_post(reply_to_json,
-                                                          system_language,
-                                                          languages_understood)
+    if reply_to_json:
+        if reply_to_json.get('object'):
+            if reply_to_json['object'].get('sensitive'):
+                if reply_to_json['object']['sensitive']:
+                    sensitive = True
+                    if reply_to_json['object'].get('summary'):
+                        summary = \
+                            get_summary_from_post(reply_to_json,
+                                                  system_language,
+                                                  languages_understood)
 
     return sensitive, summary
 
@@ -1407,7 +1404,7 @@ def get_actor_from_in_reply_to(in_reply_to: str) -> str:
 def _create_post_base(base_dir: str,
                       nickname: str, domain: str, port: int,
                       to_url: str, cc_url: str, http_prefix: str, content: str,
-                      followers_only: bool, save_to_file: bool,
+                      save_to_file: bool,
                       client_to_server: bool, comments_enabled: bool,
                       attach_image_filename: str,
                       media_type: str, image_description: str, city: str,
@@ -1667,8 +1664,7 @@ def outbox_message_create_wrap(http_prefix: str,
     return new_post
 
 
-def _post_is_addressed_to_followers(base_dir: str,
-                                    nickname: str, domain: str, port: int,
+def _post_is_addressed_to_followers(nickname: str, domain: str, port: int,
                                     http_prefix: str,
                                     post_json_object: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
@@ -1704,7 +1700,7 @@ def _post_is_addressed_to_followers(base_dir: str,
 
 
 def pin_post(base_dir: str, nickname: str, domain: str,
-             pinned_content: str, followers_only: bool) -> None:
+             pinned_content: str) -> None:
     """Pins the given post Id to the profile of then given account
     """
     account_dir = acct_dir(base_dir, nickname, domain)
@@ -1830,7 +1826,7 @@ def regenerate_index_for_box(base_dir: str,
 
 def create_public_post(base_dir: str,
                        nickname: str, domain: str, port: int, http_prefix: str,
-                       content: str, followers_only: bool, save_to_file: bool,
+                       content: str, save_to_file: bool,
                        client_to_server: bool, comments_enabled: bool,
                        attach_image_filename: str, media_type: str,
                        image_description: str, city: str,
@@ -1860,8 +1856,7 @@ def create_public_post(base_dir: str,
     return _create_post_base(base_dir, nickname, domain, port,
                              'https://www.w3.org/ns/activitystreams#Public',
                              local_actor + '/followers',
-                             http_prefix, content, followers_only,
-                             save_to_file,
+                             http_prefix, content, save_to_file,
                              client_to_server, comments_enabled,
                              attach_image_filename, media_type,
                              image_description, city,
@@ -1925,7 +1920,7 @@ def create_blog_post(base_dir: str,
     blog_json = \
         create_public_post(base_dir,
                            nickname, domain, port, http_prefix,
-                           content, followers_only, save_to_file,
+                           content, save_to_file,
                            client_to_server, comments_enabled,
                            attach_image_filename, media_type,
                            image_description, city,
@@ -1944,7 +1939,7 @@ def create_blog_post(base_dir: str,
 
 def create_news_post(base_dir: str,
                      domain: str, port: int, http_prefix: str,
-                     content: str, followers_only: bool, save_to_file: bool,
+                     content: str, save_to_file: bool,
                      attach_image_filename: str, media_type: str,
                      image_description: str, city: str,
                      subject: str, system_language: str,
@@ -1962,7 +1957,7 @@ def create_news_post(base_dir: str,
     blog = \
         create_public_post(base_dir,
                            'news', domain, port, http_prefix,
-                           content, followers_only, save_to_file,
+                           content, save_to_file,
                            client_to_server, False,
                            attach_image_filename, media_type,
                            image_description, city,
@@ -1980,7 +1975,7 @@ def create_question_post(base_dir: str,
                          nickname: str, domain: str, port: int,
                          http_prefix: str,
                          content: str, q_options: [],
-                         followers_only: bool, save_to_file: bool,
+                         save_to_file: bool,
                          client_to_server: bool, comments_enabled: bool,
                          attach_image_filename: str, media_type: str,
                          image_description: str, city: str,
@@ -1996,7 +1991,7 @@ def create_question_post(base_dir: str,
         _create_post_base(base_dir, nickname, domain, port,
                           'https://www.w3.org/ns/activitystreams#Public',
                           local_actor + '/followers',
-                          http_prefix, content, followers_only, save_to_file,
+                          http_prefix, content, save_to_file,
                           client_to_server, comments_enabled,
                           attach_image_filename, media_type,
                           image_description, city,
@@ -2030,8 +2025,7 @@ def create_question_post(base_dir: str,
 def create_unlisted_post(base_dir: str,
                          nickname: str, domain: str, port: int,
                          http_prefix: str,
-                         content: str, followers_only: bool,
-                         save_to_file: bool,
+                         content: str, save_to_file: bool,
                          client_to_server: bool, comments_enabled: bool,
                          attach_image_filename: str, media_type: str,
                          image_description: str, city: str,
@@ -2049,8 +2043,7 @@ def create_unlisted_post(base_dir: str,
     return _create_post_base(base_dir, nickname, domain, port,
                              local_actor + '/followers',
                              'https://www.w3.org/ns/activitystreams#Public',
-                             http_prefix, content, followers_only,
-                             save_to_file,
+                             http_prefix, content, save_to_file,
                              client_to_server, comments_enabled,
                              attach_image_filename, media_type,
                              image_description, city,
@@ -2066,8 +2059,7 @@ def create_unlisted_post(base_dir: str,
 
 def create_followers_only_post(base_dir: str,
                                nickname: str, domain: str, port: int,
-                               http_prefix: str,
-                               content: str, followers_only: bool,
+                               http_prefix: str, content: str,
                                save_to_file: bool,
                                client_to_server: bool, comments_enabled: bool,
                                attach_image_filename: str, media_type: str,
@@ -2087,8 +2079,7 @@ def create_followers_only_post(base_dir: str,
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
     return _create_post_base(base_dir, nickname, domain, port,
                              local_actor + '/followers', None,
-                             http_prefix, content, followers_only,
-                             save_to_file,
+                             http_prefix, content, save_to_file,
                              client_to_server, comments_enabled,
                              attach_image_filename, media_type,
                              image_description, city,
@@ -2139,8 +2130,7 @@ def get_mentioned_people(base_dir: str, http_prefix: str,
 
 def create_direct_message_post(base_dir: str,
                                nickname: str, domain: str, port: int,
-                               http_prefix: str,
-                               content: str, followers_only: bool,
+                               http_prefix: str, content: str,
                                save_to_file: bool, client_to_server: bool,
                                comments_enabled: bool,
                                attach_image_filename: str, media_type: str,
@@ -2170,7 +2160,7 @@ def create_direct_message_post(base_dir: str,
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           post_to, post_cc,
-                          http_prefix, content, followers_only, save_to_file,
+                          http_prefix, content, save_to_file,
                           client_to_server, comments_enabled,
                           attach_image_filename, media_type,
                           image_description, city,
@@ -2197,7 +2187,7 @@ def create_direct_message_post(base_dir: str,
 
 def create_report_post(base_dir: str,
                        nickname: str, domain: str, port: int, http_prefix: str,
-                       content: str, followers_only: bool, save_to_file: bool,
+                       content: str, save_to_file: bool,
                        client_to_server: bool, comments_enabled: bool,
                        attach_image_filename: str, media_type: str,
                        image_description: str, city: str,
@@ -2274,8 +2264,7 @@ def create_report_post(base_dir: str,
         post_json_object = \
             _create_post_base(base_dir, nickname, domain, port,
                               to_url, post_cc,
-                              http_prefix, content, followers_only,
-                              save_to_file,
+                              http_prefix, content, save_to_file,
                               client_to_server, comments_enabled,
                               attach_image_filename, media_type,
                               image_description, city,
@@ -2395,7 +2384,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
 def send_post(signing_priv_key_pem: str, project_version: str,
               session, base_dir: str, nickname: str, domain: str, port: int,
               to_nickname: str, to_domain: str, to_port: int, cc_str: str,
-              http_prefix: str, content: str, followers_only: bool,
+              http_prefix: str, content: str,
               save_to_file: bool, client_to_server: bool,
               comments_enabled: bool,
               attach_image_filename: str, media_type: str,
@@ -2463,7 +2452,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     post_json_object = \
         _create_post_base(base_dir, nickname, domain, port,
                           to_person_id, cc_str, http_prefix, content,
-                          followers_only, save_to_file, client_to_server,
+                          save_to_file, client_to_server,
                           comments_enabled,
                           attach_image_filename, media_type,
                           image_description, city,
@@ -2560,7 +2549,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                          from_domain: str, from_port: int,
                          to_nickname: str, to_domain: str, to_port: int,
                          cc_str: str,
-                         http_prefix: str, content: str, followers_only: bool,
+                         http_prefix: str, content: str,
                          comments_enabled: bool,
                          attach_image_filename: str, media_type: str,
                          image_description: str, city: str,
@@ -2650,7 +2639,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
         _create_post_base(base_dir,
                           from_nickname, from_domain, from_port,
                           to_person_id, cc_str, http_prefix, content,
-                          followers_only, save_to_file, client_to_server,
+                          save_to_file, client_to_server,
                           comments_enabled,
                           attach_image_filename, media_type,
                           image_description, city,
@@ -2762,8 +2751,7 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
 def send_signed_json(post_json_object: {}, session, base_dir: str,
                      nickname: str, domain: str, port: int,
                      to_nickname: str, to_domain: str,
-                     to_port: int, cc_str: str,
-                     http_prefix: str, save_to_file: bool,
+                     to_port: int, http_prefix: str,
                      client_to_server: bool, federation_list: [],
                      send_threads: [], post_log: [], cached_webfingers: {},
                      person_cache: {}, debug: bool, project_version: str,
@@ -3204,7 +3192,6 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                 to_port = 80
                 curr_proxy_type = 'i2p'
                 session_type = 'i2p'
-        cc_list = []
 
         if debug:
             to_domain_full = get_full_domain(to_domain, to_port)
@@ -3236,7 +3223,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
         send_signed_json(post_json_object, curr_session, base_dir,
                          nickname, from_domain, port,
                          to_nickname, to_domain, to_port,
-                         cc_list, from_http_prefix, True, client_to_server,
+                         from_http_prefix, client_to_server,
                          federation_list,
                          send_threads, post_log, cached_webfingers,
                          person_cache, debug, project_version,
@@ -3336,7 +3323,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
     """sends a post to the followers of the given nickname
     """
     print('send_to_followers')
-    if not _post_is_addressed_to_followers(base_dir, nickname, domain,
+    if not _post_is_addressed_to_followers(nickname, domain,
                                            port, http_prefix,
                                            post_json_object):
         if debug:
@@ -3438,8 +3425,6 @@ def send_to_followers(server, session, session_onion, session_i2p,
             to_port = get_port_from_domain(to_domain)
             to_domain = remove_domain_port(to_domain)
 
-        cc_list = ''
-
         # if we are sending to an onion domain and we
         # have an alt onion domain then use the alt
         from_domain = domain
@@ -3498,7 +3483,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
             send_signed_json(post_json_object, curr_session, base_dir,
                              nickname, from_domain, port,
                              to_nickname, to_domain, to_port,
-                             cc_list, from_http_prefix, True,
+                             from_http_prefix,
                              client_to_server, federation_list,
                              send_threads, post_log, cached_webfingers,
                              person_cache, debug, project_version,
@@ -3531,7 +3516,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                 send_signed_json(post_json_object, curr_session, base_dir,
                                  nickname, from_domain, port,
                                  to_nickname, to_domain, to_port,
-                                 cc_list, from_http_prefix, True,
+                                 from_http_prefix,
                                  client_to_server, federation_list,
                                  send_threads, post_log, cached_webfingers,
                                  person_cache, debug, project_version,
@@ -3591,92 +3576,92 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
 
 
 def create_inbox(recent_posts_cache: {},
-                 session, base_dir: str, nickname: str, domain: str, port: int,
+                 base_dir: str, nickname: str, domain: str, port: int,
                  http_prefix: str, items_per_page: int, header_only: bool,
                  page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
-                               session, base_dir, 'inbox',
+                               base_dir, 'inbox',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
 
 
-def create_bookmarks_timeline(session, base_dir: str,
+def create_bookmarks_timeline(base_dir: str,
                               nickname: str, domain: str,
                               port: int, http_prefix: str, items_per_page: int,
                               header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'tlbookmarks',
+    return _create_box_indexed({}, base_dir, 'tlbookmarks',
                                nickname, domain,
                                port, http_prefix, items_per_page, header_only,
                                True, 0, False, 0, page_number)
 
 
 def create_dm_timeline(recent_posts_cache: {},
-                       session, base_dir: str, nickname: str, domain: str,
+                       base_dir: str, nickname: str, domain: str,
                        port: int, http_prefix: str, items_per_page: int,
                        header_only: bool, page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
-                               session, base_dir, 'dm', nickname,
+                               base_dir, 'dm', nickname,
                                domain, port, http_prefix, items_per_page,
                                header_only, True, 0, False, 0, page_number)
 
 
 def create_replies_timeline(recent_posts_cache: {},
-                            session, base_dir: str, nickname: str, domain: str,
+                            base_dir: str, nickname: str, domain: str,
                             port: int, http_prefix: str, items_per_page: int,
                             header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed(recent_posts_cache, session,
+    return _create_box_indexed(recent_posts_cache,
                                base_dir, 'tlreplies',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
 
 
-def create_blogs_timeline(session, base_dir: str, nickname: str, domain: str,
+def create_blogs_timeline(base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, items_per_page: int,
                           header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'tlblogs', nickname,
+    return _create_box_indexed({}, base_dir, 'tlblogs', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
 
 
-def create_features_timeline(session, base_dir: str,
+def create_features_timeline(base_dir: str,
                              nickname: str, domain: str,
                              port: int, http_prefix: str, items_per_page: int,
                              header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'tlfeatures', nickname,
+    return _create_box_indexed({}, base_dir, 'tlfeatures', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
 
 
-def create_media_timeline(session, base_dir: str, nickname: str, domain: str,
+def create_media_timeline(base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, items_per_page: int,
                           header_only: bool, page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'tlmedia', nickname,
+    return _create_box_indexed({}, base_dir, 'tlmedia', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                0, False, 0, page_number)
 
 
-def create_news_timeline(session, base_dir: str, nickname: str, domain: str,
+def create_news_timeline(base_dir: str, domain: str,
                          port: int, http_prefix: str, items_per_page: int,
                          header_only: bool, newswire_votes_threshold: int,
                          positive_voting: bool, voting_time_mins: int,
                          page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'outbox', 'news',
+    return _create_box_indexed({}, base_dir, 'outbox', 'news',
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                newswire_votes_threshold, positive_voting,
                                voting_time_mins, page_number)
 
 
-def create_outbox(session, base_dir: str, nickname: str, domain: str,
+def create_outbox(base_dir: str, nickname: str, domain: str,
                   port: int, http_prefix: str,
                   items_per_page: int, header_only: bool, authorized: bool,
                   page_number: int) -> {}:
-    return _create_box_indexed({}, session, base_dir, 'outbox',
+    return _create_box_indexed({}, base_dir, 'outbox',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, authorized,
                                0, False, 0, page_number)
@@ -3725,12 +3710,10 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
             if len(lines) > 0:
                 end_line_number = \
                     len(lines) - 1 - int(items_per_page * page_number)
-                if end_line_number < 0:
-                    end_line_number = 0
+                end_line_number = max(end_line_number, 0)
                 start_line_number = \
                     len(lines) - 1 - int(items_per_page * (page_number - 1))
-                if start_line_number < 0:
-                    start_line_number = 0
+                start_line_number = max(start_line_number, 0)
                 line_number = start_line_number
                 while line_number >= end_line_number:
                     line_no_str = lines[line_number].strip('\n').strip('\r')
@@ -3752,7 +3735,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
 
 def is_image_media(session, base_dir: str, http_prefix: str,
                    nickname: str, domain: str,
-                   post_json_object: {}, translate: {},
+                   post_json_object: {},
                    yt_replace_domain: str,
                    twitter_replacement_domain: str,
                    allow_local_network_access: bool,
@@ -3768,7 +3751,7 @@ def is_image_media(session, base_dir: str, http_prefix: str,
         post_json_announce = \
             download_announce(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
-                              __version__, translate,
+                              __version__,
                               yt_replace_domain,
                               twitter_replacement_domain,
                               allow_local_network_access,
@@ -3957,7 +3940,7 @@ def _passed_newswire_voting(newswire_votes_threshold: int,
 
 
 def _create_box_indexed(recent_posts_cache: {},
-                        session, base_dir: str, boxname: str,
+                        base_dir: str, boxname: str,
                         nickname: str, domain: str, port: int,
                         http_prefix: str,
                         items_per_page: int, header_only: bool,
@@ -3994,8 +3977,7 @@ def _create_box_indexed(recent_posts_cache: {},
 
     page_str = '?page=true'
     if page_number:
-        if page_number < 1:
-            page_number = 1
+        page_number = max(page_number, 1)
         try:
             page_str = '?page=' + str(page_number)
         except BaseException:
@@ -4131,8 +4113,7 @@ def _create_box_indexed(recent_posts_cache: {},
     # Generate first and last entries within header
     if total_posts_count > 0:
         last_page = int(total_posts_count / items_per_page)
-        if last_page < 1:
-            last_page = 1
+        last_page = max(last_page, 1)
         box_header['last'] = \
             local_actor_url(http_prefix, nickname, domain) + \
             '/' + boxname + '?page=' + str(last_page)
@@ -4442,8 +4423,7 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
     max_emoji = 10
     max_attachments = 5
     _get_posts(session, person_url, 30, max_mentions, max_emoji,
-               max_attachments, federation_list,
-               person_cache, raw, simple, debug,
+               max_attachments, federation_list, raw, simple, debug,
                project_version, http_prefix, origin_domain, system_language,
                signing_priv_key_pem)
 
@@ -4463,7 +4443,6 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
         return domain_list
     person_cache = {}
     cached_webfingers = {}
-    federation_list = []
 
     domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
@@ -4486,13 +4465,8 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
                             92522)
-    max_mentions = 99
-    max_emoji = 99
-    max_attachments = 5
     post_domains = \
-        get_post_domains(session, person_url, 64, max_mentions, max_emoji,
-                         max_attachments, federation_list,
-                         person_cache, debug,
+        get_post_domains(session, person_url, 64, debug,
                          project_version, http_prefix, domain,
                          word_frequency, domain_list, system_language,
                          signing_priv_key_pem)
@@ -4588,10 +4562,7 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
     max_attachments = 5
     max_posts = 64
     post_domains = \
-        get_post_domains(session, person_url, max_posts,
-                         max_mentions, max_emoji,
-                         max_attachments, federation_list,
-                         person_cache, debug,
+        get_post_domains(session, person_url, max_posts, debug,
                          project_version, http_prefix, domain,
                          word_frequency, [], system_language,
                          signing_priv_key_pem)
@@ -4834,7 +4805,6 @@ def _reject_announce(announce_filename: str,
 def download_announce(session, base_dir: str, http_prefix: str,
                       nickname: str, domain: str,
                       post_json_object: {}, project_version: str,
-                      translate: {},
                       yt_replace_domain: str,
                       twitter_replacement_domain: str,
                       allow_local_network_access: bool,
@@ -5501,8 +5471,7 @@ def post_is_muted(base_dir: str, nickname: str, domain: str,
     return is_muted
 
 
-def c2s_box_json(base_dir: str, session,
-                 nickname: str, password: str,
+def c2s_box_json(session, nickname: str, password: str,
                  domain: str, port: int,
                  http_prefix: str,
                  box_name: str, page_number: int,

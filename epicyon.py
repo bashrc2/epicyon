@@ -1519,7 +1519,6 @@ def _command_options() -> None:
 
         cc_url = None
         send_message = argb.message
-        followers_only = argb.followersonly
         # client_to_server = argb.client
         attached_image_description = argb.imageDescription
         city = 'London, England'
@@ -1533,7 +1532,6 @@ def _command_options() -> None:
         if attach:
             media_type = get_attachment_media_type(attach)
         reply_to = argb.replyto
-        followers_only = False
         is_article = False
         if not domain:
             domain = get_config_param(base_dir, 'domain')
@@ -1549,7 +1547,7 @@ def _command_options() -> None:
                              base_dir, session, argb.nickname, argb.password,
                              domain, port,
                              to_nickname, to_domain, to_port, cc_url,
-                             http_prefix, send_message, followers_only,
+                             http_prefix, send_message,
                              argb.commentsEnabled, attach, media_type,
                              attached_image_description, city,
                              cached_webfingers, person_cache, is_article,
@@ -1681,8 +1679,7 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         session = create_session(proxy_type)
-        box_json = c2s_box_json(base_dir, session,
-                                argb.nickname, argb.password,
+        box_json = c2s_box_json(session, argb.nickname, argb.password,
                                 domain, port, http_prefix,
                                 argb.box, argb.pageNumber,
                                 argb.debug, signing_priv_key_pem)
@@ -2271,11 +2268,10 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         following_json = \
-            get_following_via_server(base_dir, session,
+            get_following_via_server(session,
                                      argb.nickname, argb.password,
                                      domain, port,
                                      follow_http_prefix, argb.pageNumber,
-                                     cached_webfingers, person_cache,
                                      debug, __version__, signing_priv_key_pem)
         if following_json:
             pprint(following_json)
@@ -2305,11 +2301,10 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         followers_json = \
-            get_followers_via_server(base_dir, session,
+            get_followers_via_server(session,
                                      argb.nickname, argb.password,
                                      domain, port,
                                      follow_http_prefix, argb.pageNumber,
-                                     cached_webfingers, person_cache,
                                      debug, __version__,
                                      signing_priv_key_pem)
         if followers_json:
@@ -2340,11 +2335,10 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         follow_requests_json = \
-            get_follow_requests_via_server(base_dir, session,
+            get_follow_requests_via_server(session,
                                            argb.nickname, argb.password,
                                            domain, port,
                                            follow_http_prefix, argb.pageNumber,
-                                           cached_webfingers, person_cache,
                                            debug, __version__,
                                            signing_priv_key_pem)
         if follow_requests_json:
@@ -3199,7 +3193,6 @@ def _command_options() -> None:
         delete_all_posts(base_dir, nickname, domain, 'inbox')
         delete_all_posts(base_dir, nickname, domain, 'outbox')
 
-        test_followers_only = False
         test_save_to_file = True
         test_c2s = False
         test_comments_enabled = True
@@ -3222,7 +3215,6 @@ def _command_options() -> None:
 
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "like this is totally just a #test man",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3237,7 +3229,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Zoiks!!!",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3252,7 +3243,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Hey scoob we need like a hundred more #milkshakes",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3267,7 +3257,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Getting kinda spooky around here",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3283,7 +3272,6 @@ def _command_options() -> None:
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "And they would have gotten away with it too" +
                            "if it wasn't for those pesky hackers",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3298,7 +3286,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "man these centralized sites are like the worst!",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3313,7 +3300,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "another mystery solved #test",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
@@ -3328,7 +3314,6 @@ def _command_options() -> None:
                            languages_understood)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "let's go bowling",
-                           test_followers_only,
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,

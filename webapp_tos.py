@@ -16,7 +16,7 @@ from webapp_utils import html_footer
 from markdown import markdown_to_html
 
 
-def html_terms_of_service(css_cache: {}, base_dir: str,
+def html_terms_of_service(base_dir: str,
                           http_prefix: str, domain_full: str) -> str:
     """Show the terms of service screen
     """

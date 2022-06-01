@@ -16,8 +16,7 @@ from webapp_utils import html_footer
 from markdown import markdown_to_html
 
 
-def html_welcome_final(base_dir: str, nickname: str, domain: str,
-                       http_prefix: str, domain_full: str,
+def html_welcome_final(base_dir: str, nickname: str,
                        language: str, translate: {},
                        theme_name: str) -> str:
     """Returns the final welcome screen after first login

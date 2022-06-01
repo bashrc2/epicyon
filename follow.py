@@ -386,7 +386,6 @@ def clear_followers(base_dir: str, nickname: str, domain: str) -> None:
 
 
 def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
-                       authenticated: bool,
                        follow_file='following.txt') -> int:
     """Returns the number of follows or followers
     """
@@ -422,13 +421,10 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
     return ctr
 
 
-def get_no_of_followers(base_dir: str,
-                        nickname: str, domain: str,
-                        authenticated: bool) -> int:
+def get_no_of_followers(base_dir: str, nickname: str, domain: str) -> int:
     """Returns the number of followers of the given person
     """
-    return _get_no_of_follows(base_dir, nickname, domain,
-                              authenticated, 'followers.txt')
+    return _get_no_of_follows(base_dir, nickname, domain, 'followers.txt')
 
 
 def get_following_feed(base_dir: str, domain: str, port: int, path: str,
@@ -482,7 +478,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
         id_str = \
             local_actor_url(http_prefix, nickname, domain) + '/' + follow_file
         total_str = \
-            _get_no_of_follows(base_dir, nickname, domain, authorized)
+            _get_no_of_follows(base_dir, nickname, domain)
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': first_str,
@@ -599,7 +595,6 @@ def follow_approval_required(base_dir: str, nickname_to_follow: str,
 
 def no_of_follow_requests(base_dir: str,
                           nickname_to_follow: str, domain_to_follow: str,
-                          nickname: str, domain: str, from_port: int,
                           follow_type: str) -> int:
     """Returns the current number of follow requests
     """
@@ -779,8 +774,8 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
 
     return send_signed_json(accept_json, session, base_dir,
                             nickname_to_follow, domain_to_follow, port,
-                            nickname, domain, from_port, '',
-                            http_prefix, True, client_to_server,
+                            nickname, domain, from_port,
+                            http_prefix, client_to_server,
                             federation_list,
                             send_threads, post_log, cached_webfingers,
                             person_cache, debug, project_version, None,
@@ -846,11 +841,16 @@ def followed_account_rejects(session, session_onion, session_i2p,
     except OSError:
         print('EX: followed_account_rejects unable to delete ' +
               follow_activity_filename)
+    curr_session = session
+    if domain.endswith('.onion') and session_onion:
+        curr_session = session_onion
+    elif domain.endswith('.i2p') and session_i2p:
+        curr_session = session_i2p
     # send the reject activity
-    return send_signed_json(reject_json, session, base_dir,
+    return send_signed_json(reject_json, curr_session, base_dir,
                             nickname_to_follow, domain_to_follow, port,
-                            nickname, domain, from_port, '',
-                            http_prefix, True, client_to_server,
+                            nickname, domain, from_port,
+                            http_prefix, client_to_server,
                             federation_list,
                             send_threads, post_log, cached_webfingers,
                             person_cache, debug, project_version, None,
@@ -947,8 +947,7 @@ def send_follow_request(session, base_dir: str,
     send_signed_json(new_follow_json, session, base_dir,
                      nickname, sender_domain, sender_port,
                      follow_nickname, follow_domain, follow_port,
-                     'https://www.w3.org/ns/activitystreams#Public',
-                     http_prefix, True, client_to_server,
+                     http_prefix, client_to_server,
                      federation_list,
                      send_threads, post_log, cached_webfingers, person_cache,
                      debug, project_version, None, group_account,
@@ -982,7 +981,7 @@ def send_follow_request_via_server(base_dir: str, session,
     followed_id = \
         http_prefix + '://' + follow_domain_full + '/@' + follow_nickname
 
-    status_number, published = get_status_number()
+    status_number, _ = get_status_number()
     new_follow_json = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': follow_actor + '/statuses/' + str(status_number),
@@ -1148,11 +1147,9 @@ def send_unfollow_request_via_server(base_dir: str, session,
     return unfollow_json
 
 
-def get_following_via_server(base_dir: str, session,
-                             nickname: str, password: str,
+def get_following_via_server(session, nickname: str, password: str,
                              domain: str, port: int,
                              http_prefix: str, page_number: int,
-                             cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              signing_priv_key_pem: str) -> {}:
     """Gets a page from the following collection as json
@@ -1176,7 +1173,7 @@ def get_following_via_server(base_dir: str, session,
     url = follow_actor + '/following?page=' + str(page_number)
     following_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 __version__, http_prefix, domain, 10, True)
+                 project_version, http_prefix, domain, 10, True)
     if not following_json:
         if debug:
             print('DEBUG: GET following list failed for c2s to ' + url)
@@ -1188,11 +1185,9 @@ def get_following_via_server(base_dir: str, session,
     return following_json
 
 
-def get_followers_via_server(base_dir: str, session,
-                             nickname: str, password: str,
+def get_followers_via_server(session, nickname: str, password: str,
                              domain: str, port: int,
                              http_prefix: str, page_number: int,
-                             cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              signing_priv_key_pem: str) -> {}:
     """Gets a page from the followers collection as json
@@ -1212,12 +1207,11 @@ def get_followers_via_server(base_dir: str, session,
         'Authorization': auth_header
     }
 
-    if page_number < 1:
-        page_number = 1
+    page_number = max(page_number, 1)
     url = follow_actor + '/followers?page=' + str(page_number)
     followers_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 __version__, http_prefix, domain, 10, True)
+                 project_version, http_prefix, domain, 10, True)
     if not followers_json:
         if debug:
             print('DEBUG: GET followers list failed for c2s to ' + url)
@@ -1229,11 +1223,10 @@ def get_followers_via_server(base_dir: str, session,
     return followers_json
 
 
-def get_follow_requests_via_server(base_dir: str, session,
+def get_follow_requests_via_server(session,
                                    nickname: str, password: str,
                                    domain: str, port: int,
                                    http_prefix: str, page_number: int,
-                                   cached_webfingers: {}, person_cache: {},
                                    debug: bool, project_version: str,
                                    signing_priv_key_pem: str) -> {}:
     """Gets a page from the follow requests collection as json
@@ -1257,7 +1250,7 @@ def get_follow_requests_via_server(base_dir: str, session,
     url = follow_actor + '/followrequests?page=' + str(page_number)
     followers_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 __version__, http_prefix, domain, 10, True)
+                 project_version, http_prefix, domain, 10, True)
     if not followers_json:
         if debug:
             print('DEBUG: GET follow requests list failed for c2s to ' + url)
@@ -1269,11 +1262,10 @@ def get_follow_requests_via_server(base_dir: str, session,
     return followers_json
 
 
-def approve_follow_request_via_server(base_dir: str, session,
+def approve_follow_request_via_server(session,
                                       nickname: str, password: str,
                                       domain: str, port: int,
                                       http_prefix: str, approve_handle: int,
-                                      cached_webfingers: {}, person_cache: {},
                                       debug: bool, project_version: str,
                                       signing_priv_key_pem: str) -> str:
     """Approves a follow request
@@ -1298,7 +1290,7 @@ def approve_follow_request_via_server(base_dir: str, session,
     url = actor + '/followapprove=' + approve_handle
     approve_html = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 __version__, http_prefix, domain, 10, True)
+                 project_version, http_prefix, domain, 10, True)
     if not approve_html:
         if debug:
             print('DEBUG: GET approve follow request failed for c2s to ' + url)
@@ -1310,11 +1302,10 @@ def approve_follow_request_via_server(base_dir: str, session,
     return approve_html
 
 
-def deny_follow_request_via_server(base_dir: str, session,
+def deny_follow_request_via_server(session,
                                    nickname: str, password: str,
                                    domain: str, port: int,
                                    http_prefix: str, deny_handle: int,
-                                   cached_webfingers: {}, person_cache: {},
                                    debug: bool, project_version: str,
                                    signing_priv_key_pem: str) -> str:
     """Denies a follow request
@@ -1339,7 +1330,7 @@ def deny_follow_request_via_server(base_dir: str, session,
     url = actor + '/followdeny=' + deny_handle
     deny_html = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 __version__, http_prefix, domain, 10, True)
+                 project_version, http_prefix, domain, 10, True)
     if not deny_html:
         if debug:
             print('DEBUG: GET deny follow request failed for c2s to ' + url)
@@ -1377,24 +1368,27 @@ def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:
     # for each of the accounts
     for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            if '@' in account and \
-               not account.startswith('inbox@') and \
-               not account.startswith('Actor@'):
-                following_filename = \
-                    os.path.join(subdir, account) + '/following.txt'
+            if '@' not in account:
+                continue
+            if account.startswith('inbox@'):
+                continue
+            if account.startswith('Actor@'):
+                continue
+            following_filename = \
+                os.path.join(subdir, account) + '/following.txt'
+            if debug:
+                print('DEBUG: examining follows of ' + account)
+                print(following_filename)
+            if os.path.isfile(following_filename):
+                # does this account follow the given actor?
                 if debug:
-                    print('DEBUG: examining follows of ' + account)
-                    print(following_filename)
-                if os.path.isfile(following_filename):
-                    # does this account follow the given actor?
+                    print('DEBUG: checking if ' + actor_handle +
+                          ' in ' + following_filename)
+                if actor_handle in open(following_filename).read():
                     if debug:
-                        print('DEBUG: checking if ' + actor_handle +
-                              ' in ' + following_filename)
-                    if actor_handle in open(following_filename).read():
-                        if debug:
-                            print('DEBUG: ' + account +
-                                  ' follows ' + actor_handle)
-                        recipients_dict[account] = None
+                        print('DEBUG: ' + account +
+                              ' follows ' + actor_handle)
+                    recipients_dict[account] = None
         break
     return recipients_dict
 

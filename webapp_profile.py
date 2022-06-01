@@ -126,8 +126,7 @@ def _valid_profile_preview_post(post_json_object: {},
     return True, post_json_object
 
 
-def html_profile_after_search(css_cache: {},
-                              recent_posts_cache: {}, max_recent_posts: int,
+def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                               translate: {},
                               base_dir: str, path: str, http_prefix: str,
                               nickname: str, domain: str, port: int,
@@ -283,8 +282,7 @@ def html_profile_after_search(css_cache: {},
             joined_date = profile_json['published']
 
     profile_str = \
-        _get_profile_header_after_search(base_dir,
-                                         nickname, default_timeline,
+        _get_profile_header_after_search(nickname, default_timeline,
                                          search_nickname,
                                          search_domain_full,
                                          translate,
@@ -401,12 +399,10 @@ def html_profile_after_search(css_cache: {},
         profile_str + html_footer()
 
 
-def _get_profile_header(base_dir: str, http_prefix: str,
-                        nickname: str, domain: str,
+def _get_profile_header(http_prefix: str, nickname: str,
                         domain_full: str, translate: {},
                         default_timeline: str,
                         display_name: str,
-                        avatar_description: str,
                         profile_description_short: str,
                         login_button: str, avatar_url: str,
                         theme: str, moved_to: str,
@@ -506,8 +502,7 @@ def _get_profile_header(base_dir: str, http_prefix: str,
     return html_str
 
 
-def _get_profile_header_after_search(base_dir: str,
-                                     nickname: str, default_timeline: str,
+def _get_profile_header_after_search(nickname: str, default_timeline: str,
                                      search_nickname: str,
                                      search_domain_full: str,
                                      translate: {},
@@ -899,11 +894,10 @@ def html_profile(signing_priv_key_pem: str,
             pinned_content = pin_file.read()
 
     profile_header_str = \
-        _get_profile_header(base_dir, http_prefix,
-                            nickname, domain,
+        _get_profile_header(http_prefix,
+                            nickname,
                             domain_full, translate,
                             default_timeline, display_name,
-                            avatar_description,
                             profile_description_short,
                             login_button, avatar_url, theme,
                             moved_to, also_known_as,
@@ -1040,7 +1034,7 @@ def html_profile(signing_priv_key_pem: str,
             profile_str += \
                 _html_profile_following(translate, base_dir, http_prefix,
                                         authorized, nickname,
-                                        domain, port, session,
+                                        domain, session,
                                         cached_webfingers,
                                         person_cache, extra_json,
                                         project_version, ["unfollow"],
@@ -1053,7 +1047,7 @@ def html_profile(signing_priv_key_pem: str,
         profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
                                     authorized, nickname,
-                                    domain, port, session,
+                                    domain, session,
                                     cached_webfingers,
                                     person_cache, extra_json,
                                     project_version, ["block"],
@@ -1067,18 +1061,17 @@ def html_profile(signing_priv_key_pem: str,
                                     extra_json)
         elif selected == 'skills':
             profile_str += \
-                _html_profile_skills(translate, nickname, domain_full,
-                                     extra_json)
+                _html_profile_skills(extra_json)
 #       elif selected == 'shares':
 #           profile_str += \
 #                _html_profile_shares(actor, translate,
-#                                   nickname, domain_full,
-#                                   extra_json, 'shares') + license_str
+#                                     domain_full,
+#                                     extra_json, 'shares') + license_str
 #        elif selected == 'wanted':
 #            profile_str += \
 #                _html_profile_shares(actor, translate,
-#                                   nickname, domain_full,
-#                                   extra_json, 'wanted') + license_str
+#                                     domain_full,
+#                                     extra_json, 'wanted') + license_str
     # end of #timeline
     profile_str += '</div>'
 
@@ -1169,8 +1162,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
 
 
 def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
-                            authorized: bool,
-                            nickname: str, domain: str, port: int,
+                            authorized: bool, nickname: str, domain: str,
                             session, cached_webfingers: {}, person_cache: {},
                             following_json: {}, project_version: str,
                             buttons: [],
@@ -1252,12 +1244,11 @@ def _html_profile_roles(translate: {}, nickname: str, domain: str,
     return profile_str
 
 
-def _html_profile_skills(translate: {}, nickname: str, domain: str,
-                         skillsJson: {}) -> str:
+def _html_profile_skills(skills_json: {}) -> str:
     """Shows skills on the profile screen
     """
     profile_str = ''
-    for skill, level in skillsJson.items():
+    for skill, level in skills_json.items():
         profile_str += \
             '<div>' + skill + \
             '<br><div id="myProgress"><div id="myBar" style="width:' + \
@@ -1269,7 +1260,7 @@ def _html_profile_skills(translate: {}, nickname: str, domain: str,
 
 
 def _html_profile_shares(actor: str, translate: {},
-                         nickname: str, domain: str, shares_json: {},
+                         domain: str, shares_json: {},
                          shares_file_type: str) -> str:
     """Shows shares on the profile screen
     """
@@ -1556,8 +1547,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     libretranslate_url = get_config_param(base_dir, 'libretranslateUrl')
     libretranslate_api_key = get_config_param(base_dir, 'libretranslateApiKey')
     libretranslate_str = \
-        _html_edit_profile_libre_translate(translate,
-                                           libretranslate_url,
+        _html_edit_profile_libre_translate(libretranslate_url,
                                            libretranslate_api_key)
 
     return instance_str, role_assign_str, peertube_str, libretranslate_str
@@ -1907,8 +1897,7 @@ def _html_edit_profile_change_password(translate: {}) -> str:
     return edit_profile_form
 
 
-def _html_edit_profile_libre_translate(translate: {},
-                                       libretranslate_url: str,
+def _html_edit_profile_libre_translate(libretranslate_url: str,
                                        libretranslate_api_key: str) -> str:
     """Change automatic translation settings
     """

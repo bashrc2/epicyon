@@ -469,8 +469,7 @@ def outbox_block(base_dir: str, http_prefix: str,
     return True
 
 
-def outbox_undo_block(base_dir: str, http_prefix: str,
-                      nickname: str, domain: str, port: int,
+def outbox_undo_block(base_dir: str, nickname: str, domain: str,
                       message_json: {}, debug: bool) -> None:
     """ When an undo block request is received by the outbox from c2s
     """

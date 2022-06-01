@@ -451,7 +451,6 @@ def post_message_to_outbox(session, translate: {},
                     if is_image_media(session, base_dir, http_prefix,
                                       post_to_nickname, domain,
                                       message_json,
-                                      translate,
                                       yt_replace_domain,
                                       twitter_replacement_domain,
                                       allow_local_network_access,
@@ -577,8 +576,7 @@ def post_message_to_outbox(session, translate: {},
     if debug:
         print('DEBUG: handle any like requests')
     outbox_like(recent_posts_cache,
-                base_dir, http_prefix,
-                post_to_nickname, domain, port,
+                base_dir, post_to_nickname, domain,
                 message_json, debug)
     if debug:
         print('DEBUG: handle any undo like requests')
@@ -637,9 +635,7 @@ def post_message_to_outbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle undo block requests')
-    outbox_undo_block(base_dir, http_prefix,
-                      post_to_nickname, domain,
-                      port, message_json, debug)
+    outbox_undo_block(base_dir, post_to_nickname, domain, message_json, debug)
 
     if debug:
         print('DEBUG: handle mute requests')

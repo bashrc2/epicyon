@@ -2318,7 +2318,7 @@ def _receive_announce(recent_posts_cache: {},
                                          http_prefix,
                                          nickname, domain,
                                          message_json,
-                                         __version__, translate,
+                                         __version__,
                                          yt_replace_domain,
                                          twitter_replacement_domain,
                                          allow_local_network_access,
@@ -3256,12 +3256,10 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     if ':' in sender_domain:
         sender_port = get_port_from_domain(sender_domain)
         sender_domain = remove_domain_port(sender_domain)
-    cc_list = []
 
     # create the bounce DM
     subject = None
     content = translate['DM bounce']
-    followers_only = False
     save_to_file = False
     client_to_server = False
     comments_enabled = False
@@ -3280,7 +3278,7 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     low_bandwidth = False
     post_json_object = \
         create_direct_message_post(base_dir, nickname, domain, port,
-                                   http_prefix, content, followers_only,
+                                   http_prefix, content,
                                    save_to_file, client_to_server,
                                    comments_enabled,
                                    attach_image_filename, media_type,
@@ -3299,8 +3297,8 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     print('Sending bounce DM to ' + sending_handle)
     send_signed_json(post_json_object, session, base_dir,
                      nickname, domain, port,
-                     sender_nickname, sender_domain, sender_port, cc_list,
-                     http_prefix, False, False, federation_list,
+                     sender_nickname, sender_domain, sender_port,
+                     http_prefix, False, federation_list,
                      send_threads, post_log, cached_webfingers,
                      person_cache, debug, __version__, None, group_account,
                      signing_priv_key_pem, 7238634,
@@ -4083,7 +4081,6 @@ def _inbox_after_initial(server, inbox_start_time,
 
             if is_image_media(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
-                              translate,
                               yt_replace_domain,
                               twitter_replacement_domain,
                               allow_local_network_access,
@@ -4652,9 +4649,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                   nickname_to_follow)
         return True
     if max_followers > 0:
-        if get_no_of_followers(base_dir,
-                               nickname_to_follow, domain_to_follow,
-                               True) > max_followers:
+        if get_no_of_followers(base_dir, nickname_to_follow,
+                               domain_to_follow) > max_followers:
             print('WARN: ' + nickname_to_follow +
                   ' has reached their maximum number of followers')
             return True
@@ -4719,21 +4715,18 @@ def _receive_follow_request(session, session_onion, session_i2p,
         if domain.endswith('.onion'):
             if no_of_follow_requests(base_dir,
                                      nickname_to_follow, domain_to_follow,
-                                     nickname, domain, from_port,
                                      'onion') > 5:
                 print('Too many follow requests from onion addresses')
                 return False
         elif domain.endswith('.i2p'):
             if no_of_follow_requests(base_dir,
                                      nickname_to_follow, domain_to_follow,
-                                     nickname, domain, from_port,
                                      'i2p') > 5:
                 print('Too many follow requests from i2p addresses')
                 return False
         else:
             if no_of_follow_requests(base_dir,
                                      nickname_to_follow, domain_to_follow,
-                                     nickname, domain, from_port,
                                      '') > 10:
                 print('Too many follow requests')
                 return False
