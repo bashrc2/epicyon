@@ -1541,8 +1541,8 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
                 for sep in separators:
                     if sep not in line:
                         continue
-                    clearnet = line.split(' ', 1)[0].strip()
-                    onion = line.split(' ', 1)[1].strip().replace('\n', '')
+                    clearnet = line.split(sep, 1)[0].strip()
+                    onion = line.split(sep, 1)[1].strip().replace('\n', '')
                     if clearnet and onion:
                         onion_domains[clearnet] = onion
                     break
