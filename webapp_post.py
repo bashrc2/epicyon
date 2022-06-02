@@ -1538,6 +1538,9 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
             onion_domains = {}
             separators = (' ', ',', '->')
             for line in onion_domains_list:
+                line = line.strip()
+                if line.startswith('#'):
+                    continue
                 for sep in separators:
                     if sep not in line:
                         continue
