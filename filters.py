@@ -100,12 +100,12 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
 def _is_twitter_post(content: str) -> bool:
     """Returns true if the given post content is a retweet or twitter crosspost
     """
-    if '/twitter.' in content or \
-       '/nitter.' in content or \
-       '@twitter.' in content:
-        return True
-    if '>RT <' in content:
-        return True
+    features = (
+        '/twitter.', '/nitter.', '@twitter.', '>RT <', '_tw<'
+    )
+    for feat in features:
+        if feat in content:
+            return True
     return False
 
 
