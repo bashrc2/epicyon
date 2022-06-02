@@ -1525,7 +1525,7 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
         "twitter.com": twitter_onion
     }
 
-    onion_domains_filename = base_dir + '/onion_domains.txt'
+    onion_domains_filename = base_dir + '/accounts/onion_domains.txt'
     if os.path.isfile(onion_domains_filename):
         onion_domains_list = []
         try:
