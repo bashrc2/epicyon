@@ -1479,6 +1479,83 @@ def _get_footer_with_icons(show_icons: bool,
     return footer_str
 
 
+def _substitute_onion_domains(base_dir: str, content: str) -> str:
+    """Replace clearnet domains with onion domains
+    """
+    # any common sites which have onion equivalents
+    bbc_onion = \
+        'bbcweb3hytmzhn5d532owbu6oqadra5z3ar726vq5kgwwn6aucdccrad.onion'
+    ddg_onion = \
+        'duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion'
+    guardian_onion = \
+        'guardian2zotagl6tmjucg3lrhxdk4dw3lhbqnkvvkywawy3oqfoprid.onion'
+    propublica_onion = \
+        'p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd.onion'
+    # woe betide anyone following a facebook link, but if you must
+    # then do it safely
+    facebook_onion = \
+        'facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion'
+    protonmail_onion = \
+        'protonmailrmez3lotccipshtkleegetolb73fuirgj7r4o4vfu7ozyd.onion'
+    riseup_onion = \
+        'vww6ybal4bd7szmgncyruucpgfkqahzddi37ktceo3ah7ngmcopnpyyd.onion'
+    keybase_onion = \
+        'keybase5wmilwokqirssclfnsqrjdsi7jdir5wy7y7iu3tanwmtp6oid.onion'
+    zerobin_onion = \
+        'zerobinftagjpeeebbvyzjcqyjpmjvynj5qlexwyxe7l3vqejxnqv5qd.onion'
+    securedrop_onion = \
+        'sdolvtfhatvsysc6l34d65ymdwxcujausv7k5jk4cy5ttzhjoi6fzvyd.onion'
+    # the hell site 🔥
+    twitter_onion = \
+        'twitter3e4tixl4xyajtrzo62zg5vztmjuricljdp2c5kshju4avyoid.onion'
+    onion_domains = {
+        "bbc.com": bbc_onion,
+        "bbc.co.uk": bbc_onion,
+        "theguardian.com": guardian_onion,
+        "theguardian.co.uk": guardian_onion,
+        "duckduckgo.com": ddg_onion,
+        "propublica.org": propublica_onion,
+        "facebook.com": facebook_onion,
+        "protonmail.ch": protonmail_onion,
+        "proton.me": protonmail_onion,
+        "riseup.net": riseup_onion,
+        "keybase.io": keybase_onion,
+        "zerobin.net": zerobin_onion,
+        "securedrop.org": securedrop_onion,
+        "twitter.com": twitter_onion
+    }
+
+    onion_domains_filename = base_dir + '/accounts/onion_domains.txt'
+    if os.path.isfile(onion_domains_filename):
+        onion_domains_list = []
+        try:
+            with open(onion_domains_filename, 'r') as fp_onions:
+                onion_domains_list = fp_onions.readlines()
+        except OSError:
+            print('EX: unable to load onion domains file ' +
+                  onion_domains_filename)
+        if onion_domains_list:
+            onion_domains = {}
+            separators = (' ', ',', '->')
+            for line in onion_domains_list:
+                line = line.strip()
+                if line.startswith('#'):
+                    continue
+                for sep in separators:
+                    if sep not in line:
+                        continue
+                    clearnet = line.split(sep, 1)[0].strip()
+                    onion = line.split(sep, 1)[1].strip().replace('\n', '')
+                    if clearnet and onion:
+                        onion_domains[clearnet] = onion
+                    break
+
+    for clearnet, onion in onion_domains.items():
+        if clearnet in content:
+            content = content.replace(clearnet, onion)
+    return content
+
+
 def individual_post_as_html(signing_priv_key_pem: str,
                             allow_downloads: bool,
                             recent_posts_cache: {}, max_recent_posts: int,
@@ -2095,6 +2172,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '16')
 
     if not is_pgp_encrypted(content_str):
+        # if we are on an onion instance then substitute any common clearnet
+        # domains with their onion version
+        if '.onion' in domain and '://' in content_str:
+            content_str = \
+                _substitute_onion_domains(base_dir, content_str)
         if not is_patch:
             # remove any tabs
             content_str = \
