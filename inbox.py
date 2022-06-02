@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import get_media_descriptions_from_post
 from utils import get_summary_from_post
 from utils import delete_cached_html
 from utils import get_account_timezone
@@ -640,8 +641,11 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                 summary_str = \
                     get_summary_from_post(post_json_object,
                                           system_language, [])
-                if is_filtered(base_dir, nickname, domain,
-                               summary_str + ' ' + content_str):
+                media_descriptions = \
+                    get_media_descriptions_from_post(post_json_object)
+                content_all = \
+                    summary_str + ' ' + content_str + ' ' + media_descriptions
+                if is_filtered(base_dir, nickname, domain, content_all):
                     if debug:
                         print('WARN: post was filtered out due to content')
                     return None
@@ -2688,9 +2692,10 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         return False
 
     # check for filtered content
+    media_descriptions = get_media_descriptions_from_post(message_json)
     content_all = content_str
     if summary:
-        content_all = summary + ' ' + content_str
+        content_all = summary + ' ' + content_str + ' ' + media_descriptions
     if is_filtered(base_dir, nickname, domain, content_all):
         print('REJECT: content filtered')
         return False

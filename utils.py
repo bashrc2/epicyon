@@ -138,6 +138,25 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     return content
 
 
+def get_media_descriptions_from_post(post_json_object: {}) -> str:
+    """Returns all attached media descriptions as a single text.
+    This is used for filtering
+    """
+    this_post_json = post_json_object
+    if has_object_dict(post_json_object):
+        this_post_json = post_json_object['object']
+    if not this_post_json.get('attachment'):
+        return ''
+    descriptions = ''
+    for attach in this_post_json['attachment']:
+        if not attach.get('name'):
+            continue
+        descriptions += attach['name'] + ' '
+        if attach.get('url'):
+            descriptions += attach['url'] + ' '
+    return descriptions.strip()
+
+
 def get_summary_from_post(post_json_object: {}, system_language: str,
                           languages_understood: []) -> str:
     """Returns the summary from the post in the given language

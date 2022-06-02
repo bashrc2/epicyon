@@ -32,6 +32,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import get_media_descriptions_from_post
 from utils import valid_hash_tag
 from utils import get_audio_extensions
 from utils import get_summary_from_post
@@ -5004,9 +5005,12 @@ def download_announce(session, base_dir: str, http_prefix: str,
             return None
         summary_str = \
             get_summary_from_post(announced_json, system_language, [])
+        media_descriptions = \
+            get_media_descriptions_from_post(announced_json)
         content_all = content_str
         if summary_str:
-            content_all = summary_str + ' ' + content_str
+            content_all = \
+                summary_str + ' ' + content_str + ' ' + media_descriptions
         if is_filtered(base_dir, nickname, domain, content_all):
             print('WARN: announced post has been filtered ' +
                   str(announced_json))
