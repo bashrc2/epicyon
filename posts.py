@@ -5002,8 +5002,12 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-
-        if is_filtered(base_dir, nickname, domain, content_str):
+        summary_str = \
+            get_summary_from_post(announced_json, system_language, [])
+        content_all = content_str
+        if summary_str:
+            content_all = summary_str + ' ' + content_str
+        if is_filtered(base_dir, nickname, domain, content_all):
             print('WARN: announced post has been filtered ' +
                   str(announced_json))
             _reject_announce(announce_filename,
