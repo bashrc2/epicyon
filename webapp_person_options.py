@@ -142,8 +142,17 @@ def html_person_options(default_timeline: str,
     # show banner
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
+    back_path = '/'
+    if nickname:
+        back_path = '/users/' + nickname + '/' + default_timeline
+        if 'moderation' in back_to_path:
+            back_path = '/users/' + nickname + '/moderation'
+    if authorized and origin_path_str == '/users/' + nickname:
+        banner_link = back_path
+    else:
+        banner_link = origin_path_str
     options_str += \
-        '<header>\n<a href="/users/' + nickname + '/' + default_timeline + \
+        '<header>\n<a href="' + banner_link + \
         '" title="' + translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
         'tabindex="1" accesskey="' + access_keys['menuTimeline'] + '">\n'
@@ -390,23 +399,6 @@ def html_person_options(default_timeline: str,
                     options_str += checkbox_str
 
     options_str += options_link_str
-    back_path = '/'
-    if nickname:
-        back_path = '/users/' + nickname + '/' + default_timeline
-        if 'moderation' in back_to_path:
-            back_path = '/users/' + nickname + '/moderation'
-    if authorized and origin_path_str == '/users/' + nickname:
-        options_str += \
-            '    <a href="' + back_path + '"><button type="button" ' + \
-            'class="buttonIcon" name="submitBack" ' + \
-            'accesskey="' + access_keys['menuTimeline'] + '">' + \
-            translate['Go Back'] + '</button></a>\n'
-    else:
-        options_str += \
-            '    <a href="' + origin_path_str + '"><button type="button" ' + \
-            'class="buttonIcon" name="submitBack" accesskey="' + \
-            access_keys['menuTimeline'] + '">' + translate['Go Back'] + \
-            '</button></a>\n'
     if authorized:
         options_str += \
             '    <button type="submit" class="button" ' + \
