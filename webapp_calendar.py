@@ -35,7 +35,7 @@ from webapp_utils import html_keyboard_navigation
 from maps import html_open_street_map
 
 
-def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
+def html_calendar_delete_confirm(translate: {}, base_dir: str,
                                  path: str, http_prefix: str,
                                  domain_full: str, post_id: str,
                                  post_time: str,

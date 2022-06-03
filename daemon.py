@@ -14607,8 +14607,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '?' in post_day:
             post_day = post_day.split('?')[0]
         # show the confirmation screen screen
-        msg = html_calendar_delete_confirm(self.server.css_cache,
-                                           translate,
+        msg = html_calendar_delete_confirm(translate,
                                            base_dir, path,
                                            http_prefix,
                                            domain_full,
