@@ -364,7 +364,7 @@ def html_search_emoji_text_entry(translate: {},
     emoji_str += '    <input type="text" name="searchtext" autofocus><br>\n'
     emoji_str += \
         '    <button type="submit" class="button" name="submitSearch">' + \
-        translate['Publish'] + '</button>\n'
+        translate['Search'] + '</button>\n'
     emoji_str += '  </form>\n'
     emoji_str += '  </center>\n'
     emoji_str += '  </div>\n'
@@ -434,7 +434,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     submit_key = access_keys['submitButton']
     follow_str += '    <button type="submit" class="button" ' + \
         'name="submitSearch" accesskey="' + submit_key + '">' + \
-        translate['Publish'] + '</button>\n'
+        translate['Search'] + '</button>\n'
     follow_str += '  </form>\n'
 
     cached_hashtag_swarm_filename = \

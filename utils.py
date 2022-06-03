@@ -3696,7 +3696,9 @@ def disallow_announce(content: str) -> bool:
         ':boosts_no:',
         'dont_repeat',
         'dont_announce',
-        'dont_boost'
+        'dont_boost',
+        'do not boost',
+        "don't boost"
     )
     for diss in disallow_strings:
         if diss in content:
@@ -3714,7 +3716,9 @@ def disallow_reply(content: str) -> bool:
         ':no_reply:',
         ':no_replies:',
         ':replies_no:',
-        'dont_at_me'
+        'dont_at_me',
+        'do not reply',
+        "don't reply"
     )
     for diss in disallow_strings:
         if diss in content:
