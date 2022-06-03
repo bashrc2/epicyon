@@ -30,6 +30,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_keyboard_navigation
 from webapp_utils import get_banner_file
+from webapp_utils import html_hide_from_screen_reader
 
 
 def html_person_options(default_timeline: str,
@@ -138,9 +139,6 @@ def html_person_options(default_timeline: str,
     options_str = \
         html_header_with_external_style(css_filename, instance_title, None)
 
-    options_str += html_keyboard_navigation(text_mode_banner, {}, {})
-    options_str += '<br><br>\n'
-
     # show banner
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
@@ -154,6 +152,16 @@ def html_person_options(default_timeline: str,
         'class="timeline-banner" alt="" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '</header>\n<br><br>\n'
+
+    nav_links = {}
+    timeline_link_str = html_hide_from_screen_reader('🏠') + ' ' + \
+        translate['Switch to timeline view']
+    nav_links[timeline_link_str] = \
+        '/users/' + nickname + '/' + default_timeline
+    nav_access_keys = {
+    }
+    options_str += \
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys)
 
     options_str += '<div class="options">\n'
     options_str += '  <div class="optionsAvatar">\n'
