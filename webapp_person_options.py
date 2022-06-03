@@ -29,10 +29,11 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_keyboard_navigation
+from webapp_utils import get_banner_file
 
 
 def html_person_options(default_timeline: str,
-                        css_cache: {}, translate: {}, base_dir: str,
+                        translate: {}, base_dir: str,
                         domain: str, domain_full: str,
                         origin_path_str: str,
                         options_actor: str,
@@ -61,7 +62,8 @@ def html_person_options(default_timeline: str,
                         news_instance: bool,
                         authorized: bool,
                         access_keys: {},
-                        is_group: bool) -> str:
+                        is_group: bool,
+                        theme: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_domain, options_port = get_domain_from_actor(options_actor)
@@ -138,6 +140,21 @@ def html_person_options(default_timeline: str,
 
     options_str += html_keyboard_navigation(text_mode_banner, {}, {})
     options_str += '<br><br>\n'
+
+    # show banner
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    options_str += \
+        '<header>\n<a href="/users/' + nickname + '/' + default_timeline + \
+        '" title="' + translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'tabindex="1" accesskey="' + access_keys['menuTimeline'] + '">\n'
+    options_str += \
+        '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n<br><br>\n'
+
     options_str += '<div class="options">\n'
     options_str += '  <div class="optionsAvatar">\n'
     options_str += '  <center>\n'

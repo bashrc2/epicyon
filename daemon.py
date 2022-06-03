@@ -7965,7 +7965,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             msg = \
                 html_person_options(self.server.default_timeline,
-                                    self.server.css_cache,
                                     self.server.translate,
                                     base_dir, domain,
                                     domain_full,
@@ -7988,7 +7987,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     self.server.news_instance,
                                     authorized,
-                                    access_keys, is_group)
+                                    access_keys, is_group,
+                                    self.server.theme_name)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
