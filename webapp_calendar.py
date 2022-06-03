@@ -35,7 +35,7 @@ from webapp_utils import html_keyboard_navigation
 from maps import html_open_street_map
 
 
-def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
+def html_calendar_delete_confirm(translate: {}, base_dir: str,
                                  path: str, http_prefix: str,
                                  domain_full: str, post_id: str,
                                  post_time: str,
@@ -512,7 +512,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     nav_links = {}
     timeline_link_str = html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
-    nav_links[timeline_link_str] = cal_actor + '/inbox'
+    nav_links[timeline_link_str] = cal_actor + '/' + default_timeline
 
     day_of_month = 0
     dow = week_day_of_month_start(month_number, year)

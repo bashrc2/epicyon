@@ -1,6 +1,9 @@
 @charset "UTF-8";
 
 :root {
+    --banner-height: 20vh;
+    --banner-height-mobile: 10vh;
+    --banner-height-tiny: 10vh;
     --avatar-rounding: 10%;
     --options-bg-color: #282c37;
     --options-link-bg-color: transparent;
@@ -151,6 +154,12 @@ a:focus {
 }
 
 @media screen and (min-width: 400px) {
+    .timeline-banner {
+        vertical-align: top;
+        object-fit: cover;
+        width: 100%;
+        max-height: var(--banner-height);
+    }
     textarea {
         font-family: Arial, Helvetica, sans-serif;
         font-size: var(--font-size4);
@@ -228,6 +237,12 @@ a:focus {
 }
 
 @media screen and (max-width: 1000px) {
+    .timeline-banner {
+        vertical-align: top;
+        object-fit: cover;
+        width: 98vw;
+        max-height: var(--banner-height-mobile);
+    }
     textarea {
         font-family: Arial, Helvetica, sans-serif;
         font-size: var(--font-size);
@@ -305,6 +320,12 @@ a:focus {
 }
 
 @media screen and (max-width: 480px) {
+    .timeline-banner {
+        vertical-align: top;
+        object-fit: cover;
+        width: 98vw;
+        max-height: var(--banner-height-tiny);
+    }
     textarea {
         font-family: Arial, Helvetica, sans-serif;
         font-size: var(--font-size2);

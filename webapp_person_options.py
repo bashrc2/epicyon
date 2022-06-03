@@ -29,10 +29,12 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_keyboard_navigation
+from webapp_utils import get_banner_file
+from webapp_utils import html_hide_from_screen_reader
 
 
 def html_person_options(default_timeline: str,
-                        css_cache: {}, translate: {}, base_dir: str,
+                        translate: {}, base_dir: str,
                         domain: str, domain_full: str,
                         origin_path_str: str,
                         options_actor: str,
@@ -61,7 +63,8 @@ def html_person_options(default_timeline: str,
                         news_instance: bool,
                         authorized: bool,
                         access_keys: {},
-                        is_group: bool) -> str:
+                        is_group: bool,
+                        theme: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_domain, options_port = get_domain_from_actor(options_actor)
@@ -136,8 +139,39 @@ def html_person_options(default_timeline: str,
     options_str = \
         html_header_with_external_style(css_filename, instance_title, None)
 
-    options_str += html_keyboard_navigation(text_mode_banner, {}, {})
-    options_str += '<br><br>\n'
+    # show banner
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    back_path = '/'
+    if nickname:
+        back_path = '/users/' + nickname + '/' + default_timeline
+        if 'moderation' in back_to_path:
+            back_path = '/users/' + nickname + '/moderation'
+    if authorized and origin_path_str == '/users/' + nickname:
+        banner_link = back_path
+    else:
+        banner_link = origin_path_str
+    options_str += \
+        '<header>\n<a href="' + banner_link + \
+        '" title="' + translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'tabindex="1" accesskey="' + access_keys['menuTimeline'] + '">\n'
+    options_str += \
+        '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n<br><br>\n'
+
+    nav_links = {}
+    timeline_link_str = html_hide_from_screen_reader('🏠') + ' ' + \
+        translate['Switch to timeline view']
+    nav_links[timeline_link_str] = \
+        '/users/' + nickname + '/' + default_timeline
+    nav_access_keys = {
+    }
+    options_str += \
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys)
+
     options_str += '<div class="options">\n'
     options_str += '  <div class="optionsAvatar">\n'
     options_str += '  <center>\n'
@@ -272,7 +306,7 @@ def html_person_options(default_timeline: str,
                     'accesskey="' + access_keys['enterPetname'] + '">\n' \
                     '    <button type="submit" class="buttonsmall" ' + \
                     'name="submitPetname">' + \
-                    translate['Publish'] + '</button><br>\n'
+                    translate['Save'] + '</button><br>\n'
 
             # Notify when a post arrives from this person
             if is_following_actor(base_dir, nickname, domain, options_actor):
@@ -282,7 +316,7 @@ def html_person_options(default_timeline: str,
                     translate['Notify me when this account posts'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitNotifyOnPost">' + \
-                    translate['Publish'] + '</button><br>\n'
+                    translate['Save'] + '</button><br>\n'
                 if not notify_when_person_posts(base_dir, nickname, domain,
                                                 options_nickname,
                                                 options_domain_full):
@@ -295,7 +329,7 @@ def html_person_options(default_timeline: str,
                     translate['Receive calendar events from this account'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitOnCalendar">' + \
-                    translate['Publish'] + '</button><br>\n'
+                    translate['Save'] + '</button><br>\n'
                 if not receiving_calendar_events(base_dir, nickname, domain,
                                                  options_nickname,
                                                  options_domain_full):
@@ -320,7 +354,7 @@ def html_person_options(default_timeline: str,
                         translate['Allow news posts'] + \
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToNews">' + \
-                        translate['Publish'] + '</button><br>\n'
+                        translate['Save'] + '</button><br>\n'
                     if os.path.isfile(newswire_blocked_filename):
                         checkbox_str = checkbox_str.replace(' checked>', '>')
                     else:
@@ -340,7 +374,7 @@ def html_person_options(default_timeline: str,
                     translate['News posts are moderated'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitModNewsPosts">' + \
-                    translate['Publish'] + '</button><br>\n'
+                    translate['Save'] + '</button><br>\n'
                 if not os.path.isfile(moderated_filename):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
@@ -358,30 +392,13 @@ def html_person_options(default_timeline: str,
                         translate['Featured writer'] + \
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToFeatures">' + \
-                        translate['Publish'] + '</button><br>\n'
+                        translate['Save'] + '</button><br>\n'
                     if not is_featured_writer(base_dir, options_nickname,
                                               options_domain):
                         checkbox_str = checkbox_str.replace(' checked>', '>')
                     options_str += checkbox_str
 
     options_str += options_link_str
-    back_path = '/'
-    if nickname:
-        back_path = '/users/' + nickname + '/' + default_timeline
-        if 'moderation' in back_to_path:
-            back_path = '/users/' + nickname + '/moderation'
-    if authorized and origin_path_str == '/users/' + nickname:
-        options_str += \
-            '    <a href="' + back_path + '"><button type="button" ' + \
-            'class="buttonIcon" name="submitBack" ' + \
-            'accesskey="' + access_keys['menuTimeline'] + '">' + \
-            translate['Go Back'] + '</button></a>\n'
-    else:
-        options_str += \
-            '    <a href="' + origin_path_str + '"><button type="button" ' + \
-            'class="buttonIcon" name="submitBack" accesskey="' + \
-            access_keys['menuTimeline'] + '">' + translate['Go Back'] + \
-            '</button></a>\n'
     if authorized:
         options_str += \
             '    <button type="submit" class="button" ' + \
@@ -434,7 +451,7 @@ def html_person_options(default_timeline: str,
             '    <br><br>' + translate['Notes'] + ': \n'
         options_str += '    <button type="submit" class="buttonsmall" ' + \
             'name="submitPersonNotes">' + \
-            translate['Publish'] + '</button><br>\n'
+            translate['Save'] + '</button><br>\n'
         options_str += \
             '    <textarea id="message" ' + \
             'name="optionnotes" style="height:400px" spellcheck="true" ' + \
