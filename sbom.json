@@ -28,7 +28,7 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -185,7 +185,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -227,7 +227,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -269,7 +269,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -437,7 +437,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -521,7 +521,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -605,7 +605,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -689,7 +689,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -755,7 +755,7 @@
       "release_date": "2021-10-06",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -802,7 +802,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -995,7 +995,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -1037,7 +1037,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -1079,7 +1079,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -1093,162 +1093,6 @@
     }
   ],
   "epicyon.py": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_ActivityPub.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_ActivityPub_Core.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_ActivityPub_Security.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Commandline-Interface_ActivityPub.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Commandline-Interface_Core.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Core.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.05.17",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Core_Accessibility.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Core_Security.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Timeline_Core.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.05.17",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Timeline_Security.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Web-Interface-Columns_Core.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Web-Interface_Accessibility.dot": [
-    {
-      "id": "none",
-      "server": {
-        "kb_version": {
-          "daily": "22.06.05",
-          "monthly": "22.05"
-        },
-        "version": "4.5.2"
-      }
-    }
-  ],
-  "epicyon_groups_Web-Interface_Core.dot": [
     {
       "id": "none",
       "server": {
@@ -1289,7 +1133,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -1331,7 +1175,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -1373,7 +1217,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2390,7 +2234,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2516,7 +2360,7 @@
       "release_date": "2021-10-06",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2558,7 +2402,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2589,7 +2433,7 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2631,7 +2475,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2673,7 +2517,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2715,7 +2559,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2775,7 +2619,7 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2853,7 +2697,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2895,7 +2739,7 @@
       "release_date": "2021-02-03",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2937,7 +2781,7 @@
       "release_date": "2021-09-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -2979,7 +2823,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3105,7 +2949,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3147,7 +2991,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3309,7 +3153,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3393,7 +3237,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3435,7 +3279,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3518,7 +3362,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3560,7 +3404,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3644,7 +3488,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3686,7 +3530,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -3728,7 +3572,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4016,7 +3860,7 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4052,7 +3896,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4070,7 +3914,7 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4190,7 +4034,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4279,7 +4123,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4352,7 +4196,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4399,7 +4243,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4441,7 +4285,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4797,7 +4641,7 @@
       "release_date": "2021-02-03",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4815,7 +4659,7 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4851,7 +4695,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4893,7 +4737,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -4977,7 +4821,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5019,7 +4863,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5103,7 +4947,7 @@
       "release_date": "2021-02-03",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5145,7 +4989,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5187,7 +5031,7 @@
       "release_date": "2022-01-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5229,7 +5073,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5271,7 +5115,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5313,7 +5157,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5355,7 +5199,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5397,7 +5241,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5439,7 +5283,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5481,7 +5325,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5523,7 +5367,7 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5607,7 +5451,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5696,7 +5540,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5780,7 +5624,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5822,7 +5666,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -5948,7 +5792,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -6000,7 +5844,7 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.06.05",
+          "daily": "22.05.17",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -6084,7 +5928,7 @@
       "release_date": "2021-08-02",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
@@ -6126,7 +5970,7 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.05.17",
+          "daily": "22.06.05",
           "monthly": "22.05"
         },
         "version": "4.5.2"
