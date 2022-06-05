@@ -19,6 +19,7 @@ source:
 	rm -f ../${APP}*.deb ../${APP}*.changes ../${APP}*.asc ../${APP}*.dsc
 	cd .. && mv ${APP} ${APP}-${VERSION} && tar -zcvf ${APP}_${VERSION}.orig.tar.gz ${APP}-${VERSION}/ && mv ${APP}-${VERSION} ${APP}
 clean:
+	rm -f \#*
 	rm -f *.*~ *~ *.dot
 	rm -f orgs/*~
 	rm -f ontology/*~
