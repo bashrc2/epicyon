@@ -405,7 +405,7 @@ def html_moderation_info(css_cache: {}, translate: {},
                 translate[msg_str1]
             info_form += \
                 '  <textarea id="message" ' + \
-                'name="blocked" style="height:700px" spellcheck="false">' + \
+                'name="blocked" style="height:2000px" spellcheck="false">' + \
                 blocked_str + '</textarea>\n'
             info_form += '</div>\n'
             info_shown = True
