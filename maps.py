@@ -46,17 +46,24 @@ def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
 def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     """Returns geocoordinates from a Gmaps link
     """
-    if '/maps/@' not in url:
+    if '/maps/' not in url:
+        return None, None, None
+    coords_str = url.split('/maps', 1)[1]
+    if '/@' not in coords_str:
         return None, None, None
 
-    coords_str = url.split('/maps/@')[1]
+    coords_str = coords_str.split('/@', 1)[1]
+    if 'z' not in coords_str:
+        return None, None, None
+    coords_str = coords_str.split('z', 1)[0]
+
     if ',' not in coords_str:
         return None, None, None
 
     coords = coords_str.split(',')
     if len(coords) != 3:
         return None, None, None
-    zoom = coords[2].replace('z', '')
+    zoom = coords[2]
     if not zoom.isdigit():
         return None, None, None
     latitude = coords[0]
