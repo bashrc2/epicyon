@@ -3,6 +3,8 @@ VERSION=1.1.0
 
 all:
 debug:
+sbom:
+	scanoss-py scan . > sbom.json
 source:
 	rm -f *.*~ *~
 	rm -f ontology/*~
@@ -17,6 +19,7 @@ source:
 	rm -f ../${APP}*.deb ../${APP}*.changes ../${APP}*.asc ../${APP}*.dsc
 	cd .. && mv ${APP} ${APP}-${VERSION} && tar -zcvf ${APP}_${VERSION}.orig.tar.gz ${APP}-${VERSION}/ && mv ${APP}-${VERSION} ${APP}
 clean:
+	rm -f \#*
 	rm -f *.*~ *~ *.dot
 	rm -f orgs/*~
 	rm -f ontology/*~
@@ -25,6 +28,7 @@ clean:
 	rm -f theme/indymediaclassic/welcome/*~
 	rm -f theme/indymediamodern/welcome/*~
 	rm -f website/EN/*~
+	rm -f cwlists/*~
 	rm -f gemini/EN/*~
 	rm -f scripts/*~
 	rm -f deploy/*~

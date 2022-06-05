@@ -395,7 +395,15 @@ def html_moderation_info(css_cache: {}, translate: {},
     blocking_filename = base_dir + '/accounts/blocking.txt'
     if os.path.isfile(blocking_filename):
         with open(blocking_filename, 'r') as fp_block:
-            blocked_str = fp_block.read()
+            blocked_lines = fp_block.readlines()
+            blocked_str = ''
+            if blocked_lines:
+                blocked_lines.sort()
+                for line in blocked_lines:
+                    if not line:
+                        continue
+                    line = line.replace('\n', '').replace('\r', '').strip()
+                    blocked_str += line + '\n'
             info_form += '<div class="container">\n'
             info_form += \
                 '  <br><b>' + \
@@ -405,7 +413,7 @@ def html_moderation_info(css_cache: {}, translate: {},
                 translate[msg_str1]
             info_form += \
                 '  <textarea id="message" ' + \
-                'name="blocked" style="height:700px" spellcheck="false">' + \
+                'name="blocked" style="height:2000px" spellcheck="false">' + \
                 blocked_str + '</textarea>\n'
             info_form += '</div>\n'
             info_shown = True

@@ -451,8 +451,8 @@
     "warning": "26A0",
     "wastebasket": "1F5D1",
     "watch": "231A",
-    "waveman": "1F64B-1F3FE-200D-2642-FE0F",
-    "wavewoman": "1F64B-1F3FE-200D-2640-FE0F",
+    "waveman": "1F64B",
+    "wavewoman": "1F64B",
     "wavydash": "3030",
     "wheelchairsymbol": "267F",
     "wheelchair": "1F9BD",
@@ -2824,5 +2824,6 @@
     "vegananarchism": "vegananarchism",
     "wiphala_bolivia": "wiphala_bolivia",
     "yayblob": "yayblob",
-    "notankies": "notankies"
+    "notankies": "notankies",
+    "highfive": "1F64B"
 }

@@ -221,7 +221,7 @@ def html_theme_designer(css_cache: {}, base_dir: str,
         translate['Reset'] + '</button>\n' + \
         '    <button type="submit" class="button" ' + \
         'name="submitThemeDesigner" accesskey="' + submit_key + '">' + \
-        translate['Publish'] + '</button>\n    </center>\n'
+        translate['Save'] + '</button>\n    </center>\n'
 
     contrast_warning = ''
     if theme_json.get('main-bg-color'):
