@@ -28,6 +28,7 @@ clean:
 	rm -f theme/indymediaclassic/welcome/*~
 	rm -f theme/indymediamodern/welcome/*~
 	rm -f website/EN/*~
+	rm -f cwlists/*~
 	rm -f gemini/EN/*~
 	rm -f scripts/*~
 	rm -f deploy/*~
