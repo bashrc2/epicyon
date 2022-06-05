@@ -725,7 +725,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                     str(maps_zoom) + ',normal'
         location_label_with_link = \
             '<a href="' + maps_url + '" ' + \
-            'rel="nofollow noopener noreferrer" target="_blank">' + \
+            'rel="nofollow noopener noreferrer" target="_blank">🗺️ ' + \
             translate['Location'] + '</a>'
         date_and_location += '<br><p>\n' + \
             edit_text_field(location_label_with_link, 'location', '',
