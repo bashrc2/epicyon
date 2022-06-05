@@ -395,11 +395,15 @@ def html_moderation_info(css_cache: {}, translate: {},
     blocking_filename = base_dir + '/accounts/blocking.txt'
     if os.path.isfile(blocking_filename):
         with open(blocking_filename, 'r') as fp_block:
-            blocked_lines = fp_block.readlines().sort()
+            blocked_lines = fp_block.readlines()
             blocked_str = ''
-            for line in blocked_lines:
-                line = line.replace('\n', '').replace('\r', '').strip()
-                blocked_str += line + '\n'
+            if blocked_lines:
+                blocked_lines.sort()
+                for line in blocked_lines:
+                    if not line:
+                        continue
+                    line = line.replace('\n', '').replace('\r', '').strip()
+                    blocked_str += line + '\n'
             info_form += '<div class="container">\n'
             info_form += \
                 '  <br><b>' + \
