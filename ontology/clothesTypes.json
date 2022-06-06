@@ -881,6 +881,30 @@
           "@language": "en"
         },
         {
+          "@value": "হোসিয়ারি‎",
+          "@language": "bn"
+        },
+        {
+          "@value": "양말‎‎",
+          "@language": "ko"
+        },
+        {
+          "@value": "Καλτσοποιία‎",
+          "@language": "el"
+        },
+        {
+          "@value": "çorap",
+          "@language": "tr"
+        },
+        {
+          "@value": "Kousen‎",
+          "@language": "nl"
+        },
+        {
+          "@value": "Панчішно-шкарпеткові вироби‎",
+          "@language": "uk"
+        },
+        {
           "@value": "Hosiery",
           "@language": "ar"
         },
@@ -897,7 +921,7 @@
           "@language": "sw"
         },
         {
-          "@value": "Hosiery",
+          "@value": "Meias",
           "@language": "pt"
         },
         {
@@ -929,7 +953,7 @@
           "@language": "zh"
         },
         {
-          "@value": "Hosiery‎",
+          "@value": "Calceteria",
           "@language": "ca"
         }
       ],
