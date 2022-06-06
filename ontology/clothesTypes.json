@@ -1079,6 +1079,30 @@
           "@language": "en"
         },
         {
+          "@value": "τζιν παντελονι",
+          "@language": "el"
+        },
+        {
+          "@value": "জিন্স",
+          "@language": "bn"
+        },
+        {
+          "@value": "Kot",
+          "@language": "tr"
+        },
+        {
+          "@value": "청바지",
+          "@language": "ko"
+        },
+        {
+          "@value": "Jeans",
+          "@language": "nl"
+        },
+        {
+          "@value": "джинси",
+          "@language": "uk"
+        },
+        {
           "@value": "جينز",
           "@language": "ar"
         },
@@ -1123,11 +1147,11 @@
           "@language": "hi"
         },
         {
-          "@value": "Jeans",
+          "@value": "牛仔裤",
           "@language": "zh"
         },
         {
-          "@value": "Jeans",
+          "@value": "Texans",
           "@language": "ca"
         }
       ],
