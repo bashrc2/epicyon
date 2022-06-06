@@ -18,7 +18,7 @@
           "@language": "en"
         },
         {
-          "@value": "Entire Place",
+          "@value": "Ολόκληρο το μέρος",
           "@language": "el"
         },
         {
@@ -117,7 +117,7 @@
           "@language": "en"
         },
         {
-          "@value": "Private Room",
+          "@value": "Ιδιωτικό δωμάτιο",
           "@language": "el"
         },
         {
@@ -216,7 +216,7 @@
           "@language": "en"
         },
         {
-          "@value": "Hotel Room",
+          "@value": "Δωμάτιο ξενοδοχείου",
           "@language": "el"
         },
         {
@@ -311,7 +311,7 @@
           "@language": "en"
         },
         {
-          "@value": "Shared Room",
+          "@value": "Κοινόχρηστο χώρο",
           "@language": "el"
         },
         {
@@ -402,7 +402,7 @@
           "@language": "en"
         },
         {
-          "@value": "Sofa",
+          "@value": "Καναπές",
           "@language": "el"
         },
         {
@@ -497,7 +497,7 @@
           "@language": "en"
         },
         {
-          "@value": "Boat",
+          "@value": "Σκάφος",
           "@language": "el"
         },
         {
@@ -592,7 +592,7 @@
           "@language": "en"
         },
         {
-          "@value": "Barge",
+          "@value": "Φορτηγίδα",
           "@language": "el"
         },
         {
@@ -687,7 +687,7 @@
           "@language": "en"
         },
         {
-          "@value": "Tent",
+          "@value": "Σκηνή",
           "@language": "el"
         },
         {
@@ -786,7 +786,7 @@
           "@language": "en"
         },
         {
-          "@value": "Caravan",
+          "@value": "Τροχόσπιτο",
           "@language": "el"
         },
         {
@@ -881,7 +881,7 @@
           "@language": "en"
         },
         {
-          "@value": "Hostel",
+          "@value": "Ξενοδοχείο",
           "@language": "el"
         },
         {
@@ -976,7 +976,7 @@
           "@language": "en"
         },
         {
-          "@value": "Yurt",
+          "@value": "Γιουρτ",
           "@language": "el"
         },
         {
