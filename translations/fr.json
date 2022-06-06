@@ -560,5 +560,6 @@
     "Start Time": "Heure de début",
     "End Time": "Heure de fin",
     "Switch to calendar view": "Basculer vers la vue calendrier",
-    "Save": "Sauvegarder"
+    "Save": "Sauvegarder",
+    "Switch to moderation view": "Passer en mode modération"
 }

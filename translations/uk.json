@@ -560,5 +560,6 @@
     "Start Time": "Час початку",
     "End Time": "Час закінчення",
     "Switch to calendar view": "Перейти до перегляду календаря",
-    "Save": "Зберегти"
+    "Save": "Зберегти",
+    "Switch to moderation view": "Перейти до режиму модерації"
 }

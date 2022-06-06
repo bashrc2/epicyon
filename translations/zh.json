@@ -560,5 +560,6 @@
     "Start Time": "开始时间",
     "End Time": "时间结束",
     "Switch to calendar view": "切换到日历视图",
-    "Save": "节省"
+    "Save": "节省",
+    "Switch to moderation view": "切换到审核视图"
 }
