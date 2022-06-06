@@ -980,11 +980,35 @@
           "@language": "en"
         },
         {
+          "@value": "Kurtka",
+          "@language": "pl"
+        },
+        {
+          "@value": "재킷",
+          "@language": "ko"
+        },
+        {
+          "@value": "জ্যাকেট",
+          "@language": "bn"
+        },
+        {
+          "@value": "Ceket",
+          "@language": "tr"
+        },
+        {
+          "@value": "Jasje",
+          "@language": "nl"
+        },
+        {
+          "@value": "Жакет",
+          "@language": "uk"
+        },
+        {
           "@value": "جاكيت",
           "@language": "ar"
         },
         {
-          "@value": "Jacket",
+          "@value": "Sako",
           "@language": "ku"
         },
         {
@@ -992,7 +1016,7 @@
           "@language": "it"
         },
         {
-          "@value": "Jacket",
+          "@value": "Koti",
           "@language": "sw"
         },
         {
@@ -1008,7 +1032,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Jacket",
+          "@value": "Siaced",
           "@language": "cy"
         },
         {
@@ -1024,11 +1048,11 @@
           "@language": "hi"
         },
         {
-          "@value": "Jacket",
+          "@value": "夹克",
           "@language": "zh"
         },
         {
-          "@value": "Jacket",
+          "@value": "Jaqueta",
           "@language": "ca"
         }
       ],
