@@ -679,6 +679,30 @@
           "@language": "en"
         },
         {
+          "@value": "Suknia",
+          "@language": "pl"
+        },
+        {
+          "@value": "겉옷",
+          "@language": "ko"
+        },
+        {
+          "@value": "গাউন",
+          "@language": "bn"
+        },
+        {
+          "@value": "Gewaad",
+          "@language": "nl"
+        },
+        {
+          "@value": "Elbise",
+          "@language": "tr"
+        },
+        {
+          "@value": "Сукня",
+          "@language": "uk"
+        },
+        {
           "@value": "فون",
           "@language": "ar"
         },
@@ -691,7 +715,7 @@
           "@language": "it"
         },
         {
-          "@value": "Gown",
+          "@value": "Gauni",
           "@language": "sw"
         },
         {
@@ -707,7 +731,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Gown",
+          "@value": "Gŵn",
           "@language": "cy"
         },
         {
@@ -723,7 +747,7 @@
           "@language": "hi"
         },
         {
-          "@value": "Gown",
+          "@value": "袍",
           "@language": "zh"
         },
         {
@@ -754,11 +778,39 @@
           "@language": "en"
         },
         {
-          "@value": "Hat",
+          "@value": "Hoed",
+          "@language": "nl"
+        },
+        {
+          "@value": "Καπέλο",
+          "@language": "el"
+        },
+        {
+          "@value": "টুপি",
+          "@language": "bn"
+        },
+        {
+          "@value": "Kapelusz",
+          "@language": "pl"
+        },
+        {
+          "@value": "Şapka",
+          "@language": "tr"
+        },
+        {
+          "@value": "모자",
+          "@language": "ko"
+        },
+        {
+          "@value": "Капелюх",
+          "@language": "uk"
+        },
+        {
+          "@value": "قبعة",
           "@language": "ar"
         },
         {
-          "@value": "Hat",
+          "@value": "Kûm",
           "@language": "ku"
         },
         {
@@ -766,7 +818,7 @@
           "@language": "it"
         },
         {
-          "@value": "Hat",
+          "@value": "Kofia",
           "@language": "sw"
         },
         {
