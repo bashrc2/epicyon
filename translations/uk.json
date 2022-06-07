@@ -527,6 +527,7 @@
     "Describe your attachment": "Опишіть свою прихильність",
     "Language used": "Використана мова",
     "lang_ar": "aрабська",
+    "lang_bn": "бенгальська",
     "lang_cy": "валлійська",
     "lang_en": "англійська",
     "lang_fr": "французький",
@@ -560,5 +561,6 @@
     "Start Time": "Час початку",
     "End Time": "Час закінчення",
     "Switch to calendar view": "Перейти до перегляду календаря",
-    "Save": "Зберегти"
+    "Save": "Зберегти",
+    "Switch to moderation view": "Перейти до режиму модерації"
 }

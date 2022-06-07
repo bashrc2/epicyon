@@ -527,6 +527,7 @@
     "Describe your attachment": "Décrivez votre pièce jointe",
     "Language used": "Langue utilisée",
     "lang_ar": "Arabe",
+    "lang_bn": "Bengali",
     "lang_cy": "Gallois",
     "lang_en": "Anglaise",
     "lang_fr": "Français",
@@ -560,5 +561,6 @@
     "Start Time": "Heure de début",
     "End Time": "Heure de fin",
     "Switch to calendar view": "Basculer vers la vue calendrier",
-    "Save": "Sauvegarder"
+    "Save": "Sauvegarder",
+    "Switch to moderation view": "Passer en mode modération"
 }

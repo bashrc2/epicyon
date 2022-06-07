@@ -2299,10 +2299,11 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.signing_priv_key_pem)
                     else:
                         msg = \
-                            html_moderation_info(self.server.css_cache,
-                                                 self.server.translate,
-                                                 base_dir, http_prefix,
-                                                 nickname)
+                            html_moderation_info(self.server.translate,
+                                                 base_dir, nickname,
+                                                 self.server.domain,
+                                                 self.server.theme_name,
+                                                 self.server.access_keys)
                     if msg:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)

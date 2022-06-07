@@ -527,6 +527,7 @@
     "Describe your attachment": "Ekinizi tanımlayın",
     "Language used": "Kullanılan dil",
     "lang_ar": "Arapça",
+    "lang_bn": "Bengalce",
     "lang_cy": "Galce",
     "lang_en": "Ingilizce",
     "lang_fr": "Fransızca",
@@ -560,5 +561,6 @@
     "Start Time": "Başlangıç ​​saati",
     "End Time": "Bitiş zamanı",
     "Switch to calendar view": "Takvim görünümüne geç",
-    "Save": "Kaydetmek"
+    "Save": "Kaydetmek",
+    "Switch to moderation view": "Denetleme görünümüne geç"
 }

@@ -527,6 +527,7 @@
     "Describe your attachment": "Beschrijf uw bijlage",
     "Language used": "Gebruikte taal",
     "lang_ar": "Arabisch",
+    "lang_bn": "Bengaals",
     "lang_cy": "Welsh",
     "lang_en": "Engels",
     "lang_fr": "Frans",
@@ -560,5 +561,6 @@
     "Start Time": "Starttijd",
     "End Time": "Eindtijd",
     "Switch to calendar view": "Overschakelen naar kalenderweergave",
-    "Save": "Opslaan"
+    "Save": "Opslaan",
+    "Switch to moderation view": "Overschakelen naar moderatieweergave"
 }

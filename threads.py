@@ -46,6 +46,10 @@ class thread_with_trace(threading.Thread):
 
     def __run(self):
         sys.settrace(self.globaltrace)
+        if not callable(self.__run_backup):
+            print('ERROR: threads.py/__run ' +
+                  str(self.__run_backup) + 'is not callable')
+            return
         try:
             self.__run_backup()
             self.run = self.__run_backup

@@ -527,6 +527,7 @@
     "Describe your attachment": "Eleza kiambatisho chako",
     "Language used": "Lugha iliyotumika",
     "lang_ar": "Kiarabu",
+    "lang_bn": "Kibengali",
     "lang_cy": "Kiwelisi",
     "lang_en": "Kiingereza",
     "lang_fr": "Kifaransa",
@@ -560,5 +561,6 @@
     "Start Time": "Wakati wa Kuanza",
     "End Time": "Wakati wa Mwisho",
     "Switch to calendar view": "Badili hadi mwonekano wa kalenda",
-    "Save": "Hifadhi"
+    "Save": "Hifadhi",
+    "Switch to moderation view": "Badili hadi mwonekano wa udhibiti"
 }

@@ -527,6 +527,7 @@
     "Describe your attachment": "Describa su apego",
     "Language used": "Idioma utilizado",
     "lang_ar": "Arábica",
+    "lang_bn": "Bengalí",
     "lang_cy": "Galesa",
     "lang_en": "Inglesa",
     "lang_fr": "Francesa",
@@ -560,5 +561,6 @@
     "Start Time": "Hora de inicio",
     "End Time": "Hora de finalización",
     "Switch to calendar view": "Cambiar a vista de calendario",
-    "Save": "Ahorrar"
+    "Save": "Ahorrar",
+    "Switch to moderation view": "Cambiar a la vista de moderación"
 }

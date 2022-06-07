@@ -527,6 +527,7 @@
     "Describe your attachment": "صِف مرفقك",
     "Language used": "اللغة المستخدمة",
     "lang_ar": "عربي",
+    "lang_bn": "البنغالية",
     "lang_cy": "تهرب من دفع الرهان",
     "lang_en": "إنجليزي",
     "lang_fr": "فرنسي",
@@ -560,5 +561,6 @@
     "Start Time": "وقت البدء",
     "End Time": "وقت النهاية",
     "Switch to calendar view": "قم بالتبديل إلى عرض التقويم",
-    "Save": "يحفظ"
+    "Save": "يحفظ",
+    "Switch to moderation view": "قم بالتبديل إلى عرض الاعتدال"
 }

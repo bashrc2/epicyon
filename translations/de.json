@@ -527,6 +527,7 @@
     "Describe your attachment": "Beschreiben Sie Ihren Anhang",
     "Language used": "Sprache verwendet",
     "lang_ar": "Arabisch",
+    "lang_bn": "Bengali",
     "lang_cy": "Walisisch",
     "lang_en": "Englisch",
     "lang_fr": "Französisch",
@@ -560,5 +561,6 @@
     "Start Time": "Startzeit",
     "End Time": "Endzeit",
     "Switch to calendar view": "Zur Kalenderansicht wechseln",
-    "Save": "Speichern"
+    "Save": "Speichern",
+    "Switch to moderation view": "Wechseln Sie zur Moderationsansicht"
 }

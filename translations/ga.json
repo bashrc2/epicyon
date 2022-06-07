@@ -527,6 +527,7 @@
     "Describe your attachment": "Déan cur síos ar do cheangaltán",
     "Language used": "Teanga a úsáidtear",
     "lang_ar": "Araibis",
+    "lang_bn": "Beangáilis",
     "lang_cy": "Breatnais",
     "lang_en": "Béarla",
     "lang_fr": "Fraincis",
@@ -560,5 +561,6 @@
     "Start Time": "Am Tosaigh",
     "End Time": "Am Deiridh",
     "Switch to calendar view": "Athraigh go hamharc féilire",
-    "Save": "Sábháil"
+    "Save": "Sábháil",
+    "Switch to moderation view": "Athraigh go dtí an t-amharc modhnóireachta"
 }

@@ -527,6 +527,7 @@
     "Describe your attachment": "באַשרייַבן דיין אַטאַטשמאַנט",
     "Language used": "שפּראַך געוויינט",
     "lang_ar": "אַראַביש",
+    "lang_bn": "בענגאַליש",
     "lang_cy": "וועלש",
     "lang_en": "ענגליש",
     "lang_fr": "פראנצויזיש",
@@ -560,5 +561,6 @@
     "Start Time": "אָנהייב צייט",
     "End Time": "סוף צייט",
     "Switch to calendar view": "באַשטימען צו די קאַלענדאַר מיינונג",
-    "Save": "היט"
+    "Save": "היט",
+    "Switch to moderation view": "באַשטימען צו מאַדעריישאַן מיינונג"
 }

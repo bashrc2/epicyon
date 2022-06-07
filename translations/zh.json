@@ -527,6 +527,7 @@
     "Describe your attachment": "描述你的附件",
     "Language used": "使用的语言",
     "lang_ar": "阿拉伯",
+    "lang_bn": "孟加拉",
     "lang_cy": "威尔士语",
     "lang_en": "英语",
     "lang_fr": "法语",
@@ -560,5 +561,6 @@
     "Start Time": "开始时间",
     "End Time": "时间结束",
     "Switch to calendar view": "切换到日历视图",
-    "Save": "节省"
+    "Save": "节省",
+    "Switch to moderation view": "切换到审核视图"
 }

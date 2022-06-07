@@ -22,6 +22,7 @@ from posts import get_public_post_info
 from posts import is_moderator
 from webapp_timeline import html_timeline
 # from webapp_utils import get_person_avatar_url
+from webapp_utils import get_banner_file
 from webapp_utils import get_content_warning_button
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -292,9 +293,9 @@ def html_account_info(css_cache: {}, translate: {},
     return info_form
 
 
-def html_moderation_info(css_cache: {}, translate: {},
-                         base_dir: str, http_prefix: str,
-                         nickname: str) -> str:
+def html_moderation_info(translate: {}, base_dir: str,
+                         nickname: str, domain: str, theme: str,
+                         access_keys: {}) -> str:
     msg_str1 = \
         'These are globally blocked for all accounts on this instance'
     msg_str2 = \
@@ -310,8 +311,23 @@ def html_moderation_info(css_cache: {}, translate: {},
     info_form = html_header_with_external_style(css_filename,
                                                 instance_title, None)
 
+    # show banner
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    moderation_link = '/users/' + nickname + '/moderation'
     info_form += \
-        '<center><h1><a href="/users/' + nickname + '/moderation">' + \
+        '<header>\n<a href="' + moderation_link + '" title="' + \
+        translate['Switch to moderation view'] + '" alt="' + \
+        translate['Switch to moderation view'] + '" ' + \
+        'tabindex="1" accesskey="' + access_keys['menuModeration'] + '">\n'
+    info_form += \
+        '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n<br>\n'
+
+    info_form += \
+        '<center><h1><a href="' + moderation_link + '">' + \
         translate['Moderation Information'] + \
         '</a></h1></center><br>'
 

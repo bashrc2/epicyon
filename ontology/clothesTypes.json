@@ -30,6 +30,30 @@
           "@language": "en"
         },
         {
+          "@value": "শার্ট",
+          "@language": "bn"
+        },
+        {
+          "@value": "셔츠",
+          "@language": "ko"
+        },
+        {
+          "@value": "сорочка",
+          "@language": "uk"
+        },
+        {
+          "@value": "Gömlek",
+          "@language": "tr"
+        },
+        {
+          "@value": "Shirt",
+          "@language": "nl"
+        },
+        {
+          "@value": "Πουκάμισο",
+          "@language": "el"
+        },
+        {
           "@value": "شيرت",
           "@language": "ar"
         },
@@ -58,7 +82,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Shirt",
+          "@value": "Crys",
           "@language": "cy"
         },
         {
@@ -78,7 +102,7 @@
           "@language": "zh"
         },
         {
-          "@value": "Shirt",
+          "@value": "Camisa",
           "@language": "ca"
         }
       ],
@@ -105,11 +129,31 @@
           "@language": "en"
         },
         {
+          "@value": "বেল্ট",
+          "@language": "bn"
+        },
+        {
+          "@value": "Riem",
+          "@language": "nl"
+        },
+        {
+          "@value": "Ζώνη",
+          "@language": "el"
+        },
+        {
+          "@value": "Пояс",
+          "@language": "uk"
+        },
+        {
+          "@value": "벨트",
+          "@language": "ko"
+        },
+        {
           "@value": "الحزام",
           "@language": "ar"
         },
         {
-          "@value": "Belt",
+          "@value": "Qayiş",
           "@language": "ku"
         },
         {
@@ -117,7 +161,7 @@
           "@language": "it"
         },
         {
-          "@value": "Belt",
+          "@value": "Mkanda",
           "@language": "sw"
         },
         {
@@ -133,7 +177,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Belt",
+          "@value": "Gwregys",
           "@language": "cy"
         },
         {
@@ -149,11 +193,11 @@
           "@language": "hi"
         },
         {
-          "@value": "B. Belt",
+          "@value": "腰带",
           "@language": "zh"
         },
         {
-          "@value": "Belt",
+          "@value": "Cinturó",
           "@language": "ca"
         }
       ],
@@ -180,11 +224,31 @@
           "@language": "en"
         },
         {
+          "@value": "Kinderkleding",
+          "@language": "nl"
+        },
+        {
+          "@value": "아동복",
+          "@language": "ko"
+        },
+        {
+          "@value": "বাচ্চাদের পোশাক",
+          "@language": "bn"
+        },
+        {
+          "@value": "Дитячий одяг",
+          "@language": "uk"
+        },
+        {
+            "@value": "Παιδικά Ρούχα",
+          "@language": "el"
+        },
+        {
           "@value": "ملابس الأطفال",
           "@language": "ar"
         },
         {
-          "@value": "Children's Clothing",
+          "@value": "Cilên Zarokan",
           "@language": "ku"
         },
         {
@@ -192,7 +256,7 @@
           "@language": "it"
         },
         {
-          "@value": "Children's Clothing",
+          "@value": "Mavazi ya Watoto",
           "@language": "sw"
         },
         {
@@ -208,7 +272,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Children's Clothing",
+          "@value": "Dillad Plant",
           "@language": "cy"
         },
         {
@@ -228,7 +292,7 @@
           "@language": "zh"
         },
         {
-          "@value": "Children's Clothing",
+          "@value": "Roba infantil",
           "@language": "ca"
         }
       ],
@@ -255,11 +319,27 @@
           "@language": "en"
         },
         {
-          "@value": "Coat",
+          "@value": "Пальто",
+          "@language": "uk"
+        },
+        {
+          "@value": "Jas",
+          "@language": "nl"
+        },
+        {
+          "@value": "Ceket",
+          "@language": "tr"
+        },
+        {
+          "@value": "কোট",
+          "@language": "bn"
+        },
+        {
+          "@value": "معطف",
           "@language": "ar"
         },
         {
-          "@value": "Coat",
+          "@value": "Post",
           "@language": "ku"
         },
         {
@@ -267,7 +347,7 @@
           "@language": "it"
         },
         {
-          "@value": "Coat",
+          "@value": "Kanzu",
           "@language": "sw"
         },
         {
@@ -283,7 +363,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Coat",
+          "@value": "Côt",
           "@language": "cy"
         },
         {
@@ -299,11 +379,11 @@
           "@language": "hi"
         },
         {
-          "@value": "A. Coat",
+          "@value": "外套",
           "@language": "zh"
         },
         {
-          "@value": "Coat",
+          "@value": "Abric",
           "@language": "ca"
         }
       ],
@@ -334,7 +414,7 @@
           "@language": "ar"
         },
         {
-          "@value": "Dress",
+          "@value": "Lebas",
           "@language": "ku"
         },
         {
@@ -342,7 +422,7 @@
           "@language": "it"
         },
         {
-          "@value": "Dress",
+          "@value": "Nguo",
           "@language": "sw"
         },
         {
@@ -358,7 +438,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Dress",
+          "@value": "Gwisg",
           "@language": "cy"
         },
         {
@@ -378,7 +458,7 @@
           "@language": "zh"
         },
         {
-          "@value": "Dress",
+          "@value": "Vestit",
           "@language": "ca"
         }
       ],
@@ -405,6 +485,30 @@
           "@language": "en"
         },
         {
+          "@value": "Παπούτσια",
+          "@language": "el"
+        },
+        {
+          "@value": "신발",
+          "@language": "ko"
+        },
+        {
+          "@value": "জুতা",
+          "@language": "bn"
+        },
+        {
+          "@value": "Schoenen",
+          "@language": "nl"
+        },
+        {
+          "@value": "Взуття",
+          "@language": "uk"
+        },
+        {
+          "@value": "Ayakkabı",
+          "@language": "tr"
+        },
+        {
           "@value": "الأحذية",
           "@language": "ar"
         },
@@ -417,8 +521,12 @@
           "@language": "it"
         },
         {
-          "@value": "Shoes",
+          "@value": "Viatu",
           "@language": "sw"
+        },
+        {
+          "@value": "Buty",
+          "@language": "pl"
         },
         {
           "@value": "Sapatos",
@@ -433,7 +541,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Shoes",
+          "@value": "Esgidiau",
           "@language": "cy"
         },
         {
@@ -453,7 +561,7 @@
           "@language": "zh"
         },
         {
-          "@value": "Shoes",
+          "@value": "Sabates",
           "@language": "ca"
         }
       ],
@@ -480,6 +588,22 @@
           "@language": "en"
         },
         {
+          "@value": "bot ayakkabı",
+          "@language": "tr"
+        },
+        {
+          "@value": "Buty",
+          "@language": "pl"
+        },
+        {
+          "@value": "부츠",
+          "@language": "ko"
+        },
+        {
+          "@value": "Чоботи",
+          "@language": "uk"
+        },
+        {
           "@value": "بوتس",
           "@language": "ar"
         },
@@ -492,7 +616,7 @@
           "@language": "it"
         },
         {
-          "@value": "Boots",
+          "@value": "Viatu",
           "@language": "sw"
         },
         {
@@ -528,7 +652,7 @@
           "@language": "zh"
         },
         {
-          "@value": "Boots",
+          "@value": "Botes",
           "@language": "ca"
         }
       ],
@@ -555,6 +679,30 @@
           "@language": "en"
         },
         {
+          "@value": "Suknia",
+          "@language": "pl"
+        },
+        {
+          "@value": "겉옷",
+          "@language": "ko"
+        },
+        {
+          "@value": "গাউন",
+          "@language": "bn"
+        },
+        {
+          "@value": "Gewaad",
+          "@language": "nl"
+        },
+        {
+          "@value": "Elbise",
+          "@language": "tr"
+        },
+        {
+          "@value": "Сукня",
+          "@language": "uk"
+        },
+        {
           "@value": "فون",
           "@language": "ar"
         },
@@ -567,7 +715,7 @@
           "@language": "it"
         },
         {
-          "@value": "Gown",
+          "@value": "Gauni",
           "@language": "sw"
         },
         {
@@ -583,7 +731,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Gown",
+          "@value": "Gŵn",
           "@language": "cy"
         },
         {
@@ -599,7 +747,7 @@
           "@language": "hi"
         },
         {
-          "@value": "Gown",
+          "@value": "袍",
           "@language": "zh"
         },
         {
@@ -630,11 +778,39 @@
           "@language": "en"
         },
         {
-          "@value": "Hat",
+          "@value": "Hoed",
+          "@language": "nl"
+        },
+        {
+          "@value": "Καπέλο",
+          "@language": "el"
+        },
+        {
+          "@value": "টুপি",
+          "@language": "bn"
+        },
+        {
+          "@value": "Kapelusz",
+          "@language": "pl"
+        },
+        {
+          "@value": "Şapka",
+          "@language": "tr"
+        },
+        {
+          "@value": "모자",
+          "@language": "ko"
+        },
+        {
+          "@value": "Капелюх",
+          "@language": "uk"
+        },
+        {
+          "@value": "قبعة",
           "@language": "ar"
         },
         {
-          "@value": "Hat",
+          "@value": "Kûm",
           "@language": "ku"
         },
         {
@@ -642,7 +818,7 @@
           "@language": "it"
         },
         {
-          "@value": "Hat",
+          "@value": "Kofia",
           "@language": "sw"
         },
         {
@@ -705,6 +881,30 @@
           "@language": "en"
         },
         {
+          "@value": "হোসিয়ারি‎",
+          "@language": "bn"
+        },
+        {
+          "@value": "양말‎‎",
+          "@language": "ko"
+        },
+        {
+          "@value": "Καλτσοποιία‎",
+          "@language": "el"
+        },
+        {
+          "@value": "çorap",
+          "@language": "tr"
+        },
+        {
+          "@value": "Kousen‎",
+          "@language": "nl"
+        },
+        {
+          "@value": "Панчішно-шкарпеткові вироби‎",
+          "@language": "uk"
+        },
+        {
           "@value": "Hosiery",
           "@language": "ar"
         },
@@ -721,7 +921,7 @@
           "@language": "sw"
         },
         {
-          "@value": "Hosiery",
+          "@value": "Meias",
           "@language": "pt"
         },
         {
@@ -753,7 +953,7 @@
           "@language": "zh"
         },
         {
-          "@value": "Hosiery‎",
+          "@value": "Calceteria",
           "@language": "ca"
         }
       ],
@@ -780,11 +980,35 @@
           "@language": "en"
         },
         {
+          "@value": "Kurtka",
+          "@language": "pl"
+        },
+        {
+          "@value": "재킷",
+          "@language": "ko"
+        },
+        {
+          "@value": "জ্যাকেট",
+          "@language": "bn"
+        },
+        {
+          "@value": "Ceket",
+          "@language": "tr"
+        },
+        {
+          "@value": "Jasje",
+          "@language": "nl"
+        },
+        {
+          "@value": "Жакет",
+          "@language": "uk"
+        },
+        {
           "@value": "جاكيت",
           "@language": "ar"
         },
         {
-          "@value": "Jacket",
+          "@value": "Sako",
           "@language": "ku"
         },
         {
@@ -792,7 +1016,7 @@
           "@language": "it"
         },
         {
-          "@value": "Jacket",
+          "@value": "Koti",
           "@language": "sw"
         },
         {
@@ -808,7 +1032,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Jacket",
+          "@value": "Siaced",
           "@language": "cy"
         },
         {
@@ -824,11 +1048,11 @@
           "@language": "hi"
         },
         {
-          "@value": "Jacket",
+          "@value": "夹克",
           "@language": "zh"
         },
         {
-          "@value": "Jacket",
+          "@value": "Jaqueta",
           "@language": "ca"
         }
       ],
@@ -853,6 +1077,30 @@
         {
           "@value": "Jeans",
           "@language": "en"
+        },
+        {
+          "@value": "τζιν παντελονι",
+          "@language": "el"
+        },
+        {
+          "@value": "জিন্স",
+          "@language": "bn"
+        },
+        {
+          "@value": "Kot",
+          "@language": "tr"
+        },
+        {
+          "@value": "청바지",
+          "@language": "ko"
+        },
+        {
+          "@value": "Jeans",
+          "@language": "nl"
+        },
+        {
+          "@value": "джинси",
+          "@language": "uk"
         },
         {
           "@value": "جينز",
@@ -899,11 +1147,11 @@
           "@language": "hi"
         },
         {
-          "@value": "Jeans",
+          "@value": "牛仔裤",
           "@language": "zh"
         },
         {
-          "@value": "Jeans",
+          "@value": "Texans",
           "@language": "ca"
         }
       ],

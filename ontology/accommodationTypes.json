@@ -18,15 +18,39 @@
           "@language": "en"
         },
         {
-          "@value": "Entire Place",
+          "@value": "Ολόκληρο το μέρος",
+          "@language": "el"
+        },
+        {
+          "@value": "Tüm Yer",
+          "@language": "tr"
+        },
+        {
+          "@value": "পুরো জায়গা",
+          "@language": "bn"
+        },
+        {
+          "@value": "Ціле місце",
+          "@language": "uk"
+        },
+        {
+          "@value": "Hele plaats",
+          "@language": "nl"
+        },
+        {
+          "@value": "전체 장소",
+          "@language": "ko"
+        },
+        {
+          "@value": "المكان بالكامل",
           "@language": "ar"
         },
         {
-          "@value": "Entire Place",
+          "@value": "Cihê tevahî",
           "@language": "ku"
         },
         {
-          "@value": "Entire Place",
+          "@value": "Todo el lugar",
           "@language": "es"
         },
         {
@@ -38,7 +62,7 @@
           "@language": "de"
         },
         {
-          "@value": "Entire Place",
+          "@value": "Mahali Mzima",
           "@language": "sw"
         },
         {
@@ -54,7 +78,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Entire Place",
+          "@value": "Lle Cyfan",
           "@language": "cy"
         },
         {
@@ -74,11 +98,11 @@
           "@language": "zh"
         },
         {
-          "@value": "Entire Place",
+          "@value": "Endroit entier",
           "@language": "fr"
         },
         {
-          "@value": "Entire Place",
+          "@value": "Lloc sencer",
           "@language": "ca"
         }
       ],
@@ -93,11 +117,19 @@
           "@language": "en"
         },
         {
+          "@value": "Ιδιωτικό δωμάτιο",
+          "@language": "el"
+        },
+        {
+          "@value": "Özel oda",
+          "@language": "tr"
+        },
+        {
           "@value": "الغرفة الخاصة",
           "@language": "ar"
         },
         {
-          "@value": "Private Room",
+          "@value": "Odeya Taybet",
           "@language": "ku"
         },
         {
@@ -113,7 +145,7 @@
           "@language": "de"
         },
         {
-          "@value": "Private Room",
+          "@value": "Chumba cha Kibinafsi",
           "@language": "sw"
         },
         {
@@ -125,11 +157,27 @@
           "@language": "oc"
         },
         {
+          "@value": "ব্যাক্তিগত ঘর",
+          "@language": "bn"
+        },
+        {
+          "@value": "Окрема кімната",
+          "@language": "uk"
+        },
+        {
+          "@value": "Prive Kamer",
+          "@language": "nl"
+        },
+        {
+          "@value": "사적인 방",
+          "@language": "ko"
+        },
+        {
           "@value": "Частная комната",
           "@language": "ru"
         },
         {
-          "@value": "Private Room",
+          "@value": "Ystafell Breifat",
           "@language": "cy"
         },
         {
@@ -153,7 +201,7 @@
           "@language": "fr"
         },
         {
-          "@value": "Private Room",
+          "@value": "Sala Privada",
           "@language": "ca"
         }
       ],
@@ -168,15 +216,35 @@
           "@language": "en"
         },
         {
+          "@value": "Δωμάτιο ξενοδοχείου",
+          "@language": "el"
+        },
+        {
+          "@value": "Кімната в готелі",
+          "@language": "uk"
+        },
+        {
+          "@value": "Hotelkamer",
+          "@language": "nl"
+        },
+        {
+          "@value": "হোটেল রুম",
+          "@language": "bn"
+        },
+        {
           "@value": "فندق",
           "@language": "ar"
         },
         {
-          "@value": "Hotel Room",
+          "@value": "Odeya Hotel",
           "@language": "ku"
         },
         {
-          "@value": "Hotel Room",
+          "@value": "호텔 방",
+          "@language": "ko"
+        },
+        {
+          "@value": "Habitación de hotel",
           "@language": "es"
         },
         {
@@ -188,7 +256,7 @@
           "@language": "de"
         },
         {
-          "@value": "Hotel Room",
+          "@value": "Chumba cha hoteli",
           "@language": "sw"
         },
         {
@@ -204,7 +272,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Hotel Room",
+          "@value": "Ystafell Gwesty",
           "@language": "cy"
         },
         {
@@ -224,11 +292,11 @@
           "@language": "zh"
         },
         {
-          "@value": "Hotel Room",
+          "@value": "Chambre d'hôtel",
           "@language": "fr"
         },
         {
-          "@value": "Hotel Room",
+          "@value": "Habitació d'hotel",
           "@language": "ca"
         }
       ],
@@ -243,12 +311,28 @@
           "@language": "en"
         },
         {
+          "@value": "Κοινόχρηστο χώρο",
+          "@language": "el"
+        },
+        {
+          "@value": "Paylaşılan oda",
+          "@language": "tr"
+        },
+        {
+          "@value": "Gedeelde kamer",
+          "@language": "nl"
+        },
+        {
           "@value": "الغرفة المشتركة",
           "@language": "ar"
         },
         {
-          "@value": "Shared Room",
+          "@value": "Odeya hevpar",
           "@language": "ku"
+        },
+        {
+          "@value": "공용 방",
+          "@language": "ko"
         },
         {
           "@value": "Habitación compartida",
@@ -263,7 +347,7 @@
           "@language": "de"
         },
         {
-          "@value": "Shared Room",
+          "@value": "Chumba cha Pamoja",
           "@language": "sw"
         },
         {
@@ -279,7 +363,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Shared Room",
+          "@value": "Ystafell a Rennir",
           "@language": "cy"
         },
         {
@@ -303,7 +387,7 @@
           "@language": "fr"
         },
         {
-          "@value": "Shared Room",
+          "@value": "Habitació compartida",
           "@language": "ca"
         }
       ],
@@ -318,15 +402,35 @@
           "@language": "en"
         },
         {
-          "@value": "Sofa",
+          "@value": "Καναπές",
+          "@language": "el"
+        },
+        {
+          "@value": "Bank",
+          "@language": "nl"
+        },
+        {
+          "@value": "Divan",
+          "@language": "tr"
+        },
+        {
+          "@value": "সোফা",
+          "@language": "bn"
+        },
+        {
+          "@value": "Диван",
+          "@language": "uk"
+        },
+        {
+          "@value": "كنبة",
           "@language": "ar"
         },
         {
-          "@value": "Sofa",
+          "@value": "Qenepe",
           "@language": "ku"
         },
         {
-          "@value": "Sofa",
+          "@value": "Sofá",
           "@language": "es"
         },
         {
@@ -393,11 +497,27 @@
           "@language": "en"
         },
         {
-          "@value": "Boat",
+          "@value": "Σκάφος",
+          "@language": "el"
+        },
+        {
+          "@value": "Bot",
+          "@language": "tr"
+        },
+        {
+          "@value": "Boot",
+          "@language": "nl"
+        },
+        {
+          "@value": "নৌকা",
+          "@language": "bn"
+        },
+        {
+          "@value": "قارب",
           "@language": "ar"
         },
         {
-          "@value": "Boat",
+          "@value": "Qeyik",
           "@language": "ku"
         },
         {
@@ -413,7 +533,7 @@
           "@language": "de"
         },
         {
-          "@value": "Boat",
+          "@value": "Mashua",
           "@language": "sw"
         },
         {
@@ -429,7 +549,11 @@
           "@language": "ru"
         },
         {
-          "@value": "Boat",
+          "@value": "човен",
+          "@language": "uk"
+        },
+        {
+          "@value": "Cwch",
           "@language": "cy"
         },
         {
@@ -449,11 +573,11 @@
           "@language": "zh"
         },
         {
-          "@value": "Boat",
+          "@value": "Bateau",
           "@language": "fr"
         },
         {
-          "@value": "Boat",
+          "@value": "Vaixell",
           "@language": "ca"
         }
       ],
@@ -468,19 +592,39 @@
           "@language": "en"
         },
         {
-          "@value": "Barge",
+          "@value": "Φορτηγίδα",
+          "@language": "el"
+        },
+        {
+          "@value": "Mavna",
+          "@language": "tr"
+        },
+        {
+          "@value": "বার্জ",
+          "@language": "bn"
+        },
+        {
+          "@value": "Binnenvaartschip",
+          "@language": "nl"
+        },
+        {
+          "@value": "짐배",
+          "@language": "ko"
+        },
+        {
+          "@value": "بارج",
           "@language": "ar"
         },
         {
-          "@value": "Barge",
+          "@value": "Barbilindker",
           "@language": "ku"
         },
         {
-          "@value": "Barge",
+          "@value": "Barcaza",
           "@language": "es"
         },
         {
-          "@value": "Barge",
+          "@value": "Chiatta",
           "@language": "it"
         },
         {
@@ -488,7 +632,7 @@
           "@language": "de"
         },
         {
-          "@value": "Barge",
+          "@value": "Jahazi",
           "@language": "sw"
         },
         {
@@ -504,7 +648,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Barge",
+          "@value": "Cychod",
           "@language": "cy"
         },
         {
@@ -528,7 +672,7 @@
           "@language": "fr"
         },
         {
-          "@value": "Barge",
+          "@value": "Barcassa",
           "@language": "ca"
         }
       ],
@@ -543,15 +687,39 @@
           "@language": "en"
         },
         {
+          "@value": "Σκηνή",
+          "@language": "el"
+        },
+        {
+          "@value": "তাঁবু",
+          "@language": "bn"
+        },
+        {
+          "@value": "텐트",
+          "@language": "ko"
+        },
+        {
+          "@value": "Çadır",
+          "@language": "tr"
+        },
+        {
+          "@value": "Tent",
+          "@language": "nl"
+        },
+        {
+          "@value": "Намет",
+          "@language": "uk"
+        },
+        {
           "@value": "الخيمة",
           "@language": "ar"
         },
         {
-          "@value": "Tent",
+          "@value": "Kon",
           "@language": "ku"
         },
         {
-          "@value": "Tent",
+          "@value": "Tienda",
           "@language": "es"
         },
         {
@@ -563,7 +731,7 @@
           "@language": "de"
         },
         {
-          "@value": "Tent",
+          "@value": "Hema",
           "@language": "sw"
         },
         {
@@ -579,7 +747,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Tent",
+          "@value": "Pabell",
           "@language": "cy"
         },
         {
@@ -587,7 +755,7 @@
           "@language": "ja"
         },
         {
-          "@value": "Tent",
+          "@value": "Puball",
           "@language": "ga"
         },
         {
@@ -599,11 +767,11 @@
           "@language": "zh"
         },
         {
-          "@value": "Tent",
+          "@value": "Tente",
           "@language": "fr"
         },
         {
-          "@value": "Tent",
+          "@value": "Tenda",
           "@language": "ca"
         }
       ],
@@ -618,15 +786,35 @@
           "@language": "en"
         },
         {
+          "@value": "Τροχόσπιτο",
+          "@language": "el"
+        },
+        {
+          "@value": "대상",
+          "@language": "ko"
+        },
+        {
+          "@value": "কাফেলা",
+          "@language": "bn"
+        },
+        {
           "@value": "Caravan",
+          "@language": "nl"
+        },
+        {
+          "@value": "Караван",
+          "@language": "uk"
+        },
+        {
+          "@value": "المنزل المتنقل",
           "@language": "ar"
         },
         {
-          "@value": "Caravan",
+          "@value": "Trimbêla malî",
           "@language": "ku"
         },
         {
-          "@value": "Caravan",
+          "@value": "Caravana",
           "@language": "es"
         },
         {
@@ -638,7 +826,7 @@
           "@language": "de"
         },
         {
-          "@value": "Caravan",
+          "@value": "Msafara",
           "@language": "sw"
         },
         {
@@ -654,7 +842,7 @@
           "@language": "ru"
         },
         {
-          "@value": "Caravan",
+          "@value": "Carafan",
           "@language": "cy"
         },
         {
@@ -674,11 +862,11 @@
           "@language": "zh"
         },
         {
-          "@value": "Caravan",
+          "@value": "Caravane",
           "@language": "fr"
         },
         {
-          "@value": "Caravan",
+          "@value": "Caravana",
           "@language": "ca"
         }
       ],
@@ -693,7 +881,27 @@
           "@language": "en"
         },
         {
-          "@value": "Hostel",
+          "@value": "Ξενοδοχείο",
+          "@language": "el"
+        },
+        {
+          "@value": "호스텔",
+          "@language": "ko"
+        },
+        {
+          "@value": "Herberg",
+          "@language": "nl"
+        },
+        {
+          "@value": "Pansiyon",
+          "@language": "tr"
+        },
+        {
+          "@value": "ছাত্রাবাস",
+          "@language": "bn"
+        },
+        {
+          "@value": "نزل",
           "@language": "ar"
         },
         {
@@ -701,7 +909,7 @@
           "@language": "ku"
         },
         {
-          "@value": "Hostel",
+          "@value": "Hostal",
           "@language": "es"
         },
         {
@@ -709,11 +917,11 @@
           "@language": "it"
         },
         {
-          "@value": "Hostel",
+          "@value": "Herberge",
           "@language": "de"
         },
         {
-          "@value": "Hostel",
+          "@value": "Hosteli",
           "@language": "sw"
         },
         {
@@ -749,11 +957,11 @@
           "@language": "zh"
         },
         {
-          "@value": "Hostel",
+          "@value": "Hôtel",
           "@language": "fr"
         },
         {
-          "@value": "Hostel",
+          "@value": "Alberg",
           "@language": "ca"
         }
       ],
@@ -768,6 +976,26 @@
           "@language": "en"
         },
         {
+          "@value": "Γιουρτ",
+          "@language": "el"
+        },
+        {
+          "@value": "ইউর্ট",
+          "@language": "bn"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "nl"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "tr"
+        },
+        {
+          "@value": "유르트",
+          "@language": "ko"
+        },
+        {
           "@value": "يوت",
           "@language": "ar"
         },
@@ -776,11 +1004,11 @@
           "@language": "ku"
         },
         {
-          "@value": "Yurt",
+          "@value": "Yurta",
           "@language": "es"
         },
         {
-          "@value": "Yurt",
+          "@value": "Yurta",
           "@language": "it"
         },
         {
@@ -841,6 +1069,26 @@
         {
           "@value": "Tipi",
           "@language": "en"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "el"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "ko"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "bn"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "tr"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "nl"
         },
         {
           "@value": "Tipi",
@@ -916,6 +1164,30 @@
         {
           "@value": "RV",
           "@language": "en"
+        },
+        {
+          "@value": "RV",
+          "@language": "ko"
+        },
+        {
+          "@value": "RV",
+          "@language": "tr"
+        },
+        {
+          "@value": "RV",
+          "@language": "nl"
+        },
+        {
+          "@value": "RV",
+          "@language": "bn"
+        },
+        {
+          "@value": "RV",
+          "@language": "nl"
+        },
+        {
+          "@value": "RV",
+          "@language": "el"
         },
         {
           "@value": "RV",

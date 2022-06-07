@@ -527,6 +527,7 @@
     "Describe your attachment": "अपने अनुलग्नक का वर्णन करें",
     "Language used": "इस्तेमाल की जाने वाली भाषा",
     "lang_ar": "अरबी",
+    "lang_bn": "बंगाली",
     "lang_cy": "वेल्शो",
     "lang_en": "अंग्रेज़ी",
     "lang_fr": "फ्रेंच",
@@ -560,5 +561,6 @@
     "Start Time": "समय शुरू",
     "End Time": "अंत समय",
     "Switch to calendar view": "कैलेंडर दृश्य पर स्विच करें",
-    "Save": "बचाना"
+    "Save": "बचाना",
+    "Switch to moderation view": "मॉडरेशन दृश्य पर स्विच करें"
 }

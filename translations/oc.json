@@ -523,6 +523,7 @@
     "Describe your attachment": "Describe your attachment",
     "Language used": "Language used",
     "lang_ar": "Arabic",
+    "lang_bn": "Bengali",
     "lang_cy": "Welsh",
     "lang_en": "English",
     "lang_fr": "French",
@@ -556,5 +557,6 @@
     "Start Time": "Start Time",
     "End Time": "End Time",
     "Switch to calendar view": "Switch to calendar view",
-    "Save": "Save"
+    "Save": "Save",
+    "Switch to moderation view": "Switch to moderation view"
 }

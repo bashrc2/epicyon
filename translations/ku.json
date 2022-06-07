@@ -527,6 +527,7 @@
     "Describe your attachment": "Girêdana xwe diyar bike",
     "Language used": "Zimanê bikaranîn",
     "lang_ar": "Erebî",
+    "lang_bn": "Bengalî",
     "lang_cy": "Galerkî",
     "lang_en": "Îngilîzî",
     "lang_fr": "Fransî",
@@ -560,5 +561,6 @@
     "Start Time": "Demjimêra Destpêkê",
     "End Time": "Dema Dawî",
     "Switch to calendar view": "Biguherîne bo dîtina salnameyê",
-    "Save": "Rizgarkirin"
+    "Save": "Rizgarkirin",
+    "Switch to moderation view": "Biguherîne bo dîtina moderatoriyê"
 }
