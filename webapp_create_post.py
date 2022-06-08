@@ -382,6 +382,9 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     new_post_image_section += \
         '            accept="' + formats_string + '">\n'
     new_post_image_section += \
+        '    <label class="labels">' + \
+        translate['Describe your attachment'] + '</label>\n'
+    new_post_image_section += \
         '    <textarea id="imageDescription" name="imageDescription" ' + \
         'style="height:' + str(image_description_height) + \
         'px" spellcheck="true" autocomplete="on"></textarea>\n'
