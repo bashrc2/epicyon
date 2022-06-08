@@ -705,7 +705,7 @@ def _test_threads():
 
 def create_server_alice(path: str, domain: str, port: int,
                         bob_address: str, federation_list: [],
-                        hasFollows: bool, hasPosts: bool,
+                        has_follows: bool, has_posts: bool,
                         send_threads: []):
     print('Creating test server: Alice on port ' + str(port))
     if os.path.isdir(path):
@@ -735,12 +735,12 @@ def create_server_alice(path: str, domain: str, port: int,
     delete_all_posts(path, nickname, domain, 'outbox')
     assert set_skill_level(path, nickname, domain, 'hacking', 90)
     assert set_role(path, nickname, domain, 'guru')
-    if hasFollows:
+    if has_follows:
         follow_person(path, nickname, domain, 'bob', bob_address,
                       federation_list, False, False)
         add_follower_of_person(path, nickname, domain, 'bob', bob_address,
                                federation_list, False, False)
-    if hasPosts:
+    if has_posts:
         test_save_to_file = True
         client_to_server = False
         test_comments_enabled = True
@@ -865,7 +865,7 @@ def create_server_alice(path: str, domain: str, port: int,
 
 def create_server_bob(path: str, domain: str, port: int,
                       alice_address: str, federation_list: [],
-                      hasFollows: bool, hasPosts: bool,
+                      has_follows: bool, has_posts: bool,
                       send_threads: []):
     print('Creating test server: Bob on port ' + str(port))
     if os.path.isdir(path):
@@ -894,13 +894,13 @@ def create_server_bob(path: str, domain: str, port: int,
     assert wf_endpoint
     delete_all_posts(path, nickname, domain, 'inbox')
     delete_all_posts(path, nickname, domain, 'outbox')
-    if hasFollows and alice_address:
+    if has_follows and alice_address:
         follow_person(path, nickname, domain,
                       'alice', alice_address, federation_list, False, False)
         add_follower_of_person(path, nickname, domain,
                                'alice', alice_address, federation_list,
                                False, False)
-    if hasPosts:
+    if has_posts:
         test_save_to_file = True
         test_comments_enabled = True
         test_attach_image_filename = None
@@ -1023,7 +1023,7 @@ def create_server_bob(path: str, domain: str, port: int,
 
 
 def create_server_eve(path: str, domain: str, port: int, federation_list: [],
-                      hasFollows: bool, hasPosts: bool,
+                      has_follows: bool, has_posts: bool,
                       send_threads: []):
     print('Creating test server: Eve on port ' + str(port))
     if os.path.isdir(path):
@@ -1104,7 +1104,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
 
 def create_server_group(path: str, domain: str, port: int,
                         federation_list: [],
-                        hasFollows: bool, hasPosts: bool,
+                        has_follows: bool, has_posts: bool,
                         send_threads: []):
     print('Creating test server: Group on port ' + str(port))
     if os.path.isdir(path):
@@ -1440,7 +1440,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          True, __version__, signing_priv_key_pem,
                          bob_domain, None, None)
 
-    for i in range(20):
+    for _ in range(20):
         if 'reactions' in open(outbox_post_filename).read():
             break
         time.sleep(1)
@@ -1478,7 +1478,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     bob_domain, None, None)
     announce_message_arrived = False
     outbox_message_arrived = False
-    for i in range(20):
+    for _ in range(20):
         time.sleep(1)
         if not os.path.isdir(inbox_path):
             continue
@@ -1679,7 +1679,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     queue_path = bob_dir + '/accounts/bob@' + bob_domain + '/queue'
     inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
     alice_message_arrived = False
-    for i in range(20):
+    for _ in range(20):
         time.sleep(1)
         if os.path.isdir(inbox_path):
             if len([name for name in os.listdir(inbox_path)
@@ -3030,8 +3030,8 @@ def test_client_to_server(base_dir: str):
     print('Bob follows the calendar of Alice')
     following_cal_path = \
         bob_dir + '/accounts/bob@' + bob_domain + '/followingCalendar.txt'
-    with open(following_cal_path, 'w+') as fp:
-        fp.write('alice@' + alice_domain + '\n')
+    with open(following_cal_path, 'w+') as fp_foll:
+        fp_foll.write('alice@' + alice_domain + '\n')
 
     print('\n\n*******************************************************')
     print('EVENT: Alice sends to Bob via c2s')
@@ -4477,7 +4477,7 @@ def _test_hashtag_rules():
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert tree is None
-    assert tags_in_conditions == []
+    assert not tags_in_conditions
     hashtags = ['#foo']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
@@ -5118,7 +5118,7 @@ def _test_thread_functions():
                 if def_str not in modules[mod_name]['source']:
                     print(mod_name + ' ' + first_parameter)
                     print(import_str + ' not in ' + mod_name)
-                    assert(False)
+                    assert False
             if def_str in modules[mod_name]['source']:
                 defininition_module = mod_name
             else:
@@ -5172,7 +5172,7 @@ def _test_thread_functions():
                       ' were given in module ' + mod_name)
                 print(str(definition_function_args_list))
                 print(str(calling_function_args_list))
-                assert(False)
+                assert False
             ctr += 1
 
 
