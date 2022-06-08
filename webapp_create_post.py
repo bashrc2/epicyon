@@ -197,7 +197,7 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
 
 def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                   base_dir: str, http_prefix: str,
-                  path: str, inReplyTo: str,
+                  path: str, in_reply_to: str,
                   mentions: [],
                   share_description: str,
                   report_url: str, page_number: int,
@@ -207,7 +207,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                   default_timeline: str, newswire: {},
                   theme: str, no_drop_down: bool,
                   access_keys: {}, custom_submit_text: str,
-                  conversationId: str,
+                  conversation_id: str,
                   recent_posts_cache: {}, max_recent_posts: int,
                   session, cached_webfingers: {},
                   person_cache: {}, port: int,
@@ -221,7 +221,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                   system_language: str,
                   max_like_count: int, signing_priv_key_pem: str,
                   cw_lists: {}, lists_enabled: str,
-                  boxName: str,
+                  box_name: str,
                   reply_is_chat: bool, bold_reading: bool) -> str:
     """New post screen
     """
@@ -236,8 +236,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     if not is_new_reminder:
         date_and_time_str += \
             '<img loading="lazy" decoding="async" alt="" title="" ' + \
-            'class="emojicalendar" src="/' + \
-            'icons/calendar.png"/>\n'
+            'class="emojicalendar" src="/icons/calendar.png"/>\n'
     # select a date and time for this post
     date_and_time_str += '<label class="labels">' + \
         translate['Date'] + ': </label>\n'
@@ -253,6 +252,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
     show_public_on_dropdown = True
     message_box_height = 400
+    image_description_height = 150
 
     # filename of the banner shown at the top
     banner_file, _ = \
@@ -260,7 +260,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
     if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
-            if not inReplyTo or is_new_reminder:
+            if not in_reply_to or is_new_reminder:
                 new_post_text = '<h1>' + \
                     translate['Write your post text below.'] + '</h1>\n'
             else:
@@ -269,7 +269,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                     new_post_text = \
                         '<p class="new-post-text">' + \
                         translate['Write your reply to'] + \
-                        ' <a href="' + inReplyTo + \
+                        ' <a href="' + in_reply_to + \
                         '" rel="nofollow noopener noreferrer" ' + \
                         'target="_blank">' + \
                         translate['this post'] + '</a></p>\n'
@@ -289,7 +289,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                                                     None, True, False,
                                                     http_prefix,
                                                     project_version,
-                                                    boxName,
+                                                    box_name,
                                                     yt_replace_domain,
                                                     twitter_replacement_domain,
                                                     show_published_date_only,
@@ -304,12 +304,12 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                                                     bold_reading)
 
                 reply_str = '<input type="hidden" ' + \
-                    'name="replyTo" value="' + inReplyTo + '">\n'
+                    'name="replyTo" value="' + in_reply_to + '">\n'
 
                 # if replying to a non-public post then also make
                 # this post non-public
                 if not is_public_post_from_url(base_dir, nickname, domain,
-                                               inReplyTo):
+                                               in_reply_to):
                     new_post_path = path
                     if '?' in new_post_path:
                         new_post_path = new_post_path.split('?')[0]
@@ -382,8 +382,13 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     new_post_image_section += \
         '            accept="' + formats_string + '">\n'
     new_post_image_section += \
-        edit_text_field(translate['Describe your attachment'],
-                        'imageDescription', '')
+        '    <label class="labels">' + \
+        translate['Describe your attachment'] + '</label>\n'
+    new_post_image_section += \
+        '    <textarea id="imageDescription" name="imageDescription" ' + \
+        'style="height:' + str(image_description_height) + \
+        'px" spellcheck="true" autocomplete="on"></textarea>\n'
+
     new_post_image_section += end_edit_section()
 
     new_post_emoji_section = ''
@@ -408,7 +413,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         placeholder_subject = \
             translate['Subject or Content Warning (optional)'] + '...'
     placeholder_mentions = ''
-    if inReplyTo:
+    if in_reply_to:
         placeholder_mentions = \
             translate['Replying to'] + '...'
     placeholder_message = ''
@@ -677,7 +682,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                     translate['Pin this post to your profile.'] + \
                     '</label></p>\n'
 
-            if not inReplyTo:
+            if not in_reply_to:
                 date_and_location += \
                     '<p><input type="checkbox" class="profilecheckbox" ' + \
                     'name="schedulePost"><label class="labels"> ' + \
@@ -774,7 +779,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     dropdown_dm_suffix = '/newdm'
     dropdown_reminder_suffix = '/newreminder'
     dropdown_report_suffix = '/newreport'
-    if inReplyTo or mentions:
+    if in_reply_to or mentions:
         dropdown_new_post_suffix = ''
         dropdown_new_blog_suffix = ''
         dropdown_unlisted_suffix = ''
@@ -782,15 +787,15 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         dropdown_dm_suffix = ''
         dropdown_reminder_suffix = ''
         dropdown_report_suffix = ''
-    if inReplyTo:
-        dropdown_new_post_suffix += '?replyto=' + inReplyTo
-        dropdown_new_blog_suffix += '?replyto=' + inReplyTo
-        dropdown_unlisted_suffix += '?replyunlisted=' + inReplyTo
-        dropdown_followers_suffix += '?replyfollowers=' + inReplyTo
+    if in_reply_to:
+        dropdown_new_post_suffix += '?replyto=' + in_reply_to
+        dropdown_new_blog_suffix += '?replyto=' + in_reply_to
+        dropdown_unlisted_suffix += '?replyunlisted=' + in_reply_to
+        dropdown_followers_suffix += '?replyfollowers=' + in_reply_to
         if reply_is_chat:
-            dropdown_dm_suffix += '?replychat=' + inReplyTo
+            dropdown_dm_suffix += '?replychat=' + in_reply_to
         else:
-            dropdown_dm_suffix += '?replydm=' + inReplyTo
+            dropdown_dm_suffix += '?replydm=' + in_reply_to
     for mentioned_actor in mentions:
         dropdown_new_post_suffix += '?mention=' + mentioned_actor
         dropdown_new_blog_suffix += '?mention=' + mentioned_actor
@@ -798,12 +803,12 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         dropdown_followers_suffix += '?mention=' + mentioned_actor
         dropdown_dm_suffix += '?mention=' + mentioned_actor
         dropdown_report_suffix += '?mention=' + mentioned_actor
-    if conversationId and inReplyTo:
-        dropdown_new_post_suffix += '?conversationId=' + conversationId
-        dropdown_new_blog_suffix += '?conversationId=' + conversationId
-        dropdown_unlisted_suffix += '?conversationId=' + conversationId
-        dropdown_followers_suffix += '?conversationId=' + conversationId
-        dropdown_dm_suffix += '?conversationId=' + conversationId
+    if conversation_id and in_reply_to:
+        dropdown_new_post_suffix += '?conversationId=' + conversation_id
+        dropdown_new_blog_suffix += '?conversationId=' + conversation_id
+        dropdown_unlisted_suffix += '?conversationId=' + conversation_id
+        dropdown_followers_suffix += '?conversationId=' + conversation_id
+        dropdown_dm_suffix += '?conversationId=' + conversation_id
 
     drop_down_content = ''
     if not report_url and not share_description:
@@ -834,10 +839,10 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     if reply_is_chat:
         new_post_form += \
             '    <input type="hidden" name="replychatmsg" value="yes">\n'
-    if conversationId:
+    if conversation_id:
         new_post_form += \
             '    <input type="hidden" name="conversationId" value="' + \
-            conversationId + '">\n'
+            conversation_id + '">\n'
     new_post_form += '  <div class="vertical-center">\n'
     new_post_form += \
         '    <label for="nickname"><b>' + new_post_text + '</b></label>\n'
@@ -901,8 +906,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     new_post_form += ''
 
     selected_str = ' selected'
-    if inReplyTo or endpoint == 'newdm':
-        if inReplyTo:
+    if in_reply_to or endpoint == 'newdm':
+        if in_reply_to:
             new_post_form += \
                 '    <label class="labels">' + placeholder_mentions + \
                 '</label><br>\n'
