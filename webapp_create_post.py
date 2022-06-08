@@ -252,7 +252,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
     show_public_on_dropdown = True
     message_box_height = 400
-    image_description_height = 100
+    image_description_height = 150
 
     # filename of the banner shown at the top
     banner_file, _ = \
