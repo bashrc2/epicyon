@@ -236,8 +236,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     if not is_new_reminder:
         date_and_time_str += \
             '<img loading="lazy" decoding="async" alt="" title="" ' + \
-            'class="emojicalendar" src="/' + \
-            'icons/calendar.png"/>\n'
+            'class="emojicalendar" src="/icons/calendar.png"/>\n'
     # select a date and time for this post
     date_and_time_str += '<label class="labels">' + \
         translate['Date'] + ': </label>\n'
@@ -253,6 +252,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
     show_public_on_dropdown = True
     message_box_height = 400
+    image_description_height = 100
 
     # filename of the banner shown at the top
     banner_file, _ = \
@@ -382,8 +382,10 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     new_post_image_section += \
         '            accept="' + formats_string + '">\n'
     new_post_image_section += \
-        edit_text_field(translate['Describe your attachment'],
-                        'imageDescription', '')
+        '    <textarea id="imageDescription" name="imageDescription" ' + \
+        'style="height:' + str(image_description_height) + \
+        'px" spellcheck="true" autocomplete="on"></textarea>\n'
+
     new_post_image_section += end_edit_section()
 
     new_post_emoji_section = ''
