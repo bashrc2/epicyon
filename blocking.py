@@ -1116,7 +1116,7 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
         post_json_object['object']['sensitive'] = True
 
 
-def get_cw_list_variable(listName: str) -> str:
+def get_cw_list_variable(list_name: str) -> str:
     """Returns the variable associated with a CW list
     """
-    return 'list' + listName.replace(' ', '').replace("'", '')
+    return 'list' + list_name.replace(' ', '').replace("'", '')
