@@ -5302,11 +5302,7 @@ def run_inbox_queue(server,
         if debug:
             print('DEBUG: No follow requests')
 
-        if receive_accept_reject(curr_session,
-                                 base_dir, http_prefix, domain, port,
-                                 send_threads, post_log,
-                                 cached_webfingers, person_cache,
-                                 queue_json['post'],
+        if receive_accept_reject(base_dir, domain, queue_json['post'],
                                  federation_list, debug,
                                  domain, onion_domain, i2p_domain):
             print('Queue: Accept/Reject received from ' + key_id)
