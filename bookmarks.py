@@ -164,95 +164,97 @@ def update_bookmarks_collection(recent_posts_cache: {},
     """Updates the bookmarks collection within a post
     """
     post_json_object = load_json(post_filename)
-    if post_json_object:
-        # remove any cached version of this post so that the
-        # bookmark icon is changed
-        nickname = get_nickname_from_actor(actor)
-        if not nickname:
-            return
-        cached_post_filename = \
-            get_cached_post_filename(base_dir, nickname,
-                                     domain, post_json_object)
-        if cached_post_filename:
-            if os.path.isfile(cached_post_filename):
-                try:
-                    os.remove(cached_post_filename)
-                except OSError:
-                    if debug:
-                        print('EX: update_bookmarks_collection ' +
-                              'unable to delete cached post ' +
-                              str(cached_post_filename))
-        remove_post_from_cache(post_json_object, recent_posts_cache)
+    if not post_json_object:
+        return
 
-        if not post_json_object.get('object'):
-            if debug:
-                print('DEBUG: no object in bookmarked post ' +
-                      str(post_json_object))
-            return
-        if not object_url.endswith('/bookmarks'):
-            object_url = object_url + '/bookmarks'
-        # does this post have bookmarks on it from differenent actors?
-        if not post_json_object['object'].get('bookmarks'):
-            if debug:
-                print('DEBUG: Adding initial bookmarks to ' + object_url)
-            bookmarks_json = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'id': object_url,
-                'type': 'Collection',
-                "totalItems": 1,
-                'items': [{
-                    'type': 'Bookmark',
-                    'actor': actor
-                }]
-            }
-            post_json_object['object']['bookmarks'] = bookmarks_json
-        else:
-            if not post_json_object['object']['bookmarks'].get('items'):
-                post_json_object['object']['bookmarks']['items'] = []
-            bm_items = post_json_object['object']['bookmarks']['items']
-            for bookmark_item in bm_items:
-                if bookmark_item.get('actor'):
-                    if bookmark_item['actor'] == actor:
-                        return
-            new_bookmark = {
+    # remove any cached version of this post so that the
+    # bookmark icon is changed
+    nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
+            try:
+                os.remove(cached_post_filename)
+            except OSError:
+                if debug:
+                    print('EX: update_bookmarks_collection ' +
+                          'unable to delete cached post ' +
+                          str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
+
+    if not post_json_object.get('object'):
+        if debug:
+            print('DEBUG: no object in bookmarked post ' +
+                  str(post_json_object))
+        return
+    if not object_url.endswith('/bookmarks'):
+        object_url = object_url + '/bookmarks'
+    # does this post have bookmarks on it from differenent actors?
+    if not post_json_object['object'].get('bookmarks'):
+        if debug:
+            print('DEBUG: Adding initial bookmarks to ' + object_url)
+        bookmarks_json = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'id': object_url,
+            'type': 'Collection',
+            "totalItems": 1,
+            'items': [{
                 'type': 'Bookmark',
                 'actor': actor
-            }
-            nbook = new_bookmark
-            bm_it = len(post_json_object['object']['bookmarks']['items'])
-            post_json_object['object']['bookmarks']['items'].append(nbook)
-            post_json_object['object']['bookmarks']['totalItems'] = bm_it
+            }]
+        }
+        post_json_object['object']['bookmarks'] = bookmarks_json
+    else:
+        if not post_json_object['object']['bookmarks'].get('items'):
+            post_json_object['object']['bookmarks']['items'] = []
+        bm_items = post_json_object['object']['bookmarks']['items']
+        for bookmark_item in bm_items:
+            if bookmark_item.get('actor'):
+                if bookmark_item['actor'] == actor:
+                    return
+        new_bookmark = {
+            'type': 'Bookmark',
+            'actor': actor
+        }
+        nbook = new_bookmark
+        bm_it = len(post_json_object['object']['bookmarks']['items'])
+        post_json_object['object']['bookmarks']['items'].append(nbook)
+        post_json_object['object']['bookmarks']['totalItems'] = bm_it
 
-        if debug:
-            print('DEBUG: saving post with bookmarks added')
-            pprint(post_json_object)
+    if debug:
+        print('DEBUG: saving post with bookmarks added')
+        pprint(post_json_object)
 
-        save_json(post_json_object, post_filename)
+    save_json(post_json_object, post_filename)
 
-        # prepend to the index
-        bookmarks_index_filename = \
-            acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
-        bookmark_index = post_filename.split('/')[-1]
-        if os.path.isfile(bookmarks_index_filename):
-            if bookmark_index not in open(bookmarks_index_filename).read():
-                try:
-                    with open(bookmarks_index_filename, 'r+') as bmi_file:
-                        content = bmi_file.read()
-                        if bookmark_index + '\n' not in content:
-                            bmi_file.seek(0, 0)
-                            bmi_file.write(bookmark_index + '\n' + content)
-                            if debug:
-                                print('DEBUG: bookmark added to index')
-                except OSError as ex:
-                    print('WARN: Failed to write entry to bookmarks index ' +
-                          bookmarks_index_filename + ' ' + str(ex))
-        else:
+    # prepend to the index
+    bookmarks_index_filename = \
+        acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
+    bookmark_index = post_filename.split('/')[-1]
+    if os.path.isfile(bookmarks_index_filename):
+        if bookmark_index not in open(bookmarks_index_filename).read():
             try:
-                with open(bookmarks_index_filename, 'w+') as bm_file:
-                    bm_file.write(bookmark_index + '\n')
-            except OSError:
-                print('EX: unable to write bookmarks index ' +
-                      bookmarks_index_filename)
+                with open(bookmarks_index_filename, 'r+') as bmi_file:
+                    content = bmi_file.read()
+                    if bookmark_index + '\n' not in content:
+                        bmi_file.seek(0, 0)
+                        bmi_file.write(bookmark_index + '\n' + content)
+                        if debug:
+                            print('DEBUG: bookmark added to index')
+            except OSError as ex:
+                print('WARN: Failed to write entry to bookmarks index ' +
+                      bookmarks_index_filename + ' ' + str(ex))
+    else:
+        try:
+            with open(bookmarks_index_filename, 'w+') as bm_file:
+                bm_file.write(bookmark_index + '\n')
+        except OSError:
+            print('EX: unable to write bookmarks index ' +
+                  bookmarks_index_filename)
 
 
 def bookmark_post(recent_posts_cache: {},
