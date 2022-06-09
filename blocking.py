@@ -449,8 +449,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def outbox_block(base_dir: str, http_prefix: str,
-                 nickname: str, domain: str, port: int,
+def outbox_block(base_dir: str, nickname: str, domain: str,
                  message_json: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
     """

@@ -627,9 +627,7 @@ def post_message_to_outbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle block requests')
-    outbox_block(base_dir, http_prefix,
-                 post_to_nickname, domain,
-                 port,
+    outbox_block(base_dir, post_to_nickname, domain,
                  message_json, debug)
 
     if debug:
