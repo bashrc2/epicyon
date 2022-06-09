@@ -116,7 +116,7 @@ def get_newswire_tags(text: str, max_tags: int) -> []:
     return tags
 
 
-def limit_word_lengths(text: str, maxWordLength: int) -> str:
+def limit_word_lengths(text: str, max_word_length: int) -> str:
     """Limits the maximum length of words so that the newswire
     column cannot become too wide
     """
@@ -125,8 +125,8 @@ def limit_word_lengths(text: str, maxWordLength: int) -> str:
     words = text.split(' ')
     result = ''
     for wrd in words:
-        if len(wrd) > maxWordLength:
-            wrd = wrd[:maxWordLength]
+        if len(wrd) > max_word_length:
+            wrd = wrd[:max_word_length]
         if result:
             result += ' '
         result += wrd
@@ -381,12 +381,12 @@ def load_hashtag_categories(base_dir: str, language: str) -> None:
 
 
 def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
-                                   max_categories_feedItem_size_kb: int,
+                                   max_categories_feed_item_size_kb: int,
                                    force: bool = False) -> None:
     """Updates hashtag categories based upon an rss feed
     """
     rss_items = xml_str.split('<item>')
-    max_bytes = max_categories_feedItem_size_kb * 1024
+    max_bytes = max_categories_feed_item_size_kb * 1024
     for rss_item in rss_items:
         if not rss_item:
             continue
@@ -488,7 +488,7 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
             post_url = entry['text']
         if '://' not in post_url:
             return False
-        post_domain, post_port = get_domain_from_actor(post_url)
+        post_domain, _ = get_domain_from_actor(post_url)
         if not post_domain:
             return False
         if is_blocked_domain(base_dir, post_domain):
@@ -720,7 +720,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                      moderated: bool, mirrored: bool,
                      max_posts_per_source: int,
                      max_feed_item_size_kb: int,
-                     max_categories_feedItem_size_kb: int,
+                     max_categories_feed_item_size_kb: int,
                      session, debug: bool,
                      preferred_podcast_formats: []) -> {}:
     """Converts an xml RSS 2.0 string to a dictionary
@@ -732,7 +732,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
     # is this an rss feed containing hashtag categories?
     if '<title>#categories</title>' in xml_str:
         _xml2str_to_hashtag_categories(base_dir, xml_str,
-                                       max_categories_feedItem_size_kb)
+                                       max_categories_feed_item_size_kb)
         return {}
 
     rss_items = xml_str.split('<item>')
@@ -824,7 +824,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                      moderated: bool, mirrored: bool,
                      max_posts_per_source: int,
                      max_feed_item_size_kb: int,
-                     max_categories_feedItem_size_kb: int,
+                     max_categories_feed_item_size_kb: int,
                      session, debug: bool,
                      preferred_podcast_formats: []) -> {}:
     """Converts an xml RSS 1.0 string to a dictionary
@@ -838,7 +838,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
     # is this an rss feed containing hashtag categories?
     if '<title>#categories</title>' in xml_str:
         _xml2str_to_hashtag_categories(base_dir, xml_str,
-                                       max_categories_feedItem_size_kb)
+                                       max_categories_feed_item_size_kb)
         return {}
 
     rss_items = xml_str.split(item_str)
@@ -1226,7 +1226,7 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                      moderated: bool, mirrored: bool,
                      max_posts_per_source: int,
                      max_feed_item_size_kb: int,
-                     max_categories_feedItem_size_kb: int,
+                     max_categories_feed_item_size_kb: int,
                      session, debug: bool,
                      preferred_podcast_formats: []) -> {}:
     """Converts an xml string to a dictionary
@@ -1242,14 +1242,14 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
         return _xml2str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
-                                max_categories_feedItem_size_kb,
+                                max_categories_feed_item_size_kb,
                                 session, debug,
                                 preferred_podcast_formats)
     if '<?xml version="1.0"' in xml_str:
         return _xml1str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
-                                max_categories_feedItem_size_kb,
+                                max_categories_feed_item_size_kb,
                                 session, debug, preferred_podcast_formats)
     if 'xmlns="http://www.w3.org/2005/Atom"' in xml_str:
         return _atom_feed_to_dict(base_dir, domain,
@@ -1281,7 +1281,7 @@ def get_rss(base_dir: str, domain: str, session, url: str,
             moderated: bool, mirrored: bool,
             max_posts_per_source: int, max_feed_size_kb: int,
             max_feed_item_size_kb: int,
-            max_categories_feedItem_size_kb: int, debug: bool,
+            max_categories_feed_item_size_kb: int, debug: bool,
             preferred_podcast_formats: [],
             timeout_sec: int) -> {}:
     """Returns an RSS url as a dict
@@ -1318,7 +1318,7 @@ def get_rss(base_dir: str, domain: str, session, url: str,
                                         moderated, mirrored,
                                         max_posts_per_source,
                                         max_feed_item_size_kb,
-                                        max_categories_feedItem_size_kb,
+                                        max_categories_feed_item_size_kb,
                                         session, debug,
                                         preferred_podcast_formats)
             print('WARN: feed is too large, ' +
@@ -1445,7 +1445,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(moderated_filename):
         moderated = True
 
-    with open(index_filename, 'r') as index_file:
+    with open(index_filename, 'r', encoding='utf-8') as index_file:
         post_filename = 'start'
         ctr = 0
         while post_filename:
@@ -1563,7 +1563,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                            max_posts_per_source: int, max_feed_size_kb: int,
                            max_tags: int, max_feed_item_size_kb: int,
                            max_newswire_posts: int,
-                           max_categories_feedItem_size_kb: int,
+                           max_categories_feed_item_size_kb: int,
                            system_language: str, debug: bool,
                            preferred_podcast_formats: [],
                            timeout_sec: int) -> {}:
@@ -1577,7 +1577,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
 
     # add rss feeds
     rss_feed = []
-    with open(subscriptions_filename, 'r') as fp_sub:
+    with open(subscriptions_filename, 'r', encoding='utf-8') as fp_sub:
         rss_feed = fp_sub.readlines()
     result = {}
     for url in rss_feed:
@@ -1607,7 +1607,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                              moderated, mirrored,
                              max_posts_per_source, max_feed_size_kb,
                              max_feed_item_size_kb,
-                             max_categories_feedItem_size_kb, debug,
+                             max_categories_feed_item_size_kb, debug,
                              preferred_podcast_formats,
                              timeout_sec)
         if items_list:
