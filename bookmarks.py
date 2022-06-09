@@ -574,9 +574,10 @@ def outbox_bookmark(recent_posts_cache: {},
             print('DEBUG: bookmark Add target is not string')
         return
     domain_full = get_full_domain(domain, port)
-    if not message_json['target'].endswith('://' + domain_full +
-                                           '/users/' + nickname +
-                                           '/tlbookmarks'):
+    expected_target = \
+        http_prefix + '://' + domain_full + \
+        '/users/' + nickname + '/tlbookmarks'
+    if message_json['target'] != expected_target:
         if debug:
             print('DEBUG: bookmark Add target invalid ' +
                   message_json['target'])
@@ -630,9 +631,10 @@ def outbox_undo_bookmark(recent_posts_cache: {},
             print('DEBUG: unbookmark Remove target is not string')
         return
     domain_full = get_full_domain(domain, port)
-    if not message_json['target'].endswith('://' + domain_full +
-                                           '/users/' + nickname +
-                                           '/tlbookmarks'):
+    expected_target = \
+        http_prefix + '://' + domain_full + \
+        '/users/' + nickname + '/tlbookmarks'
+    if message_json['target'] != expected_target:
         if debug:
             print('DEBUG: unbookmark Remove target invalid ' +
                   message_json['target'])
