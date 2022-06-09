@@ -119,7 +119,8 @@ def add_block(base_dir: str, nickname: str, domain: str,
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
-        if block_handle + '\n' in open(followers_filename).read():
+        if block_handle + '\n' in open(followers_filename,
+                                       encoding='utf-8').read():
             followers_str = ''
             try:
                 with open(followers_filename, 'r',
@@ -186,7 +187,8 @@ def remove_global_block(base_dir: str,
     else:
         unblock_hashtag = unblock_nickname
         if os.path.isfile(unblocking_filename):
-            if unblock_hashtag + '\n' in open(unblocking_filename).read():
+            if unblock_hashtag + '\n' in open(unblocking_filename,
+                                              encoding='utf-8').read():
                 try:
                     with open(unblocking_filename, 'r',
                               encoding='utf-8') as fp_unblock:
@@ -356,7 +358,8 @@ def is_blocked_domain(base_dir: str, domain: str,
             global_blocking_filename = base_dir + '/accounts/blocking.txt'
             if os.path.isfile(global_blocking_filename):
                 try:
-                    with open(global_blocking_filename, 'r') as fp_blocked:
+                    with open(global_blocking_filename, 'r',
+                              encoding='utf-8') as fp_blocked:
                         blocked_str = fp_blocked.read()
                         if '*@' + domain + '\n' in blocked_str:
                             return True
@@ -370,10 +373,11 @@ def is_blocked_domain(base_dir: str, domain: str,
         allow_filename = base_dir + '/accounts/allowedinstances.txt'
         # instance allow list
         if not short_domain:
-            if domain not in open(allow_filename).read():
+            if domain not in open(allow_filename, encoding='utf-8').read():
                 return True
         else:
-            if short_domain not in open(allow_filename).read():
+            if short_domain not in open(allow_filename,
+                                        encoding='utf-8').read():
                 return True
 
     return False
