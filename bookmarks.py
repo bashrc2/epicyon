@@ -258,14 +258,11 @@ def update_bookmarks_collection(recent_posts_cache: {},
 
 
 def bookmark_post(recent_posts_cache: {},
-                  session, base_dir: str, federation_list: [],
+                  base_dir: str, federation_list: [],
                   nickname: str, domain: str, port: int,
-                  ccList: [], http_prefix: str,
-                  object_url: str, actorBookmarked: str,
-                  client_to_server: bool,
-                  send_threads: [], post_log: [],
-                  person_cache: {}, cached_webfingers: {},
-                  debug: bool, project_version: str) -> {}:
+                  cc_list: [], http_prefix: str,
+                  object_url: str, actor_bookmarked: str,
+                  debug: bool) -> {}:
     """Creates a bookmark
     actor is the person doing the bookmarking
     'to' might be a specific person (actor) whose post was bookmarked
@@ -282,14 +279,14 @@ def bookmark_post(recent_posts_cache: {},
         'actor': local_actor_url(http_prefix, nickname, full_domain),
         'object': object_url
     }
-    if ccList:
-        if len(ccList) > 0:
-            new_bookmark_json['cc'] = ccList
+    if cc_list:
+        if len(cc_list) > 0:
+            new_bookmark_json['cc'] = cc_list
 
     # Extract the domain and nickname from a statuses link
     bookmarked_post_nickname = None
-    if actorBookmarked:
-        ac_bm = actorBookmarked
+    if actor_bookmarked:
+        ac_bm = actor_bookmarked
         bookmarked_post_nickname = get_nickname_from_actor(ac_bm)
         _, _ = get_domain_from_actor(ac_bm)
     else:
@@ -315,14 +312,11 @@ def bookmark_post(recent_posts_cache: {},
 
 
 def undo_bookmark_post(recent_posts_cache: {},
-                       session, base_dir: str, federation_list: [],
+                       base_dir: str, federation_list: [],
                        nickname: str, domain: str, port: int,
-                       ccList: [], http_prefix: str,
-                       object_url: str, actorBookmarked: str,
-                       client_to_server: bool,
-                       send_threads: [], post_log: [],
-                       person_cache: {}, cached_webfingers: {},
-                       debug: bool, project_version: str) -> {}:
+                       cc_list: [], http_prefix: str,
+                       object_url: str, actor_bookmarked: str,
+                       debug: bool) -> {}:
     """Removes a bookmark
     actor is the person doing the bookmarking
     'to' might be a specific person (actor) whose post was bookmarked
@@ -343,15 +337,15 @@ def undo_bookmark_post(recent_posts_cache: {},
             'object': object_url
         }
     }
-    if ccList:
-        if len(ccList) > 0:
-            new_undo_bookmark_json['cc'] = ccList
-            new_undo_bookmark_json['object']['cc'] = ccList
+    if cc_list:
+        if len(cc_list) > 0:
+            new_undo_bookmark_json['cc'] = cc_list
+            new_undo_bookmark_json['object']['cc'] = cc_list
 
     # Extract the domain and nickname from a statuses link
     bookmarked_post_nickname = None
-    if actorBookmarked:
-        ac_bm = actorBookmarked
+    if actor_bookmarked:
+        ac_bm = actor_bookmarked
         bookmarked_post_nickname = get_nickname_from_actor(ac_bm)
         _, _ = get_domain_from_actor(ac_bm)
     else:

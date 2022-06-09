@@ -9966,20 +9966,10 @@ class PubServer(BaseHTTPRequestHandler):
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
         cc_list = []
         bookmark_post(self.server.recent_posts_cache,
-                      curr_session,
-                      base_dir,
-                      self.server.federation_list,
-                      self.post_to_nickname,
-                      domain, port,
-                      cc_list,
-                      http_prefix,
-                      bookmark_url, bookmark_actor, False,
-                      self.server.send_threads,
-                      self.server.postLog,
-                      self.server.person_cache,
-                      self.server.cached_webfingers,
-                      self.server.debug,
-                      self.server.project_version)
+                      base_dir, self.server.federation_list,
+                      self.post_to_nickname, domain, port,
+                      cc_list, http_prefix, bookmark_url, bookmark_actor,
+                      self.server.debug)
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('bookmark.png'):
             del self.server.iconsCache['bookmark.png']
@@ -10122,20 +10112,10 @@ class PubServer(BaseHTTPRequestHandler):
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
         cc_list = []
         undo_bookmark_post(self.server.recent_posts_cache,
-                           curr_session,
-                           base_dir,
-                           self.server.federation_list,
+                           base_dir, self.server.federation_list,
                            self.post_to_nickname,
-                           domain, port,
-                           cc_list,
-                           http_prefix,
-                           bookmark_url, undo_actor, False,
-                           self.server.send_threads,
-                           self.server.postLog,
-                           self.server.person_cache,
-                           self.server.cached_webfingers,
-                           debug,
-                           self.server.project_version)
+                           domain, port, cc_list, http_prefix,
+                           bookmark_url, undo_actor, debug)
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('bookmark_inactive.png'):
             del self.server.iconsCache['bookmark_inactive.png']
