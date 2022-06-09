@@ -66,17 +66,20 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(voters_filename):
         # create a new voters file
         try:
-            with open(voters_filename, 'w+') as voters_file:
+            with open(voters_filename, 'w+',
+                      encoding='utf-8') as voters_file:
                 voters_file.write(reply_json['actor'] +
                                   voters_file_separator +
                                   found_answer + '\n')
         except OSError:
             print('EX: unable to write voters file ' + voters_filename)
     else:
-        if reply_json['actor'] not in open(voters_filename).read():
+        if reply_json['actor'] not in open(voters_filename,
+                                           encoding='utf-8').read():
             # append to the voters file
             try:
-                with open(voters_filename, 'a+') as voters_file:
+                with open(voters_filename, 'a+',
+                          encoding='utf-8') as voters_file:
                     voters_file.write(reply_json['actor'] +
                                       voters_file_separator +
                                       found_answer + '\n')
@@ -84,7 +87,8 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                 print('EX: unable to append to voters file ' + voters_filename)
         else:
             # change an entry in the voters file
-            with open(voters_filename, 'r') as voters_file:
+            with open(voters_filename, 'r',
+                      encoding='utf-8') as voters_file:
                 lines = voters_file.readlines()
                 newlines = []
                 save_voters_file = False
@@ -101,7 +105,8 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                         newlines.append(vote_line)
                 if save_voters_file:
                     try:
-                        with open(voters_filename, 'w+') as voters_file:
+                        with open(voters_filename, 'w+',
+                                  encoding='utf-8') as voters_file:
                             for vote_line in newlines:
                                 voters_file.write(vote_line)
                     except OSError:
@@ -115,7 +120,7 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
         if not possible_answer.get('name'):
             continue
         total_items = 0
-        with open(voters_filename, 'r') as voters_file:
+        with open(voters_filename, 'r', encoding='utf-8') as voters_file:
             lines = voters_file.readlines()
             for vote_line in lines:
                 if vote_line.endswith(voters_file_separator +

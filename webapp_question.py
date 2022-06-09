@@ -34,7 +34,7 @@ def insert_question(base_dir: str, translate: {},
 
     show_question_results = False
     if os.path.isfile(votes_filename):
-        if message_id in open(votes_filename).read():
+        if message_id in open(votes_filename, encoding='utf-8').read():
             show_question_results = True
 
     if not show_question_results:

@@ -372,7 +372,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     citations_selected = []
     if os.path.isfile(citations_filename):
         citations_separator = '#####'
-        with open(citations_filename, 'r') as fp_cit:
+        with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
             citations = fp_cit.readlines()
             for line in citations:
                 if citations_separator not in line:
@@ -611,7 +611,7 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     newswire_filename = base_dir + '/accounts/newswire.txt'
     newswire_str = ''
     if os.path.isfile(newswire_filename):
-        with open(newswire_filename, 'r') as fp_news:
+        with open(newswire_filename, 'r', encoding='utf-8') as fp_news:
             newswire_str = fp_news.read()
 
     edit_newswire_form += \
@@ -633,7 +633,7 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     filter_filename = \
         base_dir + '/accounts/news@' + domain + '/filters.txt'
     if os.path.isfile(filter_filename):
-        with open(filter_filename, 'r') as filterfile:
+        with open(filter_filename, 'r', encoding='utf-8') as filterfile:
             filter_str = filterfile.read()
 
     edit_newswire_form += \
@@ -649,7 +649,7 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     hashtag_rules_filename = \
         base_dir + '/accounts/hashtagrules.txt'
     if os.path.isfile(hashtag_rules_filename):
-        with open(hashtag_rules_filename, 'r') as rulesfile:
+        with open(hashtag_rules_filename, 'r', encoding='utf-8') as rulesfile:
             hashtag_rules_str = rulesfile.read()
 
     edit_newswire_form += \

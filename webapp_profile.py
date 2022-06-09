@@ -780,7 +780,8 @@ def html_profile(signing_priv_key_pem: str,
         follow_requests_filename = \
             acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
         if os.path.isfile(follow_requests_filename):
-            with open(follow_requests_filename, 'r') as foll_file:
+            with open(follow_requests_filename, 'r',
+                      encoding='utf-8') as foll_file:
                 for line in foll_file:
                     if len(line) > 0:
                         follow_approvals = True
@@ -792,7 +793,8 @@ def html_profile(signing_priv_key_pem: str,
             if follow_approvals:
                 curr_follower_domains = \
                     get_follower_domains(base_dir, nickname, domain)
-                with open(follow_requests_filename, 'r') as req_file:
+                with open(follow_requests_filename, 'r',
+                          encoding='utf-8') as req_file:
                     for follower_handle in req_file:
                         if len(follower_handle) > 0:
                             follower_handle = follower_handle.replace('\n', '')
@@ -890,7 +892,7 @@ def html_profile(signing_priv_key_pem: str,
     pinned_filename = account_dir + '/pinToProfile.txt'
     pinned_content = None
     if os.path.isfile(pinned_filename):
-        with open(pinned_filename, 'r') as pin_file:
+        with open(pinned_filename, 'r', encoding='utf-8') as pin_file:
             pinned_content = pin_file.read()
 
     profile_header_str = \
@@ -1476,7 +1478,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     moderators = ''
     moderators_file = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r') as mod_file:
+        with open(moderators_file, 'r', encoding='utf-8') as mod_file:
             moderators = mod_file.read()
     # site moderators
     role_assign_str = \
@@ -1494,7 +1496,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     editors = ''
     editors_file = base_dir + '/accounts/editors.txt'
     if os.path.isfile(editors_file):
-        with open(editors_file, 'r') as edit_file:
+        with open(editors_file, 'r', encoding='utf-8') as edit_file:
             editors = edit_file.read()
     role_assign_str += \
         '  <b><label class="labels">' + \
@@ -1509,7 +1511,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     counselors = ''
     counselors_file = base_dir + '/accounts/counselors.txt'
     if os.path.isfile(counselors_file):
-        with open(counselors_file, 'r') as co_file:
+        with open(counselors_file, 'r', encoding='utf-8') as co_file:
             counselors = co_file.read()
     role_assign_str += \
         edit_text_area(translate['Counselors'], 'counselors', counselors,
@@ -1519,7 +1521,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     artists = ''
     artists_file = base_dir + '/accounts/artists.txt'
     if os.path.isfile(artists_file):
-        with open(artists_file, 'r') as art_file:
+        with open(artists_file, 'r', encoding='utf-8') as art_file:
             artists = art_file.read()
     role_assign_str += \
         edit_text_area(translate['Artists'], 'artists', artists,
@@ -1633,7 +1635,7 @@ def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
     git_projects_filename = \
         acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
     if os.path.isfile(git_projects_filename):
-        with open(git_projects_filename, 'r') as git_file:
+        with open(git_projects_filename, 'r', encoding='utf-8') as git_file:
             git_projects_str = git_file.read()
 
     edit_profile_form = begin_edit_section(translate['Git Projects'])
@@ -1678,56 +1680,58 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     filter_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filter_filename):
-        with open(filter_filename, 'r') as filterfile:
+        with open(filter_filename, 'r', encoding='utf-8') as filterfile:
             filter_str = filterfile.read()
 
     filter_bio_str = ''
     filter_bio_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
     if os.path.isfile(filter_bio_filename):
-        with open(filter_bio_filename, 'r') as filterfile:
+        with open(filter_bio_filename, 'r', encoding='utf-8') as filterfile:
             filter_bio_str = filterfile.read()
 
     switch_str = ''
     switch_filename = \
         acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
     if os.path.isfile(switch_filename):
-        with open(switch_filename, 'r') as switchfile:
+        with open(switch_filename, 'r', encoding='utf-8') as switchfile:
             switch_str = switchfile.read()
 
     auto_tags = ''
     auto_tags_filename = \
         acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if os.path.isfile(auto_tags_filename):
-        with open(auto_tags_filename, 'r') as auto_file:
+        with open(auto_tags_filename, 'r', encoding='utf-8') as auto_file:
             auto_tags = auto_file.read()
 
     auto_cw = ''
     auto_cw_filename = \
         acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if os.path.isfile(auto_cw_filename):
-        with open(auto_cw_filename, 'r') as cw_file:
+        with open(auto_cw_filename, 'r', encoding='utf-8') as cw_file:
             auto_cw = cw_file.read()
 
     blocked_str = ''
     blocked_filename = \
         acct_dir(base_dir, nickname, domain) + '/blocking.txt'
     if os.path.isfile(blocked_filename):
-        with open(blocked_filename, 'r') as blockedfile:
+        with open(blocked_filename, 'r', encoding='utf-8') as blockedfile:
             blocked_str = blockedfile.read()
 
     dm_allowed_instances_str = ''
     dm_allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if os.path.isfile(dm_allowed_instances_filename):
-        with open(dm_allowed_instances_filename, 'r') as dm_file:
+        with open(dm_allowed_instances_filename, 'r',
+                  encoding='utf-8') as dm_file:
             dm_allowed_instances_str = dm_file.read()
 
     allowed_instances_str = ''
     allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/allowedinstances.txt'
     if os.path.isfile(allowed_instances_filename):
-        with open(allowed_instances_filename, 'r') as allow_file:
+        with open(allowed_instances_filename, 'r',
+                  encoding='utf-8') as allow_file:
             allowed_instances_str = allow_file.read()
 
     edit_profile_form = begin_edit_section(translate['Filtering and Blocking'])
@@ -1748,13 +1752,13 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     city = ''
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(city_filename):
-        with open(city_filename, 'r') as city_file:
+        with open(city_filename, 'r', encoding='utf-8') as city_file:
             city = city_file.read().replace('\n', '')
     locations_filename = base_dir + '/custom_locations.txt'
     if not os.path.isfile(locations_filename):
         locations_filename = base_dir + '/locations.txt'
     cities = []
-    with open(locations_filename, 'r') as loc_file:
+    with open(locations_filename, 'r', encoding='utf-8') as loc_file:
         cities = loc_file.readlines()
         cities.sort()
     edit_profile_form += '  <select id="cityDropdown" ' + \

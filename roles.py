@@ -28,7 +28,8 @@ def _clear_role_status(base_dir: str, role: str) -> None:
         if not filename.endswith(".json"):
             continue
         filename = os.path.join(base_dir + '/accounts/', filename)
-        if '"' + role + '"' not in open(filename).read():
+        if '"' + role + '"' not in open(filename,
+                                        encoding='utf-8').read():
             continue
         actor_json = load_json(filename)
         if not actor_json:
@@ -84,7 +85,7 @@ def _add_role(base_dir: str, nickname: str, domain: str,
 
         lines = []
         try:
-            with open(role_file, 'r') as fp_role:
+            with open(role_file, 'r', encoding='utf-8') as fp_role:
                 lines = fp_role.readlines()
         except OSError:
             print('EX: _add_role, failed to read roles file ' + role_file)
@@ -96,7 +97,7 @@ def _add_role(base_dir: str, nickname: str, domain: str,
         lines.append(nickname)
 
         try:
-            with open(role_file, 'w+') as fp_role:
+            with open(role_file, 'w+', encoding='utf-8') as fp_role:
                 for role_nickname in lines:
                     role_nickname = role_nickname.strip('\n').strip('\r')
                     if len(role_nickname) < 2:
@@ -108,7 +109,7 @@ def _add_role(base_dir: str, nickname: str, domain: str,
             print('EX: _add_role, failed to write roles file1 ' + role_file)
     else:
         try:
-            with open(role_file, 'w+') as fp_role:
+            with open(role_file, 'w+', encoding='utf-8') as fp_role:
                 account_dir = acct_dir(base_dir, nickname, domain)
                 if os.path.isdir(account_dir):
                     fp_role.write(nickname + '\n')
@@ -125,13 +126,13 @@ def _remove_role(base_dir: str, nickname: str, role_filename: str) -> None:
         return
 
     try:
-        with open(role_file, 'r') as fp_role:
+        with open(role_file, 'r', encoding='utf-8') as fp_role:
             lines = fp_role.readlines()
     except OSError:
         print('EX: _remove_role, failed to read roles file ' + role_file)
 
     try:
-        with open(role_file, 'w+') as fp_role:
+        with open(role_file, 'w+', encoding='utf-8') as fp_role:
             for role_nickname in lines:
                 role_nickname = role_nickname.strip('\n').strip('\r')
                 if len(role_nickname) > 1 and role_nickname != nickname:

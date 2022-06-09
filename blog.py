@@ -41,7 +41,7 @@ from cache import get_person_from_cache
 
 def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
                         nickname: str, domain: str, domain_full: str,
-                        post_id: str, depth=0) -> int:
+                        post_id: str, depth: int = 0) -> int:
     """Returns the number of replies on the post
     This is recursive, so can handle replies to replies
     """
@@ -73,7 +73,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
     replies = 0
     lines = []
     try:
-        with open(post_filename, 'r') as post_file:
+        with open(post_filename, 'r', encoding='utf-8') as post_file:
             lines = post_file.readlines()
     except OSError:
         print('EX: failed to read blog ' + post_filename)
@@ -96,7 +96,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
         print('Rewriting ' + post_filename + ' to remove ' +
               str(len(removals)) + ' entries')
         try:
-            with open(post_filename, 'w+') as post_file:
+            with open(post_filename, 'w+', encoding='utf-8') as post_file:
                 for reply_post_id in lines:
                     reply_post_id = \
                         reply_post_id.replace('\n', '').replace('\r', '')
@@ -111,7 +111,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
 
 def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                       nickname: str, domain: str, domain_full: str,
-                      post_id: str, depth=0) -> str:
+                      post_id: str, depth: int = 0) -> str:
     """Returns a string containing html blog posts
     """
     if depth > 4:
@@ -140,7 +140,8 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                     post_id.replace('/', '#') + '.html'
                 if os.path.isfile(post_filename):
                     try:
-                        with open(post_filename, 'r') as post_file:
+                        with open(post_filename, 'r',
+                                  encoding='utf-8') as post_file:
                             return post_file.read() + '\n'
                     except OSError:
                         print('EX: unable to read blog 3 ' + post_filename)
@@ -148,7 +149,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
 
     lines = []
     try:
-        with open(post_filename, 'r') as post_file:
+        with open(post_filename, 'r', encoding='utf-8') as post_file:
             lines = post_file.readlines()
     except OSError:
         print('EX: unable to read blog 4 ' + post_filename)
@@ -165,7 +166,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
             if not os.path.isfile(post_filename):
                 continue
             try:
-                with open(post_filename, 'r') as post_file:
+                with open(post_filename, 'r', encoding='utf-8') as post_file:
                     replies_str += post_file.read() + '\n'
             except OSError:
                 print('EX: unable to read blog replies ' + post_filename)
@@ -779,7 +780,8 @@ def html_edit_blog(media_instance: bool, translate: {},
 
     if os.path.isfile(base_dir + '/accounts/newpost.txt'):
         try:
-            with open(base_dir + '/accounts/newpost.txt', 'r') as file:
+            with open(base_dir + '/accounts/newpost.txt', 'r',
+                      encoding='utf-8') as file:
                 edit_blog_text = '<p>' + file.read() + '</p>'
         except OSError:
             print('EX: unable to read ' + base_dir + '/accounts/newpost.txt')
@@ -927,7 +929,8 @@ def path_contains_blog_link(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blog_index_filename):
         return None, None
-    if '#' + user_ending2[1] + '.' not in open(blog_index_filename).read():
+    if '#' + user_ending2[1] + '.' not in open(blog_index_filename,
+                                               encoding='utf-8').read():
         return None, None
     message_id = local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + user_ending2[1]

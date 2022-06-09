@@ -38,7 +38,8 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
     # has this handle already been rejected?
     rejected_follows_filename = accounts_dir + '/followrejects.txt'
     if os.path.isfile(rejected_follows_filename):
-        if deny_handle in open(rejected_follows_filename).read():
+        if deny_handle in open(rejected_follows_filename,
+                               encoding='utf-8').read():
             remove_from_follow_requests(base_dir, nickname, domain,
                                         deny_handle, debug)
             print(deny_handle +
@@ -49,7 +50,8 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
 
     # Store rejected follows
     try:
-        with open(rejected_follows_filename, 'a+') as rejects_file:
+        with open(rejected_follows_filename, 'a+',
+                  encoding='utf-8') as rejects_file:
             rejects_file.write(deny_handle + '\n')
     except OSError:
         print('EX: unable to append ' + rejected_follows_filename)
@@ -153,7 +155,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
 
     # is the handle in the requests file?
     approve_follows_str = ''
-    with open(approve_follows_filename, 'r') as fp_foll:
+    with open(approve_follows_filename, 'r', encoding='utf-8') as fp_foll:
         approve_follows_str = fp_foll.read()
     exists = False
     approve_handle_full = approve_handle
@@ -181,10 +183,12 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
               '" ' + approve_follows_filename)
         return
 
-    with open(approve_follows_filename + '.new', 'w+') as approvefilenew:
+    with open(approve_follows_filename + '.new', 'w+',
+              encoding='utf-8') as approvefilenew:
         update_approved_followers = False
         follow_activity_filename = None
-        with open(approve_follows_filename, 'r') as approvefile:
+        with open(approve_follows_filename, 'r',
+                  encoding='utf-8') as approvefile:
             for handle_of_follow_requester in approvefile:
                 # is this the approved follow?
                 if handle_of_follow_requester.startswith(approve_handle_full):
@@ -276,9 +280,11 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         # update the followers
         print('Manual follow accept: updating ' + followers_filename)
         if os.path.isfile(followers_filename):
-            if approve_handle_full not in open(followers_filename).read():
+            if approve_handle_full not in open(followers_filename,
+                                               encoding='utf-8').read():
                 try:
-                    with open(followers_filename, 'r+') as followers_file:
+                    with open(followers_filename, 'r+',
+                              encoding='utf-8') as followers_file:
                         content = followers_file.read()
                         if approve_handle_full + '\n' not in content:
                             followers_file.seek(0, 0)
@@ -294,14 +300,16 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
             print('Manual follow accept: first follower accepted for ' +
                   handle + ' is ' + approve_handle_full)
             try:
-                with open(followers_filename, 'w+') as followers_file:
+                with open(followers_filename, 'w+',
+                          encoding='utf-8') as followers_file:
                     followers_file.write(approve_handle_full + '\n')
             except OSError:
                 print('EX: unable to write ' + followers_filename)
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt
-    if approve_handle_full in open(followers_filename).read():
+    if approve_handle_full in open(followers_filename,
+                                   encoding='utf-8').read():
         # mark this handle as approved for following
         _approve_follower_handle(account_dir, approve_handle)
         # update the follow requests with the handles not yet approved

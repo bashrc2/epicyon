@@ -375,7 +375,7 @@ def load_hashtag_categories(base_dir: str, language: str) -> None:
         if not os.path.isfile(hashtag_categories_filename):
             return
 
-    with open(hashtag_categories_filename, 'r') as fp_cat:
+    with open(hashtag_categories_filename, 'r', encoding='utf-8') as fp_cat:
         xml_str = fp_cat.read()
         _xml2str_to_hashtag_categories(base_dir, xml_str, 1024, True)
 

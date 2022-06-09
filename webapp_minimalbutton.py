@@ -40,7 +40,7 @@ def set_minimal(base_dir: str, domain: str, nickname: str,
             print('EX: set_minimal unable to delete ' + minimal_filename)
     elif not minimal and not minimal_file_exists:
         try:
-            with open(minimal_filename, 'w+') as fp_min:
+            with open(minimal_filename, 'w+', encoding='utf-8') as fp_min:
                 fp_min.write('\n')
         except OSError:
             print('EX: unable to write minimal ' + minimal_filename)

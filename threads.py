@@ -156,7 +156,7 @@ def remove_dormant_threads(base_dir: str, threads_list: [], debug: bool,
     if debug:
         send_log_filename = base_dir + '/send.csv'
         try:
-            with open(send_log_filename, 'a+') as fp_log:
+            with open(send_log_filename, 'a+', encoding='utf-8') as fp_log:
                 fp_log.write(curr_time.strftime("%Y-%m-%dT%H:%M:%SZ") +
                              ',' + str(no_of_active_threads) +
                              ',' + str(len(threads_list)) + '\n')

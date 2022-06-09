@@ -72,17 +72,20 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
     else:
         bookmark_index = post_filename.strip()
     bookmark_index = bookmark_index.replace('\n', '').replace('\r', '')
-    if bookmark_index not in open(bookmarks_index_filename).read():
+    if bookmark_index not in open(bookmarks_index_filename,
+                                  encoding='utf-8').read():
         return
     index_str = ''
     try:
-        with open(bookmarks_index_filename, 'r') as index_file:
+        with open(bookmarks_index_filename, 'r',
+                  encoding='utf-8') as index_file:
             index_str = index_file.read().replace(bookmark_index + '\n', '')
     except OSError:
         print('EX: unable to read ' + bookmarks_index_filename)
     if index_str:
         try:
-            with open(bookmarks_index_filename, 'w+') as bmi_file:
+            with open(bookmarks_index_filename, 'w+',
+                      encoding='utf-8') as bmi_file:
                 bmi_file.write(index_str)
         except OSError:
             print('EX: unable to write bookmarks index ' +
@@ -236,9 +239,11 @@ def update_bookmarks_collection(recent_posts_cache: {},
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
     bookmark_index = post_filename.split('/')[-1]
     if os.path.isfile(bookmarks_index_filename):
-        if bookmark_index not in open(bookmarks_index_filename).read():
+        if bookmark_index not in open(bookmarks_index_filename,
+                                      encoding='utf-8').read():
             try:
-                with open(bookmarks_index_filename, 'r+') as bmi_file:
+                with open(bookmarks_index_filename, 'r+',
+                          encoding='utf-8') as bmi_file:
                     content = bmi_file.read()
                     if bookmark_index + '\n' not in content:
                         bmi_file.seek(0, 0)
@@ -250,7 +255,8 @@ def update_bookmarks_collection(recent_posts_cache: {},
                       bookmarks_index_filename + ' ' + str(ex))
     else:
         try:
-            with open(bookmarks_index_filename, 'w+') as bm_file:
+            with open(bookmarks_index_filename, 'w+',
+                      encoding='utf-8') as bm_file:
                 bm_file.write(bookmark_index + '\n')
         except OSError:
             print('EX: unable to write bookmarks index ' +

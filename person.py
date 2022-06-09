@@ -354,7 +354,7 @@ def get_default_person_context() -> str:
 
 
 def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
-                        http_prefix: str, saveToFile: bool,
+                        http_prefix: str, save_to_file: bool,
                         manual_follower_approval: bool,
                         group_account: bool,
                         password: str) -> (str, str, {}, {}):
@@ -365,7 +365,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         create_webfinger_endpoint(nickname, domain, port,
                                   http_prefix, public_key_pem,
                                   group_account)
-    if saveToFile:
+    if save_to_file:
         store_webfinger_endpoint(nickname, domain, port,
                                  base_dir, webfinger_endpoint)
 
@@ -485,7 +485,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         del new_person['following']
         del new_person['attachment']
 
-    if saveToFile:
+    if save_to_file:
         # save person to file
         people_subdir = '/accounts'
         if not os.path.isdir(base_dir + people_subdir):
@@ -569,14 +569,14 @@ def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
 
 
 def create_group(base_dir: str, nickname: str, domain: str, port: int,
-                 http_prefix: str, saveToFile: bool,
+                 http_prefix: str, save_to_file: bool,
                  password: str = None) -> (str, str, {}, {}):
     """Returns a group
     """
     (private_key_pem, public_key_pem,
      new_person, webfinger_endpoint) = create_person(base_dir, nickname,
                                                      domain, port,
-                                                     http_prefix, saveToFile,
+                                                     http_prefix, save_to_file,
                                                      False, password, True)
 
     return private_key_pem, public_key_pem, new_person, webfinger_endpoint
@@ -621,7 +621,7 @@ def save_person_qrcode(base_dir: str,
 
 
 def create_person(base_dir: str, nickname: str, domain: str, port: int,
-                  http_prefix: str, saveToFile: bool,
+                  http_prefix: str, save_to_file: bool,
                   manual_follower_approval: bool,
                   password: str,
                   group_account: bool = False) -> (str, str, {}, {}):
@@ -650,7 +650,7 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
      new_person, webfinger_endpoint) = _create_person_base(base_dir, nickname,
                                                            domain, port,
                                                            http_prefix,
-                                                           saveToFile,
+                                                           save_to_file,
                                                            manual_follower,
                                                            group_account,
                                                            password)
@@ -672,7 +672,7 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
         follow_dms_filename = \
             acct_dir(base_dir, nickname, domain) + '/.followDMs'
         try:
-            with open(follow_dms_filename, 'w+') as ffile:
+            with open(follow_dms_filename, 'w+', encoding='utf-8') as ffile:
                 ffile.write('\n')
         except OSError:
             print('EX: unable to write ' + follow_dms_filename)
@@ -682,7 +682,7 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
         notify_likes_filename = \
             acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
         try:
-            with open(notify_likes_filename, 'w+') as nfile:
+            with open(notify_likes_filename, 'w+', encoding='utf-8') as nfile:
                 nfile.write('\n')
         except OSError:
             print('EX: unable to write ' + notify_likes_filename)
@@ -692,7 +692,8 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
         notify_reactions_filename = \
             acct_dir(base_dir, nickname, domain) + '/.notifyReactions'
         try:
-            with open(notify_reactions_filename, 'w+') as nfile:
+            with open(notify_reactions_filename, 'w+',
+                      encoding='utf-8') as nfile:
                 nfile.write('\n')
         except OSError:
             print('EX: unable to write ' + notify_reactions_filename)
@@ -1050,8 +1051,8 @@ def person_box_json(recent_posts_cache: {},
 
 
 def set_display_nickname(base_dir: str, nickname: str, domain: str,
-                         displayName: str) -> bool:
-    if len(displayName) > 32:
+                         display_name: str) -> bool:
+    if len(display_name) > 32:
         return False
     handle = nickname + '@' + domain
     filename = base_dir + '/accounts/' + handle + '.json'
@@ -1061,7 +1062,7 @@ def set_display_nickname(base_dir: str, nickname: str, domain: str,
     person_json = load_json(filename)
     if not person_json:
         return False
-    person_json['name'] = displayName
+    person_json['name'] = display_name
     save_json(person_json, filename)
     return True
 
@@ -1088,15 +1089,15 @@ def set_bio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
 
 
 def reenable_account(base_dir: str, nickname: str) -> None:
-    """Removes an account suspention
+    """Removes an account suspension
     """
     suspended_filename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspended_filename):
         lines = []
-        with open(suspended_filename, 'r') as fp_sus:
+        with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
             lines = fp_sus.readlines()
         try:
-            with open(suspended_filename, 'w+') as fp_sus:
+            with open(suspended_filename, 'w+', encoding='utf-8') as fp_sus:
                 for suspended in lines:
                     if suspended.strip('\n').strip('\r') != nickname:
                         fp_sus.write(suspended)
@@ -1118,7 +1119,7 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
     # Don't suspend moderators
     moderators_file = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r') as fp_mod:
+        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             lines = fp_mod.readlines()
         for moderator in lines:
             if moderator.strip('\n').strip('\r') == nickname:
@@ -1139,19 +1140,19 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
 
     suspended_filename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspended_filename):
-        with open(suspended_filename, 'r') as fp_sus:
+        with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
             lines = fp_sus.readlines()
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return
         try:
-            with open(suspended_filename, 'a+') as fp_sus:
+            with open(suspended_filename, 'a+', encoding='utf-8') as fp_sus:
                 fp_sus.write(nickname + '\n')
         except OSError:
             print('EX: unable to append ' + suspended_filename)
     else:
         try:
-            with open(suspended_filename, 'w+') as fp_sus:
+            with open(suspended_filename, 'w+', encoding='utf-8') as fp_sus:
                 fp_sus.write(nickname + '\n')
         except OSError:
             print('EX: unable to write ' + suspended_filename)
@@ -1176,7 +1177,7 @@ def can_remove_post(base_dir: str, nickname: str,
     # is the post by a moderator?
     moderators_file = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r') as fp_mod:
+        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             lines = fp_mod.readlines()
         for moderator in lines:
             if domain_full + '/users/' + \
@@ -1206,13 +1207,13 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             continue
         if not os.path.isfile(tag_filename):
             continue
-        if match_str not in open(tag_filename).read():
+        if match_str not in open(tag_filename, encoding='utf-8').read():
             continue
         lines = []
-        with open(tag_filename, 'r') as fp_tag:
+        with open(tag_filename, 'r', encoding='utf-8') as fp_tag:
             lines = fp_tag.readlines()
         try:
-            with open(tag_filename, 'w+') as tag_file:
+            with open(tag_filename, 'w+', encoding='utf-8') as tag_file:
                 for tagline in lines:
                     if match_str not in tagline:
                         tag_file.write(tagline)
@@ -1234,7 +1235,7 @@ def remove_account(base_dir: str, nickname: str,
     # Don't remove moderators
     moderators_file = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r') as fp_mod:
+        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             lines = fp_mod.readlines()
         for moderator in lines:
             if moderator.strip('\n') == nickname:
@@ -1357,11 +1358,12 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
     snoozed_filename = acct_dir(base_dir, nickname, domain) + '/snoozed.txt'
     if not os.path.isfile(snoozed_filename):
         return False
-    if snooze_actor + ' ' not in open(snoozed_filename).read():
+    if snooze_actor + ' ' not in open(snoozed_filename,
+                                      encoding='utf-8').read():
         return False
     # remove the snooze entry if it has timed out
     replace_str = None
-    with open(snoozed_filename, 'r') as snoozed_file:
+    with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
         for line in snoozed_file:
             # is this the entry for the actor?
             if line.startswith(snooze_actor + ' '):
@@ -1379,16 +1381,17 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
                 break
     if replace_str:
         content = None
-        with open(snoozed_filename, 'r') as snoozed_file:
+        with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
             content = snoozed_file.read().replace(replace_str, '')
         if content:
             try:
-                with open(snoozed_filename, 'w+') as snoozfile:
+                with open(snoozed_filename, 'w+',
+                          encoding='utf-8') as snoozfile:
                     snoozfile.write(content)
             except OSError:
                 print('EX: unable to write ' + snoozed_filename)
 
-    if snooze_actor + ' ' in open(snoozed_filename).read():
+    if snooze_actor + ' ' in open(snoozed_filename, encoding='utf-8').read():
         return True
     return False
 
@@ -1403,10 +1406,11 @@ def person_snooze(base_dir: str, nickname: str, domain: str,
         return
     snoozed_filename = account_dir + '/snoozed.txt'
     if os.path.isfile(snoozed_filename):
-        if snooze_actor + ' ' in open(snoozed_filename).read():
+        if snooze_actor + ' ' in open(snoozed_filename,
+                                      encoding='utf-8').read():
             return
     try:
-        with open(snoozed_filename, 'a+') as snoozed_file:
+        with open(snoozed_filename, 'a+', encoding='utf-8') as snoozed_file:
             snoozed_file.write(snooze_actor + ' ' +
                                str(int(time.time())) + '\n')
     except OSError:
@@ -1424,21 +1428,23 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
     snoozed_filename = account_dir + '/snoozed.txt'
     if not os.path.isfile(snoozed_filename):
         return
-    if snooze_actor + ' ' not in open(snoozed_filename).read():
+    if snooze_actor + ' ' not in open(snoozed_filename,
+                                      encoding='utf-8').read():
         return
     replace_str = None
-    with open(snoozed_filename, 'r') as snoozed_file:
+    with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
         for line in snoozed_file:
             if line.startswith(snooze_actor + ' '):
                 replace_str = line
                 break
     if replace_str:
         content = None
-        with open(snoozed_filename, 'r') as snoozed_file:
+        with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
             content = snoozed_file.read().replace(replace_str, '')
         if content:
             try:
-                with open(snoozed_filename, 'w+') as snoozfile:
+                with open(snoozed_filename, 'w+',
+                          encoding='utf-8') as snoozfile:
                     snoozfile.write(content)
             except OSError:
                 print('EX: unable to write ' + snoozed_filename)
@@ -1457,7 +1463,7 @@ def set_person_notes(base_dir: str, nickname: str, domain: str,
         os.mkdir(notes_dir)
     notes_filename = notes_dir + '/' + handle + '.txt'
     try:
-        with open(notes_filename, 'w+') as notes_file:
+        with open(notes_filename, 'w+', encoding='utf-8') as notes_file:
             notes_file.write(notes)
     except OSError:
         print('EX: unable to write ' + notes_filename)
@@ -1703,7 +1709,7 @@ def get_person_avatar_url(base_dir: str, person_url: str, person_cache: {},
         if ext != 'svg':
             return im_path
         content = ''
-        with open(im_filename, 'r') as fp_im:
+        with open(im_filename, 'r', encoding='utf-8') as fp_im:
             content = fp_im.read()
         if not dangerous_svg(content, False):
             return im_path

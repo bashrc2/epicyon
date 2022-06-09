@@ -165,7 +165,7 @@ def _accept_follow(base_dir: str, message_json: {},
         acct_dir(base_dir, nickname, accepted_domain_full) + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
         if followed_nickname + '@' + followed_domain_full in \
-           open(unfollowed_filename).read():
+           open(unfollowed_filename, encoding='utf-8').read():
             if debug:
                 print('DEBUG: follow accept arrived for ' +
                       nickname + '@' + accepted_domain_full +

@@ -16,10 +16,11 @@ def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     """
     filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filters_filename):
-        if words in open(filters_filename).read():
+        if words in open(filters_filename, encoding='utf-8').read():
             return False
     try:
-        with open(filters_filename, 'a+') as filters_file:
+        with open(filters_filename, 'a+',
+                  encoding='utf-8') as filters_file:
             filters_file.write(words + '\n')
     except OSError:
         print('EX: unable to append filters ' + filters_filename)
@@ -36,10 +37,10 @@ def add_global_filter(base_dir: str, words: str) -> bool:
         return False
     filters_filename = base_dir + '/accounts/filters.txt'
     if os.path.isfile(filters_filename):
-        if words in open(filters_filename).read():
+        if words in open(filters_filename, encoding='utf-8').read():
             return False
     try:
-        with open(filters_filename, 'a+') as filters_file:
+        with open(filters_filename, 'a+', encoding='utf-8') as filters_file:
             filters_file.write(words + '\n')
     except OSError:
         print('EX: unable to append filters ' + filters_filename)
@@ -53,12 +54,12 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
     filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if not os.path.isfile(filters_filename):
         return False
-    if words not in open(filters_filename).read():
+    if words not in open(filters_filename, encoding='utf-8').read():
         return False
     new_filters_filename = filters_filename + '.new'
     try:
-        with open(filters_filename, 'r') as fp_filt:
-            with open(new_filters_filename, 'w+') as fpnew:
+        with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
+            with open(new_filters_filename, 'w+', encoding='utf-8') as fpnew:
                 for line in fp_filt:
                     line = line.replace('\n', '')
                     if line != words:
@@ -78,12 +79,12 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
     filters_filename = base_dir + '/accounts/filters.txt'
     if not os.path.isfile(filters_filename):
         return False
-    if words not in open(filters_filename).read():
+    if words not in open(filters_filename, encoding='utf-8').read():
         return False
     new_filters_filename = filters_filename + '.new'
     try:
-        with open(filters_filename, 'r') as fp_filt:
-            with open(new_filters_filename, 'w+') as fpnew:
+        with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
+            with open(new_filters_filename, 'w+', encoding='utf-8') as fpnew:
                 for line in fp_filt:
                     line = line.replace('\n', '')
                     if line != words:
@@ -118,7 +119,7 @@ def _is_filtered_base(filename: str, content: str) -> bool:
         return False
 
     try:
-        with open(filename, 'r') as fp_filt:
+        with open(filename, 'r', encoding='utf-8') as fp_filt:
             for line in fp_filt:
                 filter_str = line.replace('\n', '').replace('\r', '')
                 if not filter_str:

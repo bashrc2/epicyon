@@ -29,7 +29,7 @@ def get_hashtag_category(base_dir: str, hashtag: str) -> str:
 
     category_str = None
     try:
-        with open(category_filename, 'r') as category_file:
+        with open(category_filename, 'r', encoding='utf-8') as category_file:
             category_str = category_file.read()
     except OSError:
         print('EX: unable to read category ' + category_filename)
@@ -60,7 +60,7 @@ def get_hashtag_categories(base_dir: str,
             hashtag = catfile.split('.')[0]
             if len(hashtag) > MAX_TAG_LENGTH:
                 continue
-            with open(category_filename, 'r') as fp_category:
+            with open(category_filename, 'r', encoding='utf-8') as fp_category:
                 category_str = fp_category.read()
 
                 if not category_str:
@@ -120,7 +120,8 @@ def update_hashtag_categories(base_dir: str) -> None:
 
     # save a list of available categories for quick lookup
     try:
-        with open(category_list_filename, 'w+') as fp_category:
+        with open(category_list_filename, 'w+',
+                  encoding='utf-8') as fp_category:
             fp_category.write(category_list_str)
     except OSError:
         print('EX: unable to write category ' + category_list_filename)
@@ -171,7 +172,7 @@ def set_hashtag_category(base_dir: str, hashtag: str, category: str,
 
     category_written = False
     try:
-        with open(category_filename, 'w+') as fp_category:
+        with open(category_filename, 'w+', encoding='utf-8') as fp_category:
             fp_category.write(category)
             category_written = True
     except OSError as ex:

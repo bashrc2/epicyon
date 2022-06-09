@@ -86,7 +86,7 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
             get_config_param(base_dir, 'instanceTitle')
         if not instance_title:
             instance_title = 'Epicyon'
-        with open(help_filename, 'r') as help_file:
+        with open(help_filename, 'r', encoding='utf-8') as help_file:
             help_text = help_file.read()
             if dangerous_markup(help_text, False):
                 return ''
@@ -512,7 +512,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
     if os.path.isfile(calendar_file):
         new_calendar_event = True
         calendar_image = 'calendar_notify.png'
-        with open(calendar_file, 'r') as calfile:
+        with open(calendar_file, 'r', encoding='utf-8') as calfile:
             calendar_path = calfile.read().replace('##sent##', '')
             calendar_path = calendar_path.replace('\n', '').replace('\r', '')
             if '/calendar' not in calendar_path:
@@ -670,7 +670,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
     follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(follow_requests_filename):
-        with open(follow_requests_filename, 'r') as foll_file:
+        with open(follow_requests_filename, 'r',
+                  encoding='utf-8') as foll_file:
             for line in foll_file:
                 if len(line) > 0:
                     # show follow approvals icon

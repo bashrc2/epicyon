@@ -245,7 +245,7 @@ def _store_last_post_id(base_dir: str, nickname: str, domain: str,
         os.mkdir(lastpost_dir)
     actor_filename = lastpost_dir + '/' + actor.replace('/', '#')
     try:
-        with open(actor_filename, 'w+') as fp_actor:
+        with open(actor_filename, 'w+', encoding='utf-8') as fp_actor:
             fp_actor.write(post_id)
     except OSError:
         print('EX: Unable to write last post id to ' + actor_filename)
@@ -287,7 +287,8 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
         new_swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
         if new_swarm_str:
             try:
-                with open(cached_hashtag_swarm_filename, 'w+') as fp_swarm:
+                with open(cached_hashtag_swarm_filename, 'w+',
+                          encoding='utf-8') as fp_swarm:
                     fp_swarm.write(new_swarm_str)
                     return True
             except OSError:
@@ -343,7 +344,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         hashtag_added = False
         if not os.path.isfile(tags_filename):
             try:
-                with open(tags_filename, 'w+') as tags_file:
+                with open(tags_filename, 'w+', encoding='utf-8') as tags_file:
                     tags_file.write(tag_line)
                     hashtag_added = True
             except OSError:
@@ -351,14 +352,15 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         else:
             content = ''
             try:
-                with open(tags_filename, 'r') as tags_file:
+                with open(tags_filename, 'r', encoding='utf-8') as tags_file:
                     content = tags_file.read()
             except OSError:
                 pass
             if post_url not in content:
                 content = tag_line + content
                 try:
-                    with open(tags_filename, 'w+') as tags_file:
+                    with open(tags_filename, 'w+',
+                              encoding='utf-8') as tags_file:
                         tags_file.write(content)
                         hashtag_added = True
                 except OSError as ex:
@@ -446,7 +448,7 @@ def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
             if not os.path.isfile(filename):
                 print('filename: ' + filename)
                 return False
-            if 'postNickname' in open(filename).read():
+            if 'postNickname' in open(filename, encoding='utf-8').read():
                 print('queue file incorrectly saved to ' + filename)
                 return False
         break
@@ -2384,7 +2386,8 @@ def _receive_announce(recent_posts_cache: {},
                                        theme_name, system_language,
                                        'inbox')
                         try:
-                            with open(post_filename + '.tts', 'w+') as ttsfile:
+                            with open(post_filename + '.tts', 'w+',
+                                      encoding='utf-8') as ttsfile:
                                 ttsfile.write('\n')
                         except OSError:
                             print('EX: unable to write recent post ' +
@@ -2551,18 +2554,22 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
     post_replies_filename = post_filename.replace('.json', '.replies')
     message_id = remove_id_ending(message_json['id'])
     if os.path.isfile(post_replies_filename):
-        num_lines = sum(1 for line in open(post_replies_filename))
+        num_lines = sum(1 for line in open(post_replies_filename,
+                                           encoding='utf-8'))
         if num_lines > max_replies:
             return False
-        if message_id not in open(post_replies_filename).read():
+        if message_id not in open(post_replies_filename,
+                                  encoding='utf-8').read():
             try:
-                with open(post_replies_filename, 'a+') as replies_file:
+                with open(post_replies_filename, 'a+',
+                          encoding='utf-8') as replies_file:
                     replies_file.write(message_id + '\n')
             except OSError:
                 print('EX: unable to append ' + post_replies_filename)
     else:
         try:
-            with open(post_replies_filename, 'w+') as replies_file:
+            with open(post_replies_filename, 'w+',
+                      encoding='utf-8') as replies_file:
                 replies_file.write(message_id + '\n')
         except OSError:
             print('EX: unable to write ' + post_replies_filename)
@@ -2775,7 +2782,7 @@ def _dm_notify(base_dir: str, handle: str, url: str) -> None:
     dm_file = account_dir + '/.newDM'
     if not os.path.isfile(dm_file):
         try:
-            with open(dm_file, 'w+') as fp_dm:
+            with open(dm_file, 'w+', encoding='utf-8') as fp_dm:
                 fp_dm.write(url)
         except OSError:
             print('EX: unable to write ' + dm_file)
@@ -2886,19 +2893,19 @@ def _like_notify(base_dir: str, domain: str, onion_domain: str,
         # was there a previous like notification?
         if os.path.isfile(prev_like_file):
             # is it the same as the current notification ?
-            with open(prev_like_file, 'r') as fp_like:
+            with open(prev_like_file, 'r', encoding='utf-8') as fp_like:
                 prev_like_str = fp_like.read()
                 if prev_like_str == like_str:
                     return
         try:
-            with open(prev_like_file, 'w+') as fp_like:
+            with open(prev_like_file, 'w+', encoding='utf-8') as fp_like:
                 fp_like.write(like_str)
         except OSError:
             print('EX: ERROR: unable to save previous like notification ' +
                   prev_like_file)
 
         try:
-            with open(like_file, 'w+') as fp_like:
+            with open(like_file, 'w+', encoding='utf-8') as fp_like:
                 fp_like.write(like_str)
         except OSError:
             print('EX: ERROR: unable to write like notification file ' +
@@ -2931,7 +2938,7 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
 
     reaction_file = account_dir + '/.newReaction'
     if os.path.isfile(reaction_file):
-        if '##sent##' not in open(reaction_file).read():
+        if '##sent##' not in open(reaction_file, encoding='utf-8').read():
             return
 
     reaction_nickname = get_nickname_from_actor(actor)
@@ -2950,19 +2957,19 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
         # was there a previous reaction notification?
         if os.path.isfile(prev_reaction_file):
             # is it the same as the current notification ?
-            with open(prev_reaction_file, 'r') as fp_react:
+            with open(prev_reaction_file, 'r', encoding='utf-8') as fp_react:
                 prev_reaction_str = fp_react.read()
                 if prev_reaction_str == reaction_str:
                     return
         try:
-            with open(prev_reaction_file, 'w+') as fp_react:
+            with open(prev_reaction_file, 'w+', encoding='utf-8') as fp_react:
                 fp_react.write(reaction_str)
         except OSError:
             print('EX: ERROR: unable to save previous reaction notification ' +
                   prev_reaction_file)
 
         try:
-            with open(reaction_file, 'w+') as fp_react:
+            with open(reaction_file, 'w+', encoding='utf-8') as fp_react:
                 fp_react.write(reaction_str)
         except OSError:
             print('EX: ERROR: unable to write reaction notification file ' +
@@ -2980,12 +2987,12 @@ def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
     notify_file = account_dir + '/.newNotifiedPost'
     if os.path.isfile(notify_file):
         # check that the same notification is not repeatedly sent
-        with open(notify_file, 'r') as fp_notify:
+        with open(notify_file, 'r', encoding='utf-8') as fp_notify:
             existing_notification_message = fp_notify.read()
             if url in existing_notification_message:
                 return
     try:
-        with open(notify_file, 'w+') as fp_notify:
+        with open(notify_file, 'w+', encoding='utf-8') as fp_notify:
             fp_notify.write(url)
     except OSError:
         print('EX: unable to write ' + notify_file)
@@ -3000,7 +3007,7 @@ def _reply_notify(base_dir: str, handle: str, url: str) -> None:
     reply_file = account_dir + '/.newReply'
     if not os.path.isfile(reply_file):
         try:
-            with open(reply_file, 'w+') as fp_reply:
+            with open(reply_file, 'w+', encoding='utf-8') as fp_reply:
                 fp_reply.write(url)
         except OSError:
             print('EX: unable to write ' + reply_file)
@@ -3018,7 +3025,7 @@ def _git_patch_notify(base_dir: str, handle: str,
     subject = subject.replace('[PATCH]', '').strip()
     handle = '@' + from_nickname + '@' + from_domain
     try:
-        with open(patch_file, 'w+') as fp_patch:
+        with open(patch_file, 'w+', encoding='utf-8') as fp_patch:
             fp_patch.write('git ' + handle + ' ' + subject)
     except OSError:
         print('EX: unable to write ' + patch_file)
@@ -3175,7 +3182,7 @@ def inbox_update_index(boxname: str, base_dir: str, handle: str,
     written = False
     if os.path.isfile(index_filename):
         try:
-            with open(index_filename, 'r+') as index_file:
+            with open(index_filename, 'r+', encoding='utf-8') as index_file:
                 content = index_file.read()
                 if destination_filename + '\n' not in content:
                     index_file.seek(0, 0)
@@ -3186,7 +3193,7 @@ def inbox_update_index(boxname: str, base_dir: str, handle: str,
             print('EX: Failed to write entry to index ' + str(ex))
     else:
         try:
-            with open(index_filename, 'w+') as index_file:
+            with open(index_filename, 'w+', encoding='utf-8') as index_file:
                 index_file.write(destination_filename + '\n')
                 written = True
         except OSError as ex:
@@ -3218,13 +3225,15 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
     days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
     # has the value changed?
     if os.path.isfile(last_seen_filename):
-        with open(last_seen_filename, 'r') as last_seen_file:
+        with open(last_seen_filename, 'r',
+                  encoding='utf-8') as last_seen_file:
             days_since_epoch_file = last_seen_file.read()
             if int(days_since_epoch_file) == days_since_epoch:
                 # value hasn't changed, so we can save writing anything to file
                 return
     try:
-        with open(last_seen_filename, 'w+') as last_seen_file:
+        with open(last_seen_filename, 'w+',
+                  encoding='utf-8') as last_seen_file:
             last_seen_file.write(str(days_since_epoch))
     except OSError:
         print('EX: unable to write ' + last_seen_filename)
@@ -4142,7 +4151,8 @@ def _inbox_after_initial(server, inbox_start_time,
                 destination_filename_mitm = \
                     destination_filename.replace('.json', '') + '.mitm'
                 try:
-                    with open(destination_filename_mitm, 'w+') as mitm_file:
+                    with open(destination_filename_mitm, 'w+',
+                              encoding='utf-8') as mitm_file:
                         mitm_file.write('\n')
                 except OSError:
                     print('EX: unable to write ' + destination_filename_mitm)
@@ -4561,12 +4571,13 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
             already_unknown = False
             if os.path.isfile(unknown_contexts_file):
                 if unknown_context in \
-                   open(unknown_contexts_file).read():
+                   open(unknown_contexts_file, encoding='utf-8').read():
                     already_unknown = True
 
             if not already_unknown:
                 try:
-                    with open(unknown_contexts_file, 'a+') as unknown_file:
+                    with open(unknown_contexts_file, 'a+',
+                              encoding='utf-8') as unknown_file:
                         unknown_file.write(unknown_context + '\n')
                 except OSError:
                     print('EX: unable to append ' + unknown_contexts_file)
@@ -4579,7 +4590,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
         already_unknown = False
         if os.path.isfile(unknown_signatures_file):
             if jwebsig_type in \
-               open(unknown_signatures_file).read():
+               open(unknown_signatures_file, encoding='utf-8').read():
                 already_unknown = True
 
         if not already_unknown:
@@ -4818,7 +4829,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                         print('Group cannot follow a group')
                         return False
                     try:
-                        with open(followers_filename, 'r+') as followers_file:
+                        with open(followers_filename, 'r+',
+                                  encoding='utf-8') as followers_file:
                             content = followers_file.read()
                             if approve_handle + '\n' not in content:
                                 followers_file.seek(0, 0)
@@ -4834,7 +4846,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                               str(ex))
             else:
                 try:
-                    with open(followers_filename, 'w+') as followers_file:
+                    with open(followers_filename, 'w+',
+                              encoding='utf-8') as followers_file:
                         followers_file.write(approve_handle + '\n')
                 except OSError:
                     print('EX: unable to write ' + followers_filename)

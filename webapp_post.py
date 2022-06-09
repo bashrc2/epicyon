@@ -302,7 +302,7 @@ def _save_individual_post_as_html_to_cache(base_dir: str,
         os.mkdir(html_post_cache_dir)
 
     try:
-        with open(cached_post_filename, 'w+') as fp_cache:
+        with open(cached_post_filename, 'w+', encoding='utf-8') as fp_cache:
             fp_cache.write(post_html)
             return True
     except Exception as ex:
@@ -1529,7 +1529,8 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
     if os.path.isfile(onion_domains_filename):
         onion_domains_list = []
         try:
-            with open(onion_domains_filename, 'r') as fp_onions:
+            with open(onion_domains_filename, 'r',
+                      encoding='utf-8') as fp_onions:
                 onion_domains_list = fp_onions.readlines()
         except OSError:
             print('EX: unable to load onion domains file ' +
@@ -1808,7 +1809,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                        translate, post_json_object['actor'],
                                        theme_name, system_language,
                                        box_name)
-                        with open(announce_filename + '.tts', 'w+') as ttsfile:
+                        with open(announce_filename + '.tts', 'w+',
+                                  encoding='utf-8') as ttsfile:
                             ttsfile.write('\n')
 
         is_announced = True

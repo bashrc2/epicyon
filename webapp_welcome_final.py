@@ -50,7 +50,7 @@ def html_welcome_final(base_dir: str, nickname: str,
         instance_title = 'Epicyon'
 
     if os.path.isfile(final_filename):
-        with open(final_filename, 'r') as final_file:
+        with open(final_filename, 'r', encoding='utf-8') as final_file:
             final_text = final_file.read()
             final_text = final_text.replace('INSTANCE', instance_title)
             final_text = markdown_to_html(remove_html(final_text))

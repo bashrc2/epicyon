@@ -41,7 +41,8 @@ def import_theme(base_dir: str, filename: str) -> bool:
                   ' missing from imported theme')
             return False
     new_theme_name = None
-    with open(temp_theme_dir + '/name.txt', 'r') as fp_theme:
+    with open(temp_theme_dir + '/name.txt', 'r',
+              encoding='utf-8') as fp_theme:
         new_theme_name = fp_theme.read().replace('\n', '').replace('\r', '')
         if len(new_theme_name) > 20:
             print('WARN: Imported theme name is too long')
@@ -65,7 +66,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
     default_themes_filename = base_dir + '/defaultthemes.txt'
     if os.path.isfile(default_themes_filename):
         if new_theme_name.title() + '\n' in \
-           open(default_themes_filename).read():
+           open(default_themes_filename, encoding='utf-8').read():
             new_theme_name = new_theme_name + '2'
 
     theme_dir = base_dir + '/theme/' + new_theme_name
@@ -349,7 +350,7 @@ def _set_theme_from_dict(base_dir: str, name: str,
         if not os.path.isfile(template_filename):
             continue
 
-        with open(template_filename, 'r') as cssfile:
+        with open(template_filename, 'r', encoding='utf-8') as cssfile:
             css = cssfile.read()
             for param_name, param_value in theme_params.items():
                 if param_name == 'newswire-publish-icon':
@@ -384,7 +385,7 @@ def _set_theme_from_dict(base_dir: str, name: str,
                     continue
                 css = set_css_param(css, param_name, param_value)
             filename = base_dir + '/' + filename
-            with open(filename, 'w+') as cssfile:
+            with open(filename, 'w+', encoding='utf-8') as cssfile:
                 cssfile.write(css)
 
     screen_name = (
@@ -404,10 +405,10 @@ def _set_background_format(base_dir: str, name: str,
     css_filename = base_dir + '/' + background_type + '.css'
     if not os.path.isfile(css_filename):
         return
-    with open(css_filename, 'r') as cssfile:
+    with open(css_filename, 'r', encoding='utf-8') as cssfile:
         css = cssfile.read()
         css = css.replace('background.jpg', 'background.' + extension)
-        with open(css_filename, 'w+') as cssfile2:
+        with open(css_filename, 'w+', encoding='utf-8') as cssfile2:
             cssfile2.write(css)
 
 
@@ -419,18 +420,18 @@ def enable_grayscale(base_dir: str) -> None:
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        with open(template_filename, 'r') as cssfile:
+        with open(template_filename, 'r', encoding='utf-8') as cssfile:
             css = cssfile.read()
             if 'grayscale' not in css:
                 css = \
                     css.replace('body, html {',
                                 'body, html {\n    filter: grayscale(100%);')
                 filename = base_dir + '/' + filename
-                with open(filename, 'w+') as cssfile:
+                with open(filename, 'w+', encoding='utf-8') as cssfile:
                     cssfile.write(css)
     grayscale_filename = base_dir + '/accounts/.grayscale'
     if not os.path.isfile(grayscale_filename):
-        with open(grayscale_filename, 'w+') as grayfile:
+        with open(grayscale_filename, 'w+', encoding='utf-8') as grayfile:
             grayfile.write(' ')
 
 
@@ -442,13 +443,13 @@ def disable_grayscale(base_dir: str) -> None:
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        with open(template_filename, 'r') as cssfile:
+        with open(template_filename, 'r', encoding='utf-8') as cssfile:
             css = cssfile.read()
             if 'grayscale' in css:
                 css = \
                     css.replace('\n    filter: grayscale(100%);', '')
                 filename = base_dir + '/' + filename
-                with open(filename, 'w+') as cssfile:
+                with open(filename, 'w+', encoding='utf-8') as cssfile:
                     cssfile.write(css)
     grayscale_filename = base_dir + '/accounts/.grayscale'
     if os.path.isfile(grayscale_filename):
@@ -467,7 +468,7 @@ def _set_dyslexic_font(base_dir: str) -> bool:
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        with open(template_filename, 'r') as cssfile:
+        with open(template_filename, 'r', encoding='utf-8') as cssfile:
             css = cssfile.read()
             css = \
                 set_css_param(css, "*src",
@@ -475,7 +476,7 @@ def _set_dyslexic_font(base_dir: str) -> bool:
                               "') format('woff2')")
             css = set_css_param(css, "*font-family", "'OpenDyslexic'")
             filename = base_dir + '/' + filename
-            with open(filename, 'w+') as cssfile:
+            with open(filename, 'w+', encoding='utf-8') as cssfile:
                 cssfile.write(css)
     return False
 
@@ -504,7 +505,7 @@ def _set_custom_font(base_dir: str):
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        with open(template_filename, 'r') as cssfile:
+        with open(template_filename, 'r', encoding='utf-8') as cssfile:
             css = cssfile.read()
             css = \
                 set_css_param(css, "*src",
@@ -515,7 +516,7 @@ def _set_custom_font(base_dir: str):
             css = set_css_param(css, "*font-family", "'CustomFont'")
             css = set_css_param(css, "header-font", "'CustomFont'")
             filename = base_dir + '/' + filename
-            with open(filename, 'w+') as cssfile:
+            with open(filename, 'w+', encoding='utf-8') as cssfile:
                 cssfile.write(css)
 
 
@@ -630,7 +631,8 @@ def get_text_mode_banner(base_dir: str) -> str:
     """
     text_mode_banner_filename = base_dir + '/accounts/banner.txt'
     if os.path.isfile(text_mode_banner_filename):
-        with open(text_mode_banner_filename, 'r') as fp_text:
+        with open(text_mode_banner_filename, 'r',
+                  encoding='utf-8') as fp_text:
             banner_str = fp_text.read()
             if banner_str:
                 return banner_str.replace('\n', '<br>')
@@ -644,7 +646,7 @@ def get_text_mode_logo(base_dir: str) -> str:
     if not os.path.isfile(text_mode_logo_filename):
         text_mode_logo_filename = base_dir + '/img/logo.txt'
 
-    with open(text_mode_logo_filename, 'r') as fp_text:
+    with open(text_mode_logo_filename, 'r', encoding='utf-8') as fp_text:
         logo_str = fp_text.read()
         if logo_str:
             return logo_str.replace('\n', '<br>')
@@ -846,7 +848,7 @@ def _set_clear_cache_flag(base_dir: str) -> None:
     if not os.path.isdir(base_dir + '/accounts'):
         return
     flag_filename = base_dir + '/accounts/.clear_cache'
-    with open(flag_filename, 'w+') as fp_flag:
+    with open(flag_filename, 'w+', encoding='utf-8') as fp_flag:
         fp_flag.write('\n')
 
 
@@ -924,7 +926,7 @@ def update_default_themes_list(base_dir: str) -> None:
     """
     theme_names = get_themes_list(base_dir)
     default_themes_filename = base_dir + '/defaultthemes.txt'
-    with open(default_themes_filename, 'w+') as fp_def:
+    with open(default_themes_filename, 'w+', encoding='utf-8') as fp_def:
         for name in theme_names:
             fp_def.write(name + '\n')
 
@@ -938,7 +940,7 @@ def scan_themes_for_scripts(base_dir: str) -> bool:
                 continue
             svg_filename = os.path.join(subdir, fname)
             content = ''
-            with open(svg_filename, 'r') as fp_svg:
+            with open(svg_filename, 'r', encoding='utf-8') as fp_svg:
                 content = fp_svg.read()
             svg_dangerous = dangerous_svg(content, False)
             if svg_dangerous:

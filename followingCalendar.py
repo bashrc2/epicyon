@@ -48,17 +48,20 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
         # create a new calendar file from the following file
         following_handles = None
         try:
-            with open(following_filename, 'r') as following_file:
+            with open(following_filename, 'r',
+                      encoding='utf-8') as following_file:
                 following_handles = following_file.read()
         except OSError:
             print('EX: receiving_calendar_events ' + following_filename)
         if following_handles:
             try:
-                with open(calendar_filename, 'w+') as fp_cal:
+                with open(calendar_filename, 'w+',
+                          encoding='utf-8') as fp_cal:
                     fp_cal.write(following_handles)
             except OSError:
                 print('EX: receiving_calendar_events 2 ' + calendar_filename)
-    return handle + '\n' in open(calendar_filename).read()
+    return handle + '\n' in open(calendar_filename,
+                                 encoding='utf-8').read()
 
 
 def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
@@ -79,7 +82,8 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
     handle = following_nickname + '@' + following_domain
 
     # check that you are following this handle
-    if handle + '\n' not in open(following_filename).read():
+    if handle + '\n' not in open(following_filename,
+                                 encoding='utf-8').read():
         print('WARN: ' + handle + ' is not in ' + following_filename)
         return
 
@@ -92,7 +96,8 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(calendar_filename):
         print('Calendar file exists')
         try:
-            with open(calendar_filename, 'r') as calendar_file:
+            with open(calendar_filename, 'r',
+                      encoding='utf-8') as calendar_file:
                 following_handles = calendar_file.read()
         except OSError:
             print('EX: _receive_calendar_events ' + calendar_filename)
@@ -101,13 +106,15 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
         print('Creating calendar file ' + calendar_filename)
         following_handles = ''
         try:
-            with open(following_filename, 'r') as following_file:
+            with open(following_filename, 'r',
+                      encoding='utf-8') as following_file:
                 following_handles = following_file.read()
         except OSError:
             print('EX: _receive_calendar_events 2 ' + calendar_filename)
         if add:
             try:
-                with open(calendar_filename, 'w+') as fp_cal:
+                with open(calendar_filename, 'w+',
+                          encoding='utf-8') as fp_cal:
                     fp_cal.write(following_handles + handle + '\n')
             except OSError:
                 print('EX: unable to write ' + calendar_filename)
@@ -121,7 +128,8 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
         # remove from calendar file
         following_handles = following_handles.replace(handle + '\n', '')
         try:
-            with open(calendar_filename, 'w+') as fp_cal:
+            with open(calendar_filename, 'w+',
+                      encoding='utf-8') as fp_cal:
                 fp_cal.write(following_handles)
         except OSError:
             print('EX: _receive_calendar_events 3 ' + calendar_filename)
@@ -132,7 +140,8 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
             # append to the list of handles
             following_handles += handle + '\n'
             try:
-                with open(calendar_filename, 'w+') as fp_cal:
+                with open(calendar_filename, 'w+',
+                          encoding='utf-8') as fp_cal:
                     fp_cal.write(following_handles)
             except OSError:
                 print('EX: _receive_calendar_events 4 ' + calendar_filename)

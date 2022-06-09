@@ -394,7 +394,7 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     suspended_filename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspended_filename):
-        with open(suspended_filename, 'r') as fp_sus:
+        with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
             suspended_str = fp_sus.read()
             info_form += '<div class="container">\n'
             info_form += '  <br><b>' + \
@@ -410,7 +410,7 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     blocking_filename = base_dir + '/accounts/blocking.txt'
     if os.path.isfile(blocking_filename):
-        with open(blocking_filename, 'r') as fp_block:
+        with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
             blocked_lines = fp_block.readlines()
             blocked_str = ''
             if blocked_lines:
@@ -436,7 +436,7 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     filters_filename = base_dir + '/accounts/filters.txt'
     if os.path.isfile(filters_filename):
-        with open(filters_filename, 'r') as fp_filt:
+        with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
             filtered_str = fp_filt.read()
             info_form += '<div class="container">\n'
             info_form += \

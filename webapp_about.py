@@ -32,7 +32,8 @@ def html_about(css_cache: {}, base_dir: str, http_prefix: str,
 
     about_text = 'Information about this instance goes here.'
     if os.path.isfile(base_dir + '/accounts/about.md'):
-        with open(base_dir + '/accounts/about.md', 'r') as fp_about:
+        with open(base_dir + '/accounts/about.md', 'r',
+                  encoding='utf-8') as fp_about:
             about_text = markdown_to_html(fp_about.read())
 
     about_form = ''

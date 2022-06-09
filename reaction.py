@@ -452,7 +452,8 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
     common_reactions = None
     if os.path.isfile(common_reactions_filename):
         try:
-            with open(common_reactions_filename, 'r') as fp_react:
+            with open(common_reactions_filename, 'r',
+                      encoding='utf-8') as fp_react:
                 common_reactions = fp_react.readlines()
         except OSError:
             print('EX: unable to load common reactions file')
@@ -476,7 +477,8 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
             new_common_reactions.append(str(1).zfill(16) + ' ' + emoji_content)
         new_common_reactions.sort(reverse=True)
         try:
-            with open(common_reactions_filename, 'w+') as fp_react:
+            with open(common_reactions_filename, 'w+',
+                      encoding='utf-8') as fp_react:
                 for line in new_common_reactions:
                     fp_react.write(line + '\n')
         except OSError:
@@ -485,7 +487,8 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
     else:
         line = str(1).zfill(16) + ' ' + emoji_content + '\n'
         try:
-            with open(common_reactions_filename, 'w+') as fp_react:
+            with open(common_reactions_filename, 'w+',
+                      encoding='utf-8') as fp_react:
                 fp_react.write(line)
         except OSError:
             print('EX: error writing common reactions 2')

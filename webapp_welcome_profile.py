@@ -57,7 +57,7 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
         instance_title = 'Epicyon'
 
     if os.path.isfile(profile_filename):
-        with open(profile_filename, 'r') as fp_pro:
+        with open(profile_filename, 'r', encoding='utf-8') as fp_pro:
             profile_text = fp_pro.read()
             profile_text = profile_text.replace('INSTANCE', instance_title)
             profile_text = markdown_to_html(remove_html(profile_text))

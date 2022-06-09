@@ -34,7 +34,7 @@ def _move_following_handles_for_account(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(following_filename):
         return ctr
-    with open(following_filename, 'r') as fp_foll:
+    with open(following_filename, 'r', encoding='utf-8') as fp_foll:
         following_handles = fp_foll.readlines()
         for follow_handle in following_handles:
             follow_handle = follow_handle.strip("\n").strip("\r")
@@ -129,7 +129,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
-        with open(following_filename, 'r') as foll1:
+        with open(following_filename, 'r', encoding='utf-8') as foll1:
             following_handles = foll1.readlines()
 
             moved_to_handle = moved_to_nickname + '@' + moved_to_domain_full
@@ -139,7 +139,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
                 acct_dir(base_dir, nickname, domain) + '/refollow.txt'
 
             # unfollow the old handle
-            with open(following_filename, 'w+') as foll2:
+            with open(following_filename, 'w+', encoding='utf-8') as foll2:
                 for follow_handle in following_handles:
                     if follow_handle.strip("\n").strip("\r").lower() != \
                        handle_lower:
@@ -157,22 +157,24 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
 
                         # save the new handles to the refollow list
                         if os.path.isfile(refollow_filename):
-                            with open(refollow_filename, 'a+') as refoll:
+                            with open(refollow_filename, 'a+',
+                                      encoding='utf-8') as refoll:
                                 refoll.write(moved_to_handle + '\n')
                         else:
-                            with open(refollow_filename, 'w+') as refoll:
+                            with open(refollow_filename, 'w+',
+                                      encoding='utf-8') as refoll:
                                 refoll.write(moved_to_handle + '\n')
 
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
-        with open(followers_filename, 'r') as foll3:
+        with open(followers_filename, 'r', encoding='utf-8') as foll3:
             follower_handles = foll3.readlines()
 
             handle_lower = handle.lower()
 
             # remove followers who have moved
-            with open(followers_filename, 'w+') as foll4:
+            with open(followers_filename, 'w+', encoding='utf-8') as foll4:
                 for follower_handle in follower_handles:
                     if follower_handle.strip("\n").strip("\r").lower() != \
                        handle_lower:

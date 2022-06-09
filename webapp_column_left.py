@@ -218,7 +218,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     links_file_contains_entries = False
     links_list = None
     if os.path.isfile(links_filename):
-        with open(links_filename, 'r') as fp_links:
+        with open(links_filename, 'r', encoding='utf-8') as fp_links:
             links_list = fp_links.readlines()
 
     if not front_page:

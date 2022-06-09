@@ -45,7 +45,7 @@ def get_broken_link_substitute() -> str:
 def html_following_list(base_dir: str, following_filename: str) -> str:
     """Returns a list of handles being followed
     """
-    with open(following_filename, 'r') as following_file:
+    with open(following_filename, 'r', encoding='utf-8') as following_file:
         msg = following_file.read()
         following_list = msg.split('\n')
         following_list.sort()
@@ -362,7 +362,7 @@ def scheduled_posts_exist(base_dir: str, nickname: str, domain: str) -> bool:
         acct_dir(base_dir, nickname, domain) + '/schedule.index'
     if not os.path.isfile(schedule_index_filename):
         return False
-    if '#users#' in open(schedule_index_filename).read():
+    if '#users#' in open(schedule_index_filename, encoding='utf-8').read():
         return True
     return False
 
@@ -578,7 +578,7 @@ def get_pwa_theme_colors(css_filename: str) -> (str, str):
         return pwa_theme_color, pwa_theme_background_color
 
     css_str = ''
-    with open(css_filename, 'r') as fp_css:
+    with open(css_filename, 'r', encoding='utf-8') as fp_css:
         css_str = fp_css.read()
 
     pwa_theme_color = \
@@ -963,7 +963,7 @@ def load_individual_post_as_html_from_cache(base_dir: str,
     tries = 0
     while tries < 3:
         try:
-            with open(cached_post_filename, 'r') as file:
+            with open(cached_post_filename, 'r', encoding='utf-8') as file:
                 post_html = file.read()
                 break
         except Exception as ex:
@@ -1731,7 +1731,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
         return ''
     common_emoji = None
     try:
-        with open(common_emoji_filename, 'r') as fp_emoji:
+        with open(common_emoji_filename, 'r', encoding='utf-8') as fp_emoji:
             common_emoji = fp_emoji.readlines()
     except OSError:
         print('EX: html_common_emoji unable to load file')

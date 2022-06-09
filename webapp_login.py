@@ -113,7 +113,8 @@ def html_login(css_cache: {}, translate: {},
             '</p>'
     if os.path.isfile(base_dir + '/accounts/login.txt'):
         # custom login message
-        with open(base_dir + '/accounts/login.txt', 'r') as file:
+        with open(base_dir + '/accounts/login.txt', 'r',
+                  encoding='utf-8') as file:
             login_text = '<p class="login-text">' + file.read() + '</p>'
 
     css_filename = base_dir + '/epicyon-login.css'

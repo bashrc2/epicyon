@@ -38,7 +38,7 @@ def _get_git_project_name(base_dir: str, nickname: str, domain: str,
         return None
     subject_line_words = subject.lower().split(' ')
     for word in subject_line_words:
-        if word in open(git_projects_filename).read():
+        if word in open(git_projects_filename, encoding='utf-8').read():
             return word
     return None
 
@@ -208,11 +208,12 @@ def receive_git_patch(base_dir: str, nickname: str, domain: str,
         _git_add_from_handle(patch_str,
                              '@' + from_nickname + '@' + from_domain)
     try:
-        with open(patch_filename, 'w+') as patch_file:
+        with open(patch_filename, 'w+', encoding='utf-8') as patch_file:
             patch_file.write(patch_str)
             patch_notify_filename = \
                 acct_dir(base_dir, nickname, domain) + '/.newPatchContent'
-            with open(patch_notify_filename, 'w+') as patch_file:
+            with open(patch_notify_filename, 'w+',
+                      encoding='utf-8') as patch_file:
                 patch_file.write(patch_str)
                 return True
     except OSError as ex:

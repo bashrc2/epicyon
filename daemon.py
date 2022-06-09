@@ -510,7 +510,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if os.path.isfile(votes_filename):
             # have we already voted on this?
-            if message_id in open(votes_filename).read():
+            if message_id in open(votes_filename, encoding='utf-8').read():
                 print('Already voted on message ' + message_id)
                 return
 
@@ -580,7 +580,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.debug)
                         # record the vote
                         try:
-                            with open(votes_filename, 'a+') as votes_file:
+                            with open(votes_filename, 'a+',
+                                      encoding='utf-8') as votes_file:
                                 votes_file.write(message_id + '\n')
                         except OSError:
                             print('EX: unable to write vote ' +
@@ -892,7 +893,8 @@ class PubServer(BaseHTTPRequestHandler):
         etag = None
         if os.path.isfile(media_filename + '.etag'):
             try:
-                with open(media_filename + '.etag', 'r') as efile:
+                with open(media_filename + '.etag', 'r',
+                          encoding='utf-8') as efile:
                     etag = efile.read()
             except OSError:
                 print('EX: _set_headers_etag ' +
@@ -900,7 +902,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not etag:
             etag = md5(data).hexdigest()  # nosec
             try:
-                with open(media_filename + '.etag', 'w+') as efile:
+                with open(media_filename + '.etag', 'w+',
+                          encoding='utf-8') as efile:
                     efile.write(etag)
             except OSError:
                 print('EX: _set_headers_etag ' +
@@ -926,7 +929,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # load the etag from file
                 curr_etag = ''
                 try:
-                    with open(media_filename + '.etag', 'r') as efile:
+                    with open(media_filename + '.etag', 'r',
+                              encoding='utf-8') as efile:
                         curr_etag = efile.read()
                 except OSError:
                     print('EX: _etag_exists unable to read ' +
@@ -1953,9 +1957,9 @@ class PubServer(BaseHTTPRequestHandler):
                         # to be authorized to use an account you don't own
                         if '/' + nickname + '/' in self.path:
                             return True
-                        elif '/' + nickname + '?' in self.path:
+                        if '/' + nickname + '?' in self.path:
                             return True
-                        elif self.path.endswith('/' + nickname):
+                        if self.path.endswith('/' + nickname):
                             return True
                         if self.server.debug:
                             print('AUTH: nickname ' + nickname +
@@ -2128,14 +2132,16 @@ class PubServer(BaseHTTPRequestHandler):
                 salt = create_password(32)
                 if os.path.isfile(salt_filename):
                     try:
-                        with open(salt_filename, 'r') as fp_salt:
+                        with open(salt_filename, 'r',
+                                  encoding='utf-8') as fp_salt:
                             salt = fp_salt.read()
                     except OSError as ex:
                         print('EX: Unable to read salt for ' +
                               login_nickname + ' ' + str(ex))
                 else:
                     try:
-                        with open(salt_filename, 'w+') as fp_salt:
+                        with open(salt_filename, 'w+',
+                                  encoding='utf-8') as fp_salt:
                             fp_salt.write(salt)
                     except OSError as ex:
                         print('EX: Unable to save salt for ' +
@@ -2149,7 +2155,8 @@ class PubServer(BaseHTTPRequestHandler):
                     base_dir + '/accounts/' + \
                     login_handle + '/.token'
                 try:
-                    with open(token_filename, 'w+') as fp_tok:
+                    with open(token_filename, 'w+',
+                              encoding='utf-8') as fp_tok:
                         fp_tok.write(token)
                 except OSError as ex:
                     print('EX: Unable to save token for ' +
@@ -2960,7 +2967,8 @@ class PubServer(BaseHTTPRequestHandler):
                         feat_filename = features_blocked_filename
                         feat_written = False
                         try:
-                            with open(feat_filename, 'w+') as nofile:
+                            with open(feat_filename, 'w+',
+                                      encoding='utf-8') as nofile:
                                 nofile.write('\n')
                                 feat_written = True
                         except OSError as ex:
@@ -3004,7 +3012,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isdir(account_dir):
                         nw_filename = newswire_mod_filename
                         try:
-                            with open(nw_filename, 'w+') as modfile:
+                            with open(nw_filename, 'w+',
+                                      encoding='utf-8') as modfile:
                                 modfile.write('\n')
                         except OSError:
                             print('EX: unable to write ' + nw_filename)
@@ -4781,7 +4790,8 @@ class PubServer(BaseHTTPRequestHandler):
                             links_str += '\n'
                     links_str += fields['newColLink'] + '\n'
                 try:
-                    with open(links_filename, 'w+') as linksfile:
+                    with open(links_filename, 'w+',
+                              encoding='utf-8') as linksfile:
                         linksfile.write(links_str)
                 except OSError:
                     print('EX: _links_update unable to write ' +
@@ -4791,7 +4801,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # the text area is empty but there is a new link added
                     links_str = fields['newColLink'] + '\n'
                     try:
-                        with open(links_filename, 'w+') as linksfile:
+                        with open(links_filename, 'w+',
+                                  encoding='utf-8') as linksfile:
                             linksfile.write(links_str)
                     except OSError:
                         print('EX: _links_update unable to write ' +
@@ -4812,7 +4823,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if not dangerous_markup(about_str,
                                             allow_local_network_access):
                         try:
-                            with open(about_filename, 'w+') as aboutfile:
+                            with open(about_filename, 'w+',
+                                      encoding='utf-8') as aboutfile:
                                 aboutfile.write(about_str)
                         except OSError:
                             print('EX: unable to write about ' +
@@ -4830,7 +4842,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if not dangerous_markup(tos_str,
                                             allow_local_network_access):
                         try:
-                            with open(tos_filename, 'w+') as tosfile:
+                            with open(tos_filename, 'w+',
+                                      encoding='utf-8') as tosfile:
                                 tosfile.write(tos_str)
                         except OSError:
                             print('EX: unable to write TOS ' + tos_filename)
@@ -5024,7 +5037,8 @@ class PubServer(BaseHTTPRequestHandler):
                             newswire_str += '\n'
                     newswire_str += fields['newNewswireFeed'] + '\n'
                 try:
-                    with open(newswire_filename, 'w+') as newsfile:
+                    with open(newswire_filename, 'w+',
+                              encoding='utf-8') as newsfile:
                         newsfile.write(newswire_str)
                 except OSError:
                     print('EX: unable to write ' + newswire_filename)
@@ -5033,7 +5047,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # the text area is empty but there is a new feed added
                     newswire_str = fields['newNewswireFeed'] + '\n'
                     try:
-                        with open(newswire_filename, 'w+') as newsfile:
+                        with open(newswire_filename, 'w+',
+                                  encoding='utf-8') as newsfile:
                             newsfile.write(newswire_str)
                     except OSError:
                         print('EX: unable to write ' + newswire_filename)
@@ -5052,7 +5067,8 @@ class PubServer(BaseHTTPRequestHandler):
                 'news@' + domain + '/filters.txt'
             if fields.get('filteredWordsNewswire'):
                 try:
-                    with open(filter_newswire_filename, 'w+') as filterfile:
+                    with open(filter_newswire_filename, 'w+',
+                              encoding='utf-8') as filterfile:
                         filterfile.write(fields['filteredWordsNewswire'])
                 except OSError:
                     print('EX: unable to write ' + filter_newswire_filename)
@@ -5069,7 +5085,8 @@ class PubServer(BaseHTTPRequestHandler):
                 base_dir + '/accounts/hashtagrules.txt'
             if fields.get('hashtagRulesList'):
                 try:
-                    with open(hashtag_rules_filename, 'w+') as rulesfile:
+                    with open(hashtag_rules_filename, 'w+',
+                              encoding='utf-8') as rulesfile:
                         rulesfile.write(fields['hashtagRulesList'])
                 except OSError:
                     print('EX: unable to write ' + hashtag_rules_filename)
@@ -5088,7 +5105,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if not newswire_trusted.endswith('\n'):
                     newswire_trusted += '\n'
                 try:
-                    with open(newswire_tusted_filename, 'w+') as trustfile:
+                    with open(newswire_tusted_filename, 'w+',
+                              encoding='utf-8') as trustfile:
                         trustfile.write(newswire_trusted)
                 except OSError:
                     print('EX: unable to write ' + newswire_tusted_filename)
@@ -5188,7 +5206,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # save citations dates, so that they can be added when
                 # reloading the newblog screen
                 try:
-                    with open(citations_filename, 'w+') as citfile:
+                    with open(citations_filename, 'w+',
+                              encoding='utf-8') as citfile:
                         citfile.write(citations_str)
                 except OSError:
                     print('EX: unable to write ' + citations_filename)
@@ -6315,8 +6334,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     # if the list was given as comma separated
                                     mods = fields['moderators'].split(',')
                                     try:
-                                        with open(moderators_file,
-                                                  'w+') as modfile:
+                                        with open(moderators_file, 'w+',
+                                                  encoding='utf-8') as modfile:
                                             for mod_nick in mods:
                                                 mod_nick = mod_nick.strip()
                                                 mod_dir = base_dir + \
@@ -6343,8 +6362,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     # nicknames on separate lines
                                     mods = fields['moderators'].split('\n')
                                     try:
-                                        with open(moderators_file,
-                                                  'w+') as modfile:
+                                        with open(moderators_file, 'w+',
+                                                  encoding='utf-8') as modfile:
                                             for mod_nick in mods:
                                                 mod_nick = mod_nick.strip()
                                                 mod_dir = \
@@ -6447,8 +6466,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     # if the list was given as comma separated
                                     eds = fields['counselors'].split(',')
                                     try:
-                                        with open(counselors_file,
-                                                  'w+') as edfile:
+                                        with open(counselors_file, 'w+',
+                                                  encoding='utf-8') as edfile:
                                             for ed_nick in eds:
                                                 ed_nick = ed_nick.strip()
                                                 ed_dir = base_dir + \
@@ -6475,8 +6494,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     # nicknames on separate lines
                                     eds = fields['counselors'].split('\n')
                                     try:
-                                        with open(counselors_file,
-                                                  'w+') as edfile:
+                                        with open(counselors_file, 'w+',
+                                                  encoding='utf-8') as edfile:
                                             for ed_nick in eds:
                                                 ed_nick = ed_nick.strip()
                                                 ed_dir = \
@@ -6515,7 +6534,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     # if the list was given as comma separated
                                     eds = fields['artists'].split(',')
                                     try:
-                                        with open(artists_file, 'w+') as edfil:
+                                        with open(artists_file, 'w+',
+                                                  encoding='utf-8') as edfil:
                                             for ed_nick in eds:
                                                 ed_nick = ed_nick.strip()
                                                 ed_dir = base_dir + \
@@ -6540,7 +6560,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     # nicknames on separate lines
                                     eds = fields['artists'].split('\n')
                                     try:
-                                        with open(artists_file, 'w+') as edfil:
+                                        with open(artists_file, 'w+',
+                                                  encoding='utf-8') as edfil:
                                             for ed_nick in eds:
                                                 ed_nick = ed_nick.strip()
                                                 ed_dir = \
@@ -6655,7 +6676,8 @@ class PubServer(BaseHTTPRequestHandler):
                         # initial default setting created via
                         # the welcome screen
                         try:
-                            with open(follow_dms_filename, 'w+') as ffile:
+                            with open(follow_dms_filename, 'w+',
+                                      encoding='utf-8') as ffile:
                                 ffile.write('\n')
                         except OSError:
                             print('EX: unable to write follow DMs ' +
@@ -6667,8 +6689,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['followDMs'] == 'on':
                                 follow_dms_active = True
                                 try:
-                                    with open(follow_dms_filename,
-                                              'w+') as ffile:
+                                    with open(follow_dms_filename, 'w+',
+                                              encoding='utf-8') as ffile:
                                         ffile.write('\n')
                                 except OSError:
                                     print('EX: unable to write follow DMs 2 ' +
@@ -6691,8 +6713,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['removeTwitter'] == 'on':
                             remove_twitter_active = True
                             try:
-                                with open(remove_twitter_filename,
-                                          'w+') as rfile:
+                                with open(remove_twitter_filename, 'w+',
+                                          encoding='utf-8') as rfile:
                                     rfile.write('\n')
                             except OSError:
                                 print('EX: unable to write remove twitter ' +
@@ -6718,7 +6740,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['hideLikeButton'] == 'on':
                             hide_like_button_active = True
                             try:
-                                with open(hide_like_button_file, 'w+') as rfil:
+                                with open(hide_like_button_file, 'w+',
+                                          encoding='utf-8') as rfil:
                                     rfil.write('\n')
                             except OSError:
                                 print('EX: unable to write hide like ' +
@@ -6752,8 +6775,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['hideReactionButton'] == 'on':
                             hide_reaction_button_active = True
                             try:
-                                with open(hide_reaction_button_file,
-                                          'w+') as rfile:
+                                with open(hide_reaction_button_file, 'w+',
+                                          encoding='utf-8') as rfile:
                                     rfile.write('\n')
                             except OSError:
                                 print('EX: unable to write hide reaction ' +
@@ -6785,8 +6808,8 @@ class PubServer(BaseHTTPRequestHandler):
                             bold_reading = True
                             self.server.bold_reading[nickname] = True
                             try:
-                                with open(bold_reading_filename,
-                                          'w+') as rfile:
+                                with open(bold_reading_filename, 'w+',
+                                          encoding='utf-8') as rfile:
                                     rfile.write('\n')
                             except OSError:
                                 print('EX: unable to write bold reading ' +
@@ -6806,7 +6829,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if on_final_welcome_screen:
                         # default setting from welcome screen
                         try:
-                            with open(notify_likes_filename, 'w+') as rfile:
+                            with open(notify_likes_filename, 'w+',
+                                      encoding='utf-8') as rfile:
                                 rfile.write('\n')
                         except OSError:
                             print('EX: unable to write notify likes ' +
@@ -6819,8 +6843,8 @@ class PubServer(BaseHTTPRequestHandler):
                                not hide_like_button_active:
                                 notify_likes_active = True
                                 try:
-                                    with open(notify_likes_filename,
-                                              'w+') as rfile:
+                                    with open(notify_likes_filename, 'w+',
+                                              encoding='utf-8') as rfile:
                                         rfile.write('\n')
                                 except OSError:
                                     print('EX: unable to write notify likes ' +
@@ -6841,7 +6865,8 @@ class PubServer(BaseHTTPRequestHandler):
                         # default setting from welcome screen
                         notify_react_filename = notify_reactions_filename
                         try:
-                            with open(notify_react_filename, 'w+') as rfile:
+                            with open(notify_react_filename, 'w+',
+                                      encoding='utf-8') as rfile:
                                 rfile.write('\n')
                         except OSError:
                             print('EX: unable to write notify reactions ' +
@@ -6854,8 +6879,8 @@ class PubServer(BaseHTTPRequestHandler):
                                not hide_reaction_button_active:
                                 notify_reactions_active = True
                                 try:
-                                    with open(notify_reactions_filename,
-                                              'w+') as rfile:
+                                    with open(notify_reactions_filename, 'w+',
+                                              encoding='utf-8') as rfile:
                                         rfile.write('\n')
                                 except OSError:
                                     print('EX: unable to write ' +
@@ -6945,7 +6970,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/filters.txt'
                     if fields.get('filteredWords'):
                         try:
-                            with open(filter_filename, 'w+') as filterfile:
+                            with open(filter_filename, 'w+',
+                                      encoding='utf-8') as filterfile:
                                 filterfile.write(fields['filteredWords'])
                         except OSError:
                             print('EX: unable to write filter ' +
@@ -6965,7 +6991,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/filters_bio.txt'
                     if fields.get('filteredWordsBio'):
                         try:
-                            with open(filter_bio_filename, 'w+') as filterfile:
+                            with open(filter_bio_filename, 'w+',
+                                      encoding='utf-8') as filterfile:
                                 filterfile.write(fields['filteredWordsBio'])
                         except OSError:
                             print('EX: unable to write bio filter ' +
@@ -6985,7 +7012,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/replacewords.txt'
                     if fields.get('switchwords'):
                         try:
-                            with open(switch_filename, 'w+') as switchfile:
+                            with open(switch_filename, 'w+',
+                                      encoding='utf-8') as switchfile:
                                 switchfile.write(fields['switchwords'])
                         except OSError:
                             print('EX: unable to write switches ' +
@@ -7005,7 +7033,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/autotags.txt'
                     if fields.get('autoTags'):
                         try:
-                            with open(auto_tags_filename, 'w+') as autofile:
+                            with open(auto_tags_filename, 'w+',
+                                      encoding='utf-8') as autofile:
                                 autofile.write(fields['autoTags'])
                         except OSError:
                             print('EX: unable to write auto tags ' +
@@ -7025,7 +7054,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/autocw.txt'
                     if fields.get('autoCW'):
                         try:
-                            with open(auto_cw_filename, 'w+') as auto_cw_file:
+                            with open(auto_cw_filename, 'w+',
+                                      encoding='utf-8') as auto_cw_file:
                                 auto_cw_file.write(fields['autoCW'])
                         except OSError:
                             print('EX: unable to write auto CW ' +
@@ -7045,7 +7075,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/blocking.txt'
                     if fields.get('blocked'):
                         try:
-                            with open(blocked_filename, 'w+') as blockedfile:
+                            with open(blocked_filename, 'w+',
+                                      encoding='utf-8') as blockedfile:
                                 blockedfile.write(fields['blocked'])
                         except OSError:
                             print('EX: unable to write blocked accounts ' +
@@ -7067,8 +7098,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/dmAllowedinstances.txt'
                     if fields.get('dmAllowedInstances'):
                         try:
-                            with open(dm_allowed_instances_filename,
-                                      'w+') as afile:
+                            with open(dm_allowed_instances_filename, 'w+',
+                                      encoding='utf-8') as afile:
                                 afile.write(fields['dmAllowedInstances'])
                         except OSError:
                             print('EX: unable to write allowed DM instances ' +
@@ -7090,7 +7121,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('allowedInstances'):
                         inst_filename = allowed_instances_filename
                         try:
-                            with open(inst_filename, 'w+') as afile:
+                            with open(inst_filename, 'w+',
+                                      encoding='utf-8') as afile:
                                 afile.write(fields['allowedInstances'])
                         except OSError:
                             print('EX: unable to write allowed instances ' +
@@ -7173,8 +7205,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('ptInstances'):
                             self.server.peertube_instances.clear()
                             try:
-                                with open(peertube_instances_file,
-                                          'w+') as afile:
+                                with open(peertube_instances_file, 'w+',
+                                          encoding='utf-8') as afile:
                                     afile.write(fields['ptInstances'])
                             except OSError:
                                 print('EX: unable to write peertube ' +
@@ -7205,7 +7237,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/gitprojects.txt'
                     if fields.get('gitProjects'):
                         try:
-                            with open(git_projects_filename, 'w+') as afile:
+                            with open(git_projects_filename, 'w+',
+                                      encoding='utf-8') as afile:
                                 afile.write(fields['gitProjects'].lower())
                         except OSError:
                             print('EX: unable to write git ' +
@@ -11133,7 +11166,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             ssml_str = None
             try:
-                with open(ssml_filename, 'r') as fp_ssml:
+                with open(ssml_filename, 'r', encoding='utf-8') as fp_ssml:
                     ssml_str = fp_ssml.read()
             except OSError:
                 pass
@@ -14337,12 +14370,12 @@ class PubServer(BaseHTTPRequestHandler):
         """
         image_extensions = get_image_extensions()
         for ext in image_extensions:
-            for bg in ('follow', 'options', 'login', 'welcome'):
+            for bg_im in ('follow', 'options', 'login', 'welcome'):
                 # follow screen background image
-                if path.endswith('/' + bg + '-background.' + ext):
+                if path.endswith('/' + bg_im + '-background.' + ext):
                     bg_filename = \
                         base_dir + '/accounts/' + \
-                        bg + '-background.' + ext
+                        bg_im + '-background.' + ext
                     if os.path.isfile(bg_filename):
                         if self._etag_exists(bg_filename):
                             # The file has not changed
@@ -17503,13 +17536,13 @@ class PubServer(BaseHTTPRequestHandler):
                 in_reply_to_url = self.path.split('?replyto=')[1]
                 if '?' in in_reply_to_url:
                     mentions_list = in_reply_to_url.split('?')
-                    for m in mentions_list:
-                        if m.startswith('mention='):
-                            reply_handle = m.replace('mention=', '')
+                    for ment in mentions_list:
+                        if ment.startswith('mention='):
+                            reply_handle = ment.replace('mention=', '')
                             if reply_handle not in reply_to_list:
                                 reply_to_list.append(reply_handle)
-                        if m.startswith('page='):
-                            reply_page_str = m.replace('page=', '')
+                        if ment.startswith('page='):
+                            reply_page_str = ment.replace('page=', '')
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
 #                        if m.startswith('actor='):
@@ -17524,13 +17557,13 @@ class PubServer(BaseHTTPRequestHandler):
                 in_reply_to_url = self.path.split('?replyunlisted=')[1]
                 if '?' in in_reply_to_url:
                     mentions_list = in_reply_to_url.split('?')
-                    for m in mentions_list:
-                        if m.startswith('mention='):
-                            reply_handle = m.replace('mention=', '')
+                    for ment in mentions_list:
+                        if ment.startswith('mention='):
+                            reply_handle = ment.replace('mention=', '')
                             if reply_handle not in reply_to_list:
                                 reply_to_list.append(reply_handle)
-                        if m.startswith('page='):
-                            reply_page_str = m.replace('page=', '')
+                        if ment.startswith('page='):
+                            reply_page_str = ment.replace('page=', '')
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
                     in_reply_to_url = mentions_list[0]
@@ -18800,7 +18833,8 @@ class PubServer(BaseHTTPRequestHandler):
                     acct_dir(self.server.base_dir,
                              nickname, self.server.domain) + '/.lastUsed'
                 try:
-                    with open(last_used_filename, 'w+') as lastfile:
+                    with open(last_used_filename, 'w+',
+                              encoding='utf-8') as lastfile:
                         lastfile.write(str(int(time.time())))
                 except OSError:
                     print('EX: _receive_new_post_process unable to write ' +

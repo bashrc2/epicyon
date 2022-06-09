@@ -291,7 +291,7 @@ def _indicate_new_share_available(base_dir: str, http_prefix: str,
             local_actor = \
                 local_actor_url(http_prefix, account_nickname, domain_full)
             try:
-                with open(new_share_file, 'w+') as fp_new:
+                with open(new_share_file, 'w+', encoding='utf-8') as fp_new:
                     if shares_file_type == 'shares':
                         fp_new.write(local_actor + '/tlshares')
                     else:
@@ -1639,7 +1639,7 @@ def _generate_next_shares_token_update(base_dir: str,
     token_update_filename = token_update_dir + '/.tokenUpdate'
     next_update_sec = None
     if os.path.isfile(token_update_filename):
-        with open(token_update_filename, 'r') as fp_tok:
+        with open(token_update_filename, 'r', encoding='utf-8') as fp_tok:
             next_update_str = fp_tok.read()
             if next_update_str:
                 if next_update_str.isdigit():
@@ -1658,7 +1658,7 @@ def _generate_next_shares_token_update(base_dir: str,
         next_update_sec = curr_time + next_update_interval
         updated = True
     if updated:
-        with open(token_update_filename, 'w+') as fp_tok:
+        with open(token_update_filename, 'w+', encoding='utf-8') as fp_tok:
             fp_tok.write(str(next_update_sec))
 
 
@@ -1683,7 +1683,7 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
     if not os.path.isfile(token_update_filename):
         return
     next_update_sec = None
-    with open(token_update_filename, 'r') as fp_tok:
+    with open(token_update_filename, 'r', encoding='utf-8') as fp_tok:
         next_update_str = fp_tok.read()
         if next_update_str:
             if next_update_str.isdigit():
