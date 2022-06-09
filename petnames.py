@@ -28,7 +28,7 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
 
     # does this entry already exist?
     if os.path.isfile(petnames_filename):
-        with open(petnames_filename, 'r') as petnames_file:
+        with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
             petnames_str = petnames_file.read()
             if entry in petnames_str:
                 return True
@@ -42,7 +42,8 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
                         new_petnames_str += entry
                 # save the updated petnames file
                 try:
-                    with open(petnames_filename, 'w+') as petnames_file:
+                    with open(petnames_filename, 'w+',
+                              encoding='utf-8') as petnames_file:
                         petnames_file.write(new_petnames_str)
                 except OSError:
                     print('EX: unable to save ' + petnames_filename)
@@ -50,7 +51,8 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
                 return True
             # entry does not exist in the petnames file
             try:
-                with open(petnames_filename, 'a+') as petnames_file:
+                with open(petnames_filename, 'a+',
+                          encoding='utf-8') as petnames_file:
                     petnames_file.write(entry)
             except OSError:
                 print('EX: unable to append ' + petnames_filename)
@@ -59,7 +61,7 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
 
     # first entry
     try:
-        with open(petnames_filename, 'w+') as petnames_file:
+        with open(petnames_filename, 'w+', encoding='utf-8') as petnames_file:
             petnames_file.write(entry)
     except OSError:
         print('EX: unable to write ' + petnames_filename)
@@ -79,7 +81,7 @@ def get_pet_name(base_dir: str, nickname: str, domain: str,
 
     if not os.path.isfile(petnames_filename):
         return ''
-    with open(petnames_filename, 'r') as petnames_file:
+    with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
         petnames_str = petnames_file.read()
         if ' ' + handle + '\n' in petnames_str:
             petnames_list = petnames_str.split('\n')
@@ -106,7 +108,7 @@ def _get_pet_name_handle(base_dir: str, nickname: str, domain: str,
 
     if not os.path.isfile(petnames_filename):
         return ''
-    with open(petnames_filename, 'r') as petnames_file:
+    with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
         petnames_str = petnames_file.read()
         if petname + ' ' in petnames_str:
             petnames_list = petnames_str.split('\n')

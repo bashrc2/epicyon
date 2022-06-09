@@ -197,7 +197,8 @@ def refresh_newswire(base_dir: str):
     refresh_newswire_filename = base_dir + '/accounts/.refresh_newswire'
     if os.path.isfile(refresh_newswire_filename):
         return
-    with open(refresh_newswire_filename, 'w+') as refresh_file:
+    with open(refresh_newswire_filename, 'w+',
+              encoding='utf-8') as refresh_file:
         refresh_file.write('\n')
 
 
@@ -328,7 +329,8 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
 
     days_since_epoch_str = None
     try:
-        with open(last_seen_filename, 'r') as last_seen_file:
+        with open(last_seen_filename, 'r',
+                  encoding='utf-8') as last_seen_file:
             days_since_epoch_str = last_seen_file.read()
     except OSError:
         print('EX: failed to read last seen ' + last_seen_filename)
@@ -358,7 +360,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    with open(editors_file, 'r') as editors:
+    with open(editors_file, 'r', encoding='utf-8') as editors:
         lines = editors.readlines()
         if len(lines) == 0:
             admin_name = get_config_param(base_dir, 'admin')
@@ -384,7 +386,7 @@ def is_artist(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    with open(artists_file, 'r') as artists:
+    with open(artists_file, 'r', encoding='utf-8') as artists:
         lines = artists.readlines()
         if len(lines) == 0:
             admin_name = get_config_param(base_dir, 'admin')
@@ -601,7 +603,7 @@ def is_suspended(base_dir: str, nickname: str) -> bool:
 
     suspended_filename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspended_filename):
-        with open(suspended_filename, 'r') as susp_file:
+        with open(suspended_filename, 'r', encoding='utf-8') as susp_file:
             lines = susp_file.readlines()
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
@@ -619,7 +621,7 @@ def get_followers_list(base_dir: str,
     if not os.path.isfile(filename):
         return []
 
-    with open(filename, 'r') as foll_file:
+    with open(filename, 'r', encoding='utf-8') as foll_file:
         lines = foll_file.readlines()
         for i, _ in enumerate(lines):
             lines[i] = lines[i].strip()
@@ -648,7 +650,7 @@ def get_followers_of_person(base_dir: str,
                 continue
             if not os.path.isfile(filename):
                 continue
-            with open(filename, 'r') as followingfile:
+            with open(filename, 'r', encoding='utf-8') as followingfile:
                 for following_handle in followingfile:
                     following_handle2 = following_handle.replace('\n', '')
                     following_handle2 = following_handle2.replace('\r', '')
@@ -724,7 +726,7 @@ def save_json(json_object: {}, filename: str) -> bool:
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'w+') as json_file:
+            with open(filename, 'w+', encoding='utf-8') as json_file:
                 json_file.write(json.dumps(json_object))
                 return True
         except OSError:
@@ -743,7 +745,7 @@ def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
     tries = 0
     while tries < max_tries:
         try:
-            with open(filename, 'r') as json_file:
+            with open(filename, 'r', encoding='utf-8') as json_file:
                 data = json_file.read()
                 json_object = json.loads(data)
                 break
@@ -766,7 +768,7 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'r') as json_file:
+            with open(filename, 'r', encoding='utf-8') as json_file:
                 data = json_file.read()
                 if data:
                     data = data.replace(domain, onion_domain)
@@ -1262,11 +1264,11 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
         follow_nickname + '@' + follow_domain + '\n'
     if not os.path.isfile(petnames_filename):
         # if there is no existing petnames lookup file
-        with open(petnames_filename, 'w+') as petnames_file:
+        with open(petnames_filename, 'w+', encoding='utf-8') as petnames_file:
             petnames_file.write(petname_lookup_entry)
         return
 
-    with open(petnames_filename, 'r') as petnames_file:
+    with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
         petnames_str = petnames_file.read()
         if petnames_str:
             petnames_list = petnames_str.split('\n')
@@ -1275,7 +1277,7 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
                     # petname already exists
                     return
     # petname doesn't already exist
-    with open(petnames_filename, 'a+') as petnames_file:
+    with open(petnames_filename, 'a+', encoding='utf-8') as petnames_file:
         petnames_file.write(petname_lookup_entry)
 
 
@@ -1318,15 +1320,18 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     # was this person previously unfollowed?
     unfollowed_filename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
-        if handle_to_follow in open(unfollowed_filename).read():
+        if handle_to_follow in open(unfollowed_filename,
+                                    encoding='utf-8').read():
             # remove them from the unfollowed file
             new_lines = ''
-            with open(unfollowed_filename, 'r') as unfoll_file:
+            with open(unfollowed_filename, 'r',
+                      encoding='utf-8') as unfoll_file:
                 lines = unfoll_file.readlines()
                 for line in lines:
                     if handle_to_follow not in line:
                         new_lines += line
-            with open(unfollowed_filename, 'w+') as unfoll_file:
+            with open(unfollowed_filename, 'w+',
+                      encoding='utf-8') as unfoll_file:
                 unfoll_file.write(new_lines)
 
     if not os.path.isdir(base_dir + '/accounts'):
@@ -1336,13 +1341,13 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         handle_to_follow = '!' + handle_to_follow
     filename = base_dir + '/accounts/' + handle + '/' + follow_file
     if os.path.isfile(filename):
-        if handle_to_follow in open(filename).read():
+        if handle_to_follow in open(filename, encoding='utf-8').read():
             if debug:
                 print('DEBUG: follow already exists')
             return True
         # prepend to follow file
         try:
-            with open(filename, 'r+') as foll_file:
+            with open(filename, 'r+', encoding='utf-8') as foll_file:
                 content = foll_file.read()
                 if handle_to_follow + '\n' not in content:
                     foll_file.seek(0, 0)
@@ -1358,7 +1363,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                   ' creating new following file to follow ' +
                   handle_to_follow +
                   ', filename is ' + filename)
-        with open(filename, 'w+') as foll_file:
+        with open(filename, 'w+', encoding='utf-8') as foll_file:
             foll_file.write(handle_to_follow + '\n')
 
     if follow_file.endswith('following.txt'):
@@ -1430,7 +1435,7 @@ def locate_news_arrival(base_dir: str, domain: str,
     account_dir = base_dir + '/accounts/news@' + domain + '/'
     post_filename = account_dir + 'outbox/' + post_url
     if os.path.isfile(post_filename):
-        with open(post_filename, 'r') as arrival_file:
+        with open(post_filename, 'r', encoding='utf-8') as arrival_file:
             arrival = arrival_file.read()
             if arrival:
                 arrival_date = \
@@ -1537,7 +1542,8 @@ def get_reply_interval_hours(base_dir: str, nickname: str, domain: str,
     reply_interval_filename = \
         acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
     if os.path.isfile(reply_interval_filename):
-        with open(reply_interval_filename, 'r') as interval_file:
+        with open(reply_interval_filename, 'r',
+                  encoding='utf-8') as interval_file:
             hours_str = interval_file.read()
             if hours_str.isdigit():
                 return int(hours_str)
@@ -1553,7 +1559,8 @@ def set_reply_interval_hours(base_dir: str, nickname: str, domain: str,
     reply_interval_filename = \
         acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
     try:
-        with open(reply_interval_filename, 'w+') as interval_file:
+        with open(reply_interval_filename, 'w+',
+                  encoding='utf-8') as interval_file:
             interval_file.write(str(reply_interval_hours))
             return True
     except OSError:
@@ -1641,10 +1648,12 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
     if not os.path.isfile(moderation_index_file):
         return
     post_id = remove_id_ending(post_url)
-    if post_id in open(moderation_index_file).read():
-        with open(moderation_index_file, 'r') as file1:
+    if post_id in open(moderation_index_file, encoding='utf-8').read():
+        with open(moderation_index_file, 'r',
+                  encoding='utf-8') as file1:
             lines = file1.readlines()
-            with open(moderation_index_file, 'w+') as file2:
+            with open(moderation_index_file, 'w+',
+                      encoding='utf-8') as file2:
                 for line in lines:
                     if line.strip("\n").strip("\r") != post_id:
                         file2.write(line)
@@ -1670,7 +1679,7 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
         return False
     post_id = remove_id_ending(post_json_object['object']['inReplyTo'])
     post_id = post_id.replace('/', '#')
-    if post_id in open(blogs_index_filename).read():
+    if post_id in open(blogs_index_filename, encoding='utf-8').read():
         return True
     return False
 
@@ -1686,7 +1695,7 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
         return
     if debug:
         print('DEBUG: removing replies to ' + post_filename)
-    with open(replies_filename, 'r') as replies_file:
+    with open(replies_filename, 'r', encoding='utf-8') as replies_file:
         for reply_id in replies_file:
             reply_file = locate_post(base_dir, nickname, domain, reply_id)
             if not reply_file:
@@ -1711,7 +1720,8 @@ def _is_bookmarked(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
     if os.path.isfile(bookmarks_index_filename):
         bookmark_index = post_filename.split('/')[-1] + '\n'
-        if bookmark_index in open(bookmarks_index_filename).read():
+        if bookmark_index in open(bookmarks_index_filename,
+                                  encoding='utf-8').read():
             return True
     return False
 
@@ -1815,7 +1825,7 @@ def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
             continue
         # remove post_id from the tag index file
         lines = None
-        with open(tag_index_filename, 'r') as index_file:
+        with open(tag_index_filename, 'r', encoding='utf-8') as index_file:
             lines = index_file.readlines()
         if not lines:
             continue
@@ -1834,7 +1844,8 @@ def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
                       'unable to delete tag index ' + str(tag_index_filename))
         else:
             # write the new hashtag index without the given post in it
-            with open(tag_index_filename, 'w+') as index_file:
+            with open(tag_index_filename, 'w+',
+                      encoding='utf-8') as index_file:
                 index_file.write(newlines)
 
 
@@ -1857,13 +1868,13 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(conversation_filename):
         return False
     conversation_str = ''
-    with open(conversation_filename, 'r') as conv_file:
+    with open(conversation_filename, 'r', encoding='utf-8') as conv_file:
         conversation_str = conv_file.read()
     if post_id + '\n' not in conversation_str:
         return False
     conversation_str = conversation_str.replace(post_id + '\n', '')
     if conversation_str:
-        with open(conversation_filename, 'w+') as conv_file:
+        with open(conversation_filename, 'w+', encoding='utf-8') as conv_file:
             conv_file.write(conversation_str)
     else:
         if os.path.isfile(conversation_filename + '.muted'):
@@ -2175,7 +2186,8 @@ def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
                 base_dir + '/accounts/' + account + '/.lastUsed'
             if not os.path.isfile(last_used_filename):
                 continue
-            with open(last_used_filename, 'r') as last_used_file:
+            with open(last_used_filename, 'r',
+                      encoding='utf-8') as last_used_file:
                 last_used = last_used_file.read()
                 if last_used.isdigit():
                     time_diff = (curr_time - int(last_used))
@@ -2334,7 +2346,7 @@ def get_css(base_dir: str, css_filename: str, css_cache: {}) -> str:
             # file hasn't changed, so return the version in the cache
             return css_cache[css_filename][1]
 
-    with open(css_filename, 'r') as fp_css:
+    with open(css_filename, 'r', encoding='utf-8') as fp_css:
         css = fp_css.read()
         if css_cache.get(css_filename):
             # alter the cache contents
@@ -2394,7 +2406,7 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
         search_words = [search_str]
 
     res = []
-    with open(index_filename, 'r') as index_file:
+    with open(index_filename, 'r', encoding='utf-8') as index_file:
         post_filename = 'start'
         while post_filename:
             post_filename = index_file.readline()
@@ -2405,7 +2417,7 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
             post_filename = path + '/' + post_filename.strip()
             if not os.path.isfile(post_filename):
                 continue
-            with open(post_filename, 'r') as post_file:
+            with open(post_filename, 'r', encoding='utf-8') as post_file:
                 data = post_file.read().lower()
 
                 not_found = False
@@ -2449,7 +2461,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     for root, _, fnames in os.walk(path):
         for fname in fnames:
             file_path = os.path.join(root, fname)
-            with open(file_path, 'r') as post_file:
+            with open(file_path, 'r', encoding='utf-8') as post_file:
                 data = post_file.read().lower()
 
                 not_found = False
@@ -2892,7 +2904,8 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
             if recent_posts_cache['html'].get(post_url):
                 del recent_posts_cache['html'][post_url]
 
-    with open(post_filename + '.reject', 'w+') as reject_file:
+    with open(post_filename + '.reject', 'w+',
+              encoding='utf-8') as reject_file:
         reject_file.write('\n')
 
 
@@ -3011,7 +3024,8 @@ def dm_allowed_from_domain(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if not os.path.isfile(dm_allowed_instances_file):
         return False
-    if sending_actor_domain + '\n' in open(dm_allowed_instances_file).read():
+    if sending_actor_domain + '\n' in open(dm_allowed_instances_file,
+                                           encoding='utf-8').read():
         return True
     return False
 
@@ -3325,7 +3339,8 @@ def is_group_actor(base_dir: str, actor: str, person_cache: {},
         if debug:
             print('Cached actor file not found ' + cached_actor_filename)
         return False
-    if '"type": "Group"' in open(cached_actor_filename).read():
+    if '"type": "Group"' in open(cached_actor_filename,
+                                 encoding='utf-8').read():
         if debug:
             print('Group type found in ' + cached_actor_filename)
         return True
@@ -3338,7 +3353,8 @@ def is_group_account(base_dir: str, nickname: str, domain: str) -> bool:
     account_filename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(account_filename):
         return False
-    if '"type": "Group"' in open(account_filename).read():
+    if '"type": "Group"' in open(account_filename,
+                                 encoding='utf-8').read():
         return True
     return False
 
@@ -3596,7 +3612,7 @@ def load_account_timezones(base_dir: str) -> {}:
             if not os.path.isfile(tz_filename):
                 continue
             timezone = None
-            with open(tz_filename, 'r') as fp_timezone:
+            with open(tz_filename, 'r', encoding='utf-8') as fp_timezone:
                 timezone = fp_timezone.read().strip()
             if timezone:
                 nickname = acct.split('@')[0]
@@ -3632,7 +3648,7 @@ def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
     if not os.path.isfile(tz_filename):
         return None
     timezone = None
-    with open(tz_filename, 'r') as fp_timezone:
+    with open(tz_filename, 'r', encoding='utf-8') as fp_timezone:
         timezone = fp_timezone.read().strip()
     return timezone
 
@@ -3644,7 +3660,7 @@ def set_account_timezone(base_dir: str, nickname: str, domain: str,
     tz_filename = \
         base_dir + '/accounts/' + nickname + '@' + domain + '/timezone.txt'
     timezone = timezone.strip()
-    with open(tz_filename, 'w+') as fp_timezone:
+    with open(tz_filename, 'w+', encoding='utf-8') as fp_timezone:
         fp_timezone.write(timezone)
 
 

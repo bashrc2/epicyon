@@ -42,7 +42,8 @@ def _html_following_data_list(base_dir: str, nickname: str,
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     msg = None
     if os.path.isfile(following_filename):
-        with open(following_filename, 'r') as following_file:
+        with open(following_filename, 'r',
+                  encoding='utf-8') as following_file:
             msg = following_file.read()
             # add your own handle, so that you can send DMs
             # to yourself as reminders
@@ -53,7 +54,8 @@ def _html_following_data_list(base_dir: str, nickname: str,
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
         if os.path.isfile(petnames_filename):
             following_list = []
-            with open(petnames_filename, 'r') as petnames_file:
+            with open(petnames_filename, 'r',
+                      encoding='utf-8') as petnames_file:
                 pet_str = petnames_file.read()
                 # extract each petname and append it
                 petnames_list = pet_str.split('\n')
@@ -322,7 +324,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
             # custom report header with any additional instructions
             if os.path.isfile(base_dir + '/accounts/report.txt'):
-                with open(base_dir + '/accounts/report.txt', 'r') as file:
+                with open(base_dir + '/accounts/report.txt', 'r',
+                          encoding='utf-8') as file:
                     custom_report_text = file.read()
                     if '</p>' not in custom_report_text:
                         custom_report_text = \
@@ -359,7 +362,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             '</h1>\n'
 
     if os.path.isfile(base_dir + '/accounts/newpost.txt'):
-        with open(base_dir + '/accounts/newpost.txt', 'r') as file:
+        with open(base_dir + '/accounts/newpost.txt', 'r',
+                  encoding='utf-8') as file:
             new_post_text = \
                 '<p>' + file.read() + '</p>\n'
 
@@ -617,7 +621,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                 translate['Citations'] + ':</label></p>\n'
             citations_str += '  <ul>\n'
             citations_separator = '#####'
-            with open(citations_filename, 'r') as cit_file:
+            with open(citations_filename, 'r', encoding='utf-8') as cit_file:
                 citations = cit_file.readlines()
                 for line in citations:
                     if citations_separator not in line:

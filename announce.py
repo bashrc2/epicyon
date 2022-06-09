@@ -331,8 +331,7 @@ def send_announce_via_server(base_dir: str, session,
 def send_undo_announce_via_server(base_dir: str, session,
                                   undo_post_json_object: {},
                                   nickname: str, password: str,
-                                  domain: str, port: int,
-                                  http_prefix: str, repeat_object_url: str,
+                                  domain: str, port: int, http_prefix: str,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
                                   signing_priv_key_pem: str) -> {}:
@@ -413,8 +412,7 @@ def send_undo_announce_via_server(base_dir: str, session,
 
 
 def outbox_undo_announce(recent_posts_cache: {},
-                         base_dir: str, http_prefix: str,
-                         nickname: str, domain: str, port: int,
+                         base_dir: str, nickname: str, domain: str,
                          message_json: {}, debug: bool) -> None:
     """ When an undo announce is received by the outbox from c2s
     """

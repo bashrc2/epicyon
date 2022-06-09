@@ -679,7 +679,7 @@ def _test_cache():
     }
     person_cache = {}
     store_person_in_cache(None, person_url, person_json, person_cache, True)
-    result = get_person_from_cache(None, person_url, person_cache, True)
+    result = get_person_from_cache(None, person_url, person_cache)
     assert result['id'] == 123456
     assert result['test'] == 'This is a test'
 
@@ -705,7 +705,7 @@ def _test_threads():
 
 def create_server_alice(path: str, domain: str, port: int,
                         bob_address: str, federation_list: [],
-                        hasFollows: bool, hasPosts: bool,
+                        has_follows: bool, has_posts: bool,
                         send_threads: []):
     print('Creating test server: Alice on port ' + str(port))
     if os.path.isdir(path):
@@ -735,12 +735,12 @@ def create_server_alice(path: str, domain: str, port: int,
     delete_all_posts(path, nickname, domain, 'outbox')
     assert set_skill_level(path, nickname, domain, 'hacking', 90)
     assert set_role(path, nickname, domain, 'guru')
-    if hasFollows:
+    if has_follows:
         follow_person(path, nickname, domain, 'bob', bob_address,
                       federation_list, False, False)
         add_follower_of_person(path, nickname, domain, 'bob', bob_address,
                                federation_list, False, False)
-    if hasPosts:
+    if has_posts:
         test_save_to_file = True
         client_to_server = False
         test_comments_enabled = True
@@ -865,7 +865,7 @@ def create_server_alice(path: str, domain: str, port: int,
 
 def create_server_bob(path: str, domain: str, port: int,
                       alice_address: str, federation_list: [],
-                      hasFollows: bool, hasPosts: bool,
+                      has_follows: bool, has_posts: bool,
                       send_threads: []):
     print('Creating test server: Bob on port ' + str(port))
     if os.path.isdir(path):
@@ -894,13 +894,13 @@ def create_server_bob(path: str, domain: str, port: int,
     assert wf_endpoint
     delete_all_posts(path, nickname, domain, 'inbox')
     delete_all_posts(path, nickname, domain, 'outbox')
-    if hasFollows and alice_address:
+    if has_follows and alice_address:
         follow_person(path, nickname, domain,
                       'alice', alice_address, federation_list, False, False)
         add_follower_of_person(path, nickname, domain,
                                'alice', alice_address, federation_list,
                                False, False)
-    if hasPosts:
+    if has_posts:
         test_save_to_file = True
         test_comments_enabled = True
         test_attach_image_filename = None
@@ -1023,7 +1023,7 @@ def create_server_bob(path: str, domain: str, port: int,
 
 
 def create_server_eve(path: str, domain: str, port: int, federation_list: [],
-                      hasFollows: bool, hasPosts: bool,
+                      has_follows: bool, has_posts: bool,
                       send_threads: []):
     print('Creating test server: Eve on port ' + str(port))
     if os.path.isdir(path):
@@ -1104,7 +1104,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
 
 def create_server_group(path: str, domain: str, port: int,
                         federation_list: [],
-                        hasFollows: bool, hasPosts: bool,
+                        has_follows: bool, has_posts: bool,
                         send_threads: []):
     print('Creating test server: Group on port ' + str(port))
     if os.path.isdir(path):
@@ -1418,7 +1418,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                      bob_domain, None, None)
 
     for _ in range(20):
-        if 'likes' in open(outbox_post_filename).read():
+        if 'likes' in open(outbox_post_filename, encoding='utf-8').read():
             break
         time.sleep(1)
 
@@ -1426,7 +1426,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     if alice_post_json:
         pprint(alice_post_json)
 
-    assert 'likes' in open(outbox_post_filename).read()
+    assert 'likes' in open(outbox_post_filename, encoding='utf-8').read()
 
     print('\n\n*******************************************************')
     print("Bob reacts to Alice's post")
@@ -1440,8 +1440,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          True, __version__, signing_priv_key_pem,
                          bob_domain, None, None)
 
-    for i in range(20):
-        if 'reactions' in open(outbox_post_filename).read():
+    for _ in range(20):
+        if 'reactions' in open(outbox_post_filename, encoding='utf-8').read():
             break
         time.sleep(1)
 
@@ -1450,7 +1450,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
         pprint(alice_post_json)
 
     # TODO: fix reactions unit test
-#    assert 'reactions' in open(outbox_post_filename).read()
+#    assert 'reactions' in open(outbox_post_filename, encoding='utf-8').read()
 
     print('\n\n*******************************************************')
     print("Bob repeats Alice's post")
@@ -1478,7 +1478,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     bob_domain, None, None)
     announce_message_arrived = False
     outbox_message_arrived = False
-    for i in range(20):
+    for _ in range(20):
         time.sleep(1)
         if not os.path.isdir(inbox_path):
             continue
@@ -1639,12 +1639,15 @@ def test_follow_between_servers(base_dir: str) -> None:
                                  alice_domain, alice_port)
     assert 'alice@' + alice_domain in open(bob_dir + '/accounts/bob@' +
                                            bob_domain +
-                                           '/followers.txt').read()
+                                           '/followers.txt',
+                                           encoding='utf-8').read()
     assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
-                                       alice_domain + '/following.txt').read()
+                                       alice_domain + '/following.txt',
+                                       encoding='utf-8').read()
     assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
                                        alice_domain +
-                                       '/followingCalendar.txt').read()
+                                       '/followingCalendar.txt',
+                                       encoding='utf-8').read()
     assert not is_group_actor(alice_dir, bob_actor, alice_person_cache)
     assert not is_group_account(alice_dir, 'alice', alice_domain)
 
@@ -1679,7 +1682,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     queue_path = bob_dir + '/accounts/bob@' + bob_domain + '/queue'
     inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
     alice_message_arrived = False
-    for i in range(20):
+    for _ in range(20):
         time.sleep(1)
         if os.path.isdir(inbox_path):
             if len([name for name in os.listdir(inbox_path)
@@ -1860,12 +1863,15 @@ def test_shared_items_federation(base_dir: str) -> None:
                                  alice_domain, alice_port)
     assert 'alice@' + alice_domain in open(bob_dir + '/accounts/bob@' +
                                            bob_domain +
-                                           '/followers.txt').read()
+                                           '/followers.txt',
+                                           encoding='utf-8').read()
     assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
-                                       alice_domain + '/following.txt').read()
+                                       alice_domain + '/following.txt',
+                                       encoding='utf-8').read()
     assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
                                        alice_domain +
-                                       '/followingCalendar.txt').read()
+                                       '/followingCalendar.txt',
+                                       encoding='utf-8').read()
     assert not is_group_actor(alice_dir, bob_actor, alice_person_cache)
     assert not is_group_account(bob_dir, 'bob', bob_domain)
 
@@ -2316,20 +2322,22 @@ def test_group_follow(base_dir: str) -> None:
     assert valid_inbox(testgroup_dir, 'testgroup', testgroup_domain)
     assert valid_inbox_filenames(testgroup_dir, 'testgroup', testgroup_domain,
                                  alice_domain, alice_port)
-    assert 'alice@' + alice_domain in open(testgroup_followers_filename).read()
+    assert 'alice@' + alice_domain in open(testgroup_followers_filename,
+                                           encoding='utf-8').read()
     assert '!alice@' + alice_domain not in \
-        open(testgroup_followers_filename).read()
+        open(testgroup_followers_filename, encoding='utf-8').read()
 
     testgroup_webfinger_filename = \
         testgroup_dir + '/wfendpoints/testgroup@' + \
         testgroup_domain + ':' + str(testgroupPort) + '.json'
     assert os.path.isfile(testgroup_webfinger_filename)
-    assert 'acct:testgroup@' in open(testgroup_webfinger_filename).read()
+    assert 'acct:testgroup@' in open(testgroup_webfinger_filename,
+                                     encoding='utf-8').read()
     print('acct: exists within the webfinger endpoint for testgroup')
 
     testgroup_handle = 'testgroup@' + testgroup_domain
     following_str = ''
-    with open(alice_following_filename, 'r') as fp_foll:
+    with open(alice_following_filename, 'r', encoding='utf-8') as fp_foll:
         following_str = fp_foll.read()
         print('Alice following.txt:\n\n' + following_str)
     if '!testgroup' not in following_str:
@@ -2339,8 +2347,10 @@ def test_group_follow(base_dir: str) -> None:
     assert not is_group_account(alice_dir, 'alice', alice_domain)
     assert is_group_account(testgroup_dir, 'testgroup', testgroup_domain)
     assert '!testgroup' in following_str
-    assert testgroup_handle in open(alice_following_filename).read()
-    assert testgroup_handle in open(alice_following_calendar_filename).read()
+    assert testgroup_handle in open(alice_following_filename,
+                                    encoding='utf-8').read()
+    assert testgroup_handle in open(alice_following_calendar_filename,
+                                    encoding='utf-8').read()
     print('\n\n*********************************************************')
     print('Alice follows the test group')
 
@@ -2394,20 +2404,22 @@ def test_group_follow(base_dir: str) -> None:
     assert valid_inbox(testgroup_dir, 'testgroup', testgroup_domain)
     assert valid_inbox_filenames(testgroup_dir, 'testgroup', testgroup_domain,
                                  bob_domain, bob_port)
-    assert 'bob@' + bob_domain in open(testgroup_followers_filename).read()
+    assert 'bob@' + bob_domain in open(testgroup_followers_filename,
+                                       encoding='utf-8').read()
     assert '!bob@' + bob_domain not in \
-        open(testgroup_followers_filename).read()
+        open(testgroup_followers_filename, encoding='utf-8').read()
 
     testgroup_webfinger_filename = \
         testgroup_dir + '/wfendpoints/testgroup@' + \
         testgroup_domain + ':' + str(testgroupPort) + '.json'
     assert os.path.isfile(testgroup_webfinger_filename)
-    assert 'acct:testgroup@' in open(testgroup_webfinger_filename).read()
+    assert 'acct:testgroup@' in open(testgroup_webfinger_filename,
+                                     encoding='utf-8').read()
     print('acct: exists within the webfinger endpoint for testgroup')
 
     testgroup_handle = 'testgroup@' + testgroup_domain
     following_str = ''
-    with open(bob_following_filename, 'r') as fp_foll:
+    with open(bob_following_filename, 'r', encoding='utf-8') as fp_foll:
         following_str = fp_foll.read()
         print('Bob following.txt:\n\n' + following_str)
     if '!testgroup' not in following_str:
@@ -2415,8 +2427,10 @@ def test_group_follow(base_dir: str) -> None:
               testgroup_domain + ':' + str(testgroupPort))
     assert is_group_actor(bob_dir, testgroup_actor, bob_person_cache)
     assert '!testgroup' in following_str
-    assert testgroup_handle in open(bob_following_filename).read()
-    assert testgroup_handle in open(bob_following_calendar_filename).read()
+    assert testgroup_handle in open(bob_following_filename,
+                                    encoding='utf-8').read()
+    assert testgroup_handle in open(bob_following_calendar_filename,
+                                    encoding='utf-8').read()
     print('Bob follows the test group')
 
     print('\n\n*********************************************************')
@@ -2734,7 +2748,8 @@ def _test_follows(base_dir: str) -> None:
                   federation_list, False, False)
 
     account_dir = acct_dir(base_dir, nickname, domain)
-    with open(account_dir + '/following.txt', 'r') as fp_foll:
+    with open(account_dir + '/following.txt', 'r',
+              encoding='utf-8') as fp_foll:
         domain_found = False
         for following_domain in fp_foll:
             test_domain = following_domain.split('@')[1]
@@ -2772,7 +2787,8 @@ def _test_follows(base_dir: str) -> None:
                            federation_list, False, False)
 
     account_dir = acct_dir(base_dir, nickname, domain)
-    with open(account_dir + '/followers.txt', 'r') as fp_foll:
+    with open(account_dir + '/followers.txt', 'r',
+              encoding='utf-8') as fp_foll:
         for follower_domain in fp_foll:
             test_domain = follower_domain.split('@')[1]
             test_domain = test_domain.replace('\n', '').replace('\r', '')
@@ -3030,8 +3046,8 @@ def test_client_to_server(base_dir: str):
     print('Bob follows the calendar of Alice')
     following_cal_path = \
         bob_dir + '/accounts/bob@' + bob_domain + '/followingCalendar.txt'
-    with open(following_cal_path, 'w+') as fp:
-        fp.write('alice@' + alice_domain + '\n')
+    with open(following_cal_path, 'w+', encoding='utf-8') as fp_foll:
+        fp_foll.write('alice@' + alice_domain + '\n')
 
     print('\n\n*******************************************************')
     print('EVENT: Alice sends to Bob via c2s')
@@ -3172,11 +3188,13 @@ def test_client_to_server(base_dir: str):
     for _ in range(10):
         if os.path.isfile(bob_followers_filename):
             if 'alice@' + alice_domain + ':' + str(alice_port) in \
-               open(bob_followers_filename).read():
+               open(bob_followers_filename,
+                    encoding='utf-8').read():
                 if os.path.isfile(alice_following_filename) and \
                    os.path.isfile(alice_petnames_filename):
                     if 'bob@' + bob_domain + ':' + str(bob_port) in \
-                       open(alice_following_filename).read():
+                       open(alice_following_filename,
+                            encoding='utf-8').read():
                         break
         time.sleep(1)
 
@@ -3184,15 +3202,15 @@ def test_client_to_server(base_dir: str):
     assert os.path.isfile(alice_following_filename)
     assert os.path.isfile(alice_petnames_filename)
     assert 'bob bob@' + bob_domain in \
-        open(alice_petnames_filename).read()
+        open(alice_petnames_filename, encoding='utf-8').read()
     print('alice@' + alice_domain + ':' + str(alice_port) + ' in ' +
           bob_followers_filename)
     assert 'alice@' + alice_domain + ':' + str(alice_port) in \
-        open(bob_followers_filename).read()
+        open(bob_followers_filename, encoding='utf-8').read()
     print('bob@' + bob_domain + ':' + str(bob_port) + ' in ' +
           alice_following_filename)
     assert 'bob@' + bob_domain + ':' + str(bob_port) in \
-        open(alice_following_filename).read()
+        open(alice_following_filename, encoding='utf-8').read()
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
@@ -3210,20 +3228,21 @@ def test_client_to_server(base_dir: str):
                           '/followers.txt'):
             if 'bob@' + bob_domain + ':' + str(bob_port) in \
                open(alice_dir + '/accounts/alice@' + alice_domain +
-                    '/followers.txt').read():
+                    '/followers.txt', encoding='utf-8').read():
                 if os.path.isfile(bob_dir + '/accounts/bob@' + bob_domain +
                                   '/following.txt'):
                     alice_handle_str = \
                         'alice@' + alice_domain + ':' + str(alice_port)
                     if alice_handle_str in \
                        open(bob_dir + '/accounts/bob@' + bob_domain +
-                            '/following.txt').read():
+                            '/following.txt', encoding='utf-8').read():
                         if os.path.isfile(bob_dir + '/accounts/bob@' +
                                           bob_domain +
                                           '/followingCalendar.txt'):
                             if alice_handle_str in \
                                open(bob_dir + '/accounts/bob@' + bob_domain +
-                                    '/followingCalendar.txt').read():
+                                    '/followingCalendar.txt',
+                                    encoding='utf-8').read():
                                 break
         time.sleep(1)
 
@@ -3233,9 +3252,10 @@ def test_client_to_server(base_dir: str):
                           '/following.txt')
     assert 'bob@' + bob_domain + ':' + str(bob_port) in \
         open(alice_dir + '/accounts/alice@' + alice_domain +
-             '/followers.txt').read()
+             '/followers.txt', encoding='utf-8').read()
     assert 'alice@' + alice_domain + ':' + str(alice_port) in \
-        open(bob_dir + '/accounts/bob@' + bob_domain + '/following.txt').read()
+        open(bob_dir + '/accounts/bob@' + bob_domain + '/following.txt',
+             encoding='utf-8').read()
 
     session_bob = create_session(proxy_type)
     password = 'bobpass'
@@ -3439,18 +3459,18 @@ def test_client_to_server(base_dir: str):
                                      True, __version__, signing_priv_key_pem)
     for _ in range(10):
         if 'alice@' + alice_domain + ':' + str(alice_port) not in \
-           open(bob_followers_filename).read():
+           open(bob_followers_filename, encoding='utf-8').read():
             if 'bob@' + bob_domain + ':' + str(bob_port) not in \
-               open(alice_following_filename).read():
+               open(alice_following_filename, encoding='utf-8').read():
                 break
         time.sleep(1)
 
     assert os.path.isfile(bob_followers_filename)
     assert os.path.isfile(alice_following_filename)
     assert 'alice@' + alice_domain + ':' + str(alice_port) \
-        not in open(bob_followers_filename).read()
+        not in open(bob_followers_filename, encoding='utf-8').read()
     assert 'bob@' + bob_domain + ':' + str(bob_port) \
-        not in open(alice_following_filename).read()
+        not in open(alice_following_filename, encoding='utf-8').read()
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
@@ -4228,7 +4248,7 @@ def _test_translation_labels() -> None:
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r') as file_source:
+            with open(source_file, 'r', encoding='utf-8') as file_source:
                 source_str = file_source.read()
             if not source_str:
                 continue
@@ -4477,7 +4497,7 @@ def _test_hashtag_rules():
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert tree is None
-    assert tags_in_conditions == []
+    assert not tags_in_conditions
     hashtags = ['#foo']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
@@ -4833,7 +4853,7 @@ def _diagram_groups(include_groups: [],
     for group_name in include_groups:
         filename += '_' + group_name.replace(' ', '-')
     filename += '.dot'
-    with open(filename, 'w+') as fp_graph:
+    with open(filename, 'w+', encoding='utf-8') as fp_graph:
         fp_graph.write(call_graph_str)
         print('Graph saved to ' + filename)
         print('Plot using: ' +
@@ -4853,7 +4873,7 @@ def _test_post_variable_names():
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r') as file_source:
+            with open(source_file, 'r', encoding='utf-8') as file_source:
                 source_str = file_source.read()
             if not source_str:
                 continue
@@ -4888,7 +4908,7 @@ def _test_config_param_names():
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r') as file_source:
+            with open(source_file, 'r', encoding='utf-8') as file_source:
                 source_str = file_source.read()
             if not source_str:
                 continue
@@ -4936,7 +4956,7 @@ def _test_source_contains_no_tabs():
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r') as file_source:
+            with open(source_file, 'r', encoding='utf-8') as file_source:
                 source_str = file_source.read()
             if not source_str:
                 continue
@@ -4959,7 +4979,7 @@ def _test_checkbox_names():
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r') as file_source:
+            with open(source_file, 'r', encoding='utf-8') as file_source:
                 source_str = file_source.read()
             if not source_str:
                 continue
@@ -4999,7 +5019,7 @@ def _test_post_field_names(source_file: str, fieldnames: []):
         fnames.append(field + '.get')
 
     source_str = ''
-    with open(source_file, 'r') as file_source:
+    with open(source_file, 'r', encoding='utf-8') as file_source:
         source_str = file_source.read()
     if not source_str:
         return
@@ -5082,12 +5102,12 @@ def _test_thread_functions():
                 'functions': []
             }
             source_str = ''
-            with open(source_file, 'r') as fp_src:
+            with open(source_file, 'r', encoding='utf-8') as fp_src:
                 source_str = fp_src.read()
                 modules[mod_name]['source'] = source_str
                 if 'thread_with_trace(' in source_str:
                     threads_called_in_modules.append(mod_name)
-            with open(source_file, 'r') as fp_src:
+            with open(source_file, 'r', encoding='utf-8') as fp_src:
                 lines = fp_src.readlines()
                 modules[mod_name]['lines'] = lines
 
@@ -5118,7 +5138,7 @@ def _test_thread_functions():
                 if def_str not in modules[mod_name]['source']:
                     print(mod_name + ' ' + first_parameter)
                     print(import_str + ' not in ' + mod_name)
-                    assert(False)
+                    assert False
             if def_str in modules[mod_name]['source']:
                 defininition_module = mod_name
             else:
@@ -5172,7 +5192,7 @@ def _test_thread_functions():
                       ' were given in module ' + mod_name)
                 print(str(definition_function_args_list))
                 print(str(calling_function_args_list))
-                assert(False)
+                assert False
             ctr += 1
 
 
@@ -5197,10 +5217,10 @@ def _test_functions():
                 'functions': []
             }
             source_str = ''
-            with open(source_file, 'r') as fp_src:
+            with open(source_file, 'r', encoding='utf-8') as fp_src:
                 source_str = fp_src.read()
                 modules[mod_name]['source'] = source_str
-            with open(source_file, 'r') as fp_src:
+            with open(source_file, 'r', encoding='utf-8') as fp_src:
                 lines = fp_src.readlines()
                 modules[mod_name]['lines'] = lines
                 line_count = 0
@@ -5313,7 +5333,8 @@ def _test_functions():
                 'sed -i "s|' + name + '|' + snake_case_name + '|g" *.py\n'
             ctr += 1
         print(function_names_str + '\n')
-        with open('scripts/bad_function_names.sh', 'w+') as fn_file:
+        with open('scripts/bad_function_names.sh', 'w+',
+                  encoding='utf-8') as fn_file:
             fn_file.write(function_names_sh)
         assert False
 
@@ -6246,7 +6267,7 @@ def _test_spoofed_geolocation() -> None:
 
     kml_str += '</Document>\n'
     kml_str += '</kml>'
-    with open('unittest_decoy.kml', 'w+') as kmlfile:
+    with open('unittest_decoy.kml', 'w+', encoding='utf-8') as kmlfile:
         kmlfile.write(kml_str)
 
 

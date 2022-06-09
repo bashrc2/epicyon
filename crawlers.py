@@ -60,7 +60,7 @@ def load_known_web_bots(base_dir: str) -> []:
         return []
     crawlers_str = None
     try:
-        with open(known_bots_filename, 'r') as fp_crawlers:
+        with open(known_bots_filename, 'r', encoding='utf-8') as fp_crawlers:
             crawlers_str = fp_crawlers.read()
     except OSError:
         print('EX: unable to load web bots from ' +
@@ -88,7 +88,7 @@ def _save_known_web_bots(base_dir: str, known_bots: []) -> bool:
     for crawler in known_bots:
         known_bots_str += crawler.strip() + '\n'
     try:
-        with open(known_bots_filename, 'w+') as fp_crawlers:
+        with open(known_bots_filename, 'w+', encoding='utf-8') as fp_crawlers:
             fp_crawlers.write(known_bots_str)
     except OSError:
         print("EX: unable to save known web bots to " +

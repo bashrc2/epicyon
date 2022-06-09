@@ -34,7 +34,7 @@ def insert_question(base_dir: str, translate: {},
 
     show_question_results = False
     if os.path.isfile(votes_filename):
-        if message_id in open(votes_filename).read():
+        if message_id in open(votes_filename, encoding='utf-8').read():
             show_question_results = True
 
     if not show_question_results:
@@ -53,10 +53,11 @@ def insert_question(base_dir: str, translate: {},
                 continue
             content += \
                 '<input type="radio" name="answer" value="' + \
-                choice['name'] + '"> ' + choice['name'] + '<br><br>\n'
+                choice['name'] + '" tabindex="10"> ' + \
+                choice['name'] + '<br><br>\n'
         content += \
             '<input type="submit" value="' + \
-            translate['Vote'] + '" class="vote"><br><br>\n'
+            translate['Vote'] + '" class="vote" tabindex="10"><br><br>\n'
         content += '</form>\n</div>\n'
     else:
         # show the responses to a question

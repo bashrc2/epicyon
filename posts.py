@@ -110,7 +110,7 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
             return True
         return False
 
-    with open(moderators_file, 'r') as fp_mod:
+    with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
         lines = fp_mod.readlines()
         if len(lines) == 0:
             admin_name = get_config_param(base_dir, 'admin')
@@ -134,7 +134,7 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
         return 0
 
     ctr = 0
-    with open(filename, 'r') as followers_file:
+    with open(filename, 'r', encoding='utf-8') as followers_file:
         for follower_handle in followers_file:
             if '@' in follower_handle:
                 follower_domain = follower_handle.split('@')[1]
@@ -154,7 +154,7 @@ def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
     key_filename = base_dir + '/keys/private/' + handle.lower() + '.key'
     if not os.path.isfile(key_filename):
         return None
-    with open(key_filename, 'r') as pem_file:
+    with open(key_filename, 'r', encoding='utf-8') as pem_file:
         return pem_file.read()
     return None
 
@@ -175,7 +175,7 @@ def _get_local_public_key(base_dir: str, nickname: str, domain: str) -> str:
     key_filename = base_dir + '/keys/public/' + handle.lower() + '.key'
     if not os.path.isfile(key_filename):
         return None
-    with open(key_filename, 'r') as pem_file:
+    with open(key_filename, 'r', encoding='utf-8') as pem_file:
         return pem_file.read()
     return None
 
@@ -313,7 +313,7 @@ def _get_person_box_actor(session, base_dir: str, actor: str,
     """Returns the actor json for the given actor url
     """
     person_json = \
-        get_person_from_cache(base_dir, actor, person_cache, True)
+        get_person_from_cache(base_dir, actor, person_cache)
     if person_json:
         return person_json
 
@@ -961,16 +961,16 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str) -> None:
     if not os.path.isfile(tags_filename):
         # create a new tags index file
         try:
-            with open(tags_filename, 'w+') as tags_file:
+            with open(tags_filename, 'w+', encoding='utf-8') as tags_file:
                 tags_file.write(tagline)
         except OSError:
             print('EX: _update_hashtags_index unable to write tags file ' +
                   tags_filename)
     else:
         # prepend to tags index file
-        if tagline not in open(tags_filename).read():
+        if tagline not in open(tags_filename, encoding='utf-8').read():
             try:
-                with open(tags_filename, 'r+') as tags_file:
+                with open(tags_filename, 'r+', encoding='utf-8') as tags_file:
                     content = tags_file.read()
                     if tagline not in content:
                         tags_file.seek(0, 0)
@@ -990,9 +990,11 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
 
     index_str = event_date_str + ' ' + post_id.replace('/', '#')
     if os.path.isfile(schedule_index_filename):
-        if index_str not in open(schedule_index_filename).read():
+        if index_str not in open(schedule_index_filename,
+                                 encoding='utf-8').read():
             try:
-                with open(schedule_index_filename, 'r+') as schedule_file:
+                with open(schedule_index_filename, 'r+',
+                          encoding='utf-8') as schedule_file:
                     content = schedule_file.read()
                     if index_str + '\n' not in content:
                         schedule_file.seek(0, 0)
@@ -1003,7 +1005,8 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
                       schedule_index_filename + ' ' + str(ex))
     else:
         try:
-            with open(schedule_index_filename, 'w+') as schedule_file:
+            with open(schedule_index_filename, 'w+',
+                      encoding='utf-8') as schedule_file:
                 schedule_file.write(index_str + '\n')
         except OSError as ex:
             print('EX: Failed to write entry to scheduled posts index2 ' +
@@ -1029,7 +1032,7 @@ def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
     if not os.path.isfile(filename):
         return []
     try:
-        with open(filename, 'r') as fp_auto:
+        with open(filename, 'r', encoding='utf-8') as fp_auto:
             return fp_auto.readlines()
     except OSError:
         print('EX: unable to load auto cw file ' + filename)
@@ -1371,7 +1374,7 @@ def _create_post_mod_report(base_dir: str,
     # save to index file
     moderation_index_file = base_dir + '/accounts/moderation.txt'
     try:
-        with open(moderation_index_file, 'a+') as mod_file:
+        with open(moderation_index_file, 'a+', encoding='utf-8') as mod_file:
             mod_file.write(new_post_id + '\n')
     except OSError:
         print('EX: unable to write moderation index file ' +
@@ -1707,7 +1710,7 @@ def pin_post(base_dir: str, nickname: str, domain: str,
     account_dir = acct_dir(base_dir, nickname, domain)
     pinned_filename = account_dir + '/pinToProfile.txt'
     try:
-        with open(pinned_filename, 'w+') as pin_file:
+        with open(pinned_filename, 'w+', encoding='utf-8') as pin_file:
             pin_file.write(pinned_content)
     except OSError:
         print('EX: unable to write ' + pinned_filename)
@@ -1737,7 +1740,7 @@ def get_pinned_post_as_json(base_dir: str, http_prefix: str,
     actor = local_actor_url(http_prefix, nickname, domain_full)
     if os.path.isfile(pinned_filename):
         pinned_content = None
-        with open(pinned_filename, 'r') as pin_file:
+        with open(pinned_filename, 'r', encoding='utf-8') as pin_file:
             pinned_content = pin_file.read()
         if pinned_content:
             pinned_post_json = {
@@ -1816,7 +1819,7 @@ def regenerate_index_for_box(base_dir: str,
 
     result = ''
     try:
-        with open(box_index_filename, 'w+') as fp_box:
+        with open(box_index_filename, 'w+', encoding='utf-8') as fp_box:
             for line in index_lines:
                 result += line + '\n'
                 fp_box.write(line + '\n')
@@ -1886,7 +1889,7 @@ def _append_citations_to_blog_post(base_dir: str,
     if not os.path.isfile(citations_filename):
         return
     citations_separator = '#####'
-    with open(citations_filename, 'r') as fp_cit:
+    with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
         citations = fp_cit.readlines()
         for line in citations:
             if citations_separator not in line:
@@ -2212,7 +2215,7 @@ def create_report_post(base_dir: str,
     moderators_list = []
     moderators_file = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r') as fp_mod:
+        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             for line in fp_mod:
                 line = line.strip('\n').strip('\r')
                 if line.startswith('#'):
@@ -2284,7 +2287,7 @@ def create_report_post(base_dir: str,
         if os.path.isfile(new_report_file):
             continue
         try:
-            with open(new_report_file, 'w+') as fp_report:
+            with open(new_report_file, 'w+', encoding='utf-8') as fp_report:
                 fp_report.write(to_url + '/moderation')
         except OSError:
             print('EX: create_report_post unable to write ' + new_report_file)
@@ -2362,10 +2365,12 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
             # save the log file
             post_log_filename = base_dir + '/post.log'
             if os.path.isfile(post_log_filename):
-                with open(post_log_filename, 'a+') as log_file:
+                with open(post_log_filename, 'a+',
+                          encoding='utf-8') as log_file:
                     log_file.write(log_str + '\n')
             else:
-                with open(post_log_filename, 'w+') as log_file:
+                with open(post_log_filename, 'w+',
+                          encoding='utf-8') as log_file:
                     log_file.write(log_str + '\n')
 
         if post_result:
@@ -2702,7 +2707,7 @@ def group_followers_by_domain(base_dir: str, nickname: str, domain: str) -> {}:
     if not os.path.isfile(followers_filename):
         return None
     grouped = {}
-    with open(followers_filename, 'r') as foll_file:
+    with open(followers_filename, 'r', encoding='utf-8') as foll_file:
         for follower_handle in foll_file:
             if '@' not in follower_handle:
                 continue
@@ -3701,7 +3706,8 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
     if is_moderator(base_dir, nickname):
         moderation_index_file = base_dir + '/accounts/moderation.txt'
         if os.path.isfile(moderation_index_file):
-            with open(moderation_index_file, 'r') as index_file:
+            with open(moderation_index_file, 'r',
+                      encoding='utf-8') as index_file:
                 lines = index_file.readlines()
             box_header['totalItems'] = len(lines)
             if header_only:
@@ -3831,7 +3837,7 @@ def _add_post_to_timeline(file_path: str, boxname: str,
                           posts_in_box: [], box_actor: str) -> bool:
     """ Reads a post from file and decides whether it is valid
     """
-    with open(file_path, 'r') as post_file:
+    with open(file_path, 'r', encoding='utf-8') as post_file:
         post_str = post_file.read()
 
         if file_path.endswith('.json'):
@@ -4011,7 +4017,7 @@ def _create_box_indexed(recent_posts_cache: {},
     total_posts_count = 0
     posts_added_to_timeline = 0
     if os.path.isfile(index_filename):
-        with open(index_filename, 'r') as index_file:
+        with open(index_filename, 'r', encoding='utf-8') as index_file:
             posts_added_to_timeline = 0
             while posts_added_to_timeline < items_per_page:
                 post_filename = index_file.readline()
@@ -4267,7 +4273,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         index_ctr = 0
         # get the existing index entries as a string
         new_index = ''
-        with open(index_filename, 'r') as index_file:
+        with open(index_filename, 'r', encoding='utf-8') as index_file:
             for post_id in index_file:
                 new_index += post_id
                 index_ctr += 1
@@ -4275,7 +4281,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                     break
         # save the new index file
         if len(new_index) > 0:
-            with open(index_filename, 'w+') as index_file:
+            with open(index_filename, 'w+', encoding='utf-8') as index_file:
                 index_file.write(new_index)
 
     posts_in_box_dict = {}
@@ -4288,7 +4294,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         # Time of file creation
         full_filename = os.path.join(box_dir, post_filename)
         if os.path.isfile(full_filename):
-            content = open(full_filename).read()
+            content = open(full_filename, encoding='utf-8').read()
             if '"published":' in content:
                 published_str = content.split('"published":')[1]
                 if '"' in published_str:
@@ -4617,7 +4623,7 @@ def get_public_post_domains_blocked(session, base_dir: str,
 
     # read the blocked domains as a single string
     blocked_str = ''
-    with open(blocking_filename, 'r') as fp_block:
+    with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
         blocked_str = fp_block.read()
 
     blocked_domains = []
@@ -4669,7 +4675,8 @@ def check_domains(session, base_dir: str,
     update_follower_warnings = False
     follower_warning_str = ''
     if os.path.isfile(follower_warning_filename):
-        with open(follower_warning_filename, 'r') as fp_warn:
+        with open(follower_warning_filename, 'r',
+                  encoding='utf-8') as fp_warn:
             follower_warning_str = fp_warn.read()
 
     if single_check:
@@ -4719,7 +4726,8 @@ def check_domains(session, base_dir: str,
                     update_follower_warnings = True
 
     if update_follower_warnings and follower_warning_str:
-        with open(follower_warning_filename, 'w+') as fp_warn:
+        with open(follower_warning_filename, 'w+',
+                  encoding='utf-8') as fp_warn:
             fp_warn.write(follower_warning_str)
         if not single_check:
             print(follower_warning_str)
@@ -4731,7 +4739,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
     pub_str = 'https://www.w3.org/ns/activitystreams#Public'
     # populate the items list with replies
     replies_boxes = ('outbox', 'inbox')
-    with open(post_replies_filename, 'r') as replies_file:
+    with open(post_replies_filename, 'r', encoding='utf-8') as replies_file:
         for message_id in replies_file:
             reply_found = False
             # examine inbox and outbox
@@ -4743,7 +4751,8 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     message_id2.replace('/', '#') + '.json'
                 if os.path.isfile(search_filename):
                     if authorized or \
-                       pub_str in open(search_filename).read():
+                       pub_str in open(search_filename,
+                                       encoding='utf-8').read():
                         post_json_object = load_json(search_filename)
                         if post_json_object:
                             if post_json_object['object'].get('cc'):
@@ -4770,7 +4779,8 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     message_id2.replace('/', '#') + '.json'
                 if os.path.isfile(search_filename):
                     if authorized or \
-                       pub_str in open(search_filename).read():
+                       pub_str in open(search_filename,
+                                       encoding='utf-8').read():
                         # get the json of the reply and append it to
                         # the collection
                         post_json_object = load_json(search_filename)
@@ -4799,7 +4809,8 @@ def _reject_announce(announce_filename: str,
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announce_filename + '.reject'):
-        with open(announce_filename + '.reject', 'w+') as reject_announce_file:
+        with open(announce_filename + '.reject', 'w+',
+                  encoding='utf-8') as reject_announce_file:
             reject_announce_file.write('\n')
 
 
@@ -5565,7 +5576,8 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
     post_id = remove_id_ending(post_json_object['object']['id'])
     lastpost_id = None
     try:
-        with open(actor_filename, 'r') as fp_actor:
+        with open(actor_filename, 'r',
+                  encoding='utf-8') as fp_actor:
             lastpost_id = fp_actor.read()
     except OSError:
         print('EX: edited_post_filename unable to read ' + actor_filename)

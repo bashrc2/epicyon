@@ -228,7 +228,7 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
 
     content = None
     try:
-        with open(filename, 'r') as css_file:
+        with open(filename, 'r', encoding='utf-8') as css_file:
             content = css_file.read().lower()
     except OSError:
         print('EX: unable to read css file ' + filename)
@@ -281,7 +281,8 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
         if not os.path.isfile(switch_words_filename):
             return content
         try:
-            with open(switch_words_filename, 'r') as words_file:
+            with open(switch_words_filename, 'r',
+                      encoding='utf-8') as words_file:
                 rules = words_file.readlines()
         except OSError:
             print('EX: unable to read switches ' + switch_words_filename)
@@ -376,7 +377,8 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
     common_emoji = None
     if os.path.isfile(common_emoji_filename):
         try:
-            with open(common_emoji_filename, 'r') as fp_emoji:
+            with open(common_emoji_filename, 'r',
+                      encoding='utf-8') as fp_emoji:
                 common_emoji = fp_emoji.readlines()
         except OSError:
             print('EX: unable to load common emoji file')
@@ -400,7 +402,8 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
             new_common_emoji.append(str(1).zfill(16) + ' ' + emoji_content)
         new_common_emoji.sort(reverse=True)
         try:
-            with open(common_emoji_filename, 'w+') as fp_emoji:
+            with open(common_emoji_filename, 'w+',
+                      encoding='utf-8') as fp_emoji:
                 for line in new_common_emoji:
                     fp_emoji.write(line + '\n')
         except OSError:
@@ -409,7 +412,8 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
     else:
         line = str(1).zfill(16) + ' ' + emoji_content + '\n'
         try:
-            with open(common_emoji_filename, 'w+') as fp_emoji:
+            with open(common_emoji_filename, 'w+',
+                      encoding='utf-8') as fp_emoji:
                 fp_emoji.write(line)
         except OSError:
             print('EX: error writing common emoji 2')
@@ -929,19 +933,19 @@ def remove_long_words(content: str, max_word_length: int,
             continue
         if 'https:' in word_str:
             continue
-        elif 'http:' in word_str:
+        if 'http:' in word_str:
             continue
-        elif 'i2p:' in word_str:
+        if 'i2p:' in word_str:
             continue
-        elif 'gnunet:' in word_str:
+        if 'gnunet:' in word_str:
             continue
-        elif 'dat:' in word_str:
+        if 'dat:' in word_str:
             continue
-        elif 'rad:' in word_str:
+        if 'rad:' in word_str:
             continue
-        elif 'hyper:' in word_str:
+        if 'hyper:' in word_str:
             continue
-        elif 'briar:' in word_str:
+        if 'briar:' in word_str:
             continue
         if '<' in word_str:
             replace_word = word_str.split('<', 1)[0]
@@ -973,7 +977,7 @@ def _load_auto_tags(base_dir: str, nickname: str, domain: str) -> []:
     if not os.path.isfile(filename):
         return []
     try:
-        with open(filename, 'r') as tags_file:
+        with open(filename, 'r', encoding='utf-8') as tags_file:
             return tags_file.readlines()
     except OSError:
         print('EX: unable to read auto tags ' + filename)
@@ -1052,7 +1056,8 @@ def add_html_tags(base_dir: str, http_prefix: str,
         if os.path.isfile(following_filename):
             following = []
             try:
-                with open(following_filename, 'r') as foll_file:
+                with open(following_filename, 'r',
+                          encoding='utf-8') as foll_file:
                     following = foll_file.readlines()
             except OSError:
                 print('EX: unable to read ' + following_filename)
@@ -1557,7 +1562,7 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
         return
     emoji_dict = load_json(base_dir + '/emoji/default_emoji.json', 0, 1)
     added = 0
-    with open(import_filename, "r") as fp_emoji:
+    with open(import_filename, "r", encoding='utf-8') as fp_emoji:
         lines = fp_emoji.readlines()
         for line in lines:
             url = line.split(', ')[0]
@@ -1713,7 +1718,8 @@ def remove_script(content: str, log_filename: str,
                     if os.path.isfile(log_filename):
                         write_type = 'w+'
                     try:
-                        with open(log_filename, write_type) as fp_log:
+                        with open(log_filename, write_type,
+                                  encoding='utf-8') as fp_log:
                             fp_log.write(log_str)
                     except OSError:
                         print('EX: cannot append to svg script log')

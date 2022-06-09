@@ -17,7 +17,8 @@ def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
     peertube_list = None
     peertube_instances_filename = base_dir + '/accounts/peertube.txt'
     if os.path.isfile(peertube_instances_filename):
-        with open(peertube_instances_filename, 'r') as fp_inst:
+        with open(peertube_instances_filename, 'r',
+                  encoding='utf-8') as fp_inst:
             peertube_str = fp_inst.read()
             if peertube_str:
                 peertube_str = peertube_str.replace('\r', '')

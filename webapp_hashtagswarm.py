@@ -79,7 +79,8 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     blocked_str = ''
     global_blocking_filename = base_dir + '/accounts/blocking.txt'
     if os.path.isfile(global_blocking_filename):
-        with open(global_blocking_filename, 'r') as fp_block:
+        with open(global_blocking_filename, 'r',
+                  encoding='utf-8') as fp_block:
             blocked_str = fp_block.read()
 
     for _, _, files in os.walk(base_dir + '/tags'):
@@ -112,13 +113,13 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                 continue
             if '#' + hash_tag_name + '\n' in blocked_str:
                 continue
-            with open(tags_filename, 'r') as fp_tags:
+            with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
                 # only read one line, which saves time and memory
                 last_tag = fp_tags.readline()
                 if not last_tag.startswith(days_since_epoch_str):
                     if not last_tag.startswith(days_since_epoch_str2):
                         continue
-            with open(tags_filename, 'r') as fp_tags:
+            with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
                 while True:
                     line = fp_tags.readline()
                     if not line:

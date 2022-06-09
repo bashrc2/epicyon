@@ -56,7 +56,8 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                 os.mkdir(last_seen_dir)
             following_handles = []
             try:
-                with open(following_filename, 'r') as fp_foll:
+                with open(following_filename, 'r',
+                          encoding='utf-8') as fp_foll:
                     following_handles = fp_foll.readlines()
             except OSError:
                 print('EX: create_initial_last_seen ' + following_filename)
@@ -75,7 +76,8 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                     last_seen_dir + '/' + actor.replace('/', '#') + '.txt'
                 if not os.path.isfile(last_seen_filename):
                     try:
-                        with open(last_seen_filename, 'w+') as fp_last:
+                        with open(last_seen_filename, 'w+',
+                                  encoding='utf-8') as fp_last:
                             fp_last.write(str(100))
                     except OSError:
                         print('EX: create_initial_last_seen 2 ' +
@@ -92,7 +94,8 @@ def _pre_approved_follower(base_dir: str,
     account_dir = base_dir + '/accounts/' + handle
     approved_filename = account_dir + '/approved.txt'
     if os.path.isfile(approved_filename):
-        if approve_handle in open(approved_filename).read():
+        if approve_handle in open(approved_filename,
+                                  encoding='utf-8').read():
             return True
     return False
 
@@ -112,7 +115,8 @@ def _remove_from_follow_base(base_dir: str,
                   ' to remove ' + handle + ' from')
         return
     accept_deny_actor = None
-    if accept_or_deny_handle not in open(approve_follows_filename).read():
+    if accept_or_deny_handle not in open(approve_follows_filename,
+                                         encoding='utf-8').read():
         # is this stored in the file as an actor rather than a handle?
         accept_deny_nickname = accept_or_deny_handle.split('@')[0]
         accept_deny_domain = accept_or_deny_handle.split('@')[1]
@@ -123,14 +127,17 @@ def _remove_from_follow_base(base_dir: str,
         for users_name in users_paths:
             accept_deny_actor = \
                 '://' + accept_deny_domain + users_name + accept_deny_nickname
-            if accept_deny_actor in open(approve_follows_filename).read():
+            if accept_deny_actor in open(approve_follows_filename,
+                                         encoding='utf-8').read():
                 actor_found = True
                 break
         if not actor_found:
             return
     try:
-        with open(approve_follows_filename + '.new', 'w+') as approvefilenew:
-            with open(approve_follows_filename, 'r') as approvefile:
+        with open(approve_follows_filename + '.new', 'w+',
+                  encoding='utf-8') as approvefilenew:
+            with open(approve_follows_filename, 'r',
+                      encoding='utf-8') as approvefile:
                 if not accept_deny_actor:
                     for approve_handle in approvefile:
                         accept_deny_handle = accept_or_deny_handle
@@ -179,7 +186,7 @@ def is_following_actor(base_dir: str,
         return False
     if actor.startswith('@'):
         actor = actor[1:]
-    if actor.lower() in open(following_file).read().lower():
+    if actor.lower() in open(following_file, encoding='utf-8').read().lower():
         return True
     following_nickname = get_nickname_from_actor(actor)
     if not following_nickname:
@@ -189,7 +196,8 @@ def is_following_actor(base_dir: str,
     following_handle = \
         get_full_domain(following_nickname + '@' + following_domain,
                         following_port)
-    if following_handle.lower() in open(following_file).read().lower():
+    if following_handle.lower() in open(following_file,
+                                        encoding='utf-8').read().lower():
         return True
     return False
 
@@ -232,7 +240,7 @@ def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
 
     lines = []
     try:
-        with open(followers_file, 'r') as fp_foll:
+        with open(followers_file, 'r', encoding='utf-8') as fp_foll:
             lines = fp_foll.readlines()
     except OSError:
         print('EX: get_follower_domains ' + followers_file)
@@ -269,7 +277,7 @@ def is_follower_of_person(base_dir: str, nickname: str, domain: str,
 
     followers_str = ''
     try:
-        with open(followers_file, 'r') as fp_foll:
+        with open(followers_file, 'r', encoding='utf-8') as fp_foll:
             followers_str = fp_foll.read()
     except OSError:
         print('EX: is_follower_of_person ' + followers_file)
@@ -309,20 +317,21 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
             print('DEBUG: follow file ' + filename + ' was not found')
         return False
     handle_to_unfollow_lower = handle_to_unfollow.lower()
-    if handle_to_unfollow_lower not in open(filename).read().lower():
+    if handle_to_unfollow_lower not in open(filename,
+                                            encoding='utf-8').read().lower():
         if debug:
             print('DEBUG: handle to unfollow ' + handle_to_unfollow +
                   ' is not in ' + filename)
         return
     lines = []
     try:
-        with open(filename, 'r') as fp_unfoll:
+        with open(filename, 'r', encoding='utf-8') as fp_unfoll:
             lines = fp_unfoll.readlines()
     except OSError:
         print('EX: unfollow_account ' + filename)
     if lines:
         try:
-            with open(filename, 'w+') as fp_unfoll:
+            with open(filename, 'w+', encoding='utf-8') as fp_unfoll:
                 for line in lines:
                     check_handle = line.strip("\n").strip("\r").lower()
                     if check_handle not in (handle_to_unfollow_lower,
@@ -336,15 +345,17 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
     unfollowed_filename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
         if handle_to_unfollow_lower not in \
-           open(unfollowed_filename).read().lower():
+           open(unfollowed_filename, encoding='utf-8').read().lower():
             try:
-                with open(unfollowed_filename, 'a+') as fp_unfoll:
+                with open(unfollowed_filename, 'a+',
+                          encoding='utf-8') as fp_unfoll:
                     fp_unfoll.write(handle_to_unfollow + '\n')
             except OSError:
                 print('EX: unable to append ' + unfollowed_filename)
     else:
         try:
-            with open(unfollowed_filename, 'w+') as fp_unfoll:
+            with open(unfollowed_filename, 'w+',
+                      encoding='utf-8') as fp_unfoll:
                 fp_unfoll.write(handle_to_unfollow + '\n')
         except OSError:
             print('EX: unable to write ' + unfollowed_filename)
@@ -400,7 +411,7 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
     ctr = 0
     lines = []
     try:
-        with open(filename, 'r') as fp_foll:
+        with open(filename, 'r', encoding='utf-8') as fp_foll:
             lines = fp_foll.readlines()
     except OSError:
         print('EX: _get_no_of_follows ' + filename)
@@ -517,7 +528,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     total_ctr = 0
     lines = []
     try:
-        with open(filename, 'r') as fp_foll:
+        with open(filename, 'r', encoding='utf-8') as fp_foll:
             lines = fp_foll.readlines()
     except OSError:
         print('EX: get_following_feed ' + filename)
@@ -606,7 +617,8 @@ def no_of_follow_requests(base_dir: str,
     ctr = 0
     lines = []
     try:
-        with open(approve_follows_filename, 'r') as fp_approve:
+        with open(approve_follows_filename, 'r',
+                  encoding='utf-8') as fp_approve:
             lines = fp_approve.readlines()
     except OSError:
         print('EX: no_of_follow_requests ' + approve_follows_filename)
@@ -650,7 +662,8 @@ def store_follow_request(base_dir: str,
 
         followers_str = ''
         try:
-            with open(followers_filename, 'r') as fp_foll:
+            with open(followers_filename, 'r',
+                      encoding='utf-8') as fp_foll:
                 followers_str = fp_foll.read()
         except OSError:
             print('EX: store_follow_request ' + followers_filename)
@@ -675,7 +688,8 @@ def store_follow_request(base_dir: str,
     # should this follow be denied?
     deny_follows_filename = accounts_dir + '/followrejects.txt'
     if os.path.isfile(deny_follows_filename):
-        if approve_handle in open(deny_follows_filename).read():
+        if approve_handle in open(deny_follows_filename,
+                                  encoding='utf-8').read():
             remove_from_follow_requests(base_dir, nickname_to_follow,
                                         domain_to_follow, approve_handle,
                                         debug)
@@ -694,9 +708,11 @@ def store_follow_request(base_dir: str,
             approve_handle = '!' + approve_handle
 
     if os.path.isfile(approve_follows_filename):
-        if approve_handle not in open(approve_follows_filename).read():
+        if approve_handle not in open(approve_follows_filename,
+                                      encoding='utf-8').read():
             try:
-                with open(approve_follows_filename, 'a+') as fp_approve:
+                with open(approve_follows_filename, 'a+',
+                          encoding='utf-8') as fp_approve:
                     fp_approve.write(approve_handle_stored + '\n')
             except OSError:
                 print('EX: store_follow_request 2 ' + approve_follows_filename)
@@ -706,7 +722,8 @@ def store_follow_request(base_dir: str,
                       ' is already awaiting approval')
     else:
         try:
-            with open(approve_follows_filename, 'w+') as fp_approve:
+            with open(approve_follows_filename, 'w+',
+                      encoding='utf-8') as fp_approve:
                 fp_approve.write(approve_handle_stored + '\n')
         except OSError:
             print('EX: store_follow_request 3 ' + approve_follows_filename)
@@ -907,10 +924,12 @@ def send_follow_request(session, base_dir: str,
     unfollowed_filename = \
         acct_dir(base_dir, nickname, domain) + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
-        if follow_handle in open(unfollowed_filename).read():
+        if follow_handle in open(unfollowed_filename,
+                                 encoding='utf-8').read():
             unfollowed_file = None
             try:
-                with open(unfollowed_filename, 'r') as fp_unfoll:
+                with open(unfollowed_filename, 'r',
+                          encoding='utf-8') as fp_unfoll:
                     unfollowed_file = fp_unfoll.read()
             except OSError:
                 print('EX: send_follow_request ' + unfollowed_filename)
@@ -918,7 +937,8 @@ def send_follow_request(session, base_dir: str,
                 unfollowed_file = \
                     unfollowed_file.replace(follow_handle + '\n', '')
                 try:
-                    with open(unfollowed_filename, 'w+') as fp_unfoll:
+                    with open(unfollowed_filename, 'w+',
+                              encoding='utf-8') as fp_unfoll:
                         fp_unfoll.write(unfollowed_file)
                 except OSError:
                     print('EX: unable to write ' + unfollowed_filename)

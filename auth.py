@@ -143,7 +143,7 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
         return False
     provided_password = plain.split(':')[1]
     try:
-        with open(password_file, 'r') as passfile:
+        with open(password_file, 'r', encoding='utf-8') as passfile:
             for line in passfile:
                 if not line.startswith(nickname + ':'):
                     continue
@@ -177,10 +177,11 @@ def store_basic_credentials(base_dir: str,
     password_file = base_dir + '/accounts/passwords'
     store_str = nickname + ':' + _hash_password(password)
     if os.path.isfile(password_file):
-        if nickname + ':' in open(password_file).read():
+        if nickname + ':' in open(password_file, encoding='utf-8').read():
             try:
-                with open(password_file, 'r') as fin:
-                    with open(password_file + '.new', 'w+') as fout:
+                with open(password_file, 'r', encoding='utf-8') as fin:
+                    with open(password_file + '.new', 'w+',
+                              encoding='utf-8') as fout:
                         for line in fin:
                             if not line.startswith(nickname + ':'):
                                 fout.write(line)
@@ -199,14 +200,14 @@ def store_basic_credentials(base_dir: str,
         else:
             # append to password file
             try:
-                with open(password_file, 'a+') as passfile:
+                with open(password_file, 'a+', encoding='utf-8') as passfile:
                     passfile.write(store_str + '\n')
             except OSError:
                 print('EX: unable to append password')
                 return False
     else:
         try:
-            with open(password_file, 'w+') as passfile:
+            with open(password_file, 'w+', encoding='utf-8') as passfile:
                 passfile.write(store_str + '\n')
         except OSError:
             print('EX: unable to create password file')
@@ -221,8 +222,9 @@ def remove_password(base_dir: str, nickname: str) -> None:
     password_file = base_dir + '/accounts/passwords'
     if os.path.isfile(password_file):
         try:
-            with open(password_file, 'r') as fin:
-                with open(password_file + '.new', 'w+') as fout:
+            with open(password_file, 'r', encoding='utf-8') as fin:
+                with open(password_file + '.new', 'w+',
+                          encoding='utf-8') as fout:
                     for line in fin:
                         if not line.startswith(nickname + ':'):
                             fout.write(line)
@@ -289,7 +291,7 @@ def record_login_failure(base_dir: str, ip_address: str,
     curr_time = datetime.datetime.utcnow()
     curr_time_str = curr_time.strftime("%Y-%m-%d %H:%M:%SZ")
     try:
-        with open(failure_log, write_type) as fp_fail:
+        with open(failure_log, write_type, encoding='utf-8') as fp_fail:
             # here we use a similar format to an ssh log, so that
             # systems such as fail2ban can parse it
             fp_fail.write(curr_time_str + ' ' +

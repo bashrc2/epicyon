@@ -211,7 +211,7 @@ def spoof_geolocation(base_dir: str,
                     "", "", 0)
         cities = []
         try:
-            with open(locations_filename, 'r') as loc_file:
+            with open(locations_filename, 'r', encoding='utf-8') as loc_file:
                 cities = loc_file.readlines()
         except OSError:
             print('EX: unable to read locations ' + locations_filename)
@@ -223,7 +223,7 @@ def spoof_geolocation(base_dir: str,
         if os.path.isfile(nogo_filename):
             nogo_list = []
             try:
-                with open(nogo_filename, 'r') as nogo_file:
+                with open(nogo_filename, 'r', encoding='utf-8') as nogo_file:
                     nogo_list = nogo_file.readlines()
             except OSError:
                 print('EX: unable to read ' + nogo_filename)
@@ -319,7 +319,7 @@ def get_spoofed_city(city: str, base_dir: str,
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(city_filename):
         try:
-            with open(city_filename, 'r') as city_file:
+            with open(city_filename, 'r', encoding='utf-8') as city_file:
                 city = city_file.read().replace('\n', '')
         except OSError:
             print('EX: unable to read ' + city_filename)

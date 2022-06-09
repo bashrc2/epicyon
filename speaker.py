@@ -146,7 +146,7 @@ def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
             ")": ","
         }
     if os.path.isfile(pronounce_filename):
-        with open(pronounce_filename, 'r') as fp_pro:
+        with open(pronounce_filename, 'r', encoding='utf-8') as fp_pro:
             pronounce_list = fp_pro.readlines()
             for conversion in pronounce_list:
                 separator = None
@@ -507,7 +507,7 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     accounts_dir = acct_dir(base_dir, nickname, domain_full)
     approve_follows_filename = accounts_dir + '/followrequests.txt'
     if os.path.isfile(approve_follows_filename):
-        with open(approve_follows_filename, 'r') as fp_foll:
+        with open(approve_follows_filename, 'r', encoding='utf-8') as fp_foll:
             follows = fp_foll.readlines()
             if len(follows) > 0:
                 follow_requests_exist = True
@@ -525,7 +525,7 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     liked_by = ''
     like_filename = accounts_dir + '/.newLike'
     if os.path.isfile(like_filename):
-        with open(like_filename, 'r') as fp_like:
+        with open(like_filename, 'r', encoding='utf-8') as fp_like:
             liked_by = fp_like.read()
     calendar_filename = accounts_dir + '/.newCalendar'
     post_cal = os.path.isfile(calendar_filename)
@@ -586,7 +586,7 @@ def update_speaker(base_dir: str, http_prefix: str,
                                system_language,
                                gender, box_name)
     try:
-        with open(cached_ssml_filename, 'w+') as fp_ssml:
+        with open(cached_ssml_filename, 'w+', encoding='utf-8') as fp_ssml:
             fp_ssml.write(ssml_str)
     except OSError:
         print('EX: unable to write ssml ' + cached_ssml_filename)

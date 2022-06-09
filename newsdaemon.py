@@ -46,7 +46,7 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
     index_filename = base_path + '/outbox.index'
 
     if os.path.isfile(index_filename):
-        if post_id not in open(index_filename).read():
+        if post_id not in open(index_filename, encoding='utf-8').read():
             try:
                 with open(index_filename, 'r+') as feeds_file:
                     content = feeds_file.read()
@@ -59,7 +59,7 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
                       index_filename + ' ' + str(ex))
     else:
         try:
-            with open(index_filename, 'w+') as feeds_file:
+            with open(index_filename, 'w+', encoding='utf-8') as feeds_file:
                 feeds_file.write(post_id + '\n')
         except OSError:
             print('EX: unable to write ' + index_filename)
@@ -70,7 +70,8 @@ def _save_arrived_time(base_dir: str, post_filename: str,
     """Saves the time when an rss post arrived to a file
     """
     try:
-        with open(post_filename + '.arrived', 'w+') as arrived_file:
+        with open(post_filename + '.arrived', 'w+',
+                  encoding='utf-8') as arrived_file:
             arrived_file.write(arrived)
     except OSError:
         print('EX: unable to write ' + post_filename + '.arrived')
@@ -394,7 +395,7 @@ def _newswire_hashtag_processing(session, base_dir: str, post_json_object: {},
     if not os.path.isfile(rules_filename):
         return True
     rules = []
-    with open(rules_filename, 'r') as fp_rules:
+    with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
         rules = fp_rules.readlines()
 
     domain_full = get_full_domain(domain, port)
@@ -466,7 +467,7 @@ def _create_news_mirror(base_dir: str, domain: str,
             # no index for mirrors found
             return True
         removals = []
-        with open(mirror_index_filename, 'r') as index_file:
+        with open(mirror_index_filename, 'r', encoding='utf-8') as index_file:
             # remove the oldest directories
             ctr = 0
             while no_of_dirs > max_mirrored_articles:
@@ -489,13 +490,15 @@ def _create_news_mirror(base_dir: str, domain: str,
         # remove the corresponding index entries
         if removals:
             index_content = ''
-            with open(mirror_index_filename, 'r') as index_file:
+            with open(mirror_index_filename, 'r',
+                      encoding='utf-8') as index_file:
                 index_content = index_file.read()
                 for remove_post_id in removals:
                     index_content = \
                         index_content.replace(remove_post_id + '\n', '')
             try:
-                with open(mirror_index_filename, 'w+') as index_file:
+                with open(mirror_index_filename, 'w+',
+                          encoding='utf-8') as index_file:
                     index_file.write(index_content)
             except OSError:
                 print('EX: unable to write ' + mirror_index_filename)
@@ -524,13 +527,15 @@ def _create_news_mirror(base_dir: str, domain: str,
     # append the post Id number to the index file
     if os.path.isfile(mirror_index_filename):
         try:
-            with open(mirror_index_filename, 'a+') as index_file:
+            with open(mirror_index_filename, 'a+',
+                      encoding='utf-8') as index_file:
                 index_file.write(post_id_number + '\n')
         except OSError:
             print('EX: unable to append ' + mirror_index_filename)
     else:
         try:
-            with open(mirror_index_filename, 'w+') as index_file:
+            with open(mirror_index_filename, 'w+',
+                      encoding='utf-8') as index_file:
                 index_file.write(post_id_number + '\n')
         except OSError:
             print('EX: unable to write ' + mirror_index_filename)

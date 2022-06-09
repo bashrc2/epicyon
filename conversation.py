@@ -43,15 +43,18 @@ def update_conversation(base_dir: str, nickname: str, domain: str,
     post_id = remove_id_ending(post_json_object['object']['id'])
     if not os.path.isfile(conversation_filename):
         try:
-            with open(conversation_filename, 'w+') as conv_file:
+            with open(conversation_filename, 'w+',
+                      encoding='utf-8') as conv_file:
                 conv_file.write(post_id + '\n')
                 return True
         except OSError:
             print('EX: update_conversation ' +
                   'unable to write to ' + conversation_filename)
-    elif post_id + '\n' not in open(conversation_filename).read():
+    elif post_id + '\n' not in open(conversation_filename,
+                                    encoding='utf-8').read():
         try:
-            with open(conversation_filename, 'a+') as conv_file:
+            with open(conversation_filename, 'a+',
+                      encoding='utf-8') as conv_file:
                 conv_file.write(post_id + '\n')
                 return True
         except OSError:
@@ -72,7 +75,8 @@ def mute_conversation(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(conversation_filename + '.muted'):
         return
     try:
-        with open(conversation_filename + '.muted', 'w+') as conv_file:
+        with open(conversation_filename + '.muted', 'w+',
+                  encoding='utf-8') as conv_file:
             conv_file.write('\n')
     except OSError:
         print('EX: unable to write mute ' + conversation_filename)

@@ -1006,7 +1006,7 @@ def _command_options() -> None:
                                     __version__, argb.language,
                                     signing_priv_key_pem)
         try:
-            with open('socnet.dot', 'w+') as fp_soc:
+            with open('socnet.dot', 'w+', encoding='utf-8') as fp_soc:
                 fp_soc.write(dot_graph)
                 print('Saved to socnet.dot')
         except OSError:
@@ -1453,7 +1453,8 @@ def _command_options() -> None:
         approve_follows_filename = accounts_dir + '/followrequests.txt'
         approve_ctr = 0
         if os.path.isfile(approve_follows_filename):
-            with open(approve_follows_filename, 'r') as approvefile:
+            with open(approve_follows_filename, 'r',
+                      encoding='utf-8') as approvefile:
                 for approve in approvefile:
                     print(approve.replace('\n', '').replace('\r', ''))
                     approve_ctr += 1

@@ -36,7 +36,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
     index_lines = []
     delete_schedule_post = False
     nickname = handle.split('@')[0]
-    with open(schedule_index_filename, 'r') as sched_file:
+    with open(schedule_index_filename, 'r', encoding='utf-8') as sched_file:
         for line in sched_file:
             if ' ' not in line:
                 continue
@@ -163,7 +163,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
     # write the new schedule index file
     schedule_index_file = \
         base_dir + '/accounts/' + handle + '/schedule.index'
-    with open(schedule_index_file, 'w+') as schedule_file:
+    with open(schedule_index_file, 'w+', encoding='utf-8') as schedule_file:
         for line in index_lines:
             schedule_file.write(line)
 

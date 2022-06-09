@@ -39,7 +39,7 @@ def get_understood_languages(base_dir: str, http_prefix: str,
     """
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
-        get_person_from_cache(base_dir, person_url, person_cache, False)
+        get_person_from_cache(base_dir, person_url, person_cache)
     if not actor_json:
         print('WARN: unable to load actor to obtain languages ' + person_url)
         return []
@@ -117,7 +117,7 @@ def understood_post_language(base_dir: str, nickname: str, domain: str,
         return True
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
-        get_person_from_cache(base_dir, person_url, person_cache, False)
+        get_person_from_cache(base_dir, person_url, person_cache)
     if not actor_json:
         print('WARN: unable to load actor to check languages ' + person_url)
         return False

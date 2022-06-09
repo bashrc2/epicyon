@@ -105,7 +105,7 @@ def meta_data_instance(show_accounts: bool,
     rules_filename = \
         base_dir + '/accounts/tos.md'
     if os.path.isfile(rules_filename):
-        with open(rules_filename, 'r') as fp_rules:
+        with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
             rules_lines = fp_rules.readlines()
             rule_ctr = 1
             for line in rules_lines:

@@ -41,7 +41,7 @@ from cache import get_person_from_cache
 
 def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
                         nickname: str, domain: str, domain_full: str,
-                        post_id: str, depth=0) -> int:
+                        post_id: str, depth: int = 0) -> int:
     """Returns the number of replies on the post
     This is recursive, so can handle replies to replies
     """
@@ -73,7 +73,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
     replies = 0
     lines = []
     try:
-        with open(post_filename, 'r') as post_file:
+        with open(post_filename, 'r', encoding='utf-8') as post_file:
             lines = post_file.readlines()
     except OSError:
         print('EX: failed to read blog ' + post_filename)
@@ -96,7 +96,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
         print('Rewriting ' + post_filename + ' to remove ' +
               str(len(removals)) + ' entries')
         try:
-            with open(post_filename, 'w+') as post_file:
+            with open(post_filename, 'w+', encoding='utf-8') as post_file:
                 for reply_post_id in lines:
                     reply_post_id = \
                         reply_post_id.replace('\n', '').replace('\r', '')
@@ -111,7 +111,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
 
 def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                       nickname: str, domain: str, domain_full: str,
-                      post_id: str, depth=0) -> str:
+                      post_id: str, depth: int = 0) -> str:
     """Returns a string containing html blog posts
     """
     if depth > 4:
@@ -140,7 +140,8 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                     post_id.replace('/', '#') + '.html'
                 if os.path.isfile(post_filename):
                     try:
-                        with open(post_filename, 'r') as post_file:
+                        with open(post_filename, 'r',
+                                  encoding='utf-8') as post_file:
                             return post_file.read() + '\n'
                     except OSError:
                         print('EX: unable to read blog 3 ' + post_filename)
@@ -148,7 +149,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
 
     lines = []
     try:
-        with open(post_filename, 'r') as post_file:
+        with open(post_filename, 'r', encoding='utf-8') as post_file:
             lines = post_file.readlines()
     except OSError:
         print('EX: unable to read blog 4 ' + post_filename)
@@ -165,7 +166,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
             if not os.path.isfile(post_filename):
                 continue
             try:
-                with open(post_filename, 'r') as post_file:
+                with open(post_filename, 'r', encoding='utf-8') as post_file:
                     replies_str += post_file.read() + '\n'
             except OSError:
                 print('EX: unable to read blog replies ' + post_filename)
@@ -271,7 +272,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
 
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
-        get_person_from_cache(base_dir, person_url, person_cache, False)
+        get_person_from_cache(base_dir, person_url, person_cache)
     languages_understood = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)
@@ -354,11 +355,8 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     return blog_str
 
 
-def _html_blog_post_rss2(authorized: bool,
-                         base_dir: str, http_prefix: str, translate: {},
-                         nickname: str, domain: str, domain_full: str,
-                         post_json_object: {},
-                         handle: str, restrict_to_domain: bool,
+def _html_blog_post_rss2(domain: str, post_json_object: {},
+                         restrict_to_domain: bool,
                          system_language: str) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
@@ -389,11 +387,8 @@ def _html_blog_post_rss2(authorized: bool,
     return rss_str
 
 
-def _html_blog_post_rss3(authorized: bool,
-                         base_dir: str, http_prefix: str, translate: {},
-                         nickname: str, domain: str, domain_full: str,
-                         post_json_object: {},
-                         handle: str, restrict_to_domain: bool,
+def _html_blog_post_rss3(domain: str, post_json_object: {},
+                         restrict_to_domain: bool,
                          system_language: str) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
@@ -605,8 +600,7 @@ def html_blog_page(authorized: bool, session,
     return blog_str + html_footer()
 
 
-def html_blog_page_rss2(authorized: bool, session,
-                        base_dir: str, http_prefix: str, translate: {},
+def html_blog_page_rss2(base_dir: str, http_prefix: str, translate: {},
                         nickname: str, domain: str, port: int,
                         no_of_items: int, page_number: int,
                         include_header: bool, system_language: str) -> str:
@@ -646,19 +640,14 @@ def html_blog_page_rss2(authorized: bool, session,
                 continue
 
             blog_rss2 += \
-                _html_blog_post_rss2(authorized, base_dir,
-                                     http_prefix, translate,
-                                     nickname, domain,
-                                     domain_full, item,
-                                     None, True, system_language)
+                _html_blog_post_rss2(domain, item, True, system_language)
 
     if include_header:
         return blog_rss2 + rss2footer()
     return blog_rss2
 
 
-def html_blog_page_rss3(authorized: bool, session,
-                        base_dir: str, http_prefix: str, translate: {},
+def html_blog_page_rss3(base_dir: str, http_prefix: str,
                         nickname: str, domain: str, port: int,
                         no_of_items: int, page_number: int,
                         system_language: str) -> str:
@@ -667,8 +656,6 @@ def html_blog_page_rss3(authorized: bool, session,
     if ' ' in nickname or '@' in nickname or \
        '\n' in nickname or '\r' in nickname:
         return None
-
-    domain_full = get_full_domain(domain, port)
 
     blog_rss3 = ''
 
@@ -690,12 +677,7 @@ def html_blog_page_rss3(authorized: bool, session,
                 continue
 
             blog_rss3 += \
-                _html_blog_post_rss3(authorized, base_dir,
-                                     http_prefix, translate,
-                                     nickname, domain,
-                                     domain_full, item,
-                                     None, True,
-                                     system_language)
+                _html_blog_post_rss3(domain, item, True, system_language)
 
     return blog_rss3
 
@@ -760,7 +742,7 @@ def html_blog_view(authorized: bool,
 
     domain_full = get_full_domain(domain, port)
 
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
@@ -778,9 +760,7 @@ def html_blog_view(authorized: bool,
 
 
 def html_edit_blog(media_instance: bool, translate: {},
-                   base_dir: str, http_prefix: str,
-                   path: str,
-                   page_number: int,
+                   base_dir: str, path: str, page_number: int,
                    nickname: str, domain: str,
                    post_url: str, system_language: str) -> str:
     """Edit a blog post after it was created
@@ -800,7 +780,8 @@ def html_edit_blog(media_instance: bool, translate: {},
 
     if os.path.isfile(base_dir + '/accounts/newpost.txt'):
         try:
-            with open(base_dir + '/accounts/newpost.txt', 'r') as file:
+            with open(base_dir + '/accounts/newpost.txt', 'r',
+                      encoding='utf-8') as file:
                 edit_blog_text = '<p>' + file.read() + '</p>'
         except OSError:
             print('EX: unable to read ' + base_dir + '/accounts/newpost.txt')
@@ -948,7 +929,8 @@ def path_contains_blog_link(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blog_index_filename):
         return None, None
-    if '#' + user_ending2[1] + '.' not in open(blog_index_filename).read():
+    if '#' + user_ending2[1] + '.' not in open(blog_index_filename,
+                                               encoding='utf-8').read():
         return None, None
     message_id = local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + user_ending2[1]

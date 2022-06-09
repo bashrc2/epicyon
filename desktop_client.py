@@ -169,12 +169,14 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
     read_posts_dir = home_dir + '/.config/epicyon/' + handle
     read_posts_filename = read_posts_dir + '/' + post_category + '.txt'
     if os.path.isfile(read_posts_filename):
-        if post_id in open(read_posts_filename).read():
+        if post_id in open(read_posts_filename,
+                           encoding='utf-8').read():
             return
         try:
             # prepend to read posts file
             post_id += '\n'
-            with open(read_posts_filename, 'r+') as read_file:
+            with open(read_posts_filename, 'r+',
+                      encoding='utf-8') as read_file:
                 content = read_file.read()
                 if post_id not in content:
                     read_file.seek(0, 0)
@@ -182,7 +184,7 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
         except Exception as ex:
             print('EX: Failed to mark post as read' + str(ex))
     else:
-        with open(read_posts_filename, 'w+') as read_file:
+        with open(read_posts_filename, 'w+', encoding='utf-8') as read_file:
             read_file.write(post_id + '\n')
 
 
@@ -292,7 +294,7 @@ def _desktop_show_banner() -> None:
         banner_filename = 'theme/' + banner_theme + '/banner.txt'
         if not os.path.isfile(banner_filename):
             return
-    with open(banner_filename, 'r') as banner_file:
+    with open(banner_filename, 'r', encoding='utf-8') as banner_file:
         banner = banner_file.read()
         if banner:
             print(banner + '\n')
@@ -1325,7 +1327,7 @@ def _desktop_show_follow_requests(follow_requests_json: {},
 
 def _desktop_show_following(following_json: {}, translate: {},
                             page_number: int, indent: str,
-                            followType='following') -> None:
+                            follow_type: str = 'following') -> None:
     """Shows a page of accounts followed
     """
     if not isinstance(following_json, dict):
@@ -1335,9 +1337,9 @@ def _desktop_show_following(following_json: {}, translate: {},
     if not following_json['orderedItems']:
         return
     print('')
-    if followType == 'following':
+    if follow_type == 'following':
         print(indent + 'Following page ' + str(page_number))
-    elif followType == 'followers':
+    elif follow_type == 'followers':
         print(indent + 'Followers page ' + str(page_number))
     print('')
     for item in following_json['orderedItems']:
@@ -2198,7 +2200,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       post_json_object,
                                                       nickname, password,
                                                       domain, port,
-                                                      http_prefix, post_id,
+                                                      http_prefix,
                                                       cached_webfingers,
                                                       person_cache,
                                                       True, __version__,

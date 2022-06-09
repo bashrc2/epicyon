@@ -75,7 +75,7 @@ def create_reject(base_dir: str, federation_list: [],
                                  http_prefix, object_json, 'Reject')
 
 
-def _accept_follow(base_dir: str, domain: str, message_json: {},
+def _accept_follow(base_dir: str, message_json: {},
                    federation_list: [], debug: bool,
                    curr_domain: str,
                    onion_domain: str, i2p_domain: str) -> None:
@@ -165,7 +165,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
         acct_dir(base_dir, nickname, accepted_domain_full) + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
         if followed_nickname + '@' + followed_domain_full in \
-           open(unfollowed_filename).read():
+           open(unfollowed_filename, encoding='utf-8').read():
             if debug:
                 print('DEBUG: follow accept arrived for ' +
                       nickname + '@' + accepted_domain_full +
@@ -195,14 +195,8 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
                   followed_nickname + '@' + followed_domain)
 
 
-def receive_accept_reject(session, base_dir: str,
-                          http_prefix: str, domain: str, port: int,
-                          send_threads: [], post_log: [],
-                          cached_webfingers: {},
-                          person_cache: {}, message_json: {},
-                          federation_list: [],
-                          debug: bool,
-                          curr_domain: str,
+def receive_accept_reject(base_dir: str, domain: str, message_json: {},
+                          federation_list: [], debug: bool, curr_domain: str,
                           onion_domain: str, i2p_domain: str) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
@@ -229,7 +223,7 @@ def receive_accept_reject(session, base_dir: str,
                   ' does not contain a nickname. ' +
                   'Assuming single user instance.')
     # receive follow accept
-    _accept_follow(base_dir, domain, message_json, federation_list, debug,
+    _accept_follow(base_dir, message_json, federation_list, debug,
                    curr_domain, onion_domain, i2p_domain)
     if debug:
         print('DEBUG: Uh, ' + message_json['type'] + ', I guess')

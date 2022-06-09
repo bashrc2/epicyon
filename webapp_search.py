@@ -442,7 +442,8 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     swarm_str = ''
     if os.path.isfile(cached_hashtag_swarm_filename):
         try:
-            with open(cached_hashtag_swarm_filename, 'r') as fp_swarm:
+            with open(cached_hashtag_swarm_filename, 'r',
+                      encoding='utf-8') as fp_swarm:
                 swarm_str = fp_swarm.read()
         except OSError:
             print('EX: html_search unable to read cached hashtag swarm ' +
@@ -451,7 +452,8 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
         swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
         if swarm_str:
             try:
-                with open(cached_hashtag_swarm_filename, 'w+') as fp_hash:
+                with open(cached_hashtag_swarm_filename, 'w+',
+                          encoding='utf-8') as fp_hash:
                     fp_hash.write(swarm_str)
             except OSError:
                 print('EX: html_search unable to save cached hashtag swarm ' +
@@ -757,7 +759,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             nickname = None
 
     # read the index
-    with open(hashtag_index_file, 'r') as fp_hash:
+    with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
         lines = fp_hash.readlines()
 
     # read the css
@@ -947,7 +949,7 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
 
     # read the index
     lines = []
-    with open(hashtag_index_file, 'r') as fp_hash:
+    with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
         lines = fp_hash.readlines()
     if not lines:
         return None

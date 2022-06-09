@@ -67,6 +67,9 @@ def webfinger_handle(session, handle: str, http_prefix: str,
                      debug: bool, group_account: bool,
                      signing_priv_key_pem: str) -> {}:
     """Gets webfinger result for the given ActivityPub handle
+    NOTE: in earlier implementations group_account modified the acct prefix.
+    This has been left in, because currently there is still no consensus
+    about how groups should be implemented.
     """
     if not session:
         print('WARN: No session specified for webfinger_handle')
@@ -159,6 +162,9 @@ def create_webfinger_endpoint(nickname: str, domain: str, port: int,
                               http_prefix: str, public_key_pem: str,
                               group_account: bool) -> {}:
     """Creates a webfinger endpoint for a user
+    NOTE: in earlier implementations group_account modified the acct prefix.
+    This has been left in, because currently there is still no consensus
+    about how groups should be implemented.
     """
     original_domain = domain
     domain = get_full_domain(domain, port)

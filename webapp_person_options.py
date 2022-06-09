@@ -444,7 +444,8 @@ def html_person_options(default_timeline: str,
                 acct_dir(base_dir, nickname, domain) + \
                 '/notes/' + handle + '.txt'
             if os.path.isfile(person_notes_filename):
-                with open(person_notes_filename, 'r') as fp_notes:
+                with open(person_notes_filename, 'r',
+                          encoding='utf-8') as fp_notes:
                     person_notes = fp_notes.read()
 
         options_str += \

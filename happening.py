@@ -70,12 +70,15 @@ def _remove_event_from_timeline(event_id: str,
                                 tl_events_filename: str) -> None:
     """Removes the given event Id from the timeline
     """
-    if event_id + '\n' not in open(tl_events_filename).read():
+    if event_id + '\n' not in open(tl_events_filename,
+                                   encoding='utf-8').read():
         return
-    with open(tl_events_filename, 'r') as fp_tl:
+    with open(tl_events_filename, 'r',
+              encoding='utf-8') as fp_tl:
         events_timeline = fp_tl.read().replace(event_id + '\n', '')
         try:
-            with open(tl_events_filename, 'w+') as fp2:
+            with open(tl_events_filename, 'w+',
+                      encoding='utf-8') as fp2:
                 fp2.write(events_timeline)
         except OSError:
             print('EX: ERROR: unable to save events timeline')
@@ -135,7 +138,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         if os.path.isfile(tl_events_filename):
             _remove_event_from_timeline(event_id, tl_events_filename)
             try:
-                with open(tl_events_filename, 'r+') as tl_events_file:
+                with open(tl_events_filename, 'r+',
+                          encoding='utf-8') as tl_events_file:
                     content = tl_events_file.read()
                     if event_id + '\n' not in content:
                         tl_events_file.seek(0, 0)
@@ -146,7 +150,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
                 return False
         else:
             try:
-                with open(tl_events_filename, 'w+') as tl_events_file:
+                with open(tl_events_filename, 'w+',
+                          encoding='utf-8') as tl_events_file:
                     tl_events_file.write(event_id + '\n')
             except OSError:
                 print('EX: unable to write ' + tl_events_filename)
@@ -161,13 +166,14 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
     # Does this event post already exist within the calendar month?
     if os.path.isfile(calendar_filename):
-        if post_id in open(calendar_filename).read():
+        if post_id in open(calendar_filename,
+                           encoding='utf-8').read():
             # Event post already exists
             return False
 
     # append the post Id to the file for the calendar month
     try:
-        with open(calendar_filename, 'a+') as calendar_file:
+        with open(calendar_filename, 'a+', encoding='utf-8') as calendar_file:
             calendar_file.write(post_id + '\n')
     except OSError:
         print('EX: unable to append ' + calendar_filename)
@@ -179,7 +185,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         '/calendar?year=' + str(event_year) + '?month=' + \
         str(event_month_number) + '?day=' + str(event_day_of_month)
     try:
-        with open(cal_notify_filename, 'w+') as cal_file:
+        with open(cal_notify_filename, 'w+', encoding='utf-8') as cal_file:
             cal_file.write(notify_str)
     except OSError:
         print('EX: unable to write ' + cal_notify_filename)
@@ -255,7 +261,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
 
     calendar_post_ids = []
     recreate_events_file = False
-    with open(calendar_filename, 'r') as events_file:
+    with open(calendar_filename, 'r', encoding='utf-8') as events_file:
         for post_id in events_file:
             post_id = post_id.replace('\n', '').replace('\r', '')
             post_filename = locate_post(base_dir, nickname, domain, post_id)
@@ -321,7 +327,8 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
     # if some posts have been deleted then regenerate the calendar file
     if recreate_events_file:
         try:
-            with open(calendar_filename, 'w+') as calendar_file:
+            with open(calendar_filename, 'w+',
+                      encoding='utf-8') as calendar_file:
                 for post_id in calendar_post_ids:
                     calendar_file.write(post_id + '\n')
         except OSError:
@@ -553,7 +560,7 @@ def day_events_check(base_dir: str, nickname: str, domain: str,
         return False
 
     events_exist = False
-    with open(calendar_filename, 'r') as events_file:
+    with open(calendar_filename, 'r', encoding='utf-8') as events_file:
         for post_id in events_file:
             post_id = post_id.replace('\n', '').replace('\r', '')
             post_filename = locate_post(base_dir, nickname, domain, post_id)
@@ -649,7 +656,8 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
     # if some posts have been deleted then regenerate the calendar file
     if recreate_events_file:
         try:
-            with open(calendar_filename, 'w+') as calendar_file:
+            with open(calendar_filename, 'w+',
+                      encoding='utf-8') as calendar_file:
                 for post_id in calendar_post_ids:
                     calendar_file.write(post_id + '\n')
         except OSError:
@@ -675,7 +683,7 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
 
     calendar_post_ids = []
     recreate_events_file = False
-    with open(calendar_filename, 'r') as events_file:
+    with open(calendar_filename, 'r', encoding='utf-8') as events_file:
         for post_id in events_file:
             post_id = post_id.replace('\n', '').replace('\r', '')
             post_filename = locate_post(base_dir, nickname, domain, post_id)
@@ -730,7 +738,8 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
     # if some posts have been deleted then regenerate the calendar file
     if recreate_events_file:
         try:
-            with open(calendar_filename, 'w+') as calendar_file:
+            with open(calendar_filename, 'w+',
+                      encoding='utf-8') as calendar_file:
                 for post_id in calendar_post_ids:
                     calendar_file.write(post_id + '\n')
         except OSError:
@@ -751,15 +760,15 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
         return
     if '/' in message_id:
         message_id = message_id.replace('/', '#')
-    if message_id not in open(calendar_filename).read():
+    if message_id not in open(calendar_filename, encoding='utf-8').read():
         return
     lines = None
-    with open(calendar_filename, 'r') as fp_cal:
+    with open(calendar_filename, 'r', encoding='utf-8') as fp_cal:
         lines = fp_cal.readlines()
     if not lines:
         return
     try:
-        with open(calendar_filename, 'w+') as fp_cal:
+        with open(calendar_filename, 'w+', encoding='utf-8') as fp_cal:
             for line in lines:
                 if message_id not in line:
                     fp_cal.write(line)

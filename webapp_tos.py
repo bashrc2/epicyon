@@ -32,7 +32,8 @@ def html_terms_of_service(base_dir: str,
 
     tos_text = 'Terms of Service go here.'
     if os.path.isfile(base_dir + '/accounts/tos.md'):
-        with open(base_dir + '/accounts/tos.md', 'r') as file:
+        with open(base_dir + '/accounts/tos.md', 'r',
+                  encoding='utf-8') as file:
             tos_text = markdown_to_html(file.read())
 
     tos_form = ''

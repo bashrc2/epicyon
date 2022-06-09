@@ -36,7 +36,7 @@ def welcome_screen_is_complete(base_dir: str,
     if not os.path.isdir(account_path):
         return
     complete_filename = account_path + '/.welcome_complete'
-    with open(complete_filename, 'w+') as fp_comp:
+    with open(complete_filename, 'w+', encoding='utf-8') as fp_comp:
         fp_comp.write('\n')
 
 
@@ -77,7 +77,7 @@ def html_welcome_screen(base_dir: str, nickname: str,
         instance_title = 'Epicyon'
 
     if os.path.isfile(welcome_filename):
-        with open(welcome_filename, 'r') as fp_wel:
+        with open(welcome_filename, 'r', encoding='utf-8') as fp_wel:
             welcome_text = fp_wel.read()
             welcome_text = welcome_text.replace('INSTANCE', instance_title)
             welcome_text = markdown_to_html(remove_html(welcome_text))

@@ -46,11 +46,12 @@ def add_global_block(base_dir: str,
         # is the handle already blocked?
         block_handle = block_nickname + '@' + block_domain
         if os.path.isfile(blocking_filename):
-            if block_handle in open(blocking_filename).read():
+            if block_handle in open(blocking_filename,
+                                    encoding='utf-8').read():
                 return False
         # block an account handle or domain
         try:
-            with open(blocking_filename, 'a+') as block_file:
+            with open(blocking_filename, 'a+', encoding='utf-8') as block_file:
                 block_file.write(block_handle + '\n')
         except OSError:
             print('EX: unable to save blocked handle ' + block_handle)
@@ -59,11 +60,12 @@ def add_global_block(base_dir: str,
         block_hashtag = block_nickname
         # is the hashtag already blocked?
         if os.path.isfile(blocking_filename):
-            if block_hashtag + '\n' in open(blocking_filename).read():
+            if block_hashtag + '\n' in \
+               open(blocking_filename, encoding='utf-8').read():
                 return False
         # block a hashtag
         try:
-            with open(blocking_filename, 'a+') as block_file:
+            with open(blocking_filename, 'a+', encoding='utf-8') as block_file:
                 block_file.write(block_hashtag + '\n')
         except OSError:
             print('EX: unable to save blocked hashtag ' + block_hashtag)
@@ -83,17 +85,20 @@ def add_block(base_dir: str, nickname: str, domain: str,
     blocking_filename = acct_dir(base_dir, nickname, domain) + '/blocking.txt'
     block_handle = block_nickname + '@' + block_domain
     if os.path.isfile(blocking_filename):
-        if block_handle + '\n' in open(blocking_filename).read():
+        if block_handle + '\n' in open(blocking_filename,
+                                       encoding='utf-8').read():
             return False
 
     # if we are following then unfollow
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
-        if block_handle + '\n' in open(following_filename).read():
+        if block_handle + '\n' in open(following_filename,
+                                       encoding='utf-8').read():
             following_str = ''
             try:
-                with open(following_filename, 'r') as foll_file:
+                with open(following_filename, 'r',
+                          encoding='utf-8') as foll_file:
                     following_str = foll_file.read()
             except OSError:
                 print('EX: Unable to read following ' + following_filename)
@@ -103,7 +108,8 @@ def add_block(base_dir: str, nickname: str, domain: str,
                 following_str = following_str.replace(block_handle + '\n', '')
 
             try:
-                with open(following_filename, 'w+') as foll_file:
+                with open(following_filename, 'w+',
+                          encoding='utf-8') as foll_file:
                     foll_file.write(following_str)
             except OSError:
                 print('EX: Unable to write following ' + following_str)
@@ -113,10 +119,12 @@ def add_block(base_dir: str, nickname: str, domain: str,
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
-        if block_handle + '\n' in open(followers_filename).read():
+        if block_handle + '\n' in open(followers_filename,
+                                       encoding='utf-8').read():
             followers_str = ''
             try:
-                with open(followers_filename, 'r') as foll_file:
+                with open(followers_filename, 'r',
+                          encoding='utf-8') as foll_file:
                     followers_str = foll_file.read()
             except OSError:
                 print('EX: Unable to read followers ' + followers_filename)
@@ -126,14 +134,15 @@ def add_block(base_dir: str, nickname: str, domain: str,
                 followers_str = followers_str.replace(block_handle + '\n', '')
 
             try:
-                with open(followers_filename, 'w+') as foll_file:
+                with open(followers_filename, 'w+',
+                          encoding='utf-8') as foll_file:
                     foll_file.write(followers_str)
             except OSError:
                 print('EX: Unable to write followers ' + followers_str)
                 return False
 
     try:
-        with open(blocking_filename, 'a+') as block_file:
+        with open(blocking_filename, 'a+', encoding='utf-8') as block_file:
             block_file.write(block_handle + '\n')
     except OSError:
         print('EX: unable to append block handle ' + block_handle)
@@ -150,10 +159,13 @@ def remove_global_block(base_dir: str,
     if not unblock_nickname.startswith('#'):
         unblock_handle = unblock_nickname + '@' + unblock_domain
         if os.path.isfile(unblocking_filename):
-            if unblock_handle in open(unblocking_filename).read():
+            if unblock_handle in open(unblocking_filename,
+                                      encoding='utf-8').read():
                 try:
-                    with open(unblocking_filename, 'r') as fp_unblock:
-                        with open(unblocking_filename + '.new', 'w+') as fpnew:
+                    with open(unblocking_filename, 'r',
+                              encoding='utf-8') as fp_unblock:
+                        with open(unblocking_filename + '.new', 'w+',
+                                  encoding='utf-8') as fpnew:
                             for line in fp_unblock:
                                 handle = \
                                     line.replace('\n', '').replace('\r', '')
@@ -175,10 +187,13 @@ def remove_global_block(base_dir: str,
     else:
         unblock_hashtag = unblock_nickname
         if os.path.isfile(unblocking_filename):
-            if unblock_hashtag + '\n' in open(unblocking_filename).read():
+            if unblock_hashtag + '\n' in open(unblocking_filename,
+                                              encoding='utf-8').read():
                 try:
-                    with open(unblocking_filename, 'r') as fp_unblock:
-                        with open(unblocking_filename + '.new', 'w+') as fpnew:
+                    with open(unblocking_filename, 'r',
+                              encoding='utf-8') as fp_unblock:
+                        with open(unblocking_filename + '.new', 'w+',
+                                  encoding='utf-8') as fpnew:
                             for line in fp_unblock:
                                 block_line = \
                                     line.replace('\n', '').replace('\r', '')
@@ -209,10 +224,13 @@ def remove_block(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/blocking.txt'
     unblock_handle = unblock_nickname + '@' + unblock_domain
     if os.path.isfile(unblocking_filename):
-        if unblock_handle in open(unblocking_filename).read():
+        if unblock_handle in open(unblocking_filename,
+                                  encoding='utf-8').read():
             try:
-                with open(unblocking_filename, 'r') as fp_unblock:
-                    with open(unblocking_filename + '.new', 'w+') as fpnew:
+                with open(unblocking_filename, 'r',
+                          encoding='utf-8') as fp_unblock:
+                    with open(unblocking_filename + '.new', 'w+',
+                              encoding='utf-8') as fpnew:
                         for line in fp_unblock:
                             handle = line.replace('\n', '').replace('\r', '')
                             if unblock_handle not in line:
@@ -244,7 +262,8 @@ def is_blocked_hashtag(base_dir: str, hashtag: str) -> bool:
         hashtag = hashtag.strip('\n').strip('\r')
         if not hashtag.startswith('#'):
             hashtag = '#' + hashtag
-        if hashtag + '\n' in open(global_blocking_filename).read():
+        if hashtag + '\n' in open(global_blocking_filename,
+                                  encoding='utf-8').read():
             return True
     return False
 
@@ -263,7 +282,8 @@ def get_domain_blocklist(base_dir: str) -> str:
     if not os.path.isfile(global_blocking_filename):
         return blocked_str
     try:
-        with open(global_blocking_filename, 'r') as fp_blocked:
+        with open(global_blocking_filename, 'r',
+                  encoding='utf-8') as fp_blocked:
             blocked_str += fp_blocked.read()
     except OSError:
         print('EX: unable to read ' + global_blocking_filename)
@@ -287,7 +307,8 @@ def update_blocked_cache(base_dir: str,
     if not os.path.isfile(global_blocking_filename):
         return blocked_cache_last_updated
     try:
-        with open(global_blocking_filename, 'r') as fp_blocked:
+        with open(global_blocking_filename, 'r',
+                  encoding='utf-8') as fp_blocked:
             blocked_lines = fp_blocked.readlines()
             # remove newlines
             for index, _ in enumerate(blocked_lines):
@@ -337,7 +358,8 @@ def is_blocked_domain(base_dir: str, domain: str,
             global_blocking_filename = base_dir + '/accounts/blocking.txt'
             if os.path.isfile(global_blocking_filename):
                 try:
-                    with open(global_blocking_filename, 'r') as fp_blocked:
+                    with open(global_blocking_filename, 'r',
+                              encoding='utf-8') as fp_blocked:
                         blocked_str = fp_blocked.read()
                         if '*@' + domain + '\n' in blocked_str:
                             return True
@@ -351,10 +373,11 @@ def is_blocked_domain(base_dir: str, domain: str,
         allow_filename = base_dir + '/accounts/allowedinstances.txt'
         # instance allow list
         if not short_domain:
-            if domain not in open(allow_filename).read():
+            if domain not in open(allow_filename, encoding='utf-8').read():
                 return True
         else:
-            if short_domain not in open(allow_filename).read():
+            if short_domain not in open(allow_filename,
+                                        encoding='utf-8').read():
                 return True
 
     return False
@@ -384,43 +407,49 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
         else:
             global_blocks_filename = base_dir + '/accounts/blocking.txt'
             if os.path.isfile(global_blocks_filename):
-                if '*@' + block_domain in open(global_blocks_filename).read():
+                if '*@' + block_domain in open(global_blocks_filename,
+                                               encoding='utf-8').read():
                     return True
                 if block_handle:
                     block_str = block_handle + '\n'
-                    if block_str in open(global_blocks_filename).read():
+                    if block_str in open(global_blocks_filename,
+                                         encoding='utf-8').read():
                         return True
     else:
         # instance allow list
         allow_filename = base_dir + '/accounts/allowedinstances.txt'
         short_domain = _get_short_domain(block_domain)
         if not short_domain:
-            if block_domain + '\n' not in open(allow_filename).read():
+            if block_domain + '\n' not in open(allow_filename,
+                                               encoding='utf-8').read():
                 return True
         else:
-            if short_domain + '\n' not in open(allow_filename).read():
+            if short_domain + '\n' not in open(allow_filename,
+                                               encoding='utf-8').read():
                 return True
 
     # account level allow list
     account_dir = acct_dir(base_dir, nickname, domain)
     allow_filename = account_dir + '/allowedinstances.txt'
     if os.path.isfile(allow_filename):
-        if block_domain + '\n' not in open(allow_filename).read():
+        if block_domain + '\n' not in open(allow_filename,
+                                           encoding='utf-8').read():
             return True
 
     # account level block list
     blocking_filename = account_dir + '/blocking.txt'
     if os.path.isfile(blocking_filename):
-        if '*@' + block_domain + '\n' in open(blocking_filename).read():
+        if '*@' + block_domain + '\n' in open(blocking_filename,
+                                              encoding='utf-8').read():
             return True
         if block_handle:
-            if block_handle + '\n' in open(blocking_filename).read():
+            if block_handle + '\n' in open(blocking_filename,
+                                           encoding='utf-8').read():
                 return True
     return False
 
 
-def outbox_block(base_dir: str, http_prefix: str,
-                 nickname: str, domain: str, port: int,
+def outbox_block(base_dir: str, nickname: str, domain: str,
                  message_json: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
     """
@@ -606,7 +635,8 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
             print('MUTE: cached post not found ' + cached_post_filename)
 
     try:
-        with open(post_filename + '.muted', 'w+') as mute_file:
+        with open(post_filename + '.muted', 'w+',
+                  encoding='utf-8') as mute_file:
             mute_file.write('\n')
     except OSError:
         print('EX: Failed to save mute file ' + post_filename + '.muted')
@@ -926,7 +956,8 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
                     if not os.path.isfile(following_filename):
                         continue
                     try:
-                        with open(following_filename, 'r') as foll_file:
+                        with open(following_filename, 'r',
+                                  encoding='utf-8') as foll_file:
                             follow_list = foll_file.readlines()
                             for handle in follow_list:
                                 if '@' not in handle:
@@ -942,7 +973,8 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
 
         # write the allow file
         try:
-            with open(allow_filename, 'w+') as allow_file:
+            with open(allow_filename, 'w+',
+                      encoding='utf-8') as allow_file:
                 allow_file.write(domain_full + '\n')
                 for allowed in allowed_domains:
                     allow_file.write(allowed + '\n')
@@ -1083,7 +1115,7 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
         post_json_object['object']['sensitive'] = True
 
 
-def get_cw_list_variable(listName: str) -> str:
+def get_cw_list_variable(list_name: str) -> str:
     """Returns the variable associated with a CW list
     """
-    return 'list' + listName.replace(' ', '').replace("'", '')
+    return 'list' + list_name.replace(' ', '').replace("'", '')
