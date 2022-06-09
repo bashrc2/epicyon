@@ -53,10 +53,11 @@ def insert_question(base_dir: str, translate: {},
                 continue
             content += \
                 '<input type="radio" name="answer" value="' + \
-                choice['name'] + '"> ' + choice['name'] + '<br><br>\n'
+                choice['name'] + '" tabindex="10"> ' + \
+                choice['name'] + '<br><br>\n'
         content += \
             '<input type="submit" value="' + \
-            translate['Vote'] + '" class="vote"><br><br>\n'
+            translate['Vote'] + '" class="vote" tabindex="10"><br><br>\n'
         content += '</form>\n</div>\n'
     else:
         # show the responses to a question
