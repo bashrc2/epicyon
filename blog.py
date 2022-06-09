@@ -272,7 +272,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
 
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
-        get_person_from_cache(base_dir, person_url, person_cache, False)
+        get_person_from_cache(base_dir, person_url, person_cache)
     languages_understood = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)

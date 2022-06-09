@@ -1686,8 +1686,7 @@ def get_person_avatar_url(base_dir: str, person_url: str, person_cache: {},
     """Returns the avatar url for the person
     """
     person_json = \
-        get_person_from_cache(base_dir, person_url, person_cache,
-                              allow_downloads)
+        get_person_from_cache(base_dir, person_url, person_cache)
     if not person_json:
         return None
 

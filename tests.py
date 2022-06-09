@@ -679,7 +679,7 @@ def _test_cache():
     }
     person_cache = {}
     store_person_in_cache(None, person_url, person_json, person_cache, True)
-    result = get_person_from_cache(None, person_url, person_cache, True)
+    result = get_person_from_cache(None, person_url, person_cache)
     assert result['id'] == 123456
     assert result['test'] == 'This is a test'
 

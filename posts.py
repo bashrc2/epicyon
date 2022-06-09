@@ -313,7 +313,7 @@ def _get_person_box_actor(session, base_dir: str, actor: str,
     """Returns the actor json for the given actor url
     """
     person_json = \
-        get_person_from_cache(base_dir, actor, person_cache, True)
+        get_person_from_cache(base_dir, actor, person_cache)
     if person_json:
         return person_json
 

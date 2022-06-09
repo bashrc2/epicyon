@@ -7935,8 +7935,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor_json = \
                 get_person_from_cache(base_dir,
                                       options_actor,
-                                      self.server.person_cache,
-                                      True)
+                                      self.server.person_cache)
             if actor_json:
                 if actor_json.get('movedTo'):
                     moved_to = actor_json['movedTo']

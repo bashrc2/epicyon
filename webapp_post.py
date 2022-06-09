@@ -1116,8 +1116,7 @@ def _get_post_title_announce_html(base_dir: str,
                 container_class_icons, container_class)
 
     announce_domain, _ = get_domain_from_actor(attributed_to)
-    get_person_from_cache(base_dir, attributed_to,
-                          person_cache, allow_downloads)
+    get_person_from_cache(base_dir, attributed_to, person_cache)
     announce_display_name = \
         get_display_name(base_dir, attributed_to, person_cache)
     if announce_display_name:
@@ -1325,7 +1324,7 @@ def _get_post_title_reply_html(base_dir: str,
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
-    get_person_from_cache(base_dir, reply_actor, person_cache, allow_downloads)
+    get_person_from_cache(base_dir, reply_actor, person_cache)
     reply_display_name = \
         get_display_name(base_dir, reply_actor, person_cache)
     if reply_display_name:
@@ -2121,7 +2120,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     domain_full = get_full_domain(domain, port)
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
-        get_person_from_cache(base_dir, person_url, person_cache, False)
+        get_person_from_cache(base_dir, person_url, person_cache)
     languages_understood = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)

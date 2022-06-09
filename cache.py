@@ -77,8 +77,8 @@ def store_person_in_cache(base_dir: str, person_url: str,
             save_json(person_json, cache_filename)
 
 
-def get_person_from_cache(base_dir: str, person_url: str, person_cache: {},
-                          allow_write_to_file: bool) -> {}:
+def get_person_from_cache(base_dir: str, person_url: str,
+                          person_cache: {}) -> {}:
     """Get an actor from the cache
     """
     # if the actor is not in memory then try to load it from file
@@ -157,7 +157,7 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
                 person_url.replace(possible_users_path + 'inbox', '/inbox')
             break
     person_json = \
-        get_person_from_cache(base_dir, person_url, person_cache, True)
+        get_person_from_cache(base_dir, person_url, person_cache)
     if not person_json:
         if debug:
             print('DEBUG: Obtaining public key for ' + person_url)

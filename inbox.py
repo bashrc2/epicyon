@@ -2058,7 +2058,6 @@ def _receive_undo_bookmark(recent_posts_cache: {},
 
     undo_bookmarks_collection_entry(recent_posts_cache, base_dir,
                                     post_filename,
-                                    message_json['object']['url'],
                                     message_json['actor'], domain, debug)
     # regenerate the html
     bookmarked_post_json = load_json(post_filename, 0, 1)

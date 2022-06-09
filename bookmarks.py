@@ -34,7 +34,6 @@ from session import post_json
 
 def undo_bookmarks_collection_entry(recent_posts_cache: {},
                                     base_dir: str, post_filename: str,
-                                    object_url: str,
                                     actor: str, domain: str,
                                     debug: bool) -> None:
     """Undoes a bookmark for a particular actor
@@ -366,7 +365,7 @@ def undo_bookmark_post(recent_posts_cache: {},
             return None
 
         undo_bookmarks_collection_entry(recent_posts_cache,
-                                        base_dir, post_filename, object_url,
+                                        base_dir, post_filename,
                                         new_undo_bookmark_json['actor'],
                                         domain, debug)
     else:
