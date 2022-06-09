@@ -7643,9 +7643,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
                 msg = \
-                    html_blog_page_rss2(authorized,
-                                        curr_session,
-                                        base_dir,
+                    html_blog_page_rss2(base_dir,
                                         http_prefix,
                                         self.server.translate,
                                         nickname,
@@ -7698,9 +7696,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = acct.split('@')[0]
                 domain = acct.split('@')[1]
                 msg += \
-                    html_blog_page_rss2(authorized,
-                                        curr_session,
-                                        base_dir,
+                    html_blog_page_rss2(base_dir,
                                         http_prefix,
                                         self.server.translate,
                                         nickname,
@@ -7807,8 +7803,7 @@ class PubServer(BaseHTTPRequestHandler):
                   path + ' ' + calling_domain)
         self._404()
 
-    def _get_rss3feed(self, authorized: bool,
-                      calling_domain: str, path: str,
+    def _get_rss3feed(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, port: int, proxy_type: str,
                       getreq_start_time,
@@ -7829,10 +7824,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     return
                 msg = \
-                    html_blog_page_rss3(authorized,
-                                        curr_session,
-                                        base_dir, http_prefix,
-                                        self.server.translate,
+                    html_blog_page_rss3(base_dir, http_prefix,
                                         nickname, domain, port,
                                         MAX_POSTS_IN_RSS_FEED, 1,
                                         system_language)
@@ -15642,8 +15634,7 @@ class PubServer(BaseHTTPRequestHandler):
         # RSS 3.0
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.txt'):
-            self._get_rss3feed(authorized,
-                               calling_domain, self.path,
+            self._get_rss3feed(calling_domain, self.path,
                                self.server.base_dir,
                                self.server.http_prefix,
                                self.server.domain,
@@ -17645,7 +17636,6 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = html_edit_blog(self.server.media_instance,
                                          self.server.translate,
                                          self.server.base_dir,
-                                         self.server.http_prefix,
                                          self.path, reply_page_number,
                                          nickname, self.server.domain,
                                          post_url,

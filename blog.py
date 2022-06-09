@@ -354,11 +354,8 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     return blog_str
 
 
-def _html_blog_post_rss2(authorized: bool,
-                         base_dir: str, http_prefix: str, translate: {},
-                         nickname: str, domain: str, domain_full: str,
-                         post_json_object: {},
-                         handle: str, restrict_to_domain: bool,
+def _html_blog_post_rss2(domain: str, post_json_object: {},
+                         restrict_to_domain: bool,
                          system_language: str) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
@@ -389,11 +386,8 @@ def _html_blog_post_rss2(authorized: bool,
     return rss_str
 
 
-def _html_blog_post_rss3(authorized: bool,
-                         base_dir: str, http_prefix: str, translate: {},
-                         nickname: str, domain: str, domain_full: str,
-                         post_json_object: {},
-                         handle: str, restrict_to_domain: bool,
+def _html_blog_post_rss3(domain: str, post_json_object: {},
+                         restrict_to_domain: bool,
                          system_language: str) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
@@ -605,8 +599,7 @@ def html_blog_page(authorized: bool, session,
     return blog_str + html_footer()
 
 
-def html_blog_page_rss2(authorized: bool, session,
-                        base_dir: str, http_prefix: str, translate: {},
+def html_blog_page_rss2(base_dir: str, http_prefix: str, translate: {},
                         nickname: str, domain: str, port: int,
                         no_of_items: int, page_number: int,
                         include_header: bool, system_language: str) -> str:
@@ -646,19 +639,14 @@ def html_blog_page_rss2(authorized: bool, session,
                 continue
 
             blog_rss2 += \
-                _html_blog_post_rss2(authorized, base_dir,
-                                     http_prefix, translate,
-                                     nickname, domain,
-                                     domain_full, item,
-                                     None, True, system_language)
+                _html_blog_post_rss2(domain, item, True, system_language)
 
     if include_header:
         return blog_rss2 + rss2footer()
     return blog_rss2
 
 
-def html_blog_page_rss3(authorized: bool, session,
-                        base_dir: str, http_prefix: str, translate: {},
+def html_blog_page_rss3(base_dir: str, http_prefix: str,
                         nickname: str, domain: str, port: int,
                         no_of_items: int, page_number: int,
                         system_language: str) -> str:
@@ -667,8 +655,6 @@ def html_blog_page_rss3(authorized: bool, session,
     if ' ' in nickname or '@' in nickname or \
        '\n' in nickname or '\r' in nickname:
         return None
-
-    domain_full = get_full_domain(domain, port)
 
     blog_rss3 = ''
 
@@ -690,12 +676,7 @@ def html_blog_page_rss3(authorized: bool, session,
                 continue
 
             blog_rss3 += \
-                _html_blog_post_rss3(authorized, base_dir,
-                                     http_prefix, translate,
-                                     nickname, domain,
-                                     domain_full, item,
-                                     None, True,
-                                     system_language)
+                _html_blog_post_rss3(domain, item, True, system_language)
 
     return blog_rss3
 
@@ -760,7 +741,7 @@ def html_blog_view(authorized: bool,
 
     domain_full = get_full_domain(domain, port)
 
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
@@ -778,9 +759,7 @@ def html_blog_view(authorized: bool,
 
 
 def html_edit_blog(media_instance: bool, translate: {},
-                   base_dir: str, http_prefix: str,
-                   path: str,
-                   page_number: int,
+                   base_dir: str, path: str, page_number: int,
                    nickname: str, domain: str,
                    post_url: str, system_language: str) -> str:
     """Edit a blog post after it was created
