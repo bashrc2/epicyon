@@ -20758,12 +20758,12 @@ class EpicyonServer(ThreadingHTTPServer):
 
 
 def run_posts_queue(base_dir: str, send_threads: [], debug: bool,
-                    timeoutMins: int) -> None:
+                    timeout_mins: int) -> None:
     """Manages the threads used to send posts
     """
     while True:
         time.sleep(1)
-        remove_dormant_threads(base_dir, send_threads, debug, timeoutMins)
+        remove_dormant_threads(base_dir, send_threads, debug, timeout_mins)
 
 
 def run_shares_expire(version_number: str, base_dir: str) -> None:
