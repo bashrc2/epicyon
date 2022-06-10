@@ -522,7 +522,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             os.mkdir(base_dir + private_keys_subdir)
         filename = base_dir + private_keys_subdir + '/' + handle + '.key'
         try:
-            with open(filename, 'w+') as text_file:
+            with open(filename, 'w+', encoding='utf-8') as text_file:
                 print(private_key_pem, file=text_file)
         except OSError:
             print('EX: unable to save ' + filename)
@@ -533,7 +533,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             os.mkdir(base_dir + public_keys_subdir)
         filename = base_dir + public_keys_subdir + '/' + handle + '.pem'
         try:
-            with open(filename, 'w+') as text_file:
+            with open(filename, 'w+', encoding='utf-8') as text_file:
                 print(public_key_pem, file=text_file)
         except OSError:
             print('EX: unable to save 2 ' + filename)

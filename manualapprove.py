@@ -117,13 +117,15 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
     if os.path.isfile(approved_filename):
         if not text_in_file(approve_handle, approved_filename):
             try:
-                with open(approved_filename, 'a+') as approved_file:
+                with open(approved_filename, 'a+',
+                          encoding='utf-8') as approved_file:
                     approved_file.write(approve_handle + '\n')
             except OSError:
                 print('EX: unable to append ' + approved_filename)
     else:
         try:
-            with open(approved_filename, 'w+') as approved_file:
+            with open(approved_filename, 'w+',
+                      encoding='utf-8') as approved_file:
                 approved_file.write(approve_handle + '\n')
         except OSError:
             print('EX: unable to write ' + approved_filename)

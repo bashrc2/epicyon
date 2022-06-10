@@ -615,7 +615,7 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
 
     calendar_post_ids = []
     recreate_events_file = False
-    with open(calendar_filename, 'r') as events_file:
+    with open(calendar_filename, 'r', encoding='utf-8') as events_file:
         for post_id in events_file:
             post_id = post_id.replace('\n', '').replace('\r', '')
             post_filename = locate_post(base_dir, nickname, domain, post_id)

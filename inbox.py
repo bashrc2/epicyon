@@ -4170,7 +4170,8 @@ def _inbox_after_initial(server, inbox_start_time,
                 print('MUTE REPLY: ' + destination_filename)
                 destination_filename_muted = destination_filename + '.muted'
                 try:
-                    with open(destination_filename_muted, 'w+') as mute_file:
+                    with open(destination_filename_muted, 'w+',
+                              encoding='utf-8') as mute_file:
                         mute_file.write('\n')
                 except OSError:
                     print('EX: unable to write ' + destination_filename_muted)
@@ -4592,7 +4593,8 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
 
         if not already_unknown:
             try:
-                with open(unknown_signatures_file, 'a+') as unknown_file:
+                with open(unknown_signatures_file, 'a+',
+                          encoding='utf-8') as unknown_file:
                     unknown_file.write(jwebsig_type + '\n')
             except OSError:
                 print('EX: unable to append ' + unknown_signatures_file)
