@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import text_in_file
 from utils import convert_published_to_local_timezone
 from utils import convert_to_snake_case
 from utils import get_sha_256
@@ -2324,8 +2325,7 @@ def test_group_follow(base_dir: str) -> None:
                                  alice_domain, alice_port)
     assert 'alice@' + alice_domain in open(testgroup_followers_filename,
                                            encoding='utf-8').read()
-    assert '!alice@' + alice_domain not in \
-        open(testgroup_followers_filename, encoding='utf-8').read()
+    assert not text_in_file('!alice@' + alice_domain, testgroup_followers_filename)
 
     testgroup_webfinger_filename = \
         testgroup_dir + '/wfendpoints/testgroup@' + \
@@ -2404,10 +2404,9 @@ def test_group_follow(base_dir: str) -> None:
     assert valid_inbox(testgroup_dir, 'testgroup', testgroup_domain)
     assert valid_inbox_filenames(testgroup_dir, 'testgroup', testgroup_domain,
                                  bob_domain, bob_port)
-    assert 'bob@' + bob_domain in open(testgroup_followers_filename,
-                                       encoding='utf-8').read()
-    assert '!bob@' + bob_domain not in \
-        open(testgroup_followers_filename, encoding='utf-8').read()
+    assert text_in_file('bob@' + bob_domain, testgroup_followers_filename)
+    assert not text_in_file('!bob@' + bob_domain,
+                            testgroup_followers_filename)
 
     testgroup_webfinger_filename = \
         testgroup_dir + '/wfendpoints/testgroup@' + \
@@ -3458,19 +3457,19 @@ def test_client_to_server(base_dir: str):
                                      cached_webfingers, person_cache,
                                      True, __version__, signing_priv_key_pem)
     for _ in range(10):
-        if 'alice@' + alice_domain + ':' + str(alice_port) not in \
-           open(bob_followers_filename, encoding='utf-8').read():
-            if 'bob@' + bob_domain + ':' + str(bob_port) not in \
-               open(alice_following_filename, encoding='utf-8').read():
+        test_str = 'alice@' + alice_domain + ':' + str(alice_port)
+        if not text_in_file(test_str, bob_followers_filename):
+            test_str = 'bob@' + bob_domain + ':' + str(bob_port)
+            if not text_in_file(test_str, alice_following_filename):
                 break
         time.sleep(1)
 
     assert os.path.isfile(bob_followers_filename)
     assert os.path.isfile(alice_following_filename)
-    assert 'alice@' + alice_domain + ':' + str(alice_port) \
-        not in open(bob_followers_filename, encoding='utf-8').read()
-    assert 'bob@' + bob_domain + ':' + str(bob_port) \
-        not in open(alice_following_filename, encoding='utf-8').read()
+    test_str = 'alice@' + alice_domain + ':' + str(alice_port)
+    assert not text_in_file(test_str, bob_followers_filename)
+    test_str = 'bob@' + bob_domain + ':' + str(bob_port)
+    assert not text_in_file(test_str, alice_following_filename)
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)

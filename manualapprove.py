@@ -16,6 +16,7 @@ from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import get_user_paths
 from utils import acct_dir
+from utils import text_in_file
 from threads import thread_with_trace
 from session import create_session
 
@@ -115,7 +116,7 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
     """
     approved_filename = account_dir + '/approved.txt'
     if os.path.isfile(approved_filename):
-        if approve_handle not in open(approved_filename).read():
+        if not text_in_file(approve_handle, approved_filename):
             try:
                 with open(approved_filename, 'a+') as approved_file:
                     approved_file.write(approve_handle + '\n')
@@ -280,8 +281,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         # update the followers
         print('Manual follow accept: updating ' + followers_filename)
         if os.path.isfile(followers_filename):
-            if approve_handle_full not in open(followers_filename,
-                                               encoding='utf-8').read():
+            if not text_in_file(approve_handle_full, followers_filename):
                 try:
                     with open(followers_filename, 'r+',
                               encoding='utf-8') as followers_file:

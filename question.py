@@ -12,6 +12,7 @@ from utils import locate_post
 from utils import load_json
 from utils import save_json
 from utils import has_object_dict
+from utils import text_in_file
 
 
 def question_update_votes(base_dir: str, nickname: str, domain: str,
@@ -74,8 +75,7 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
         except OSError:
             print('EX: unable to write voters file ' + voters_filename)
     else:
-        if reply_json['actor'] not in open(voters_filename,
-                                           encoding='utf-8').read():
+        if not text_in_file(reply_json['actor'], voters_filename):
             # append to the voters file
             try:
                 with open(voters_filename, 'a+',
