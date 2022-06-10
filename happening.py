@@ -24,7 +24,6 @@ from utils import get_display_name
 from utils import delete_post
 from utils import get_status_number
 from utils import get_full_domain
-from utils import text_in_file
 from filters import is_filtered
 from context import get_individual_post_context
 from session import get_method
@@ -71,7 +70,8 @@ def _remove_event_from_timeline(event_id: str,
                                 tl_events_filename: str) -> None:
     """Removes the given event Id from the timeline
     """
-    if not text_in_file(event_id + '\n', tl_events_filename):
+    if event_id + '\n' not in open(tl_events_filename,
+                                   encoding='utf-8').read():
         return
     with open(tl_events_filename, 'r',
               encoding='utf-8') as fp_tl:
@@ -166,7 +166,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
     # Does this event post already exist within the calendar month?
     if os.path.isfile(calendar_filename):
-        if text_in_file(post_id, calendar_filename):
+        if post_id in open(calendar_filename,
+                           encoding='utf-8').read():
             # Event post already exists
             return False
 
@@ -759,7 +760,7 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
         return
     if '/' in message_id:
         message_id = message_id.replace('/', '#')
-    if not text_in_file(message_id, calendar_filename):
+    if message_id not in open(calendar_filename, encoding='utf-8').read():
         return
     lines = None
     with open(calendar_filename, 'r', encoding='utf-8') as fp_cal:

@@ -28,7 +28,6 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
 from utils import has_object_string_type
-from utils import text_in_file
 from posts import get_person_box
 from session import post_json
 
@@ -72,7 +71,8 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
     else:
         bookmark_index = post_filename.strip()
     bookmark_index = bookmark_index.replace('\n', '').replace('\r', '')
-    if not text_in_file(bookmark_index, bookmarks_index_filename):
+    if bookmark_index not in open(bookmarks_index_filename,
+                                  encoding='utf-8').read():
         return
     index_str = ''
     try:
@@ -238,7 +238,8 @@ def update_bookmarks_collection(recent_posts_cache: {},
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
     bookmark_index = post_filename.split('/')[-1]
     if os.path.isfile(bookmarks_index_filename):
-        if not text_in_file(bookmark_index, bookmarks_index_filename):
+        if bookmark_index not in open(bookmarks_index_filename,
+                                      encoding='utf-8').read():
             try:
                 with open(bookmarks_index_filename, 'r+',
                           encoding='utf-8') as bmi_file:

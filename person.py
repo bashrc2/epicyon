@@ -38,7 +38,6 @@ from roles import set_role
 from roles import set_rolesFromList
 from roles import get_actor_roles_list
 from media import process_meta_data
-from utils import text_in_file
 from utils import get_attachment_property_value
 from utils import get_nickname_from_actor
 from utils import remove_html
@@ -1208,7 +1207,7 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             continue
         if not os.path.isfile(tag_filename):
             continue
-        if not text_in_file(match_str, tag_filename):
+        if match_str not in open(tag_filename, encoding='utf-8').read():
             continue
         lines = []
         with open(tag_filename, 'r', encoding='utf-8') as fp_tag:
@@ -1359,7 +1358,8 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
     snoozed_filename = acct_dir(base_dir, nickname, domain) + '/snoozed.txt'
     if not os.path.isfile(snoozed_filename):
         return False
-    if not text_in_file(snooze_actor + ' ', snoozed_filename):
+    if snooze_actor + ' ' not in open(snoozed_filename,
+                                      encoding='utf-8').read():
         return False
     # remove the snooze entry if it has timed out
     replace_str = None
@@ -1428,7 +1428,8 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
     snoozed_filename = account_dir + '/snoozed.txt'
     if not os.path.isfile(snoozed_filename):
         return
-    if not text_in_file(snooze_actor + ' ', snoozed_filename):
+    if snooze_actor + ' ' not in open(snoozed_filename,
+                                      encoding='utf-8').read():
         return
     replace_str = None
     with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:

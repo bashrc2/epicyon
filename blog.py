@@ -34,7 +34,6 @@ from utils import first_paragraph_from_string
 from utils import get_actor_property_url
 from utils import acct_dir
 from posts import create_blogs_timeline
-from utils import text_in_file
 from newswire import rss2header
 from newswire import rss2footer
 from cache import get_person_from_cache
@@ -930,7 +929,8 @@ def path_contains_blog_link(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blog_index_filename):
         return None, None
-    if not text_in_file('#' + user_ending2[1] + '.', blog_index_filename):
+    if '#' + user_ending2[1] + '.' not in open(blog_index_filename,
+                                               encoding='utf-8').read():
         return None, None
     message_id = local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + user_ending2[1]

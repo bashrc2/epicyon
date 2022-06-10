@@ -30,7 +30,6 @@ from utils import get_user_paths
 from utils import acct_dir
 from utils import has_group_type
 from utils import local_actor_url
-from utils import text_in_file
 from acceptreject import create_accept
 from acceptreject import create_reject
 from webfinger import webfinger_handle
@@ -95,7 +94,8 @@ def _pre_approved_follower(base_dir: str,
     account_dir = base_dir + '/accounts/' + handle
     approved_filename = account_dir + '/approved.txt'
     if os.path.isfile(approved_filename):
-        if text_in_file(approve_handle, approved_filename):
+        if approve_handle in open(approved_filename,
+                                  encoding='utf-8').read():
             return True
     return False
 
@@ -115,7 +115,8 @@ def _remove_from_follow_base(base_dir: str,
                   ' to remove ' + handle + ' from')
         return
     accept_deny_actor = None
-    if not text_in_file(accept_or_deny_handle, approve_follows_filename):
+    if accept_or_deny_handle not in open(approve_follows_filename,
+                                         encoding='utf-8').read():
         # is this stored in the file as an actor rather than a handle?
         accept_deny_nickname = accept_or_deny_handle.split('@')[0]
         accept_deny_domain = accept_or_deny_handle.split('@')[1]
@@ -126,7 +127,8 @@ def _remove_from_follow_base(base_dir: str,
         for users_name in users_paths:
             accept_deny_actor = \
                 '://' + accept_deny_domain + users_name + accept_deny_nickname
-            if text_in_file(accept_deny_actor, approve_follows_filename):
+            if accept_deny_actor in open(approve_follows_filename,
+                                         encoding='utf-8').read():
                 actor_found = True
                 break
         if not actor_found:
@@ -184,8 +186,7 @@ def is_following_actor(base_dir: str,
         return False
     if actor.startswith('@'):
         actor = actor[1:]
-    actor_lower = actor.lower()
-    if text_in_file(actor_lower, following_file).lower():
+    if actor.lower() in open(following_file, encoding='utf-8').read().lower():
         return True
     following_nickname = get_nickname_from_actor(actor)
     if not following_nickname:
@@ -195,8 +196,8 @@ def is_following_actor(base_dir: str,
     following_handle = \
         get_full_domain(following_nickname + '@' + following_domain,
                         following_port)
-    following_handle_lower = following_handle.lower()
-    if text_in_file(following_handle_lower, following_file).lower():
+    if following_handle.lower() in open(following_file,
+                                        encoding='utf-8').read().lower():
         return True
     return False
 
@@ -316,7 +317,8 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
             print('DEBUG: follow file ' + filename + ' was not found')
         return False
     handle_to_unfollow_lower = handle_to_unfollow.lower()
-    if not text_in_file(handle_to_unfollow_lower, filename):
+    if handle_to_unfollow_lower not in open(filename,
+                                            encoding='utf-8').read().lower():
         if debug:
             print('DEBUG: handle to unfollow ' + handle_to_unfollow +
                   ' is not in ' + filename)
@@ -686,7 +688,8 @@ def store_follow_request(base_dir: str,
     # should this follow be denied?
     deny_follows_filename = accounts_dir + '/followrejects.txt'
     if os.path.isfile(deny_follows_filename):
-        if text_in_file(approve_handle, deny_follows_filename):
+        if approve_handle in open(deny_follows_filename,
+                                  encoding='utf-8').read():
             remove_from_follow_requests(base_dir, nickname_to_follow,
                                         domain_to_follow, approve_handle,
                                         debug)
@@ -705,7 +708,8 @@ def store_follow_request(base_dir: str,
             approve_handle = '!' + approve_handle
 
     if os.path.isfile(approve_follows_filename):
-        if not text_in_file(approve_handle, approve_follows_filename):
+        if approve_handle not in open(approve_follows_filename,
+                                      encoding='utf-8').read():
             try:
                 with open(approve_follows_filename, 'a+',
                           encoding='utf-8') as fp_approve:
@@ -920,7 +924,8 @@ def send_follow_request(session, base_dir: str,
     unfollowed_filename = \
         acct_dir(base_dir, nickname, domain) + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
-        if text_in_file(follow_handle, unfollowed_filename):
+        if follow_handle in open(unfollowed_filename,
+                                 encoding='utf-8').read():
             unfollowed_file = None
             try:
                 with open(unfollowed_filename, 'r',
@@ -1399,7 +1404,7 @@ def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:
                 if debug:
                     print('DEBUG: checking if ' + actor_handle +
                           ' in ' + following_filename)
-                if text_in_file(actor_handle, following_filename):
+                if actor_handle in open(following_filename).read():
                     if debug:
                         print('DEBUG: ' + account +
                               ' follows ' + actor_handle)

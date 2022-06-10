@@ -50,7 +50,7 @@ def text_in_file(text: str, filename: str) -> bool:
                 if text in content:
                     return True
     except OSError:
-        print('EX: unable to find text in missing file ' + filename)
+        pass
     return False
 
 

@@ -18,7 +18,6 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
-from utils import text_in_file
 from utils import get_media_descriptions_from_post
 from utils import get_summary_from_post
 from utils import delete_cached_html
@@ -2558,7 +2557,8 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
                                            encoding='utf-8'))
         if num_lines > max_replies:
             return False
-        if not text_in_file(message_id, post_replies_filename):
+        if message_id not in open(post_replies_filename,
+                                  encoding='utf-8').read():
             try:
                 with open(post_replies_filename, 'a+',
                           encoding='utf-8') as replies_file:
@@ -2875,7 +2875,7 @@ def _like_notify(base_dir: str, domain: str, onion_domain: str,
 
     like_file = account_dir + '/.newLike'
     if os.path.isfile(like_file):
-        if not text_in_file('##sent##', like_file):
+        if '##sent##' not in open(like_file).read():
             return
 
     liker_nickname = get_nickname_from_actor(actor)
@@ -2937,7 +2937,7 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
 
     reaction_file = account_dir + '/.newReaction'
     if os.path.isfile(reaction_file):
-        if not text_in_file('##sent##', reaction_file):
+        if '##sent##' not in open(reaction_file, encoding='utf-8').read():
             return
 
     reaction_nickname = get_nickname_from_actor(actor)
@@ -4816,7 +4816,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
             print('Updating followers file: ' +
                   followers_filename + ' adding ' + approve_handle)
             if os.path.isfile(followers_filename):
-                if not text_in_file(approve_handle, followers_filename):
+                if approve_handle not in open(followers_filename).read():
                     group_account = \
                         has_group_type(base_dir,
                                        message_json['actor'], person_cache)

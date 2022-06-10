@@ -32,7 +32,6 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
-from utils import text_in_file
 from utils import get_media_descriptions_from_post
 from utils import valid_hash_tag
 from utils import get_audio_extensions
@@ -969,7 +968,7 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str) -> None:
                   tags_filename)
     else:
         # prepend to tags index file
-        if not text_in_file(tagline, tags_filename):
+        if tagline not in open(tags_filename, encoding='utf-8').read():
             try:
                 with open(tags_filename, 'r+', encoding='utf-8') as tags_file:
                     content = tags_file.read()
@@ -991,7 +990,8 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
 
     index_str = event_date_str + ' ' + post_id.replace('/', '#')
     if os.path.isfile(schedule_index_filename):
-        if not text_in_file(index_str, schedule_index_filename):
+        if index_str not in open(schedule_index_filename,
+                                 encoding='utf-8').read():
             try:
                 with open(schedule_index_filename, 'r+',
                           encoding='utf-8') as schedule_file:
