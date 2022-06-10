@@ -7206,7 +7206,7 @@ def _test_diff_content() -> None:
                           timezone, system_language)
     assert html_str
     expected = \
-        '<details><summary class="cw">SHOW EDITS</summary>' + \
+        '<details><summary class="cw" tabindex="10">SHOW EDITS</summary>' + \
         '<p><b>Mon Dec 14, 01:07</b></p><p><label class="diff_add">' + \
         '+ This is some content</label><br><label class="diff_remove">' + \
         '- This is some previous content</label><br>' + \
