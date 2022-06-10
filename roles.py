@@ -13,6 +13,7 @@ from utils import save_json
 from utils import get_status_number
 from utils import remove_domain_port
 from utils import acct_dir
+from utils import text_in_file
 
 
 def _clear_role_status(base_dir: str, role: str) -> None:
@@ -28,8 +29,7 @@ def _clear_role_status(base_dir: str, role: str) -> None:
         if not filename.endswith(".json"):
             continue
         filename = os.path.join(base_dir + '/accounts/', filename)
-        if '"' + role + '"' not in open(filename,
-                                        encoding='utf-8').read():
+        if not text_in_file('"' + role + '"', filename):
             continue
         actor_json = load_json(filename)
         if not actor_json:

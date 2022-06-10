@@ -33,6 +33,7 @@ from utils import get_nickname_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
+from utils import text_in_file
 from conversation import mute_conversation
 from conversation import unmute_conversation
 
@@ -46,8 +47,7 @@ def add_global_block(base_dir: str,
         # is the handle already blocked?
         block_handle = block_nickname + '@' + block_domain
         if os.path.isfile(blocking_filename):
-            if block_handle in open(blocking_filename,
-                                    encoding='utf-8').read():
+            if text_in_file(block_handle, blocking_filename):
                 return False
         # block an account handle or domain
         try:
@@ -60,8 +60,7 @@ def add_global_block(base_dir: str,
         block_hashtag = block_nickname
         # is the hashtag already blocked?
         if os.path.isfile(blocking_filename):
-            if block_hashtag + '\n' in \
-               open(blocking_filename, encoding='utf-8').read():
+            if text_in_file(block_hashtag + '\n', blocking_filename):
                 return False
         # block a hashtag
         try:
@@ -85,16 +84,14 @@ def add_block(base_dir: str, nickname: str, domain: str,
     blocking_filename = acct_dir(base_dir, nickname, domain) + '/blocking.txt'
     block_handle = block_nickname + '@' + block_domain
     if os.path.isfile(blocking_filename):
-        if block_handle + '\n' in open(blocking_filename,
-                                       encoding='utf-8').read():
+        if text_in_file(block_handle + '\n', blocking_filename):
             return False
 
     # if we are following then unfollow
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
-        if block_handle + '\n' in open(following_filename,
-                                       encoding='utf-8').read():
+        if text_in_file(block_handle + '\n', following_filename):
             following_str = ''
             try:
                 with open(following_filename, 'r',
@@ -119,8 +116,7 @@ def add_block(base_dir: str, nickname: str, domain: str,
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
-        if block_handle + '\n' in open(followers_filename,
-                                       encoding='utf-8').read():
+        if text_in_file(block_handle + '\n', followers_filename):
             followers_str = ''
             try:
                 with open(followers_filename, 'r',
@@ -159,8 +155,7 @@ def remove_global_block(base_dir: str,
     if not unblock_nickname.startswith('#'):
         unblock_handle = unblock_nickname + '@' + unblock_domain
         if os.path.isfile(unblocking_filename):
-            if unblock_handle in open(unblocking_filename,
-                                      encoding='utf-8').read():
+            if text_in_file(unblock_handle, unblocking_filename):
                 try:
                     with open(unblocking_filename, 'r',
                               encoding='utf-8') as fp_unblock:
@@ -187,8 +182,7 @@ def remove_global_block(base_dir: str,
     else:
         unblock_hashtag = unblock_nickname
         if os.path.isfile(unblocking_filename):
-            if unblock_hashtag + '\n' in open(unblocking_filename,
-                                              encoding='utf-8').read():
+            if text_in_file(unblock_hashtag + '\n', unblocking_filename):
                 try:
                     with open(unblocking_filename, 'r',
                               encoding='utf-8') as fp_unblock:
@@ -224,8 +218,7 @@ def remove_block(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/blocking.txt'
     unblock_handle = unblock_nickname + '@' + unblock_domain
     if os.path.isfile(unblocking_filename):
-        if unblock_handle in open(unblocking_filename,
-                                  encoding='utf-8').read():
+        if text_in_file(unblock_handle, unblocking_filename):
             try:
                 with open(unblocking_filename, 'r',
                           encoding='utf-8') as fp_unblock:
@@ -262,8 +255,7 @@ def is_blocked_hashtag(base_dir: str, hashtag: str) -> bool:
         hashtag = hashtag.strip('\n').strip('\r')
         if not hashtag.startswith('#'):
             hashtag = '#' + hashtag
-        if hashtag + '\n' in open(global_blocking_filename,
-                                  encoding='utf-8').read():
+        if text_in_file(hashtag + '\n', global_blocking_filename):
             return True
     return False
 
@@ -373,11 +365,10 @@ def is_blocked_domain(base_dir: str, domain: str,
         allow_filename = base_dir + '/accounts/allowedinstances.txt'
         # instance allow list
         if not short_domain:
-            if domain not in open(allow_filename, encoding='utf-8').read():
+            if not text_in_file(domain, allow_filename):
                 return True
         else:
-            if short_domain not in open(allow_filename,
-                                        encoding='utf-8').read():
+            if not text_in_file(short_domain, allow_filename):
                 return True
 
     return False
@@ -407,44 +398,37 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
         else:
             global_blocks_filename = base_dir + '/accounts/blocking.txt'
             if os.path.isfile(global_blocks_filename):
-                if '*@' + block_domain in open(global_blocks_filename,
-                                               encoding='utf-8').read():
+                if text_in_file('*@' + block_domain, global_blocks_filename):
                     return True
                 if block_handle:
                     block_str = block_handle + '\n'
-                    if block_str in open(global_blocks_filename,
-                                         encoding='utf-8').read():
+                    if text_in_file(block_str, global_blocks_filename):
                         return True
     else:
         # instance allow list
         allow_filename = base_dir + '/accounts/allowedinstances.txt'
         short_domain = _get_short_domain(block_domain)
         if not short_domain:
-            if block_domain + '\n' not in open(allow_filename,
-                                               encoding='utf-8').read():
+            if not text_in_file(block_domain + '\n', allow_filename):
                 return True
         else:
-            if short_domain + '\n' not in open(allow_filename,
-                                               encoding='utf-8').read():
+            if not text_in_file(short_domain + '\n', allow_filename):
                 return True
 
     # account level allow list
     account_dir = acct_dir(base_dir, nickname, domain)
     allow_filename = account_dir + '/allowedinstances.txt'
     if os.path.isfile(allow_filename):
-        if block_domain + '\n' not in open(allow_filename,
-                                           encoding='utf-8').read():
+        if not text_in_file(block_domain + '\n', allow_filename):
             return True
 
     # account level block list
     blocking_filename = account_dir + '/blocking.txt'
     if os.path.isfile(blocking_filename):
-        if '*@' + block_domain + '\n' in open(blocking_filename,
-                                              encoding='utf-8').read():
+        if text_in_file('*@' + block_domain + '\n', blocking_filename):
             return True
         if block_handle:
-            if block_handle + '\n' in open(blocking_filename,
-                                           encoding='utf-8').read():
+            if text_in_file(block_handle + '\n', blocking_filename):
                 return True
     return False
 

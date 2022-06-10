@@ -278,7 +278,7 @@ def _html_podcast_soundbites(link_url: str, extension: str,
             soundbite_title += ' ' + str(ctr)
         podcast_str += \
             '    <span itemprop="trailer">\n' + \
-            '    <audio controls>\n' + \
+            '    <audio controls tabindex="10">\n' + \
             '    <p>' + soundbite_title + '</p>\n' + \
             '    <source src="' + preview_url + '" type="audio/' + \
             extension.replace('.', '') + '">' + \
@@ -372,7 +372,7 @@ def html_podcast_episode(css_cache: {}, translate: {},
         # podcast player widget
         podcast_str += \
             '  <span itemprop="audio">\n' + \
-            '  <audio controls>\n' + \
+            '  <audio controls tabindex="10">\n' + \
             '    <source src="' + link_url + '" type="audio/' + \
             audio_extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
@@ -397,7 +397,8 @@ def html_podcast_episode(css_cache: {}, translate: {},
                 '  <span itemprop="video">\n' + \
                 '  <figure id="videoContainer" ' + \
                 'data-fullscreen="false">\n' + \
-                '    <video id="video" controls preload="metadata">\n' + \
+                '    <video id="video" controls preload="metadata" ' + \
+                'tabindex="10">\n' + \
                 '<source src="' + link_url + '" ' + \
                 'type="' + video_mime_type + '">' + \
                 translate[video_msg] + \

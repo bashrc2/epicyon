@@ -11,6 +11,7 @@ import os
 from question import is_question
 from utils import remove_id_ending
 from utils import acct_dir
+from utils import text_in_file
 
 
 def insert_question(base_dir: str, translate: {},
@@ -34,7 +35,7 @@ def insert_question(base_dir: str, translate: {},
 
     show_question_results = False
     if os.path.isfile(votes_filename):
-        if message_id in open(votes_filename, encoding='utf-8').read():
+        if text_in_file(message_id, votes_filename):
             show_question_results = True
 
     if not show_question_results:

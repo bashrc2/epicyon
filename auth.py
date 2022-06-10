@@ -15,6 +15,7 @@ import secrets
 import datetime
 from utils import is_system_account
 from utils import has_users_path
+from utils import text_in_file
 
 
 def _hash_password(password: str) -> str:
@@ -177,7 +178,7 @@ def store_basic_credentials(base_dir: str,
     password_file = base_dir + '/accounts/passwords'
     store_str = nickname + ':' + _hash_password(password)
     if os.path.isfile(password_file):
-        if nickname + ':' in open(password_file, encoding='utf-8').read():
+        if text_in_file(nickname + ':', password_file):
             try:
                 with open(password_file, 'r', encoding='utf-8') as fin:
                     with open(password_file + '.new', 'w+',

@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import text_in_file
 from utils import get_media_descriptions_from_post
 from utils import get_summary_from_post
 from utils import delete_cached_html
@@ -448,7 +449,7 @@ def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
             if not os.path.isfile(filename):
                 print('filename: ' + filename)
                 return False
-            if 'postNickname' in open(filename, encoding='utf-8').read():
+            if text_in_file('postNickname', filename):
                 print('queue file incorrectly saved to ' + filename)
                 return False
         break
@@ -2557,8 +2558,7 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
                                            encoding='utf-8'))
         if num_lines > max_replies:
             return False
-        if message_id not in open(post_replies_filename,
-                                  encoding='utf-8').read():
+        if not text_in_file(message_id, post_replies_filename):
             try:
                 with open(post_replies_filename, 'a+',
                           encoding='utf-8') as replies_file:
@@ -2875,7 +2875,7 @@ def _like_notify(base_dir: str, domain: str, onion_domain: str,
 
     like_file = account_dir + '/.newLike'
     if os.path.isfile(like_file):
-        if '##sent##' not in open(like_file).read():
+        if not text_in_file('##sent##', like_file):
             return
 
     liker_nickname = get_nickname_from_actor(actor)
@@ -2937,7 +2937,7 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
 
     reaction_file = account_dir + '/.newReaction'
     if os.path.isfile(reaction_file):
-        if '##sent##' not in open(reaction_file, encoding='utf-8').read():
+        if not text_in_file('##sent##', reaction_file):
             return
 
     reaction_nickname = get_nickname_from_actor(actor)
@@ -4170,7 +4170,8 @@ def _inbox_after_initial(server, inbox_start_time,
                 print('MUTE REPLY: ' + destination_filename)
                 destination_filename_muted = destination_filename + '.muted'
                 try:
-                    with open(destination_filename_muted, 'w+') as mute_file:
+                    with open(destination_filename_muted, 'w+',
+                              encoding='utf-8') as mute_file:
                         mute_file.write('\n')
                 except OSError:
                     print('EX: unable to write ' + destination_filename_muted)
@@ -4569,8 +4570,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
 
             already_unknown = False
             if os.path.isfile(unknown_contexts_file):
-                if unknown_context in \
-                   open(unknown_contexts_file, encoding='utf-8').read():
+                if text_in_file(unknown_context, unknown_contexts_file):
                     already_unknown = True
 
             if not already_unknown:
@@ -4588,13 +4588,13 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
 
         already_unknown = False
         if os.path.isfile(unknown_signatures_file):
-            if jwebsig_type in \
-               open(unknown_signatures_file, encoding='utf-8').read():
+            if text_in_file(jwebsig_type, unknown_signatures_file):
                 already_unknown = True
 
         if not already_unknown:
             try:
-                with open(unknown_signatures_file, 'a+') as unknown_file:
+                with open(unknown_signatures_file, 'a+',
+                          encoding='utf-8') as unknown_file:
                     unknown_file.write(jwebsig_type + '\n')
             except OSError:
                 print('EX: unable to append ' + unknown_signatures_file)
@@ -4816,7 +4816,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
             print('Updating followers file: ' +
                   followers_filename + ' adding ' + approve_handle)
             if os.path.isfile(followers_filename):
-                if approve_handle not in open(followers_filename).read():
+                if not text_in_file(approve_handle, followers_filename):
                     group_account = \
                         has_group_type(base_dir,
                                        message_json['actor'], person_cache)

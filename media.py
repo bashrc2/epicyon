@@ -318,12 +318,13 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
     decoy_seed_filename = acct_dir(base_dir, nickname, domain) + '/decoyseed'
     decoy_seed = 63725
     if os.path.isfile(decoy_seed_filename):
-        with open(decoy_seed_filename, 'r') as fp_seed:
+        with open(decoy_seed_filename, 'r', encoding='utf-8') as fp_seed:
             decoy_seed = int(fp_seed.read())
     else:
         decoy_seed = randint(10000, 10000000000000000)
         try:
-            with open(decoy_seed_filename, 'w+') as fp_seed:
+            with open(decoy_seed_filename, 'w+',
+                      encoding='utf-8') as fp_seed:
                 fp_seed.write(str(decoy_seed))
         except OSError:
             print('EX: unable to write ' + decoy_seed_filename)

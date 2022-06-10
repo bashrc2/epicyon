@@ -9,6 +9,7 @@ __module_group__ = "Moderation"
 
 import os
 from utils import acct_dir
+from utils import text_in_file
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -16,7 +17,7 @@ def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     """
     filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filters_filename):
-        if words in open(filters_filename, encoding='utf-8').read():
+        if text_in_file(words, filters_filename):
             return False
     try:
         with open(filters_filename, 'a+',
@@ -37,7 +38,7 @@ def add_global_filter(base_dir: str, words: str) -> bool:
         return False
     filters_filename = base_dir + '/accounts/filters.txt'
     if os.path.isfile(filters_filename):
-        if words in open(filters_filename, encoding='utf-8').read():
+        if text_in_file(words, filters_filename):
             return False
     try:
         with open(filters_filename, 'a+', encoding='utf-8') as filters_file:
@@ -54,7 +55,7 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
     filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if not os.path.isfile(filters_filename):
         return False
-    if words not in open(filters_filename, encoding='utf-8').read():
+    if not text_in_file(words, filters_filename):
         return False
     new_filters_filename = filters_filename + '.new'
     try:
@@ -79,7 +80,7 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
     filters_filename = base_dir + '/accounts/filters.txt'
     if not os.path.isfile(filters_filename):
         return False
-    if words not in open(filters_filename, encoding='utf-8').read():
+    if not text_in_file(words, filters_filename):
         return False
     new_filters_filename = filters_filename + '.new'
     try:

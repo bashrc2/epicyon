@@ -279,9 +279,9 @@ def _add_embedded_audio(translate: {}, content: str) -> str:
             continue
         content += \
             '<center>\n<span itemprop="audio">' + \
-            '<audio controls>\n' + \
+            '<audio controls tabindex="10">\n' + \
             '<source src="' + wrd + '" type="audio/' + \
-            extension.replace('.', '') + '" tabindex="10">' + \
+            extension.replace('.', '') + '">' + \
             translate['Your browser does not support the audio element.'] + \
             '</audio>\n</span>\n</center>\n'
     return content
@@ -324,9 +324,9 @@ def _add_embedded_video(translate: {}, content: str) -> str:
             '<figure id="videoContainer" ' + \
             'data-fullscreen="false">\n' + \
             '    <video id="video" controls ' + \
-            'preload="metadata">\n' + \
+            'preload="metadata" tabindex="10">\n' + \
             '<source src="' + wrd + '" type="video/' + \
-            extension.replace('.', '') + '" tabindex="10">\n' + \
+            extension.replace('.', '') + '">\n' + \
             translate['Your browser does not support the video element.'] + \
             '</video>\n</figure>\n</span>\n</center>\n'
     return content

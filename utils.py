@@ -40,6 +40,25 @@ INVALID_CHARACTERS = (
 )
 
 
+def text_in_file(text: str, filename: str,
+                 case_sensitive: bool = True) -> bool:
+    """is the given text in the given file?
+    """
+    if not case_sensitive:
+        text = text.lower()
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            content = file.read()
+            if content:
+                if not case_sensitive:
+                    content = content.lower()
+                if text in content:
+                    return True
+    except OSError:
+        print('EX: unable to find text in missing file ' + filename)
+    return False
+
+
 def local_actor_url(http_prefix: str, nickname: str, domain_full: str) -> str:
     """Returns the url for an actor on this instance
     """
@@ -109,32 +128,32 @@ def has_object_dict(post_json_object: {}) -> bool:
 
 def get_content_from_post(post_json_object: {}, system_language: str,
                           languages_understood: [],
-                          contentType: str = "content") -> str:
+                          content_type: str = "content") -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """
     this_post_json = post_json_object
     if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
-    if not this_post_json.get(contentType):
+    if not this_post_json.get(content_type):
         return ''
     content = ''
-    mapDict = contentType + 'Map'
-    if this_post_json.get(mapDict):
-        if isinstance(this_post_json[mapDict], dict):
-            if this_post_json[mapDict].get(system_language):
-                sys_lang = this_post_json[mapDict][system_language]
+    map_dict = content_type + 'Map'
+    if this_post_json.get(map_dict):
+        if isinstance(this_post_json[map_dict], dict):
+            if this_post_json[map_dict].get(system_language):
+                sys_lang = this_post_json[map_dict][system_language]
                 if isinstance(sys_lang, str):
-                    return this_post_json[mapDict][system_language]
+                    return this_post_json[map_dict][system_language]
             else:
                 # is there a contentMap/summaryMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
-                    if this_post_json[mapDict].get(lang):
-                        return this_post_json[mapDict][lang]
+                    if this_post_json[map_dict].get(lang):
+                        return this_post_json[map_dict][lang]
     else:
-        if isinstance(this_post_json[contentType], str):
-            content = this_post_json[contentType]
+        if isinstance(this_post_json[content_type], str):
+            content = this_post_json[content_type]
     return content
 
 
@@ -1320,8 +1339,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     # was this person previously unfollowed?
     unfollowed_filename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
-        if handle_to_follow in open(unfollowed_filename,
-                                    encoding='utf-8').read():
+        if text_in_file(handle_to_follow, unfollowed_filename):
             # remove them from the unfollowed file
             new_lines = ''
             with open(unfollowed_filename, 'r',
@@ -1341,7 +1359,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         handle_to_follow = '!' + handle_to_follow
     filename = base_dir + '/accounts/' + handle + '/' + follow_file
     if os.path.isfile(filename):
-        if handle_to_follow in open(filename, encoding='utf-8').read():
+        if text_in_file(handle_to_follow, filename):
             if debug:
                 print('DEBUG: follow already exists')
             return True
@@ -1648,7 +1666,7 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
     if not os.path.isfile(moderation_index_file):
         return
     post_id = remove_id_ending(post_url)
-    if post_id in open(moderation_index_file, encoding='utf-8').read():
+    if text_in_file(post_id, moderation_index_file):
         with open(moderation_index_file, 'r',
                   encoding='utf-8') as file1:
             lines = file1.readlines()
@@ -1679,7 +1697,7 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
         return False
     post_id = remove_id_ending(post_json_object['object']['inReplyTo'])
     post_id = post_id.replace('/', '#')
-    if post_id in open(blogs_index_filename, encoding='utf-8').read():
+    if text_in_file(post_id, blogs_index_filename):
         return True
     return False
 
@@ -1720,8 +1738,7 @@ def _is_bookmarked(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
     if os.path.isfile(bookmarks_index_filename):
         bookmark_index = post_filename.split('/')[-1] + '\n'
-        if bookmark_index in open(bookmarks_index_filename,
-                                  encoding='utf-8').read():
+        if text_in_file(bookmark_index, bookmarks_index_filename):
             return True
     return False
 
@@ -3024,8 +3041,7 @@ def dm_allowed_from_domain(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if not os.path.isfile(dm_allowed_instances_file):
         return False
-    if sending_actor_domain + '\n' in open(dm_allowed_instances_file,
-                                           encoding='utf-8').read():
+    if text_in_file(sending_actor_domain + '\n', dm_allowed_instances_file):
         return True
     return False
 
@@ -3339,8 +3355,7 @@ def is_group_actor(base_dir: str, actor: str, person_cache: {},
         if debug:
             print('Cached actor file not found ' + cached_actor_filename)
         return False
-    if '"type": "Group"' in open(cached_actor_filename,
-                                 encoding='utf-8').read():
+    if text_in_file('"type": "Group"', cached_actor_filename):
         if debug:
             print('Group type found in ' + cached_actor_filename)
         return True
@@ -3353,8 +3368,7 @@ def is_group_account(base_dir: str, nickname: str, domain: str) -> bool:
     account_filename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(account_filename):
         return False
-    if '"type": "Group"' in open(account_filename,
-                                 encoding='utf-8').read():
+    if text_in_file('"type": "Group"', account_filename):
         return True
     return False
 

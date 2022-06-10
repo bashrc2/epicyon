@@ -10,6 +10,7 @@ __module_group__ = "Calendar"
 import os
 from utils import remove_domain_port
 from utils import acct_dir
+from utils import text_in_file
 
 
 def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
@@ -30,8 +31,7 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
     handle = following_nickname + '@' + following_domain
 
     # check that you are following this handle
-    if handle + '\n' not in open(following_filename,
-                                 encoding='utf-8').read():
+    if not text_in_file(handle + '\n', following_filename):
         print('WARN: ' + handle + ' is not in ' + following_filename)
         return
 
@@ -113,5 +113,4 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
         with open(notify_on_post_filename, 'w+',
                   encoding='utf-8') as fp_notify:
             fp_notify.write('')
-    return handle + '\n' in open(notify_on_post_filename,
-                                 encoding='utf-8').read()
+    return text_in_file(handle + '\n', notify_on_post_filename)

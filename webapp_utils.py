@@ -26,6 +26,7 @@ from utils import get_audio_extensions
 from utils import get_video_extensions
 from utils import get_image_extensions
 from utils import local_actor_url
+from utils import text_in_file
 from cache import store_person_in_cache
 from content import add_html_tags
 from content import replace_emoji_from_tags
@@ -362,7 +363,7 @@ def scheduled_posts_exist(base_dir: str, nickname: str, domain: str) -> bool:
         acct_dir(base_dir, nickname, domain) + '/schedule.index'
     if not os.path.isfile(schedule_index_filename):
         return False
-    if '#users#' in open(schedule_index_filename, encoding='utf-8').read():
+    if text_in_file('#users#', schedule_index_filename):
         return True
     return False
 
@@ -1205,7 +1206,7 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                             '    <figure id="videoContainer" ' + \
                             'data-fullscreen="false">\n' + \
                             '    <video id="video" controls ' + \
-                            'preload="metadata">\n'
+                            'preload="metadata" tabindex="10">\n'
                         gallery_str += \
                             '      <source src="' + attach['url'] + \
                             '" alt="' + image_description + \
@@ -1244,7 +1245,7 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                     '<center><figure id="videoContainer" ' + \
                     'data-fullscreen="false">\n' + \
                     '    <video id="video" controls ' + \
-                    'preload="metadata">\n'
+                    'preload="metadata" tabindex="10">\n'
                 attachment_str += \
                     '<source src="' + attach['url'] + '" alt="' + \
                     image_description + '" title="' + image_description + \
@@ -1271,7 +1272,7 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                         gallery_str += \
                             '  <a href="' + attach['url'] + \
                             '" tabindex="10">\n'
-                        gallery_str += '    <audio controls>\n'
+                        gallery_str += '    <audio controls tabindex="10">\n'
                         gallery_str += \
                             '      <source src="' + attach['url'] + \
                             '" alt="' + image_description + \
@@ -1306,7 +1307,7 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                     gallery_str += '  </div>\n'
                     gallery_str += '</div>\n'
 
-                attachment_str += '<center>\n<audio controls>\n'
+                attachment_str += '<center>\n<audio controls tabindex="10">\n'
                 attachment_str += \
                     '<source src="' + attach['url'] + '" alt="' + \
                     image_description + '" title="' + image_description + \

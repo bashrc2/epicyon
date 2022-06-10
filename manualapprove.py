@@ -16,6 +16,7 @@ from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import get_user_paths
 from utils import acct_dir
+from utils import text_in_file
 from threads import thread_with_trace
 from session import create_session
 
@@ -38,8 +39,7 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
     # has this handle already been rejected?
     rejected_follows_filename = accounts_dir + '/followrejects.txt'
     if os.path.isfile(rejected_follows_filename):
-        if deny_handle in open(rejected_follows_filename,
-                               encoding='utf-8').read():
+        if text_in_file(deny_handle, rejected_follows_filename):
             remove_from_follow_requests(base_dir, nickname, domain,
                                         deny_handle, debug)
             print(deny_handle +
@@ -115,15 +115,17 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
     """
     approved_filename = account_dir + '/approved.txt'
     if os.path.isfile(approved_filename):
-        if approve_handle not in open(approved_filename).read():
+        if not text_in_file(approve_handle, approved_filename):
             try:
-                with open(approved_filename, 'a+') as approved_file:
+                with open(approved_filename, 'a+',
+                          encoding='utf-8') as approved_file:
                     approved_file.write(approve_handle + '\n')
             except OSError:
                 print('EX: unable to append ' + approved_filename)
     else:
         try:
-            with open(approved_filename, 'w+') as approved_file:
+            with open(approved_filename, 'w+',
+                      encoding='utf-8') as approved_file:
                 approved_file.write(approve_handle + '\n')
         except OSError:
             print('EX: unable to write ' + approved_filename)
@@ -280,8 +282,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         # update the followers
         print('Manual follow accept: updating ' + followers_filename)
         if os.path.isfile(followers_filename):
-            if approve_handle_full not in open(followers_filename,
-                                               encoding='utf-8').read():
+            if not text_in_file(approve_handle_full, followers_filename):
                 try:
                     with open(followers_filename, 'r+',
                               encoding='utf-8') as followers_file:
@@ -308,8 +309,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt
-    if approve_handle_full in open(followers_filename,
-                                   encoding='utf-8').read():
+    if text_in_file(approve_handle_full, followers_filename):
         # mark this handle as approved for following
         _approve_follower_handle(account_dir, approve_handle)
         # update the follow requests with the handles not yet approved

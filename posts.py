@@ -32,6 +32,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import text_in_file
 from utils import get_media_descriptions_from_post
 from utils import valid_hash_tag
 from utils import get_audio_extensions
@@ -968,7 +969,7 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str) -> None:
                   tags_filename)
     else:
         # prepend to tags index file
-        if tagline not in open(tags_filename, encoding='utf-8').read():
+        if not text_in_file(tagline, tags_filename):
             try:
                 with open(tags_filename, 'r+', encoding='utf-8') as tags_file:
                     content = tags_file.read()
@@ -990,8 +991,7 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
 
     index_str = event_date_str + ' ' + post_id.replace('/', '#')
     if os.path.isfile(schedule_index_filename):
-        if index_str not in open(schedule_index_filename,
-                                 encoding='utf-8').read():
+        if not text_in_file(index_str, schedule_index_filename):
             try:
                 with open(schedule_index_filename, 'r+',
                           encoding='utf-8') as schedule_file:
@@ -4294,7 +4294,12 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         # Time of file creation
         full_filename = os.path.join(box_dir, post_filename)
         if os.path.isfile(full_filename):
-            content = open(full_filename, encoding='utf-8').read()
+            content = ''
+            try:
+                with open(full_filename, 'r', encoding='utf-8') as fp_content:
+                    content = fp_content.read()
+            except OSError:
+                print('EX: unable to open content ' + full_filename)
             if '"published":' in content:
                 published_str = content.split('"published":')[1]
                 if '"' in published_str:
@@ -4751,8 +4756,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     message_id2.replace('/', '#') + '.json'
                 if os.path.isfile(search_filename):
                     if authorized or \
-                       pub_str in open(search_filename,
-                                       encoding='utf-8').read():
+                       text_in_file(pub_str, search_filename):
                         post_json_object = load_json(search_filename)
                         if post_json_object:
                             if post_json_object['object'].get('cc'):
@@ -4779,8 +4783,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     message_id2.replace('/', '#') + '.json'
                 if os.path.isfile(search_filename):
                     if authorized or \
-                       pub_str in open(search_filename,
-                                       encoding='utf-8').read():
+                       text_in_file(pub_str, search_filename):
                         # get the json of the reply and append it to
                         # the collection
                         post_json_object = load_json(search_filename)

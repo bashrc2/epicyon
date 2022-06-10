@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import text_in_file
 from utils import convert_published_to_local_timezone
 from utils import convert_to_snake_case
 from utils import get_sha_256
@@ -1418,7 +1419,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                      bob_domain, None, None)
 
     for _ in range(20):
-        if 'likes' in open(outbox_post_filename, encoding='utf-8').read():
+        if text_in_file('likes', outbox_post_filename):
             break
         time.sleep(1)
 
@@ -1426,7 +1427,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     if alice_post_json:
         pprint(alice_post_json)
 
-    assert 'likes' in open(outbox_post_filename, encoding='utf-8').read()
+    assert text_in_file('likes', outbox_post_filename)
 
     print('\n\n*******************************************************')
     print("Bob reacts to Alice's post")
@@ -1441,7 +1442,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          bob_domain, None, None)
 
     for _ in range(20):
-        if 'reactions' in open(outbox_post_filename, encoding='utf-8').read():
+        if text_in_file('reactions', outbox_post_filename):
             break
         time.sleep(1)
 
@@ -1450,7 +1451,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
         pprint(alice_post_json)
 
     # TODO: fix reactions unit test
-#    assert 'reactions' in open(outbox_post_filename, encoding='utf-8').read()
+#    assert text_in_file('reactions', outbox_post_filename)
 
     print('\n\n*******************************************************')
     print("Bob repeats Alice's post")
@@ -1637,17 +1638,14 @@ def test_follow_between_servers(base_dir: str) -> None:
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
-    assert 'alice@' + alice_domain in open(bob_dir + '/accounts/bob@' +
-                                           bob_domain +
-                                           '/followers.txt',
-                                           encoding='utf-8').read()
-    assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
-                                       alice_domain + '/following.txt',
-                                       encoding='utf-8').read()
-    assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
-                                       alice_domain +
-                                       '/followingCalendar.txt',
-                                       encoding='utf-8').read()
+    assert text_in_file('alice@' + alice_domain, bob_dir + '/accounts/bob@' +
+                        bob_domain + '/followers.txt')
+    assert text_in_file('bob@' + bob_domain,
+                        alice_dir + '/accounts/alice@' +
+                        alice_domain + '/following.txt')
+    assert text_in_file('bob@' + bob_domain,
+                        alice_dir + '/accounts/alice@' +
+                        alice_domain + '/followingCalendar.txt')
     assert not is_group_actor(alice_dir, bob_actor, alice_person_cache)
     assert not is_group_account(alice_dir, 'alice', alice_domain)
 
@@ -1861,17 +1859,15 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
-    assert 'alice@' + alice_domain in open(bob_dir + '/accounts/bob@' +
-                                           bob_domain +
-                                           '/followers.txt',
-                                           encoding='utf-8').read()
-    assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
-                                       alice_domain + '/following.txt',
-                                       encoding='utf-8').read()
-    assert 'bob@' + bob_domain in open(alice_dir + '/accounts/alice@' +
-                                       alice_domain +
-                                       '/followingCalendar.txt',
-                                       encoding='utf-8').read()
+    assert text_in_file('alice@' + alice_domain,
+                        bob_dir + '/accounts/bob@' +
+                        bob_domain + '/followers.txt')
+    assert text_in_file('bob@' + bob_domain,
+                        alice_dir + '/accounts/alice@' +
+                        alice_domain + '/following.txt')
+    assert text_in_file('bob@' + bob_domain,
+                        alice_dir + '/accounts/alice@' +
+                        alice_domain + '/followingCalendar.txt')
     assert not is_group_actor(alice_dir, bob_actor, alice_person_cache)
     assert not is_group_account(bob_dir, 'bob', bob_domain)
 
@@ -2322,17 +2318,15 @@ def test_group_follow(base_dir: str) -> None:
     assert valid_inbox(testgroup_dir, 'testgroup', testgroup_domain)
     assert valid_inbox_filenames(testgroup_dir, 'testgroup', testgroup_domain,
                                  alice_domain, alice_port)
-    assert 'alice@' + alice_domain in open(testgroup_followers_filename,
-                                           encoding='utf-8').read()
-    assert '!alice@' + alice_domain not in \
-        open(testgroup_followers_filename, encoding='utf-8').read()
+    assert text_in_file('alice@' + alice_domain, testgroup_followers_filename)
+    assert not text_in_file('!alice@' + alice_domain,
+                            testgroup_followers_filename)
 
     testgroup_webfinger_filename = \
         testgroup_dir + '/wfendpoints/testgroup@' + \
         testgroup_domain + ':' + str(testgroupPort) + '.json'
     assert os.path.isfile(testgroup_webfinger_filename)
-    assert 'acct:testgroup@' in open(testgroup_webfinger_filename,
-                                     encoding='utf-8').read()
+    assert text_in_file('acct:testgroup@', testgroup_webfinger_filename)
     print('acct: exists within the webfinger endpoint for testgroup')
 
     testgroup_handle = 'testgroup@' + testgroup_domain
@@ -2347,10 +2341,8 @@ def test_group_follow(base_dir: str) -> None:
     assert not is_group_account(alice_dir, 'alice', alice_domain)
     assert is_group_account(testgroup_dir, 'testgroup', testgroup_domain)
     assert '!testgroup' in following_str
-    assert testgroup_handle in open(alice_following_filename,
-                                    encoding='utf-8').read()
-    assert testgroup_handle in open(alice_following_calendar_filename,
-                                    encoding='utf-8').read()
+    assert text_in_file(testgroup_handle, alice_following_filename)
+    assert text_in_file(testgroup_handle, alice_following_calendar_filename)
     print('\n\n*********************************************************')
     print('Alice follows the test group')
 
@@ -2404,17 +2396,15 @@ def test_group_follow(base_dir: str) -> None:
     assert valid_inbox(testgroup_dir, 'testgroup', testgroup_domain)
     assert valid_inbox_filenames(testgroup_dir, 'testgroup', testgroup_domain,
                                  bob_domain, bob_port)
-    assert 'bob@' + bob_domain in open(testgroup_followers_filename,
-                                       encoding='utf-8').read()
-    assert '!bob@' + bob_domain not in \
-        open(testgroup_followers_filename, encoding='utf-8').read()
+    assert text_in_file('bob@' + bob_domain, testgroup_followers_filename)
+    assert not text_in_file('!bob@' + bob_domain,
+                            testgroup_followers_filename)
 
     testgroup_webfinger_filename = \
         testgroup_dir + '/wfendpoints/testgroup@' + \
         testgroup_domain + ':' + str(testgroupPort) + '.json'
     assert os.path.isfile(testgroup_webfinger_filename)
-    assert 'acct:testgroup@' in open(testgroup_webfinger_filename,
-                                     encoding='utf-8').read()
+    assert text_in_file('acct:testgroup@', testgroup_webfinger_filename)
     print('acct: exists within the webfinger endpoint for testgroup')
 
     testgroup_handle = 'testgroup@' + testgroup_domain
@@ -2427,10 +2417,8 @@ def test_group_follow(base_dir: str) -> None:
               testgroup_domain + ':' + str(testgroupPort))
     assert is_group_actor(bob_dir, testgroup_actor, bob_person_cache)
     assert '!testgroup' in following_str
-    assert testgroup_handle in open(bob_following_filename,
-                                    encoding='utf-8').read()
-    assert testgroup_handle in open(bob_following_calendar_filename,
-                                    encoding='utf-8').read()
+    assert text_in_file(testgroup_handle, bob_following_filename)
+    assert text_in_file(testgroup_handle, bob_following_calendar_filename)
     print('Bob follows the test group')
 
     print('\n\n*********************************************************')
@@ -3187,30 +3175,27 @@ def test_client_to_server(base_dir: str):
         bob_dir + '/accounts/bob@' + bob_domain + '/followers.txt'
     for _ in range(10):
         if os.path.isfile(bob_followers_filename):
-            if 'alice@' + alice_domain + ':' + str(alice_port) in \
-               open(bob_followers_filename,
-                    encoding='utf-8').read():
+            test_str = 'alice@' + alice_domain + ':' + str(alice_port)
+            if text_in_file(test_str, bob_followers_filename):
                 if os.path.isfile(alice_following_filename) and \
                    os.path.isfile(alice_petnames_filename):
-                    if 'bob@' + bob_domain + ':' + str(bob_port) in \
-                       open(alice_following_filename,
-                            encoding='utf-8').read():
+                    test_str = 'bob@' + bob_domain + ':' + str(bob_port)
+                    if text_in_file(test_str, alice_following_filename):
                         break
         time.sleep(1)
 
     assert os.path.isfile(bob_followers_filename)
     assert os.path.isfile(alice_following_filename)
     assert os.path.isfile(alice_petnames_filename)
-    assert 'bob bob@' + bob_domain in \
-        open(alice_petnames_filename, encoding='utf-8').read()
+    assert text_in_file('bob bob@' + bob_domain, alice_petnames_filename)
     print('alice@' + alice_domain + ':' + str(alice_port) + ' in ' +
           bob_followers_filename)
-    assert 'alice@' + alice_domain + ':' + str(alice_port) in \
-        open(bob_followers_filename, encoding='utf-8').read()
+    test_str = 'alice@' + alice_domain + ':' + str(alice_port)
+    assert text_in_file(test_str, bob_followers_filename)
     print('bob@' + bob_domain + ':' + str(bob_port) + ' in ' +
           alice_following_filename)
-    assert 'bob@' + bob_domain + ':' + str(bob_port) in \
-        open(alice_following_filename, encoding='utf-8').read()
+    test_str = 'bob@' + bob_domain + ':' + str(bob_port)
+    assert text_in_file(test_str, alice_following_filename)
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
@@ -3226,23 +3211,25 @@ def test_client_to_server(base_dir: str):
     for _ in range(10):
         if os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
                           '/followers.txt'):
-            if 'bob@' + bob_domain + ':' + str(bob_port) in \
-               open(alice_dir + '/accounts/alice@' + alice_domain +
-                    '/followers.txt', encoding='utf-8').read():
+            test_str = 'bob@' + bob_domain + ':' + str(bob_port)
+            test_filename = \
+                alice_dir + '/accounts/alice@' + \
+                alice_domain + '/followers.txt'
+            if text_in_file(test_str, test_filename):
                 if os.path.isfile(bob_dir + '/accounts/bob@' + bob_domain +
                                   '/following.txt'):
                     alice_handle_str = \
                         'alice@' + alice_domain + ':' + str(alice_port)
-                    if alice_handle_str in \
-                       open(bob_dir + '/accounts/bob@' + bob_domain +
-                            '/following.txt', encoding='utf-8').read():
+                    if text_in_file(alice_handle_str,
+                                    bob_dir + '/accounts/bob@' + bob_domain +
+                                    '/following.txt'):
                         if os.path.isfile(bob_dir + '/accounts/bob@' +
                                           bob_domain +
                                           '/followingCalendar.txt'):
-                            if alice_handle_str in \
-                               open(bob_dir + '/accounts/bob@' + bob_domain +
-                                    '/followingCalendar.txt',
-                                    encoding='utf-8').read():
+                            if text_in_file(alice_handle_str,
+                                            bob_dir + '/accounts/bob@' +
+                                            bob_domain +
+                                            '/followingCalendar.txt'):
                                 break
         time.sleep(1)
 
@@ -3250,12 +3237,13 @@ def test_client_to_server(base_dir: str):
                           '/followers.txt')
     assert os.path.isfile(bob_dir + '/accounts/bob@' + bob_domain +
                           '/following.txt')
-    assert 'bob@' + bob_domain + ':' + str(bob_port) in \
-        open(alice_dir + '/accounts/alice@' + alice_domain +
-             '/followers.txt', encoding='utf-8').read()
-    assert 'alice@' + alice_domain + ':' + str(alice_port) in \
-        open(bob_dir + '/accounts/bob@' + bob_domain + '/following.txt',
-             encoding='utf-8').read()
+    test_str = 'bob@' + bob_domain + ':' + str(bob_port)
+    assert text_in_file(test_str, alice_dir + '/accounts/alice@' +
+                        alice_domain + '/followers.txt')
+    test_str = 'alice@' + alice_domain + ':' + str(alice_port)
+    assert text_in_file(test_str,
+                        bob_dir + '/accounts/bob@' +
+                        bob_domain + '/following.txt')
 
     session_bob = create_session(proxy_type)
     password = 'bobpass'
@@ -3458,19 +3446,19 @@ def test_client_to_server(base_dir: str):
                                      cached_webfingers, person_cache,
                                      True, __version__, signing_priv_key_pem)
     for _ in range(10):
-        if 'alice@' + alice_domain + ':' + str(alice_port) not in \
-           open(bob_followers_filename, encoding='utf-8').read():
-            if 'bob@' + bob_domain + ':' + str(bob_port) not in \
-               open(alice_following_filename, encoding='utf-8').read():
+        test_str = 'alice@' + alice_domain + ':' + str(alice_port)
+        if not text_in_file(test_str, bob_followers_filename):
+            test_str = 'bob@' + bob_domain + ':' + str(bob_port)
+            if not text_in_file(test_str, alice_following_filename):
                 break
         time.sleep(1)
 
     assert os.path.isfile(bob_followers_filename)
     assert os.path.isfile(alice_following_filename)
-    assert 'alice@' + alice_domain + ':' + str(alice_port) \
-        not in open(bob_followers_filename, encoding='utf-8').read()
-    assert 'bob@' + bob_domain + ':' + str(bob_port) \
-        not in open(alice_following_filename, encoding='utf-8').read()
+    test_str = 'alice@' + alice_domain + ':' + str(alice_port)
+    assert not text_in_file(test_str, bob_followers_filename)
+    test_str = 'bob@' + bob_domain + ':' + str(bob_port)
+    assert not text_in_file(test_str, alice_following_filename)
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
@@ -7218,7 +7206,7 @@ def _test_diff_content() -> None:
                           timezone, system_language)
     assert html_str
     expected = \
-        '<details><summary class="cw">SHOW EDITS</summary>' + \
+        '<details><summary class="cw" tabindex="10">SHOW EDITS</summary>' + \
         '<p><b>Mon Dec 14, 01:07</b></p><p><label class="diff_add">' + \
         '+ This is some content</label><br><label class="diff_remove">' + \
         '- This is some previous content</label><br>' + \

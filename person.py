@@ -62,6 +62,7 @@ from utils import get_user_paths
 from utils import get_group_paths
 from utils import local_actor_url
 from utils import dangerous_svg
+from utils import text_in_file
 from session import create_session
 from session import get_json
 from webfinger import webfinger_handle
@@ -521,7 +522,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             os.mkdir(base_dir + private_keys_subdir)
         filename = base_dir + private_keys_subdir + '/' + handle + '.key'
         try:
-            with open(filename, 'w+') as text_file:
+            with open(filename, 'w+', encoding='utf-8') as text_file:
                 print(private_key_pem, file=text_file)
         except OSError:
             print('EX: unable to save ' + filename)
@@ -532,7 +533,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             os.mkdir(base_dir + public_keys_subdir)
         filename = base_dir + public_keys_subdir + '/' + handle + '.pem'
         try:
-            with open(filename, 'w+') as text_file:
+            with open(filename, 'w+', encoding='utf-8') as text_file:
                 print(public_key_pem, file=text_file)
         except OSError:
             print('EX: unable to save 2 ' + filename)
@@ -1207,7 +1208,7 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             continue
         if not os.path.isfile(tag_filename):
             continue
-        if match_str not in open(tag_filename, encoding='utf-8').read():
+        if not text_in_file(match_str, tag_filename):
             continue
         lines = []
         with open(tag_filename, 'r', encoding='utf-8') as fp_tag:
@@ -1358,8 +1359,7 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
     snoozed_filename = acct_dir(base_dir, nickname, domain) + '/snoozed.txt'
     if not os.path.isfile(snoozed_filename):
         return False
-    if snooze_actor + ' ' not in open(snoozed_filename,
-                                      encoding='utf-8').read():
+    if not text_in_file(snooze_actor + ' ', snoozed_filename):
         return False
     # remove the snooze entry if it has timed out
     replace_str = None
@@ -1391,7 +1391,7 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
             except OSError:
                 print('EX: unable to write ' + snoozed_filename)
 
-    if snooze_actor + ' ' in open(snoozed_filename, encoding='utf-8').read():
+    if text_in_file(snooze_actor + ' ', snoozed_filename):
         return True
     return False
 
@@ -1406,8 +1406,7 @@ def person_snooze(base_dir: str, nickname: str, domain: str,
         return
     snoozed_filename = account_dir + '/snoozed.txt'
     if os.path.isfile(snoozed_filename):
-        if snooze_actor + ' ' in open(snoozed_filename,
-                                      encoding='utf-8').read():
+        if text_in_file(snooze_actor + ' ', snoozed_filename):
             return
     try:
         with open(snoozed_filename, 'a+', encoding='utf-8') as snoozed_file:
@@ -1428,8 +1427,7 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
     snoozed_filename = account_dir + '/snoozed.txt'
     if not os.path.isfile(snoozed_filename):
         return
-    if snooze_actor + ' ' not in open(snoozed_filename,
-                                      encoding='utf-8').read():
+    if not text_in_file(snooze_actor + ' ', snoozed_filename):
         return
     replace_str = None
     with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:

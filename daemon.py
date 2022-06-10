@@ -251,6 +251,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import text_in_file
 from utils import is_onion_request
 from utils import is_i2p_request
 from utils import get_account_timezone
@@ -510,7 +511,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if os.path.isfile(votes_filename):
             # have we already voted on this?
-            if message_id in open(votes_filename, encoding='utf-8').read():
+            if text_in_file(message_id, votes_filename):
                 print('Already voted on message ' + message_id)
                 return
 
@@ -2921,7 +2922,8 @@ class PubServer(BaseHTTPRequestHandler):
                         nw_filename = newswire_blocked_filename
                         nw_written = False
                         try:
-                            with open(nw_filename, 'w+') as nofile:
+                            with open(nw_filename, 'w+',
+                                      encoding='utf-8') as nofile:
                                 nofile.write('\n')
                                 nw_written = True
                         except OSError as ex:
@@ -5671,7 +5673,8 @@ class PubServer(BaseHTTPRequestHandler):
                         city_filename = \
                             acct_dir(base_dir, nickname, domain) + '/city.txt'
                         try:
-                            with open(city_filename, 'w+') as fp_city:
+                            with open(city_filename, 'w+',
+                                      encoding='utf-8') as fp_city:
                                 fp_city.write(fields['cityDropdown'])
                         except OSError:
                             print('EX: unable to write city ' + city_filename)
@@ -6402,7 +6405,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     # if the list was given as comma separated
                                     eds = fields['editors'].split(',')
                                     try:
-                                        with open(editors_file, 'w+') as edfil:
+                                        with open(editors_file, 'w+',
+                                                  encoding='utf-8') as edfil:
                                             for ed_nick in eds:
                                                 ed_nick = ed_nick.strip()
                                                 ed_dir = base_dir + \
@@ -6427,8 +6431,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     # nicknames on separate lines
                                     eds = fields['editors'].split('\n')
                                     try:
-                                        with open(editors_file,
-                                                  'w+') as edfile:
+                                        with open(editors_file, 'w+',
+                                                  encoding='utf-8') as edfile:
                                             for ed_nick in eds:
                                                 ed_nick = ed_nick.strip()
                                                 ed_dir = \
@@ -8105,7 +8109,8 @@ class PubServer(BaseHTTPRequestHandler):
             if os.path.isfile(ontology_filename):
                 ontology_file = None
                 try:
-                    with open(ontology_filename, 'r') as fp_ont:
+                    with open(ontology_filename, 'r',
+                              encoding='utf-8') as fp_ont:
                         ontology_file = fp_ont.read()
                 except OSError:
                     print('EX: unable to read ontology ' + ontology_filename)
@@ -11508,7 +11513,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             ssml_str = None
             try:
-                with open(ssml_filename, 'r') as fp_ssml:
+                with open(ssml_filename, 'r', encoding='utf-8') as fp_ssml:
                     ssml_str = fp_ssml.read()
             except OSError:
                 pass
@@ -18638,7 +18643,8 @@ class PubServer(BaseHTTPRequestHandler):
                     media_tag_filename = media_filename + '.etag'
                     if os.path.isfile(media_tag_filename):
                         try:
-                            with open(media_tag_filename, 'r') as efile:
+                            with open(media_tag_filename, 'r',
+                                      encoding='utf-8') as efile:
                                 etag = efile.read()
                         except OSError:
                             print('EX: do_HEAD unable to read ' +
@@ -18654,7 +18660,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if media_binary:
                             etag = md5(media_binary).hexdigest()  # nosec
                             try:
-                                with open(media_tag_filename, 'w+') as efile:
+                                with open(media_tag_filename, 'w+',
+                                          encoding='utf-8') as efile:
                                     efile.write(etag)
                             except OSError:
                                 print('EX: do_HEAD unable to write ' +
@@ -20744,25 +20751,25 @@ class PubServerUnitTest(PubServer):
 class EpicyonServer(ThreadingHTTPServer):
     def handle_error(self, request, client_address):
         # surpress connection reset errors
-        cls, e = sys.exc_info()[:2]
+        cls, e_ret = sys.exc_info()[:2]
         if cls is ConnectionResetError:
-            if e.errno != errno.ECONNRESET:
-                print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
+            if e_ret.errno != errno.ECONNRESET:
+                print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e_ret))
             pass
         elif cls is BrokenPipeError:
             pass
         else:
-            print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
+            print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e_ret))
             return HTTPServer.handle_error(self, request, client_address)
 
 
 def run_posts_queue(base_dir: str, send_threads: [], debug: bool,
-                    timeoutMins: int) -> None:
+                    timeout_mins: int) -> None:
     """Manages the threads used to send posts
     """
     while True:
         time.sleep(1)
-        remove_dormant_threads(base_dir, send_threads, debug, timeoutMins)
+        remove_dormant_threads(base_dir, send_threads, debug, timeout_mins)
 
 
 def run_shares_expire(version_number: str, base_dir: str) -> None:
@@ -20819,7 +20826,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
                 nickname = handle.split('@')[0]
                 token = None
                 try:
-                    with open(token_filename, 'r') as fp_tok:
+                    with open(token_filename, 'r',
+                              encoding='utf-8') as fp_tok:
                         token = fp_tok.read()
                 except BaseException as ex:
                     print('WARN: Unable to read token for ' +
@@ -20862,7 +20870,7 @@ def run_daemon(preferred_podcast_formats: [],
                max_news_posts: int,
                max_mirrored_articles: int,
                max_newswire_feed_size_kb: int,
-               max_newswire_postsPerSource: int,
+               max_newswire_posts_per_source: int,
                show_published_date_only: bool,
                voting_time_mins: int,
                positive_voting: bool,
@@ -21104,7 +21112,7 @@ def run_daemon(preferred_podcast_formats: [],
     # this is the maximum number of posts to show for each.
     # This avoids one or two sources from dominating the news,
     # and also prevents big feeds from slowing down page load times
-    httpd.max_newswire_postsPerSource = max_newswire_postsPerSource
+    httpd.max_newswire_posts_per_source = max_newswire_posts_per_source
 
     # Show only the date at the bottom of posts, and not the time
     httpd.show_published_date_only = show_published_date_only

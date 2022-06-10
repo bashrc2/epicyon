@@ -68,6 +68,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import text_in_file
 from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_users_path
@@ -2748,7 +2749,7 @@ def _command_options() -> None:
             sys.exit()
         password_file = base_dir + '/accounts/passwords'
         if os.path.isfile(password_file):
-            if nickname + ':' in open(password_file).read():
+            if text_in_file(nickname + ':', password_file):
                 store_basic_credentials(base_dir, nickname, new_password)
                 print('Password for ' + nickname + ' was changed')
             else:

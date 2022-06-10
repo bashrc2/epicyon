@@ -17,6 +17,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from utils import text_in_file
 from utils import local_actor_url
 from utils import get_actor_languages_list
 from utils import get_base_content_from_post
@@ -929,8 +930,7 @@ def path_contains_blog_link(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blog_index_filename):
         return None, None
-    if '#' + user_ending2[1] + '.' not in open(blog_index_filename,
-                                               encoding='utf-8').read():
+    if not text_in_file('#' + user_ending2[1] + '.', blog_index_filename):
         return None, None
     message_id = local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + user_ending2[1]

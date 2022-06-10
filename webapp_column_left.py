@@ -487,7 +487,7 @@ def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
     links_filename = base_dir + '/accounts/links.txt'
     links_str = ''
     if os.path.isfile(links_filename):
-        with open(links_filename, 'r') as fp_links:
+        with open(links_filename, 'r', encoding='utf-8') as fp_links:
             links_str = fp_links.read()
 
     edit_links_form += \
@@ -512,7 +512,7 @@ def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
             about_filename = base_dir + '/accounts/about.md'
             about_str = ''
             if os.path.isfile(about_filename):
-                with open(about_filename, 'r') as fp_about:
+                with open(about_filename, 'r', encoding='utf-8') as fp_about:
                     about_str = fp_about.read()
 
             edit_links_form += \
@@ -531,7 +531,7 @@ def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
             tos_filename = base_dir + '/accounts/tos.md'
             tos_str = ''
             if os.path.isfile(tos_filename):
-                with open(tos_filename, 'r') as fp_tos:
+                with open(tos_filename, 'r', encoding='utf-8') as fp_tos:
                     tos_str = fp_tos.read()
 
             edit_links_form += \

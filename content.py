@@ -1683,7 +1683,7 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         content = prev_content
     if not edits_str:
         return ''
-    return '<details><summary class="cw">' + \
+    return '<details><summary class="cw" tabindex="10">' + \
         translate['SHOW EDITS'] + '</summary>' + \
         edits_str + '</details>'
 

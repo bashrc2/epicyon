@@ -17,6 +17,7 @@ from utils import acct_dir
 from utils import dangerous_svg
 from utils import local_actor_url
 from utils import remove_html
+from utils import text_in_file
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
@@ -65,8 +66,8 @@ def import_theme(base_dir: str, filename: str) -> bool:
     # if the theme name in the default themes list?
     default_themes_filename = base_dir + '/defaultthemes.txt'
     if os.path.isfile(default_themes_filename):
-        if new_theme_name.title() + '\n' in \
-           open(default_themes_filename, encoding='utf-8').read():
+        test_str = new_theme_name.title() + '\n'
+        if text_in_file(test_str, default_themes_filename):
             new_theme_name = new_theme_name + '2'
 
     theme_dir = base_dir + '/theme/' + new_theme_name
