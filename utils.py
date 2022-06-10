@@ -40,13 +40,17 @@ INVALID_CHARACTERS = (
 )
 
 
-def text_in_file(text: str, filename: str) -> bool:
+def text_in_file(text: str, filename: str, case_sensitive: bool = True) -> bool:
     """is the given text in the given file?
     """
+    if not case_sensitive:
+        text = text.lower()
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             content = file.read()
             if content:
+                if not case_sensitive:
+                    content = content.lower()
                 if text in content:
                     return True
     except OSError:

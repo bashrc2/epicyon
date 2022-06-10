@@ -30,6 +30,7 @@ from utils import get_user_paths
 from utils import acct_dir
 from utils import has_group_type
 from utils import local_actor_url
+from utils import text_in_file
 from acceptreject import create_accept
 from acceptreject import create_reject
 from webfinger import webfinger_handle
@@ -115,8 +116,7 @@ def _remove_from_follow_base(base_dir: str,
                   ' to remove ' + handle + ' from')
         return
     accept_deny_actor = None
-    if accept_or_deny_handle not in open(approve_follows_filename,
-                                         encoding='utf-8').read():
+    if not text_in_file(accept_or_deny_handle, approve_follows_filename):
         # is this stored in the file as an actor rather than a handle?
         accept_deny_nickname = accept_or_deny_handle.split('@')[0]
         accept_deny_domain = accept_or_deny_handle.split('@')[1]
@@ -317,8 +317,7 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
             print('DEBUG: follow file ' + filename + ' was not found')
         return False
     handle_to_unfollow_lower = handle_to_unfollow.lower()
-    if handle_to_unfollow_lower not in open(filename,
-                                            encoding='utf-8').read().lower():
+    if not text_in_file(handle_to_unfollow_lower, filename, False):
         if debug:
             print('DEBUG: handle to unfollow ' + handle_to_unfollow +
                   ' is not in ' + filename)
@@ -708,8 +707,7 @@ def store_follow_request(base_dir: str,
             approve_handle = '!' + approve_handle
 
     if os.path.isfile(approve_follows_filename):
-        if approve_handle not in open(approve_follows_filename,
-                                      encoding='utf-8').read():
+        if not text_in_file(approve_handle, approve_follows_filename):
             try:
                 with open(approve_follows_filename, 'a+',
                           encoding='utf-8') as fp_approve:

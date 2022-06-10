@@ -11,6 +11,7 @@ import os
 from utils import has_object_dict
 from utils import acct_dir
 from utils import remove_id_ending
+from utils import text_in_file
 
 
 def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
@@ -50,8 +51,7 @@ def update_conversation(base_dir: str, nickname: str, domain: str,
         except OSError:
             print('EX: update_conversation ' +
                   'unable to write to ' + conversation_filename)
-    elif post_id + '\n' not in open(conversation_filename,
-                                    encoding='utf-8').read():
+    elif not text_in_file(post_id + '\n', conversation_filename):
         try:
             with open(conversation_filename, 'a+',
                       encoding='utf-8') as conv_file:

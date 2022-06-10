@@ -34,6 +34,7 @@ from utils import get_status_number
 from utils import clear_from_post_caches
 from utils import dangerous_markup
 from utils import local_actor_url
+from utils import text_in_file
 from inbox import store_hash_tags
 from session import create_session
 
@@ -46,7 +47,7 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
     index_filename = base_path + '/outbox.index'
 
     if os.path.isfile(index_filename):
-        if post_id not in open(index_filename, encoding='utf-8').read():
+        if not text_in_file(post_id, index_filename):
             try:
                 with open(index_filename, 'r+') as feeds_file:
                     content = feeds_file.read()
