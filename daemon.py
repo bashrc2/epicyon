@@ -20820,7 +20820,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
                 nickname = handle.split('@')[0]
                 token = None
                 try:
-                    with open(token_filename, 'r') as fp_tok:
+                    with open(token_filename, 'r',
+                              encoding='utf-8') as fp_tok:
                         token = fp_tok.read()
                 except BaseException as ex:
                     print('WARN: Unable to read token for ' +
@@ -20863,7 +20864,7 @@ def run_daemon(preferred_podcast_formats: [],
                max_news_posts: int,
                max_mirrored_articles: int,
                max_newswire_feed_size_kb: int,
-               max_newswire_postsPerSource: int,
+               max_newswire_posts_per_source: int,
                show_published_date_only: bool,
                voting_time_mins: int,
                positive_voting: bool,
@@ -21105,7 +21106,7 @@ def run_daemon(preferred_podcast_formats: [],
     # this is the maximum number of posts to show for each.
     # This avoids one or two sources from dominating the news,
     # and also prevents big feeds from slowing down page load times
-    httpd.max_newswire_postsPerSource = max_newswire_postsPerSource
+    httpd.max_newswire_posts_per_source = max_newswire_posts_per_source
 
     # Show only the date at the bottom of posts, and not the time
     httpd.show_published_date_only = show_published_date_only

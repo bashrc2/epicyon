@@ -814,7 +814,7 @@ def run_newswire_daemon(base_dir: str, httpd,
         print('Updating newswire feeds')
         new_newswire = \
             get_dict_from_newswire(httpd.session, base_dir, domain,
-                                   httpd.max_newswire_postsPerSource,
+                                   httpd.max_newswire_posts_per_source,
                                    httpd.max_newswire_feed_size_kb,
                                    httpd.maxTags,
                                    httpd.max_feed_item_size_kb,
