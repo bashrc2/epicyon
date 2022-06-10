@@ -20745,15 +20745,15 @@ class PubServerUnitTest(PubServer):
 class EpicyonServer(ThreadingHTTPServer):
     def handle_error(self, request, client_address):
         # surpress connection reset errors
-        cls, e = sys.exc_info()[:2]
+        cls, e_ret = sys.exc_info()[:2]
         if cls is ConnectionResetError:
-            if e.errno != errno.ECONNRESET:
-                print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
+            if e_ret.errno != errno.ECONNRESET:
+                print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e_ret))
             pass
         elif cls is BrokenPipeError:
             pass
         else:
-            print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
+            print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e_ret))
             return HTTPServer.handle_error(self, request, client_address)
 
 
