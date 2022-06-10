@@ -166,8 +166,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
     # Does this event post already exist within the calendar month?
     if os.path.isfile(calendar_filename):
-        if post_id in open(calendar_filename,
-                           encoding='utf-8').read():
+        if text_in_file(post_id, calendar_filename):
             # Event post already exists
             return False
 

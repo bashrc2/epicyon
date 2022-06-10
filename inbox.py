@@ -449,7 +449,7 @@ def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
             if not os.path.isfile(filename):
                 print('filename: ' + filename)
                 return False
-            if 'postNickname' in open(filename, encoding='utf-8').read():
+            if text_in_file('postNickname', filename):
                 print('queue file incorrectly saved to ' + filename)
                 return False
         break

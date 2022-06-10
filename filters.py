@@ -17,7 +17,7 @@ def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     """
     filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filters_filename):
-        if words in open(filters_filename, encoding='utf-8').read():
+        if text_in_file(words, filters_filename):
             return False
     try:
         with open(filters_filename, 'a+',
@@ -38,7 +38,7 @@ def add_global_filter(base_dir: str, words: str) -> bool:
         return False
     filters_filename = base_dir + '/accounts/filters.txt'
     if os.path.isfile(filters_filename):
-        if words in open(filters_filename, encoding='utf-8').read():
+        if text_in_file(words, filters_filename):
             return False
     try:
         with open(filters_filename, 'a+', encoding='utf-8') as filters_file:

@@ -26,6 +26,7 @@ from utils import get_audio_extensions
 from utils import get_video_extensions
 from utils import get_image_extensions
 from utils import local_actor_url
+from utils import text_in_file
 from cache import store_person_in_cache
 from content import add_html_tags
 from content import replace_emoji_from_tags
@@ -362,7 +363,7 @@ def scheduled_posts_exist(base_dir: str, nickname: str, domain: str) -> bool:
         acct_dir(base_dir, nickname, domain) + '/schedule.index'
     if not os.path.isfile(schedule_index_filename):
         return False
-    if '#users#' in open(schedule_index_filename, encoding='utf-8').read():
+    if text_in_file('#users#', schedule_index_filename):
         return True
     return False
 

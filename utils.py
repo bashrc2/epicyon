@@ -40,7 +40,8 @@ INVALID_CHARACTERS = (
 )
 
 
-def text_in_file(text: str, filename: str, case_sensitive: bool = True) -> bool:
+def text_in_file(text: str, filename: str,
+                 case_sensitive: bool = True) -> bool:
     """is the given text in the given file?
     """
     if not case_sensitive:
@@ -127,32 +128,32 @@ def has_object_dict(post_json_object: {}) -> bool:
 
 def get_content_from_post(post_json_object: {}, system_language: str,
                           languages_understood: [],
-                          contentType: str = "content") -> str:
+                          content_type: str = "content") -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """
     this_post_json = post_json_object
     if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
-    if not this_post_json.get(contentType):
+    if not this_post_json.get(content_type):
         return ''
     content = ''
-    mapDict = contentType + 'Map'
-    if this_post_json.get(mapDict):
-        if isinstance(this_post_json[mapDict], dict):
-            if this_post_json[mapDict].get(system_language):
-                sys_lang = this_post_json[mapDict][system_language]
+    map_dict = content_type + 'Map'
+    if this_post_json.get(map_dict):
+        if isinstance(this_post_json[map_dict], dict):
+            if this_post_json[map_dict].get(system_language):
+                sys_lang = this_post_json[map_dict][system_language]
                 if isinstance(sys_lang, str):
-                    return this_post_json[mapDict][system_language]
+                    return this_post_json[map_dict][system_language]
             else:
                 # is there a contentMap/summaryMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
-                    if this_post_json[mapDict].get(lang):
-                        return this_post_json[mapDict][lang]
+                    if this_post_json[map_dict].get(lang):
+                        return this_post_json[map_dict][lang]
     else:
-        if isinstance(this_post_json[contentType], str):
-            content = this_post_json[contentType]
+        if isinstance(this_post_json[content_type], str):
+            content = this_post_json[content_type]
     return content
 
 

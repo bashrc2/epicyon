@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import text_in_file
 from utils import disallow_announce
 from utils import disallow_reply
 from utils import get_base_content_from_post
@@ -169,8 +170,7 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
     read_posts_dir = home_dir + '/.config/epicyon/' + handle
     read_posts_filename = read_posts_dir + '/' + post_category + '.txt'
     if os.path.isfile(read_posts_filename):
-        if post_id in open(read_posts_filename,
-                           encoding='utf-8').read():
+        if text_in_file(post_id, read_posts_filename):
             return
         try:
             # prepend to read posts file
@@ -201,7 +201,7 @@ def _has_read_post(actor: str, post_id: str, post_category: str) -> bool:
     read_posts_dir = home_dir + '/.config/epicyon/' + handle
     read_posts_filename = read_posts_dir + '/' + post_category + '.txt'
     if os.path.isfile(read_posts_filename):
-        if post_id in open(read_posts_filename).read():
+        if text_in_file(post_id, read_posts_filename):
             return True
     return False
 

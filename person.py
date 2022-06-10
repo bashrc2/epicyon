@@ -1391,7 +1391,7 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
             except OSError:
                 print('EX: unable to write ' + snoozed_filename)
 
-    if snooze_actor + ' ' in open(snoozed_filename, encoding='utf-8').read():
+    if text_in_file(snooze_actor + ' ', snoozed_filename):
         return True
     return False
 
@@ -1406,8 +1406,7 @@ def person_snooze(base_dir: str, nickname: str, domain: str,
         return
     snoozed_filename = account_dir + '/snoozed.txt'
     if os.path.isfile(snoozed_filename):
-        if snooze_actor + ' ' in open(snoozed_filename,
-                                      encoding='utf-8').read():
+        if text_in_file(snooze_actor + ' ', snoozed_filename):
             return
     try:
         with open(snoozed_filename, 'a+', encoding='utf-8') as snoozed_file:

@@ -113,5 +113,4 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
         with open(notify_on_post_filename, 'w+',
                   encoding='utf-8') as fp_notify:
             fp_notify.write('')
-    return handle + '\n' in open(notify_on_post_filename,
-                                 encoding='utf-8').read()
+    return text_in_file(handle + '\n', notify_on_post_filename)

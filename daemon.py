@@ -251,6 +251,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import text_in_file
 from utils import is_onion_request
 from utils import is_i2p_request
 from utils import get_account_timezone
@@ -510,7 +511,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if os.path.isfile(votes_filename):
             # have we already voted on this?
-            if message_id in open(votes_filename, encoding='utf-8').read():
+            if text_in_file(message_id, votes_filename):
                 print('Already voted on message ' + message_id)
                 return
 

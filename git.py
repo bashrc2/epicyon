@@ -11,6 +11,7 @@ import os
 import html
 from utils import acct_dir
 from utils import has_object_string_type
+from utils import text_in_file
 
 
 def _git_format_content(content: str) -> str:
@@ -38,7 +39,7 @@ def _get_git_project_name(base_dir: str, nickname: str, domain: str,
         return None
     subject_line_words = subject.lower().split(' ')
     for word in subject_line_words:
-        if word in open(git_projects_filename, encoding='utf-8').read():
+        if text_in_file(word, git_projects_filename):
             return word
     return None
 

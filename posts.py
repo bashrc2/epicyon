@@ -4751,8 +4751,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     message_id2.replace('/', '#') + '.json'
                 if os.path.isfile(search_filename):
                     if authorized or \
-                       pub_str in open(search_filename,
-                                       encoding='utf-8').read():
+                       text_in_file(pub_str, search_filename):
                         post_json_object = load_json(search_filename)
                         if post_json_object:
                             if post_json_object['object'].get('cc'):
@@ -4779,8 +4778,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     message_id2.replace('/', '#') + '.json'
                 if os.path.isfile(search_filename):
                     if authorized or \
-                       pub_str in open(search_filename,
-                                       encoding='utf-8').read():
+                       text_in_file(pub_str, search_filename):
                         # get the json of the reply and append it to
                         # the collection
                         post_json_object = load_json(search_filename)
