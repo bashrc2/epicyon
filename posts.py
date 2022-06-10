@@ -4294,7 +4294,12 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         # Time of file creation
         full_filename = os.path.join(box_dir, post_filename)
         if os.path.isfile(full_filename):
-            content = open(full_filename, encoding='utf-8').read()
+            content = ''
+            try:
+                with open(full_filename, 'r', encoding='utf-8') as fp_content:
+                    content = fp_content.read()
+            except OSError:
+                print('EX: unable to open content ' + full_filename)
             if '"published":' in content:
                 published_str = content.split('"published":')[1]
                 if '"' in published_str:

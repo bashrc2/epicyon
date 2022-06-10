@@ -4569,8 +4569,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
 
             already_unknown = False
             if os.path.isfile(unknown_contexts_file):
-                if unknown_context in \
-                   open(unknown_contexts_file, encoding='utf-8').read():
+                if text_in_file(unknown_context, unknown_contexts_file):
                     already_unknown = True
 
             if not already_unknown:
@@ -4588,8 +4587,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
 
         already_unknown = False
         if os.path.isfile(unknown_signatures_file):
-            if jwebsig_type in \
-               open(unknown_signatures_file, encoding='utf-8').read():
+            if text_in_file(jwebsig_type, unknown_signatures_file):
                 already_unknown = True
 
         if not already_unknown:

@@ -60,8 +60,7 @@ def add_global_block(base_dir: str,
         block_hashtag = block_nickname
         # is the hashtag already blocked?
         if os.path.isfile(blocking_filename):
-            if block_hashtag + '\n' in \
-               open(blocking_filename, encoding='utf-8').read():
+            if text_in_file(block_hashtag + '\n', blocking_filename):
                 return False
         # block a hashtag
         try:

@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+from utils import text_in_file
 from utils import has_object_string_object
 from utils import has_users_path
 from utils import get_full_domain
@@ -164,8 +165,8 @@ def _accept_follow(base_dir: str, message_json: {},
     unfollowed_filename = \
         acct_dir(base_dir, nickname, accepted_domain_full) + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
-        if followed_nickname + '@' + followed_domain_full in \
-           open(unfollowed_filename, encoding='utf-8').read():
+        if text_in_file(followed_nickname + '@' + followed_domain_full,
+                        unfollowed_filename):
             if debug:
                 print('DEBUG: follow accept arrived for ' +
                       nickname + '@' + accepted_domain_full +

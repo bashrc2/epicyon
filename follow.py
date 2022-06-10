@@ -340,8 +340,8 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
     # later arrives then it can be ignored
     unfollowed_filename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
-        if handle_to_unfollow_lower not in \
-           open(unfollowed_filename, encoding='utf-8').read().lower():
+        if not text_in_file(handle_to_unfollow_lower,
+                            unfollowed_filename, False):
             try:
                 with open(unfollowed_filename, 'a+',
                           encoding='utf-8') as fp_unfoll:
