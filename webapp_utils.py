@@ -1206,7 +1206,7 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                             '    <figure id="videoContainer" ' + \
                             'data-fullscreen="false">\n' + \
                             '    <video id="video" controls ' + \
-                            'preload="metadata">\n'
+                            'preload="metadata" tabindex="10">\n'
                         gallery_str += \
                             '      <source src="' + attach['url'] + \
                             '" alt="' + image_description + \
@@ -1245,7 +1245,7 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                     '<center><figure id="videoContainer" ' + \
                     'data-fullscreen="false">\n' + \
                     '    <video id="video" controls ' + \
-                    'preload="metadata">\n'
+                    'preload="metadata" tabindex="10">\n'
                 attachment_str += \
                     '<source src="' + attach['url'] + '" alt="' + \
                     image_description + '" title="' + image_description + \
@@ -1272,7 +1272,7 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                         gallery_str += \
                             '  <a href="' + attach['url'] + \
                             '" tabindex="10">\n'
-                        gallery_str += '    <audio controls>\n'
+                        gallery_str += '    <audio controls tabindex="10">\n'
                         gallery_str += \
                             '      <source src="' + attach['url'] + \
                             '" alt="' + image_description + \
@@ -1307,7 +1307,7 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                     gallery_str += '  </div>\n'
                     gallery_str += '</div>\n'
 
-                attachment_str += '<center>\n<audio controls>\n'
+                attachment_str += '<center>\n<audio controls tabindex="10">\n'
                 attachment_str += \
                     '<source src="' + attach['url'] + '" alt="' + \
                     image_description + '" title="' + image_description + \
