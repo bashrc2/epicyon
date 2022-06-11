@@ -63,46 +63,39 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
 
     # get the contents of the minimize file, which is
     # a set of handles
-    following_handles = ''
+    minimize_handles = ''
     if os.path.isfile(minimize_filename):
         print('Minimize file exists')
         try:
             with open(minimize_filename, 'r',
                       encoding='utf-8') as minimize_file:
-                following_handles = minimize_file.read()
+                minimize_handles = minimize_file.read()
         except OSError:
             print('EX: minimize_attached_images ' + minimize_filename)
     else:
         # create a new minimize file from the following file
         print('Creating minimize file ' + minimize_filename)
-        following_handles = ''
-        try:
-            with open(following_filename, 'r',
-                      encoding='utf-8') as following_file:
-                following_handles = following_file.read()
-        except OSError:
-            print('EX: minimize_attached_images 2 ' + minimize_filename)
         if add:
             try:
                 with open(minimize_filename, 'w+',
                           encoding='utf-8') as fp_min:
-                    fp_min.write(following_handles + handle + '\n')
+                    fp_min.write('')
             except OSError:
                 print('EX: minimize_attached_images unable to write ' +
                       minimize_filename)
 
     # already in the minimize file?
-    if handle + '\n' in following_handles:
+    if handle + '\n' in minimize_handles:
         print(handle + ' exists in followingMinimizeImages.txt')
         if add:
             # already added
             return
         # remove from minimize file
-        following_handles = following_handles.replace(handle + '\n', '')
+        minimize_handles = minimize_handles.replace(handle + '\n', '')
         try:
             with open(minimize_filename, 'w+',
                       encoding='utf-8') as fp_min:
-                fp_min.write(following_handles)
+                fp_min.write(minimize_handles)
         except OSError:
             print('EX: minimize_attached_images 3 ' + minimize_filename)
     else:
@@ -110,11 +103,11 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
         # not already in the minimize file
         if add:
             # append to the list of handles
-            following_handles += handle + '\n'
+            minimize_handles += handle + '\n'
             try:
                 with open(minimize_filename, 'w+',
                           encoding='utf-8') as fp_min:
-                    fp_min.write(following_handles)
+                    fp_min.write(minimize_handles)
             except OSError:
                 print('EX: minimize_attached_images 4 ' + minimize_filename)
 
