@@ -54,20 +54,12 @@ def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
         if not os.path.isfile(following_filename):
             return False
         # create a new minimize file from the following file
-        following_handles = None
         try:
-            with open(following_filename, 'r',
-                      encoding='utf-8') as following_file:
-                following_handles = following_file.read()
+            with open(minimize_filename, 'w+',
+                      encoding='utf-8') as fp_min:
+                fp_min.write('')
         except OSError:
-            print('EX: minimizing_attached_images ' + following_filename)
-        if following_handles:
-            try:
-                with open(minimize_filename, 'w+',
-                          encoding='utf-8') as fp_cal:
-                    fp_cal.write(following_handles)
-            except OSError:
-                print('EX: minimizing_attached_images 2 ' + minimize_filename)
+            print('EX: minimizing_attached_images 2 ' + minimize_filename)
     return text_in_file(handle + '\n', minimize_filename)
 
 
