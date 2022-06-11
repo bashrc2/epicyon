@@ -2041,6 +2041,15 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
 
+    person_url = local_actor_url(http_prefix, nickname, domain_full)
+    actor_json = \
+        get_person_from_cache(base_dir, person_url, person_cache)
+    languages_understood = []
+    if actor_json:
+        languages_understood = get_actor_languages_list(actor_json)
+    content_str = get_content_from_post(post_json_object, system_language,
+                                        languages_understood)
+
     attachment_str, gallery_str = \
         get_post_attachments_as_html(base_dir, nickname, domain,
                                      domain_full,
@@ -2048,7 +2057,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      box_name, translate,
                                      is_muted, avatar_link,
                                      reply_str, announce_str, like_str,
-                                     bookmark_str, delete_str, mute_str)
+                                     bookmark_str, delete_str, mute_str,
+                                     content_str)
 
     published_str = \
         _get_published_date_str(post_json_object, show_published_date_only,
@@ -2119,14 +2129,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             post_json_object['object']['content']
 
     domain_full = get_full_domain(domain, port)
-    person_url = local_actor_url(http_prefix, nickname, domain_full)
-    actor_json = \
-        get_person_from_cache(base_dir, person_url, person_cache)
-    languages_understood = []
-    if actor_json:
-        languages_understood = get_actor_languages_list(actor_json)
-    content_str = get_content_from_post(post_json_object, system_language,
-                                        languages_understood)
+    if not content_str:
+        content_str = get_content_from_post(post_json_object, system_language,
+                                            languages_understood)
     if not content_str:
         content_str = \
             auto_translate_post(base_dir, post_json_object,

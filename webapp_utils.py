@@ -1129,7 +1129,8 @@ def get_post_attachments_as_html(base_dir: str,
                                  reply_str: str, announce_str: str,
                                  like_str: str,
                                  bookmark_str: str, delete_str: str,
-                                 mute_str: str) -> (str, str):
+                                 mute_str: str,
+                                 content: str) -> (str, str):
     """Returns a string representing any attachments
     """
     attachment_str = ''
@@ -1231,6 +1232,11 @@ def get_post_attachments_as_html(base_dir: str,
                         minimizing_attached_images(base_dir, nickname, domain,
                                                    following_nickname,
                                                    following_domain)
+
+                # minimize any NSFW images
+                if not minimize_images and content:
+                    if 'nsfw' in content.lower():
+                        minimize_images = True
 
                 if minimize_images:
                     show_img_str = 'SHOW MEDIA'
