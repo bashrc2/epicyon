@@ -562,5 +562,7 @@
     "End Time": "終了時間",
     "Switch to calendar view": "カレンダービューに切り替えます",
     "Save": "保存",
-    "Switch to moderation view": "モデレートビューに切り替えます"
+    "Switch to moderation view": "モデレートビューに切り替えます",
+    "Minimize attached images": "添付画像を最小限に抑える",
+    "SHOW MEDIA": "メディアを表示"
 }

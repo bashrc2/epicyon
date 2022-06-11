@@ -179,6 +179,8 @@ from webapp_accesskeys import load_access_keys_for_accounts
 from webapp_confirm import html_confirm_delete
 from webapp_confirm import html_confirm_remove_shared_item
 from webapp_confirm import html_confirm_unblock
+from webapp_person_options import person_minimize_images
+from webapp_person_options import person_undo_minimize_images
 from webapp_person_options import html_person_options
 from webapp_timeline import html_shares
 from webapp_timeline import html_wanted
@@ -2852,6 +2854,35 @@ class PubServer(BaseHTTPRequestHandler):
                                        options_domain_full)
             else:
                 remove_person_from_calendar(base_dir,
+                                            chooser_nickname,
+                                            domain,
+                                            options_nickname,
+                                            options_domain_full)
+            users_path_str = \
+                users_path + '/' + self.server.default_timeline + \
+                '?page=' + str(page_number)
+            self._redirect_headers(users_path_str, cookie,
+                                   calling_domain)
+            self.server.postreq_busy = False
+            return
+
+        # person options screen, minimize images checkbox
+        # See html_person_options
+        if '&submitMinimizeImages=' in options_confirm_params:
+            minimize_images = None
+            if 'minimizeImages=' in options_confirm_params:
+                minimize_images = \
+                    options_confirm_params.split('minimizeImages=')[1]
+                if '&' in minimize_images:
+                    minimize_images = minimize_images.split('&')[0]
+            if minimize_images == 'on':
+                person_minimize_images(base_dir,
+                                       chooser_nickname,
+                                       domain,
+                                       options_nickname,
+                                       options_domain_full)
+            else:
+                person_undo_minimize_images(base_dir,
                                             chooser_nickname,
                                             domain,
                                             options_nickname,

@@ -2042,7 +2042,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '14')
 
     attachment_str, gallery_str = \
-        get_post_attachments_as_html(base_dir, domain_full,
+        get_post_attachments_as_html(base_dir, nickname, domain,
+                                     domain_full,
                                      post_json_object,
                                      box_name, translate,
                                      is_muted, avatar_link,

@@ -20,6 +20,8 @@ from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import is_featured_writer
 from utils import acct_dir
+from utils import text_in_file
+from utils import remove_domain_port
 from blocking import is_blocked
 from follow import is_follower_of_person
 from follow import is_following_actor
@@ -31,6 +33,108 @@ from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_keyboard_navigation
 from webapp_utils import get_banner_file
 from webapp_utils import html_hide_from_screen_reader
+from webapp_utils import minimizing_attached_images
+
+
+def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
+                              following_nickname: str,
+                              following_domain: str,
+                              add: bool) -> None:
+    """Adds or removes a handle from the following.txt list into a list
+    indicating whether to minimize images from that account
+    """
+    # check that a following file exists
+    domain = remove_domain_port(domain)
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
+    if not os.path.isfile(following_filename):
+        print("WARN: following.txt doesn't exist for " +
+              nickname + '@' + domain)
+        return
+    handle = following_nickname + '@' + following_domain
+
+    # check that you are following this handle
+    if text_in_file(handle + '\n', following_filename):
+        print('WARN: ' + handle + ' is not in ' + following_filename)
+        return
+
+    minimize_filename = \
+        acct_dir(base_dir, nickname, domain) + '/followingMinimizeImages.txt'
+
+    # get the contents of the minimize file, which is
+    # a set of handles
+    following_handles = ''
+    if os.path.isfile(minimize_filename):
+        print('Minimize file exists')
+        try:
+            with open(minimize_filename, 'r',
+                      encoding='utf-8') as minimize_file:
+                following_handles = minimize_file.read()
+        except OSError:
+            print('EX: minimize_attached_images ' + minimize_filename)
+    else:
+        # create a new minimize file from the following file
+        print('Creating minimize file ' + minimize_filename)
+        following_handles = ''
+        try:
+            with open(following_filename, 'r',
+                      encoding='utf-8') as following_file:
+                following_handles = following_file.read()
+        except OSError:
+            print('EX: minimize_attached_images 2 ' + minimize_filename)
+        if add:
+            try:
+                with open(minimize_filename, 'w+',
+                          encoding='utf-8') as fp_min:
+                    fp_min.write(following_handles + handle + '\n')
+            except OSError:
+                print('EX: minimize_attached_images unable to write ' +
+                      minimize_filename)
+
+    # already in the minimize file?
+    if handle + '\n' in following_handles:
+        print(handle + ' exists in followingMinimizeImages.txt')
+        if add:
+            # already added
+            return
+        # remove from minimize file
+        following_handles = following_handles.replace(handle + '\n', '')
+        try:
+            with open(minimize_filename, 'w+',
+                      encoding='utf-8') as fp_min:
+                fp_min.write(following_handles)
+        except OSError:
+            print('EX: minimize_attached_images 3 ' + minimize_filename)
+    else:
+        print(handle + ' not in followingMinimizeImages.txt')
+        # not already in the minimize file
+        if add:
+            # append to the list of handles
+            following_handles += handle + '\n'
+            try:
+                with open(minimize_filename, 'w+',
+                          encoding='utf-8') as fp_min:
+                    fp_min.write(following_handles)
+            except OSError:
+                print('EX: minimize_attached_images 4 ' + minimize_filename)
+
+
+def person_minimize_images(base_dir: str, nickname: str, domain: str,
+                           following_nickname: str,
+                           following_domain: str) -> None:
+    """Images from this person are minimized by default
+    """
+    _minimize_attached_images(base_dir, nickname, domain,
+                              following_nickname, following_domain, True)
+
+
+def person_undo_minimize_images(base_dir: str, nickname: str, domain: str,
+                                following_nickname: str,
+                                following_domain: str) -> None:
+    """Images from this person are no longer minimized by default
+    """
+    _minimize_attached_images(base_dir, nickname, domain,
+                              following_nickname, following_domain, False)
 
 
 def html_person_options(default_timeline: str,
@@ -333,6 +437,19 @@ def html_person_options(default_timeline: str,
                 if not receiving_calendar_events(base_dir, nickname, domain,
                                                  options_nickname,
                                                  options_domain_full):
+                    checkbox_str = checkbox_str.replace(' checked>', '>')
+                options_str += checkbox_str
+
+                checkbox_str = \
+                    '    <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="minimizeImages" checked> ' + \
+                    translate['Minimize attached images'] + \
+                    '\n    <button type="submit" class="buttonsmall" ' + \
+                    'name="submitMinimizeImages">' + \
+                    translate['Save'] + '</button><br>\n'
+                if not minimizing_attached_images(base_dir, nickname, domain,
+                                                  options_nickname,
+                                                  options_domain_full):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 

@@ -21,6 +21,7 @@ from utils import get_cached_post_filename
 from utils import get_config_param
 from utils import acct_dir
 from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
 from utils import is_float
 from utils import get_audio_extensions
 from utils import get_video_extensions
@@ -33,6 +34,41 @@ from content import replace_emoji_from_tags
 from person import get_person_avatar_url
 from posts import is_moderator
 from blocking import is_blocked
+
+
+def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
+                               following_nickname: str,
+                               following_domain: str) -> bool:
+    """Returns true if images from the account being followed should be
+    minimized by default
+    """
+    if following_nickname == nickname and following_domain == domain:
+        # reminder post
+        return False
+    minimize_filename = \
+        acct_dir(base_dir, nickname, domain) + '/followingMinimizeImages.txt'
+    handle = following_nickname + '@' + following_domain
+    if not os.path.isfile(minimize_filename):
+        following_filename = \
+            acct_dir(base_dir, nickname, domain) + '/following.txt'
+        if not os.path.isfile(following_filename):
+            return False
+        # create a new minimize file from the following file
+        following_handles = None
+        try:
+            with open(following_filename, 'r',
+                      encoding='utf-8') as following_file:
+                following_handles = following_file.read()
+        except OSError:
+            print('EX: minimizing_attached_images ' + following_filename)
+        if following_handles:
+            try:
+                with open(minimize_filename, 'w+',
+                          encoding='utf-8') as fp_cal:
+                    fp_cal.write(following_handles)
+            except OSError:
+                print('EX: minimizing_attached_images 2 ' + minimize_filename)
+    return text_in_file(handle + '\n', minimize_filename)
 
 
 def get_broken_link_substitute() -> str:
@@ -1092,7 +1128,9 @@ def _is_attached_video(attachment_filename: str) -> bool:
     return False
 
 
-def get_post_attachments_as_html(base_dir: str, domain_full: str,
+def get_post_attachments_as_html(base_dir: str,
+                                 nickname: str, domain: str,
+                                 domain_full: str,
                                  post_json_object: {}, box_name: str,
                                  translate: {},
                                  is_muted: bool, avatar_link: str,
@@ -1184,12 +1222,43 @@ def get_post_attachments_as_html(base_dir: str, domain_full: str,
                     gallery_str += '  </div>\n'
                     gallery_str += '</div>\n'
 
+                # optionally hide the image
+                attributed_actor = None
+                minimize_images = False
+                if post_json_object['object'].get('attributedTo'):
+                    if isinstance(post_json_object['object']['attributedTo'],
+                                  str):
+                        attributed_actor = \
+                            post_json_object['object']['attributedTo']
+                if attributed_actor:
+                    following_nickname = \
+                        get_nickname_from_actor(attributed_actor)
+                    following_domain, _ = \
+                        get_domain_from_actor(attributed_actor)
+                    minimize_images = \
+                        minimizing_attached_images(base_dir, nickname, domain,
+                                                   following_nickname,
+                                                   following_domain)
+
+                if minimize_images:
+                    show_img_str = 'SHOW MEDIA'
+                    if translate:
+                        show_img_str = translate['SHOW MEDIA']
+                    attachment_str += \
+                        '<details><summary class="cw" tabindex="10">' + \
+                        show_img_str + '</summary>' + \
+                        '<div id="' + post_id + '">\n'
+
                 attachment_str += '<a href="' + image_url + '" tabindex="10">'
                 attachment_str += \
                     '<img loading="lazy" decoding="async" ' + \
                     'src="' + image_url + \
                     '" alt="' + image_description + '" title="' + \
                     image_description + '" class="attachment"></a>\n'
+
+                if minimize_images:
+                    attachment_str += '</div></details>\n'
+
                 attachment_ctr += 1
         elif _is_video_mime_type(media_type):
             if _is_attached_video(attach['url']):
