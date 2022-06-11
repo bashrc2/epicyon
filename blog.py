@@ -260,16 +260,6 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     delete_str = ''
     mute_str = ''
     is_muted = False
-    attachment_str, _ = \
-        get_post_attachments_as_html(base_dir, domain_full,
-                                     post_json_object,
-                                     'tlblogs', translate,
-                                     is_muted, avatar_link,
-                                     reply_str, announce_str,
-                                     like_str, bookmark_str,
-                                     delete_str, mute_str)
-    if attachment_str:
-        blog_str += '<br><center>' + attachment_str + '</center>'
 
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
@@ -279,6 +269,17 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         languages_understood = get_actor_languages_list(actor_json)
     json_content = get_content_from_post(post_json_object, system_language,
                                          languages_understood)
+    attachment_str, _ = \
+        get_post_attachments_as_html(base_dir, nickname, domain,
+                                     domain_full, post_json_object,
+                                     'tlblogs', translate,
+                                     is_muted, avatar_link,
+                                     reply_str, announce_str,
+                                     like_str, bookmark_str,
+                                     delete_str, mute_str,
+                                     json_content)
+    if attachment_str:
+        blog_str += '<br><center>' + attachment_str + '</center>'
     if json_content:
         content_str = add_embedded_elements(translate, json_content,
                                             peertube_instances)

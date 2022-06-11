@@ -10,6 +10,25 @@ __module_group__ = "Calendar"
 import os
 
 
+def _text_in_file2(text: str, filename: str,
+                   case_sensitive: bool = True) -> bool:
+    """is the given text in the given file?
+    """
+    if not case_sensitive:
+        text = text.lower()
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            content = file.read()
+            if content:
+                if not case_sensitive:
+                    content = content.lower()
+                if text in content:
+                    return True
+    except OSError:
+        print('EX: unable to find text in missing file ' + filename)
+    return False
+
+
 def _dir_acct(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the directory of an account
     """
@@ -60,8 +79,7 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
                     fp_cal.write(following_handles)
             except OSError:
                 print('EX: receiving_calendar_events 2 ' + calendar_filename)
-    return handle + '\n' in open(calendar_filename,
-                                 encoding='utf-8').read()
+    return _text_in_file2(handle + '\n', calendar_filename)
 
 
 def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
@@ -82,8 +100,7 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
     handle = following_nickname + '@' + following_domain
 
     # check that you are following this handle
-    if handle + '\n' not in open(following_filename,
-                                 encoding='utf-8').read():
+    if not _text_in_file2(handle + '\n', following_filename):
         print('WARN: ' + handle + ' is not in ' + following_filename)
         return
 
