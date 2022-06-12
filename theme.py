@@ -394,10 +394,10 @@ def _set_theme_from_dict(base_dir: str, name: str,
     )
     for scr in screen_name:
         if bg_params.get(scr):
-            _set_background_format(base_dir, name, scr, bg_params[scr])
+            _set_background_format(base_dir, scr, bg_params[scr])
 
 
-def _set_background_format(base_dir: str, name: str,
+def _set_background_format(base_dir: str,
                            background_type: str, extension: str) -> None:
     """Sets the background file extension
     """
@@ -533,9 +533,7 @@ def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
               dyslexic_font, False)
 
 
-def reset_theme_designer_settings(base_dir: str, theme_name: str, domain: str,
-                                  allow_local_network_access: bool,
-                                  system_language: str) -> None:
+def reset_theme_designer_settings(base_dir: str) -> None:
     """Resets the theme designer settings
     """
     custom_variables_file = base_dir + '/accounts/theme.json'
@@ -864,9 +862,7 @@ def set_theme(base_dir: str, name: str, domain: str,
 
     # if the theme has changed then remove any custom settings
     if prev_theme_name != name or designer_reset:
-        reset_theme_designer_settings(base_dir, name, domain,
-                                      allow_local_network_access,
-                                      system_language)
+        reset_theme_designer_settings(base_dir)
 
     _remove_theme(base_dir)
 

@@ -2573,9 +2573,7 @@ class PubServer(BaseHTTPRequestHandler):
         if 'submitThemeDesignerReset=' in theme_params or \
            'submitThemeDesigner=' not in theme_params:
             if 'submitThemeDesignerReset=' in theme_params:
-                reset_theme_designer_settings(base_dir, theme_name, domain,
-                                              allow_local_network_access,
-                                              system_language)
+                reset_theme_designer_settings(base_dir)
                 set_theme(base_dir, theme_name, domain,
                           allow_local_network_access, system_language,
                           dyslexic_font, True)
