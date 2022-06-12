@@ -378,8 +378,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                 return None
             store_person_in_cache(base_dir, actor, person_json, person_cache,
                                   allow_downloads)
-            return get_person_avatar_url(base_dir, actor, person_cache,
-                                         allow_downloads)
+            return get_person_avatar_url(base_dir, actor, person_cache)
         return None
     return avatar_image_filename.replace(base_dir + '/cache', '')
 
@@ -1429,8 +1428,7 @@ def get_avatar_image_url(session, base_dir: str, http_prefix: str,
     # get the avatar image url for the post actor
     if not avatar_url:
         avatar_url = \
-            get_person_avatar_url(base_dir, post_actor, person_cache,
-                                  allow_downloads)
+            get_person_avatar_url(base_dir, post_actor, person_cache)
         avatar_url = \
             update_avatar_image_cache(signing_priv_key_pem,
                                       session, base_dir, http_prefix,

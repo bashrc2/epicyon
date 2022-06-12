@@ -2165,7 +2165,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('EX: Unable to save token for ' +
                           login_nickname + ' ' + str(ex))
 
-                person_upgrade_actor(base_dir, None, login_handle,
+                person_upgrade_actor(base_dir, None,
                                      base_dir + '/accounts/' +
                                      login_handle + '.json')
 
@@ -2408,8 +2408,7 @@ class PubServer(BaseHTTPRequestHandler):
                             locate_post(base_dir, nickname, domain,
                                         moderation_text)
                         if post_filename:
-                            if can_remove_post(base_dir,
-                                               nickname, domain, port,
+                            if can_remove_post(base_dir, domain, port,
                                                moderation_text):
                                 delete_post(base_dir,
                                             http_prefix,
@@ -2425,8 +2424,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 locate_post(base_dir, 'news', domain,
                                             moderation_text)
                             if post_filename:
-                                if can_remove_post(base_dir,
-                                                   'news', domain, port,
+                                if can_remove_post(base_dir, domain, port,
                                                    moderation_text):
                                     delete_post(base_dir,
                                                 http_prefix,

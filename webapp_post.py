@@ -347,8 +347,7 @@ def _get_post_from_recent_cache(session,
     # update avatar if needed
     if not avatar_url:
         avatar_url = \
-            get_person_avatar_url(base_dir, post_actor, person_cache,
-                                  allow_downloads)
+            get_person_avatar_url(base_dir, post_actor, person_cache)
 
         _log_post_timing(enable_timing_log, post_start_time, '2.1')
 
@@ -1145,8 +1144,7 @@ def _get_post_title_announce_html(base_dir: str,
     # show avatar of person replied to
     announce_actor = attributed_to
     announce_avatar_url = \
-        get_person_avatar_url(base_dir, announce_actor,
-                              person_cache, allow_downloads)
+        get_person_avatar_url(base_dir, announce_actor, person_cache)
 
     _log_post_timing(enable_timing_log, post_start_time, '13.4')
 
@@ -1353,8 +1351,7 @@ def _get_post_title_reply_html(base_dir: str,
 
     # show avatar of person replied to
     reply_avatar_url = \
-        get_person_avatar_url(base_dir, reply_actor, person_cache,
-                              allow_downloads)
+        get_person_avatar_url(base_dir, reply_actor, person_cache)
 
     _log_post_timing(enable_timing_log, post_start_time, '13.8')
 

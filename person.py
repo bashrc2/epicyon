@@ -757,7 +757,7 @@ def create_news_inbox(base_dir: str, domain: str, port: int,
 
 
 def person_upgrade_actor(base_dir: str, person_json: {},
-                         handle: str, filename: str) -> None:
+                         filename: str) -> None:
     """Alter the actor to add any new properties
     """
     update_actor = False
@@ -950,7 +950,7 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
         return None
     person_json = load_json(filename)
     if not is_shared_inbox:
-        person_upgrade_actor(base_dir, person_json, handle, filename)
+        person_upgrade_actor(base_dir, person_json, filename)
     # if not person_json:
     #     person_json={"user": "unknown"}
     return person_json
@@ -1163,7 +1163,7 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
             print('EX: unable to write ' + suspended_filename)
 
 
-def can_remove_post(base_dir: str, nickname: str,
+def can_remove_post(base_dir: str,
                     domain: str, port: int, post_id: str) -> bool:
     """Returns true if the given post can be removed
     """
@@ -1683,8 +1683,8 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     return None, None
 
 
-def get_person_avatar_url(base_dir: str, person_url: str, person_cache: {},
-                          allow_downloads: bool) -> str:
+def get_person_avatar_url(base_dir: str, person_url: str,
+                          person_cache: {}) -> str:
     """Returns the avatar url for the person
     """
     person_json = \

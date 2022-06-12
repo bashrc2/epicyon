@@ -202,8 +202,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         if profile_json['icon'].get('url'):
             avatar_url = profile_json['icon']['url']
     if not avatar_url:
-        avatar_url = get_person_avatar_url(base_dir, person_url,
-                                           person_cache, True)
+        avatar_url = get_person_avatar_url(base_dir, person_url, person_cache)
     display_name = search_nickname
     if profile_json.get('name'):
         display_name = profile_json['name']
@@ -2473,7 +2472,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
         get_full_domain(follow_url_domain, follow_url_port)
     title_str = '@' + follow_url_nickname + '@' + follow_url_domain_full
     avatar_url = \
-        get_person_avatar_url(base_dir, follow_url, person_cache, True)
+        get_person_avatar_url(base_dir, follow_url, person_cache)
     if not avatar_url:
         avatar_url = follow_url + '/avatar.png'
 
