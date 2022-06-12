@@ -2165,7 +2165,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('EX: Unable to save token for ' +
                           login_nickname + ' ' + str(ex))
 
-                person_upgrade_actor(base_dir, None, login_handle,
+                person_upgrade_actor(base_dir, None,
                                      base_dir + '/accounts/' +
                                      login_handle + '.json')
 
@@ -2408,8 +2408,7 @@ class PubServer(BaseHTTPRequestHandler):
                             locate_post(base_dir, nickname, domain,
                                         moderation_text)
                         if post_filename:
-                            if can_remove_post(base_dir,
-                                               nickname, domain, port,
+                            if can_remove_post(base_dir, domain, port,
                                                moderation_text):
                                 delete_post(base_dir,
                                             http_prefix,
@@ -2425,8 +2424,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 locate_post(base_dir, 'news', domain,
                                             moderation_text)
                             if post_filename:
-                                if can_remove_post(base_dir,
-                                                   'news', domain, port,
+                                if can_remove_post(base_dir, domain, port,
                                                    moderation_text):
                                     delete_post(base_dir,
                                                 http_prefix,
@@ -2575,9 +2573,7 @@ class PubServer(BaseHTTPRequestHandler):
         if 'submitThemeDesignerReset=' in theme_params or \
            'submitThemeDesigner=' not in theme_params:
             if 'submitThemeDesignerReset=' in theme_params:
-                reset_theme_designer_settings(base_dir, theme_name, domain,
-                                              allow_local_network_access,
-                                              system_language)
+                reset_theme_designer_settings(base_dir)
                 set_theme(base_dir, theme_name, domain,
                           allow_local_network_access, system_language,
                           dyslexic_font, True)
@@ -4555,7 +4551,7 @@ class PubServer(BaseHTTPRequestHandler):
                         get_domain_from_actor(share_actor)
                     remove_shared_item(base_dir,
                                        share_nickname, share_domain, item_id,
-                                       http_prefix, domain_full, 'shares')
+                                       'shares')
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -4628,7 +4624,7 @@ class PubServer(BaseHTTPRequestHandler):
                         get_domain_from_actor(share_actor)
                     remove_shared_item(base_dir,
                                        share_nickname, share_domain, item_id,
-                                       http_prefix, domain_full, 'wanted')
+                                       'wanted')
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -18528,14 +18524,12 @@ class PubServer(BaseHTTPRequestHandler):
         response_str = None
         if endpoint_type == 'propfind':
             response_str = \
-                dav_propfind_response(self.server.base_dir,
-                                      nickname, self.server.domain,
-                                      depth, propfind_xml)
+                dav_propfind_response(nickname, propfind_xml)
         elif endpoint_type == 'put':
             response_str = \
                 dav_put_response(self.server.base_dir,
                                  nickname, self.server.domain,
-                                 depth, propfind_xml,
+                                 propfind_xml,
                                  self.server.http_prefix,
                                  self.server.system_language,
                                  self.server.recent_dav_etags)
@@ -18548,7 +18542,7 @@ class PubServer(BaseHTTPRequestHandler):
             response_str = \
                 dav_report_response(self.server.base_dir,
                                     nickname, self.server.domain,
-                                    depth, propfind_xml,
+                                    propfind_xml,
                                     self.server.person_cache,
                                     self.server.http_prefix,
                                     curr_etag,

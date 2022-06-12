@@ -361,8 +361,7 @@ def send_undo_reaction_via_server(base_dir: str, session,
 
 
 def outbox_reaction(recent_posts_cache: {},
-                    base_dir: str, http_prefix: str,
-                    nickname: str, domain: str, port: int,
+                    base_dir: str, nickname: str, domain: str,
                     message_json: {}, debug: bool) -> None:
     """ When a reaction request is received by the outbox from c2s
     """
@@ -405,8 +404,7 @@ def outbox_reaction(recent_posts_cache: {},
 
 
 def outbox_undo_reaction(recent_posts_cache: {},
-                         base_dir: str, http_prefix: str,
-                         nickname: str, domain: str, port: int,
+                         base_dir: str, nickname: str, domain: str,
                          message_json: {}, debug: bool) -> None:
     """ When an undo reaction request is received by the outbox from c2s
     """

@@ -793,8 +793,7 @@ def _dav_decode_token(token: str) -> (int, int, str):
     return token_year, token_month_number, token_post_id
 
 
-def dav_propfind_response(base_dir: str, nickname: str, domain: str,
-                          depth: int, xml_str: str) -> str:
+def dav_propfind_response(nickname: str, xml_str: str) -> str:
     """Returns the response to caldav PROPFIND
     """
     if '<d:propfind' not in xml_str or \
@@ -977,7 +976,7 @@ def _dav_update_recent_etags(etag: str, nickname: str,
 
 
 def dav_put_response(base_dir: str, nickname: str, domain: str,
-                     depth: int, xml_str: str, http_prefix: str,
+                     xml_str: str, http_prefix: str,
                      system_language: str,
                      recent_dav_etags: {}) -> str:
     """Returns the response to caldav PUT
@@ -1023,7 +1022,7 @@ def dav_put_response(base_dir: str, nickname: str, domain: str,
 
 
 def dav_report_response(base_dir: str, nickname: str, domain: str,
-                        depth: int, xml_str: str,
+                        xml_str: str,
                         person_cache: {}, http_prefix: str,
                         curr_etag: str, recent_dav_etags: {},
                         domain_full: str, system_language: str) -> str:

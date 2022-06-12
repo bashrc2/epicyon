@@ -66,8 +66,7 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
             print('EX: unable to write ' + index_filename)
 
 
-def _save_arrived_time(base_dir: str, post_filename: str,
-                       arrived: str) -> None:
+def _save_arrived_time(post_filename: str, arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
     try:
@@ -100,8 +99,7 @@ def _hashtag_logical_not(tree: [], hashtags: [], moderated: bool,
     return False
 
 
-def _hashtag_logical_contains(tree: [], hashtags: [], moderated: bool,
-                              content: str, url: str) -> bool:
+def _hashtag_logical_contains(tree: [], content: str) -> bool:
     """ Contains
     """
     if len(tree) != 2:
@@ -121,8 +119,7 @@ def _hashtag_logical_contains(tree: [], hashtags: [], moderated: bool,
     return False
 
 
-def _hashtag_logical_from(tree: [], hashtags: [], moderated: bool,
-                          content: str, url: str) -> bool:
+def _hashtag_logical_from(tree: [], url: str) -> bool:
     """ FROM
     """
     if len(tree) != 2:
@@ -210,10 +207,9 @@ def hashtag_rule_resolve(tree: [], hashtags: [], moderated: bool,
     if tree[0] == 'not':
         return _hashtag_logical_not(tree, hashtags, moderated, content, url)
     if tree[0] == 'contains':
-        return _hashtag_logical_contains(tree, hashtags, moderated,
-                                         content, url)
+        return _hashtag_logical_contains(tree, content)
     if tree[0] == 'from':
-        return _hashtag_logical_from(tree, hashtags, moderated, content, url)
+        return _hashtag_logical_from(tree, url)
     if tree[0] == 'and':
         return _hashtag_logical_and(tree, hashtags, moderated, content, url)
     if tree[0] == 'or':
@@ -378,13 +374,9 @@ def _hashtag_remove(http_prefix: str, domain_full: str, post_json_object: {},
         post_json_object['object']['tag'].remove(rm_tag_object)
 
 
-def _newswire_hashtag_processing(session, base_dir: str, post_json_object: {},
+def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
                                  hashtags: [], http_prefix: str,
                                  domain: str, port: int,
-                                 person_cache: {},
-                                 cached_webfingers: {},
-                                 federation_list: [],
-                                 send_threads: [], post_log: [],
                                  moderated: bool, url: str,
                                  system_language: str,
                                  translate: {}) -> bool:
@@ -549,11 +541,6 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 newswire: {},
                                 translate: {},
                                 recent_posts_cache: {},
-                                max_recent_posts: int,
-                                session, cached_webfingers: {},
-                                person_cache: {},
-                                federation_list: [],
-                                send_threads: [], post_log: [],
                                 max_mirrored_articles: int,
                                 allow_local_network_access: bool,
                                 system_language: str,
@@ -697,12 +684,8 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         moderated = item[5]
 
         save_post = \
-            _newswire_hashtag_processing(session, base_dir,
-                                         blog, hashtags,
+            _newswire_hashtag_processing(base_dir, blog, hashtags,
                                          http_prefix, domain, port,
-                                         person_cache, cached_webfingers,
-                                         federation_list,
-                                         send_threads, post_log,
                                          moderated, url, system_language,
                                          translate)
 
@@ -755,7 +738,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                 # this can then later be used to construct the news timeline
                 # excluding items during the voting period
                 if moderated:
-                    _save_arrived_time(base_dir, filename,
+                    _save_arrived_time(filename,
                                        blog['object']['arrived'])
                 else:
                     if os.path.isfile(filename + '.arrived'):
@@ -842,17 +825,9 @@ def run_newswire_daemon(base_dir: str, httpd,
             print('No new newswire')
 
         print('Converting newswire to activitypub format')
-        _convert_rss_to_activitypub(base_dir,
-                                    http_prefix, domain, port,
+        _convert_rss_to_activitypub(base_dir, http_prefix, domain, port,
                                     new_newswire, translate,
                                     httpd.recent_posts_cache,
-                                    httpd.max_recent_posts,
-                                    httpd.session,
-                                    httpd.cached_webfingers,
-                                    httpd.person_cache,
-                                    httpd.federation_list,
-                                    httpd.send_threads,
-                                    httpd.postLog,
                                     httpd.max_mirrored_articles,
                                     httpd.allow_local_network_access,
                                     httpd.system_language,

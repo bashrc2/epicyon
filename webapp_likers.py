@@ -149,8 +149,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
         if likers_list:
             likers_list += ' '
         liker_avatar_url = \
-            get_person_avatar_url(base_dir, liker_actor,
-                                  person_cache, False)
+            get_person_avatar_url(base_dir, liker_actor, person_cache)
         if not liker_avatar_url:
             liker_avatar_url = ''
         else:
