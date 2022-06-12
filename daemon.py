@@ -18524,14 +18524,12 @@ class PubServer(BaseHTTPRequestHandler):
         response_str = None
         if endpoint_type == 'propfind':
             response_str = \
-                dav_propfind_response(self.server.base_dir,
-                                      nickname, self.server.domain,
-                                      depth, propfind_xml)
+                dav_propfind_response(nickname, propfind_xml)
         elif endpoint_type == 'put':
             response_str = \
                 dav_put_response(self.server.base_dir,
                                  nickname, self.server.domain,
-                                 depth, propfind_xml,
+                                 propfind_xml,
                                  self.server.http_prefix,
                                  self.server.system_language,
                                  self.server.recent_dav_etags)
@@ -18544,7 +18542,7 @@ class PubServer(BaseHTTPRequestHandler):
             response_str = \
                 dav_report_response(self.server.base_dir,
                                     nickname, self.server.domain,
-                                    depth, propfind_xml,
+                                    propfind_xml,
                                     self.server.person_cache,
                                     self.server.http_prefix,
                                     curr_etag,
