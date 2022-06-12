@@ -119,9 +119,7 @@ def _get_valid_shared_item_id(actor: str, display_name: str) -> str:
 
 
 def remove_shared_item(base_dir: str, nickname: str, domain: str,
-                       item_id: str,
-                       http_prefix: str, domain_full: str,
-                       shares_file_type: str) -> None:
+                       item_id: str, shares_file_type: str) -> None:
     """Removes a share for a person
     """
     shares_filename = \
@@ -992,8 +990,7 @@ def send_undo_wanted_via_server(base_dir: str, session,
     return undo_share_json
 
 
-def get_shared_items_catalog_via_server(base_dir, session,
-                                        nickname: str, password: str,
+def get_shared_items_catalog_via_server(session, nickname: str, password: str,
                                         domain: str, port: int,
                                         http_prefix: str, debug: bool,
                                         signing_priv_key_pem: str) -> {}:
@@ -1100,8 +1097,7 @@ def outbox_share_upload(base_dir: str, http_prefix: str,
         print('DEBUG: shared item received via c2s')
 
 
-def outbox_undo_share_upload(base_dir: str, http_prefix: str,
-                             nickname: str, domain: str, port: int,
+def outbox_undo_share_upload(base_dir: str, nickname: str, domain: str,
                              message_json: {}, debug: bool) -> None:
     """ When a shared item is removed via c2s
     """
@@ -1119,10 +1115,9 @@ def outbox_undo_share_upload(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: displayName missing from Offer')
         return
-    domain_full = get_full_domain(domain, port)
     remove_shared_item(base_dir, nickname, domain,
                        message_json['object']['displayName'],
-                       http_prefix, domain_full, 'shares')
+                       'shares')
     if debug:
         print('DEBUG: shared item removed via c2s')
 

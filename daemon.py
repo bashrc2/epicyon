@@ -4551,7 +4551,7 @@ class PubServer(BaseHTTPRequestHandler):
                         get_domain_from_actor(share_actor)
                     remove_shared_item(base_dir,
                                        share_nickname, share_domain, item_id,
-                                       http_prefix, domain_full, 'shares')
+                                       'shares')
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -4624,7 +4624,7 @@ class PubServer(BaseHTTPRequestHandler):
                         get_domain_from_actor(share_actor)
                     remove_shared_item(base_dir,
                                        share_nickname, share_domain, item_id,
-                                       http_prefix, domain_full, 'wanted')
+                                       'wanted')
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path

@@ -656,9 +656,8 @@ def post_message_to_outbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle undo share uploads')
-    outbox_undo_share_upload(base_dir, http_prefix,
-                             post_to_nickname, domain,
-                             port, message_json, debug)
+    outbox_undo_share_upload(base_dir, post_to_nickname, domain,
+                             message_json, debug)
 
     if debug:
         print('DEBUG: handle actor updates from c2s')

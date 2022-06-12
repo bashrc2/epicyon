@@ -1994,7 +1994,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     print('Bob can read the shared items catalog on his own instance')
     signing_priv_key_pem = None
     catalog_json = \
-        get_shared_items_catalog_via_server(bob_dir, session_bob,
+        get_shared_items_catalog_via_server(session_bob,
                                             'bob', bob_password,
                                             bob_domain, bob_port,
                                             http_prefix, True,
