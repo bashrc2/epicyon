@@ -74,6 +74,8 @@ from follow import is_following_actor
 
 
 def generate_rsa_key() -> (str, str):
+    """Creates an RSA key for signing
+    """
     key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048,
@@ -1053,6 +1055,8 @@ def person_box_json(recent_posts_cache: {},
 
 def set_display_nickname(base_dir: str, nickname: str, domain: str,
                          display_name: str) -> bool:
+    """Sets the display name for an account
+    """
     if len(display_name) > 32:
         return False
     handle = nickname + '@' + domain
