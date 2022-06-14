@@ -99,7 +99,7 @@ def set_actor_languages(actor_json: {}, languages_str: str) -> None:
     actor_json['attachment'].append(new_languages)
 
 
-def understood_post_language(base_dir: str, nickname: str, domain: str,
+def understood_post_language(base_dir: str, nickname: str,
                              message_json: {}, system_language: str,
                              http_prefix: str, domain_full: str,
                              person_cache: {}) -> bool:

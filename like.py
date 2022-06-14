@@ -385,8 +385,7 @@ def outbox_like(recent_posts_cache: {},
 
 
 def outbox_undo_like(recent_posts_cache: {},
-                     base_dir: str, http_prefix: str,
-                     nickname: str, domain: str, port: int,
+                     base_dir: str, nickname: str, domain: str,
                      message_json: {}, debug: bool) -> None:
     """ When an undo like request is received by the outbox from c2s
     """

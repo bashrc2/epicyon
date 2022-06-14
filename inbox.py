@@ -2686,7 +2686,7 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                       message_json['object']['tag'])
                 return False
     # check that the post is in a language suitable for this account
-    if not understood_post_language(base_dir, nickname, domain,
+    if not understood_post_language(base_dir, nickname,
                                     message_json, system_language,
                                     http_prefix, domain_full,
                                     person_cache):

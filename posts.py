@@ -4998,7 +4998,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if not understood_post_language(base_dir, nickname, domain,
+        if not understood_post_language(base_dir, nickname,
                                         announced_json, system_language,
                                         http_prefix, domain_full,
                                         person_cache):

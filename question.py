@@ -136,20 +136,20 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
     return question_json, question_post_filename
 
 
-def is_question(postObjectJson: {}) -> bool:
+def is_question(post_object_json: {}) -> bool:
     """ is the given post a question?
     """
-    if postObjectJson['type'] != 'Create' and \
-       postObjectJson['type'] != 'Update':
+    if post_object_json['type'] != 'Create' and \
+       post_object_json['type'] != 'Update':
         return False
-    if not has_object_dict(postObjectJson):
+    if not has_object_dict(post_object_json):
         return False
-    if not postObjectJson['object'].get('type'):
+    if not post_object_json['object'].get('type'):
         return False
-    if postObjectJson['object']['type'] != 'Question':
+    if post_object_json['object']['type'] != 'Question':
         return False
-    if not postObjectJson['object'].get('oneOf'):
+    if not post_object_json['object'].get('oneOf'):
         return False
-    if not isinstance(postObjectJson['object']['oneOf'], list):
+    if not isinstance(post_object_json['object']['oneOf'], list):
         return False
     return True
