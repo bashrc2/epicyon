@@ -353,8 +353,7 @@ def _dav_encode_token(year: int, month_number: int,
 
 
 def _icalendar_day(base_dir: str, nickname: str, domain: str,
-                   day_events: [], person_cache: {},
-                   http_prefix: str) -> str:
+                   day_events: [], person_cache: {}) -> str:
     """Returns a day's events in icalendar format
     """
     ical_str = ''
@@ -478,7 +477,6 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
 def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
                                 year: int, month_number: int,
                                 day_number: int, person_cache: {},
-                                http_prefix: str,
                                 text_match: str, system_language: str) -> str:
     """Returns today's events in icalendar format
     """
@@ -503,8 +501,7 @@ def get_todays_events_icalendar(base_dir: str, nickname: str, domain: str,
         return ical_str
 
     ical_str += \
-        _icalendar_day(base_dir, nickname, domain, day_events, person_cache,
-                       http_prefix)
+        _icalendar_day(base_dir, nickname, domain, day_events, person_cache)
 
     ical_str += 'END:VCALENDAR\n'
     return ical_str
@@ -514,7 +511,6 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
                                year: int,
                                month_number: int,
                                person_cache: {},
-                               http_prefix: str,
                                text_match: str) -> str:
     """Returns today's events in icalendar format
     """
@@ -537,8 +533,7 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
         day_events = month_events[str(day_of_month)]
         ical_str += \
             _icalendar_day(base_dir, nickname, domain,
-                           day_events, person_cache,
-                           http_prefix)
+                           day_events, person_cache)
 
     ical_str += 'END:VCALENDAR\n'
     return ical_str
@@ -1098,7 +1093,7 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                                 search_date.year,
                                                 search_date.month,
                                                 search_date.day, person_cache,
-                                                http_prefix, text_match,
+                                                text_match,
                                                 system_language)
                 events_href = \
                     http_prefix + '://' + domain_full + '/users/' + \
@@ -1132,7 +1127,6 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                                query_start_year,
                                                query_start_month,
                                                person_cache,
-                                               http_prefix,
                                                text_match)
                 events_href = \
                     http_prefix + '://' + domain_full + '/users/' + \
@@ -1180,7 +1174,6 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                                                    nickname, domain,
                                                    year, month,
                                                    person_cache,
-                                                   http_prefix,
                                                    text_match)
                     events_href = \
                         http_prefix + '://' + domain_full + '/users/' + \
@@ -1217,7 +1210,7 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
             get_todays_events_icalendar(base_dir, nickname, domain,
                                         search_date.year, search_date.month,
                                         search_date.day, person_cache,
-                                        http_prefix, text_match,
+                                        text_match,
                                         system_language)
         events_href = \
             http_prefix + '://' + domain_full + '/users/' + \

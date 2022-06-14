@@ -852,12 +852,10 @@ def _desktop_show_actor(base_dir: str, actor_json: {}, translate: {},
 
 
 def _desktop_show_profile(session, nickname: str, domain: str,
-                          http_prefix: str, base_dir: str, box_name: str,
-                          page_number: int, index: int, box_json: {},
+                          base_dir: str, index: int, box_json: {},
                           system_language: str,
                           screenreader: str, espeak,
-                          translate: {}, your_actor: str,
-                          post_json_object: {},
+                          translate: {}, post_json_object: {},
                           signing_priv_key_pem: str) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
@@ -901,13 +899,10 @@ def _desktop_show_profile(session, nickname: str, domain: str,
     return actor_json
 
 
-def _desktop_show_profile_from_handle(session, nickname: str, domain: str,
-                                      http_prefix: str, base_dir: str,
-                                      box_name: str, handle: str,
-                                      system_language: str,
+def _desktop_show_profile_from_handle(session, domain: str, base_dir: str,
+                                      handle: str, system_language: str,
                                       screenreader: str, espeak,
-                                      translate: {}, your_actor: str,
-                                      post_json_object: {},
+                                      translate: {},
                                       signing_priv_key_pem: str) -> {}:
     """Shows the profile for a handle
     Returns the actor json
@@ -985,9 +980,7 @@ def _desktop_show_box(indent: str,
                       your_actor: str, box_name: str, box_json: {},
                       translate: {},
                       screenreader: str, system_language: str, espeak,
-                      page_number: int,
-                      new_replies: bool,
-                      new_dms: bool) -> bool:
+                      page_number: int) -> bool:
     """Shows online timeline
     """
     number_width = 2
@@ -1429,8 +1422,6 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     content = None
     cached_webfingers = {}
     person_cache = {}
-    new_replies_exist = False
-    new_dms_exist = False
     pgp_key_upload = False
 
     say_str = indent + 'Loading translations file'
@@ -1502,12 +1493,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       signing_priv_key_pem)
         else:
             inbox_json = box_json
-        new_dms_exist = False
-        new_replies_exist = False
         if inbox_json:
             _new_desktop_notifications(your_actor, inbox_json, notify_json)
             if notify_json.get('dmNotify'):
-                new_dms_exist = True
                 if notify_json.get('dmNotifyChanged'):
                     _desktop_notification(notification_type,
                                           "Epicyon",
@@ -1515,7 +1503,6 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if notification_sounds:
                         _play_notification_sound(dm_sound_filename, player)
             if notify_json.get('repliesNotify'):
-                new_replies_exist = True
                 if notify_json.get('repliesNotifyChanged'):
                     _desktop_notification(notification_type,
                                           "Epicyon",
@@ -1532,9 +1519,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                   your_actor, curr_timeline, box_json,
                                   translate,
                                   None, system_language, espeak,
-                                  page_number,
-                                  new_replies_exist,
-                                  new_dms_exist)
+                                  page_number)
                 desktop_shown = True
             prev_timeline_first_id = timeline_first_id
         else:
@@ -1580,9 +1565,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       your_actor, curr_timeline, box_json,
                                       translate,
                                       screenreader, system_language, espeak,
-                                      page_number,
-                                      new_replies_exist, new_dms_exist)
-                new_dms_exist = False
+                                      page_number)
             elif command_str.startswith('show rep'):
                 page_number = 1
                 prev_timeline_first_id = ''
@@ -1596,10 +1579,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       your_actor, curr_timeline, box_json,
                                       translate,
                                       screenreader, system_language, espeak,
-                                      page_number,
-                                      new_replies_exist, new_dms_exist)
-                # Turn off the replies indicator
-                new_replies_exist = False
+                                      page_number)
             elif command_str.startswith('show b'):
                 page_number = 1
                 prev_timeline_first_id = ''
@@ -1613,10 +1593,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       your_actor, curr_timeline, box_json,
                                       translate,
                                       screenreader, system_language, espeak,
-                                      page_number,
-                                      new_replies_exist, new_dms_exist)
-                # Turn off the replies indicator
-                new_replies_exist = False
+                                      page_number)
             elif (command_str.startswith('show sen') or
                   command_str.startswith('show out')):
                 page_number = 1
@@ -1631,8 +1608,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       your_actor, curr_timeline, box_json,
                                       translate,
                                       screenreader, system_language, espeak,
-                                      page_number,
-                                      new_replies_exist, new_dms_exist)
+                                      page_number)
             elif (command_str == 'show' or command_str.startswith('show in') or
                   command_str == 'clear'):
                 page_number = 1
@@ -1656,8 +1632,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       your_actor, curr_timeline, box_json,
                                       translate,
                                       screenreader, system_language, espeak,
-                                      page_number,
-                                      new_replies_exist, new_dms_exist)
+                                      page_number)
             elif (command_str.startswith('read ') or
                   command_str.startswith('show ') or
                   command_str == 'read' or
@@ -1699,14 +1674,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if post_json_object:
                         actor_json = \
                             _desktop_show_profile(session, nickname, domain,
-                                                  http_prefix, base_dir,
-                                                  curr_timeline,
-                                                  page_number, post_index,
+                                                  base_dir, post_index,
                                                   box_json,
                                                   system_language,
                                                   screenreader,
                                                   espeak, translate,
-                                                  your_actor,
                                                   post_json_object,
                                                   signing_priv_key_pem)
                     else:
@@ -1718,16 +1690,12 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     profile_handle = post_index_str
                     _desktop_clear_screen()
                     _desktop_show_banner()
-                    _desktop_show_profile_from_handle(session,
-                                                      nickname, domain,
-                                                      http_prefix, base_dir,
-                                                      curr_timeline,
+                    _desktop_show_profile_from_handle(session, domain,
+                                                      base_dir,
                                                       profile_handle,
                                                       system_language,
                                                       screenreader,
                                                       espeak, translate,
-                                                      your_actor,
-                                                      None,
                                                       signing_priv_key_pem)
                     say_str = 'Press Enter to continue...'
                     say_str2 = _highlight_text(say_str)
@@ -1742,12 +1710,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_index = int(post_index_str)
                     actor_json = \
                         _desktop_show_profile(session, nickname, domain,
-                                              http_prefix, base_dir,
-                                              curr_timeline,
-                                              page_number, post_index,
+                                              base_dir, post_index,
                                               box_json,
                                               system_language, screenreader,
-                                              espeak, translate, your_actor,
+                                              espeak, translate,
                                               None, signing_priv_key_pem)
                     say_str = 'Press Enter to continue...'
                     say_str2 = _highlight_text(say_str)
@@ -2581,5 +2547,4 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       your_actor, curr_timeline, box_json,
                                       translate,
                                       screenreader, system_language,
-                                      espeak, page_number,
-                                      new_replies_exist, new_dms_exist)
+                                      espeak, page_number)

@@ -580,8 +580,7 @@ def post_message_to_outbox(session, translate: {},
     if debug:
         print('DEBUG: handle any undo like requests')
     outbox_undo_like(recent_posts_cache,
-                     base_dir, http_prefix,
-                     post_to_nickname, domain, port,
+                     base_dir, post_to_nickname, domain,
                      message_json, debug)
 
     if debug:

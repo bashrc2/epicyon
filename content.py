@@ -324,7 +324,7 @@ def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
     if not os.path.isdir(custom_emoji_dir):
         os.mkdir(custom_emoji_dir)
     emoji_image_filename = custom_emoji_dir + '/' + emojiName + '.' + ext
-    if not download_image(session, base_dir, url,
+    if not download_image(session, url,
                           emoji_image_filename, debug, False):
         if debug:
             print('EX: custom emoji not downloaded ' + url)
@@ -1573,7 +1573,7 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
             emoji_image_filename = base_dir + '/emoji/' + tag + '.png'
             if os.path.isfile(emoji_image_filename):
                 continue
-            if download_image(session, base_dir, url,
+            if download_image(session, url,
                               emoji_image_filename, True, False):
                 emoji_dict[tag] = tag
                 added += 1
