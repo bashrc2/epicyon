@@ -383,7 +383,6 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                                                year, month_number,
                                                day_number,
                                                person_cache,
-                                               http_prefix,
                                                text_match,
                                                system_language)
         day_events = None
@@ -404,7 +403,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     if icalendar:
         return get_month_events_icalendar(base_dir, nickname, domain,
                                           year, month_number, person_cache,
-                                          http_prefix, text_match)
+                                          text_match)
 
     events = \
         get_calendar_events(base_dir, nickname, domain, year, month_number,
