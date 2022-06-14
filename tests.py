@@ -3208,7 +3208,7 @@ def test_client_to_server(base_dir: str):
                                    http_prefix,
                                    cached_webfingers, person_cache,
                                    True, __version__, signing_priv_key_pem)
-    for _ in range(10):
+    for _ in range(20):
         if os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
                           '/followers.txt'):
             test_str = 'bob@' + bob_domain + ':' + str(bob_port)

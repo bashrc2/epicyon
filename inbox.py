@@ -884,9 +884,7 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
     return recipients_dict, recipients_dict_followers
 
 
-def _receive_undo_follow(session, base_dir: str, http_prefix: str,
-                         port: int, message_json: {},
-                         federation_list: [],
+def _receive_undo_follow(base_dir: str, message_json: {},
                          debug: bool, domain: str,
                          onion_domain: str, i2p_domain: str) -> bool:
     if not message_json['object'].get('actor'):
@@ -947,12 +945,8 @@ def _receive_undo_follow(session, base_dir: str, http_prefix: str,
     return False
 
 
-def _receive_undo(session, base_dir: str, http_prefix: str,
-                  port: int, send_threads: [], post_log: [],
-                  cached_webfingers: {}, person_cache: {},
-                  message_json: {}, federation_list: [],
-                  debug: bool, domain: str,
-                  onion_domain: str, i2p_domain: str) -> bool:
+def _receive_undo(base_dir: str, message_json: {}, debug: bool,
+                  domain: str, onion_domain: str, i2p_domain: str) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
     if not message_json['type'].startswith('Undo'):
@@ -971,10 +965,8 @@ def _receive_undo(session, base_dir: str, http_prefix: str,
         return False
     if message_json['object']['type'] == 'Follow' or \
        message_json['object']['type'] == 'Join':
-        return _receive_undo_follow(session, base_dir, http_prefix,
-                                    port, message_json,
-                                    federation_list, debug,
-                                    domain, onion_domain, i2p_domain)
+        return _receive_undo_follow(base_dir, message_json,
+                                    debug, domain, onion_domain, i2p_domain)
     return False
 
 
@@ -1242,10 +1234,8 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
 
 def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                              http_prefix: str, domain: str, port: int,
-                             send_threads: [], post_log: [],
                              cached_webfingers: {},
                              person_cache: {}, message_json: {},
-                             federation_list: [],
                              nickname: str, debug: bool,
                              max_mentions: int, max_emoji: int,
                              allow_local_network_access: bool,
@@ -1332,11 +1322,11 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
 
 
 def _receive_like(recent_posts_cache: {},
-                  session, handle: str, is_group: bool, base_dir: str,
+                  session, handle: str, base_dir: str,
                   http_prefix: str, domain: str, port: int,
                   onion_domain: str, i2p_domain: str,
-                  send_threads: [], post_log: [], cached_webfingers: {},
-                  person_cache: {}, message_json: {}, federation_list: [],
+                  cached_webfingers: {},
+                  person_cache: {}, message_json: {},
                   debug: bool,
                   signing_priv_key_pem: str,
                   max_recent_posts: int, translate: {},
@@ -1394,7 +1384,7 @@ def _receive_like(recent_posts_cache: {},
                           handle_name, handle_dom,
                           post_liked_id,
                           like_actor):
-        _like_notify(base_dir, domain, onion_domain, handle,
+        _like_notify(base_dir, domain, onion_domain, i2p_domain, handle,
                      like_actor, post_liked_id)
     update_likes_collection(recent_posts_cache, base_dir, post_filename,
                             post_liked_id, like_actor,
@@ -1462,10 +1452,10 @@ def _receive_like(recent_posts_cache: {},
 
 
 def _receive_undo_like(recent_posts_cache: {},
-                       session, handle: str, is_group: bool, base_dir: str,
+                       session, handle: str, base_dir: str,
                        http_prefix: str, domain: str, port: int,
-                       send_threads: [], post_log: [], cached_webfingers: {},
-                       person_cache: {}, message_json: {}, federation_list: [],
+                       cached_webfingers: {},
+                       person_cache: {}, message_json: {},
                        debug: bool,
                        signing_priv_key_pem: str,
                        max_recent_posts: int, translate: {},
@@ -1581,11 +1571,11 @@ def _receive_undo_like(recent_posts_cache: {},
 
 
 def _receive_reaction(recent_posts_cache: {},
-                      session, handle: str, is_group: bool, base_dir: str,
+                      session, handle: str, base_dir: str,
                       http_prefix: str, domain: str, port: int,
                       onion_domain: str,
-                      send_threads: [], post_log: [], cached_webfingers: {},
-                      person_cache: {}, message_json: {}, federation_list: [],
+                      cached_webfingers: {},
+                      person_cache: {}, message_json: {},
                       debug: bool,
                       signing_priv_key_pem: str,
                       max_recent_posts: int, translate: {},
@@ -2850,7 +2840,8 @@ def _already_reacted(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def _like_notify(base_dir: str, domain: str, onion_domain: str,
+def _like_notify(base_dir: str, domain: str,
+                 onion_domain: str, i2p_domain: str,
                  handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
     """
@@ -2861,9 +2852,13 @@ def _like_notify(base_dir: str, domain: str, onion_domain: str,
     # check that the liked post was by this handle
     nickname = handle.split('@')[0]
     if '/' + domain + '/users/' + nickname not in url:
-        if not onion_domain:
-            return
-        if '/' + onion_domain + '/users/' + nickname not in url:
+        if onion_domain:
+            if '/' + onion_domain + '/users/' + nickname not in url:
+                return
+        if i2p_domain:
+            if '/' + i2p_domain + '/users/' + nickname not in url:
+                return
+        if not i2p_domain and not onion_domain:
             return
 
     account_dir = base_dir + '/accounts/' + handle
@@ -3012,8 +3007,7 @@ def _reply_notify(base_dir: str, handle: str, url: str) -> None:
             print('EX: unable to write ' + reply_file)
 
 
-def _git_patch_notify(base_dir: str, handle: str,
-                      subject: str, content: str,
+def _git_patch_notify(base_dir: str, handle: str, subject: str,
                       from_nickname: str, from_domain: str) -> None:
     """Creates a notification that a new git patch has arrived
     """
@@ -3051,7 +3045,6 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                            send_threads: [], post_log: [],
                            cached_webfingers: {},
                            person_cache: {}, debug: bool,
-                           system_language: str,
                            curr_domain: str,
                            onion_domain: str, i2p_domain: str,
                            signing_priv_key_pem: str) -> None:
@@ -3238,7 +3231,7 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
         print('EX: unable to write ' + last_seen_filename)
 
 
-def _bounce_dm(senderPostId: str, session, http_prefix: str,
+def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                base_dir: str, nickname: str, domain: str, port: int,
                sending_handle: str, federation_list: [],
                send_threads: [], post_log: [],
@@ -3288,7 +3281,7 @@ def _bounce_dm(senderPostId: str, session, http_prefix: str,
     media_type = None
     image_description = ''
     city = 'London, England'
-    in_reply_to = remove_id_ending(senderPostId)
+    in_reply_to = remove_id_ending(sender_post_id)
     in_reply_to_atom_uri = None
     schedule_post = False
     event_date = None
@@ -3646,8 +3639,7 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
                          json_obj['type'], json_obj['summary'],
                          json_obj['content'],
                          from_nickname, from_domain_full):
-        _git_patch_notify(base_dir, handle,
-                          json_obj['summary'], json_obj['content'],
+        _git_patch_notify(base_dir, handle, json_obj['summary'],
                           from_nickname, from_domain_full)
         return 1
     if '[PATCH]' in json_obj['content']:
@@ -3662,10 +3654,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          key_id: str, handle: str, message_json: {},
                          base_dir: str, http_prefix: str, send_threads: [],
                          post_log: [], cached_webfingers: {}, person_cache: {},
-                         queue: [], domain: str,
-                         onion_domain: str, i2p_domain: str,
-                         port: int, proxy_type: str,
-                         federation_list: [], debug: bool,
+                         domain: str, onion_domain: str, i2p_domain: str,
+                         port: int, federation_list: [], debug: bool,
                          queue_filename: str, destination_filename: str,
                          max_replies: int, allow_deletion: bool,
                          max_mentions: int, max_emoji: int, translate: {},
@@ -3715,15 +3705,13 @@ def _inbox_after_initial(server, inbox_start_time,
     handle_name = handle.split('@')[0]
 
     if _receive_like(recent_posts_cache,
-                     session, handle, is_group,
+                     session, handle,
                      base_dir, http_prefix,
                      domain, port,
                      onion_domain, i2p_domain,
-                     send_threads, post_log,
                      cached_webfingers,
                      person_cache,
                      message_json,
-                     federation_list,
                      debug, signing_priv_key_pem,
                      max_recent_posts, translate,
                      allow_deletion,
@@ -3743,14 +3731,12 @@ def _inbox_after_initial(server, inbox_start_time,
         return False
 
     if _receive_undo_like(recent_posts_cache,
-                          session, handle, is_group,
+                          session, handle,
                           base_dir, http_prefix,
                           domain, port,
-                          send_threads, post_log,
                           cached_webfingers,
                           person_cache,
                           message_json,
-                          federation_list,
                           debug, signing_priv_key_pem,
                           max_recent_posts, translate,
                           allow_deletion,
@@ -3770,15 +3756,13 @@ def _inbox_after_initial(server, inbox_start_time,
         return False
 
     if _receive_reaction(recent_posts_cache,
-                         session, handle, is_group,
+                         session, handle,
                          base_dir, http_prefix,
                          domain, port,
                          onion_domain,
-                         send_threads, post_log,
                          cached_webfingers,
                          person_cache,
                          message_json,
-                         federation_list,
                          debug, signing_priv_key_pem,
                          max_recent_posts, translate,
                          allow_deletion,
@@ -4346,8 +4330,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                        http_prefix, federation_list,
                                        send_threads,
                                        post_log, cached_webfingers,
-                                       person_cache,
-                                       debug, system_language,
+                                       person_cache, debug,
                                        domain, onion_domain, i2p_domain,
                                        signing_priv_key_pem)
                 fitness_performance(inbox_start_time,
@@ -4422,7 +4405,7 @@ def _restore_queue_items(base_dir: str, queue: []) -> None:
 def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
-    print('THREAD: Starting inbox queue watchdog')
+    print('THREAD: Starting inbox queue watchdog ' + project_version)
     inbox_queue_original = httpd.thrInboxQueue.clone(run_inbox_queue)
     httpd.thrInboxQueue.start()
     while True:
@@ -5089,17 +5072,14 @@ def run_inbox_queue(server,
         inbox_start_time = time.time()
 
         curr_session = session
-        curr_proxy_type = proxy_type
         if queue_json.get('actor'):
             if isinstance(queue_json['actor'], str):
                 sender_domain, _ = get_domain_from_actor(queue_json['actor'])
                 if sender_domain.endswith('.onion') and \
                    session_onion and proxy_type != 'tor':
-                    curr_proxy_type = 'tor'
                     curr_session = session_onion
                 elif (sender_domain.endswith('.i2p') and
                       session_i2p and proxy_type != 'i2p'):
-                    curr_proxy_type = 'i2p'
                     curr_session = session_i2p
 
         if debug and queue_json.get('actor'):
@@ -5259,13 +5239,7 @@ def run_inbox_queue(server,
         # if queue_json['post'].get('id'):
         #     queue_json['post']['id'] = queue_json['id']
 
-        if _receive_undo(curr_session,
-                         base_dir, http_prefix, port,
-                         send_threads, post_log,
-                         cached_webfingers,
-                         person_cache,
-                         queue_json['post'],
-                         federation_list,
+        if _receive_undo(base_dir, queue_json['post'],
                          debug, domain, onion_domain, i2p_domain):
             print('Queue: Undo accepted from ' + key_id)
             if os.path.isfile(queue_filename):
@@ -5335,11 +5309,9 @@ def run_inbox_queue(server,
         if _receive_update_activity(recent_posts_cache, curr_session,
                                     base_dir, http_prefix,
                                     domain, port,
-                                    send_threads, post_log,
                                     cached_webfingers,
                                     person_cache,
                                     queue_json['post'],
-                                    federation_list,
                                     queue_json['postNickname'],
                                     debug,
                                     max_mentions, max_emoji,
@@ -5460,11 +5432,9 @@ def run_inbox_queue(server,
                                  base_dir, http_prefix,
                                  send_threads, post_log,
                                  cached_webfingers,
-                                 person_cache, queue,
-                                 domain,
+                                 person_cache, domain,
                                  onion_domain, i2p_domain,
-                                 port, curr_proxy_type,
-                                 federation_list,
+                                 port, federation_list,
                                  debug,
                                  queue_filename, destination,
                                  max_replies, allow_deletion,
