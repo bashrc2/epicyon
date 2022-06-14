@@ -465,7 +465,7 @@ def post_json(http_prefix: str, domain_full: str,
     return None
 
 
-def post_json_string(session, post_jsonStr: str,
+def post_json_string(session, post_json_str: str,
                      federation_list: [],
                      inbox_url: str,
                      headers: {},
@@ -489,7 +489,7 @@ def post_json_string(session, post_jsonStr: str,
 
     try:
         post_result = \
-            session.post(url=inbox_url, data=post_jsonStr,
+            session.post(url=inbox_url, data=post_json_str,
                          headers=headers, timeout=timeout_sec)
     except requests.exceptions.RequestException as ex:
         if not quiet:
@@ -500,7 +500,7 @@ def post_json_string(session, post_jsonStr: str,
             print('EX: connection was reset during post_json_string')
         if not quiet:
             print('EX: post_json_string failed ' + inbox_url + ' ' +
-                  post_jsonStr + ' ' + str(headers))
+                  post_json_str + ' ' + str(headers))
         return None, None, 0
     except ValueError as ex:
         if not quiet:
@@ -592,8 +592,7 @@ def _looks_like_url(url: str) -> bool:
     return True
 
 
-def download_image(session, base_dir: str, url: str,
-                   image_filename: str, debug: bool,
+def download_image(session, url: str, image_filename: str, debug: bool,
                    force: bool = False) -> bool:
     """Downloads an image with an expected mime type
     """

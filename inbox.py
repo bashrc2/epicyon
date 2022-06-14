@@ -186,7 +186,7 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
             if not test_image_filename:
                 image_filename = \
                     base_dir + '/media/' + post_id + '_' + filename
-                if not download_image(session, base_dir, url,
+                if not download_image(session, url,
                                       image_filename, debug):
                     continue
             else:

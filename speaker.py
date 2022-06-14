@@ -320,8 +320,7 @@ def _ssml_header(system_language: str, box_name: str, summary: str) -> str:
 
 
 def _speaker_endpoint_ssml(display_name: str, summary: str,
-                           content: str, image_description: str,
-                           links: [], language: str,
+                           content: str, language: str,
                            gender: str, box_name: str) -> str:
     """Returns an SSML endpoint for the TTS speaker
     https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language
@@ -379,8 +378,6 @@ def get_ssml_box(base_dir: str, path: str,
     return _speaker_endpoint_ssml(speaker_json['name'],
                                   speaker_json['summary'],
                                   speaker_json['say'],
-                                  speaker_json['imageDescription'],
-                                  speaker_json['detectedLinks'],
                                   system_language,
                                   gender, box_name)
 
@@ -411,7 +408,7 @@ def speakable_text(base_dir: str, content: str, translate: {}) -> (str, []):
 
 
 def _post_to_speaker_json(base_dir: str, http_prefix: str,
-                          nickname: str, domain: str, domain_full: str,
+                          nickname: str, domain_full: str,
                           post_json_object: {}, person_cache: {},
                           translate: {}, announcing_actor: str,
                           theme_name: str) -> {}:
@@ -554,7 +551,7 @@ def update_speaker(base_dir: str, http_prefix: str,
     """
     speaker_json = \
         _post_to_speaker_json(base_dir, http_prefix,
-                              nickname, domain, domain_full,
+                              nickname, domain_full,
                               post_json_object, person_cache,
                               translate, announcing_actor,
                               theme_name)
@@ -581,8 +578,6 @@ def update_speaker(base_dir: str, http_prefix: str,
         _speaker_endpoint_ssml(speaker_json['name'],
                                speaker_json['summary'],
                                speaker_json['say'],
-                               speaker_json['imageDescription'],
-                               speaker_json['detectedLinks'],
                                system_language,
                                gender, box_name)
     try:
