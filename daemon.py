@@ -18937,7 +18937,6 @@ class PubServer(BaseHTTPRequestHandler):
                         content_str = \
                             get_base_content_from_post(message_json,
                                                        sys_language)
-                        followers_only = False
                         pin_post(self.server.base_dir,
                                  nickname, self.server.domain, content_str)
                         return 1
@@ -18988,7 +18987,6 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: blog posts must have content')
                     return -1
                 # submit button on newblog screen
-                followers_only = False
                 save_to_file = False
                 client_to_server = False
                 city = None
@@ -19006,7 +19004,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain, self.server.port,
                                      self.server.http_prefix,
                                      fields['message'],
-                                     followers_only, save_to_file,
+                                     save_to_file,
                                      client_to_server, comments_enabled,
                                      filename, attachment_media_type,
                                      fields['imageDescription'],
@@ -19148,7 +19146,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                followers_only = False
                 save_to_file = False
                 client_to_server = False
 
@@ -19208,7 +19205,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                followers_only = True
                 save_to_file = False
                 client_to_server = False
 
@@ -19273,7 +19269,6 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.base_dir,
                                             nickname,
                                             self.server.domain)
-                    followers_only = True
                     save_to_file = False
                     client_to_server = False
 
@@ -19351,7 +19346,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                followers_only = True
                 save_to_file = False
                 client_to_server = False
                 comments_enabled = False
