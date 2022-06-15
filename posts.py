@@ -813,7 +813,7 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
                 tag_type = tag_item['type'].lower()
                 if tag_type == 'mention':
                     if tag_item.get('href'):
-                        post_domain, post_port = \
+                        post_domain, _ = \
                             get_domain_from_actor(tag_item['href'])
                         if post_domain not in post_domains:
                             post_domains.append(post_domain)
@@ -822,10 +822,6 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
 
 def _get_posts_for_blocked_domains(base_dir: str,
                                    session, outbox_url: str, max_posts: int,
-                                   max_mentions: int,
-                                   max_emoji: int, max_attachments: int,
-                                   federation_list: [],
-                                   person_cache: {},
                                    debug: bool,
                                    project_version: str, http_prefix: str,
                                    domain: str,
@@ -863,7 +859,7 @@ def _get_posts_for_blocked_domains(base_dir: str,
             continue
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
-                post_domain, post_port = \
+                post_domain, _ = \
                     get_domain_from_actor(item['object']['inReplyTo'])
                 if is_blocked_domain(base_dir, post_domain):
                     if item['object'].get('url'):
@@ -882,7 +878,7 @@ def _get_posts_for_blocked_domains(base_dir: str,
                     continue
                 tag_type = tag_item['type'].lower()
                 if tag_type == 'mention' and tag_item.get('href'):
-                    post_domain, post_port = \
+                    post_domain, _ = \
                         get_domain_from_actor(tag_item['href'])
                     if is_blocked_domain(base_dir, post_domain):
                         if item['object'].get('url'):
@@ -1910,7 +1906,7 @@ def _append_citations_to_blog_post(base_dir: str,
 
 def create_blog_post(base_dir: str,
                      nickname: str, domain: str, port: int, http_prefix: str,
-                     content: str, followers_only: bool, save_to_file: bool,
+                     content: str, save_to_file: bool,
                      client_to_server: bool, comments_enabled: bool,
                      attach_image_filename: str, media_type: str,
                      image_description: str, city: str,
@@ -2315,7 +2311,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                 post_json_string(session, post_json_str, federation_list,
                                  inbox_url, signature_header_json,
                                  debug, http_prefix, domain_full)
-            if return_code >= 500 and return_code < 600:
+            if return_code in range(500, 600):
                 # if an instance is returning a code which indicates that
                 # it might have a runtime error, like 503, then don't
                 # continue to post to it
@@ -2337,7 +2333,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                     post_json_string(session, post_json_str, federation_list,
                                      inbox_url, signature_header_json_ld,
                                      debug, http_prefix, domain_full)
-                if return_code >= 500 and return_code < 600:
+                if return_code in range(500, 600):
                     # if an instance is returning a code which indicates that
                     # it might have a runtime error, like 503, then don't
                     # continue to post to it
@@ -4546,7 +4542,6 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
         return {}
     person_cache = {}
     cached_webfingers = {}
-    federation_list = []
 
     domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
@@ -4569,9 +4564,6 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
                             13863)
-    max_mentions = 99
-    max_emoji = 99
-    max_attachments = 5
     max_posts = 64
     post_domains = \
         get_post_domains(session, person_url, max_posts, debug,
@@ -4587,10 +4579,6 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
     blocked_posts = \
         _get_posts_for_blocked_domains(base_dir, session,
                                        person_url, max_posts,
-                                       max_mentions,
-                                       max_emoji, max_attachments,
-                                       federation_list,
-                                       person_cache,
                                        debug,
                                        project_version, http_prefix,
                                        domain, signing_priv_key_pem)
