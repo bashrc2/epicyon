@@ -18649,7 +18649,6 @@ class PubServer(BaseHTTPRequestHandler):
     def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   length: int, post_bytes, boundary: str,
                                   calling_domain: str, cookie: str,
-                                  authorized: bool,
                                   content_license_url: str,
                                   curr_session, proxy_type: str) -> int:
         # Note: this needs to happen synchronously
@@ -19509,7 +19508,6 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _receive_new_post(self, post_type: str, path: str,
                           calling_domain: str, cookie: str,
-                          authorized: bool,
                           content_license_url: str,
                           curr_session, proxy_type: str) -> int:
         """A new post has been created
@@ -19614,7 +19612,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                path, headers, length,
                                                post_bytes, boundary,
                                                calling_domain, cookie,
-                                               authorized,
                                                content_license_url,
                                                curr_session, proxy_type)
         return page_number
@@ -20347,7 +20344,6 @@ class PubServer(BaseHTTPRequestHandler):
             page_number = \
                 self._receive_new_post(curr_post_type, self.path,
                                        calling_domain, cookie,
-                                       authorized,
                                        self.server.content_license_url,
                                        curr_session, proxy_type)
             if page_number:
@@ -20646,7 +20642,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._update_inbox_queue(self.post_to_nickname,
                                                  message_json, message_bytes,
                                                  self.server.debug)
-                    if queue_status >= 0 and queue_status <= 3:
+                    if queue_status in range(0, 4):
                         self.server.postreq_busy = False
                         return
                     if self.server.debug:
@@ -20667,7 +20663,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._update_inbox_queue('inbox', message_json,
                                              message_bytes,
                                              self.server.debug)
-                if queue_status >= 0 and queue_status <= 3:
+                if queue_status in range(0, 4):
                     self.server.postreq_busy = False
                     return
         self._200()
@@ -20685,7 +20681,6 @@ class EpicyonServer(ThreadingHTTPServer):
         if cls is ConnectionResetError:
             if e_ret.errno != errno.ECONNRESET:
                 print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e_ret))
-            pass
         elif cls is BrokenPipeError:
             pass
         else:
