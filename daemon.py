@@ -500,7 +500,6 @@ class PubServer(BaseHTTPRequestHandler):
     def handle_error(self, request, client_address):
         print('ERROR: http server error: ' + str(request) + ', ' +
               str(client_address))
-        pass
 
     def _send_reply_to_question(self, nickname: str, message_id: str,
                                 answer: str,
@@ -2439,10 +2438,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
         return
 
-    def _key_shortcuts(self, path: str,
-                       calling_domain: str, cookie: str,
+    def _key_shortcuts(self, calling_domain: str, cookie: str,
                        base_dir: str, http_prefix: str, nickname: str,
-                       domain: str, domain_full: str, port: int,
+                       domain: str, domain_full: str,
                        onion_domain: str, i2p_domain: str,
                        debug: bool, access_keys: {},
                        default_timeline: str) -> None:
@@ -2529,12 +2527,10 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
         return
 
-    def _theme_designer_edit(self, path: str,
-                             calling_domain: str, cookie: str,
+    def _theme_designer_edit(self, calling_domain: str, cookie: str,
                              base_dir: str, http_prefix: str, nickname: str,
-                             domain: str, domain_full: str, port: int,
-                             onion_domain: str, i2p_domain: str,
-                             debug: bool, access_keys: {},
+                             domain: str, domain_full: str,
+                             onion_domain: str, i2p_domain: str, debug: bool,
                              default_timeline: str, theme_name: str,
                              allow_local_network_access: bool,
                              system_language: str,
@@ -3347,8 +3343,7 @@ class PubServer(BaseHTTPRequestHandler):
         return
 
     def _unfollow_confirm(self, calling_domain: str, cookie: str,
-                          authorized: bool, path: str,
-                          base_dir: str, http_prefix: str,
+                          path: str, base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
                           debug: bool,
@@ -3430,8 +3425,7 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 path_users_section = path.split('/users/')[1]
                 self.post_to_nickname = path_users_section.split('/')[0]
-                group_account = has_group_type(self.server.base_dir,
-                                               following_actor,
+                group_account = has_group_type(base_dir, following_actor,
                                                self.server.person_cache)
                 unfollow_account(self.server.base_dir, self.post_to_nickname,
                                  self.server.domain,
@@ -3448,8 +3442,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _follow_confirm(self, calling_domain: str, cookie: str,
-                        authorized: bool, path: str,
-                        base_dir: str, http_prefix: str,
+                        path: str, base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
                         debug: bool,
@@ -3621,8 +3614,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _block_confirm(self, calling_domain: str, cookie: str,
-                       authorized: bool, path: str,
-                       base_dir: str, http_prefix: str,
+                       path: str, base_dir: str, http_prefix: str,
                        domain: str, domain_full: str, port: int,
                        onion_domain: str, i2p_domain: str,
                        debug: bool,
@@ -3711,8 +3703,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _unblock_confirm(self, calling_domain: str, cookie: str,
-                         authorized: bool, path: str,
-                         base_dir: str, http_prefix: str,
+                         path: str, base_dir: str, http_prefix: str,
                          domain: str, domain_full: str, port: int,
                          onion_domain: str, i2p_domain: str,
                          debug: bool) -> None:
@@ -3805,8 +3796,7 @@ class PubServer(BaseHTTPRequestHandler):
                               domain: str, domain_full: str,
                               port: int, search_for_emoji: bool,
                               onion_domain: str, i2p_domain: str,
-                              getreq_start_time, getreq_timings: {},
-                              debug: bool,
+                              getreq_start_time, debug: bool,
                               curr_session, proxy_type: str) -> None:
         """Receive a search query
         """
@@ -4338,11 +4328,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _receive_vote(self, calling_domain: str, cookie: str,
-                      authorized: bool, path: str,
-                      base_dir: str, http_prefix: str,
-                      domain: str, domain_full: str,
-                      onion_domain: str, i2p_domain: str,
-                      debug: bool,
+                      path: str, http_prefix: str, domain_full: str,
+                      onion_domain: str, i2p_domain: str, debug: bool,
                       curr_session, proxy_type: str) -> None:
         """Receive a vote via POST
         """
@@ -4425,13 +4412,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
         return
 
-    def _receive_image(self, length: int,
-                       calling_domain: str, cookie: str,
-                       authorized: bool, path: str,
-                       base_dir: str, http_prefix: str,
-                       domain: str, domain_full: str,
-                       onion_domain: str, i2p_domain: str,
-                       debug: bool) -> None:
+    def _receive_image(self, length: int, path: str, base_dir: str,
+                       domain: str, debug: bool) -> None:
         """Receives an image via POST
         """
         if not self.outbox_authenticated:
@@ -4491,8 +4473,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _remove_share(self, calling_domain: str, cookie: str,
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
-                      domain: str, domain_full: str,
-                      onion_domain: str, i2p_domain: str,
+                      domain_full: str, onion_domain: str, i2p_domain: str,
                       debug: bool) -> None:
         """Removes a shared item
         """
@@ -4564,8 +4545,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _remove_wanted(self, calling_domain: str, cookie: str,
                        authorized: bool, path: str,
                        base_dir: str, http_prefix: str,
-                       domain: str, domain_full: str,
-                       onion_domain: str, i2p_domain: str,
+                       domain_full: str, onion_domain: str, i2p_domain: str,
                        debug: bool) -> None:
         """Removes a wanted item
         """
@@ -4635,8 +4615,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _receive_remove_post(self, calling_domain: str, cookie: str,
-                             authorized: bool, path: str,
-                             base_dir: str, http_prefix: str,
+                             path: str, base_dir: str, http_prefix: str,
                              domain: str, domain_full: str,
                              onion_domain: str, i2p_domain: str,
                              debug: bool,
@@ -4743,10 +4722,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _links_update(self, calling_domain: str, cookie: str,
-                      authorized: bool, path: str,
-                      base_dir: str, http_prefix: str,
-                      domain: str, domain_full: str,
-                      onion_domain: str, i2p_domain: str, debug: bool,
+                      path: str, base_dir: str, debug: bool,
                       default_timeline: str,
                       allow_local_network_access: bool) -> None:
         """Updates the left links column of the timeline
@@ -4890,12 +4866,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _set_hashtag_category(self, calling_domain: str, cookie: str,
-                              authorized: bool, path: str,
-                              base_dir: str, http_prefix: str,
-                              domain: str, domain_full: str,
-                              onion_domain: str, i2p_domain: str, debug: bool,
-                              default_timeline: str,
-                              allow_local_network_access: bool) -> None:
+                              path: str, base_dir: str,
+                              domain: str, debug: bool) -> None:
         """On the screen after selecting a hashtag from the swarm, this sets
         the category for that tag
         """
@@ -4993,10 +4965,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _newswire_update(self, calling_domain: str, cookie: str,
-                         authorized: bool, path: str,
-                         base_dir: str, http_prefix: str,
-                         domain: str, domain_full: str,
-                         onion_domain: str, i2p_domain: str, debug: bool,
+                         path: str, base_dir: str,
+                         domain: str, debug: bool,
                          default_timeline: str) -> None:
         """Updates the right newswire column of the timeline
         """
@@ -5153,11 +5123,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _citations_update(self, calling_domain: str, cookie: str,
-                          authorized: bool, path: str,
-                          base_dir: str, http_prefix: str,
-                          domain: str, domain_full: str,
-                          onion_domain: str, i2p_domain: str, debug: bool,
-                          default_timeline: str,
+                          path: str, base_dir: str,
+                          domain: str, debug: bool,
                           newswire: {}) -> None:
         """Updates the citations for a blog post after hitting
         update button on the citations screen
@@ -5247,11 +5214,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _news_post_edit(self, calling_domain: str, cookie: str,
-                        authorized: bool, path: str,
-                        base_dir: str, http_prefix: str,
-                        domain: str, domain_full: str,
-                        onion_domain: str, i2p_domain: str, debug: bool,
-                        default_timeline: str) -> None:
+                        path: str, base_dir: str,
+                        domain: str, debug: bool) -> None:
         """edits a news post after receiving POST
         """
         users_path = path.replace('/newseditdata', '')
@@ -5384,8 +5348,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _profile_edit(self, calling_domain: str, cookie: str,
-                      authorized: bool, path: str,
-                      base_dir: str, http_prefix: str,
+                      path: str, base_dir: str, http_prefix: str,
                       domain: str, domain_full: str,
                       onion_domain: str, i2p_domain: str,
                       debug: bool, allow_local_network_access: bool,
@@ -5884,9 +5847,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('customSubmitText'):
                             if fields['customSubmitText'] != \
                                curr_custom_submit_text:
-                                customText = fields['customSubmitText']
+                                custom_text = fields['customSubmitText']
                                 set_config_param(base_dir, 'customSubmitText',
-                                                 customText)
+                                                 custom_text)
                         else:
                             if curr_custom_submit_text:
                                 set_config_param(base_dir, 'customSubmitText',
@@ -7305,7 +7268,7 @@ class PubServer(BaseHTTPRequestHandler):
                         save_json(actor_json, actor_filename)
                         webfinger_update(base_dir,
                                          nickname, domain,
-                                         onion_domain,
+                                         onion_domain, i2p_domain,
                                          self.server.cached_webfingers)
                         # also copy to the actors cache and
                         # person_cache in memory
@@ -7597,8 +7560,7 @@ class PubServer(BaseHTTPRequestHandler):
                           None, calling_domain, False)
         self._write(msg)
 
-    def _get_exported_theme(self, calling_domain: str, path: str,
-                            base_dir: str, domain_full: str,
+    def _get_exported_theme(self, path: str, base_dir: str, domain_full: str,
                             debug: bool) -> None:
         """Returns an exported theme zip file
         """
@@ -7684,8 +7646,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('font not found: ' + path + ' ' + calling_domain)
         self._404()
 
-    def _get_rss2feed(self, authorized: bool,
-                      calling_domain: str, path: str,
+    def _get_rss2feed(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, port: int, proxy_type: str,
                       getreq_start_time,
@@ -7734,8 +7695,7 @@ class PubServer(BaseHTTPRequestHandler):
                   path + ' ' + calling_domain)
         self._404()
 
-    def _get_rss2site(self, authorized: bool,
-                      calling_domain: str, path: str,
+    def _get_rss2site(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain_full: str, port: int, proxy_type: str,
                       translate: {},
@@ -7792,8 +7752,7 @@ class PubServer(BaseHTTPRequestHandler):
                   path + ' ' + calling_domain)
         self._404()
 
-    def _get_newswire_feed(self, authorized: bool,
-                           calling_domain: str, path: str,
+    def _get_newswire_feed(self, calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, port: int, proxy_type: str,
                            getreq_start_time,
@@ -14827,11 +14786,6 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path and path.endswith('/editprofile'):
             peertube_instances = self.server.peertube_instances
             nickname = get_nickname_from_actor(path)
-            if nickname:
-                city = get_spoofed_city(self.server.city,
-                                        base_dir, nickname, domain)
-            else:
-                city = self.server.city
 
             access_keys = self.server.access_keys
             if '/users/' in path:
@@ -14839,17 +14793,12 @@ class PubServer(BaseHTTPRequestHandler):
                     access_keys = self.server.key_shortcuts[nickname]
 
             default_reply_interval_hrs = self.server.default_reply_interval_hrs
-            msg = html_edit_profile(self.server, self.server.css_cache,
-                                    translate,
-                                    base_dir,
-                                    path, domain,
-                                    port,
-                                    http_prefix,
+            msg = html_edit_profile(self.server, translate,
+                                    base_dir, path, domain, port,
                                     self.server.default_timeline,
                                     self.server.theme_name,
                                     peertube_instances,
                                     self.server.text_mode_banner,
-                                    city,
                                     self.server.user_agents_blocked,
                                     self.server.crawlers_allowed,
                                     access_keys,
@@ -15605,7 +15554,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         if authorized and '/exports/' in self.path:
-            self._get_exported_theme(calling_domain, self.path,
+            self._get_exported_theme(self.path,
                                      self.server.base_dir,
                                      self.server.domain_full,
                                      self.server.debug)
@@ -15651,8 +15600,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if self.path == '/newswire.xml':
-            self._get_newswire_feed(authorized,
-                                    calling_domain, self.path,
+            self._get_newswire_feed(calling_domain, self.path,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
@@ -15667,8 +15615,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.xml'):
             if not self.path == '/blog/rss.xml':
-                self._get_rss2feed(authorized,
-                                   calling_domain, self.path,
+                self._get_rss2feed(calling_domain, self.path,
                                    self.server.base_dir,
                                    self.server.http_prefix,
                                    self.server.domain,
@@ -15678,8 +15625,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug,
                                    curr_session)
             else:
-                self._get_rss2site(authorized,
-                                   calling_domain, self.path,
+                self._get_rss2site(calling_domain, self.path,
                                    self.server.base_dir,
                                    self.server.http_prefix,
                                    self.server.domain_full,
@@ -18703,7 +18649,6 @@ class PubServer(BaseHTTPRequestHandler):
     def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   length: int, post_bytes, boundary: str,
                                   calling_domain: str, cookie: str,
-                                  authorized: bool,
                                   content_license_url: str,
                                   curr_session, proxy_type: str) -> int:
         # Note: this needs to happen synchronously
@@ -19563,7 +19508,6 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _receive_new_post(self, post_type: str, path: str,
                           calling_domain: str, cookie: str,
-                          authorized: bool,
                           content_license_url: str,
                           curr_session, proxy_type: str) -> int:
         """A new post has been created
@@ -19668,7 +19612,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                path, headers, length,
                                                post_bytes, boundary,
                                                calling_domain, cookie,
-                                               authorized,
                                                content_license_url,
                                                curr_session, proxy_type)
         return page_number
@@ -19976,23 +19919,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         if authorized and self.path.endswith('/sethashtagcategory'):
             self._set_hashtag_category(calling_domain, cookie,
-                                       authorized, self.path,
+                                       self.path,
                                        self.server.base_dir,
-                                       self.server.http_prefix,
                                        self.server.domain,
-                                       self.server.domain_full,
-                                       self.server.onion_domain,
-                                       self.server.i2p_domain,
-                                       self.server.debug,
-                                       self.server.default_timeline,
-                                       self.server.allow_local_network_access)
+                                       self.server.debug)
             self.server.postreq_busy = False
             return
 
         # update of profile/avatar from web interface,
         # after selecting Edit button then Submit
         if authorized and self.path.endswith('/profiledata'):
-            self._profile_edit(calling_domain, cookie, authorized, self.path,
+            self._profile_edit(calling_domain, cookie, self.path,
                                self.server.base_dir, self.server.http_prefix,
                                self.server.domain,
                                self.server.domain_full,
@@ -20007,12 +19944,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if authorized and self.path.endswith('/linksdata'):
-            self._links_update(calling_domain, cookie, authorized, self.path,
-                               self.server.base_dir, self.server.http_prefix,
-                               self.server.domain,
-                               self.server.domain_full,
-                               self.server.onion_domain,
-                               self.server.i2p_domain, self.server.debug,
+            self._links_update(calling_domain, cookie, self.path,
+                               self.server.base_dir, self.server.debug,
                                self.server.default_timeline,
                                self.server.allow_local_network_access)
             self.server.postreq_busy = False
@@ -20020,39 +19953,28 @@ class PubServer(BaseHTTPRequestHandler):
 
         if authorized and self.path.endswith('/newswiredata'):
             self._newswire_update(calling_domain, cookie,
-                                  authorized, self.path,
+                                  self.path,
                                   self.server.base_dir,
-                                  self.server.http_prefix,
-                                  self.server.domain,
-                                  self.server.domain_full,
-                                  self.server.onion_domain,
-                                  self.server.i2p_domain, self.server.debug,
+                                  self.server.domain, self.server.debug,
                                   self.server.default_timeline)
             self.server.postreq_busy = False
             return
 
         if authorized and self.path.endswith('/citationsdata'):
             self._citations_update(calling_domain, cookie,
-                                   authorized, self.path,
+                                   self.path,
                                    self.server.base_dir,
-                                   self.server.http_prefix,
                                    self.server.domain,
-                                   self.server.domain_full,
-                                   self.server.onion_domain,
-                                   self.server.i2p_domain, self.server.debug,
-                                   self.server.default_timeline,
+                                   self.server.debug,
                                    self.server.newswire)
             self.server.postreq_busy = False
             return
 
         if authorized and self.path.endswith('/newseditdata'):
-            self._news_post_edit(calling_domain, cookie, authorized, self.path,
-                                 self.server.base_dir, self.server.http_prefix,
+            self._news_post_edit(calling_domain, cookie, self.path,
+                                 self.server.base_dir,
                                  self.server.domain,
-                                 self.server.domain_full,
-                                 self.server.onion_domain,
-                                 self.server.i2p_domain, self.server.debug,
-                                 self.server.default_timeline)
+                                 self.server.debug)
             self.server.postreq_busy = False
             return
 
@@ -20110,7 +20032,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        search_for_emoji,
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
-                                       postreq_start_time, {},
+                                       postreq_start_time,
                                        self.server.debug,
                                        curr_session,
                                        proxy_type)
@@ -20133,10 +20055,8 @@ class PubServer(BaseHTTPRequestHandler):
             if self.path.endswith('/question') or \
                '/question?page=' in self.path:
                 self._receive_vote(calling_domain, cookie,
-                                   authorized, self.path,
-                                   self.server.base_dir,
+                                   self.path,
                                    self.server.http_prefix,
-                                   self.server.domain,
                                    self.server.domain_full,
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
@@ -20152,7 +20072,6 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized, self.path,
                                    self.server.base_dir,
                                    self.server.http_prefix,
-                                   self.server.domain,
                                    self.server.domain_full,
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
@@ -20166,7 +20085,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     authorized, self.path,
                                     self.server.base_dir,
                                     self.server.http_prefix,
-                                    self.server.domain,
                                     self.server.domain_full,
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
@@ -20188,7 +20106,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             if self.path.endswith('/rmpost'):
                 self._receive_remove_post(calling_domain, cookie,
-                                          authorized, self.path,
+                                          self.path,
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           self.server.domain,
@@ -20207,7 +20125,7 @@ class PubServer(BaseHTTPRequestHandler):
             # decision to follow in the web interface is confirmed
             if self.path.endswith('/followconfirm'):
                 self._follow_confirm(calling_domain, cookie,
-                                     authorized, self.path,
+                                     self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
@@ -20228,7 +20146,7 @@ class PubServer(BaseHTTPRequestHandler):
             # decision to unfollow in the web interface is confirmed
             if self.path.endswith('/unfollowconfirm'):
                 self._unfollow_confirm(calling_domain, cookie,
-                                       authorized, self.path,
+                                       self.path,
                                        self.server.base_dir,
                                        self.server.http_prefix,
                                        self.server.domain,
@@ -20248,7 +20166,7 @@ class PubServer(BaseHTTPRequestHandler):
             # decision to unblock in the web interface is confirmed
             if self.path.endswith('/unblockconfirm'):
                 self._unblock_confirm(calling_domain, cookie,
-                                      authorized, self.path,
+                                      self.path,
                                       self.server.base_dir,
                                       self.server.http_prefix,
                                       self.server.domain,
@@ -20267,7 +20185,7 @@ class PubServer(BaseHTTPRequestHandler):
             # decision to block in the web interface is confirmed
             if self.path.endswith('/blockconfirm'):
                 self._block_confirm(calling_domain, cookie,
-                                    authorized, self.path,
+                                    self.path,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
@@ -20315,14 +20233,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.key_shortcuts[nickname] = access_keys.copy()
                 access_keys = self.server.key_shortcuts[nickname]
 
-                self._key_shortcuts(self.path,
-                                    calling_domain, cookie,
+                self._key_shortcuts(calling_domain, cookie,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     nickname,
                                     self.server.domain,
                                     self.server.domain_full,
-                                    self.server.port,
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
                                     self.server.debug,
@@ -20345,18 +20261,15 @@ class PubServer(BaseHTTPRequestHandler):
                 allow_local_network_access = \
                     self.server.allow_local_network_access
 
-                self._theme_designer_edit(self.path,
-                                          calling_domain, cookie,
+                self._theme_designer_edit(calling_domain, cookie,
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           nickname,
                                           self.server.domain,
                                           self.server.domain_full,
-                                          self.server.port,
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
                                           self.server.debug,
-                                          access_keys,
                                           self.server.default_timeline,
                                           self.server.theme_name,
                                           allow_local_network_access,
@@ -20431,7 +20344,6 @@ class PubServer(BaseHTTPRequestHandler):
             page_number = \
                 self._receive_new_post(curr_post_type, self.path,
                                        calling_domain, cookie,
-                                       authorized,
                                        self.server.content_license_url,
                                        curr_session, proxy_type)
             if page_number:
@@ -20530,14 +20442,9 @@ class PubServer(BaseHTTPRequestHandler):
         # receive images to the outbox
         if self.headers['Content-type'].startswith('image/') and \
            users_in_path:
-            self._receive_image(length, calling_domain, cookie,
-                                authorized, self.path,
+            self._receive_image(length, self.path,
                                 self.server.base_dir,
-                                self.server.http_prefix,
                                 self.server.domain,
-                                self.server.domain_full,
-                                self.server.onion_domain,
-                                self.server.i2p_domain,
                                 self.server.debug)
             self.server.postreq_busy = False
             return
@@ -20735,7 +20642,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._update_inbox_queue(self.post_to_nickname,
                                                  message_json, message_bytes,
                                                  self.server.debug)
-                    if queue_status >= 0 and queue_status <= 3:
+                    if queue_status in range(0, 4):
                         self.server.postreq_busy = False
                         return
                     if self.server.debug:
@@ -20756,7 +20663,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._update_inbox_queue('inbox', message_json,
                                              message_bytes,
                                              self.server.debug)
-                if queue_status >= 0 and queue_status <= 3:
+                if queue_status in range(0, 4):
                     self.server.postreq_busy = False
                     return
         self._200()
@@ -20774,7 +20681,6 @@ class EpicyonServer(ThreadingHTTPServer):
         if cls is ConnectionResetError:
             if e_ret.errno != errno.ECONNRESET:
                 print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e_ret))
-            pass
         elif cls is BrokenPipeError:
             pass
         else:

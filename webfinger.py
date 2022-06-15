@@ -490,7 +490,7 @@ def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
 
 
 def webfinger_update(base_dir: str, nickname: str, domain: str,
-                     onion_domain: str,
+                     onion_domain: str, i2p_domain: str,
                      cached_webfingers: {}) -> None:
     """Regenerates stored webfinger
     """
@@ -505,8 +505,15 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
         if onion_domain in handle:
             handle = handle.replace(onion_domain, domain)
             onionify = True
+    elif i2p_domain:
+        if i2p_domain in handle:
+            handle = handle.replace(i2p_domain, domain)
+            i2pify = True
     if not onionify:
-        wf_json = load_json(filename)
+        if not i2pify:
+            wf_json = load_json(filename)
+        else:
+            wf_json = load_json_onionify(filename, domain, i2p_domain)
     else:
         wf_json = load_json_onionify(filename, domain, onion_domain)
     if not wf_json:

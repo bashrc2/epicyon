@@ -3374,7 +3374,7 @@ def test_client_to_server(base_dir: str):
                              cached_webfingers,
                              person_cache, True, __version__,
                              signing_priv_key_pem)
-    for _ in range(20):
+    for _ in range(30):
         if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
                     if os.path.isfile(os.path.join(outbox_path, name))]) == 4:

@@ -1646,8 +1646,7 @@ def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
     return edit_profile_form
 
 
-def _html_edit_profile_shared_items(base_dir: str, nickname: str, domain: str,
-                                    translate: {}) -> str:
+def _html_edit_profile_shared_items(base_dir: str, translate: {}) -> str:
     """shared items section of edit profile screen
     """
     shared_items_str = ''
@@ -2189,12 +2188,12 @@ def _html_edit_profile_top_banner(base_dir: str,
     return edit_profile_form
 
 
-def html_edit_profile(server, css_cache: {}, translate: {},
+def html_edit_profile(server, translate: {},
                       base_dir: str, path: str,
-                      domain: str, port: int, http_prefix: str,
+                      domain: str, port: int,
                       default_timeline: str, theme: str,
                       peertube_instances: [],
-                      text_mode_banner: str, city: str,
+                      text_mode_banner: str,
                       user_agents_blocked: [],
                       crawlers_allowed: [],
                       access_keys: {},
@@ -2328,8 +2327,7 @@ def html_edit_profile(server, css_cache: {}, translate: {},
                 _html_edit_profile_twitter(base_dir, translate, remove_twitter)
             # shared items section
             shares_federation_str = \
-                _html_edit_profile_shared_items(base_dir, nickname,
-                                                domain, translate)
+                _html_edit_profile_shared_items(base_dir, translate)
             instance_str, role_assign_str, peertube_str, libretranslate_str = \
                 _html_edit_profile_instance(base_dir, translate,
                                             peertube_instances,
