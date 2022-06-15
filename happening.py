@@ -635,7 +635,7 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
                     event_time = \
                         datetime.strptime(tag['startTime'],
                                           "%Y-%m-%dT%H:%M:%S%z")
-                    if event_time >= now and event_time <= end_of_week:
+                    if now <= event_time <= end_of_week:
                         week_day_index = (event_time - now).days()
                         post_event.append(tag)
                 else:
