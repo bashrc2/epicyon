@@ -20035,7 +20035,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        search_for_emoji,
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
-                                       postreq_start_time, {},
+                                       postreq_start_time,
                                        self.server.debug,
                                        curr_session,
                                        proxy_type)
