@@ -14827,11 +14827,6 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path and path.endswith('/editprofile'):
             peertube_instances = self.server.peertube_instances
             nickname = get_nickname_from_actor(path)
-            if nickname:
-                city = get_spoofed_city(self.server.city,
-                                        base_dir, nickname, domain)
-            else:
-                city = self.server.city
 
             access_keys = self.server.access_keys
             if '/users/' in path:
@@ -14839,17 +14834,12 @@ class PubServer(BaseHTTPRequestHandler):
                     access_keys = self.server.key_shortcuts[nickname]
 
             default_reply_interval_hrs = self.server.default_reply_interval_hrs
-            msg = html_edit_profile(self.server, self.server.css_cache,
-                                    translate,
-                                    base_dir,
-                                    path, domain,
-                                    port,
-                                    http_prefix,
+            msg = html_edit_profile(self.server, translate,
+                                    base_dir, path, domain, port,
                                     self.server.default_timeline,
                                     self.server.theme_name,
                                     peertube_instances,
                                     self.server.text_mode_banner,
-                                    city,
                                     self.server.user_agents_blocked,
                                     self.server.crawlers_allowed,
                                     access_keys,
