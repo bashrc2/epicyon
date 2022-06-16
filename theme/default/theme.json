@@ -165,7 +165,7 @@
     "vcard-icon-size-mobile": "80px",
     "vcard-icon-size-tiny": "80px",
     "lines-color": "grey",
-    "place-color": "black",
+    "place-color": "lightblue",
     "event-color": "grey",
     "event-public-color": "#282c37",
     "today-foreground": "black",
