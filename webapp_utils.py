@@ -1119,6 +1119,20 @@ def _is_attached_video(attachment_filename: str) -> bool:
     return False
 
 
+def _is_nsfw(content: str) -> bool:
+    """Does the given content indicate nsfw?
+    """
+    content_lower = content.lower()
+    nsfw_tags = (
+        'nsfw', 'porn', 'pr0n', 'explicit', 'lewd',
+        'nude', 'boob', 'erotic'
+    )
+    for tag_name in nsfw_tags:
+        if tag_name in content_lower:
+            return True
+    return False
+
+
 def get_post_attachments_as_html(base_dir: str,
                                  nickname: str, domain: str,
                                  domain_full: str,
@@ -1234,7 +1248,7 @@ def get_post_attachments_as_html(base_dir: str,
 
                 # minimize any NSFW images
                 if not minimize_images and content:
-                    if 'nsfw' in content.lower():
+                    if _is_nsfw(content):
                         minimize_images = True
 
                 if minimize_images:
