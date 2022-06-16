@@ -18,10 +18,10 @@ from utils import save_json
 def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
     """Returns geocoordinates from an OSM map link
     """
-    if osm_domain + '/#map=' not in url:
+    if osm_domain + '#map=' not in url:
         return None, None, None
 
-    coords_str = url.split(osm_domain + '/#map=')[1]
+    coords_str = url.split(osm_domain + '#map=')[1]
     if '/' not in coords_str:
         return None, None, None
 
