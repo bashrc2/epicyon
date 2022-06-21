@@ -3276,14 +3276,6 @@ def valid_url_prefix(url: str) -> bool:
     return False
 
 
-def remove_line_endings(text: str) -> str:
-    """Removes any newline from the end of a string
-    """
-    text = text.replace('\n', '')
-    text = text.replace('\r', '')
-    return text.strip()
-
-
 def valid_password(password: str) -> bool:
     """Returns true if the given password is valid
     """

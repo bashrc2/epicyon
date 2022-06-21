@@ -63,7 +63,6 @@ from utils import get_group_paths
 from utils import local_actor_url
 from utils import dangerous_svg
 from utils import text_in_file
-from utils import remove_line_endings
 from session import create_session
 from session import get_json
 from webfinger import webfinger_handle
@@ -542,7 +541,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             print('EX: unable to save 2 ' + filename)
 
         if password:
-            password = remove_line_endings(password)
+            password = remove_eol(password).strip()
             store_basic_credentials(base_dir, nickname, password)
 
     return private_key_pem, public_key_pem, new_person, webfinger_endpoint
