@@ -637,21 +637,22 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                                   reply_nickname + '@' + reply_domain)
                         return None
 
-        if post_json_object['object'].get('content'):
-            content_str = \
-                get_base_content_from_post(post_json_object, system_language)
-            if content_str:
-                summary_str = \
-                    get_summary_from_post(post_json_object,
-                                          system_language, [])
-                media_descriptions = \
-                    get_media_descriptions_from_post(post_json_object)
-                content_all = \
-                    summary_str + ' ' + content_str + ' ' + media_descriptions
-                if is_filtered(base_dir, nickname, domain, content_all):
-                    if debug:
-                        print('WARN: post was filtered out due to content')
-                    return None
+    # filter on the content of the post
+    content_str = \
+        get_base_content_from_post(post_json_object, system_language)
+    if content_str:
+        summary_str = \
+            get_summary_from_post(post_json_object,
+                                  system_language, [])
+        media_descriptions = \
+            get_media_descriptions_from_post(post_json_object)
+        content_all = \
+            summary_str + ' ' + content_str + ' ' + media_descriptions
+        if is_filtered(base_dir, nickname, domain, content_all):
+            if debug:
+                print('WARN: post was filtered out due to content')
+            return None
+
     original_post_id = None
     if post_json_object.get('id'):
         if not isinstance(post_json_object['id'], str):

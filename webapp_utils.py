@@ -1125,7 +1125,7 @@ def _is_nsfw(content: str) -> bool:
     content_lower = content.lower()
     nsfw_tags = (
         'nsfw', 'porn', 'pr0n', 'explicit', 'lewd',
-        'nude', 'boob', 'erotic'
+        'nude', 'boob', 'erotic', 'sex'
     )
     for tag_name in nsfw_tags:
         if tag_name in content_lower:
