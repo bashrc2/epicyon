@@ -32,6 +32,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import remove_eol
 from utils import text_in_file
 from utils import get_media_descriptions_from_post
 from utils import valid_hash_tag
@@ -139,8 +140,7 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
         for follower_handle in followers_file:
             if '@' in follower_handle:
                 follower_domain = follower_handle.split('@')[1]
-                follower_domain = follower_domain.replace('\n', '')
-                follower_domain = follower_domain.replace('\r', '')
+                follower_domain = remove_eol(follower_domain)
                 if domain == follower_domain:
                     ctr += 1
     return ctr
@@ -2707,8 +2707,8 @@ def group_followers_by_domain(base_dir: str, nickname: str, domain: str) -> {}:
         for follower_handle in foll_file:
             if '@' not in follower_handle:
                 continue
-            fhandle = \
-                follower_handle.strip().replace('\n', '').replace('\r', '')
+            fhandle1 = follower_handle.strip()
+            fhandle = remove_eol(fhandle1)
             follower_domain = fhandle.split('@')[1]
             if not grouped.get(follower_domain):
                 grouped[follower_domain] = [fhandle]
@@ -4041,8 +4041,7 @@ def _create_box_indexed(recent_posts_cache: {},
                 # filename of the post without any extension or path
                 # This should also correspond to any index entry in
                 # the posts cache
-                post_url = \
-                    post_filename.replace('\n', '').replace('\r', '')
+                post_url = remove_eol(post_filename)
                 post_url = post_url.replace('.json', '').strip()
 
                 if post_url in post_urls_in_box:
@@ -4737,7 +4736,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
             reply_found = False
             # examine inbox and outbox
             for boxname in replies_boxes:
-                message_id2 = message_id.replace('\n', '').replace('\r', '')
+                message_id2 = remove_eol(message_id)
                 search_filename = \
                     acct_dir(base_dir, nickname, domain) + '/' + \
                     boxname + '/' + \
@@ -4763,7 +4762,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     break
             # if not in either inbox or outbox then examine the shared inbox
             if not reply_found:
-                message_id2 = message_id.replace('\n', '').replace('\r', '')
+                message_id2 = remove_eol(message_id)
                 search_filename = \
                     base_dir + \
                     '/accounts/inbox@' + \

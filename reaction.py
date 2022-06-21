@@ -31,6 +31,7 @@ from utils import save_json
 from utils import remove_post_from_cache
 from utils import get_cached_post_filename
 from utils import contains_invalid_chars
+from utils import remove_eol
 from posts import send_signed_json
 from session import post_json
 from webfinger import webfinger_handle
@@ -470,7 +471,8 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
                     line = count_str + ' ' + emoji_content
                     new_common_reactions.append(line)
             else:
-                new_common_reactions.append(line.replace('\n', ''))
+                line1 = remove_eol(line)
+                new_common_reactions.append(line1)
         if not reaction_found:
             new_common_reactions.append(str(1).zfill(16) + ' ' + emoji_content)
         new_common_reactions.sort(reverse=True)

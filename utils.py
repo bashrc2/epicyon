@@ -40,6 +40,12 @@ INVALID_CHARACTERS = (
 )
 
 
+def remove_eol(line: str):
+    """Removes line ending characters
+    """
+    return line.replace('\n', '').replace('\r', '')
+
+
 def text_in_file(text: str, filename: str,
                  case_sensitive: bool = True) -> bool:
     """is the given text in the given file?
@@ -671,8 +677,7 @@ def get_followers_of_person(base_dir: str,
                 continue
             with open(filename, 'r', encoding='utf-8') as followingfile:
                 for following_handle in followingfile:
-                    following_handle2 = following_handle.replace('\n', '')
-                    following_handle2 = following_handle2.replace('\r', '')
+                    following_handle2 = remove_eol(following_handle)
                     if following_handle2 == handle:
                         if account not in followers:
                             followers.append(account)
@@ -1306,7 +1311,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                   follow_file: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
-    follow_domain_str_lower = follow_domain.lower().replace('\n', '')
+    follow_domain_str_lower1 = follow_domain.lower()
+    follow_domain_str_lower = remove_eol(follow_domain_str_lower1)
     if not domain_permitted(follow_domain_str_lower,
                             federation_list):
         if debug:
@@ -1414,8 +1420,8 @@ def locate_news_votes(base_dir: str, domain: str,
     """Returns the votes filename for a news post
     within the news user account
     """
-    post_url = \
-        post_url.strip().replace('\n', '').replace('\r', '')
+    post_url1 = post_url.strip()
+    post_url = remove_eol(post_url1)
 
     # if this post in the shared inbox?
     post_url = remove_id_ending(post_url.strip()).replace('/', '#')
@@ -1438,8 +1444,8 @@ def locate_news_arrival(base_dir: str, domain: str,
     """Returns the arrival time for a news post
     within the news user account
     """
-    post_url = \
-        post_url.strip().replace('\n', '').replace('\r', '')
+    post_url1 = post_url.strip()
+    post_url = remove_eol(post_url1)
 
     # if this post in the shared inbox?
     post_url = remove_id_ending(post_url.strip()).replace('/', '#')
@@ -2910,8 +2916,7 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
         # filename of the post without any extension or path
         # This should also correspond to any index entry in
         # the posts cache
-        post_url = \
-            index_filename.replace('\n', '').replace('\r', '')
+        post_url = remove_eol(index_filename)
         post_url = post_url.replace('.json', '').strip()
 
         if post_url in recent_posts_cache['index']:

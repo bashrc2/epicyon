@@ -17,6 +17,7 @@ from utils import get_port_from_domain
 from utils import get_user_paths
 from utils import acct_dir
 from utils import text_in_file
+from utils import remove_eol
 from threads import thread_with_trace
 from session import create_session
 
@@ -57,8 +58,7 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
         print('EX: unable to append ' + rejected_follows_filename)
 
     deny_nickname = deny_handle.split('@')[0]
-    deny_domain = \
-        deny_handle.split('@')[1].replace('\n', '').replace('\r', '')
+    deny_domain = remove_eol(deny_handle.split('@')[1])
     deny_port = port
     if ':' in deny_domain:
         deny_port = get_port_from_domain(deny_domain)
@@ -195,7 +195,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                 # is this the approved follow?
                 if handle_of_follow_requester.startswith(approve_handle_full):
                     handle_of_follow_requester = \
-                        handle_of_follow_requester.replace('\n', '')
+                        remove_eol(handle_of_follow_requester)
                     handle_of_follow_requester = \
                         handle_of_follow_requester.replace('\r', '')
                     port2 = port
@@ -212,7 +212,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                             approve_nickname = approve_handle.split('@')[0]
                             approve_domain = approve_handle.split('@')[1]
                             approve_domain = \
-                                approve_domain.replace('\n', '')
+                                remove_eol(approve_domain)
                             approve_domain = \
                                 approve_domain.replace('\r', '')
                             approve_port = port2

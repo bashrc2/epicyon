@@ -20,6 +20,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import remove_eol
 from utils import get_domain_from_actor
 from utils import valid_hash_tag
 from utils import dangerous_svg
@@ -1458,8 +1459,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                 # filename of the post without any extension or path
                 # This should also correspond to any index entry in
                 # the posts cache
-                post_url = \
-                    post_filename.replace('\n', '').replace('\r', '')
+                post_url = remove_eol(post_filename)
                 post_url = post_url.replace('.json', '').strip()
 
                 # read the post from file

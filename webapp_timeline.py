@@ -19,6 +19,7 @@ from utils import remove_id_ending
 from utils import acct_dir
 from utils import is_float
 from utils import local_actor_url
+from utils import remove_eol
 from follow import follower_approval_active
 from person import is_person_snoozed
 from markdown import markdown_to_html
@@ -514,7 +515,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
         calendar_image = 'calendar_notify.png'
         with open(calendar_file, 'r', encoding='utf-8') as calfile:
             calendar_path = calfile.read().replace('##sent##', '')
-            calendar_path = calendar_path.replace('\n', '').replace('\r', '')
+            calendar_path = remove_eol(calendar_path)
             if '/calendar' not in calendar_path:
                 calendar_path = '/calendar'
 

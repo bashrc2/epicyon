@@ -11,6 +11,7 @@ import os
 import time
 from utils import save_json
 from utils import user_agent_domain
+from utils import remove_eol
 from blocking import update_blocked_cache
 from blocking import is_blocked_domain
 
@@ -72,7 +73,7 @@ def load_known_web_bots(base_dir: str) -> []:
     for crawler in crawlers_list:
         if not crawler:
             continue
-        crawler = crawler.replace('\n', '').strip()
+        crawler = remove_eol(crawler).strip()
         if not crawler:
             continue
         if crawler not in known_bots:

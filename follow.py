@@ -31,6 +31,7 @@ from utils import acct_dir
 from utils import has_group_type
 from utils import local_actor_url
 from utils import text_in_file
+from utils import remove_eol
 from acceptreject import create_accept
 from acceptreject import create_reject
 from webfinger import webfinger_handle
@@ -67,7 +68,7 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                     continue
                 if '@' not in handle:
                     continue
-                handle = handle.replace('\n', '')
+                handle = remove_eol(handle)
                 nickname = handle.split('@')[0]
                 domain = handle.split('@')[1]
                 if nickname.startswith('!'):
@@ -244,7 +245,7 @@ def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
 
     domains_list = []
     for handle in lines:
-        handle = handle.replace('\n', '')
+        handle = remove_eol(handle)
         follower_domain, _ = get_domain_from_actor(handle)
         if not follower_domain:
             continue
@@ -535,8 +536,8 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
                 page_ctr += 1
                 total_ctr += 1
                 if curr_page == page_number:
-                    line2 = \
-                        line.lower().replace('\n', '').replace('\r', '')
+                    line2_lower = line.lower()
+                    line2 = remove_eol(line2_lower)
                     nick = line2.split('@')[0]
                     dom = line2.split('@')[1]
                     if not nick.startswith('!'):
@@ -555,8 +556,8 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
                 page_ctr += 1
                 total_ctr += 1
                 if curr_page == page_number:
-                    append_str = \
-                        line.lower().replace('\n', '').replace('\r', '')
+                    append_str1 = line.lower()
+                    append_str = remove_eol(append_str1)
                     following['orderedItems'].append(append_str)
         if page_ctr >= follows_per_page:
             page_ctr = 0

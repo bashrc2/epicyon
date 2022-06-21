@@ -18,6 +18,7 @@ from utils import dangerous_svg
 from utils import local_actor_url
 from utils import remove_html
 from utils import text_in_file
+from utils import remove_eol
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
@@ -44,7 +45,8 @@ def import_theme(base_dir: str, filename: str) -> bool:
     new_theme_name = None
     with open(temp_theme_dir + '/name.txt', 'r',
               encoding='utf-8') as fp_theme:
-        new_theme_name = fp_theme.read().replace('\n', '').replace('\r', '')
+        new_theme_name1 = fp_theme.read()
+        new_theme_name = remove_eol(new_theme_name1)
         if len(new_theme_name) > 20:
             print('WARN: Imported theme name is too long')
             return False

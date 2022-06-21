@@ -16,6 +16,7 @@ import datetime
 from utils import is_system_account
 from utils import has_users_path
 from utils import text_in_file
+from utils import remove_eol
 
 
 def _hash_password(password: str) -> str:
@@ -78,9 +79,9 @@ def create_basic_auth_header(nickname: str, password: str) -> str:
     """This is only used by tests
     """
     auth_str = \
-        nickname.replace('\n', '').replace('\r', '') + \
+        remove_eol(nickname) + \
         ':' + \
-        password.replace('\n', '').replace('\r', '')
+        remove_eol(password)
     return 'Basic ' + \
         base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
 
@@ -118,8 +119,8 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
         print('basic auth - attempted login using system account ' +
               nickname_from_path + ' in path')
         return False
-    base64_str = \
-        auth_header.split(' ')[1].replace('\n', '').replace('\r', '')
+    base64_str1 = auth_header.split(' ')[1]
+    base64_str = remove_eol(base64_str1)
     plain = base64.b64decode(base64_str).decode('utf-8')
     if ':' not in plain:
         if debug:
@@ -148,8 +149,8 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
             for line in passfile:
                 if not line.startswith(nickname + ':'):
                     continue
-                stored_password = \
-                    line.split(':')[1].replace('\n', '').replace('\r', '')
+                stored_password_base = line.split(':')[1]
+                stored_password = remove_eol(stored_password_base)
                 success = _verify_password(stored_password, provided_password)
                 if not success:
                     if debug:
@@ -169,8 +170,8 @@ def store_basic_credentials(base_dir: str,
     """
     if ':' in nickname or ':' in password:
         return False
-    nickname = nickname.replace('\n', '').replace('\r', '').strip()
-    password = password.replace('\n', '').replace('\r', '').strip()
+    nickname = remove_eol(nickname).strip()
+    password = remove_eol(password).strip()
 
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')

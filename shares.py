@@ -22,6 +22,7 @@ from posts import get_person_box
 from session import post_json
 from session import post_image
 from session import create_session
+from utils import remove_eol
 from utils import has_object_string_type
 from utils import date_string_to_seconds
 from utils import date_seconds_to_string
@@ -1502,7 +1503,7 @@ def authorize_shared_items(shared_items_federated_domains: [],
         if debug:
             print('DEBUG: shared item federation should not use basic auth')
         return False
-    provided_token = auth_header.replace('\n', '').replace('\r', '').strip()
+    provided_token = remove_eol(auth_header).strip()
     if not provided_token:
         if debug:
             print('DEBUG: shared item federation token is empty')

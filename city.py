@@ -13,6 +13,7 @@ import random
 import math
 from random import randint
 from utils import acct_dir
+from utils import remove_eol
 
 # states which the simulated city dweller can be in
 PERSON_SLEEP = 0
@@ -145,7 +146,7 @@ def _get_city_pulse(curr_time_of_day, decoy_seed: int) -> (float, float):
 def parse_nogo_string(nogo_line: str) -> []:
     """Parses a line from locations_nogo.txt and returns the polygon
     """
-    nogo_line = nogo_line.replace('\n', '').replace('\r', '')
+    nogo_line = remove_eol(nogo_line)
     polygon_str = nogo_line.split(':', 1)[1]
     if ';' in polygon_str:
         pts = polygon_str.split(';')
@@ -320,7 +321,8 @@ def get_spoofed_city(city: str, base_dir: str,
     if os.path.isfile(city_filename):
         try:
             with open(city_filename, 'r', encoding='utf-8') as city_file:
-                city = city_file.read().replace('\n', '')
+                city1 = city_file.read()
+                city = remove_eol(city1)
         except OSError:
             print('EX: unable to read ' + city_filename)
     return city

@@ -25,6 +25,7 @@ from utils import delete_post
 from utils import get_status_number
 from utils import get_full_domain
 from utils import text_in_file
+from utils import remove_eol
 from filters import is_filtered
 from context import get_individual_post_context
 from session import get_method
@@ -262,7 +263,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
     recreate_events_file = False
     with open(calendar_filename, 'r', encoding='utf-8') as events_file:
         for post_id in events_file:
-            post_id = post_id.replace('\n', '').replace('\r', '')
+            post_id = remove_eol(post_id)
             post_filename = locate_post(base_dir, nickname, domain, post_id)
             if not post_filename:
                 recreate_events_file = True
@@ -556,7 +557,7 @@ def day_events_check(base_dir: str, nickname: str, domain: str,
     events_exist = False
     with open(calendar_filename, 'r', encoding='utf-8') as events_file:
         for post_id in events_file:
-            post_id = post_id.replace('\n', '').replace('\r', '')
+            post_id = remove_eol(post_id)
             post_filename = locate_post(base_dir, nickname, domain, post_id)
             if not post_filename:
                 continue
@@ -612,7 +613,7 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
     recreate_events_file = False
     with open(calendar_filename, 'r', encoding='utf-8') as events_file:
         for post_id in events_file:
-            post_id = post_id.replace('\n', '').replace('\r', '')
+            post_id = remove_eol(post_id)
             post_filename = locate_post(base_dir, nickname, domain, post_id)
             if not post_filename:
                 recreate_events_file = True
@@ -679,7 +680,7 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
     recreate_events_file = False
     with open(calendar_filename, 'r', encoding='utf-8') as events_file:
         for post_id in events_file:
-            post_id = post_id.replace('\n', '').replace('\r', '')
+            post_id = remove_eol(post_id)
             post_filename = locate_post(base_dir, nickname, domain, post_id)
             if not post_filename:
                 recreate_events_file = True

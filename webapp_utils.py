@@ -28,6 +28,7 @@ from utils import get_video_extensions
 from utils import get_image_extensions
 from utils import local_actor_url
 from utils import text_in_file
+from utils import remove_eol
 from cache import store_person_in_cache
 from content import add_html_tags
 from content import replace_emoji_from_tags
@@ -1822,7 +1823,8 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
     ctr = 0
     html_str = ''
     while ctr < no_of_emoji and line_ctr < len(common_emoji):
-        emoji_name = common_emoji[line_ctr].split(' ')[1].replace('\n', '')
+        emoji_name1 = common_emoji[line_ctr].split(' ')[1]
+        emoji_name = remove_eol(emoji_name1)
         emoji_icon_name = emoji_name
         emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
         if not os.path.isfile(emoji_filename):

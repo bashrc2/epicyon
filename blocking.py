@@ -11,6 +11,7 @@ import os
 import json
 import time
 from datetime import datetime
+from utils import remove_eol
 from utils import has_object_string
 from utils import has_object_string_object
 from utils import has_object_string_type
@@ -162,8 +163,7 @@ def remove_global_block(base_dir: str,
                         with open(unblocking_filename + '.new', 'w+',
                                   encoding='utf-8') as fpnew:
                             for line in fp_unblock:
-                                handle = \
-                                    line.replace('\n', '').replace('\r', '')
+                                handle = remove_eol(line)
                                 if unblock_handle not in line:
                                     fpnew.write(handle + '\n')
                 except OSError as ex:
@@ -189,8 +189,7 @@ def remove_global_block(base_dir: str,
                         with open(unblocking_filename + '.new', 'w+',
                                   encoding='utf-8') as fpnew:
                             for line in fp_unblock:
-                                block_line = \
-                                    line.replace('\n', '').replace('\r', '')
+                                block_line = remove_eol(line)
                                 if unblock_hashtag not in line:
                                     fpnew.write(block_line + '\n')
                 except OSError as ex:
@@ -225,7 +224,7 @@ def remove_block(base_dir: str, nickname: str, domain: str,
                     with open(unblocking_filename + '.new', 'w+',
                               encoding='utf-8') as fpnew:
                         for line in fp_unblock:
-                            handle = line.replace('\n', '').replace('\r', '')
+                            handle = remove_eol(line)
                             if unblock_handle not in line:
                                 fpnew.write(handle + '\n')
             except OSError as ex:
@@ -304,7 +303,7 @@ def update_blocked_cache(base_dir: str,
             blocked_lines = fp_blocked.readlines()
             # remove newlines
             for index, _ in enumerate(blocked_lines):
-                blocked_lines[index] = blocked_lines[index].replace('\n', '')
+                blocked_lines[index] = remove_eol(blocked_lines[index])
             # update the cache
             blocked_cache.clear()
             blocked_cache += blocked_lines
@@ -946,7 +945,7 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
                             for handle in follow_list:
                                 if '@' not in handle:
                                     continue
-                                handle = handle.replace('\n', '')
+                                handle = remove_eol(handle)
                                 handle_domain = handle.split('@')[1]
                                 if handle_domain not in allowed_domains:
                                     allowed_domains.append(handle_domain)

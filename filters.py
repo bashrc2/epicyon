@@ -10,6 +10,7 @@ __module_group__ = "Moderation"
 import os
 from utils import acct_dir
 from utils import text_in_file
+from utils import remove_eol
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -62,7 +63,7 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
         with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
             with open(new_filters_filename, 'w+', encoding='utf-8') as fpnew:
                 for line in fp_filt:
-                    line = line.replace('\n', '')
+                    line = remove_eol(line)
                     if line != words:
                         fpnew.write(line + '\n')
     except OSError as ex:
@@ -87,7 +88,7 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
         with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
             with open(new_filters_filename, 'w+', encoding='utf-8') as fpnew:
                 for line in fp_filt:
-                    line = line.replace('\n', '')
+                    line = remove_eol(line)
                     if line != words:
                         fpnew.write(line + '\n')
     except OSError as ex:
@@ -122,7 +123,7 @@ def _is_filtered_base(filename: str, content: str) -> bool:
     try:
         with open(filename, 'r', encoding='utf-8') as fp_filt:
             for line in fp_filt:
-                filter_str = line.replace('\n', '').replace('\r', '')
+                filter_str = remove_eol(line)
                 if not filter_str:
                     continue
                 if len(filter_str) < 2:

@@ -17,6 +17,7 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_config_param
 from utils import local_actor_url
+from utils import remove_eol
 from posts import download_follow_collection
 from posts import get_public_post_info
 from posts import is_moderator
@@ -418,7 +419,7 @@ def html_moderation_info(translate: {}, base_dir: str,
                 for line in blocked_lines:
                     if not line:
                         continue
-                    line = line.replace('\n', '').replace('\r', '').strip()
+                    line = remove_eol(line).strip()
                     blocked_str += line + '\n'
             info_form += '<div class="container">\n'
             info_form += \
