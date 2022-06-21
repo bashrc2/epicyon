@@ -43,7 +43,7 @@ from utils import get_nickname_from_actor
 from utils import remove_html
 from utils import contains_invalid_chars
 from utils import replace_users_with_at
-from utils import remove_line_endings
+from utils import remove_eol
 from utils import remove_domain_port
 from utils import get_status_number
 from utils import get_full_domain
@@ -63,6 +63,7 @@ from utils import get_group_paths
 from utils import local_actor_url
 from utils import dangerous_svg
 from utils import text_in_file
+from utils import remove_line_endings
 from session import create_session
 from session import get_json
 from webfinger import webfinger_handle
@@ -104,7 +105,7 @@ def set_profile_image(base_dir: str, http_prefix: str,
     """Saves the given image file as an avatar or background
     image for the given person
     """
-    image_filename = image_filename.replace('\n', '').replace('\r', '')
+    image_filename = remove_eol(image_filename)
     if not is_image_file(image_filename):
         print('Profile image must be png, jpg, gif or svg format')
         return False
@@ -1371,8 +1372,8 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
         for line in snoozed_file:
             # is this the entry for the actor?
             if line.startswith(snooze_actor + ' '):
-                snoozed_time_str = \
-                    line.split(' ')[1].replace('\n', '').replace('\r', '')
+                snoozed_time_str1 = line.split(' ')[1]
+                snoozed_time_str = remove_eol(snoozed_time_str1)
                 # is there a time appended?
                 if snoozed_time_str.isdigit():
                     snoozed_time = int(snoozed_time_str)
@@ -1525,7 +1526,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         for user_path in paths:
             if user_path in handle:
                 nickname = handle.split(user_path)[1]
-                nickname = nickname.replace('\n', '').replace('\r', '')
+                nickname = remove_eol(nickname)
                 domain = handle.split(user_path)[0]
                 user_path_found = True
                 break
@@ -1556,7 +1557,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
             return None, None
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
-        domain = domain.replace('\n', '').replace('\r', '')
+        domain = remove_eol(domain)
 
     cached_webfingers = {}
     proxy_type = None

@@ -25,6 +25,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import remove_eol
 from utils import disallow_announce
 from utils import disallow_reply
 from utils import convert_published_to_local_timezone
@@ -1542,7 +1543,8 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
                     if sep not in line:
                         continue
                     clearnet = line.split(sep, 1)[0].strip()
-                    onion = line.split(sep, 1)[1].strip().replace('\n', '')
+                    onion1 = line.split(sep, 1)[1].strip()
+                    onion = remove_eol(onion1)
                     if clearnet and onion:
                         onion_domains[clearnet] = onion
                     break

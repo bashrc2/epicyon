@@ -29,6 +29,7 @@ from utils import local_actor_url
 from utils import has_actor
 from utils import has_object_string_type
 from utils import text_in_file
+from utils import remove_eol
 from posts import get_person_box
 from session import post_json
 
@@ -71,7 +72,7 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
         bookmark_index = post_filename.split('/')[-1].strip()
     else:
         bookmark_index = post_filename.strip()
-    bookmark_index = bookmark_index.replace('\n', '').replace('\r', '')
+    bookmark_index = remove_eol(bookmark_index)
     if not text_in_file(bookmark_index, bookmarks_index_filename):
         return
     index_str = ''

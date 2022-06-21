@@ -253,6 +253,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import remove_eol
 from utils import text_in_file
 from utils import is_onion_request
 from utils import is_i2p_request
@@ -4185,7 +4186,7 @@ class PubServer(BaseHTTPRequestHandler):
                         timezone = \
                             self.server.account_timezone.get(nickname)
 
-                    profile_handle = search_str.replace('\n', '').strip()
+                    profile_handle = remove_eol(search_str).strip()
 
                     # establish the session
                     curr_proxy_type = proxy_type

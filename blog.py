@@ -17,6 +17,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from utils import remove_eol
 from utils import text_in_file
 from utils import local_actor_url
 from utils import get_actor_languages_list
@@ -80,7 +81,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
         print('EX: failed to read blog ' + post_filename)
 
     for reply_post_id in lines:
-        reply_post_id = reply_post_id.replace('\n', '').replace('\r', '')
+        reply_post_id = remove_eol(reply_post_id)
         reply_post_id = reply_post_id.replace('.json', '')
         if locate_post(base_dir, nickname, domain, reply_post_id):
             reply_post_id = reply_post_id.replace('.replies', '')
@@ -99,8 +100,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
         try:
             with open(post_filename, 'w+', encoding='utf-8') as post_file:
                 for reply_post_id in lines:
-                    reply_post_id = \
-                        reply_post_id.replace('\n', '').replace('\r', '')
+                    reply_post_id = remove_eol(reply_post_id)
                     if reply_post_id not in removals:
                         post_file.write(reply_post_id + '\n')
         except OSError as ex:
@@ -158,7 +158,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
     if lines:
         replies_str = ''
         for reply_post_id in lines:
-            reply_post_id = reply_post_id.replace('\n', '').replace('\r', '')
+            reply_post_id = remove_eol(reply_post_id)
             reply_post_id = reply_post_id.replace('.json', '')
             reply_post_id = reply_post_id.replace('.replies', '')
             post_filename = acct_dir(base_dir, nickname, domain) + \

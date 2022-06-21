@@ -15,6 +15,7 @@ from utils import get_status_number
 from utils import load_json
 from utils import is_account_dir
 from utils import acct_dir
+from utils import remove_eol
 from outbox import post_message_to_outbox
 from session import create_session
 
@@ -43,7 +44,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
             date_str = line.split(' ')[0]
             if 'T' not in date_str:
                 continue
-            post_id = line.split(' ', 1)[1].replace('\n', '').replace('\r', '')
+            post_id1 = line.split(' ', 1)[1]
+            post_id = remove_eol(post_id1)
             post_filename = schedule_dir + post_id + '.json'
             if delete_schedule_post:
                 # delete extraneous scheduled posts

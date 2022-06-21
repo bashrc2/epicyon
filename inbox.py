@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import remove_eol
 from utils import text_in_file
 from utils import get_media_descriptions_from_post
 from utils import get_summary_from_post
@@ -2314,7 +2315,8 @@ def _receive_announce(recent_posts_cache: {},
               str(message_json))
     else:
         if debug:
-            print('Generated announce html ' + announce_html.replace('\n', ''))
+            announce_html2 = remove_eol(announce_html)
+            print('Generated announce html ' + announce_html2)
 
     post_json_object = download_announce(session, base_dir,
                                          http_prefix,

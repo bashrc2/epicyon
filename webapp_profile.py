@@ -30,6 +30,7 @@ from utils import get_supported_languages
 from utils import local_actor_url
 from utils import get_reply_interval_hours
 from utils import get_account_timezone
+from utils import remove_eol
 from languages import get_actor_languages
 from skills import get_skills
 from theme import get_themes_list
@@ -796,7 +797,8 @@ def html_profile(signing_priv_key_pem: str,
                           encoding='utf-8') as req_file:
                     for follower_handle in req_file:
                         if len(follower_handle) > 0:
-                            follower_handle = follower_handle.replace('\n', '')
+                            follower_handle = \
+                                remove_eol(follower_handle)
                             if '://' in follower_handle:
                                 follower_actor = follower_handle
                             else:
@@ -1751,7 +1753,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(city_filename):
         with open(city_filename, 'r', encoding='utf-8') as city_file:
-            city = city_file.read().replace('\n', '')
+            city1 = city_file.read()
+            city = remove_eol(city1)
     locations_filename = base_dir + '/custom_locations.txt'
     if not os.path.isfile(locations_filename):
         locations_filename = base_dir + '/locations.txt'

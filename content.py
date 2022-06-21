@@ -32,6 +32,7 @@ from utils import acct_dir
 from utils import is_float
 from utils import get_currencies
 from utils import remove_html
+from utils import remove_eol
 from petnames import get_pet_name
 from session import download_image
 
@@ -288,7 +289,7 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
             print('EX: unable to read switches ' + switch_words_filename)
 
     for line in rules:
-        replace_str = line.replace('\n', '').replace('\r', '')
+        replace_str = remove_eol(line)
         splitters = ('->', ':', ',', ';', '-')
         word_transform = None
         for split_str in splitters:
@@ -397,7 +398,8 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
                     line = count_str + ' ' + emoji_content
                     new_common_emoji.append(line)
             else:
-                new_common_emoji.append(line.replace('\n', ''))
+                line1 = remove_eol(line)
+                new_common_emoji.append(line1)
         if not emoji_found:
             new_common_emoji.append(str(1).zfill(16) + ' ' + emoji_content)
         new_common_emoji.sort(reverse=True)
@@ -757,7 +759,7 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                 continue
             follow_nick = follow.split('@')[0]
             if possible_nickname == follow_nick:
-                follow_str = follow.replace('\n', '').replace('\r', '')
+                follow_str = remove_eol(follow)
                 replace_domain = follow_str.split('@')[1]
                 recipient_actor = http_prefix + "://" + \
                     replace_domain + "/@" + possible_nickname
@@ -780,10 +782,10 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
             if '@' not in follow:
                 follow_ctr += 1
                 continue
-            pet = petnames[follow_ctr].replace('\n', '')
+            pet = remove_eol(petnames[follow_ctr])
             if pet:
                 if possible_nickname == pet:
-                    follow_str = follow.replace('\n', '').replace('\r', '')
+                    follow_str = remove_eol(follow)
                     replace_nickname = follow_str.split('@')[0]
                     replace_domain = follow_str.split('@')[1]
                     recipient_actor = http_prefix + "://" + \
@@ -817,7 +819,7 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
         return False
     if following:
         for follow in following:
-            if follow.replace('\n', '').replace('\r', '') != possible_handle:
+            if remove_eol(follow) != possible_handle:
                 continue
             recipient_actor = http_prefix + "://" + \
                 possible_domain + "/@" + possible_nickname

@@ -68,6 +68,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import remove_eol
 from utils import text_in_file
 from utils import remove_domain_port
 from utils import get_port_from_domain
@@ -1457,7 +1458,8 @@ def _command_options() -> None:
             with open(approve_follows_filename, 'r',
                       encoding='utf-8') as approvefile:
                 for approve in approvefile:
-                    print(approve.replace('\n', '').replace('\r', ''))
+                    approve1 = remove_eol(approve)
+                    print(approve1)
                     approve_ctr += 1
         if approve_ctr == 0:
             print('There are no follow requests pending approval.')
@@ -1488,7 +1490,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         if not argb.sendto:
@@ -1504,7 +1506,7 @@ def _command_options() -> None:
         if '@' in argb.sendto:
             to_nickname = argb.sendto.split('@')[0]
             to_domain = argb.sendto.split('@')[1]
-            to_domain = to_domain.replace('\n', '').replace('\r', '')
+            to_domain = remove_eol(to_domain)
             to_port = 443
             if ':' in to_domain:
                 to_port = get_port_from_domain(to_domain)
@@ -1583,7 +1585,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
         proxy_type = None
         if argb.tor or domain.endswith('.onion'):
             proxy_type = 'tor'
@@ -1624,7 +1626,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -1661,7 +1663,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         proxy_type = None
         if argb.tor or domain.endswith('.onion'):
@@ -1697,7 +1699,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         if not argb.nickname:
             print('Specify a nickname with the --nickname option')
@@ -1769,7 +1771,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         if not argb.nickname:
             print('Specify a nickname with the --nickname option')
@@ -1803,7 +1805,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         if not argb.nickname:
             print('Specify a nickname with the --nickname option')
@@ -1875,7 +1877,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         if not argb.nickname:
             print('Specify a nickname with the --nickname option')
@@ -1913,7 +1915,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -1952,7 +1954,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -1985,7 +1987,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2025,7 +2027,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2060,7 +2062,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2094,7 +2096,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2127,7 +2129,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2164,7 +2166,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         follow_nickname = get_nickname_from_actor(argb.follow)
         if not follow_nickname:
@@ -2212,7 +2214,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         follow_nickname = get_nickname_from_actor(argb.unfollow)
         if not follow_nickname:
@@ -2257,7 +2259,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2290,7 +2292,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2324,7 +2326,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2442,31 +2444,31 @@ def _command_options() -> None:
                 sys.exit()
             if '/users/' in argb.followers:
                 nickname = argb.followers.split('/users/')[1]
-                nickname = nickname.replace('\n', '').replace('\r', '')
+                nickname = remove_eol(nickname)
                 domain = argb.followers.split('/users/')[0]
             elif '/profile/' in argb.followers:
                 nickname = argb.followers.split('/profile/')[1]
-                nickname = nickname.replace('\n', '').replace('\r', '')
+                nickname = remove_eol(nickname)
                 domain = argb.followers.split('/profile/')[0]
             elif '/author/' in argb.followers:
                 nickname = argb.followers.split('/author/')[1]
-                nickname = nickname.replace('\n', '').replace('\r', '')
+                nickname = remove_eol(nickname)
                 domain = argb.followers.split('/author/')[0]
             elif '/channel/' in argb.followers:
                 nickname = argb.followers.split('/channel/')[1]
-                nickname = nickname.replace('\n', '').replace('\r', '')
+                nickname = remove_eol(nickname)
                 domain = argb.followers.split('/channel/')[0]
             elif '/accounts/' in argb.followers:
                 nickname = argb.followers.split('/accounts/')[1]
-                nickname = nickname.replace('\n', '').replace('\r', '')
+                nickname = remove_eol(nickname)
                 domain = argb.followers.split('/accounts/')[0]
             elif '/u/' in argb.followers:
                 nickname = argb.followers.split('/u/')[1]
-                nickname = nickname.replace('\n', '').replace('\r', '')
+                nickname = remove_eol(nickname)
                 domain = argb.followers.split('/u/')[0]
             elif '/c/' in argb.followers:
                 nickname = argb.followers.split('/c/')[1]
-                nickname = nickname.replace('\n', '').replace('\r', '')
+                nickname = remove_eol(nickname)
                 domain = argb.followers.split('/c/')[0]
         else:
             # format: @nick@domain
@@ -2480,7 +2482,7 @@ def _command_options() -> None:
                 sys.exit()
             nickname = argb.followers.split('@')[0]
             domain = argb.followers.split('@')[1]
-            domain = domain.replace('\n', '').replace('\r', '')
+            domain = remove_eol(domain)
         cached_webfingers = {}
         if argb.http or domain.endswith('.onion'):
             http_prefix = 'http'
@@ -2603,7 +2605,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
         if len(argb.password.strip()) < 8:
             print('Password should be at least 8 characters')
             sys.exit()
@@ -2652,7 +2654,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
         if len(argb.password.strip()) < 8:
             print('Password should be at least 8 characters')
             sys.exit()
@@ -2818,7 +2820,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         if not argb.skillLevelPercent:
             print('Specify a skill level in the range 0-100')
@@ -2862,7 +2864,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -2906,7 +2908,7 @@ def _command_options() -> None:
                 print('Specify a password with the --password option')
                 sys.exit()
 
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         proxy_type = None
         if argb.tor or domain.endswith('.onion'):
@@ -2965,11 +2967,11 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         if '@' in argb.block:
             blocked_domain = argb.block.split('@')[1]
-            blocked_domain = blocked_domain.replace('\n', '').replace('\r', '')
+            blocked_domain = remove_eol(blocked_domain)
             blocked_nickname = argb.block.split('@')[0]
             blocked_actor = http_prefix + '://' + blocked_domain + \
                 '/users/' + blocked_nickname
@@ -3009,7 +3011,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -3041,7 +3043,7 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         session = create_session(proxy_type)
         person_cache = {}
@@ -3073,11 +3075,11 @@ def _command_options() -> None:
             if not argb.password:
                 print('Specify a password with the --password option')
                 sys.exit()
-        argb.password = argb.password.replace('\n', '')
+        argb.password = remove_eol(argb.password)
 
         if '@' in argb.unblock:
             blocked_domain = argb.unblock.split('@')[1]
-            blocked_domain = blocked_domain.replace('\n', '').replace('\r', '')
+            blocked_domain = remove_eol(blocked_domain)
             blocked_nickname = argb.unblock.split('@')[0]
             blocked_actor = http_prefix + '://' + blocked_domain + \
                 '/users/' + blocked_nickname

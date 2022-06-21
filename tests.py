@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import remove_eol
 from utils import text_in_file
 from utils import convert_published_to_local_timezone
 from utils import convert_to_snake_case
@@ -2741,7 +2742,7 @@ def _test_follows(base_dir: str) -> None:
         domain_found = False
         for following_domain in fp_foll:
             test_domain = following_domain.split('@')[1]
-            test_domain = test_domain.replace('\n', '').replace('\r', '')
+            test_domain = remove_eol(test_domain)
             if test_domain == 'mesh.com':
                 domain_found = True
             if test_domain not in federation_list:
@@ -2755,7 +2756,7 @@ def _test_follows(base_dir: str) -> None:
         domain_found = False
         for following_domain in fp_foll:
             test_domain = following_domain.split('@')[1]
-            test_domain = test_domain.replace('\n', '').replace('\r', '')
+            test_domain = remove_eol(test_domain)
             if test_domain == 'mesh.com':
                 domain_found = True
         assert domain_found is False
@@ -2779,7 +2780,7 @@ def _test_follows(base_dir: str) -> None:
               encoding='utf-8') as fp_foll:
         for follower_domain in fp_foll:
             test_domain = follower_domain.split('@')[1]
-            test_domain = test_domain.replace('\n', '').replace('\r', '')
+            test_domain = remove_eol(test_domain)
             if test_domain not in federation_list:
                 print(test_domain)
                 assert False
@@ -4715,7 +4716,7 @@ def _get_function_call_args(name: str, lines: [], start_line_ctr: int) -> []:
             continue
         args_str += lines[line_ctr].split(')')[0]
         break
-    return args_str.replace('\n', '').replace(' ', '').split(',')
+    return remove_eol(args_str).replace(' ', '').split(',')
 
 
 def get_function_calls(name: str, lines: [], start_line_ctr: int,
@@ -7257,6 +7258,15 @@ def _test_color_contrast_value(base_dir: str) -> None:
     print('Color contrast is ok for all themes')
 
 
+def _test_remove_end_of_line():
+    print('remove_end_of_line')
+    text = 'some text\r\n'
+    expected = 'some text'
+    assert remove_eol(text) == expected
+    text = 'some text'
+    assert remove_eol(text) == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7274,6 +7284,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_remove_end_of_line()
     _test_translation_labels()
     _test_color_contrast_value(base_dir)
     _test_diff_content()
