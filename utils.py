@@ -792,7 +792,6 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
                 if data:
                     data = data.replace(domain, onion_domain)
                     data = data.replace('https:', 'http:')
-                    print('*****data: ' + data)
                 json_object = json.loads(data)
                 break
         except BaseException:
