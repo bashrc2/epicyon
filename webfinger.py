@@ -501,6 +501,7 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
 
     filename = base_dir + wf_subdir + '/' + handle + '.json'
     onionify = False
+    i2pify = False
     if onion_domain:
         if onion_domain in handle:
             handle = handle.replace(onion_domain, domain)
