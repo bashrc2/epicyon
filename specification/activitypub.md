@@ -22,7 +22,7 @@ In ActivityPub, a user is represented by "actors" via the user's accounts on ser
 -   **An `inbox`:** How they get messages from the world
 -   **An `outbox`:** How they send messages to others
 
-[An Actor with inbox and outbox](activitypub-tutorial-1.png)
+![An Actor with inbox and outbox](activitypub-tutorial-1.png)
 
 These are endpoints, or really, just URLs which are listed in the ActivityPub actor's ActivityStreams description. (More on ActivityStreams later).
 
@@ -108,7 +108,7 @@ ActivityPub uses ActivityStreams for its vocabulary. This is pretty great becaus
 
 So, okay. Alyssa wants to talk to her friends, and her friends want to talk to her! Luckily these "inbox" and "outbox" things can help us out. They both behave differently for GET and POST. Let's see how that works:
 
-[Actor with messages flowing from rest of world to inbox and from outbox to rest of world](activitypub-tutorial-2.png)
+![Actor with messages flowing from rest of world to inbox and from outbox to rest of world](activitypub-tutorial-2.png)
 
 Hey nice, so just as a recap:
 
@@ -133,7 +133,7 @@ Let's see an example! Let's say Alyssa wants to catch up with her friend, Ben Bi
 
 This is a note addressed to Ben. She POSTs it to her outbox.
 
-[Actor posting message to outbox](activitypub-tutorial-3.png)
+![Actor posting message to outbox](activitypub-tutorial-3.png)
 
 Since this is a non-activity object, the server recognizes that this is an object being newly created, and does the courtesy of wrapping it in a Create activity. (Activities sent around in ActivityPub generally follow the pattern of some activity by some actor being taken on some object. In this case the activity is a Create of a Note object, posted by a Person).
 
@@ -154,11 +154,11 @@ Since this is a non-activity object, the server recognizes that this is an objec
 
 Alyssa's server looks up Ben's ActivityStreams actor object, finds his inbox endpoint, and POSTs her object to his inbox.
 
-[Server posting to remote actor's inbox](activitypub-tutorial-4.png)
+![Server posting to remote actor's inbox](activitypub-tutorial-4.png)
 
 Technically these are two separate steps\... one is client to server communication, and one is server to server communication (federation). But, since we're using them both in this example, we can abstractly think of this as being a streamlined submission from outbox to inbox:
 
-[Note flowing from one actor's outbox to other actor's inbox](activitypub-tutorial-5.png)
+![Note flowing from one actor's outbox to other actor's inbox](activitypub-tutorial-5.png)
 
 Cool! A while later, Alyssa checks what new messages she's gotten. Her phone polls her inbox via GET, and amongst a bunch of cat videos posted by friends and photos of her nephew posted by her sister, she sees the following:
 
