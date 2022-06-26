@@ -564,5 +564,6 @@
     "Save": "Зберегти",
     "Switch to moderation view": "Перейти до режиму модерації",
     "Minimize attached images": "Мінімізуйте вкладені зображення",
-    "SHOW MEDIA": "ПОКАЗАТИ ЗМІ"
+    "SHOW MEDIA": "ПОКАЗАТИ ЗМІ",
+    "ActivityPub Specification": "Специфікація ActivityPub"
 }

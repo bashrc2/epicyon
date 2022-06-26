@@ -174,6 +174,7 @@ from webapp_utils import get_pwa_theme_colors
 from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
 from webapp_about import html_about
+from webapp_specification import html_specification
 from webapp_accesskeys import html_access_keys
 from webapp_accesskeys import load_access_keys_for_accounts
 from webapp_confirm import html_confirm_delete
@@ -4782,6 +4783,7 @@ class PubServer(BaseHTTPRequestHandler):
             links_filename = base_dir + '/accounts/links.txt'
             about_filename = base_dir + '/accounts/about.md'
             tos_filename = base_dir + '/accounts/tos.md'
+            specification_filename = base_dir + '/accounts/activitypub.md'
 
             # extract all of the text fields into a dict
             fields = \
@@ -4859,6 +4861,25 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: _links_update unable to delete ' +
                                   tos_filename)
+
+                if fields.get('editedSpecification'):
+                    specification_str = fields['editedSpecification']
+                    if not dangerous_markup(specification_str,
+                                            allow_local_network_access):
+                        try:
+                            with open(specification_filename, 'w+',
+                                      encoding='utf-8') as specificationfile:
+                                specificationfile.write(specification_str)
+                        except OSError:
+                            print('EX: unable to write specification ' +
+                                  specification_filename)
+                else:
+                    if os.path.isfile(specification_filename):
+                        try:
+                            os.remove(specification_filename)
+                        except OSError:
+                            print('EX: _links_update unable to delete ' +
+                                  specification_filename)
 
         # redirect back to the default timeline
         self._redirect_headers(actor_str + '/' + default_timeline,
@@ -16271,6 +16292,39 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'show about screen',
+                                self.server.debug)
+            return
+
+        if self.path in ('/specification', '/protocol', '/activitypub'):
+            if calling_domain.endswith('.onion'):
+                msg = \
+                    html_specification(self.server.css_cache,
+                                       self.server.base_dir, 'http',
+                                       self.server.onion_domain,
+                                       None, self.server.translate,
+                                       self.server.system_language)
+            elif calling_domain.endswith('.i2p'):
+                msg = \
+                    html_specification(self.server.css_cache,
+                                       self.server.base_dir, 'http',
+                                       self.server.i2p_domain,
+                                       None, self.server.translate,
+                                       self.server.system_language)
+            else:
+                msg = \
+                    html_specification(self.server.css_cache,
+                                       self.server.base_dir,
+                                       self.server.http_prefix,
+                                       self.server.domain_full,
+                                       self.server.onion_domain,
+                                       self.server.translate,
+                                       self.server.system_language)
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._login_headers('text/html', msglen, calling_domain)
+            self._write(msg)
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', 'show specification screen',
                                 self.server.debug)
             return
 

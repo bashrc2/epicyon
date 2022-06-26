@@ -564,5 +564,6 @@
     "Save": "Opslaan",
     "Switch to moderation view": "Overschakelen naar moderatieweergave",
     "Minimize attached images": "Bijgevoegde afbeeldingen minimaliseren",
-    "SHOW MEDIA": "TOON MEDIA"
+    "SHOW MEDIA": "TOON MEDIA",
+    "ActivityPub Specification": "ActivityPub-specificatie"
 }

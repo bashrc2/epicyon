@@ -505,7 +505,7 @@ def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
     edit_links_form += \
         '</div>'
 
-    # the admin can edit terms of service and about text
+    # the admin can edit terms of service, about and specification text
     admin_nickname = get_config_param(base_dir, 'admin')
     if admin_nickname:
         if nickname == admin_nickname:
@@ -544,6 +544,26 @@ def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
                 '  <textarea id="message" name="editedTOS" ' + \
                 'style="height:100vh" spellcheck="true" autocomplete="on">' + \
                 tos_str + '</textarea>'
+            edit_links_form += \
+                '</div>'
+
+            specification_filename = base_dir + '/accounts/activitypub.md'
+            specification_str = ''
+            if os.path.isfile(specification_filename):
+                with open(specification_filename, 'r',
+                          encoding='utf-8') as fp_specification:
+                    specification_str = fp_specification.read()
+
+            edit_links_form += \
+                '<div class="container">'
+            edit_links_form += \
+                '  ' + \
+                translate['ActivityPub Specification'] + \
+                '<br>'
+            edit_links_form += \
+                '  <textarea id="message" name="editedSpecification" ' + \
+                'style="height:1000vh" spellcheck="true" ' + \
+                'autocomplete="on">' + specification_str + '</textarea>'
             edit_links_form += \
                 '</div>'
 
