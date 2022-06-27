@@ -297,7 +297,7 @@ def markdown_to_html(markdown: str) -> str:
         for hsh, hashes in titles.items():
             if line.startswith(hashes):
                 line = line.replace(hashes, '').strip()
-                line = '<' + hsh + '>' + line + '</' + hsh + '>'
+                line = '<' + hsh + '>' + line + '</' + hsh + '>\n'
                 ctr = -1
                 break
         html_str += line
