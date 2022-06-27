@@ -18,15 +18,13 @@ ActivityPub provides two layers:
 ActivityPub implementations can implement just one of these things or both of them. However, once you've implemented one, it isn't too many steps to implement the other, and there are a lot of benefits to both (making your website part of the decentralized social web, and being able to use clients and client libraries that work across a wide variety of social websites).
 
 In ActivityPub, a user is represented by "actors" via the user's accounts on servers, sometimes also called "instances". User's accounts on different servers correspond to different actors. Every Actor has:
-
  * **An `inbox`:** How they get messages from the world
  * **An `outbox`:** How they send messages to others
-
 ![An Actor with inbox and outbox](activitypub-tutorial-1.png)
 
 These are endpoints, or really, just URLs which are listed in the ActivityPub actor's ActivityStreams description. (More on ActivityStreams later).
 
-Here's an example of the record of our friend Alyssa P. Hacker:
+Here's an example of the actor record of our friend Alyssa P. Hacker:
 
 ### Example 1
 ``` json
@@ -125,12 +123,17 @@ Let's see an example! Let's say Alyssa wants to catch up with her friend, Ben Bi
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Note",
- "to": ["https://chatty.example/users/ben/"],
- "attributedTo": "https://instancedomain/users/alyssa/",
+ "to": ["https://chatty.example/users/ben"],
+ "attributedTo": "https://instancedomain/users/alyssa",
+ "published": "2039-10-15T10:30:11Z",
+ "rejectReplies": False,
+ "mediaType": "text/html",
+ "attachment": [],
+ "summary": "Book",
  "content": "Say, did you finish reading that book I lent you?"}
 ```
 
-This is a note addressed to Ben. She POSTs it to her outbox.
+This is a note addressed to Ben. Since she doesn't want to distract him too much she includes a summary line, which is similar to an email subject line. She POSTs it to her outbox.
 
 ![Actor posting message to outbox](activitypub-tutorial-3.png)
 
@@ -140,21 +143,28 @@ Since this is a non-activity object, the server recognizes that this is an objec
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
- "id": "https://instancedomain/users/alyssa/posts/a29a6843-9feb-4c74-a7f7-081b9c9201d3",
- "to": ["https://chatty.example/users/ben/"],
- "actor": "https://instancedomain/users/alyssa/",
- "object": {"type": "Note",
-            "id": "https://instancedomain/users/alyssa/posts/49e2d03d-b53a-4c4c-a95c-94a6abf45a19",
-            "attributedTo": "https://instancedomain/users/alyssa/",
-            "to": ["https://chatty.example/users/ben/"],
-            "content": "Say, did you finish reading that book I lent you?"}}
+ "id": "https://instancedomain/users/alyssa/statuses/a29a6843/activity",
+ "to": ["https://chatty.example/users/ben"],
+ "actor": "https://instancedomain/users/alyssa",
+ "object": {
+     "type": "Note",
+     "id": "https://instancedomain/users/alyssa/statuses/49e2d03d",
+     "attributedTo": "https://instancedomain/users/alyssa",
+     "to": ["https://chatty.example/users/ben"],
+     "published": "2039-10-15T10:30:11Z",
+     "rejectReplies": False,
+     "mediaType": "text/html",
+     "attachment": [],
+     "summary": "Book",
+     "content": "Say, did you finish reading that book I lent you?"
+ }}
 ```
 
 Alyssa's server looks up Ben's ActivityStreams actor object, finds his inbox endpoint, and POSTs her object to his inbox.
 
 ![Server posting to remote actor's inbox](activitypub-tutorial-4.png)
 
-Technically these are two separate steps\... one is client to server communication, and one is server to server communication (federation). But, since we're using them both in this example, we can abstractly think of this as being a streamlined submission from outbox to inbox:
+Technically these are two separate steps... one is client to server communication, and one is server to server communication (federation). But, since we're using them both in this example, we can abstractly think of this as being a streamlined submission from outbox to inbox:
 
 ![Note flowing from one actor's outbox to other actor's inbox](activitypub-tutorial-5.png)
 
@@ -164,17 +174,22 @@ Cool! A while later, Alyssa checks what new messages she's gotten. Her phone pol
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
- "id": "https://chatty.example/users/ben/statuses/51086",
- "to": ["https://instancedomain/users/alyssa/"],
- "actor": "https://chatty.example/users/ben/",
- "object": {"type": "Note",
-            "id": "https://chatty.example/users/ben/statuses/51085",
-            "attributedTo": "https://chatty.example/users/ben/",
-            "to": ["https://instancedomain/users/alyssa/"],
-            "inReplyTo": "https://instancedomain/users/alyssa/posts/49e2d03d-b53a-4c4c-a95c-94a6abf45a19",
-            "content": "<p>Argh, yeah, sorry, I'll get it back to you tomorrow.</p>
-                        <p>I was reviewing the section on register machines,
-                           since it's been a while since I wrote one.</p>"}}
+ "id": "https://chatty.example/users/ben/statuses/51086/activity",
+ "to": ["https://instancedomain/users/alyssa"],
+ "actor": "https://chatty.example/users/ben",
+ "object": {
+     "type": "Note",
+     "id": "https://chatty.example/users/ben/statuses/51085",
+     "attributedTo": "https://chatty.example/users/ben",
+     "to": ["https://instancedomain/users/alyssa"],
+     "inReplyTo": "https://instancedomain/users/alyssa/statuses/49e2d03d",
+     "published": "2039-10-15T12:45:45Z",
+     "rejectReplies": False,
+     "mediaType": "text/html",
+     "content": "<p>Argh, yeah, sorry, I'll get it back to you tomorrow.</p>
+                 <p>I was reviewing the section on register machines,
+                 since it's been a while since I wrote one.</p>"
+}}
 ```
 
 Alyssa is relieved, and likes Ben's post:
@@ -183,7 +198,7 @@ Alyssa is relieved, and likes Ben's post:
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Like",
- "id": "https://instancedomain/users/alyssa/posts/5312e10e-5110-42e5-a09b-934882b3ecec",
+ "id": "https://instancedomain/users/alyssa/statuses/5312e10e",
  "to": ["https://chatty.example/users/ben/"],
  "actor": "https://instancedomain/users/alyssa/",
  "object": "https://chatty.example/users/ben/statuses/51086"}
@@ -197,16 +212,21 @@ Feeling happy about things, she decides to post a public message to her follower
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
- "id": "https://instancedomain/users/alyssa/posts/9282e9cc-14d0-42b3-a758-d6aeca6c876b",
- "to": ["https://instancedomain/users/alyssa/followers/",
+ "id": "https://instancedomain/users/alyssa/statuses/9282e9cc/activity",
+ "to": ["https://instancedomain/users/alyssa/followers",
         "https://www.w3.org/ns/activitystreams#Public"],
- "actor": "https://instancedomain/users/alyssa/",
- "object": {"type": "Note",
-            "id": "https://instancedomain/users/alyssa/posts/d18c55d4-8a63-4181-9745-4e6cf7938fa1",
-            "attributedTo": "https://instancedomain/users/alyssa/",
-            "to": ["https://instancedomain/users/alyssa/followers/",
-                   "https://www.w3.org/ns/activitystreams#Public"],
-            "content": "Lending books to friends is nice.  Getting them back is even nicer! :)"}}
+ "actor": "https://instancedomain/users/alyssa",
+ "object": {
+     "type": "Note",
+     "id": "https://instancedomain/users/alyssa/statuses/d18c55d4",
+     "attributedTo": "https://instancedomain/users/alyssa",
+     "to": ["https://instancedomain/users/alyssa/followers",
+            "https://www.w3.org/ns/activitystreams#Public"],
+     "published": "2039-10-15T13:11:16Z",
+     "rejectReplies": False,
+     "mediaType": "text/html",
+     "content": "Lending books to friends is nice.  Getting them back is even nicer! :)"
+}}
 ```
 
 ### 1.1 Social Web Working Group
@@ -259,7 +279,7 @@ As an example, if example.com receives the activity
 {
   "@context": "https://www.w3.org/ns/activitystreams",
   "type": "Like",
-  "actor": "https://example.net/~mallory",
+  "actor": "https://example.net/users/~mallory",
   "to": ["https://hatchat.example/sarah/",
          "https://example.com/peeps/john/"],
   "object": {
@@ -643,12 +663,12 @@ The above example could be converted to this:
 {
   "@context": "https://www.w3.org/ns/activitystreams",
   "type": "Create",
-  "id": "https://example.net/~mallory/87374",
-  "actor": "https://example.net/~mallory",
+  "id": "https://example.net/users/~mallory/87374",
+  "actor": "https://example.net/users/~mallory",
   "object": {
     "id": "https://example.com/~mallory/note/72",
     "type": "Note",
-    "attributedTo": "https://example.net/~mallory",
+    "attributedTo": "https://example.net/users/~mallory",
     "content": "This is a note",
     "published": "2015-02-10T15:04:55Z",
     "to": ["https://example.org/~john/"],
