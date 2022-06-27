@@ -471,7 +471,6 @@ A timestamp for when this actor was last changed. This can be used by followers 
                 "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n"
                                 "..."
                                 "-----END PUBLIC KEY-----\n"},
-  "summary": "Just another ActivityPub account",
   "type": "Person"
 }
 ```
