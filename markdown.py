@@ -141,8 +141,28 @@ def _markdown_replace_links(markdown: str, images: bool = False) -> str:
                 markdown_link.split(start_chars)[1].split(']')[0] + \
                 '" />'
         text = text.split(')', 1)[1]
+
     for md_link, html_link in replace_links.items():
-        markdown = markdown.replace(md_link, html_link)
+        lines = markdown.split('\n')
+        markdown = ''
+        code_section = False
+        ctr = 0
+        for line in lines:
+            if ctr > 0:
+                markdown += '\n'
+            # avoid code sections
+            if not code_section:
+                if '<code>' in line:
+                    code_section = True
+            else:
+                if '</code>' in line:
+                    code_section = False
+            if code_section:
+                markdown += line
+                ctr += 1
+                continue
+            markdown += line.replace(md_link, html_link)
+            ctr += 1
     return markdown
 
 

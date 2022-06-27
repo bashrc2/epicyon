@@ -5771,7 +5771,7 @@ def _test_markdown_to_html():
         'This is [a link](https://something.somewhere) to something.\n' + \
         'And [something else](https://cat.pic).\n' + \
         'Or ![pounce](/cat.jpg).'
-    assert markdown_to_html(markdown) == \
+    expected = \
         'This is <a href="https://something.somewhere" ' + \
         'target="_blank" rel="nofollow noopener noreferrer">' + \
         'a link</a> to something.<br>' + \
@@ -5779,6 +5779,10 @@ def _test_markdown_to_html():
         'target="_blank" rel="nofollow noopener noreferrer">' + \
         'something else</a>.<br>' + \
         'Or <img class="markdownImage" src="/cat.jpg" alt="pounce" />.'
+    result = markdown_to_html(markdown)
+    if result != expected:
+        print(result)
+    assert result == expected
 
 
 def _test_extract_text_fields_from_post():
