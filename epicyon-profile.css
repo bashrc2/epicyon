@@ -256,6 +256,10 @@ code {
     line-height: var(--code-spacing);
 }
 
+ul.md_list {
+    color: var(--main-fg-color);
+}
+
 audio {
     width: 100%;
 }

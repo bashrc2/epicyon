@@ -102,7 +102,7 @@ def _html_podcast_chapters(link_url: str,
             if chapters_html:
                 html_str = \
                     '<div class="chapters">\n' + \
-                    '  <ul>\n' + chapters_html + '  </ul>\n</div>\n'
+                    '  <u>\n' + chapters_html + '  </u>\n</div>\n'
     return html_str
 
 

@@ -1008,7 +1008,7 @@ def _get_blog_citations_html(box_name: str,
         if translate.get(translated_citations_str):
             translated_citations_str = translate[translated_citations_str]
         citations_str = '<p><b>' + translated_citations_str + ':</b></p>' + \
-            '<ul>\n' + citations_str + '</ul>\n'
+            '<u>\n' + citations_str + '</u>\n'
     return citations_str
 
 

@@ -313,7 +313,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         if citations_str:
             citations_str = '<p><b>' + translate['Citations'] + \
                 ':</b></p>' + \
-                '<ul>\n' + citations_str + '</ul>\n'
+                '<u>\n' + citations_str + '</u>\n'
 
     blog_str += '<br>\n' + citations_str
 

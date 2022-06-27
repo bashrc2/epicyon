@@ -68,13 +68,13 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '*)': '</i>)',
         '*,': '</i>,',
         '*\n': '</i>\n',
-        ' _': ' <ul>',
-        '_ ': '</ul> ',
-        '_.': '</ul>.',
-        '_:': '</ul>:',
-        '_;': '</ul>;',
-        '_,': '</ul>,',
-        '_\n': '</ul>\n',
+        ' _': ' <u>',
+        '_ ': '</u> ',
+        '_.': '</u>.',
+        '_:': '</u>:',
+        '_;': '</u>;',
+        '_,': '</u>,',
+        '_\n': '</u>\n',
         ' `': ' <em>',
         '`.': '</em>.',
         '`:': '</em>:',
@@ -100,14 +100,14 @@ def _markdown_emphasis_html(markdown: str) -> str:
         elif section_text.startswith('*'):
             section_text = section_text[1:] + '<i>'
         elif section_text.startswith('_'):
-            section_text = section_text[1:] + '<ul>'
+            section_text = section_text[1:] + '<u>'
 
         if section_text.endswith('**'):
             section_text = section_text[:len(section_text) - 2] + '</b>'
         elif section_text.endswith('*'):
             section_text = section_text[:len(section_text) - 1] + '</i>'
         elif section_text.endswith('_'):
-            section_text = section_text[:len(section_text) - 1] + '</ul>'
+            section_text = section_text[:len(section_text) - 1] + '</u>'
 
         if section_text.strip():
             markdown += section_text
@@ -259,7 +259,8 @@ def _markdown_replace_bullet_points(markdown: str) -> str:
                 for index in range(start_line, line_ctr):
                     line_text = lines[index].replace(bullet_matched, '', 1)
                     if index == start_line:
-                        lines[index] = '<ul>\n<li>' + line_text + '</li>'
+                        lines[index] = \
+                            '<ul class="md_list">\n<li>' + line_text + '</li>'
                     elif index == line_ctr - 1:
                         lines[index] = '<li>' + line_text + '</li>\n</ul>'
                     else:

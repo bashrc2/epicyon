@@ -5736,7 +5736,8 @@ def _test_markdown_to_html():
         'And some other text.'
     result = markdown_to_html(markdown)
     expected = \
-        'This is a list of points:<br>\n<ul><br>\n<li>Point 1</li><br>\n' + \
+        'This is a list of points:<br>\n<ul class="md_list">' + \
+        '<br>\n<li>Point 1</li><br>\n' + \
         '<li>Point 2</li><br>\n<li></li><br>\n</ul><br>\n' + \
         'And some other text.<br>\n'
     if result != expected:
@@ -5749,7 +5750,7 @@ def _test_markdown_to_html():
         'And some other text.'
     result = markdown_to_html(markdown)
     expected = \
-        'This is a list of points:<br>\n<ul><br>\n' + \
+        'This is a list of points:<br>\n<ul class="md_list"><br>\n' + \
         '<li><b>Point 1</b></li><br>\n' + \
         '<li><i>Point 2</i></li><br>\n<li></li><br>\n</ul><br>\n' + \
         'And some other text.<br>\n'
@@ -5767,10 +5768,11 @@ def _test_markdown_to_html():
     expected = \
         'This is a code section:<br>\n' + \
         '<code>\n' + \
-        '10 PRINT "YOLO"<br>\n' + \
-        '20 GOTO 10<br>\n' + \
+        '10 PRINT "YOLO"\n' + \
+        '20 GOTO 10\n' + \
         '</code>\n' + \
-        '<br>\nAnd some other text.<br>\n'
+        '<br>\n' + \
+        'And some other text.<br>\n'
     if result != expected:
         print(result)
     assert result == expected
@@ -5782,7 +5784,7 @@ def _test_markdown_to_html():
     assert markdown_to_html(markdown) == 'This is <i>italic</i>'
 
     markdown = 'This is _underlined_'
-    assert markdown_to_html(markdown) == 'This is <ul>underlined</ul>'
+    assert markdown_to_html(markdown) == 'This is <u>underlined</u>'
 
     markdown = 'This is **just** plain text'
     assert markdown_to_html(markdown) == 'This is <b>just</b> plain text'
