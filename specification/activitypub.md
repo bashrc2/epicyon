@@ -28,78 +28,78 @@ Here's an example of the actor record of our friend Alyssa P. Hacker:
 
 ### Example 1
 ``` json
-{'aliases': ['https://instancedomain/@Alyssa',
-             'https://instancedomain/users/Alyssa'],
- 'links': [{'href': 'https://instancedomain/@Alyssa',
-            'rel': 'http://webfinger.net/rel/profile-page',
-            'type': 'text/html'},
-           {'href': 'https://instancedomain/users/Alyssa',
-            'rel': 'self',
-            'type': 'application/activity+json'},
-           {'rel': 'http://ostatus.org/schema/1.0/subscribe',
-            'template': 'https://instancedomain/authorize_interaction?uri={uri}'}],
- 'subject': 'acct:Alyssa@instancedomain'}
-{'@context': ['https://www.w3.org/ns/activitystreams',
-              'https://w3id.org/security/v1',
-              {'Curve25519Key': 'toot:Curve25519Key',
-               'Device': 'toot:Device',
-               'Ed25519Key': 'toot:Ed25519Key',
-               'Ed25519Signature': 'toot:Ed25519Signature',
-               'EncryptedMessage': 'toot:EncryptedMessage',
-               'PropertyValue': 'schema:PropertyValue',
-               'alsoKnownAs': {'@id': 'as:alsoKnownAs', '@type': '@id'},
-               'cipherText': 'toot:cipherText',
-               'claim': {'@id': 'toot:claim', '@type': '@id'},
-               'deviceId': 'toot:deviceId',
-               'devices': {'@id': 'toot:devices', '@type': '@id'},
-               'discoverable': 'toot:discoverable',
-               'featured': {'@id': 'toot:featured', '@type': '@id'},
-               'featuredTags': {'@id': 'toot:featuredTags', '@type': '@id'},
-               'fingerprintKey': {'@id': 'toot:fingerprintKey', '@type': '@id'},
-               'focalPoint': {'@container': '@list', '@id': 'toot:focalPoint'},
-               'identityKey': {'@id': 'toot:identityKey', '@type': '@id'},
-               'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
-               'messageFranking': 'toot:messageFranking',
-               'messageType': 'toot:messageType',
-               'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
-               'publicKeyBase64': 'toot:publicKeyBase64',
-               'schema': 'http://schema.org#',
-               'suspended': 'toot:suspended',
-               'toot': 'http://joinmastodon.org/ns#',
-               'value': 'schema:value'}],
- 'alsoKnownAs': ['https://activitypubhackers/users/Alyssa'],
- 'attachment': [{'name': 'XMPP',
-                 'type': 'PropertyValue',
-                 'value': 'alyssa@chatdomain'}],
- 'devices': 'https://instancedomain/users/Alyssa/collections/devices',
- 'discoverable': True,
- 'endpoints': {'sharedInbox': 'https://instancedomain/inbox'},
- 'featured': 'https://instancedomain/users/Alyssa/collections/featured',
- 'featuredTags': 'https://instancedomain/users/Alyssa/collections/tags',
- 'followers': 'https://instancedomain/users/Alyssa/followers',
- 'following': 'https://instancedomain/users/Alyssa/following',
- 'icon': {'mediaType': 'image/png',
-          'type': 'Image',
-          'url': 'https://instancedomain/accounts/avatars/000/000/001/original/abc.png'},
- 'id': 'https://instancedomain/users/Alyssa',
- 'image': {'mediaType': 'image/jpeg',
-           'type': 'Image',
-           'url': 'https://instancedomain/accounts/headers/000/000/001/original/def.jpeg'},
- 'inbox': 'https://instancedomain/users/Alyssa/inbox',
- 'manuallyApprovesFollowers': False,
- 'name': 'Alyssa',
- 'outbox': 'https://instancedomain/users/Alyssa/outbox',
- 'preferredUsername': 'Alyssa',
- 'publicKey': {'id': 'https://instancedomain/users/Alyssa#main-key',
-               'owner': 'https://instancedomain/users/Alyssa',
-               'publicKeyPem': '-----BEGIN PUBLIC KEY-----\n'
-                               '...'
-                               '-----END PUBLIC KEY-----\n'},
- 'published': '2016-03-16T00:00:00Z',
- 'summary': '<p>Hacker in residence</p>',
- 'tag': [],
- 'type': 'Person',
- 'url': 'https://instancedomain/@Alyssa'}
+{"aliases": ["https://instancedomain/@Alyssa",
+             "https://instancedomain/users/Alyssa"],
+ "links": [{"href": "https://instancedomain/@Alyssa",
+            "rel": "http://webfinger.net/rel/profile-page",
+            "type": "text/html"},
+           {"href": "https://instancedomain/users/Alyssa",
+            "rel": "self",
+            "type": "application/activity+json"},
+           {"rel": "http://ostatus.org/schema/1.0/subscribe",
+            "template": "https://instancedomain/authorize_interaction?uri={uri}"}],
+ "subject": "acct:Alyssa@instancedomain"}
+{"@context": ["https://www.w3.org/ns/activitystreams",
+              "https://w3id.org/security/v1",
+              {"Curve25519Key": "toot:Curve25519Key",
+               "Device": "toot:Device",
+               "Ed25519Key": "toot:Ed25519Key",
+               "Ed25519Signature": "toot:Ed25519Signature",
+               "EncryptedMessage": "toot:EncryptedMessage",
+               "PropertyValue": "schema:PropertyValue",
+               "alsoKnownAs": {"@id": "as:alsoKnownAs", "@type": "@id"},
+               "cipherText": "toot:cipherText",
+               "claim": {"@id": "toot:claim", "@type": "@id"},
+               "deviceId": "toot:deviceId",
+               "devices": {"@id": "toot:devices", "@type": "@id"},
+               "discoverable": "toot:discoverable",
+               "featured": {"@id": "toot:featured", "@type": "@id"},
+               "featuredTags": {"@id": "toot:featuredTags", "@type": "@id"},
+               "fingerprintKey": {"@id": "toot:fingerprintKey", "@type": "@id"},
+               "focalPoint": {"@container": "@list", "@id": "toot:focalPoint"},
+               "identityKey": {"@id": "toot:identityKey", "@type": "@id"},
+               "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+               "messageFranking": "toot:messageFranking",
+               "messageType": "toot:messageType",
+               "movedTo": {"@id": "as:movedTo", "@type": "@id"},
+               "publicKeyBase64": "toot:publicKeyBase64",
+               "schema": "http://schema.org#",
+               "suspended": "toot:suspended",
+               "toot": "http://joinmastodon.org/ns#",
+               "value": "schema:value"}],
+ "alsoKnownAs": ["https://activitypubhackers/users/Alyssa"],
+ "attachment": [{"name": "XMPP",
+                 "type": "PropertyValue",
+                 "value": "alyssa@chatdomain"}],
+ "devices": "https://instancedomain/users/Alyssa/collections/devices",
+ "discoverable": True,
+ "endpoints": {"sharedInbox": "https://instancedomain/inbox"},
+ "featured": "https://instancedomain/users/Alyssa/collections/featured",
+ "featuredTags": "https://instancedomain/users/Alyssa/collections/tags",
+ "followers": "https://instancedomain/users/Alyssa/followers",
+ "following": "https://instancedomain/users/Alyssa/following",
+ "icon": {"mediaType": "image/png",
+          "type": "Image",
+          "url": "https://instancedomain/accounts/avatars/abc.png"},
+ "id": "https://instancedomain/users/Alyssa",
+ "image": {"mediaType": "image/jpeg",
+           "type": "Image",
+           "url": "https://instancedomain/accounts/headers/def.jpeg"},
+ "inbox": "https://instancedomain/users/Alyssa/inbox",
+ "manuallyApprovesFollowers": False,
+ "name": "Alyssa",
+ "outbox": "https://instancedomain/users/Alyssa/outbox",
+ "preferredUsername": "Alyssa",
+ "publicKey": {"id": "https://instancedomain/users/Alyssa#main-key",
+               "owner": "https://instancedomain/users/Alyssa",
+               "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n"
+                               "..."
+                               "-----END PUBLIC KEY-----\n"},
+ "published": "2016-03-16T00:00:00Z",
+ "summary": "<p>Hacker in residence</p>",
+ "tag": [],
+ "type": "Person",
+ "url": "https://instancedomain/@Alyssa"}
 ```
 
 ActivityPub uses [ActivityStreams](https://www.w3.org/TR/activitystreams-core) for its [vocabulary](https://www.w3.org/TR/activitystreams-vocabulary). This is pretty great because ActivityStreams includes all the common terms you need to represent all the activities and content flowing around a social network. It's likely that ActivityStreams already includes all the vocabulary you need, but even if it doesn't, ActivityStreams can be extended via [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD). If you know what JSON-LD is, you can take advantage of the cool linked data approaches provided by JSON-LD. If you don't, don't worry, JSON-LD documents and ActivityStreams can be understood as plain old simple JSON. (If you're going to add extensions, that's the point at which JSON-LD really helps you out).
@@ -321,7 +321,7 @@ Servers *MAY* require authorization as specified in section B.1 Authentication a
 
 ### 3.3 The source property
 
-In addition to all the properties defined by the Activity-Vocabulary, ActivityPub extends the `Object` by supplying the `source` property. The `source` property is intended to convey some sort of source from which the `content` markup was derived, as a form of provenance, or to support future editing by clients. In general, clients do the conversion from `source` to `content`, not the other way around.
+In addition to all the properties defined by the [Activity Vocabulary](https://www.w3.org/TR/activitystreams-vocabulary), ActivityPub extends the `Object` by supplying the `source` property. The `source` property is intended to convey some sort of source from which the `content` markup was derived, as a form of provenance, or to support future editing by clients. In general, clients do the conversion from `source` to `content`, not the other way around.
 
 The value of `source` is itself an object which uses its own `content` and `mediaType` fields to supply source information.
 
@@ -331,11 +331,13 @@ The value of `source` is itself an object which uses its own `content` and `medi
   "@context": ["https://www.w3.org/ns/activitystreams",
                {"@language": "en"}],
   "type": "Note",
-  "id": "http://postparty.example/statuses/2415",
+  "id": "http://postparty.example/users/username/statuses/2415",
+  "mediaType": "text/html"
   "content": "<p>I <em>really</em> like strawberries!</p>",
   "source": {
-    "content": "I *really* like strawberries!",
-    "mediaType": "text/markdown"}
+    "content": "<p>I *really* like strawberries!</p>",
+    "mediaType": "text/html"
+  }
 }
 ```
 
@@ -388,18 +390,25 @@ A link to an ActivityStreams collection of objects this actor has liked; see sec
   "@context": ["https://www.w3.org/ns/activitystreams",
                {"@language": "ja"}],
   "type": "Person",
-  "id": "https://kenzoishii.example.com/",
-  "following": "https://kenzoishii.example.com/following.json",
-  "followers": "https://kenzoishii.example.com/followers.json",
-  "liked": "https://kenzoishii.example.com/liked.json",
-  "inbox": "https://kenzoishii.example.com/inbox.json",
-  "outbox": "https://kenzoishii.example.com/feed.json",
+  "id": "https://kenzoishii.example.com/users/kenzoishii",
+  "following": "https://kenzoishii.example.com/users/kenzoishii/following",
+  "followers": "https://kenzoishii.example.com/users/kenzoishii/followers",
+  "liked": "https://kenzoishii.example.com/users/kenzoishii/liked",
+  "inbox": "https://kenzoishii.example.com/users/kenzoishii/inbox",
+  "outbox": "https://kenzoishii.example.com/users/kenzoishii/outbox",
   "preferredUsername": "kenzoishii",
   "name": "石井健蔵",
   "summary": "この方はただの例です",
-  "icon": [
-    "https://kenzoishii.example.com/image/165987aklre4"
-  ]
+  "icon": {
+    "mediaType": "image/png",
+    "type": "Image",
+    "url": "https://kenzoishii.example.com/accounts/avatars/730.png"
+  },
+  "image": {
+    "mediaType": "image/jpeg",
+    "type": "Image",
+    "url": "https://kenzoishii.example.com/accounts/headers/zhw.jpg"
+  }
 }
 ```
 
