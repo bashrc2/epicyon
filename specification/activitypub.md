@@ -251,8 +251,7 @@ It is called out whenever a portion of the specification only applies to impleme
 
 Objects are the core concept around which both ActivityStreams and ActivityPub are built. Objects are often wrapped in Activities and are contained in streams of Collections, which are themselves subclasses of Objects. See the Activity-Vocabulary document, particularly the [Core Classes](https://www.w3.org/TR/activitystreams-vocabulary/#types); ActivityPub follows the mapping of this vocabulary very closely.
 
-ActivityPub defines some terms in addition to those provided by ActivityStreams. These terms are provided in the ActivityPub [JSON-LD
-context](http://www.w3.org/TR/json-ld/#the-context) at `https://www.w3.org/ns/activitystreams`. Implementers *SHOULD* include the ActivityPub context in their object definitions. Implementers *MAY* include additional context as appropriate.
+ActivityPub defines some terms in addition to those provided by ActivityStreams. These terms are provided in the ActivityPub [JSON-LD context](http://www.w3.org/TR/json-ld/#the-context) at `https://www.w3.org/ns/activitystreams`. Implementers *SHOULD* include the ActivityPub context in their object definitions. Implementers *MAY* include additional context as appropriate.
 
 ActivityPub shares the same [URI / IRI conventions as in ActivityStreams](https://www.w3.org/TR/activitystreams-core/#urls).
 
@@ -300,8 +299,7 @@ The type of the object.
 
 ### 3.2 Retrieving objects
 
-The HTTP GET method may be dereferenced against an object's `id` property to retrieve the activity. Servers *MAY* use HTTP content
-negotiation as defined in **RFC7231** to select the type of data to return in response to a request, but *MUST* present the ActivityStreams object representation in response to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`, and *SHOULD* also present the ActivityStreams representation in response to `application/activity+json` as well. The client *MUST* specify an `Accept` header with the `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` media type in order to retrieve the activity.
+The HTTP GET method may be dereferenced against an object's `id` property to retrieve the activity. Servers *MAY* use HTTP content negotiation as defined in **RFC7231** to select the type of data to return in response to a request, but *MUST* present the ActivityStreams object representation in response to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`, and *SHOULD* also present the ActivityStreams representation in response to `application/activity+json` as well. The client *MUST* specify an `Accept` header with the `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` media type in order to retrieve the activity.
 
 Servers *MAY* implement other behavior for requests which do not comply with the above requirement. (For example, servers may implement additional legacy protocols, or may use the same URI for both HTML and ActivityStreams representations of a resource).
 
@@ -332,13 +330,11 @@ The value of `source` is itself an object which uses its own `content` and `medi
 
 In general, it's best to let a user edit their original post in the same source format they originally composed it in. But not all clients can reliably provide a nice interface for all source types, and since clients are expected to do the conversion from `source` to `content`, some clients may work with a media type that another client does not know how to work with. While a client could feasibly provide the `content` markup to be edited and ignore the source, this means that the user will lose the more desirable form of the original `source` in any future revisions. A client doing so should thus provide a minimally obtrusive warning cautioning that the original source format is not understood and is thus being ignored.
 
-For example, Alyssa P. Hacker likes to post to her ActivityPub powered blog via an Emacs client she has written, leveraging [Org mode](http://orgmode.org/). Later she switches to editing on her phone's client, which has no idea what `text/x-org` is or how to render
-it to HTML, so it provides a text box to edit the original `content` instead. A helpful warning displays above the edit area saying, "This was originally written in another markup language we don't know how to handle. If you edit, you'll lose your original source!" Alyssa decides the small typo fix isn't worth losing her nice org-mode markup and decides to make the update when she gets home.
+For example, Alyssa P. Hacker likes to post to her ActivityPub powered blog via an Emacs client she has written, leveraging [Org mode](http://orgmode.org). Later she switches to editing on her phone's client, which has no idea what `text/x-org` is or how to render it to HTML, so it provides a text box to edit the original `content` instead. A helpful warning displays above the edit area saying, "This was originally written in another markup language we don't know how to handle. If you edit, you'll lose your original source!" Alyssa decides the small typo fix isn't worth losing her nice org-mode markup and decides to make the update when she gets home.
 
 ## 4. Actors
 
-ActivityPub actors are generally one of the [ActivityStreams Actor Types](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), but they don't have to be. For example, a [Profile](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile) object might be used as an actor, or a type from an ActivityStreams extension. Actors are retrieved like any other Object in ActivityPub. Like other ActivityStreams objects, actors have an `id`, which is a URI. When entered directly into a user interface
-(for example on a login form), it is desirable to support simplified naming. For this purpose, ID normalization *SHOULD* be performed as follows:
+ActivityPub actors are generally one of the [ActivityStreams Actor Types](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), but they don't have to be. For example, a [Profile](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile) object might be used as an actor, or a type from an ActivityStreams extension. Actors are retrieved like any other Object in ActivityPub. Like other ActivityStreams objects, actors have an `id`, which is a URI. When entered directly into a user interface (for example on a login form), it is desirable to support simplified naming. For this purpose, ID normalization *SHOULD* be performed as follows:
 
  * If the entered ID is a valid URI, then it is to be used directly.
  * If it appears that the user neglected to add a scheme for a URI that would otherwise be considered valid, such as `example.org/alice/`, clients *MAY* attempt to provide a default scheme, preferably `https`.
@@ -531,8 +527,7 @@ Every object *MAY* have a `shares` collection. This is a list of all `Announce` 
 
 Activities as defined by ActivityStreams are the core mechanism for creating, modifying and sharing content within the social graph.
 
-Client to server interaction takes place through clients posting Activities to an actor's outbox. To do this, clients *MUST* discover the URL of the actor's outbox from their profile and then *MUST* make an HTTP `POST` request to this URL with the Content-Type of `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`. Servers *MAY* interpret a Content-Type or Accept header of `application/activity+json` as equivalent to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` for client-to-server interactions. The request *MUST* be authenticated with the credentials of the user to whom the outbox belongs. The body of
-the `POST` request *MUST* contain a single Activity (which *MAY* contain embedded objects), or a single non-Activity object which will be wrapped in a Create activity by the server.
+Client to server interaction takes place through clients posting Activities to an actor's outbox. To do this, clients *MUST* discover the URL of the actor's outbox from their profile and then *MUST* make an HTTP `POST` request to this URL with the Content-Type of `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`. Servers *MAY* interpret a Content-Type or Accept header of `application/activity+json` as equivalent to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` for client-to-server interactions. The request *MUST* be authenticated with the credentials of the user to whom the outbox belongs. The body of the `POST` request *MUST* contain a single Activity (which *MAY* contain embedded objects), or a single non-Activity object which will be wrapped in a Create activity by the server.
 
 ### Example 11: Submitting an Activity to the Outbox
 
@@ -574,8 +569,7 @@ HTTP caching mechanisms **RFC7234** *SHOULD* be respected when appropriate, both
 
 ### 6.1 Client Addressing
 
-**Clients** are responsible for addressing new Activities appropriately. To some extent, this is dependent upon the particular client
-implementation, but clients must be aware that the server will only forward new Activities to addressees in the `to`, `bto`, `cc`, `bcc`, and `audience` fields.
+**Clients** are responsible for addressing new Activities appropriately. To some extent, this is dependent upon the particular client implementation, but clients must be aware that the server will only forward new Activities to addressees in the `to`, `bto`, `cc`, `bcc`, and `audience` fields.
 
 The Followers Collection and/or the Public Collection are good choices for the default addressing of new Activities.
 
@@ -620,12 +614,9 @@ the like is generated by the client as:
 }
 ```
 
-The receiving outbox can then perform delivery to not only the followers of Chris (the liker), but also to Amy, and Amy's
-followers and Evan, both of whom received the original article.
+The receiving outbox can then perform delivery to not only the followers of Chris (the liker), but also to Amy, and Amy's followers and Evan, both of whom received the original article.
 
-Clients submitting the following activities to an `outbox` *MUST* provide the `object` property in the activity: `Create`, `Update`,
-`Delete`, `Follow`, `Add`, `Remove`, `Like`, `Block`, `Undo`. Additionally, clients submitting the following activities to an outbox
-*MUST* also provide the `target` property: `Add`, `Remove`.
+Clients submitting the following activities to an `outbox` *MUST* provide the `object` property in the activity: `Create`, `Update`, `Delete`, `Follow`, `Add`, `Remove`, `Like`, `Block`, `Undo`. Additionally, clients submitting the following activities to an outbox *MUST* also provide the `target` property: `Add`, `Remove`.
 
 ### 6.2 Create Activity
 
@@ -719,8 +710,7 @@ A deleted object:
 
 The `Follow` activity is used to subscribe to the activities of another actor.
 
-The side effect of receiving this in an **outbox** is that the server *SHOULD* add the `object` to the `actor`'s `following`
-Collection when and only if an `Accept` activity is subsequently received with this `Follow` activity as its object.
+The side effect of receiving this in an **outbox** is that the server *SHOULD* add the `object` to the `actor`'s `following` Collection when and only if an `Accept` activity is subsequently received with this `Follow` activity as its object.
 
 ### 6.6 Add Activity
 
@@ -731,8 +721,7 @@ Upon receipt of an `Add` activity into the **outbox**, the server *SHOULD* add t
 
 ### 6.7 Remove Activity
 
-Upon receipt of a `Remove` activity into the **outbox**, the server *SHOULD* remove the `object` from the collection specified in the
-`target` property, unless:
+Upon receipt of a `Remove` activity into the **outbox**, the server *SHOULD* remove the `object` from the collection specified in the `target` property, unless:
 
  * the `target` is not owned by the receiving server, and thus they are not authorized to update it.
  * the `object` is not allowed to be removed from the `target` collection for some other reason, at the receiving server's discretion.
@@ -751,8 +740,7 @@ Servers *SHOULD NOT* deliver Block Activities to their `object`.
 
 ### 6.10 Undo Activity
 
-The `Undo` activity is used to undo a previous activity. See the Activity Vocabulary documentation on [Inverse Activities and "Undo"](https://www.w3.org/TR/activitystreams-vocabulary/#inverse). For example, `Undo` may be used to undo a previous `Like`, `Follow`, or
-`Block`. The undo activity and the activity being undone *MUST* both have the same actor. Side effects should be undone, to the extent possible. For example, if undoing a `Like`, any counter that had been incremented previously should be decremented appropriately.
+The `Undo` activity is used to undo a previous activity. See the Activity Vocabulary documentation on [Inverse Activities and "Undo"](https://www.w3.org/TR/activitystreams-vocabulary/#inverse). For example, `Undo` may be used to undo a previous `Like`, `Follow`, or `Block`. The undo activity and the activity being undone *MUST* both have the same actor. Side effects should be undone, to the extent possible. For example, if undoing a `Like`, any counter that had been incremented previously should be decremented appropriately.
 
 There are some exceptions where there is an existing and explicit "inverse activity" which should be used instead. `Create` based activities should instead use `Delete`, and `Add` activities should use `Remove`.
 
@@ -768,8 +756,7 @@ Servers *MAY* support uploading document types to be referenced in activites, su
 
 ## 7. Server to Server Interactions
 
-Servers communicate with other servers and propagate information across the social graph by posting activities to actors' inbox endpoints. An Activity sent over the network *SHOULD* have an `id`, unless it is intended to be transient (in which case it *MAY* omit the
-`id`).
+Servers communicate with other servers and propagate information across the social graph by posting activities to actors' inbox endpoints. An Activity sent over the network *SHOULD* have an `id`, unless it is intended to be transient (in which case it *MAY* omit the `id`).
 
 `POST` requests (eg. to the inbox) *MUST* be made with a Content-Type of `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` and `GET` requests (see also section 3.2 Retrieving objects) with an Accept header of `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`. Servers *SHOULD* interpret a Content-Type or Accept header of `application/activity+json` as equivalent to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` for server-to-server interactions.
 
@@ -803,9 +790,7 @@ Servers *MUST* de-duplicate the final recipient list. Servers *MUST* also exclud
 
 What to do when there are no recipients specified is not defined, however it's recommended that if no recipients are specified the object remains completely private and access controls restrict the access to object. If the object is just sent to the "public" collection the object is not delivered to any actors but is publicly viewable in the actor's outbox.
 
-An HTTP POST request (with authorization of the submitting user) is then made to the inbox, with the Activity as the body of the
-request. This Activity is added by the receiver as an `item` in the inbox OrderedCollection. Attempts to deliver to an inbox on a
-non-federated server *SHOULD* result in a `405 Method Not Allowed` response.
+An HTTP POST request (with authorization of the submitting user) is then made to the inbox, with the Activity as the body of the request. This Activity is added by the receiver as an `item` in the inbox OrderedCollection. Attempts to deliver to an inbox on a non-federated server *SHOULD* result in a `405 Method Not Allowed` response.
 
 For federated servers performing delivery to a third party server, delivery *SHOULD* be performed asynchronously, and *SHOULD* additionally retry delivery to recipients if it fails due to network error.
 
@@ -831,8 +816,7 @@ The following section is to mitigate the "ghost replies" problem which occasiona
 
 Alyssa makes a post about her having successfully presented a paper at a conference and sends it to her followers collection, which includes her friend Ben. Ben replies to Alyssa's message congratulating her and includes her followers collection on the recipients. However, Ben has no access to see the members of Alyssa's followers collection, so his server does not forward his messages to their inbox. Without the following mechanism, if Alyssa were then to reply to Ben, her followers would see Alyssa replying to Ben without having ever seen Ben interacting. This would be very confusing!
 
-When Activities are received in the inbox, the server needs to forward these to recipients that the origin was unable to deliver them
-to. To do this, the server *MUST* target and deliver to the values of `to`, `cc`, and/or `audience` if and only if all of the following are true:
+When Activities are received in the inbox, the server needs to forward these to recipients that the origin was unable to deliver them to. To do this, the server *MUST* target and deliver to the values of `to`, `cc`, and/or `audience` if and only if all of the following are true:
 
  * This is the first time the server has seen this Activity.
  * The values of `to`, `cc`, and/or `audience` contain a Collection owned by the server.
@@ -917,8 +901,7 @@ The `Announce` activity is effectively what is known as "sharing", "reposting", 
 
 ###  7.12 Undo Activity
 
-The `Undo` activity is used to undo the side effects of previous activities. See the ActivityStreams documentation on [Inverse Activities and "Undo"](https://www.w3.org/TR/activitystreams-vocabulary/#inverse). The scope and restrictions of the `Undo` activity are the same as for the Undo activity in the context of client to server interactions, but applied to a federated
-context.
+The `Undo` activity is used to undo the side effects of previous activities. See the ActivityStreams documentation on [Inverse Activities and "Undo"](https://www.w3.org/TR/activitystreams-vocabulary/#inverse). The scope and restrictions of the `Undo` activity are the same as for the Undo activity in the context of client to server interactions, but applied to a federated context.
 
 ## A. Internationalization
 
@@ -944,11 +927,9 @@ Servers should be careful to verify that new content is really posted by the act
 
 ### B.3 Accessing localhost URIs
 
-It is often convenient while developing to test against a process running on localhost. However, permitting requests to localhost in a production client or server instance can be dangerous. Making requests to URIs on localhost which do not require authorization may
-unintentionally access or modify resources assumed to be protected to be usable by localhost-only.
+It is often convenient while developing to test against a process running on localhost. However, permitting requests to localhost in a production client or server instance can be dangerous. Making requests to URIs on localhost which do not require authorization may unintentionally access or modify resources assumed to be protected to be usable by localhost-only.
 
-If your ActivityPub server or client does permit making requests to localhost URIs for development purposes, consider making it a
-configuration option which defaults to off.
+If your ActivityPub server or client does permit making requests to localhost URIs for development purposes, consider making it a configuration option which defaults to off.
 
 ### B.4 URI Schemes
 
@@ -956,8 +937,7 @@ There are many types of URIs aside from just `http` and `https`. Some libraries 
 
 ### B.5 Recursive Objects
 
-Servers should set a limit on how deep to recurse while resolving objects, or otherwise specially handle ActivityStreams objects with
-recursive references. Failure to properly do so may result in denial-of-service security vulnerabilities.
+Servers should set a limit on how deep to recurse while resolving objects, or otherwise specially handle ActivityStreams objects with recursive references. Failure to properly do so may result in denial-of-service security vulnerabilities.
 
 ### B.6 Spam
 
@@ -976,8 +956,7 @@ Servers should ratelimit API client submissions. This serves two purposes:
 
 ### B.9 Client-to-server response denial-of-service
 
-In order to prevent a client from being overloaded by oversized Collections, servers should take care to limit the size of Collection
-pages they return to clients. Clients should still be prepared to limit the size of responses they are willing to handle in case they connect to malicious or compromised servers, for example by timing out and generating an error.
+In order to prevent a client from being overloaded by oversized Collections, servers should take care to limit the size of Collection pages they return to clients. Clients should still be prepared to limit the size of responses they are willing to handle in case they connect to malicious or compromised servers, for example by timing out and generating an error.
 
 ### B.10 Sanitizing Content
 
@@ -991,11 +970,9 @@ Any activity field being rendered for browsers (or other rich text enabled appli
 
 *This section is non-normative.*
 
-This specification comes from years of hard work and experience by a number of communities exploring the space of federation on the web. In particular, much of this specification is informed by [OStatus](https://www.w3.org/community/ostatus/wiki/Main_Page) and the
-[Pump API](https://github.com/pump-io/pump.io/blob/master/API.md), as pioneered by StatusNet (now GNU Social) and Pump.io. Both of those initiatives were the product of many developers' hard work, but more than anyone, Evan Prodromou has been a constant leader in this space, and it is unlikely that ActivityPub would exist in something resembling its current state without his hard work.
+This specification comes from years of hard work and experience by a number of communities exploring the space of federation on the web. In particular, much of this specification is informed by [OStatus](https://www.w3.org/community/ostatus/wiki/Main_Page) and the [Pump API](https://github.com/pump-io/pump.io/blob/master/API.md), as pioneered by StatusNet (now GNU Social) and Pump.io. Both of those initiatives were the product of many developers' hard work, but more than anyone, Evan Prodromou has been a constant leader in this space, and it is unlikely that ActivityPub would exist in something resembling its current state without his hard work.
 
-Erin Shepherd built the initial version of this specification, borrowed from the ideas in the [Pump
-API](https://github.com/pump-io/pump.io/blob/master/API.md) document, mostly as a complete rewrite of text, but sharing most of the primary ideas while switching from ActivityStreams 1 to ActivityStreams 2.
+Erin Shepherd built the initial version of this specification, borrowed from the ideas in the [Pump API](https://github.com/pump-io/pump.io/blob/master/API.md) document, mostly as a complete rewrite of text, but sharing most of the primary ideas while switching from ActivityStreams 1 to ActivityStreams 2.
 
 Jessica Tallon and Christine Lemmer-Webber took over as editors when the standard moved to the W3C Social Working Group and did the majority of transition from Erin Shepherd's document to its current state as ActivityPub. Much of the document was rewritten and reorganized under the long feedback process of the Social Working Group.
 
