@@ -784,7 +784,7 @@ An activity is delivered to its targets (which are actors) by first looking up t
 
 The inbox is determined by first retrieving the target actor's JSON-LD representation and then looking up the `inbox` property. If a recipient is a `Collection` or `OrderedCollection`, then the server *MUST* dereference the collection (with the user's credentials) and discover inboxes for each item in the collection. Servers *MUST* limit the number of layers of indirections through collections which will be performed, which *MAY* be one.
 
-Servers *MUST* de-duplicate the final recipient list. Servers *MUST* also exclude actors from the list which are the same as the `actor of the Activity being notified about. That is, actors shouldn't have their own activities delivered to themselves.
+Servers *MUST* de-duplicate the final recipient list. Servers *MUST* also exclude actors from the list which are the same as the `actor` of the Activity being notified about. That is, actors shouldn't have their own activities delivered to themselves.
 
 **Note: Silent and private activities**
 
