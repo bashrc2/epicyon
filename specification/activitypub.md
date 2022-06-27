@@ -429,6 +429,7 @@ A timestamp for when this actor was last changed. This can be used by followers 
     }
   ],
   "id": "https://kenzoishii.example.com/users/kenzoishii",
+  "url": "https://kenzoishii.example.com/@kenzoishii"
   "following": "https://kenzoishii.example.com/users/kenzoishii/following",
   "followers": "https://kenzoishii.example.com/users/kenzoishii/followers",
   "featured": "https://kenzoishii.example.com/users/kenzoishii/featured",
