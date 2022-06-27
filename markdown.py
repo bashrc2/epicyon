@@ -17,6 +17,7 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '**.': '</b>.',
         '**:': '</b>:',
         '**;': '</b>;',
+        '?**': '?</b>',
         '**,': '</b>,',
         '**\n': '</b>\n',
         '>**': '><b>',
@@ -25,6 +26,7 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '*<': '</i><',
         ' *': ' <i>',
         '* ': '</i> ',
+        '?*': '?</i>',
         '*.': '</i>.',
         '*:': '</i>:',
         '*;': '</i>;',
@@ -41,6 +43,7 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '`.': '</em>.',
         '`:': '</em>:',
         '`;': '</em>;',
+        '`,': '</em>;',
         '`\n': '</em>\n',
         '` ': '</em> '
     }
