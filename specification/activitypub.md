@@ -412,7 +412,7 @@ Describes the profile page background banner for this person.
 If true then followers for this account require permission to be granted. This can be an effective anti-spam or anti-harassment feature.
 
 **publicKey**
-Describes the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07** public key for this account. This can be used by other accounts on the same or other federated servers to validate the authenticity of received posts.
+Describes the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07) public key for this account. This can be used by other accounts on the same or other federated servers to validate the authenticity of received posts.
 
 **published**
 This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
