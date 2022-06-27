@@ -147,16 +147,16 @@ Since this is a non-activity object, the server recognizes that this is an objec
  "to": ["https://chatty.example/users/ben"],
  "actor": "https://instancedomain/users/alyssa",
  "object": {
-     "type": "Note",
-     "id": "https://instancedomain/users/alyssa/statuses/49e2d03d",
-     "attributedTo": "https://instancedomain/users/alyssa",
-     "to": ["https://chatty.example/users/ben"],
-     "published": "2039-10-15T10:30:11Z",
-     "rejectReplies": False,
-     "mediaType": "text/html",
-     "attachment": [],
-     "summary": "Book",
-     "content": "Say, did you finish reading that book I lent you?"
+   "type": "Note",
+   "id": "https://instancedomain/users/alyssa/statuses/49e2d03d",
+   "attributedTo": "https://instancedomain/users/alyssa",
+   "to": ["https://chatty.example/users/ben"],
+   "published": "2039-10-15T10:30:11Z",
+   "rejectReplies": False,
+   "mediaType": "text/html",
+   "attachment": [],
+   "summary": "Book",
+   "content": "Say, did you finish reading that book I lent you?"
  }}
 ```
 
@@ -178,17 +178,17 @@ Cool! A while later, Alyssa checks what new messages she's gotten. Her phone pol
  "to": ["https://instancedomain/users/alyssa"],
  "actor": "https://chatty.example/users/ben",
  "object": {
-     "type": "Note",
-     "id": "https://chatty.example/users/ben/statuses/51085",
-     "attributedTo": "https://chatty.example/users/ben",
-     "to": ["https://instancedomain/users/alyssa"],
-     "inReplyTo": "https://instancedomain/users/alyssa/statuses/49e2d03d",
-     "published": "2039-10-15T12:45:45Z",
-     "rejectReplies": False,
-     "mediaType": "text/html",
-     "content": "<p>Argh, yeah, sorry, I'll get it back to you tomorrow.</p>
-                 <p>I was reviewing the section on register machines,
-                 since it's been a while since I wrote one.</p>"
+   "type": "Note",
+   "id": "https://chatty.example/users/ben/statuses/51085",
+   "attributedTo": "https://chatty.example/users/ben",
+   "to": ["https://instancedomain/users/alyssa"],
+   "inReplyTo": "https://instancedomain/users/alyssa/statuses/49e2d03d",
+   "published": "2039-10-15T12:45:45Z",
+   "rejectReplies": False,
+   "mediaType": "text/html",
+   "content": "<p>Argh, yeah, sorry, I'll get it back to you tomorrow.</p>
+               <p>I was reviewing the section on register machines,
+               since it's been a while since I wrote one.</p>"
 }}
 ```
 
@@ -217,15 +217,15 @@ Feeling happy about things, she decides to post a public message to her follower
         "https://www.w3.org/ns/activitystreams#Public"],
  "actor": "https://instancedomain/users/alyssa",
  "object": {
-     "type": "Note",
-     "id": "https://instancedomain/users/alyssa/statuses/d18c55d4",
-     "attributedTo": "https://instancedomain/users/alyssa",
-     "to": ["https://instancedomain/users/alyssa/followers",
-            "https://www.w3.org/ns/activitystreams#Public"],
-     "published": "2039-10-15T13:11:16Z",
-     "rejectReplies": False,
-     "mediaType": "text/html",
-     "content": "Lending books to friends is nice.  Getting them back is even nicer! :)"
+   "type": "Note",
+   "id": "https://instancedomain/users/alyssa/statuses/d18c55d4",
+   "attributedTo": "https://instancedomain/users/alyssa",
+   "to": ["https://instancedomain/users/alyssa/followers",
+          "https://www.w3.org/ns/activitystreams#Public"],
+   "published": "2039-10-15T13:11:16Z",
+   "rejectReplies": False,
+   "mediaType": "text/html",
+   "content": "Lending books to friends is nice.  Getting them back is even nicer! :)"
 }}
 ```
 
@@ -280,13 +280,13 @@ As an example, if example.com receives the activity
   "@context": "https://www.w3.org/ns/activitystreams",
   "type": "Like",
   "actor": "https://example.net/users/~mallory",
-  "to": ["https://hatchat.example/sarah/",
-         "https://example.com/peeps/john/"],
+  "to": ["https://hatchat.example/sarah",
+         "https://example.com/peeps/john"],
   "object": {
     "@context": {"@language": "en"},
-    "id": "https://example.org/~alice/note/23",
+    "id": "https://example.org/users/~alice/note/23",
     "type": "Note",
-    "attributedTo": "https://example.org/~alice",
+    "attributedTo": "https://example.org/users/~alice",
     "content": "I'm a goat"
   }
 }
@@ -298,7 +298,7 @@ it should dereference the `id` both to ensure that it exists and is a valid obje
 
 All Objects in [ActivityStreams](https://www.w3.org/TR/activitystreams-core) should have unique global identifiers. ActivityPub extends this requirement; all objects distributed by the ActivityPub protocol *MUST* have unique global identifiers, unless they are intentionally transient (short lived activities that are not intended to be able to be looked up, such as some kinds of chat messages or game notifications). These identifiers must fall into one of the following groups:
 
- * Publicly dereferencable URIs, such as HTTPS URIs, with their authority belonging to that of their originating server. (Publicly facing content *SHOULD* use HTTPS URIs).
+ * Publicly dereferencable URIs, such as HTTPS URIs, with their authority belonging to that of their originating server. (Publicly facing content *SHOULD* use HTTPS URIs if the network being used does not have integrated transport security).
  * An ID explicitly specified as the JSON `null` object, which implies an anonymous object (a part of its parent context)
 
 Identifiers *MUST* be provided for activities posted in server to server communication, unless the activity is intentionally transient. However, for client to server communication, a server receiving an object posted to the outbox with no specified `id` *SHOULD* allocate an object ID in the actor's namespace and attach it to the posted object.
