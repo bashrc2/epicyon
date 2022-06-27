@@ -385,28 +385,13 @@ A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-
 **followers**
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that follow this actor; see section 5.3 Followers Collection.
 
-**endpoints**
-Contains a dictionary of any additional endpoints, and MAY contain an entry for a **shared inbox**.
-
 **discoverable**
 Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
 
 Implementations *MAY** provide the following properties:
 
-**summary**
-Profile summary or biography for this person.
-
-**featured**
-Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing "pinned" posts appearing on the account profile screen. Such posts are typically used to provide more information about the account, beyond the profile summary.
-
 **liked**
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
-
-**icon**
-Describes the avatar image for this person.
-
-**image**
-Describes the profile page background banner for this person.
 
 **manuallyApprovesFollowers**
 If true then followers for this account require permission to be granted. This can be an effective anti-spam or anti-harassment feature.
@@ -533,10 +518,16 @@ A link to the actor's "profile web page", if not equal to the value of `id`.
 The preferred "nickname" or "display name" of the actor.
 
 **summary**
-A quick summary or bio by the user about themselves.
+A quick summary or biography by the user about themselves.
+
+**featured**
+Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing "pinned" posts appearing on the account profile screen. Such posts are typically used to provide more information about the account, beyond the profile summary.
 
 **icon**
-A link to an image or an Image object which represents the user's profile picture (this may be a thumbnail).
+Describes an image which represents the user's profile picture (this may be a thumbnail).
+
+**image**
+Describes the profile page background banner for this person.
 
 **Note**
 
