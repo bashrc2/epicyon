@@ -28,78 +28,73 @@ Here's an example of the actor record of our friend Alyssa P. Hacker:
 
 ### Example 1
 ``` json
-{"aliases": ["https://instancedomain/@Alyssa",
-             "https://instancedomain/users/Alyssa"],
- "links": [{"href": "https://instancedomain/@Alyssa",
-            "rel": "http://webfinger.net/rel/profile-page",
-            "type": "text/html"},
-           {"href": "https://instancedomain/users/Alyssa",
-            "rel": "self",
-            "type": "application/activity+json"},
-           {"rel": "http://ostatus.org/schema/1.0/subscribe",
-            "template": "https://instancedomain/authorize_interaction?uri={uri}"}],
- "subject": "acct:Alyssa@instancedomain"}
-{"@context": ["https://www.w3.org/ns/activitystreams",
-              "https://w3id.org/security/v1",
-              {"Curve25519Key": "toot:Curve25519Key",
-               "Device": "toot:Device",
-               "Ed25519Key": "toot:Ed25519Key",
-               "Ed25519Signature": "toot:Ed25519Signature",
-               "EncryptedMessage": "toot:EncryptedMessage",
-               "PropertyValue": "schema:PropertyValue",
-               "alsoKnownAs": {"@id": "as:alsoKnownAs", "@type": "@id"},
-               "cipherText": "toot:cipherText",
-               "claim": {"@id": "toot:claim", "@type": "@id"},
-               "deviceId": "toot:deviceId",
-               "devices": {"@id": "toot:devices", "@type": "@id"},
-               "discoverable": "toot:discoverable",
-               "featured": {"@id": "toot:featured", "@type": "@id"},
-               "featuredTags": {"@id": "toot:featuredTags", "@type": "@id"},
-               "fingerprintKey": {"@id": "toot:fingerprintKey", "@type": "@id"},
-               "focalPoint": {"@container": "@list", "@id": "toot:focalPoint"},
-               "identityKey": {"@id": "toot:identityKey", "@type": "@id"},
-               "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
-               "messageFranking": "toot:messageFranking",
-               "messageType": "toot:messageType",
-               "movedTo": {"@id": "as:movedTo", "@type": "@id"},
-               "publicKeyBase64": "toot:publicKeyBase64",
-               "schema": "http://schema.org#",
-               "suspended": "toot:suspended",
-               "toot": "http://joinmastodon.org/ns#",
-               "value": "schema:value"}],
- "alsoKnownAs": ["https://activitypubhackers/users/Alyssa"],
- "attachment": [{"name": "XMPP",
-                 "type": "PropertyValue",
-                 "value": "alyssa@chatdomain"}],
- "devices": "https://instancedomain/users/Alyssa/collections/devices",
- "discoverable": True,
- "endpoints": {"sharedInbox": "https://instancedomain/inbox"},
- "featured": "https://instancedomain/users/Alyssa/collections/featured",
- "featuredTags": "https://instancedomain/users/Alyssa/collections/tags",
- "followers": "https://instancedomain/users/Alyssa/followers",
- "following": "https://instancedomain/users/Alyssa/following",
- "icon": {"mediaType": "image/png",
-          "type": "Image",
-          "url": "https://instancedomain/accounts/avatars/abc.png"},
- "id": "https://instancedomain/users/Alyssa",
- "image": {"mediaType": "image/jpeg",
+{
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://w3id.org/security/v1",
+    {
+      "Curve25519Key": "toot:Curve25519Key",
+      "Device": "toot:Device",
+      "Ed25519Key": "toot:Ed25519Key",
+      "Ed25519Signature": "toot:Ed25519Signature",
+      "EncryptedMessage": "toot:EncryptedMessage",
+      "PropertyValue": "schema:PropertyValue",
+      "alsoKnownAs": {"@id": "as:alsoKnownAs", "@type": "@id"},
+      "cipherText": "toot:cipherText",
+      "claim": {"@id": "toot:claim", "@type": "@id"},
+      "deviceId": "toot:deviceId",
+      "devices": {"@id": "toot:devices", "@type": "@id"},
+      "discoverable": "toot:discoverable",
+      "featured": {"@id": "toot:featured", "@type": "@id"},
+      "featuredTags": {"@id": "toot:featuredTags", "@type": "@id"},
+      "fingerprintKey": {"@id": "toot:fingerprintKey", "@type": "@id"},
+      "focalPoint": {"@container": "@list", "@id": "toot:focalPoint"},
+      "identityKey": {"@id": "toot:identityKey", "@type": "@id"},
+      "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+      "messageFranking": "toot:messageFranking",
+      "messageType": "toot:messageType",
+      "movedTo": {"@id": "as:movedTo", "@type": "@id"},
+      "publicKeyBase64": "toot:publicKeyBase64",
+      "schema": "http://schema.org#",
+      "suspended": "toot:suspended",
+      "toot": "http://joinmastodon.org/ns#",
+      "value": "schema:value"
+    }
+  ],
+  "alsoKnownAs": ["https://activitypubhackers/users/Alyssa"],
+  "attachment": [{"name": "XMPP",
+                  "type": "PropertyValue",
+                  "value": "alyssa@chatdomain"}],
+  "devices": "https://instancedomain/users/Alyssa/collections/devices",
+  "discoverable": True,
+  "endpoints": {"sharedInbox": "https://instancedomain/inbox"},
+  "featured": "https://instancedomain/users/Alyssa/collections/featured",
+  "featuredTags": "https://instancedomain/users/Alyssa/collections/tags",
+  "followers": "https://instancedomain/users/Alyssa/followers",
+  "following": "https://instancedomain/users/Alyssa/following",
+  "icon": {"mediaType": "image/png",
            "type": "Image",
-           "url": "https://instancedomain/accounts/headers/def.jpeg"},
- "inbox": "https://instancedomain/users/Alyssa/inbox",
- "manuallyApprovesFollowers": False,
- "name": "Alyssa",
- "outbox": "https://instancedomain/users/Alyssa/outbox",
- "preferredUsername": "Alyssa",
- "publicKey": {"id": "https://instancedomain/users/Alyssa#main-key",
-               "owner": "https://instancedomain/users/Alyssa",
-               "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n"
-                               "..."
-                               "-----END PUBLIC KEY-----\n"},
- "published": "2016-03-16T00:00:00Z",
- "summary": "<p>Hacker in residence</p>",
- "tag": [],
- "type": "Person",
- "url": "https://instancedomain/@Alyssa"}
+           "url": "https://instancedomain/accounts/avatars/abc.png"},
+  "id": "https://instancedomain/users/Alyssa",
+  "image": {"mediaType": "image/jpeg",
+            "type": "Image",
+            "url": "https://instancedomain/accounts/headers/def.jpeg"},
+  "inbox": "https://instancedomain/users/Alyssa/inbox",
+  "manuallyApprovesFollowers": False,
+  "name": "Alyssa",
+  "outbox": "https://instancedomain/users/Alyssa/outbox",
+  "preferredUsername": "Alyssa",
+  "publicKey": {"id": "https://instancedomain/users/Alyssa#main-key",
+                "owner": "https://instancedomain/users/Alyssa",
+                "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n"
+                                "..."
+                                "-----END PUBLIC KEY-----\n"},
+  "published": "2016-03-16T00:00:00Z",
+  "summary": "<p>Hacker in residence</p>",
+  "tag": [],
+  "type": "Person",
+  "url": "https://instancedomain/@Alyssa"
+}
 ```
 
 ActivityPub uses [ActivityStreams](https://www.w3.org/TR/activitystreams-core) for its [vocabulary](https://www.w3.org/TR/activitystreams-vocabulary). This is pretty great because ActivityStreams includes all the common terms you need to represent all the activities and content flowing around a social network. It's likely that ActivityStreams already includes all the vocabulary you need, but even if it doesn't, ActivityStreams can be extended via [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD). If you know what JSON-LD is, you can take advantage of the cool linked data approaches provided by JSON-LD. If you don't, don't worry, JSON-LD documents and ActivityStreams can be understood as plain old simple JSON. (If you're going to add extensions, that's the point at which JSON-LD really helps you out).
@@ -121,16 +116,18 @@ Let's see an example! Let's say Alyssa wants to catch up with her friend, Ben Bi
 
 ### Example 2
 ``` json
-{"@context": "https://www.w3.org/ns/activitystreams",
- "type": "Note",
- "to": ["https://chatty.example/users/ben"],
- "attributedTo": "https://instancedomain/users/alyssa",
- "published": "2039-10-15T10:30:11Z",
- "rejectReplies": False,
- "mediaType": "text/html",
- "attachment": [],
- "summary": "Book",
- "content": "Say, did you finish reading that book I lent you?"}
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Note",
+  "to": ["https://chatty.example/users/ben"],
+  "attributedTo": "https://instancedomain/users/alyssa",
+  "published": "2039-10-15T10:30:11Z",
+  "rejectReplies": False,
+  "mediaType": "text/html",
+  "attachment": [],
+  "summary": "Book",
+  "content": "Say, did you finish reading that book I lent you?"
+}
 ```
 
 This is a note addressed to Ben. Since she doesn't want to distract him too much she includes a summary line, which is similar to an email subject line. She POSTs it to her outbox.
@@ -141,23 +138,25 @@ Since this is a non-activity object, the server recognizes that this is an objec
 
 ### Example 3
 ``` json
-{"@context": "https://www.w3.org/ns/activitystreams",
- "type": "Create",
- "id": "https://instancedomain/users/alyssa/statuses/a29a6843/activity",
- "to": ["https://chatty.example/users/ben"],
- "actor": "https://instancedomain/users/alyssa",
- "object": {
-   "type": "Note",
-   "id": "https://instancedomain/users/alyssa/statuses/49e2d03d",
-   "attributedTo": "https://instancedomain/users/alyssa",
-   "to": ["https://chatty.example/users/ben"],
-   "published": "2039-10-15T10:30:11Z",
-   "rejectReplies": False,
-   "mediaType": "text/html",
-   "attachment": [],
-   "summary": "Book",
-   "content": "Say, did you finish reading that book I lent you?"
- }}
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "id": "https://instancedomain/users/alyssa/statuses/a29a6843/activity",
+  "to": ["https://chatty.example/users/ben"],
+  "actor": "https://instancedomain/users/alyssa",
+  "object": {
+    "type": "Note",
+    "id": "https://instancedomain/users/alyssa/statuses/49e2d03d",
+    "attributedTo": "https://instancedomain/users/alyssa",
+    "to": ["https://chatty.example/users/ben"],
+    "published": "2039-10-15T10:30:11Z",
+    "rejectReplies": False,
+    "mediaType": "text/html",
+    "attachment": [],
+    "summary": "Book",
+    "content": "Say, did you finish reading that book I lent you?"
+  }
+}
 ```
 
 Alyssa's server looks up Ben's [ActivityStreams actor object](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), finds his inbox endpoint, and POSTs her object to his inbox.
@@ -172,36 +171,40 @@ Cool! A while later, Alyssa checks what new messages she's gotten. Her phone pol
 
 ### Example 4
 ``` json
-{"@context": "https://www.w3.org/ns/activitystreams",
- "type": "Create",
- "id": "https://chatty.example/users/ben/statuses/51086/activity",
- "to": ["https://instancedomain/users/alyssa"],
- "actor": "https://chatty.example/users/ben",
- "object": {
-   "type": "Note",
-   "id": "https://chatty.example/users/ben/statuses/51085",
-   "attributedTo": "https://chatty.example/users/ben",
-   "to": ["https://instancedomain/users/alyssa"],
-   "inReplyTo": "https://instancedomain/users/alyssa/statuses/49e2d03d",
-   "published": "2039-10-15T12:45:45Z",
-   "rejectReplies": False,
-   "mediaType": "text/html",
-   "content": "<p>Argh, yeah, sorry, I'll get it back to you tomorrow.</p>
-               <p>I was reviewing the section on register machines,
-               since it's been a while since I wrote one.</p>"
-}}
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "id": "https://chatty.example/users/ben/statuses/51086/activity",
+  "to": ["https://instancedomain/users/alyssa"],
+  "actor": "https://chatty.example/users/ben",
+  "object": {
+    "type": "Note",
+    "id": "https://chatty.example/users/ben/statuses/51085",
+    "attributedTo": "https://chatty.example/users/ben",
+    "to": ["https://instancedomain/users/alyssa"],
+    "inReplyTo": "https://instancedomain/users/alyssa/statuses/49e2d03d",
+    "published": "2039-10-15T12:45:45Z",
+    "rejectReplies": False,
+    "mediaType": "text/html",
+    "content": "<p>Argh, yeah, sorry, I'll get it back to you tomorrow.</p>
+                <p>I was reviewing the section on register machines,
+                since it's been a while since I wrote one.</p>"
+  }
+}
 ```
 
 Alyssa is relieved, and likes Ben's post:
 
 ### Example 5
 ``` json
-{"@context": "https://www.w3.org/ns/activitystreams",
- "type": "Like",
- "id": "https://instancedomain/users/alyssa/statuses/5312e10e",
- "to": ["https://chatty.example/users/ben/"],
- "actor": "https://instancedomain/users/alyssa/",
- "object": "https://chatty.example/users/ben/statuses/51086"}
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Like",
+  "id": "https://instancedomain/users/alyssa/statuses/5312e10e",
+  "to": ["https://chatty.example/users/ben/"],
+  "actor": "https://instancedomain/users/alyssa/",
+  "object": "https://chatty.example/users/ben/statuses/51086"
+}
 ```
 
 She POSTs this message to her outbox. (Since it's an activity, her server knows it doesn't need to wrap it in a Create object).
@@ -210,23 +213,25 @@ Feeling happy about things, she decides to post a public message to her follower
 
 ### Example 6
 ``` json
-{"@context": "https://www.w3.org/ns/activitystreams",
- "type": "Create",
- "id": "https://instancedomain/users/alyssa/statuses/9282e9cc/activity",
- "to": ["https://instancedomain/users/alyssa/followers",
-        "https://www.w3.org/ns/activitystreams#Public"],
- "actor": "https://instancedomain/users/alyssa",
- "object": {
-   "type": "Note",
-   "id": "https://instancedomain/users/alyssa/statuses/d18c55d4",
-   "attributedTo": "https://instancedomain/users/alyssa",
-   "to": ["https://instancedomain/users/alyssa/followers",
-          "https://www.w3.org/ns/activitystreams#Public"],
-   "published": "2039-10-15T13:11:16Z",
-   "rejectReplies": False,
-   "mediaType": "text/html",
-   "content": "Lending books to friends is nice.  Getting them back is even nicer! :)"
-}}
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "id": "https://instancedomain/users/alyssa/statuses/9282e9cc/activity",
+  "to": ["https://instancedomain/users/alyssa/followers",
+         "https://www.w3.org/ns/activitystreams#Public"],
+  "actor": "https://instancedomain/users/alyssa",
+  "object": {
+    "type": "Note",
+    "id": "https://instancedomain/users/alyssa/statuses/d18c55d4",
+    "attributedTo": "https://instancedomain/users/alyssa",
+    "to": ["https://instancedomain/users/alyssa/followers",
+           "https://www.w3.org/ns/activitystreams#Public"],
+    "published": "2039-10-15T13:11:16Z",
+    "rejectReplies": False,
+    "mediaType": "text/html",
+    "content": "Lending books to friends is nice.  Getting them back is even nicer! :)"
+  }
+}
 ```
 
 ### 1.1 Social Web Working Group
@@ -287,6 +292,7 @@ As an example, if example.com receives the activity
     "id": "https://example.org/users/~alice/note/23",
     "type": "Note",
     "attributedTo": "https://example.org/users/~alice",
+    "mediaType": "text/html",
     "content": "I'm a goat"
   }
 }
