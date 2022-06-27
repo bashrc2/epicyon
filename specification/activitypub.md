@@ -126,8 +126,8 @@ Let's see an example! Let's say Alyssa wants to catch up with her friend, Ben Bi
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Note",
- "to": ["https://chatty.example/ben/"],
- "attributedTo": "https://instancedomain/alyssa/",
+ "to": ["https://chatty.example/users/ben/"],
+ "attributedTo": "https://instancedomain/users/alyssa/",
  "content": "Say, did you finish reading that book I lent you?"}
 ```
 
@@ -142,13 +142,13 @@ Since this is a non-activity object, the server recognizes that this is an objec
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
- "id": "https://instancedomain/alyssa/posts/a29a6843-9feb-4c74-a7f7-081b9c9201d3",
- "to": ["https://chatty.example/ben/"],
- "actor": "https://instancedomain/alyssa/",
+ "id": "https://instancedomain/users/alyssa/posts/a29a6843-9feb-4c74-a7f7-081b9c9201d3",
+ "to": ["https://chatty.example/users/ben/"],
+ "actor": "https://instancedomain/users/alyssa/",
  "object": {"type": "Note",
-            "id": "https://instancedomain/alyssa/posts/49e2d03d-b53a-4c4c-a95c-94a6abf45a19",
-            "attributedTo": "https://instancedomain/alyssa/",
-            "to": ["https://chatty.example/ben/"],
+            "id": "https://instancedomain/users/alyssa/posts/49e2d03d-b53a-4c4c-a95c-94a6abf45a19",
+            "attributedTo": "https://instancedomain/users/alyssa/",
+            "to": ["https://chatty.example/users/ben/"],
             "content": "Say, did you finish reading that book I lent you?"}}
 ```
 
@@ -167,14 +167,14 @@ Cool! A while later, Alyssa checks what new messages she's gotten. Her phone pol
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
- "id": "https://chatty.example/ben/p/51086",
- "to": ["https://instancedomain/alyssa/"],
- "actor": "https://chatty.example/ben/",
+ "id": "https://chatty.example/users/ben/statuses/51086",
+ "to": ["https://instancedomain/users/alyssa/"],
+ "actor": "https://chatty.example/users/ben/",
  "object": {"type": "Note",
-            "id": "https://chatty.example/ben/p/51085",
-            "attributedTo": "https://chatty.example/ben/",
-            "to": ["https://instancedomain/alyssa/"],
-            "inReplyTo": "https://instancedomain/alyssa/posts/49e2d03d-b53a-4c4c-a95c-94a6abf45a19",
+            "id": "https://chatty.example/users/ben/statuses/51085",
+            "attributedTo": "https://chatty.example/users/ben/",
+            "to": ["https://instancedomain/users/alyssa/"],
+            "inReplyTo": "https://instancedomain/users/alyssa/posts/49e2d03d-b53a-4c4c-a95c-94a6abf45a19",
             "content": "<p>Argh, yeah, sorry, I'll get it back to you tomorrow.</p>
                         <p>I was reviewing the section on register machines,
                            since it's been a while since I wrote one.</p>"}}
@@ -187,10 +187,10 @@ Alyssa is relieved, and likes Ben's post:
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Like",
- "id": "https://instancedomain/alyssa/posts/5312e10e-5110-42e5-a09b-934882b3ecec",
- "to": ["https://chatty.example/ben/"],
- "actor": "https://instancedomain/alyssa/",
- "object": "https://chatty.example/ben/p/51086"}
+ "id": "https://instancedomain/users/alyssa/posts/5312e10e-5110-42e5-a09b-934882b3ecec",
+ "to": ["https://chatty.example/users/ben/"],
+ "actor": "https://instancedomain/users/alyssa/",
+ "object": "https://chatty.example/users/ben/statuses/51086"}
 ```
 
 She POSTs this message to her outbox. (Since it's an activity, her server knows it doesn't need to wrap it in a Create object).
@@ -202,14 +202,14 @@ Feeling happy about things, she decides to post a public message to her follower
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
- "id": "https://instancedomain/alyssa/posts/9282e9cc-14d0-42b3-a758-d6aeca6c876b",
- "to": ["https://instancedomain/alyssa/followers/",
+ "id": "https://instancedomain/users/alyssa/posts/9282e9cc-14d0-42b3-a758-d6aeca6c876b",
+ "to": ["https://instancedomain/users/alyssa/followers/",
         "https://www.w3.org/ns/activitystreams#Public"],
- "actor": "https://instancedomain/alyssa/",
+ "actor": "https://instancedomain/users/alyssa/",
  "object": {"type": "Note",
-            "id": "https://instancedomain/alyssa/posts/d18c55d4-8a63-4181-9745-4e6cf7938fa1",
-            "attributedTo": "https://instancedomain/alyssa/",
-            "to": ["https://instancedomain/alyssa/followers/",
+            "id": "https://instancedomain/users/alyssa/posts/d18c55d4-8a63-4181-9745-4e6cf7938fa1",
+            "attributedTo": "https://instancedomain/users/alyssa/",
+            "to": ["https://instancedomain/users/alyssa/followers/",
                    "https://www.w3.org/ns/activitystreams#Public"],
             "content": "Lending books to friends is nice.  Getting them back is even nicer! :)"}}
 ```
@@ -318,7 +318,7 @@ The value of `source` is itself an object which uses its own `content` and `medi
   "@context": ["https://www.w3.org/ns/activitystreams",
                {"@language": "en"}],
   "type": "Note",
-  "id": "http://postparty.example/p/2415",
+  "id": "http://postparty.example/statuses/2415",
   "content": "<p>I <em>really</em> like strawberries!</p>",
   "source": {
     "content": "I *really* like strawberries!",
