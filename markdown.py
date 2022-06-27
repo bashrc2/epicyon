@@ -280,7 +280,7 @@ def markdown_to_html(markdown: str) -> str:
     }
     for line in lines_list:
         if ctr > 0:
-            html_str += '<br>'
+            html_str += '<br>\n'
 
         # avoid code sections
         if not code_section:
