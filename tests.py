@@ -5725,6 +5725,32 @@ def _test_markdown_to_html():
         'This is a multi-line quotation:<br>' + \
         '<blockquote><i>The first line The second line</i></blockquote>'
 
+    markdown = 'This is a list of points:\n' + \
+        ' * Point 1\n' + \
+        ' * Point 2\n\n' + \
+        'And some other text.'
+    result = markdown_to_html(markdown)
+    expected = \
+        'This is a list of points:<br><ul><br><li>Point 1</li><br>' + \
+        '<li>Point 2</li><br><li></li><br></ul><br>And some other text.<br>'
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    markdown = 'This is a code section:\n' + \
+        '``` json\n' + \
+        '10 PRINT "YOLO"\n' + \
+        '20 GOTO 10\n' + \
+        '```\n\n' + \
+        'And some other text.'
+    result = markdown_to_html(markdown)
+    expected = \
+        'This is a code section:<br><code><br>10 PRINT "YOLO"<br>' + \
+        '20 GOTO 10<br></code><br><br>And some other text.<br>'
+    if result != expected:
+        print(result)
+    assert result == expected
+
     markdown = 'This is **bold**'
     assert markdown_to_html(markdown) == 'This is <b>bold</b>'
 

@@ -6,7 +6,7 @@ The ActivityPub protocol is a decentralized social networking protocol based upo
 
 ## Status of This Document
 
-*This document is based upon the 2018 version of the []W3C ActivityPub specification](https://www.w3.org/TR/activitypub). Any alterations are for the purposes of more accurately reflecting the actual use of the protocol, with the aim of creating less confusion for new implementors.*
+*This document is based upon the 2018 version of the [W3C ActivityPub specification](https://www.w3.org/TR/activitypub). Any alterations are for the purposes of more accurately reflecting the actual use of the protocol, with the aim of creating less confusion for new implementors.*
 
 # 1. Overview
 
@@ -19,8 +19,8 @@ ActivityPub implementations can implement just one of these things or both of th
 
 In ActivityPub, a user is represented by "actors" via the user's accounts on servers. User's accounts on different servers correspond to different actors. Every Actor has:
 
--   **An `inbox`:** How they get messages from the world
--   **An `outbox`:** How they send messages to others
+ * **An `inbox`:** How they get messages from the world
+ * **An `outbox`:** How they send messages to others
 
 ![An Actor with inbox and outbox](activitypub-tutorial-1.png)
 

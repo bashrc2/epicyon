@@ -32,7 +32,13 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '_:': '</ul>:',
         '_;': '</ul>;',
         '_,': '</ul>,',
-        '_\n': '</ul>\n'
+        '_\n': '</ul>\n',
+        ' `': '<em>',
+        '`.': '</em>',
+        '`:': '</em>',
+        '`;': '</em>',
+        '`\n': '</em>',
+        '` ': '</em>'
     }
     for md_str, html in replacements.items():
         markdown = markdown.replace(md_str, html)
@@ -61,7 +67,19 @@ def _markdown_replace_quotes(markdown: str) -> str:
     lines = markdown.split('\n')
     result = ''
     prev_quote_line = None
+    code_section = False
     for line in lines:
+        # avoid code sections
+        if not code_section:
+            if '<code>' in line:
+                code_section = True
+        else:
+            if '</code>' in line:
+                code_section = False
+        if code_section:
+            result += line + '\n'
+            continue
+
         if '> ' not in line:
             result += line + '\n'
             prev_quote_line = None
@@ -128,9 +146,101 @@ def _markdown_replace_links(markdown: str, images: bool = False) -> str:
     return markdown
 
 
+def _markdown_replace_bullet_points(markdown: str) -> str:
+    """Replaces bullet points
+    """
+    lines = markdown.split('\n')
+    bullet_style = ('* ', ' * ', '- ', ' - ')
+    bullet_matched = ''
+    start_line = -1
+    line_ctr = 0
+    changed = False
+    code_section = False
+    for line in lines:
+        if not line.strip():
+            # skip blank lines
+            line_ctr += 1
+            continue
+
+        # skip over code sections
+        if not code_section:
+            if '<code>' in line:
+                code_section = True
+        else:
+            if '</code>' in line:
+                code_section = False
+        if code_section:
+            line_ctr += 1
+            continue
+
+        if not bullet_matched:
+            for test_str in bullet_style:
+                if line.startswith(test_str):
+                    bullet_matched = test_str
+                    start_line = line_ctr
+                    break
+        else:
+            if not line.startswith(bullet_matched):
+                for index in range(start_line, line_ctr):
+                    line_text = lines[index].replace(bullet_matched, '', 1)
+                    if index == start_line:
+                        lines[index] = '<ul>\n<li>' + line_text + '</li>'
+                    elif index == line_ctr - 1:
+                        lines[index] = '<li>' + line_text + '</li>\n</ul>'
+                    else:
+                        lines[index] = '<li>' + line_text + '</li>'
+                changed = True
+                start_line = -1
+                bullet_matched = ''
+        line_ctr += 1
+
+    if not changed:
+        return markdown
+
+    markdown = ''
+    for line in lines:
+        markdown += line + '\n'
+    return markdown
+
+
+def _markdown_replace_code(markdown: str) -> str:
+    """Replaces code sections within markdown
+    """
+    lines = markdown.split('\n')
+    start_line = -1
+    line_ctr = 0
+    changed = False
+    section_active = False
+    for line in lines:
+        if not line.strip():
+            # skip blank lines
+            line_ctr += 1
+            continue
+        if line.startswith('```'):
+            if not section_active:
+                start_line = line_ctr
+                section_active = True
+            else:
+                lines[start_line] = '<code>'
+                lines[line_ctr] = '</code>'
+                section_active = False
+                changed = True
+        line_ctr += 1
+
+    if not changed:
+        return markdown
+
+    markdown = ''
+    for line in lines:
+        markdown += line + '\n'
+    return markdown
+
+
 def markdown_to_html(markdown: str) -> str:
     """Converts markdown formatted text to html
     """
+    markdown = _markdown_replace_code(markdown)
+    markdown = _markdown_replace_bullet_points(markdown)
     markdown = _markdown_replace_quotes(markdown)
     markdown = _markdown_emphasis_html(markdown)
     markdown = _markdown_replace_links(markdown, True)
@@ -140,6 +250,7 @@ def markdown_to_html(markdown: str) -> str:
     lines_list = markdown.split('\n')
     html_str = ''
     ctr = 0
+    code_section = False
     titles = {
         "h5": '#####',
         "h4": '####',
@@ -150,6 +261,19 @@ def markdown_to_html(markdown: str) -> str:
     for line in lines_list:
         if ctr > 0:
             html_str += '<br>'
+
+        # avoid code sections
+        if not code_section:
+            if '<code>' in line:
+                code_section = True
+        else:
+            if '</code>' in line:
+                code_section = False
+        if code_section:
+            html_str += line
+            ctr += 1
+            continue
+
         for hsh, hashes in titles.items():
             if line.startswith(hashes):
                 line = line.replace(hashes, '').strip()
