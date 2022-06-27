@@ -1,4 +1,4 @@
-# ActivityPub
+# ActivityPub Protocol Specification
 
 ## Abstract
 
