@@ -122,7 +122,6 @@ Of course, if that last one (GET'ing from someone's outbox) was the only way to 
 Let's see an example! Let's say Alyssa wants to catch up with her friend, Ben Bitdiddle. She lent him a book recently and she wants to make sure he returns it to her. Here's the message she composes, as an ActivityStreams object:
 
 ### Example 2
-
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Note",
@@ -138,7 +137,6 @@ This is a note addressed to Ben. She POSTs it to her outbox.
 Since this is a non-activity object, the server recognizes that this is an object being newly created, and does the courtesy of wrapping it in a Create activity. (Activities sent around in ActivityPub generally follow the pattern of some activity by some actor being taken on some object. In this case the activity is a Create of a Note object, posted by a Person).
 
 ### Example 3
-
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
@@ -163,7 +161,6 @@ Technically these are two separate steps\... one is client to server communicati
 Cool! A while later, Alyssa checks what new messages she's gotten. Her phone polls her inbox via GET, and amongst a bunch of cat videos posted by friends and photos of her nephew posted by her sister, she sees the following:
 
 ### Example 4
-
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
@@ -183,7 +180,6 @@ Cool! A while later, Alyssa checks what new messages she's gotten. Her phone pol
 Alyssa is relieved, and likes Ben's post:
 
 ### Example 5
-
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Like",
@@ -198,7 +194,6 @@ She POSTs this message to her outbox. (Since it's an activity, her server knows 
 Feeling happy about things, she decides to post a public message to her followers. Soon the following message is blasted to all the members of her followers collection, and since it has the special Public group addressed, is generally readable by anyone.
 
 ### Example 6
-
 ``` json
 {"@context": "https://www.w3.org/ns/activitystreams",
  "type": "Create",
@@ -260,7 +255,6 @@ Servers *SHOULD* validate the content they receive to avoid content spoofing att
 As an example, if example.com receives the activity
 
 ### Example 7
-
 ``` json
 {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -312,7 +306,6 @@ In addition to all the properties defined by the Activity-Vocabulary, ActivityPu
 The value of `source` is itself an object which uses its own `content` and `mediaType` fields to supply source information.
 
 ### Example 8
-
 ``` json
 {
   "@context": ["https://www.w3.org/ns/activitystreams",
@@ -370,7 +363,6 @@ Implementations *MAY* provide the following properties:
 A link to an ActivityStreams collection of objects this actor has liked; see section 5.5 Liked Collection.
 
 ### Example 9
-
 ``` json
 {
   "@context": ["https://www.w3.org/ns/activitystreams",
@@ -493,7 +485,6 @@ Every actor *MAY* have a `liked` collection. This is a list of every object from
 In addition to ActivityStreams collections and objects, Activities may additionally be addressed to the special "public" collection, with the identifier `https://www.w3.org/ns/activitystreams#Public`. For example:
 
 ### Example 10
-
 ``` json
 {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -530,7 +521,6 @@ Activities as defined by ActivityStreams are the core mechanism for creating, mo
 Client to server interaction takes place through clients posting Activities to an actor's outbox. To do this, clients *MUST* discover the URL of the actor's outbox from their profile and then *MUST* make an HTTP `POST` request to this URL with the Content-Type of `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`. Servers *MAY* interpret a Content-Type or Accept header of `application/activity+json` as equivalent to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` for client-to-server interactions. The request *MUST* be authenticated with the credentials of the user to whom the outbox belongs. The body of the `POST` request *MUST* contain a single Activity (which *MAY* contain embedded objects), or a single non-Activity object which will be wrapped in a Create activity by the server.
 
 ### Example 11: Submitting an Activity to the Outbox
-
 ``` json
 POST /outbox/ HTTP/1.1
 Host: dustycloud.org
@@ -553,7 +543,6 @@ Content-Type: application/ld+json; profile="https://www.w3.org/ns/activitystream
 If an Activity is submitted with a value in the `id` property, servers *MUST* ignore this and generate a new `id` for the Activity. Servers *MUST* return a `201 Created` HTTP code, and unless the activity is transient, *MUST* include the new `id` in the `Location` header.
 
 ### Example 12: Outbox response to submitted Activity
-
 ``` http
 HTTP/1.1 201 Created
 Location: https://dustycloud.org/likes/345
@@ -580,7 +569,6 @@ Clients *MAY* give the user the chance to amend this addressing in the UI.
 For example, when Chris likes the following article by Amy:
 
 ### Example 13: An Article
-
 ``` json
 {
   "@context": ["https://www.w3.org/ns/activitystreams",
@@ -598,7 +586,6 @@ For example, when Chris likes the following article by Amy:
 the like is generated by the client as:
 
 ### Example 14: A Like of the Article
-
 ``` json
 {
   "@context": ["https://www.w3.org/ns/activitystreams",
@@ -637,7 +624,6 @@ The `Location` value returned by the server should be the URL of the new Create 
 Any `to`, `bto`, `cc`, `bcc`, and `audience` properties specified on the object *MUST* be copied over to the new Create activity by the server.
 
 ### Example 15: Object with audience targeting
-
 ``` json
 {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -653,7 +639,6 @@ Any `to`, `bto`, `cc`, `bcc`, and `audience` properties specified on the object 
 The above example could be converted to this:
 
 ### Example 16: Create Activity wrapper generated by the server
-
 ``` json
 {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -694,7 +679,6 @@ The `Delete` activity is used to delete an already existing object. The side eff
 A deleted object:
 
 ### Example 17
-
 ``` json
 {
   "@context": "https://www.w3.org/ns/activitystreams",
