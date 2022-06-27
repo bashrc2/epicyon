@@ -19,6 +19,10 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '**;': '</b>;',
         '**,': '</b>,',
         '**\n': '</b>\n',
+        '>**': '><b>',
+        '**<': '</b><',
+        '>*': '><i>',
+        '*<': '</i><',
         ' *': ' <i>',
         '* ': '</i> ',
         '*.': '</i>.',
@@ -302,4 +306,8 @@ def markdown_to_html(markdown: str) -> str:
                 break
         html_str += line
         ctr += 1
+
+    html_str = html_str.replace('<code><br>', '<code>')
+    html_str = html_str.replace('</code><br>', '</code>')
+
     return html_str
