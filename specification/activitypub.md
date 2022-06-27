@@ -371,38 +371,38 @@ ActivityPub does not dictate a specific relationship between "users" and Actors;
 
 Actor objects *MUST* have, in addition to the properties mandated by section 3.1 Object Identifiers, the following properties:
 
-**inbox**
+#### 4.1.1 inbox
 A reference to an ActivityStreams [`OrderedCollection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages received by the actor; see section 5.2 Inbox.
 
-**outbox**
+#### 4.1.2 outbox
 An ActivityStreams [`OrderedCollection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages produced by the actor; see section 5.1 Outbox.
 
 Implementations *SHOULD*, in addition, provide the following properties:
 
-**following**
+#### 4.1.3 following
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that this actor is following; see section 5.4 Following Collection
 
-**followers**
+#### 4.1.4 followers
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that follow this actor; see section 5.3 Followers Collection.
 
-**discoverable**
+#### 4.1.5 discoverable
 Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
 
 Implementations *MAY** provide the following properties:
 
-**liked**
+#### 4.1.6 liked
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
 
-**manuallyApprovesFollowers**
+#### 4.1.7 manuallyApprovesFollowers
 If true then followers for this account require permission to be granted. This can be an effective anti-spam or anti-harassment feature.
 
-**publicKey**
+#### 4.1.8 publicKey
 Describes the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07) public key for this account. This can be used by other accounts on the same or other federated servers to validate the authenticity of received posts.
 
-**published**
+#### 4.1.9 published
 This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
 
-**updated**
+#### 4.1.10 updated
 A timestamp for when this actor was last changed. This can be used by followers to update their actor caches.
 
 ### Example 9
@@ -477,13 +477,13 @@ A timestamp for when this actor was last changed. This can be used by followers 
 
 Implementations *MAY*, in addition, provide the following properties:
 
-**streams**
+#### 4.1.11 streams
 A list of supplementary Collections which may be of interest.
 
-**preferredUsername**
+#### 4.1.12 preferredUsername
 A short username which may be used to refer to the actor, with no uniqueness guarantees.
 
-**endpoints**
+#### 4.1.13 endpoints
 A json object which maps additional (typically server/domain-wide) endpoints which may be useful either for this actor or someone referencing this actor. This mapping may be nested inside the actor document as the value or may be a link to a JSON-LD document with these properties.
 
 The `endpoints` mapping *MAY* include the following properties:
@@ -510,27 +510,27 @@ An optional endpoint used for wide delivery of publicly addressed activities and
 
 As the upstream vocabulary for ActivityPub, any applicable [ActivityStreams](https://www.w3.org/TR/activitystreams-core) property may be used on ActivityPub Actors. Some ActivityStreams properties are particularly worth highlighting to demonstrate how they are used in ActivityPub implementations.
 
-**url**
+#### 4.1.14 url
 A link to the actor's "profile web page", if not equal to the value of `id`.
 
-**name**
+#### 4.1.15 name
 The preferred "nickname" or "display name" of the actor.
 
-**summary**
+#### 4.1.16 summary
 A quick summary or biography by the user about themselves.
-
-**featured**
-Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing "pinned" posts appearing on the account profile screen. Such posts are typically used to provide more information about the account, beyond the profile summary.
-
-**icon**
-Describes an image which represents the user's profile picture (this may be a thumbnail).
-
-**image**
-Describes the profile page background banner for this person.
 
 **Note**
 
 Properties containing natural language values, such as `name`, `preferredUsername`, or `summary`, make use of [natural language support defined in ActivityStreams](https://www.w3.org/TR/activitystreams-core/#naturalLanguageValues).
+
+#### 4.1.17 featured
+Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing "pinned" posts appearing on the account profile screen. Such posts are typically used to provide more information about the account, beyond the profile summary.
+
+#### 4.1.18 icon
+Describes an image which represents the user's profile picture (this may be a thumbnail).
+
+#### 4.1.19 image
+Describes the profile page background banner for this person.
 
 ## 5. Collections
 
