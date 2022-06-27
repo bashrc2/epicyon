@@ -89,7 +89,7 @@ Here's an example of the record of our friend Alyssa P. Hacker:
            'url': 'https://instancedomain/accounts/headers/000/000/001/original/def.jpeg'},
  'inbox': 'https://instancedomain/users/Alyssa/inbox',
  'manuallyApprovesFollowers': False,
- 'name': 'Eugen',
+ 'name': 'Alyssa',
  'outbox': 'https://instancedomain/users/Alyssa/outbox',
  'preferredUsername': 'Alyssa',
  'publicKey': {'id': 'https://instancedomain/users/Alyssa#main-key',
