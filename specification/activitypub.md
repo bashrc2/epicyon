@@ -2,7 +2,7 @@
 
 ## Abstract
 
-The ActivityPub protocol is a decentralized social networking protocol based upon the ActivityStreams 2.0 data format. It provides a client to server API for creating, updating and deleting content, as well as a federated server to server API for delivering notifications and content.
+The ActivityPub protocol is a decentralized social networking protocol based upon the [ActivityStreams 2.0](https://www.w3.org/TR/activitystreams-core) data format. It provides a client to server API for creating, updating and deleting content, as well as a federated server to server API for delivering notifications and content.
 
 ## Status of This Document
 
@@ -22,7 +22,7 @@ In ActivityPub, a user is represented by "actors" via the user's accounts on ser
  * **An `outbox`:** How they send messages to others
 ![An Actor with inbox and outbox](activitypub-tutorial-1.png)
 
-These are endpoints, or really, just URLs which are listed in the ActivityPub actor's ActivityStreams description. (More on ActivityStreams later).
+These are endpoints, or really, just URLs which are listed in the ActivityPub actor's ActivityStreams description. (More on [ActivityStreams](https://www.w3.org/TR/activitystreams-core) later).
 
 Here's an example of the actor record of our friend Alyssa P. Hacker:
 
@@ -102,9 +102,9 @@ Here's an example of the actor record of our friend Alyssa P. Hacker:
  'url': 'https://instancedomain/@Alyssa'}
 ```
 
-ActivityPub uses ActivityStreams for its vocabulary. This is pretty great because ActivityStreams includes all the common terms you need to represent all the activities and content flowing around a social network. It's likely that ActivityStreams already includes all the vocabulary you need, but even if it doesn't, ActivityStreams can be extended via JSON-LD. If you know what JSON-LD is, you can take advantage of the cool linked data approaches provided by JSON-LD. If you don't, don't worry, JSON-LD documents and ActivityStreams can be understood as plain old simple JSON. (If you're going to add extensions, that's the point at which JSON-LD really helps you out).
+ActivityPub uses [ActivityStreams](https://www.w3.org/TR/activitystreams-core) for its [vocabulary](https://www.w3.org/TR/activitystreams-vocabulary). This is pretty great because ActivityStreams includes all the common terms you need to represent all the activities and content flowing around a social network. It's likely that ActivityStreams already includes all the vocabulary you need, but even if it doesn't, ActivityStreams can be extended via [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD). If you know what JSON-LD is, you can take advantage of the cool linked data approaches provided by JSON-LD. If you don't, don't worry, JSON-LD documents and ActivityStreams can be understood as plain old simple JSON. (If you're going to add extensions, that's the point at which JSON-LD really helps you out).
 
-So, okay. Alyssa wants to talk to her friends, and her friends want to talk to her! Luckily these "inbox" and "outbox" things can help us out. They both behave differently for GET and POST. Let's see how that works:
+So, okay. Alyssa wants to talk to her friends, and her friends want to talk to her! Luckily these "inbox" and "outbox" things can help us out. They both behave differently for [GET and POST](https://www.w3schools.com/tags/ref_httpmethods.asp). Let's see how that works:
 
 ![Actor with messages flowing from rest of world to inbox and from outbox to rest of world](activitypub-tutorial-2.png)
 
@@ -117,7 +117,7 @@ Hey nice, so just as a recap:
 
 Of course, if that last one (GET'ing from someone's outbox) was the only way to see what people have sent, this wouldn't be a very efficient federation protocol! Indeed, federation happens usually by servers posting messages sent by actors to actors on other servers' inboxes.
 
-Let's see an example! Let's say Alyssa wants to catch up with her friend, Ben Bitdiddle. She lent him a book recently and she wants to make sure he returns it to her. Here's the message she composes, as an ActivityStreams object:
+Let's see an example! Let's say Alyssa wants to catch up with her friend, Ben Bitdiddle. She lent him a book recently and she wants to make sure he returns it to her. Here's the message she composes, as an [ActivityStreams](https://www.w3.org/TR/activitystreams-core) object:
 
 ### Example 2
 ``` json
@@ -160,11 +160,11 @@ Since this is a non-activity object, the server recognizes that this is an objec
  }}
 ```
 
-Alyssa's server looks up Ben's ActivityStreams actor object, finds his inbox endpoint, and POSTs her object to his inbox.
+Alyssa's server looks up Ben's [ActivityStreams actor object](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), finds his inbox endpoint, and POSTs her object to his inbox.
 
 ![Server posting to remote actor's inbox](activitypub-tutorial-4.png)
 
-Technically these are two separate steps... one is client to server communication, and one is server to server communication (federation). But, since we're using them both in this example, we can abstractly think of this as being a streamlined submission from outbox to inbox:
+Technically these are two separate steps... one is **client to server** communication, and one is **server to server** communication (federation). But, since we're using them both in this example, we can abstractly think of this as being a streamlined submission from outbox to inbox:
 
 ![Note flowing from one actor's outbox to other actor's inbox](activitypub-tutorial-5.png)
 
@@ -244,7 +244,7 @@ The key words *MAY*, *MUST*, *MUST NOT*, *SHOULD*, and *SHOULD NOT* are to be in
 This specification defines two closely related and interacting protocols:
 
 **A client to server protocol, or "Social API"**
-This protocol permits a client to act *on behalf* of a user. For example, this protocol is used by a mobile phone application to interact with a social stream of the user's actor.
+This protocol permits a client to act *on behalf* of a user. For example, this protocol is used by a mobile phone or laptop application to interact with a social stream of the user's actor.
 
 **A server to server protocol, or "Federation Protocol"**
 This protocol is used to distribute activities between actors on different servers/instances, tying them into the same social graph.
@@ -254,19 +254,19 @@ The ActivityPub specification is designed so that once either of these protocols
 **ActivityPub conformant Client**
 This designation applies to any implementation of the entirety of the client portion of the client to server protocol.
 
-**ActivityPub conformant Server / Instance**
+**ActivityPub conformant Server/Instance**
 This designation applies to any implementation of the entirety of the server portion of the client to server protocol.
 
-**ActivityPub conformant Federated Server / Instance**
+**ActivityPub conformant Federated Server/Instance**
 This designation applies to any implementation of the entirety of the federation protocols.
 
 It is called out whenever a portion of the specification only applies to implementation of the federation protocol. In addition, whenever requirements are specified, it is called out whether they apply to the client or server (for the client-to-server protocol) or whether referring to a sending or receiving server in the server-to-server protocol.
 
 ## 3. Objects
 
-Objects are the core concept around which both ActivityStreams and ActivityPub are built. Objects are often wrapped in Activities and are contained in streams of Collections, which are themselves subclasses of Objects. See the Activity-Vocabulary document, particularly the [Core Classes](https://www.w3.org/TR/activitystreams-vocabulary/#types); ActivityPub follows the mapping of this vocabulary very closely.
+Objects are the core concept around which both [ActivityStreams](https://www.w3.org/TR/activitystreams-core) and ActivityPub are built. Objects are often wrapped in Activities and are contained in streams of Collections, which are themselves subclasses of Objects. See the Activity-Vocabulary document, particularly the [Core Classes](https://www.w3.org/TR/activitystreams-vocabulary/#types); ActivityPub follows the mapping of this vocabulary very closely.
 
-ActivityPub defines some terms in addition to those provided by ActivityStreams. These terms are provided in the ActivityPub [JSON-LD context](http://www.w3.org/TR/json-ld/#the-context) at `https://www.w3.org/ns/activitystreams`. Implementers *SHOULD* include the ActivityPub context in their object definitions. Implementers *MAY* include additional context as appropriate.
+ActivityPub defines some terms in addition to those provided by [ActivityStreams](https://www.w3.org/TR/activitystreams-core). These terms are provided in the ActivityPub [JSON-LD context](http://www.w3.org/TR/json-ld/#the-context) at `https://www.w3.org/ns/activitystreams`. Implementers *SHOULD* include the ActivityPub context in their object definitions. Implementers *MAY* include additional context as appropriate.
 
 ActivityPub shares the same [URI / IRI conventions as in ActivityStreams](https://www.w3.org/TR/activitystreams-core/#urls).
 
@@ -296,7 +296,7 @@ it should dereference the `id` both to ensure that it exists and is a valid obje
 
 ### 3.1 Object Identifiers
 
-All Objects in ActivityStreams should have unique global identifiers. ActivityPub extends this requirement; all objects distributed by the ActivityPub protocol *MUST* have unique global identifiers, unless they are intentionally transient (short lived activities that are not intended to be able to be looked up, such as some kinds of chat messages or game notifications). These identifiers must fall into one of the following groups:
+All Objects in [ActivityStreams](https://www.w3.org/TR/activitystreams-core) should have unique global identifiers. ActivityPub extends this requirement; all objects distributed by the ActivityPub protocol *MUST* have unique global identifiers, unless they are intentionally transient (short lived activities that are not intended to be able to be looked up, such as some kinds of chat messages or game notifications). These identifiers must fall into one of the following groups:
 
  * Publicly dereferencable URIs, such as HTTPS URIs, with their authority belonging to that of their originating server. (Publicly facing content *SHOULD* use HTTPS URIs).
  * An ID explicitly specified as the JSON `null` object, which implies an anonymous object (a part of its parent context)
@@ -313,9 +313,9 @@ The type of the object.
 
 ### 3.2 Retrieving objects
 
-The HTTP GET method may be dereferenced against an object's `id` property to retrieve the activity. Servers *MAY* use HTTP content negotiation as defined in [RFC7231](https://datatracker.ietf.org/doc/html/rfc7231) to select the type of data to return in response to a request, but *MUST* present the ActivityStreams object representation in response to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`, and *SHOULD* also present the ActivityStreams representation in response to `application/activity+json` as well. The client *MUST* specify an `Accept` header with the `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` media type in order to retrieve the activity.
+The HTTP GET method may be dereferenced against an object's `id` property to retrieve the activity. Servers *MAY* use HTTP content negotiation as defined in [RFC7231](https://datatracker.ietf.org/doc/html/rfc7231) to select the type of data to return in response to a request, but *MUST* present the [ActivityStreams](https://www.w3.org/TR/activitystreams-core) object representation in response to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`, and *SHOULD* also present the [ActivityStreams](https://www.w3.org/TR/activitystreams-core) representation in response to `application/activity+json` as well. The client *MUST* specify an `Accept` header with the `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` media type in order to retrieve the activity.
 
-Servers *MAY* implement other behavior for requests which do not comply with the above requirement. (For example, servers may implement additional legacy protocols, or may use the same URI for both HTML and ActivityStreams representations of a resource).
+Servers *MAY* implement other behavior for requests which do not comply with the above requirement. (For example, servers may implement additional legacy protocols, or may use the same URI for both HTML and [ActivityStreams](https://www.w3.org/TR/activitystreams-core) representations of a resource).
 
 Servers *MAY* require authorization as specified in section B.1 Authentication and Authorization, and may additionally implement their own authorization rules. Servers *SHOULD* fail requests which do not pass their authorization checks with the appropriate HTTP error code, or the 403 Forbidden error code where the existence of the object is considered private. An origin server which does not wish to disclose the existence of a private target *MAY* instead respond with a status code of 404 Not Found.
 
@@ -347,7 +347,7 @@ For example, Alyssa P. Hacker likes to post to her ActivityPub powered blog via 
 
 ## 4. Actors
 
-ActivityPub actors are generally one of the [ActivityStreams Actor Types](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), but they don't have to be. For example, a [Profile](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile) object might be used as an actor, or a type from an ActivityStreams extension. Actors are retrieved like any other Object in ActivityPub. Like other ActivityStreams objects, actors have an `id`, which is a URI. When entered directly into a user interface (for example on a login form), it is desirable to support simplified naming. For this purpose, ID normalization *SHOULD* be performed as follows:
+ActivityPub actors are generally one of the [ActivityStreams Actor Types](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), but they don't have to be. For example, a [Profile](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile) object might be used as an actor, or a type from an [ActivityStreams](https://www.w3.org/TR/activitystreams-core) extension. Actors are retrieved like any other Object in ActivityPub. Like other [ActivityStreams objects](https://www.w3.org/TR/activitystreams-vocabulary/#object-types), actors have an `id`, which is a URI. When entered directly into a user interface (for example on a login form), it is desirable to support simplified naming. For this purpose, ID normalization *SHOULD* be performed as follows:
 
  * If the entered ID is a valid URI, then it is to be used directly.
  * If it appears that the user neglected to add a scheme for a URI that would otherwise be considered valid, such as `example.org/alice/`, clients *MAY* attempt to provide a default scheme, preferably `https`.
@@ -436,7 +436,7 @@ An optional endpoint used for wide delivery of publicly addressed activities and
 
 **Note**
 
-As the upstream vocabulary for ActivityPub, any applicable ActivityStreams property may be used on ActivityPub Actors. Some ActivityStreams properties are particularly worth highlighting to demonstrate how they are used in ActivityPub implementations.
+As the upstream vocabulary for ActivityPub, any applicable [ActivityStreams](https://www.w3.org/TR/activitystreams-core) property may be used on ActivityPub Actors. Some ActivityStreams properties are particularly worth highlighting to demonstrate how they are used in ActivityPub implementations.
 
 **url**
 A link to the actor's "profile web page", if not equal to the value of `id`.
