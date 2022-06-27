@@ -44,6 +44,7 @@ def _markdown_emphasis_html(markdown: str) -> str:
         ' `': ' <em>',
         '`.': '</em>.',
         '`:': '</em>:',
+        "`'": "</em>'",
         '`;': '</em>;',
         '`,': '</em>;',
         '`\n': '</em>\n',
