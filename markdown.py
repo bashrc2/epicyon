@@ -33,12 +33,12 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '_;': '</ul>;',
         '_,': '</ul>,',
         '_\n': '</ul>\n',
-        ' `': '<em>',
-        '`.': '</em>',
-        '`:': '</em>',
-        '`;': '</em>',
-        '`\n': '</em>',
-        '` ': '</em>'
+        ' `': ' <em>',
+        '`.': '</em>.',
+        '`:': '</em>:',
+        '`;': '</em>;',
+        '`\n': '</em>\n',
+        '` ': '</em> '
     }
     for md_str, html in replacements.items():
         markdown = markdown.replace(md_str, html)
