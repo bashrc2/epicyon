@@ -135,20 +135,20 @@ def _markdown_replace_links(markdown: str, images: bool = False) -> str:
            '(' not in markdown_link:
             text = text.split(')', 1)[1]
             continue
+        link_text = markdown_link.split(start_chars)[1].split(']')[0]
+        link_text = link_text.replace('`', '')
         if not images:
             replace_links[markdown_link] = \
                 '<a href="' + \
                 markdown_link.split('(')[1].split(')')[0] + \
                 '" target="_blank" rel="nofollow noopener noreferrer">' + \
-                markdown_link.split(start_chars)[1].split(']')[0] + \
-                '</a>'
+                link_text + '</a>'
         else:
+            link_text = markdown_link.split(start_chars)[1].split(']')[0]
             replace_links[markdown_link] = \
                 '<img class="markdownImage" src="' + \
                 markdown_link.split('(')[1].split(')')[0] + \
-                '" alt="' + \
-                markdown_link.split(start_chars)[1].split(']')[0] + \
-                '" />'
+                '" alt="' + link_text + '" />'
         text = text.split(')', 1)[1]
 
     for md_link, html_link in replace_links.items():
