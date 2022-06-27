@@ -303,10 +303,10 @@ Identifiers *MUST* be provided for activities posted in server to server communi
 All objects have the following properties:
 
 **id**
-The object's unique global identifier (unless the object is transient, in which case the `id` *MAY* be omitted.
+String value for the object's unique global identifier (unless the object is transient, in which case the `id` *MAY* be omitted.
 
 **type**
-The type of the object.
+String value for the type of the [object](https://www.w3.org/TR/activitystreams-core/#object).
 
 ### 3.2 Retrieving objects
 The HTTP GET method may be dereferenced against an object's `id` property to retrieve the activity. Servers *MAY* use HTTP content negotiation as defined in [RFC7231](https://datatracker.ietf.org/doc/html/rfc7231) to select the type of data to return in response to a request, but *MUST* present the [ActivityStreams](https://www.w3.org/TR/activitystreams-core) object representation in response to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`, and *SHOULD* also present the [ActivityStreams](https://www.w3.org/TR/activitystreams-core) representation in response to `application/activity+json` as well. The client *MUST* specify an `Accept` header with the `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` media type in order to retrieve the activity.
