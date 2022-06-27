@@ -17,7 +17,7 @@ ActivityPub provides two layers:
 
 ActivityPub implementations can implement just one of these things or both of them. However, once you've implemented one, it isn't too many steps to implement the other, and there are a lot of benefits to both (making your website part of the decentralized social web, and being able to use clients and client libraries that work across a wide variety of social websites).
 
-In ActivityPub, a user is represented by "actors" via the user's accounts on servers. User's accounts on different servers correspond to different actors. Every Actor has:
+In ActivityPub, a user is represented by "actors" via the user's accounts on servers, sometimes also called "instances". User's accounts on different servers correspond to different actors. Every Actor has:
 
  * **An `inbox`:** How they get messages from the world
  * **An `outbox`:** How they send messages to others
