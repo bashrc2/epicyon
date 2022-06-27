@@ -270,7 +270,7 @@ ActivityPub defines some terms in addition to those provided by [ActivityStreams
 
 ActivityPub shares the same [URI / IRI conventions as in ActivityStreams](https://www.w3.org/TR/activitystreams-core/#urls).
 
-Servers *SHOULD* validate the content they receive to avoid content spoofing attacks. This *MAY* be done by checking the time that a server received a post at an `inbox` or `outbox` (converted to [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time)) against the `date` field within the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07). See Security Considerations for details of using http signatures.
+Servers *SHOULD* validate the content they receive to avoid content spoofing attacks. This *MAY* be done by checking the time that a server received a post at an `inbox` or `outbox` (converted to [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time)) against the `date` field within the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07), after the signature has been validated. If there is more than a few minutes difference then this could be a [replay attack](https://en.wikipedia.org/wiki/Replay_attack). See Security Considerations for details of using http signatures.
 
 As an example, if example.com receives the activity
 
