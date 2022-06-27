@@ -335,7 +335,10 @@ def markdown_to_html(markdown: str) -> str:
     }
     for line in lines_list:
         if ctr > 0:
-            html_str += '<br>\n'
+            if not code_section:
+                html_str += '<br>\n'
+            else:
+                html_str += '\n'
 
         # avoid code sections
         if not code_section:
