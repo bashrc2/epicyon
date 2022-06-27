@@ -380,31 +380,97 @@ An ActivityStreams [`OrderedCollection`](https://www.w3.org/TR/activitystreams-v
 Implementations *SHOULD*, in addition, provide the following properties:
 
 **following**
-A link to an ActivityStreams collection of the actors that this actor is following; see section 5.4 Following Collection
+A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that this actor is following; see section 5.4 Following Collection
 
 **followers**
-A link to an ActivityStreams collection of the actors that follow this actor; see section 5.3 Followers Collection.
+A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that follow this actor; see section 5.3 Followers Collection.
 
-Implementations *MAY* provide the following properties:
+**endpoints**
+Contains a dictionary of any additional endpoints, and MAY contain an entry for a **shared inbox**.
+
+**discoverable**
+Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
+
+Implementations *MAY** provide the following properties:
+
+**summary**
+Profile summary or biography for this person.
+
+**featured**
+Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing "pinned" posts appearing on the account profile screen. Such posts are typically used to provide more information about the account, beyond the profile summary.
 
 **liked**
-A link to an ActivityStreams collection of objects this actor has liked; see section 5.5 Liked Collection.
+A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
+
+**icon**
+Describes the avatar image for this person.
+
+**image**
+Describes the profile page background banner for this person.
+
+**manuallyApprovesFollowers**
+If true then followers for this account require permission to be granted. This can be an effective anti-spam or anti-harassment feature.
+
+**publicKey**
+Describes the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07** public key for this account. This can be used by other accounts on the same or other federated servers to validate the authenticity of received posts.
+
+**published**
+This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
+
+**updated**
+A timestamp for when this actor was last changed. This can be used by followers to update their actor caches.
 
 ### Example 9
 ``` json
 {
-  "@context": ["https://www.w3.org/ns/activitystreams",
-               {"@language": "ja"}],
-  "type": "Person",
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://w3id.org/security/v1",
+    {"@language": "ja"},
+    {
+      "Curve25519Key": "toot:Curve25519Key",
+      "Device": "toot:Device",
+      "Ed25519Key": "toot:Ed25519Key",
+      "Ed25519Signature": "toot:Ed25519Signature",
+      "EncryptedMessage": "toot:EncryptedMessage",
+      "PropertyValue": "schema:PropertyValue",
+      "alsoKnownAs": {"@id": "as:alsoKnownAs", "@type": "@id"},
+      "cipherText": "toot:cipherText",
+      "claim": {"@id": "toot:claim", "@type": "@id"},
+      "deviceId": "toot:deviceId",
+      "devices": {"@id": "toot:devices", "@type": "@id"},
+      "discoverable": "toot:discoverable",
+      "featured": {"@id": "toot:featured", "@type": "@id"},
+      "featuredTags": {"@id": "toot:featuredTags", "@type": "@id"},
+      "fingerprintKey": {"@id": "toot:fingerprintKey", "@type": "@id"},
+      "focalPoint": {"@container": "@list", "@id": "toot:focalPoint"},
+      "identityKey": {"@id": "toot:identityKey", "@type": "@id"},
+      "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+      "messageFranking": "toot:messageFranking",
+      "messageType": "toot:messageType",
+      "movedTo": {"@id": "as:movedTo", "@type": "@id"},
+      "publicKeyBase64": "toot:publicKeyBase64",
+      "schema": "http://schema.org#",
+      "suspended": "toot:suspended",
+      "toot": "http://joinmastodon.org/ns#",
+      "value": "schema:value"
+    }
+  ],
   "id": "https://kenzoishii.example.com/users/kenzoishii",
   "following": "https://kenzoishii.example.com/users/kenzoishii/following",
   "followers": "https://kenzoishii.example.com/users/kenzoishii/followers",
+  "featured": "https://kenzoishii.example.com/users/kenzoishii/featured",
   "liked": "https://kenzoishii.example.com/users/kenzoishii/liked",
   "inbox": "https://kenzoishii.example.com/users/kenzoishii/inbox",
   "outbox": "https://kenzoishii.example.com/users/kenzoishii/outbox",
+  "endpoints": {"sharedInbox": "https://kenzoishii.example.com/inbox"},
   "preferredUsername": "kenzoishii",
   "name": "石井健蔵",
   "summary": "この方はただの例です",
+  "published": "2017-08-23T00:00:00Z",
+  "updated": "2022-02-09T00:00:00Z",
+  "discoverable": True,
+  "manuallyApprovesFollowers": False,
   "icon": {
     "mediaType": "image/png",
     "type": "Image",
@@ -414,7 +480,14 @@ A link to an ActivityStreams collection of objects this actor has liked; see sec
     "mediaType": "image/jpeg",
     "type": "Image",
     "url": "https://kenzoishii.example.com/accounts/headers/zhw.jpg"
-  }
+  },
+  "publicKey": {"id": "https://kenzoishii.example.com/users/kenzoishii#main-key",
+                "owner": "https://kenzoishii.example.com/users/kenzoishii",
+                "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n"
+                                "..."
+                                "-----END PUBLIC KEY-----\n"},
+  "summary": "Just another ActivityPub account",
+  "type": "Person"
 }
 ```
 
