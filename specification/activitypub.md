@@ -217,7 +217,7 @@ ActivityPub is one of several related specifications being produced by the Socia
 
 As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative. Everything else in this specification is normative.
 
-The key words *MAY*, *MUST*, *MUST NOT*, *SHOULD*, and *SHOULD NOT* are to be interpreted as described in **RFC2119**.
+The key words *MAY*, *MUST*, *MUST NOT*, *SHOULD*, and *SHOULD NOT* are to be interpreted as described in [RFC2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
 ### 2.1 Specification Profiles
 
@@ -293,7 +293,7 @@ The type of the object.
 
 ### 3.2 Retrieving objects
 
-The HTTP GET method may be dereferenced against an object's `id` property to retrieve the activity. Servers *MAY* use HTTP content negotiation as defined in **RFC7231** to select the type of data to return in response to a request, but *MUST* present the ActivityStreams object representation in response to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`, and *SHOULD* also present the ActivityStreams representation in response to `application/activity+json` as well. The client *MUST* specify an `Accept` header with the `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` media type in order to retrieve the activity.
+The HTTP GET method may be dereferenced against an object's `id` property to retrieve the activity. Servers *MAY* use HTTP content negotiation as defined in [RFC7231](https://datatracker.ietf.org/doc/html/rfc7231) to select the type of data to return in response to a request, but *MUST* present the ActivityStreams object representation in response to `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`, and *SHOULD* also present the ActivityStreams representation in response to `application/activity+json` as well. The client *MUST* specify an `Accept` header with the `application/ld+json; profile="https://www.w3.org/ns/activitystreams"` media type in order to retrieve the activity.
 
 Servers *MAY* implement other behavior for requests which do not comply with the above requirement. (For example, servers may implement additional legacy protocols, or may use the same URI for both HTML and ActivityStreams representations of a resource).
 
@@ -400,10 +400,10 @@ The `endpoints` mapping *MAY* include the following properties:
 Endpoint URI so this actor's clients may access remote ActivityStreams objects which require authentication to access. To use this endpoint, the client posts an `x-www-form-urlencoded` `id` parameter with the value being the `id` of the requested ActivityStreams object.
 
 **oauthAuthorizationEndpoint**
-If OAuth 2.0 bearer tokens **RFC6749** **RFC6750** are being used for authenticating client to server interactions, this endpoint specifies a URI at which a browser-authenticated user may obtain a new authorization grant.
+If OAuth 2.0 bearer tokens [RFC6749](https://datatracker.ietf.org/doc/html/rfc6749) [RFC6750](https://datatracker.ietf.org/doc/html/rfc6750) are being used for authenticating client to server interactions, this endpoint specifies a URI at which a browser-authenticated user may obtain a new authorization grant.
 
 **oauthTokenEndpoint**
-If OAuth 2.0 bearer tokens **RFC6749** **RFC6750** are being used for authenticating client to server interactions, this endpoint specifies a URI at which a client may acquire an access token.
+If OAuth 2.0 bearer tokens [RFC6749](https://datatracker.ietf.org/doc/html/rfc6749) [RFC6750](https://datatracker.ietf.org/doc/html/rfc6750) are being used for authenticating client to server interactions, this endpoint specifies a URI at which a client may acquire an access token.
 
 **provideClientKey**
 If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization, this endpoint specifies a URI at which browser-authenticated users may authorize a client's public key for client to server interactions.
@@ -554,7 +554,7 @@ The server *MUST* then add this new Activity to the outbox collection. Depending
 
 Attempts to submit objects to servers not implementing client to server support *SHOULD* result in a `405 Method Not Allowed` response.
 
-HTTP caching mechanisms **RFC7234** *SHOULD* be respected when appropriate, both in clients receiving responses from servers as well as servers sending responses to clients.
+HTTP caching mechanisms [RFC7234](https://datatracker.ietf.org/doc/html/rfc7234) *SHOULD* be respected when appropriate, both in clients receiving responses from servers as well as servers sending responses to clients.
 
 ### 6.1 Client Addressing
 
@@ -758,7 +758,7 @@ Delivery is usually triggered by, for example:
 
 Servers performing delivery to the `inbox` or `sharedInbox` properties of actors on other servers *MUST* provide the `object` property in the activity: `Create`, `Update`, `Delete`, `Follow`, `Add`, `Remove`, `Like`, `Block`, `Undo`. Additionally, servers performing server to server delivery of the following activities *MUST* also provide the `target` property: `Add`, `Remove`.
 
-HTTP caching mechanisms **RFC7234** *SHOULD* be respected when appropriate, both when receiving responses from other servers as well as sending responses to other servers.
+HTTP caching mechanisms [RFC7234](https://datatracker.ietf.org/doc/html/rfc7234) *SHOULD* be respected when appropriate, both when receiving responses from other servers as well as sending responses to other servers.
 
 ### 7.1 Delivery
 
