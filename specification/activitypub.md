@@ -317,7 +317,7 @@ The HTTP GET method may be dereferenced against an object's `id` property to ret
 
 Servers *MAY* implement other behavior for requests which do not comply with the above requirement. (For example, servers may implement additional legacy protocols, or may use the same URI for both HTML and [ActivityStreams](https://www.w3.org/TR/activitystreams-core) representations of a resource).
 
-Servers *MAY* require authorization as specified in section B.1 Authentication and Authorization, and may additionally implement their own authorization rules. Servers *SHOULD* fail requests which do not pass their authorization checks with the appropriate HTTP error code, or the 403 Forbidden error code where the existence of the object is considered private. An origin server which does not wish to disclose the existence of a private target *MAY* instead respond with a status code of 404 Not Found.
+Servers *MAY* require authorization as specified in section B.1 Authentication and Authorization, and may additionally implement their own authorization rules, such as **authorized fetch**. Servers *SHOULD* fail requests which do not pass their authorization checks with the appropriate [HTTP error code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes), or the **403 Forbidden** error code where the existence of the object is considered private. An origin server which does not wish to disclose the existence of a private target *MAY* instead respond with a status code of **404 Not Found**.
 
 ### 3.3 The source property
 
