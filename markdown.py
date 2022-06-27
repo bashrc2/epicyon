@@ -8,6 +8,38 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 
+def _markdown_get_sections(markdown: str) -> []:
+    """Returns a list of sections for markdown
+    """
+    if '<code>' not in markdown:
+        return [markdown]
+    lines = markdown.split('\n')
+    sections = []
+    section_text = ''
+    section_active = False
+    ctr = 0
+    for line in lines:
+        if ctr > 0:
+            section_text += '\n'
+
+        if not section_active:
+            if '<code>' in line:
+                section_active = True
+                sections.append(section_text)
+                section_text = ''
+        else:
+            if '</code>' in line:
+                section_active = False
+                sections.append(section_text)
+                section_text = ''
+
+        section_text += line
+        ctr += 1
+    if section_text.strip():
+        sections.append(section_text)
+    return sections
+
+
 def _markdown_emphasis_html(markdown: str) -> str:
     """Add italics and bold html markup to the given markdown
     """
@@ -53,22 +85,32 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '`\n': '</em>\n',
         '` ': '</em> '
     }
-    for md_str, html in replacements.items():
-        markdown = markdown.replace(md_str, html)
 
-    if markdown.startswith('**'):
-        markdown = markdown[2:] + '<b>'
-    elif markdown.startswith('*'):
-        markdown = markdown[1:] + '<i>'
-    elif markdown.startswith('_'):
-        markdown = markdown[1:] + '<ul>'
+    sections = _markdown_get_sections(markdown)
+    markdown = ''
+    for section_text in sections:
+        if '<code>' in section_text:
+            markdown += section_text
+            continue
+        for md_str, html in replacements.items():
+            section_text = section_text.replace(md_str, html)
 
-    if markdown.endswith('**'):
-        markdown = markdown[:len(markdown) - 2] + '</b>'
-    elif markdown.endswith('*'):
-        markdown = markdown[:len(markdown) - 1] + '</i>'
-    elif markdown.endswith('_'):
-        markdown = markdown[:len(markdown) - 1] + '</ul>'
+        if section_text.startswith('**'):
+            section_text = section_text[2:] + '<b>'
+        elif section_text.startswith('*'):
+            section_text = section_text[1:] + '<i>'
+        elif section_text.startswith('_'):
+            section_text = section_text[1:] + '<ul>'
+
+        if section_text.endswith('**'):
+            section_text = section_text[:len(section_text) - 2] + '</b>'
+        elif section_text.endswith('*'):
+            section_text = section_text[:len(section_text) - 1] + '</i>'
+        elif section_text.endswith('_'):
+            section_text = section_text[:len(section_text) - 1] + '</ul>'
+
+        if section_text.strip():
+            markdown += section_text
     return markdown
 
 
