@@ -608,9 +608,9 @@ Care should be taken to not confuse the the `likes` collection with the similarl
  * **liked:** Specifically a property of actors. This is a collection of `Like` activities performed *by the actor*, added to the collection as a side effect of delivery to the outbox.
  * **likes:** May be a property of any object. This is a collection of `Like` activities referencing this object, added to the collection as a side effect of delivery to the inbox.
 
-### 5.8 Shares Collection
+### 5.8 Shares/Boosts Collection
 
-Every object *MAY* have a `shares` collection. This is a list of all `Announce` activities with this object as the `object` property, added as a side effect. The `shares` collection *MUST* be either an [`OrderedCollection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) or a [`Collection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-collection) and *MAY* be filtered on privileges of an authenticated user or as appropriate when no authentication is given.
+Every object *MAY* have a `shares` collection, otherwise known as `boosts` or `repeats`. This is a list of all `Announce` activities with this object as the `object` property, added as a side effect. The `shares` collection *MUST* be either an [`OrderedCollection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) or a [`Collection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-collection) and *MAY* be filtered on privileges of an authenticated user or as appropriate when no authentication is given.
 
 ## 6. Client to Server Interactions
 
