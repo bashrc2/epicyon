@@ -197,8 +197,8 @@ Alyssa is relieved, and likes Ben's post:
   "@context": "https://www.w3.org/ns/activitystreams",
   "type": "Like",
   "id": "https://instancedomain/users/alyssa/statuses/5312e10e",
-  "to": ["https://chatty.example/users/ben/"],
-  "actor": "https://instancedomain/users/alyssa/",
+  "to": ["https://chatty.example/users/ben"],
+  "actor": "https://instancedomain/users/alyssa",
   "object": "https://chatty.example/users/ben/statuses/51086"
 }
 ```
@@ -433,6 +433,7 @@ A timestamp for when this actor was last changed. This can be used by followers 
   "following": "https://kenzoishii.example.com/users/kenzoishii/following",
   "followers": "https://kenzoishii.example.com/users/kenzoishii/followers",
   "featured": "https://kenzoishii.example.com/users/kenzoishii/featured",
+  "featuredTags": "https://kenzoishii.example.com/users/kenzoishii/collections/tags",
   "liked": "https://kenzoishii.example.com/users/kenzoishii/liked",
   "inbox": "https://kenzoishii.example.com/users/kenzoishii/inbox",
   "outbox": "https://kenzoishii.example.com/users/kenzoishii/outbox",
@@ -514,10 +515,13 @@ Properties containing natural language values, such as `name`, `preferredUsernam
 #### 4.1.17 featured
 Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing "pinned" posts appearing on the account profile screen. Such posts are typically used to provide more information about the account, beyond the profile summary.
 
-#### 4.1.18 icon
+#### 4.1.18 featuredTags
+Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing tag objects representing hashtags. This is used to improve discoverability.
+
+#### 4.1.19 icon
 Describes an image which represents the user's profile picture (this may be a thumbnail).
 
-#### 4.1.19 image
+#### 4.1.20 image
 Describes the profile page background banner for this person.
 
 ## 5. Collections
