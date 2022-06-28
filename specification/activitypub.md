@@ -1046,6 +1046,25 @@ The side effect of receiving this in an **inbox** is determined by the type of t
 
 If the `object` of a `Reject` received to an **inbox** is a `Follow` activity previously sent by the receiver, this means the recipient did not approve the `Follow` request. The server *MUST NOT* add the `actor` to the receiver's Following Collection.
 
+### Example X
+Alice reviews Mallory's follow request. It's from an unfamiliar instance, and the posts there look like spam. She rejects the request, which is then sent via POST to Mallory's `inbox`.
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Reject",
+  "actor": "https://example.com/users/alice",
+  "to": ["https://unfamiliarinstance/users/mallory"],
+  "cc": [],
+  "object": {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    "id": "https://unfamiliarinstance/users/mallory/statuses/7589238923642",
+    "type": "Follow",
+    "actor": "https://unfamiliarinstance/users/mallory",
+    "object": "https://example.com/users/alice"
+  }
+}
+```
+
 ### 7.8 Add Activity
 Upon receipt of an `Add` activity into the **inbox**, the server *SHOULD* add the `object` to the collection specified in the `target` property, unless:
 
