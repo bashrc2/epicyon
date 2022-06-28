@@ -873,6 +873,18 @@ The `Follow` activity is used to subscribe to the activities of another actor.
 
 The side effect of receiving this in an **outbox** is that the server *SHOULD* add the `object` to the `actor`'s `following` Collection when and only if an `Accept` activity is subsequently received with this `Follow` activity as its object.
 
+### Example X
+Follow request sent by Misha to Alice.
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "id": "https://anotherinstance/users/misha/statuses/67839359385539",
+  "type": "Follow",
+  "actor": "https://anotherinstance/users/misha",
+  "object": "https://example.com/users/alice"
+}
+```
+
 ### 6.6 Add Activity
 Upon receipt of an `Add` activity into the **outbox**, the server *SHOULD* add the `object` to the collection specified in the `target` property, unless:
 
