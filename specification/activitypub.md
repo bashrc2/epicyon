@@ -912,8 +912,7 @@ Upon receipt of an `Add` activity into the **inbox**, the server *SHOULD* add th
  * the `object` is not allowed to be added to the `target` collection for some other reason, at the receiver's discretion.
 
 ### 7.9 Remove Activity
-Upon receipt of a `Remove` activity into the **inbox**, the server *SHOULD* remove the `object` from the collection specified in the
-`target` property, unless:
+Upon receipt of a `Remove` activity into the **inbox**, the server *SHOULD* remove the `object` from the collection specified in the `target` property, unless:
 
  * the `target` is not owned by the receiving server, and thus they can't update it.
  * the `object` is not allowed to be removed to the `target` collection for some other reason, at the receiver's discretion.
