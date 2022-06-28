@@ -518,6 +518,8 @@ Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-co
 #### 4.1.18 featuredTags
 Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing tag objects representing hashtags. This is used to improve discoverability.
 
+For example, Alyssa likes reading and so she pins a post containing hashtags for her favorite books to her profile. The post appears within the `featured` collection of her `actor` and the hashtags within the post appear within `featuredTags`. When searching the hashtag for a particular book, Misha discovers Alyssa's account and decides to send a follow request based upon their mutual interest.
+
 #### 4.1.19 icon
 Describes an image which represents the user's profile picture (this may be a thumbnail).
 
