@@ -934,7 +934,7 @@ Delivery is usually triggered by, for example:
 
  * an Activity being created in an actor's outbox with their Followers Collection as the recipient.
  * an Activity being created in an actor's outbox with directly addressed recipients.
- * an Activity being created in an actors's outbox with user-curated collections as recipients.
+ * an Activity being created in an actor's outbox with user-curated collections as recipients.
  * an Activity being created in an actor's outbox or inbox which references another object.
 
 Servers performing delivery to the `inbox` or `sharedInbox` properties of actors on other servers *MUST* provide the `object` property in the activity: `Create`, `Update`, `Delete`, `Follow`, `Add`, `Remove`, `Like`, `Block`, `Undo`. Additionally, servers performing server to server delivery of the following activities *MUST* also provide the `target` property: `Add`, `Remove`.
