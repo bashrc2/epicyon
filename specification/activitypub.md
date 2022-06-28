@@ -1110,6 +1110,35 @@ The `Undo` activity is used to undo the side effects of previous activities. See
 
 Building an international base of users is important in a federated network. [ActivityStreams provides tooling for internationalization of content](https://www.w3.org/TR/activitystreams-core/#naturalLanguageValues), which should be used whenever possible. However, it can be difficult for implementations to determine which [`@language` property](https://www.w3.org/TR/activitystreams-core/#defaultlangcontext) to provide for user-submitted content. The [W3C Internationalization group](https://www.w3.org/International/) provides some [guidance on language detection](https://www.w3.org/International/wiki/LanguageDetection).
 
+To support multiple languages, `Note` and `Article` objects can include `contentMap`, in addition to the `content` field. For Public notes this can help clients to display only posts which contain languages understood by the reader.
+
+### Example X
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "id": "https://instancedomain/users/alyssa/statuses/63783815/activity",
+  "to": ["https://another.example/users/andré"],
+  "actor": "https://instancedomain/users/alyssa",
+  "object": {
+    "type": "Note",
+    "id": "https://instancedomain/users/alyssa/statuses/63783815",
+    "attributedTo": "https://instancedomain/users/alyssa",
+    "to": ["https://another.example/users/andré"],
+    "published": "2035-08-02T09:27:41Z",
+    "rejectReplies": False,
+    "mediaType": "text/html",
+    "attachment": [],
+    "summary": "",
+    "content": "Nous construisons un web social décentralisé",
+    "contentMap": {
+        "fr": "Nous construisons un web social décentralisé"
+    }
+  }
+}
+```
+
+
 ## B. Security Considerations
 *This section is non-normative.*
 
