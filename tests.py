@@ -5737,8 +5737,8 @@ def _test_markdown_to_html():
     result = markdown_to_html(markdown)
     expected = \
         'This is a list of points:<br>\n<ul class="md_list">' + \
-        '<br>\n<li>Point 1</li><br>\n' + \
-        '<li>Point 2</li><br>\n<li></li><br>\n</ul><br>\n' + \
+        '\n<li>Point 1</li>\n' + \
+        '<li>Point 2</li>\n<li></li>\n</ul><br>\n' + \
         'And some other text.<br>\n'
     if result != expected:
         print(result)
@@ -5750,9 +5750,9 @@ def _test_markdown_to_html():
         'And some other text.'
     result = markdown_to_html(markdown)
     expected = \
-        'This is a list of points:<br>\n<ul class="md_list"><br>\n' + \
-        '<li><b>Point 1</b></li><br>\n' + \
-        '<li><i>Point 2</i></li><br>\n<li></li><br>\n</ul><br>\n' + \
+        'This is a list of points:<br>\n<ul class="md_list">\n' + \
+        '<li><b>Point 1</b></li>\n' + \
+        '<li><i>Point 2</i></li>\n<li></li>\n</ul><br>\n' + \
         'And some other text.<br>\n'
     if result != expected:
         print(result)

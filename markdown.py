@@ -389,4 +389,8 @@ def markdown_to_html(markdown: str) -> str:
     html_str = html_str.replace('<code><br>', '<code>')
     html_str = html_str.replace('</code><br>', '</code>')
 
+    html_str = html_str.replace('<ul class="md_list"><br>',
+                                '<ul class="md_list">')
+    html_str = html_str.replace('</li><br>', '</li>')
+
     return html_str
