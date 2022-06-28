@@ -281,7 +281,7 @@ As an example, if example.com receives the activity
          "https://example.com/users/john"],
   "object": {
     "@context": {"@language": "en"},
-    "id": "https://example.org/users/alice/note/23",
+    "id": "https://example.org/users/alice/statuses/23",
     "type": "Note",
     "attributedTo": "https://example.org/users/alice",
     "mediaType": "text/html",
@@ -729,7 +729,7 @@ The above example could be converted to this:
   "id": "https://example.net/users/mallory/87374",
   "actor": "https://example.net/users/mallory",
   "object": {
-    "id": "https://example.com/@mallory/note/72",
+    "id": "https://example.com/@mallory/statuses/72",
     "type": "Note",
     "attributedTo": "https://example.net/users/mallory",
     "content": "This is a note",
@@ -845,7 +845,7 @@ A deleted object:
 ``` json
 {
   "@context": "https://www.w3.org/ns/activitystreams",
-  "id": "https://example.com/@alice/note/72",
+  "id": "https://example.com/@alice/statuses/72",
   "type": "Tombstone",
   "published": "2015-02-10T15:04:55Z",
   "updated": "2015-02-10T15:04:55Z",
