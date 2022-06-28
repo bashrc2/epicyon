@@ -839,8 +839,23 @@ Note that this behavior is for client to server interaction where the client is 
 ### 6.4 Delete Activity
 The `Delete` activity is used to delete an already existing object. The side effect of this is that the server *MAY* replace the `object` with a `Tombstone` of the object that will be displayed in activities which reference the deleted object. If the deleted object is requested the server *SHOULD* respond with either the HTTP 410 Gone status code if a `Tombstone` object is presented as the response body, otherwise respond with a HTTP 404 Not Found.
 
-A deleted object:
+The delete request, sent out by POST.
+### Example X
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "actor"': "https://example.com/users/alice",
+  "object": "https://example.com/users/alice/statuses/72",
+  "to": [
+    "https://example.com/users/alice/followers",
+    "https://www.w3.org/ns/activitystreams#Public"
+  ],
+  "cc"': [],
+  "type": "Delete"
+}
+```
 
+A deleted object:
 ### Example 17
 ``` json
 {
