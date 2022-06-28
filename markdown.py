@@ -168,62 +168,44 @@ def _markdown_replace_quotes(markdown: str) -> str:
     return result
 
 
-def _markdown_replace_links(markdown: str, images: bool = False) -> str:
+def _markdown_replace_links(markdown: str) -> str:
     """Replaces markdown links with html
     Optionally replace image links
     """
-    replace_links = {}
-    text = markdown
-    start_chars = '['
-    if images:
-        start_chars = '!['
-    while start_chars in text:
-        if ')' not in text:
-            break
-        text = text.split(start_chars, 1)[1]
-        markdown_link = start_chars + text.split(')')[0] + ')'
-        if ']' not in markdown_link or \
-           '(' not in markdown_link:
-            text = text.split(')', 1)[1]
+    sections = _markdown_get_sections(markdown)
+    result = ''
+    for section_text in sections:
+        if '<code>' in section_text or \
+           '](' not in section_text:
+            result += section_text
             continue
-        link_text = markdown_link.split(start_chars)[1].split(']')[0]
-        link_text = link_text.replace('`', '')
-        if not images:
-            replace_links[markdown_link] = \
-                '<a href="' + \
-                markdown_link.split('(')[1].split(')')[0] + \
-                '" target="_blank" rel="nofollow noopener noreferrer">' + \
-                link_text + '</a>'
-        else:
-            link_text = markdown_link.split(start_chars)[1].split(']')[0]
-            replace_links[markdown_link] = \
-                '<img class="markdownImage" src="' + \
-                markdown_link.split('(')[1].split(')')[0] + \
-                '" alt="' + link_text + '" />'
-        text = text.split(')', 1)[1]
-
-    for md_link, html_link in replace_links.items():
-        lines = markdown.split('\n')
-        markdown = ''
-        code_section = False
+        sections_links = section_text.split('](')
         ctr = 0
-        for line in lines:
-            if ctr > 0:
-                markdown += '\n'
-            # avoid code sections
-            if not code_section:
-                if '<code>' in line:
-                    code_section = True
-            else:
-                if '</code>' in line:
-                    code_section = False
-            if code_section:
-                markdown += line
+        for link_section in sections_links:
+            if ctr == 0:
                 ctr += 1
                 continue
-            markdown += line.replace(md_link, html_link)
+            if '[' in sections_links[ctr - 1] and \
+               ')' in link_section:
+                link_text = sections_links[ctr - 1].split('[')[-1]
+                link_url = link_section.split(')')[0]
+                replace_str = '[' + link_text + '](' + link_url + ')'
+                if '!' + replace_str in section_text:
+                    html_link = \
+                        '<img class="markdownImage" src="' + \
+                        link_url + '" alt="' + link_text + '" />'
+                    section_text = \
+                        section_text.replace('!' + replace_str, html_link)
+                if replace_str in section_text:
+                    html_link = \
+                        '<a href="' + link_url + '" target="_blank" ' + \
+                        'rel="nofollow noopener noreferrer">' + \
+                        link_text + '</a>'
+                    section_text = \
+                        section_text.replace(replace_str, html_link)
             ctr += 1
-    return markdown
+        result += section_text
+    return result
 
 
 def _markdown_replace_bullet_points(markdown: str) -> str:
@@ -348,7 +330,6 @@ def markdown_to_html(markdown: str) -> str:
     markdown = _markdown_replace_bullet_points(markdown)
     markdown = _markdown_replace_quotes(markdown)
     markdown = _markdown_emphasis_html(markdown)
-    markdown = _markdown_replace_links(markdown, True)
     markdown = _markdown_replace_links(markdown)
 
     # replace headers
