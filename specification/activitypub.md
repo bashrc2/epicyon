@@ -749,7 +749,7 @@ The above example could be converted to this:
 The `Update` activity is used when updating an already existing object. The side effect of this is that the `object` *MUST* be modified to reflect the new structure as defined in the update activity, assuming the actor has permission to update this object.
 
 ### Example X
-When Alan makes a change to his profile, his `actor` is sent out as a POST to the `inbox` or `sharedInbox` his followers as an `update` activity.
+When Alan makes a change to his profile, his `actor` is sent out as a POST to the `inbox` or `sharedInbox` of his followers as an `update` activity.
 ``` json
 {
   "@context": [
