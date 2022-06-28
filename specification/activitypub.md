@@ -748,6 +748,89 @@ The above example could be converted to this:
 ### 6.3 Update Activity
 The `Update` activity is used when updating an already existing object. The side effect of this is that the `object` *MUST* be modified to reflect the new structure as defined in the update activity, assuming the actor has permission to update this object.
 
+### Example X
+When Alan makes a change to his profile, his `actor` is sent out as a POST to the `inbox` or `sharedInbox` his followers as an `update` activity.
+``` json
+{
+  "@context": [
+      "https://www.w3.org/ns/activitystreams",
+      "https://enigmatic.social/schemas/litepub-0.1.jsonld",
+      {"@language": "en"}
+  ],
+  "actor": "https://enigmatic.social/users/alan",
+  "cc": [],
+  "id": "https://enigmatic.social/activities/hiefuhfuoejwdwyscho",
+  "object": {
+    "alsoKnownAs": [],
+    "attachment": [
+      {
+        "name": "Languages",
+        "type": "PropertyValue",
+        "value": "DE, EN"
+      },
+      {
+        "name": "Website",
+        "type": "PropertyValue",
+        "value": "<a href=\"https://totally.enigmatic/\">https://totally.enigmatic/</a>"
+      }
+    ],
+    "capabilities": {"acceptsChatMessages": true},
+    "discoverable": false,
+    "endpoints": {
+      "oauthAuthorizationEndpoint": "https://enigmatic.social/oauth/authorize",
+      "oauthRegistrationEndpoint": "https://enigmatic.social/api/v1/apps",
+      "oauthTokenEndpoint": "https://enigmatic.social/oauth/token",
+      "sharedInbox": "https://enigmatic.social/inbox",
+      "uploadMedia": "https://enigmatic.social/api/ap/upload_media"
+    },
+    "featured": "https://enigmatic.social/users/alan/collections/featured",
+    "followers": "https://enigmatic.social/users/alan/followers",
+    "following": "https://enigmatic.social/users/alan/following",
+    "icon": {
+      "type": "Image",
+      "url": "https://enigmatic.social/media/niefiwmwfyw.png"
+    },
+    "id": "https://enigmatic.social/users/alan",
+    "image": {
+      "type": "Image",
+      "url": "https://enigmatic.social/media/jejfh4h38cmw.jpg"
+    },
+    "inbox": "https://enigmatic.social/users/alan/inbox",
+    "manuallyApprovesFollowers": true,
+    "name": "alan :alan_chess:",
+    "outbox": "https://enigmatic.social/users/alan/outbox",
+    "preferredUsername": "alan",
+    "publicKey": {
+      "id": "https://enigmatic.social/users/alan#main-key",
+      "owner": "https://enigmatic.social/users/alan",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n
+      ...
+      -----END PUBLIC KEY-----\n\n"
+    },
+    "summary": "Chess player",
+    "tag": [
+      {
+        "icon": {
+          "type": "Image",
+          "url": "https://enigmatic.social/emoji/custom/chess/alan_chess.png"
+        },
+        "id": "https://enigmatic.social/emoji/custom/chess/alan_chess.png",
+        "name": ":alan_chess:",
+        "type": "Emoji",
+        "updated": "2022-05-11T00:00:00Z"
+      }
+    ],
+    "type": "Person",
+    "url": "https://enigmatic.social/users/alan"
+  },
+  "to": [
+    "https://enigmatic.social/users/alan/followers",
+    "https://www.w3.org/ns/activitystreams#Public"
+  ],
+  "type": "Update"
+}
+```
+
 #### 6.3.1 Partial Updates
 For client to server interactions, updates are partial; rather than updating the document all at once, any key value pair supplied is used to replace the existing value with the new value. This only applies to the top-level fields of the updated object. A special exception is for when the value is the json `null` type; this means that this field should be removed from the server's representation of the object.
 
