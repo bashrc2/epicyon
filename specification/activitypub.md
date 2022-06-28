@@ -1157,7 +1157,7 @@ Servers should be careful to verify that new content is really posted by the act
 
 Verification of incoming posts SHOULD occur via a `http header signature` check. Currently, [draft 07 of the http signatures RFC](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07) has become the *de facto* standard, although later versions MAY be implemented provided that sufficient support exists between federated servers.
 
-In addition, to allow for relaying of posts [linked data signatures](https://w3c-ccg.github.io/data-integrity-spec) MAY additionally be used. This can allow posts to be verified as authentic even if they have passed through intermediate servers. An incoming post SHOULD be considered valid if its `http header signature` fails but an attached `linked data signature` passes.
+In addition, to allow for relaying of posts [linked data signatures](https://w3c-ccg.github.io/data-integrity-spec) MAY be used. This can allow posts to be verified as authentic even if they have passed through intermediate servers. An incoming post SHOULD be considered valid if its `http header signature` fails but an attached `linked data signature` passes.
 
 ### B.3 Accessing localhost URIs
 It is often convenient while developing to test against a process running on localhost. However, permitting requests to localhost in a production client or server instance can be dangerous. Making requests to URIs on localhost which do not require authorization may unintentionally access or modify resources assumed to be protected to be usable by localhost-only.
