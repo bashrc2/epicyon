@@ -21,10 +21,10 @@ def html_specification(css_cache: {}, base_dir: str, http_prefix: str,
                        system_language: str) -> str:
     """Show the specification screen
     """
+    specification_filename = base_dir + '/specification/activitypub.md'
     admin_nickname = get_config_param(base_dir, 'admin')
-    if not os.path.isfile(base_dir + '/accounts/activitypub.md'):
-        copyfile(base_dir + '/specification/activitypub.md',
-                 base_dir + '/accounts/activitypub.md')
+    if os.path.isfile(base_dir + '/accounts/activitypub.md'):
+        specification_filename = base_dir + '/accounts/activitypub.md'
 
     if os.path.isfile(base_dir + '/accounts/login-background-custom.jpg'):
         if not os.path.isfile(base_dir + '/accounts/login-background.jpg'):
@@ -32,8 +32,8 @@ def html_specification(css_cache: {}, base_dir: str, http_prefix: str,
                      base_dir + '/accounts/login-background.jpg')
 
     specification_text = 'ActivityPub Protocol Specification.'
-    if os.path.isfile(base_dir + '/accounts/activitypub.md'):
-        with open(base_dir + '/accounts/activitypub.md', 'r',
+    if os.path.isfile(specification_filename):
+        with open(specification_filename, 'r',
                   encoding='utf-8') as fp_specification:
             md_text = markdown_example_numbers(fp_specification.read())
             specification_text = markdown_to_html(md_text)
