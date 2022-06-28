@@ -1087,6 +1087,21 @@ Upon receipt of an `Announce` activity in an **inbox**, a server *SHOULD* increm
 
 The `Announce` activity is effectively what is known as "sharing", "reposting", or "boosting" in other social networks.
 
+### Example X
+Alice enjoys Misha's book review post. She boosts it so that her followers can also read it. The `object` field contains the `id` of Misha's post.
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "actor": "https://example.com/users/alice",
+  "cc": ["https://example.com/users/alice/followers"],
+  "id": "https://example.com/users/alice/statuses/24389572539/activity",
+  "object": "https://anotherinstance/users/misha/statuses/9254264627254",
+  "published": "2022-10-07T11:04:48Z",
+  "to": ["https://www.w3.org/ns/activitystreams#Public"],
+  "type": "Announce"
+}
+```
+
 ### 7.12 Undo Activity
 The `Undo` activity is used to undo the side effects of previous activities. See the ActivityStreams documentation on [Inverse Activities and "Undo"](https://www.w3.org/TR/activitystreams-vocabulary/#inverse). The scope and restrictions of the `Undo` activity are the same as for the Undo activity in the context of client to server interactions, but applied to a federated context.
 
