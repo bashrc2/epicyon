@@ -1146,7 +1146,7 @@ To support multiple languages, `Note` and `Article` objects can include `content
 ### B.1 Authentication and Authorization
 ActivityPub uses authentication for two purposes; first, to authenticate clients to servers, and secondly in federated implementations to authenticate servers to each other.
 
-In most implementations authentication from client to server happens via [OAuth 2.0](https://datatracker.ietf.org/doc/html/rfc6749) although other methods MAY be used.
+The authentication method is not determined by this specification, but in most client to server implementations it happens via [OAuth 2.0](https://datatracker.ietf.org/doc/html/rfc6749). Other methods may be used.
 
 Also see the [Social Web Community Group Authentication and Authorization best practices report](https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication_Authorization).
 
