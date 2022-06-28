@@ -355,14 +355,14 @@ Once the actor's URI has been identified, it should be dereferenced.
 
 ActivityPub does not dictate a specific relationship between "users" and Actors; many configurations are possible. There may be multiple human users or organizations controlling an Actor, or likewise one human or organization may control multiple Actors. Similarly, an Actor may represent a piece of software, like a bot, or an automated process. More detailed "user" modelling, for example linking together of Actors which are controlled by the same entity, or allowing one Actor to be presented through multiple alternate profiles or aspects, are at the discretion of the implementation.
 
-### 4.1 *Actor* objects
+### 4.1 Actor objects
 Actor objects *MUST* have, in addition to the properties mandated by section 3.1 Object Identifiers, the following properties:
 
 #### 4.1.1 inbox
-A reference to an ActivityStreams [`OrderedCollection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages received by the actor; see section 5.2 Inbox.
+A reference to an ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages received by the actor; see section 5.2 Inbox.
 
 #### 4.1.2 outbox
-An ActivityStreams [`OrderedCollection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages produced by the actor; see section 5.1 Outbox.
+An ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages produced by the actor; see section 5.1 Outbox.
 
 Implementations *SHOULD*, in addition, provide the following properties:
 
@@ -375,7 +375,7 @@ A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-
 #### 4.1.5 discoverable
 Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
 
-Implementations *MAY** provide the following properties:
+Implementations *MAY* provide the following properties:
 
 #### 4.1.6 liked
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
