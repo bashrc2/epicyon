@@ -1022,6 +1022,25 @@ The side effect of receiving this in an **inbox** is determined by the type of t
 
 If the `object` of an `Accept` received to an **inbox** is a `Follow` activity previously sent by the receiver, the server *SHOULD* add the `actor` to the receiver's Following Collection.
 
+### Example X
+Alice reviews Misha's follow request. Her account looks genuine, and not like a spammer. She accepts the follow, and it travels by POST back to Misha's `inbox`.
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Accept",
+  "actor": "https://example.com/users/alice",
+  "to": ["https://anotherinstance/users/misha"],
+  "cc": [],
+  "object": {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    "id": "https://anotherinstance/users/misha/statuses/67839359385539",
+    "type": "Follow",
+    "actor": "https://anotherinstance/users/misha",
+    "object": "https://example.com/users/alice"
+  }
+}
+```
+
 ### 7.7 Reject Activity
 The side effect of receiving this in an **inbox** is determined by the type of the `object` received, and it is possible to reject types not described in this document (for example, an `Offer`).
 
