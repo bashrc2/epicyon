@@ -564,5 +564,6 @@
     "Save": "Salva",
     "Switch to moderation view": "Passa alla visualizzazione moderazione",
     "Minimize attached images": "Riduci al minimo le immagini allegate",
-    "SHOW MEDIA": "MOSTRA MEDIA"
+    "SHOW MEDIA": "MOSTRA MEDIA",
+    "ActivityPub Specification": "Specifica ActivityPub"
 }

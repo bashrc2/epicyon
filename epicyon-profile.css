@@ -21,6 +21,7 @@
     --header-bg-color: #282c37;
     --main-bg-color: #282c37;
     --post-bg-color: #282c37;
+    --code-color: lightblue;
     --column-left-color: #282c37;
     --link-bg-color: #282c37;
     --dropdown-fg-color: #dddddd;
@@ -127,6 +128,7 @@
     --quote-font-size-mobile: 120%;
     --quote-font-size-tiny: 60%;
     --line-spacing: 180%;
+    --code-spacing: 100%;
     --line-spacing-newswire: 120%;
     --newswire-item-moderated-color: white;
     --newswire-date-moderated-color: white;
@@ -246,6 +248,16 @@ body, html {
     font-size: var(--font-size);
     line-height: var(--line-spacing);
     image-rendering: var(--rendering);
+}
+
+code {
+    color: var(--code-color);
+    white-space: pre;
+    line-height: var(--code-spacing);
+}
+
+ul.md_list {
+    color: var(--main-fg-color);
 }
 
 audio {

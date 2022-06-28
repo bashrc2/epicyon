@@ -564,5 +564,6 @@
     "Save": "Сохранять",
     "Switch to moderation view": "Перейти в режим модерации",
     "Minimize attached images": "Свернуть прикрепленные изображения",
-    "SHOW MEDIA": "ПОКАЗАТЬ МЕДИА"
+    "SHOW MEDIA": "ПОКАЗАТЬ МЕДИА",
+    "ActivityPub Specification": "Спецификация ActivityPub"
 }

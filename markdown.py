@@ -8,6 +8,38 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 
+def _markdown_get_sections(markdown: str) -> []:
+    """Returns a list of sections for markdown
+    """
+    if '<code>' not in markdown:
+        return [markdown]
+    lines = markdown.split('\n')
+    sections = []
+    section_text = ''
+    section_active = False
+    ctr = 0
+    for line in lines:
+        if ctr > 0:
+            section_text += '\n'
+
+        if not section_active:
+            if '<code>' in line:
+                section_active = True
+                sections.append(section_text)
+                section_text = ''
+        else:
+            if '</code>' in line:
+                section_active = False
+                sections.append(section_text)
+                section_text = ''
+
+        section_text += line
+        ctr += 1
+    if section_text.strip():
+        sections.append(section_text)
+    return sections
+
+
 def _markdown_emphasis_html(markdown: str) -> str:
     """Add italics and bold html markup to the given markdown
     """
@@ -17,39 +49,73 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '**.': '</b>.',
         '**:': '</b>:',
         '**;': '</b>;',
+        '?**': '?</b>',
+        '\n**': '\n<b>',
         '**,': '</b>,',
         '**\n': '</b>\n',
+        '(**': '(<b>)',
+        '**)': '</b>)',
+        '>**': '><b>',
+        '**<': '</b><',
+        '>*': '><i>',
+        '*<': '</i><',
         ' *': ' <i>',
         '* ': '</i> ',
+        '?*': '?</i>',
+        '\n*': '\n<i>',
         '*.': '</i>.',
         '*:': '</i>:',
         '*;': '</i>;',
+        '(*': '(<i>)',
+        '*)': '</i>)',
         '*,': '</i>,',
         '*\n': '</i>\n',
-        ' _': ' <ul>',
-        '_ ': '</ul> ',
-        '_.': '</ul>.',
-        '_:': '</ul>:',
-        '_;': '</ul>;',
-        '_,': '</ul>,',
-        '_\n': '</ul>\n'
+        '(_': '(<u>',
+        '_)': '</u>)',
+        ' _': ' <u>',
+        '_ ': '</u> ',
+        '_.': '</u>.',
+        '_:': '</u>:',
+        '_;': '</u>;',
+        '_,': '</u>,',
+        '_\n': '</u>\n',
+        ' `': ' <em>',
+        '`.': '</em>.',
+        '`:': '</em>:',
+        "`'": "</em>'",
+        "(`": "(<em>",
+        "`)": "</em>)",
+        '`;': '</em>;',
+        '`,': '</em>,',
+        '`\n': '</em>\n',
+        '` ': '</em> '
     }
-    for md_str, html in replacements.items():
-        markdown = markdown.replace(md_str, html)
 
-    if markdown.startswith('**'):
-        markdown = markdown[2:] + '<b>'
-    elif markdown.startswith('*'):
-        markdown = markdown[1:] + '<i>'
-    elif markdown.startswith('_'):
-        markdown = markdown[1:] + '<ul>'
+    sections = _markdown_get_sections(markdown)
+    markdown = ''
+    for section_text in sections:
+        if '<code>' in section_text:
+            markdown += section_text
+            continue
+        for md_str, html in replacements.items():
+            section_text = section_text.replace(md_str, html)
 
-    if markdown.endswith('**'):
-        markdown = markdown[:len(markdown) - 2] + '</b>'
-    elif markdown.endswith('*'):
-        markdown = markdown[:len(markdown) - 1] + '</i>'
-    elif markdown.endswith('_'):
-        markdown = markdown[:len(markdown) - 1] + '</ul>'
+        if section_text.startswith('**'):
+            section_text = section_text[2:] + '<b>'
+        elif section_text.startswith('*'):
+            section_text = section_text[1:] + '<i>'
+        elif section_text.startswith('_'):
+            section_text = section_text[1:] + '<u>'
+
+        if section_text.endswith('**'):
+            section_text = section_text[:len(section_text) - 2] + '</b>'
+        elif section_text.endswith('*'):
+            section_text = section_text[:len(section_text) - 1] + '</i>'
+        elif section_text.endswith('_'):
+            section_text = section_text[:len(section_text) - 1] + '</u>'
+
+        if section_text.strip():
+            markdown += section_text
     return markdown
 
 
@@ -61,7 +127,19 @@ def _markdown_replace_quotes(markdown: str) -> str:
     lines = markdown.split('\n')
     result = ''
     prev_quote_line = None
+    code_section = False
     for line in lines:
+        # avoid code sections
+        if not code_section:
+            if '<code>' in line:
+                code_section = True
+        else:
+            if '</code>' in line:
+                code_section = False
+        if code_section:
+            result += line + '\n'
+            continue
+
         if '> ' not in line:
             result += line + '\n'
             prev_quote_line = None
@@ -90,56 +168,176 @@ def _markdown_replace_quotes(markdown: str) -> str:
     return result
 
 
-def _markdown_replace_links(markdown: str, images: bool = False) -> str:
+def _markdown_replace_links(markdown: str) -> str:
     """Replaces markdown links with html
     Optionally replace image links
     """
-    replace_links = {}
-    text = markdown
-    start_chars = '['
-    if images:
-        start_chars = '!['
-    while start_chars in text:
-        if ')' not in text:
-            break
-        text = text.split(start_chars, 1)[1]
-        markdown_link = start_chars + text.split(')')[0] + ')'
-        if ']' not in markdown_link or \
-           '(' not in markdown_link:
-            text = text.split(')', 1)[1]
+    sections = _markdown_get_sections(markdown)
+    result = ''
+    for section_text in sections:
+        if '<code>' in section_text or \
+           '](' not in section_text:
+            result += section_text
             continue
-        if not images:
-            replace_links[markdown_link] = \
-                '<a href="' + \
-                markdown_link.split('(')[1].split(')')[0] + \
-                '" target="_blank" rel="nofollow noopener noreferrer">' + \
-                markdown_link.split(start_chars)[1].split(']')[0] + \
-                '</a>'
+        sections_links = section_text.split('](')
+        ctr = 0
+        for link_section in sections_links:
+            if ctr == 0:
+                ctr += 1
+                continue
+            if '[' in sections_links[ctr - 1] and \
+               ')' in link_section:
+                link_text = sections_links[ctr - 1].split('[')[-1]
+                link_url = link_section.split(')')[0]
+                replace_str = '[' + link_text + '](' + link_url + ')'
+                link_text = link_text.replace('`', '')
+                if '!' + replace_str in section_text:
+                    html_link = \
+                        '<img class="markdownImage" src="' + \
+                        link_url + '" alt="' + link_text + '" />'
+                    section_text = \
+                        section_text.replace('!' + replace_str, html_link)
+                if replace_str in section_text:
+                    html_link = \
+                        '<a href="' + link_url + '" target="_blank" ' + \
+                        'rel="nofollow noopener noreferrer">' + \
+                        link_text + '</a>'
+                    section_text = \
+                        section_text.replace(replace_str, html_link)
+            ctr += 1
+        result += section_text
+    return result
+
+
+def _markdown_replace_bullet_points(markdown: str) -> str:
+    """Replaces bullet points
+    """
+    lines = markdown.split('\n')
+    bullet_style = ('* ', ' * ', '- ', ' - ')
+    bullet_matched = ''
+    start_line = -1
+    line_ctr = 0
+    changed = False
+    code_section = False
+    for line in lines:
+        if not line.strip():
+            # skip blank lines
+            line_ctr += 1
+            continue
+
+        # skip over code sections
+        if not code_section:
+            if '<code>' in line:
+                code_section = True
         else:
-            replace_links[markdown_link] = \
-                '<img class="markdownImage" src="' + \
-                markdown_link.split('(')[1].split(')')[0] + \
-                '" alt="' + \
-                markdown_link.split(start_chars)[1].split(']')[0] + \
-                '" />'
-        text = text.split(')', 1)[1]
-    for md_link, html_link in replace_links.items():
-        markdown = markdown.replace(md_link, html_link)
+            if '</code>' in line:
+                code_section = False
+        if code_section:
+            line_ctr += 1
+            continue
+
+        if not bullet_matched:
+            for test_str in bullet_style:
+                if line.startswith(test_str):
+                    bullet_matched = test_str
+                    start_line = line_ctr
+                    break
+        else:
+            if not line.startswith(bullet_matched):
+                for index in range(start_line, line_ctr):
+                    line_text = lines[index].replace(bullet_matched, '', 1)
+                    if index == start_line:
+                        lines[index] = \
+                            '<ul class="md_list">\n<li>' + line_text + '</li>'
+                    elif index == line_ctr - 1:
+                        lines[index] = '<li>' + line_text + '</li>\n</ul>'
+                    else:
+                        lines[index] = '<li>' + line_text + '</li>'
+                changed = True
+                start_line = -1
+                bullet_matched = ''
+        line_ctr += 1
+
+    if not changed:
+        return markdown
+
+    markdown = ''
+    for line in lines:
+        markdown += line + '\n'
+    return markdown
+
+
+def _markdown_replace_code(markdown: str) -> str:
+    """Replaces code sections within markdown
+    """
+    lines = markdown.split('\n')
+    start_line = -1
+    line_ctr = 0
+    changed = False
+    section_active = False
+    for line in lines:
+        if not line.strip():
+            # skip blank lines
+            line_ctr += 1
+            continue
+        if line.startswith('```'):
+            if not section_active:
+                start_line = line_ctr
+                section_active = True
+            else:
+                lines[start_line] = '<code>'
+                lines[line_ctr] = '</code>'
+                section_active = False
+                changed = True
+        line_ctr += 1
+
+    if not changed:
+        return markdown
+
+    markdown = ''
+    for line in lines:
+        markdown += line + '\n'
+    return markdown
+
+
+def markdown_example_numbers(markdown: str) -> str:
+    """Ensures that example numbers in the ActivityPub specification
+    document are sequential
+    """
+    lines = markdown.split('\n')
+    example_number = 1
+    line_ctr = 0
+    for line in lines:
+        if not line.strip():
+            # skip blank lines
+            line_ctr += 1
+            continue
+        if line.startswith('##') and '## Example ' in line:
+            header_str = line.split(' Example ')[0]
+            lines[line_ctr] = header_str + ' Example ' + str(example_number)
+            example_number += 1
+        line_ctr += 1
+
+    markdown = ''
+    for line in lines:
+        markdown += line + '\n'
     return markdown
 
 
 def markdown_to_html(markdown: str) -> str:
     """Converts markdown formatted text to html
     """
+    markdown = _markdown_replace_code(markdown)
+    markdown = _markdown_replace_bullet_points(markdown)
     markdown = _markdown_replace_quotes(markdown)
     markdown = _markdown_emphasis_html(markdown)
-    markdown = _markdown_replace_links(markdown, True)
     markdown = _markdown_replace_links(markdown)
 
     # replace headers
     lines_list = markdown.split('\n')
     html_str = ''
     ctr = 0
+    code_section = False
     titles = {
         "h5": '#####',
         "h4": '####',
@@ -149,13 +347,37 @@ def markdown_to_html(markdown: str) -> str:
     }
     for line in lines_list:
         if ctr > 0:
-            html_str += '<br>'
+            if not code_section:
+                html_str += '<br>\n'
+            else:
+                html_str += '\n'
+
+        # avoid code sections
+        if not code_section:
+            if '<code>' in line:
+                code_section = True
+        else:
+            if '</code>' in line:
+                code_section = False
+        if code_section:
+            html_str += line
+            ctr += 1
+            continue
+
         for hsh, hashes in titles.items():
             if line.startswith(hashes):
                 line = line.replace(hashes, '').strip()
-                line = '<' + hsh + '>' + line + '</' + hsh + '>'
+                line = '<' + hsh + '>' + line + '</' + hsh + '>\n'
                 ctr = -1
                 break
         html_str += line
         ctr += 1
+
+    html_str = html_str.replace('<code><br>', '<code>')
+    html_str = html_str.replace('</code><br>', '</code>')
+
+    html_str = html_str.replace('<ul class="md_list"><br>',
+                                '<ul class="md_list">')
+    html_str = html_str.replace('</li><br>', '</li>')
+
     return html_str

@@ -5715,15 +5715,67 @@ def _test_markdown_to_html():
 
     markdown = 'This is a quotation:\n' + \
         '> Some quote or other'
-    assert markdown_to_html(markdown) == 'This is a quotation:<br>' + \
+    expected = \
+        'This is a quotation:<br>\n' + \
         '<blockquote><i>Some quote or other</i></blockquote>'
+    result = markdown_to_html(markdown)
+    if result != expected:
+        print(result)
+    assert result == expected
 
     markdown = 'This is a multi-line quotation:\n' + \
         '> The first line\n' + \
         '> The second line'
     assert markdown_to_html(markdown) == \
-        'This is a multi-line quotation:<br>' + \
+        'This is a multi-line quotation:<br>\n' + \
         '<blockquote><i>The first line The second line</i></blockquote>'
+
+    markdown = 'This is a list of points:\n' + \
+        ' * Point 1\n' + \
+        ' * Point 2\n\n' + \
+        'And some other text.'
+    result = markdown_to_html(markdown)
+    expected = \
+        'This is a list of points:<br>\n<ul class="md_list">' + \
+        '\n<li>Point 1</li>\n' + \
+        '<li>Point 2</li>\n<li></li>\n</ul><br>\n' + \
+        'And some other text.<br>\n'
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    markdown = 'This is a list of points:\n' + \
+        ' * **Point 1**\n' + \
+        ' * *Point 2*\n\n' + \
+        'And some other text.'
+    result = markdown_to_html(markdown)
+    expected = \
+        'This is a list of points:<br>\n<ul class="md_list">\n' + \
+        '<li><b>Point 1</b></li>\n' + \
+        '<li><i>Point 2</i></li>\n<li></li>\n</ul><br>\n' + \
+        'And some other text.<br>\n'
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    markdown = 'This is a code section:\n' + \
+        '``` json\n' + \
+        '10 PRINT "YOLO"\n' + \
+        '20 GOTO 10\n' + \
+        '```\n\n' + \
+        'And some other text.'
+    result = markdown_to_html(markdown)
+    expected = \
+        'This is a code section:<br>\n' + \
+        '<code>\n' + \
+        '10 PRINT "YOLO"\n' + \
+        '20 GOTO 10\n' + \
+        '</code>\n' + \
+        '<br>\n' + \
+        'And some other text.<br>\n'
+    if result != expected:
+        print(result)
+    assert result == expected
 
     markdown = 'This is **bold**'
     assert markdown_to_html(markdown) == 'This is <b>bold</b>'
@@ -5732,27 +5784,34 @@ def _test_markdown_to_html():
     assert markdown_to_html(markdown) == 'This is <i>italic</i>'
 
     markdown = 'This is _underlined_'
-    assert markdown_to_html(markdown) == 'This is <ul>underlined</ul>'
+    assert markdown_to_html(markdown) == 'This is <u>underlined</u>'
 
     markdown = 'This is **just** plain text'
     assert markdown_to_html(markdown) == 'This is <b>just</b> plain text'
 
     markdown = '# Title1\n### Title3\n## Title2\n'
-    assert markdown_to_html(markdown) == \
-        '<h1>Title1</h1><h3>Title3</h3><h2>Title2</h2>'
+    expected = '<h1>Title1</h1>\n<h3>Title3</h3>\n<h2>Title2</h2>\n'
+    result = markdown_to_html(markdown)
+    if result != expected:
+        print(result)
+    assert result == expected
 
     markdown = \
         'This is [a link](https://something.somewhere) to something.\n' + \
         'And [something else](https://cat.pic).\n' + \
         'Or ![pounce](/cat.jpg).'
-    assert markdown_to_html(markdown) == \
+    expected = \
         'This is <a href="https://something.somewhere" ' + \
         'target="_blank" rel="nofollow noopener noreferrer">' + \
-        'a link</a> to something.<br>' + \
+        'a link</a> to something.<br>\n' + \
         'And <a href="https://cat.pic" ' + \
         'target="_blank" rel="nofollow noopener noreferrer">' + \
-        'something else</a>.<br>' + \
+        'something else</a>.<br>\n' + \
         'Or <img class="markdownImage" src="/cat.jpg" alt="pounce" />.'
+    result = markdown_to_html(markdown)
+    if result != expected:
+        print(result)
+    assert result == expected
 
 
 def _test_extract_text_fields_from_post():
