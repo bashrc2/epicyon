@@ -1140,14 +1140,15 @@ To support multiple languages, `Note` and `Article` objects can include `content
 }
 ```
 
-
 ## B. Security Considerations
 *This section is non-normative.*
 
 ### B.1 Authentication and Authorization
 ActivityPub uses authentication for two purposes; first, to authenticate clients to servers, and secondly in federated implementations to authenticate servers to each other.
 
-Unfortunately at the time of standardization, there are no strongly agreed upon mechanisms for authentication. Some possible directions for authentication are laid out [in the Social Web Community Group Authentication and Authorization best practices report](https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication_Authorization).
+In most implementations authentication from client to server happens via [OAuth 2.0](https://datatracker.ietf.org/doc/html/rfc6749), although other methods MAY be used.
+
+Also see the [Social Web Community Group Authentication and Authorization best practices report](https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication_Authorization).
 
 ### B.2 Verification
 Servers should not trust client submitted content, and federated servers also should not trust content received from a server other than the content's origin without some form of verification.
