@@ -12,6 +12,7 @@ from shutil import copyfile
 from utils import get_config_param
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
+from markdown import markdown_example_numbers
 from markdown import markdown_to_html
 
 
@@ -34,7 +35,8 @@ def html_specification(css_cache: {}, base_dir: str, http_prefix: str,
     if os.path.isfile(base_dir + '/accounts/activitypub.md'):
         with open(base_dir + '/accounts/activitypub.md', 'r',
                   encoding='utf-8') as fp_specification:
-            specification_text = markdown_to_html(fp_specification.read())
+            md_text = markdown_example_numbers(fp_specification.read())
+            specification_text = markdown_to_html(md_text)
 
     specification_form = ''
     css_filename = base_dir + '/epicyon-profile.css'

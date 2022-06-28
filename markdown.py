@@ -312,6 +312,30 @@ def _markdown_replace_code(markdown: str) -> str:
     return markdown
 
 
+def markdown_example_numbers(markdown: str) -> str:
+    """Ensures that example numbers in the ActivityPub specification
+    document are sequential
+    """
+    lines = markdown.split('\n')
+    example_number = 1
+    line_ctr = 0
+    for line in lines:
+        if not line.strip():
+            # skip blank lines
+            line_ctr += 1
+            continue
+        if line.startswith('##') and '## Example ' in line:
+            header_str = line.split(' Example ')[0]
+            lines[line_ctr] = header_str + ' Example ' + str(example_number)
+            example_number += 1
+        line_ctr += 1
+
+    markdown = ''
+    for line in lines:
+        markdown += line + '\n'
+    return markdown
+
+
 def markdown_to_html(markdown: str) -> str:
     """Converts markdown formatted text to html
     """
