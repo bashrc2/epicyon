@@ -4864,15 +4864,13 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if fields.get('editedSpecification'):
                     specification_str = fields['editedSpecification']
-                    if not dangerous_markup(specification_str,
-                                            allow_local_network_access):
-                        try:
-                            with open(specification_filename, 'w+',
-                                      encoding='utf-8') as specificationfile:
-                                specificationfile.write(specification_str)
-                        except OSError:
-                            print('EX: unable to write specification ' +
-                                  specification_filename)
+                    try:
+                        with open(specification_filename, 'w+',
+                                  encoding='utf-8') as specificationfile:
+                            specificationfile.write(specification_str)
+                    except OSError:
+                        print('EX: unable to write specification ' +
+                              specification_filename)
                 else:
                     if os.path.isfile(specification_filename):
                         try:
