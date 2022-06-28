@@ -190,6 +190,7 @@ def _markdown_replace_links(markdown: str) -> str:
                 link_text = sections_links[ctr - 1].split('[')[-1]
                 link_url = link_section.split(')')[0]
                 replace_str = '[' + link_text + '](' + link_url + ')'
+                link_text = link_text.replace('`', '')
                 if '!' + replace_str in section_text:
                     html_link = \
                         '<img class="markdownImage" src="' + \
