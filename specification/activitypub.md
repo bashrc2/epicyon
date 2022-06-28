@@ -591,6 +591,12 @@ Care should be taken to not confuse the the `likes` collection with the similarl
 ### 5.8 Shares/Boosts Collection
 Every object *MAY* have a `shares` collection, otherwise known as `boosts` or `repeats`. This is a list of all `Announce` activities with this object as the `object` property, added as a side effect. The `shares` collection *MUST* be either an [`OrderedCollection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) or a [`Collection`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-collection) and *MAY* be filtered on privileges of an authenticated user or as appropriate when no authentication is given.
 
+### 5.9 Featured Collection
+Every `actor` MAY have a `featured` collection, which contains "pinned" posts used to supply more information about the person or organization.
+
+### 5.10 FeaturedTags Collection
+Every `actor` MAY have a `featuredTags` collection to enhance discoverability, containing tag objects.
+
 ## 6. Client to Server Interactions
 Activities as defined by ActivityStreams are the core mechanism for creating, modifying and sharing content within the social graph.
 
