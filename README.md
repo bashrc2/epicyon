@@ -16,7 +16,7 @@ Key features:
  * Suitable for installation on single board computers.
  * No javascript.
  * No database. Data stored as ordinary files.
- * No fashionable web frameworks. "Boring by design".
+ * No fashionable web frameworks. *"Boring by design"*.
  * No blockchain garbage.
  * Written in Python, with few dependencies.
  * AGPL license, which big tech hates.
