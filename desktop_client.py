@@ -344,7 +344,7 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
     text = html.unescape(say_text).replace('"', "'")
     cmd = 'mimic3 -v ' + voice + \
         ' --length-scale ' + length_scale + \
-        ' --noise_w ' + noise_w + \
+        ' --noise-w ' + noise_w + \
         ' "' + text + '"'
     os.system(cmd)
 
