@@ -706,7 +706,7 @@ Any `to`, `bto`, `cc`, `bcc`, and `audience` properties specified on the object 
   "type": "Note",
   "content": "This is a note",
   "published": "2015-02-10T15:04:55Z",
-  "to": ["https://example.org/@john/"],
+  "to": ["https://example.org/@john"],
   "cc": ["https://example.com/@erik/followers",
          "https://www.w3.org/ns/activitystreams#Public"]
 }
@@ -727,12 +727,12 @@ The above example could be converted to this:
     "attributedTo": "https://example.net/users/mallory",
     "content": "This is a note",
     "published": "2015-02-10T15:04:55Z",
-    "to": ["https://example.org/@john/"],
+    "to": ["https://example.org/@john"],
     "cc": ["https://example.com/@erik/followers",
            "https://www.w3.org/ns/activitystreams#Public"]
   },
   "published": "2015-02-10T15:04:55Z",
-  "to": ["https://example.org/@john/"],
+  "to": ["https://example.org/@john"],
   "cc": ["https://example.com/@erik/followers",
          "https://www.w3.org/ns/activitystreams#Public"]
 }
