@@ -389,6 +389,9 @@ Describes the [http header signature](https://datatracker.ietf.org/doc/html/draf
 #### 4.1.9 published
 This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
 
+#### 4.1.10 preferredUsername
+A short username which may be used to refer to the actor, with no uniqueness guarantees.
+
 ### Example 9
 ``` json
 {
@@ -463,14 +466,11 @@ This is a timestamp for when the account was first created, and is used to show 
 
 Implementations *MAY*, in addition, provide the following properties:
 
-#### 4.1.10 updated
+#### 4.1.11 updated
 A timestamp for when this actor was last changed. This can be used by followers to update their actor caches.
 
-#### 4.1.11 streams
+#### 4.1.12 streams
 A list of supplementary Collections which may be of interest.
-
-#### 4.1.12 preferredUsername
-A short username which may be used to refer to the actor, with no uniqueness guarantees.
 
 #### 4.1.13 endpoints
 A json object which maps additional (typically server/domain-wide) endpoints which may be useful either for this actor or someone referencing this actor. This mapping may be nested inside the actor document as the value or may be a link to a JSON-LD document with these properties.
