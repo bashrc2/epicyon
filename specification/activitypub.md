@@ -356,102 +356,97 @@ Once the actor's URI has been identified, it should be dereferenced.
 ActivityPub does not dictate a specific relationship between "users" and Actors; many configurations are possible. There may be multiple human users or organizations controlling an Actor, or likewise one human or organization may control multiple Actors. Similarly, an Actor may represent a piece of software, like a bot, or an automated process. More detailed "user" modelling, for example linking together of Actors which are controlled by the same entity, or allowing one Actor to be presented through multiple alternate profiles or aspects, are at the discretion of the implementation.
 
 ### 4.1 Actor objects
-Actor objects *MUST* have, in addition to the properties mandated by section 3.1 Object Identifiers, the following properties:
 
-#### 4.1.1 inbox
+As the upstream vocabulary for ActivityPub, any applicable [ActivityStreams](https://www.w3.org/TR/activitystreams-core) property may be used on ActivityPub Actors. Some ActivityStreams properties are particularly worth highlighting to demonstrate how they are used in ActivityPub implementations.
+
+Properties containing natural language values, such as `name`, `preferredUsername`, or `summary`, make use of [natural language support defined in ActivityStreams](https://www.w3.org/TR/activitystreams-core/#naturalLanguageValues).
+
+#### 4.1.1 Actor objects *MUST* have, in addition to the properties mandated by section 3.1 Object Identifiers, the following properties:
+
+##### inbox
 A reference to an ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages received by the actor; see section 5.2 Inbox.
 
-#### 4.1.2 outbox
+##### outbox
 An ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages produced by the actor; see section 5.1 Outbox.
 
 Implementations *SHOULD*, in addition, provide the following properties:
 
-#### 4.1.3 following
+##### following
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that this actor is following; see section 5.4 Following Collection
 
-#### 4.1.4 followers
+##### followers
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that follow this actor; see section 5.3 Followers Collection.
 
-#### 4.1.5 discoverable
+##### discoverable
 Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
 
-Implementations *MAY* provide the following properties:
-
-#### 4.1.6 liked
-A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
-
-#### 4.1.7 manuallyApprovesFollowers
-If true then followers for this account require permission to be granted. This can be an effective anti-spam or anti-harassment feature.
-
-#### 4.1.8 publicKey
+##### publicKey
 Describes the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07) public key for this account. This can be used by other accounts on the same or other federated servers to validate the authenticity of received posts.
 
-#### 4.1.9 published
-This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
-
-#### 4.1.10 preferredUsername
+##### preferredUsername
 A short username which may be used to refer to the actor, with no uniqueness guarantees.
 
-Implementations *MAY*, in addition, provide the following properties:
+#### 4.1.2 Implementations *MAY* provide the following properties:
 
-#### 4.1.11 updated
+##### liked
+A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
+
+##### manuallyApprovesFollowers
+If true then followers for this account require permission to be granted. This can be an effective anti-spam or anti-harassment feature.
+
+##### published
+This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
+
+##### updated
 A timestamp for when this actor was last changed. This can be used by followers to update their actor caches.
 
-#### 4.1.12 streams
+##### streams
 A list of supplementary Collections which may be of interest.
 
-#### 4.1.13 endpoints
+##### endpoints
 A json object which maps additional (typically server/domain-wide) endpoints which may be useful either for this actor or someone referencing this actor. This mapping may be nested inside the actor document as the value or may be a link to a JSON-LD document with these properties.
 
 The `endpoints` mapping *MAY* include the following properties:
 
-**proxyUrl**
+###### *proxyUrl*
 Endpoint URI so this actor's clients may access remote ActivityStreams objects which require authentication to access. To use this endpoint, the client posts an `x-www-form-urlencoded` `id` parameter with the value being the `id` of the requested ActivityStreams object.
 
-**oauthAuthorizationEndpoint**
+###### *oauthAuthorizationEndpoint*
 If OAuth 2.0 bearer tokens [RFC6749](https://datatracker.ietf.org/doc/html/rfc6749) [RFC6750](https://datatracker.ietf.org/doc/html/rfc6750) are being used for authenticating client to server interactions, this endpoint specifies a URI at which a browser-authenticated user may obtain a new authorization grant.
 
-**oauthTokenEndpoint**
+###### *oauthTokenEndpoint*
 If OAuth 2.0 bearer tokens [RFC6749](https://datatracker.ietf.org/doc/html/rfc6749) [RFC6750](https://datatracker.ietf.org/doc/html/rfc6750) are being used for authenticating client to server interactions, this endpoint specifies a URI at which a client may acquire an access token.
 
-**provideClientKey**
+###### *provideClientKey*
 If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization, this endpoint specifies a URI at which browser-authenticated users may authorize a client's public key for client to server interactions.
 
-**signClientKey**
+###### *signClientKey*
 If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization, this endpoint specifies a URI at which a client key may be signed by the actor's key for a time window to act on behalf of the actor in interacting with foreign servers.
 
-**sharedInbox**
+###### *sharedInbox*
 An optional endpoint used for wide delivery of publicly addressed activities and activities sent to followers. `sharedInbox` endpoints *SHOULD* also be publicly readable `OrderedCollection` objects containing objects addressed to the Public special collection. Reading from the `sharedInbox` endpoint *MUST NOT* present objects which are not addressed to the `Public` endpoint.
 
-**Note**
-
-As the upstream vocabulary for ActivityPub, any applicable [ActivityStreams](https://www.w3.org/TR/activitystreams-core) property may be used on ActivityPub Actors. Some ActivityStreams properties are particularly worth highlighting to demonstrate how they are used in ActivityPub implementations.
-
-#### 4.1.14 url
+##### url
 A link to the actor's "profile web page", if not equal to the value of `id`.
 
-#### 4.1.15 name
+##### name
 The preferred "nickname" or "display name" of the actor.
 
-#### 4.1.16 summary
+##### summary
 A quick summary or biography by the user about themselves.
 
-**Note**
-
-Properties containing natural language values, such as `name`, `preferredUsername`, or `summary`, make use of [natural language support defined in ActivityStreams](https://www.w3.org/TR/activitystreams-core/#naturalLanguageValues).
-
-#### 4.1.17 featured
+##### featured
 Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing "pinned" posts appearing on the account profile screen. Such posts are typically used to provide more information about the account, beyond the profile summary.
 
-#### 4.1.18 featuredTags
+##### featuredTags
 Link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing tag objects representing hashtags. This is used to improve discoverability.
 
 For example, Alyssa likes reading and so she pins a post containing hashtags for her favorite books to her profile. The post appears within the `featured` collection of her `actor` and the hashtags within the post appear within `featuredTags`. When searching the hashtag for a particular book, Misha discovers Alyssa's account and decides to send a follow request based upon their mutual interest.
 
-#### 4.1.19 icon
+##### icon
 Describes an image which represents the user's profile picture (this may be a thumbnail).
 
-#### 4.1.20 image
+##### image
 Describes the profile page background banner for this person.
 
 ### Example 9
