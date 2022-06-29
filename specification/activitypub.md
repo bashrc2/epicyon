@@ -369,16 +369,11 @@ A reference to an ActivityStreams [OrderedCollection](https://www.w3.org/TR/acti
 ##### outbox
 An ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages produced by the actor; see section 5.1 Outbox.
 
-Implementations *SHOULD*, in addition, provide the following properties:
-
 ##### following
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that this actor is following; see section 5.4 Following Collection
 
 ##### followers
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that follow this actor; see section 5.3 Followers Collection.
-
-##### discoverable
-Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
 
 ##### publicKey
 Describes the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07) public key for this account. This can be used by other accounts on the same or other federated servers to validate the authenticity of received posts.
@@ -387,6 +382,9 @@ Describes the [http header signature](https://datatracker.ietf.org/doc/html/draf
 A short username which may be used to refer to the actor, with no uniqueness guarantees.
 
 #### 4.1.2 Implementations *MAY* provide the following properties:
+
+##### discoverable
+Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
 
 ##### liked
 A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
