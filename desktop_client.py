@@ -1405,7 +1405,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
         if screenreader == 'espeak':
             print('Setting up espeak')
             from espeak import espeak
-        elif screenreader != 'picospeaker':
+        elif screenreader not in ('picospeaker', 'mimic3'):
             print(screenreader + ' is not a supported TTS system')
             return
 
