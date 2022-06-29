@@ -1153,7 +1153,10 @@ Verification of incoming posts SHOULD occur via a `http header signature` check.
 A typical http signature created by Alyssa's server on an outgoing POST might look like the following:
 
 ``` http
-Signature: keyId="https://instancedomain/users/alyssa#main-key",algorithm="rsa-sha256",headers="(request-target) host date digest content-type",signature="tsZYmLJTJJJ/U+HrxVdLTDOwuo8Erqx/uAG2nqcxiiAq0zTQ2Qe2ORPEYRADMBULMAKpX8pt1uZLZncWqyLLLfOSE+M/xMowQkYDaTlLmg9bnnX/+pgp74Ixo6O47R6JhhMUknmBk2bejYamYAtWa5ER6GoZ5/0M4lyyqX890+rP4qlZu10ltb3vFm4qD4jgEPFtOjAEVloeYiMJng7ml6BtiU60OrsEmvcTQvpcB8xazvtCyzocG8+knzAFgUlSZxFKukBE/bakj10DIjG8tjSuNe48iX0OyRdLM7xpVk9RZUK5I/qZ0Epe5iUdUrzlsrAXWHWkXAc+8lvv/asRtw=="
+Signature: keyId="https://instancedomain/users/alyssa#main-key",
+           algorithm="rsa-sha256",
+           headers="(request-target) host date digest content-type",
+           signature="tsZYmLJTJJJ/U+...=="
 ```
 
 http signatures SHOULD include `host`, `date` and a `digest` created from the post.
