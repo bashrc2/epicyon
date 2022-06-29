@@ -358,78 +358,6 @@ ActivityPub does not dictate a specific relationship between "users" and Actors;
 ### 4.1 Actor objects
 Actor objects *MUST* have, in addition to the properties mandated by section 3.1 Object Identifiers, the following properties:
 
-### Example 9
-``` json
-{
-  "@context": [
-    "https://www.w3.org/ns/activitystreams",
-    "https://w3id.org/security/v1",
-    {"@language": "ja"},
-    {
-      "Curve25519Key": "toot:Curve25519Key",
-      "Device": "toot:Device",
-      "Ed25519Key": "toot:Ed25519Key",
-      "Ed25519Signature": "toot:Ed25519Signature",
-      "EncryptedMessage": "toot:EncryptedMessage",
-      "PropertyValue": "schema:PropertyValue",
-      "alsoKnownAs": {"@id": "as:alsoKnownAs", "@type": "@id"},
-      "cipherText": "toot:cipherText",
-      "claim": {"@id": "toot:claim", "@type": "@id"},
-      "deviceId": "toot:deviceId",
-      "devices": {"@id": "toot:devices", "@type": "@id"},
-      "discoverable": "toot:discoverable",
-      "featured": {"@id": "toot:featured", "@type": "@id"},
-      "featuredTags": {"@id": "toot:featuredTags", "@type": "@id"},
-      "fingerprintKey": {"@id": "toot:fingerprintKey", "@type": "@id"},
-      "focalPoint": {"@container": "@list", "@id": "toot:focalPoint"},
-      "identityKey": {"@id": "toot:identityKey", "@type": "@id"},
-      "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
-      "messageFranking": "toot:messageFranking",
-      "messageType": "toot:messageType",
-      "movedTo": {"@id": "as:movedTo", "@type": "@id"},
-      "publicKeyBase64": "toot:publicKeyBase64",
-      "schema": "http://schema.org#",
-      "suspended": "toot:suspended",
-      "toot": "http://joinmastodon.org/ns#",
-      "value": "schema:value"
-    }
-  ],
-  "id": "https://kenzoishii.example.com/users/kenzoishii",
-  "url": "https://kenzoishii.example.com/@kenzoishii"
-  "following": "https://kenzoishii.example.com/users/kenzoishii/following",
-  "followers": "https://kenzoishii.example.com/users/kenzoishii/followers",
-  "featured": "https://kenzoishii.example.com/users/kenzoishii/featured",
-  "featuredTags": "https://kenzoishii.example.com/users/kenzoishii/collections/tags",
-  "liked": "https://kenzoishii.example.com/users/kenzoishii/liked",
-  "inbox": "https://kenzoishii.example.com/users/kenzoishii/inbox",
-  "outbox": "https://kenzoishii.example.com/users/kenzoishii/outbox",
-  "endpoints": {"sharedInbox": "https://kenzoishii.example.com/inbox"},
-  "preferredUsername": "kenzoishii",
-  "name": "石井健蔵",
-  "summary": "この方はただの例です",
-  "published": "2017-08-23T00:00:00Z",
-  "updated": "2022-02-09T00:00:00Z",
-  "discoverable": True,
-  "manuallyApprovesFollowers": False,
-  "icon": {
-    "mediaType": "image/png",
-    "type": "Image",
-    "url": "https://kenzoishii.example.com/accounts/avatars/730.png"
-  },
-  "image": {
-    "mediaType": "image/jpeg",
-    "type": "Image",
-    "url": "https://kenzoishii.example.com/accounts/headers/zhw.jpg"
-  },
-  "publicKey": {"id": "https://kenzoishii.example.com/users/kenzoishii#main-key",
-                "owner": "https://kenzoishii.example.com/users/kenzoishii",
-                "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n"
-                                "..."
-                                "-----END PUBLIC KEY-----\n"},
-  "type": "Person"
-}
-```
-
 #### 4.1.1 inbox
 A reference to an ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages received by the actor; see section 5.2 Inbox.
 
@@ -525,6 +453,78 @@ Describes an image which represents the user's profile picture (this may be a th
 
 #### 4.1.20 image
 Describes the profile page background banner for this person.
+
+### Example 9
+``` json
+{
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://w3id.org/security/v1",
+    {"@language": "ja"},
+    {
+      "Curve25519Key": "toot:Curve25519Key",
+      "Device": "toot:Device",
+      "Ed25519Key": "toot:Ed25519Key",
+      "Ed25519Signature": "toot:Ed25519Signature",
+      "EncryptedMessage": "toot:EncryptedMessage",
+      "PropertyValue": "schema:PropertyValue",
+      "alsoKnownAs": {"@id": "as:alsoKnownAs", "@type": "@id"},
+      "cipherText": "toot:cipherText",
+      "claim": {"@id": "toot:claim", "@type": "@id"},
+      "deviceId": "toot:deviceId",
+      "devices": {"@id": "toot:devices", "@type": "@id"},
+      "discoverable": "toot:discoverable",
+      "featured": {"@id": "toot:featured", "@type": "@id"},
+      "featuredTags": {"@id": "toot:featuredTags", "@type": "@id"},
+      "fingerprintKey": {"@id": "toot:fingerprintKey", "@type": "@id"},
+      "focalPoint": {"@container": "@list", "@id": "toot:focalPoint"},
+      "identityKey": {"@id": "toot:identityKey", "@type": "@id"},
+      "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+      "messageFranking": "toot:messageFranking",
+      "messageType": "toot:messageType",
+      "movedTo": {"@id": "as:movedTo", "@type": "@id"},
+      "publicKeyBase64": "toot:publicKeyBase64",
+      "schema": "http://schema.org#",
+      "suspended": "toot:suspended",
+      "toot": "http://joinmastodon.org/ns#",
+      "value": "schema:value"
+    }
+  ],
+  "id": "https://kenzoishii.example.com/users/kenzoishii",
+  "url": "https://kenzoishii.example.com/@kenzoishii"
+  "following": "https://kenzoishii.example.com/users/kenzoishii/following",
+  "followers": "https://kenzoishii.example.com/users/kenzoishii/followers",
+  "featured": "https://kenzoishii.example.com/users/kenzoishii/featured",
+  "featuredTags": "https://kenzoishii.example.com/users/kenzoishii/collections/tags",
+  "liked": "https://kenzoishii.example.com/users/kenzoishii/liked",
+  "inbox": "https://kenzoishii.example.com/users/kenzoishii/inbox",
+  "outbox": "https://kenzoishii.example.com/users/kenzoishii/outbox",
+  "endpoints": {"sharedInbox": "https://kenzoishii.example.com/inbox"},
+  "preferredUsername": "kenzoishii",
+  "name": "石井健蔵",
+  "summary": "この方はただの例です",
+  "published": "2017-08-23T00:00:00Z",
+  "updated": "2022-02-09T00:00:00Z",
+  "discoverable": True,
+  "manuallyApprovesFollowers": False,
+  "icon": {
+    "mediaType": "image/png",
+    "type": "Image",
+    "url": "https://kenzoishii.example.com/accounts/avatars/730.png"
+  },
+  "image": {
+    "mediaType": "image/jpeg",
+    "type": "Image",
+    "url": "https://kenzoishii.example.com/accounts/headers/zhw.jpg"
+  },
+  "publicKey": {"id": "https://kenzoishii.example.com/users/kenzoishii#main-key",
+                "owner": "https://kenzoishii.example.com/users/kenzoishii",
+                "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n"
+                                "..."
+                                "-----END PUBLIC KEY-----\n"},
+  "type": "Person"
+}
+```
 
 ## 5. Collections
 ActivityStreams defines the collection concept; ActivityPub defines several collections with special behavior. Note that ActivityPub makes use of [ActivityStreams paging](https://www.w3.org/TR/activitystreams-core/#paging) to traverse large sets of objects.
