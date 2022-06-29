@@ -4,9 +4,24 @@
 
 <img src="https://libreserver.org/epicyon/img/mobile.jpg" width="30%"/>
 
-Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and suitable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions, news feed and perimeter defense against adversaries. It contains *no JavaScript* and uses HTML+CSS with a Python backend.
+Epicyon is a [fediverse](https://en.wikipedia.org/wiki/Fediverse) server suitable for self-hosting a small number of accounts on low power systems.
 
-Corporate social media gives you an audience, with reach, celebrity, spectacle, lack of control, professional influencers, anxiety, alienation and competition. It's designed for fast growth regardless of social consequences. Epicyon is designed for community, in which you have voice, agency, discussions and comradery. The community approach is the better way to build a habitable internet for the long term.
+Key features:
+
+ * Open standards: HTML, CSS, ActivityPub, RSS, CalDAV.
+ * Supports common web browsers and [shell browsers](https://lynx.invisible-island.net).
+ * Will not drain your mobile or laptop battery.
+ * Customisable themes. It doesn't have to look bland.
+ * Does not require much RAM, either on server or client.
+ * Suitable for installation on single board computers.
+ * No javascript.
+ * No database. Data stored as ordinary files.
+ * No fashionable web frameworks. "Boring by design".
+ * No blockchain garbage.
+ * Written in Python, with few dependencies.
+ * AGPL license, which big tech hates.
+
+Epicyon is for people who are tired of *big anything* and just want to DIY their online social experience without much fuss or expense. Think *water cooler discussions* rather than *shouting into the void*, in which you're mainly just reading and responding to the posts of people that you're following.
 
 [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md) - [Principles of Unity](principlesofunity.md) - [C2S Desktop Client](README_desktop_client.md) - [Coding Style](README_coding_style.md)
 

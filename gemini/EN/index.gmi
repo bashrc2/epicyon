@@ -13,7 +13,24 @@
        ``-'      ``-'
 ```
 
-Epicyon is an AGPL licensed ActivityPub protocol compliant federated social network server suitable for hosting a small number of accounts on low power systems requiring minimal maintenance, such as single board computers. It's the ActivityPub equivalent of an email server, storing posts as human readable JSON on file, rather than in a database. It also uses only a small amount of RAM.
+Epicyon is a fediverse server suitable for self-hosting a small number of accounts on low power systems.
+
+Key features:
+
+ * Open standards: HTML, CSS, ActivityPub, RSS, CalDAV.
+ * Supports common web browsers and shell browsers.
+ * Will not drain your mobile or laptop battery.
+ * Customisable themes. It doesn't have to look bland.
+ * Does not require much RAM, either on server or client.
+ * Suitable for installation on single board computers.
+ * No javascript.
+ * No database. Data stored as ordinary files.
+ * No fashionable web frameworks. "Boring by design".
+ * No blockchain garbage.
+ * Written in Python, with few dependencies.
+ * AGPL license, which big tech hates.
+
+Epicyon is for people who are tired of Big Anything and just want to DIY their online social experience without much fuss or expense. Think "water cooler discussions" rather than "shouting into the void", in which you're mainly just reading and responding to the posts of people that you're following.
 
 ## An Internet of People, Not Corporate Agendas
 
