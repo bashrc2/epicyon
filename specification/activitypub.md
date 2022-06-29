@@ -358,40 +358,6 @@ ActivityPub does not dictate a specific relationship between "users" and Actors;
 ### 4.1 Actor objects
 Actor objects *MUST* have, in addition to the properties mandated by section 3.1 Object Identifiers, the following properties:
 
-#### 4.1.1 inbox
-A reference to an ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages received by the actor; see section 5.2 Inbox.
-
-#### 4.1.2 outbox
-An ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages produced by the actor; see section 5.1 Outbox.
-
-Implementations *SHOULD*, in addition, provide the following properties:
-
-#### 4.1.3 following
-A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that this actor is following; see section 5.4 Following Collection
-
-#### 4.1.4 followers
-A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that follow this actor; see section 5.3 Followers Collection.
-
-#### 4.1.5 discoverable
-Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
-
-Implementations *MAY* provide the following properties:
-
-#### 4.1.6 liked
-A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
-
-#### 4.1.7 manuallyApprovesFollowers
-If true then followers for this account require permission to be granted. This can be an effective anti-spam or anti-harassment feature.
-
-#### 4.1.8 publicKey
-Describes the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07) public key for this account. This can be used by other accounts on the same or other federated servers to validate the authenticity of received posts.
-
-#### 4.1.9 published
-This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
-
-#### 4.1.10 preferredUsername
-A short username which may be used to refer to the actor, with no uniqueness guarantees.
-
 ### Example 9
 ``` json
 {
@@ -463,6 +429,40 @@ A short username which may be used to refer to the actor, with no uniqueness gua
   "type": "Person"
 }
 ```
+
+#### 4.1.1 inbox
+A reference to an ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages received by the actor; see section 5.2 Inbox.
+
+#### 4.1.2 outbox
+An ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages produced by the actor; see section 5.1 Outbox.
+
+Implementations *SHOULD*, in addition, provide the following properties:
+
+#### 4.1.3 following
+A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that this actor is following; see section 5.4 Following Collection
+
+#### 4.1.4 followers
+A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of the actors that follow this actor; see section 5.3 Followers Collection.
+
+#### 4.1.5 discoverable
+Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
+
+Implementations *MAY* provide the following properties:
+
+#### 4.1.6 liked
+A link to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) of objects this actor has liked; see section 5.5 Liked Collection.
+
+#### 4.1.7 manuallyApprovesFollowers
+If true then followers for this account require permission to be granted. This can be an effective anti-spam or anti-harassment feature.
+
+#### 4.1.8 publicKey
+Describes the [http header signature](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07) public key for this account. This can be used by other accounts on the same or other federated servers to validate the authenticity of received posts.
+
+#### 4.1.9 published
+This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
+
+#### 4.1.10 preferredUsername
+A short username which may be used to refer to the actor, with no uniqueness guarantees.
 
 Implementations *MAY*, in addition, provide the following properties:
 
