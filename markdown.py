@@ -339,6 +339,7 @@ def markdown_to_html(markdown: str) -> str:
     ctr = 0
     code_section = False
     titles = {
+        "h6": '######',
         "h5": '#####',
         "h4": '####',
         "h3": '###',
