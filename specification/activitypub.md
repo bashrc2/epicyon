@@ -1150,6 +1150,16 @@ Servers should be careful to verify that new content is really posted by the act
 
 Verification of incoming posts SHOULD occur via a `http header signature` check. Currently, [draft 07 of the http signatures RFC](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-07) has become the *de facto* standard, although later versions MAY be implemented provided that sufficient support exists between federated servers.
 
+A typical http signature created by Alyssa's server on an outgoing POST might look like the following:
+
+``` http
+Signature: keyId="https://instancedomain/users/alyssa#main-key",algorithm="rsa-sha256",headers="(request-target) host date digest content-type",signature="tsZYmLJTJJJ/U+HrxVdLTDOwuo8Erqx/uAG2nqcxiiAq0zTQ2Qe2ORPEYRADMBULMAKpX8pt1uZLZncWqyLLLfOSE+M/xMowQkYDaTlLmg9bnnX/+pgp74Ixo6O47R6JhhMUknmBk2bejYamYAtWa5ER6GoZ5/0M4lyyqX890+rP4qlZu10ltb3vFm4qD4jgEPFtOjAEVloeYiMJng7ml6BtiU60OrsEmvcTQvpcB8xazvtCyzocG8+knzAFgUlSZxFKukBE/bakj10DIjG8tjSuNe48iX0OyRdLM7xpVk9RZUK5I/qZ0Epe5iUdUrzlsrAXWHWkXAc+8lvv/asRtw=="
+```
+
+http signatures SHOULD include `host`, `date` and a `digest` created from the post.
+
+The receiving server can obtain Alyssa's public key from `https://instancedomain/users/alyssa#main-key` and use it to verify the signature.
+
 In addition, to allow for relaying of posts [linked data signatures](https://w3c-ccg.github.io/data-integrity-spec) MAY be used. This can allow posts to be verified as authentic even if they have passed through intermediate servers. An incoming post SHOULD be considered valid if its `http header signature` fails but an attached `linked data signature` passes.
 
 ### B.3 Accessing localhost URIs
