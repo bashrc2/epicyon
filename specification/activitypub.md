@@ -389,9 +389,6 @@ Describes the [http header signature](https://datatracker.ietf.org/doc/html/draf
 #### 4.1.9 published
 This is a timestamp for when the account was first created, and is used to show a joined date on profile screens.
 
-#### 4.1.10 updated
-A timestamp for when this actor was last changed. This can be used by followers to update their actor caches.
-
 ### Example 9
 ``` json
 {
@@ -465,6 +462,9 @@ A timestamp for when this actor was last changed. This can be used by followers 
 ```
 
 Implementations *MAY*, in addition, provide the following properties:
+
+#### 4.1.10 updated
+A timestamp for when this actor was last changed. This can be used by followers to update their actor caches.
 
 #### 4.1.11 streams
 A list of supplementary Collections which may be of interest.
