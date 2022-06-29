@@ -346,7 +346,7 @@ For example, Alyssa P. Hacker likes to post to her ActivityPub powered blog via 
 ActivityPub actors are generally one of the [ActivityStreams Actor Types](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), but they don't have to be. For example, a [Profile](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile) object might be used as an actor, or a type from an [ActivityStreams](https://www.w3.org/TR/activitystreams-core) extension. Actors are retrieved like any other Object in ActivityPub. Like other [ActivityStreams objects](https://www.w3.org/TR/activitystreams-vocabulary/#object-types), actors have an `id`, which is a URI. When entered directly into a user interface (for example on a login form), it is desirable to support simplified naming. For this purpose, ID normalization *SHOULD* be performed as follows:
 
  * If the entered ID is a valid URI, then it is to be used directly.
- * If it appears that the user neglected to add a scheme for a URI that would otherwise be considered valid, such as `example.org/alice/`, clients *MAY* attempt to provide a default scheme, preferably `https`.
+ * If it appears that the user neglected to add a scheme for a URI that would otherwise be considered valid, such as `example.org/users/alice`, clients *MAY* attempt to provide a default scheme, preferably `https`.
  * Otherwise, the entered value should be considered invalid.
 
 Once the actor's URI has been identified, it should be dereferenced.
