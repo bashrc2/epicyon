@@ -340,7 +340,7 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
     if pitch > 75:
         voice = 'en_US/vctk_low'
     length_scale = str(1.0 - (rate / 200.0))
-    noise_w = str(srange / 100.0)
+    noise_w = str(float(srange) / 100.0)
     text = html.unescape(say_text).replace('"', "'")
     cmd = 'mimic3 -v ' + voice + \
         ' --length-scale ' + length_scale + \
