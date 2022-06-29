@@ -347,7 +347,8 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
     cmd = 'mimic3 -v ' + voice + \
         ' --length-scale ' + length_scale + \
         ' --noise-w ' + noise_w + \
-        ' "' + text + '" &'
+        ' --play-program aplay' + \
+        ' "' + text + '"'
     os.system(cmd)
 
 
