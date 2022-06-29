@@ -28,6 +28,12 @@ Or if you have picospeaker installed:
 ~/epicyon-client-pico
 ```
 
+Or if you have mimic3 installed:
+
+``` bash
+~/epicyon-client-mimic3
+```
+
 ## Commands
 
 The desktop client has a few commands, which may be more convenient than the web interface for some purposes:
@@ -87,7 +93,13 @@ Or a quicker version, if you have installed the desktop client as described abov
 Or if you have [picospeaker](https://gitlab.com/ky1e/picospeaker) installed:
 
 ``` bash
-python3 epicyon.py --notifyShowNewPosts --screenreader picospeaker --desktop yournickname@yourdomain
+~/epicyon-stream-pico
+```
+
+Or if you have mimic3 installed:
+
+``` bash
+~/epicyon-stream-mimic3
 ```
 
 You can also use the **--password** option to provide the password. This will then stay running and incoming posts will be announced as they arrive.

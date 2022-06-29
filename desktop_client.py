@@ -326,6 +326,29 @@ def _speaker_espeak(espeak, pitch: int, rate: int, srange: int,
     espeak.synth(html.unescape(say_text))
 
 
+def _speaker_mimic3(pitch: int, rate: int, srange: int,
+                    say_text: str) -> None:
+    """Speaks the given text with mimic3
+    """
+    voice = 'en_UK/apope_low'
+    if pitch > 20:
+        voice = 'en_US/m-ailabs_low'
+    if pitch > 40:
+        voice = 'en_US/hifi-tts_low'
+    if pitch >= 50:
+        voice = 'en_US/ljspeech_low'
+    if pitch > 75:
+        voice = 'en_US/vctk_low'
+    length_scale = str(1.0 - (rate / 200.0))
+    noise_w = str(srange / 100.0)
+    text = html.unescape(say_text).replace('"', "'")
+    cmd = 'mimic3 -v ' + voice + \
+        ' --length-scale ' + length_scale + \
+        ' --noise_w ' + noise_w + \
+        ' "' + text + '"'
+    os.system(cmd)
+
+
 def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
                          say_text: str) -> None:
     """TTS using picospeaker
@@ -396,6 +419,8 @@ def _text_to_speech(say_str: str, screenreader: str,
         _speaker_espeak(espeak, pitch, rate, srange, say_str)
     elif screenreader == 'picospeaker':
         _speaker_picospeaker(pitch, rate, system_language, say_str)
+    elif screenreader == 'mimic3':
+        _speaker_mimic3(pitch, rate, system_language, say_str)
 
 
 def _say_command(content: str, say_str: str, screenreader: str,

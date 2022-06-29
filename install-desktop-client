@@ -126,9 +126,24 @@ cp ~/epicyon-client ~/epicyon-client-pico
 chmod +x ~/epicyon-client-pico
 sed -i 's|epicyon.py|epicyon.py --screenreader picospeaker|g' ~/epicyon-client-pico
 
+# TTS version with mimic3
+cp ~/epicyon-client ~/epicyon-client-mimic3
+chmod +x ~/epicyon-client-mimic3
+sed -i 's|epicyon.py|epicyon.py --screenreader mimic3|g' ~/epicyon-client-mimic3
+
 # TTS stream
 cp ~/epicyon-client ~/epicyon-client-stream
 chmod +x ~/epicyon-client-stream
 sed -i 's|epicyon.py|epicyon.py --notifyShowNewPosts --screenreader espeak|g' ~/epicyon-client-stream
+
+# TTS stream
+cp ~/epicyon-client ~/epicyon-stream-pico
+chmod +x ~/epicyon-stream-pico
+sed -i 's|epicyon.py|epicyon.py --notifyShowNewPosts --screenreader picospeaker|g' ~/epicyon-stream-pico
+
+# TTS stream
+cp ~/epicyon-client ~/epicyon-stream-mimic3
+chmod +x ~/epicyon-stream-mimic3
+sed -i 's|epicyon.py|epicyon.py --notifyShowNewPosts --screenreader mimic3|g' ~/epicyon-stream-mimic3
 
 zenity --info --width=400 --text "Epicyon desktop client is now installed. You can run it with ~/epicyon-client"
