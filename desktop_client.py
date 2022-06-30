@@ -369,6 +369,7 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
     except OSError as ex:
         print('EX: unable to play ' + audio_filename + ' ' + str(ex))
     _play_sound(audio_filename)
+    time.sleep(4)
 
 
 def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
