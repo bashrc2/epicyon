@@ -363,7 +363,8 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
         ' --length-scale ' + length_scale + \
         ' --noise-w ' + noise_w + \
         ' --stdout' + \
-        ' "' + text + '" > ' + audio_filename
+        ' "' + text + '" > ' + \
+        audio_filename + ' 2> /dev/null'
     try:
         os.system(cmd)
     except OSError as ex:
