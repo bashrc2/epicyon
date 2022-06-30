@@ -352,6 +352,8 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
     if pitch > 75:
         voice = 'en_US/vctk_low'
     length_scale = str(1.0 - (rate / 200.0))
+    if srange > 100:
+        srange = 100
     noise_w = str(srange / 100.0)
     text = html.unescape(say_text).replace('"', "'")
     if not text:
@@ -362,7 +364,6 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
         ' --noise-w ' + noise_w + \
         ' --stdout' + \
         ' "' + text + '" > ' + audio_filename
-    print(cmd)
     try:
         os.system(cmd)
     except OSError as ex:
