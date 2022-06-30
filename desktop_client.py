@@ -316,6 +316,18 @@ def _desktop_wait_for_cmd(timeout: int, debug: bool) -> str:
     return None
 
 
+def _play_sound(sound_filename: str,
+                player: str = 'ffplay') -> None:
+    """Plays a sound
+    """
+    if not os.path.isfile(sound_filename):
+        return
+
+    if player == 'ffplay':
+        os.system('ffplay ' + sound_filename +
+                  ' -autoexit -hide_banner -nodisp 2> /dev/null')
+
+
 def _speaker_espeak(espeak, pitch: int, rate: int, srange: int,
                     say_text: str) -> None:
     """Speaks the given text with espeak
@@ -324,6 +336,40 @@ def _speaker_espeak(espeak, pitch: int, rate: int, srange: int,
     espeak.set_parameter(espeak.Parameter.Rate, rate)
     espeak.set_parameter(espeak.Parameter.Range, srange)
     espeak.synth(html.unescape(say_text))
+
+
+def _speaker_mimic3(pitch: int, rate: int, srange: int,
+                    say_text: str) -> None:
+    """Speaks the given text with mimic3
+    """
+    voice = 'en_UK/apope_low'
+    if pitch > 20:
+        voice = 'en_US/m-ailabs_low'
+    if pitch > 40:
+        voice = 'en_US/hifi-tts_low'
+    if pitch >= 50:
+        voice = 'en_US/ljspeech_low'
+    if pitch > 75:
+        voice = 'en_US/vctk_low'
+    length_scale = str(1.2 - (rate / 600.0))
+    if srange > 100:
+        srange = 100
+    noise_w = str(srange / 100.0)
+    text = html.unescape(say_text).replace('"', "'")
+    if not text:
+        return
+    audio_filename = '/tmp/epicyon_voice.wav'
+    cmd = 'mimic3 -v ' + voice + \
+        ' --length-scale ' + length_scale + \
+        ' --noise-w ' + noise_w + \
+        ' --stdout' + \
+        ' "' + text + '" > ' + \
+        audio_filename + ' 2> /dev/null'
+    try:
+        os.system(cmd)
+    except OSError as ex:
+        print('EX: unable to play ' + audio_filename + ' ' + str(ex))
+    _play_sound(audio_filename)
 
 
 def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
@@ -348,18 +394,6 @@ def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
         ' -p ' + str(pitch) + ' "' + \
         html.unescape(str(say_text)) + '" 2> /dev/null'
     os.system(speaker_cmd)
-
-
-def _play_notification_sound(sound_filename: str,
-                             player: str = 'ffplay') -> None:
-    """Plays a sound
-    """
-    if not os.path.isfile(sound_filename):
-        return
-
-    if player == 'ffplay':
-        os.system('ffplay ' + sound_filename +
-                  ' -autoexit -hide_banner -nodisp 2> /dev/null')
 
 
 def _desktop_notification(notification_type: str,
@@ -396,6 +430,8 @@ def _text_to_speech(say_str: str, screenreader: str,
         _speaker_espeak(espeak, pitch, rate, srange, say_str)
     elif screenreader == 'picospeaker':
         _speaker_picospeaker(pitch, rate, system_language, say_str)
+    elif screenreader == 'mimic3':
+        _speaker_mimic3(pitch, rate, srange, say_str)
 
 
 def _say_command(content: str, say_str: str, screenreader: str,
@@ -1380,7 +1416,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
         if screenreader == 'espeak':
             print('Setting up espeak')
             from espeak import espeak
-        elif screenreader != 'picospeaker':
+        elif screenreader not in ('picospeaker', 'mimic3'):
             print(screenreader + ' is not a supported TTS system')
             return
 
@@ -1501,7 +1537,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                           "Epicyon",
                                           "New DM " + your_actor + '/dm')
                     if notification_sounds:
-                        _play_notification_sound(dm_sound_filename, player)
+                        _play_sound(dm_sound_filename, player)
             if notify_json.get('repliesNotify'):
                 if notify_json.get('repliesNotifyChanged'):
                     _desktop_notification(notification_type,
@@ -1509,7 +1545,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                           "New reply " +
                                           your_actor + '/replies')
                     if notification_sounds:
-                        _play_notification_sound(reply_sound_filename, player)
+                        _play_sound(reply_sound_filename, player)
 
         if box_json:
             timeline_first_id = _get_first_item_id(box_json)

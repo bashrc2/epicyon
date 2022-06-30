@@ -181,7 +181,8 @@ def _command_options() -> None:
                         help='Nickname of the account to use')
     parser.add_argument('--screenreader', dest='screenreader', type=str,
                         default=None,
-                        help='Name of the screen reader: espeak/picospeaker')
+                        help='Name of the screen reader: ' +
+                        'espeak/picospeaker/mimic3')
     parser.add_argument('--fol', '--follow', dest='follow', type=str,
                         default=None,
                         help='Handle of account to follow. eg. ' +
