@@ -316,17 +316,7 @@ def _desktop_wait_for_cmd(timeout: int, debug: bool) -> str:
     return None
 
 
-def _speaker_espeak(espeak, pitch: int, rate: int, srange: int,
-                    say_text: str) -> None:
-    """Speaks the given text with espeak
-    """
-    espeak.set_parameter(espeak.Parameter.Pitch, pitch)
-    espeak.set_parameter(espeak.Parameter.Rate, rate)
-    espeak.set_parameter(espeak.Parameter.Range, srange)
-    espeak.synth(html.unescape(say_text))
-
-
-def _play_notification_sound(sound_filename: str,
+def _play_sound(sound_filename: str,
                              player: str = 'ffplay') -> None:
     """Plays a sound
     """
@@ -336,6 +326,16 @@ def _play_notification_sound(sound_filename: str,
     if player == 'ffplay':
         os.system('ffplay ' + sound_filename +
                   ' -autoexit -hide_banner -nodisp 2> /dev/null')
+
+
+def _speaker_espeak(espeak, pitch: int, rate: int, srange: int,
+                    say_text: str) -> None:
+    """Speaks the given text with espeak
+    """
+    espeak.set_parameter(espeak.Parameter.Pitch, pitch)
+    espeak.set_parameter(espeak.Parameter.Rate, rate)
+    espeak.set_parameter(espeak.Parameter.Range, srange)
+    espeak.synth(html.unescape(say_text))
 
 
 def _speaker_mimic3(pitch: int, rate: int, srange: int,
@@ -365,7 +365,7 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
         os.system(cmd)
     except OSError as ex:
         print('EX: unable to play ' + audio_filename + ' ' + str(ex))
-    _play_notification_sound(audio_filename)
+    _play_sound(audio_filename)
 
 
 def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
@@ -1533,7 +1533,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                           "Epicyon",
                                           "New DM " + your_actor + '/dm')
                     if notification_sounds:
-                        _play_notification_sound(dm_sound_filename, player)
+                        _play_sound(dm_sound_filename, player)
             if notify_json.get('repliesNotify'):
                 if notify_json.get('repliesNotifyChanged'):
                     _desktop_notification(notification_type,
@@ -1541,7 +1541,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                           "New reply " +
                                           your_actor + '/replies')
                     if notification_sounds:
-                        _play_notification_sound(reply_sound_filename, player)
+                        _play_sound(reply_sound_filename, player)
 
         if box_json:
             timeline_first_id = _get_first_item_id(box_json)
