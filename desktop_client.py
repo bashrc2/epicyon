@@ -16,7 +16,6 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
-from subprocess import call
 from utils import text_in_file
 from utils import disallow_announce
 from utils import disallow_reply
@@ -327,6 +326,18 @@ def _speaker_espeak(espeak, pitch: int, rate: int, srange: int,
     espeak.synth(html.unescape(say_text))
 
 
+def _play_notification_sound(sound_filename: str,
+                             player: str = 'ffplay') -> None:
+    """Plays a sound
+    """
+    if not os.path.isfile(sound_filename):
+        return
+
+    if player == 'ffplay':
+        os.system('ffplay ' + sound_filename +
+                  ' -autoexit -hide_banner -nodisp 2> /dev/null')
+
+
 def _speaker_mimic3(pitch: int, rate: int, srange: int,
                     say_text: str) -> None:
     """Speaks the given text with mimic3
@@ -348,13 +359,13 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
     audio_filename = '/tmp/epicyon_voice.wav'
     cmd = 'mimic3 -v ' + voice + \
         ' --length-scale ' + length_scale + \
-        ' --noise-w ' + noise_w + ' --stdout' + \
+        ' --noise-w ' + noise_w + \
         ' "' + text + '" > ' + audio_filename
     try:
         os.system(cmd)
-        call(['aplay', audio_filename])
-    except OSError:
-        print('EX: unable to play ' + audio_filename)
+    except OSError as ex:
+        print('EX: unable to play ' + audio_filename + ' ' + str(ex))
+    _play_notification_sound(audio_filename)
 
 
 def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
@@ -379,18 +390,6 @@ def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
         ' -p ' + str(pitch) + ' "' + \
         html.unescape(str(say_text)) + '" 2> /dev/null'
     os.system(speaker_cmd)
-
-
-def _play_notification_sound(sound_filename: str,
-                             player: str = 'ffplay') -> None:
-    """Plays a sound
-    """
-    if not os.path.isfile(sound_filename):
-        return
-
-    if player == 'ffplay':
-        os.system('ffplay ' + sound_filename +
-                  ' -autoexit -hide_banner -nodisp 2> /dev/null')
 
 
 def _desktop_notification(notification_type: str,
