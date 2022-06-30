@@ -351,7 +351,7 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
         voice = 'en_US/ljspeech_low'
     if pitch > 75:
         voice = 'en_US/vctk_low'
-    length_scale = str(1.0 - (rate / 600.0))
+    length_scale = str(1.2 - (rate / 600.0))
     if srange > 100:
         srange = 100
     noise_w = str(srange / 100.0)
