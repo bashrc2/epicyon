@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from subprocess import call
 from utils import text_in_file
 from utils import disallow_announce
 from utils import disallow_reply
@@ -344,11 +345,16 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
     text = html.unescape(say_text).replace('"', "'")
     if not text:
         return
+    audio_filename = '/tmp/epicyon_voice.wav'
     cmd = 'mimic3 -v ' + voice + \
         ' --length-scale ' + length_scale + \
         ' --noise-w ' + noise_w + ' --stdout' + \
-        ' "' + text + '" 2> /dev/null | aplay 2> /dev/null &'
-    os.system(cmd)
+        ' "' + text + '" > ' + audio_filename
+    try:
+        os.system(cmd)
+        call(['aplay', audio_filename])
+    except OSError:
+        print('EX: unable to play ' + audio_filename)
 
 
 def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
