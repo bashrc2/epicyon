@@ -317,7 +317,7 @@ def _desktop_wait_for_cmd(timeout: int, debug: bool) -> str:
 
 
 def _play_sound(sound_filename: str,
-                             player: str = 'ffplay') -> None:
+                player: str = 'ffplay') -> None:
     """Plays a sound
     """
     if not os.path.isfile(sound_filename):
