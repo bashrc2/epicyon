@@ -342,6 +342,39 @@ In general, it's best to let a user edit their original post in the same source 
 
 For example, Alyssa P. Hacker likes to post to her ActivityPub powered blog via an Emacs client she has written, leveraging [Org mode](http://orgmode.org). Later she switches to editing on her phone's client, which has no idea what `text/x-org` is or how to render it to HTML, so it provides a text box to edit the original `content` instead. A helpful warning displays above the edit area saying, "This was originally written in another markup language we don't know how to handle. If you edit, you'll lose your original source!" Alyssa decides the small typo fix isn't worth losing her nice org-mode markup and decides to make the update when she gets home.
 
+### 3.4 Attachments
+
+### 3.5 Hashtags
+
+When a new post is created, if it has `content` containing one or more hashtags then these should be used to generate a list of `Hashtag` objects in a list called `tag`. The `href` for each tag in the list SHOULD refer to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing posts having that hashtag.
+
+### Example X
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "actor": "https://example.net/users/fearghus",
+  "to": ["https://example.net/users/fearghus/followers",
+         "https://www.w3.org/ns/activitystreams#Public"],
+  "object": {
+    "@context": {"@language": "en"},
+    "id": "https://example.net/users/fearghus/statuses/23",
+    "type": "Note",
+    "attributedTo": "https://example.net/users/fearghus",
+    "to": ["https://example.net/users/fearghus/followers",
+           "https://www.w3.org/ns/activitystreams#Public"],
+    "mediaType": "text/html",
+    "content": "Posting with <a href=\"https://example.net/tags/ActivityPub\" class=\"mention hashtag\" rel=\"tag\">#<span>ActivityPub</span></a>",
+    "tag": [
+    {
+        "href": "https://example.net/tags/ActivityPub",
+        "name": "#ActivityPub",
+        "type": "Hashtag"
+    }
+    ]
+  }
+}
+```
 ## 4. Actors
 ActivityPub actors are generally one of the [ActivityStreams Actor Types](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), but they don't have to be. For example, a [Profile](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile) object might be used as an actor, or a type from an [ActivityStreams](https://www.w3.org/TR/activitystreams-core) extension. Actors are retrieved like any other Object in ActivityPub. Like other [ActivityStreams objects](https://www.w3.org/TR/activitystreams-vocabulary/#object-types), actors have an `id`, which is a URI. When entered directly into a user interface (for example on a login form), it is desirable to support simplified naming. For this purpose, ID normalization *SHOULD* be performed as follows:
 
