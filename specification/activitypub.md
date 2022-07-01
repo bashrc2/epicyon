@@ -358,7 +358,7 @@ In the case of attached images, the `name` field can be used to supply a descrip
          "https://www.w3.org/ns/activitystreams#Public"],
   "object": {
     "@context": {"@language": "en"},
-    "id": "https://example.net/users/fearghus/statuses/23",
+    "id": "https://example.net/users/fearghus/statuses/6423726",
     "type": "Note",
     "attributedTo": "https://example.net/users/fearghus",
     "to": ["https://example.net/users/fearghus/followers",
@@ -395,7 +395,7 @@ When a new post is created, if it has `content` containing one or more hashtags 
          "https://www.w3.org/ns/activitystreams#Public"],
   "object": {
     "@context": {"@language": "en"},
-    "id": "https://example.net/users/fearghus/statuses/23",
+    "id": "https://example.net/users/fearghus/statuses/28265429",
     "type": "Note",
     "attributedTo": "https://example.net/users/fearghus",
     "to": ["https://example.net/users/fearghus/followers",
