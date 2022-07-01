@@ -344,6 +344,43 @@ For example, Alyssa P. Hacker likes to post to her ActivityPub powered blog via 
 
 ### 3.4 Attachments
 
+Attachments may be added to `Note` or `Article` objects. The `mediaType` can be any MIME type, and the attached media should be available at the specified `url`. The `attachment` list can include more than one item.
+
+In the case of attached images, the `name` field can be used to supply a description.
+
+### Example X
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "actor": "https://example.net/users/fearghus",
+  "to": ["https://example.net/users/fearghus/followers",
+         "https://www.w3.org/ns/activitystreams#Public"],
+  "object": {
+    "@context": {"@language": "en"},
+    "id": "https://example.net/users/fearghus/statuses/23",
+    "type": "Note",
+    "attributedTo": "https://example.net/users/fearghus",
+    "to": ["https://example.net/users/fearghus/followers",
+           "https://www.w3.org/ns/activitystreams#Public"],
+    "summary": "",
+    "sensitive": False,
+    "mediaType": "text/html",
+    "content": "This is a post with an attached image",
+    "attachment": [
+    {
+        "mediaType": "image/jpeg",
+        "name": "Description of the attached image",
+        "type": "Document",
+        "url": "https://example.net/users/fearghus/media/hfr73473rgr283g.jpg"
+    }
+    ]
+  }
+}
+```
+
+It may also be necessary to warn about the content being attached. This can be done by setting `sensitive` to *True* and supplying a `summary` containing a warning message.
+
 ### 3.5 Hashtags
 
 When a new post is created, if it has `content` containing one or more hashtags then these should be used to generate a list of `Hashtag` objects in a list called `tag`. The `href` for each tag in the list SHOULD refer to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing posts having that hashtag.
