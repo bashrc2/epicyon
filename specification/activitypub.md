@@ -342,6 +342,76 @@ In general, it's best to let a user edit their original post in the same source 
 
 For example, Alyssa P. Hacker likes to post to her ActivityPub powered blog via an Emacs client she has written, leveraging [Org mode](http://orgmode.org). Later she switches to editing on her phone's client, which has no idea what `text/x-org` is or how to render it to HTML, so it provides a text box to edit the original `content` instead. A helpful warning displays above the edit area saying, "This was originally written in another markup language we don't know how to handle. If you edit, you'll lose your original source!" Alyssa decides the small typo fix isn't worth losing her nice org-mode markup and decides to make the update when she gets home.
 
+### 3.4 Attachments
+
+Attachments may be added to `Note` or `Article` objects. The `mediaType` can be any MIME type, and the attached media should be available at the specified `url`. The `attachment` list can include more than one item.
+
+In the case of attached images, the `name` field can be used to supply a description.
+
+### Example X
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "actor": "https://example.net/users/fearghus",
+  "to": ["https://example.net/users/fearghus/followers",
+         "https://www.w3.org/ns/activitystreams#Public"],
+  "object": {
+    "@context": {"@language": "en"},
+    "id": "https://example.net/users/fearghus/statuses/23",
+    "type": "Note",
+    "attributedTo": "https://example.net/users/fearghus",
+    "to": ["https://example.net/users/fearghus/followers",
+           "https://www.w3.org/ns/activitystreams#Public"],
+    "summary": "",
+    "sensitive": False,
+    "mediaType": "text/html",
+    "content": "This is a post with an attached image",
+    "attachment": [
+    {
+        "mediaType": "image/jpeg",
+        "name": "Description of the attached image",
+        "type": "Document",
+        "url": "https://example.net/users/fearghus/media/hfr73473rgr283g.jpg"
+    }
+    ]
+  }
+}
+```
+
+It may also be necessary to warn about the content being attached. This can be done by setting `sensitive` to *True* and supplying a `summary` containing a warning message.
+
+### 3.5 Hashtags
+
+When a new post is created, if it has `content` containing one or more hashtags then these should be used to generate a list of `Hashtag` objects in a list called `tag`. The `href` for each tag in the list SHOULD refer to an [ActivityStreams collection](https://www.w3.org/TR/activitystreams-core/#collections) containing posts having that hashtag.
+
+### Example X
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "actor": "https://example.net/users/fearghus",
+  "to": ["https://example.net/users/fearghus/followers",
+         "https://www.w3.org/ns/activitystreams#Public"],
+  "object": {
+    "@context": {"@language": "en"},
+    "id": "https://example.net/users/fearghus/statuses/23",
+    "type": "Note",
+    "attributedTo": "https://example.net/users/fearghus",
+    "to": ["https://example.net/users/fearghus/followers",
+           "https://www.w3.org/ns/activitystreams#Public"],
+    "mediaType": "text/html",
+    "content": "Posting with <a href=\"https://example.net/tags/ActivityPub\" class=\"mention hashtag\" rel=\"tag\">#<span>ActivityPub</span></a>",
+    "tag": [
+    {
+        "href": "https://example.net/tags/ActivityPub",
+        "name": "#ActivityPub",
+        "type": "Hashtag"
+    }
+    ]
+  }
+}
+```
 ## 4. Actors
 ActivityPub actors are generally one of the [ActivityStreams Actor Types](https://www.w3.org/TR/activitystreams-vocabulary/#actor-types), but they don't have to be. For example, a [Profile](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile) object might be used as an actor, or a type from an [ActivityStreams](https://www.w3.org/TR/activitystreams-core) extension. Actors are retrieved like any other Object in ActivityPub. Like other [ActivityStreams objects](https://www.w3.org/TR/activitystreams-vocabulary/#object-types), actors have an `id`, which is a URI. When entered directly into a user interface (for example on a login form), it is desirable to support simplified naming. For this purpose, ID normalization *SHOULD* be performed as follows:
 
@@ -983,6 +1053,8 @@ The server *MAY* filter its delivery targets according to implementation-specifi
 For servers hosting many actors, delivery to all followers can result in an overwhelming number of messages sent. Some servers would also like to display a list of all messages posted publicly to the "known network". Thus ActivityPub provides an optional mechanism for serving these two use cases.
 
 When an object is being delivered to the originating actor's followers, a server *MAY* reduce the number of receiving actors delivered to by identifying all followers which share the same sharedInbox who would otherwise be individual recipients and instead deliver objects to said `sharedInbox`. Thus in this scenario, the remote/receiving server participates in determining targeting and performing delivery to specific inboxes.
+
+![A post is delivered from Alyssa's outbox to the her followers on another server, via its shared inbox](activitypub-tutorial-shared-inbox.png)
 
 Additionally, if an object is addressed to the Public special collection, a server *MAY* deliver that object to all known `sharedInbox` endpoints on the network.
 
