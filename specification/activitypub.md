@@ -285,6 +285,7 @@ As an example, if example.com receives the activity
     "type": "Note",
     "attributedTo": "https://example.org/users/alice",
     "mediaType": "text/html",
+    "published": "2031-03-27T14:10:25Z",
     "content": "I'm a goat"
   }
 }
@@ -358,11 +359,12 @@ In the case of attached images, the `name` field can be used to supply a descrip
          "https://www.w3.org/ns/activitystreams#Public"],
   "object": {
     "@context": {"@language": "en"},
-    "id": "https://example.net/users/fearghus/statuses/23",
+    "id": "https://example.net/users/fearghus/statuses/6423726",
     "type": "Note",
     "attributedTo": "https://example.net/users/fearghus",
     "to": ["https://example.net/users/fearghus/followers",
            "https://www.w3.org/ns/activitystreams#Public"],
+    "published": "2032-09-14T19:17:02Z",
     "summary": "",
     "sensitive": False,
     "mediaType": "text/html",
@@ -395,11 +397,12 @@ When a new post is created, if it has `content` containing one or more hashtags 
          "https://www.w3.org/ns/activitystreams#Public"],
   "object": {
     "@context": {"@language": "en"},
-    "id": "https://example.net/users/fearghus/statuses/23",
+    "id": "https://example.net/users/fearghus/statuses/28265429",
     "type": "Note",
     "attributedTo": "https://example.net/users/fearghus",
     "to": ["https://example.net/users/fearghus/followers",
            "https://www.w3.org/ns/activitystreams#Public"],
+    "published": "2032-05-29T15:08:47Z",
     "mediaType": "text/html",
     "content": "Posting with <a href=\"https://example.net/tags/ActivityPub\" class=\"mention hashtag\" rel=\"tag\">#<span>ActivityPub</span></a>",
     "tag": [
