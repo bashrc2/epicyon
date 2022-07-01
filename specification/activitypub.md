@@ -984,6 +984,8 @@ For servers hosting many actors, delivery to all followers can result in an over
 
 When an object is being delivered to the originating actor's followers, a server *MAY* reduce the number of receiving actors delivered to by identifying all followers which share the same sharedInbox who would otherwise be individual recipients and instead deliver objects to said `sharedInbox`. Thus in this scenario, the remote/receiving server participates in determining targeting and performing delivery to specific inboxes.
 
+![A post is delivered from Alyssa's outbox to the her followers on another server, via its shared inbox](activitypub-tutorial-shared-inbox.png)
+
 Additionally, if an object is addressed to the Public special collection, a server *MAY* deliver that object to all known `sharedInbox` endpoints on the network.
 
 Origin servers sending publicly addressed activities to `sharedInbox` endpoints *MUST* still deliver to actors and collections otherwise addressed (through `to`, `bto`, `cc`, `bcc`, and `audience`) which do not have a `sharedInbox` and would not otherwise receive the activity through the `sharedInbox` mechanism.
