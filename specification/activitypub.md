@@ -424,17 +424,37 @@ ActivityPub actors are generally one of the [ActivityStreams Actor Types](https:
 
 Once the actor's URI has been identified, it should be dereferenced.
 
-**Note**
+### 4.1 Mapping "users" to Actors
 
 ActivityPub does not dictate a specific relationship between "users" and Actors; many configurations are possible. There may be multiple human users or organizations controlling an Actor, or likewise one human or organization may control multiple Actors. Similarly, an Actor may represent a piece of software, like a bot, or an automated process. More detailed "user" modelling, for example linking together of Actors which are controlled by the same entity, or allowing one Actor to be presented through multiple alternate profiles or aspects, are at the discretion of the implementation.
 
-### 4.1 Actor objects
+### 4.2 Discovering Actor URLs
+
+Actor URLs may be discovered via [webfinger (RFC7033)](https://datatracker.ietf.org/doc/html/rfc7033). A webfinger request to a site owned by Alyssa might look like:
+
+``` json
+{'aliases': ['https://instancedomain/@Alyssa',
+             'https://instancedomain/users/Alyssa'],
+ 'links': [{'href': 'https://instancedomain/@Alyssa',
+            'rel': 'http://webfinger.net/rel/profile-page',
+            'type': 'text/html'},
+           {'href': 'https://instancedomain/users/Alyssa',
+            'rel': 'self',
+            'type': 'application/activity+json'},
+           {'rel': 'http://ostatus.org/schema/1.0/subscribe',
+            'template': 'https://instancedomain/authorize_interaction?uri={uri}'}],
+ 'subject': 'acct:Alyssa@instancedomain'}
+```
+
+This tells us if Alyssa has any aliases and `subject` tells us her ActivityPub account handle. We can use the `href` for the MIME type `application/activity+json` to locate Alyssa's actor at `https://instancedomain/users/Alyssa`, and then resolve it via making a json GET request with an `Accept` field having the same MIME type.
+
+### 4.3 Actor objects
 
 As the upstream vocabulary for ActivityPub, any applicable [ActivityStreams](https://www.w3.org/TR/activitystreams-core) property may be used on ActivityPub Actors. Some ActivityStreams properties are particularly worth highlighting to demonstrate how they are used in ActivityPub implementations.
 
 Properties containing natural language values, such as `name`, `preferredUsername`, or `summary`, make use of [natural language support defined in ActivityStreams](https://www.w3.org/TR/activitystreams-core/#naturalLanguageValues).
 
-#### 4.1.1 Actor objects *MUST* have, in addition to the properties mandated by section 3.1 Object Identifiers, the following properties:
+#### 4.3.1 Actor objects *MUST* have, in addition to the properties mandated by section 3.1 Object Identifiers, the following properties:
 
 ##### inbox
 A reference to an ActivityStreams [OrderedCollection](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection) comprised of all the messages received by the actor; see section 5.2 Inbox.
@@ -454,7 +474,7 @@ Describes the [http header signature](https://datatracker.ietf.org/doc/html/draf
 ##### preferredUsername
 A short username which may be used to refer to the actor, with no uniqueness guarantees.
 
-#### 4.1.2 Implementations *MAY* provide the following properties:
+#### 4.3.2 Implementations *MAY* provide the following properties:
 
 ##### discoverable
 Indicates whether the person wishes to be discoverable via recommendations or listings of active accounts.
