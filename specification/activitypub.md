@@ -430,7 +430,7 @@ ActivityPub does not dictate a specific relationship between "users" and Actors;
 
 ### 4.2 Discovering Actor URLs
 
-Actor URLs may be discovered via [webfinger (RFC7033)](https://datatracker.ietf.org/doc/html/rfc7033). A webfinger request to a site owned by Alyssa might look like:
+Actor URLs may be discovered via [webfinger (RFC7033)](https://datatracker.ietf.org/doc/html/rfc7033). The returned result from a webfinger request to a site owned by Alyssa might look like:
 
 ``` json
 {'aliases': ['https://instancedomain/@Alyssa',
