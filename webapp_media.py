@@ -211,6 +211,10 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             if '"' not in url:
                 continue
             url = url.split('"')[0]
+            if ('/trending', '/home', '/overview',
+               '/recently-added', '/local') in url:
+                # ignore various peertube endpoints
+                continue
             if '/c/' in url:
                 # don't try to embed peertube channel page
                 continue
