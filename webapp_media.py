@@ -211,8 +211,12 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             if '"' not in url:
                 continue
             url = url.split('"')[0]
-            if ('/trending', '/home', '/overview',
-               '/recently-added', '/local') in url:
+            if url.endswith('/trending') or \
+               url.endswith('/home') or \
+               url.endswith('/overview') or \
+               url.endswith('/recently-added') or \
+               url.endswith('/local') or \
+               url.endswith('/about'):
                 # ignore various peertube endpoints
                 continue
             if '/c/' in url:
