@@ -62,6 +62,7 @@
     --font-size-dropdown-header-tiny: 20px;
     --font-size-mobile: 50px;
     --font-size-tiny: 25px;
+    --font-size-pageslist: 32px;
     --font-size: 26px;
     --font-size2: 20px;
     --font-size3: 34px;
@@ -1863,7 +1864,7 @@ h3 {
         float: right;
     }
     .pageslist {
-        font-size: var(--font-size);
+        font-size: var(--font-size-pageslist);
     }
     .pageslist mark {
     }
@@ -2660,7 +2661,7 @@ h3 {
         margin-right: 1vw;
     }
     .pageslist {
-        font-size: var(--font-size);
+        font-size: var(--font-size-pageslist);
     }
     .pageslist mark {
     }
@@ -3454,7 +3455,7 @@ h3 {
         margin-right: 1vw;
     }
     .pageslist {
-        font-size: var(--font-size);
+        font-size: var(--font-size-pageslist);
     }
     .pageslist mark {
     }
