@@ -120,7 +120,7 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
     return html_str
 
 
-def fitness_thread(base_dir: str, fitness: {}):
+def fitness_thread(base_dir: str, fitness: {}) -> None:
     """Thread used to save fitness function scores
     """
     fitness_filename = base_dir + '/accounts/fitness.json'
