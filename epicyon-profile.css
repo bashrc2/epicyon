@@ -32,6 +32,7 @@
     --main-bg-color-dm: #222;
     --main-bg-color-report: #221c27;
     --main-header-color-roles: #282237;
+    --pageslist-color: #dddddd;
     --main-fg-color: #dddddd;
     --cw-color: #dddddd;
     --cw-style: normal;
@@ -62,6 +63,7 @@
     --font-size-dropdown-header-tiny: 20px;
     --font-size-mobile: 50px;
     --font-size-tiny: 25px;
+    --font-size-pageslist: 32px;
     --font-size: 26px;
     --font-size2: 20px;
     --font-size3: 34px;
@@ -1862,6 +1864,10 @@ h3 {
     .columnIcons img {
         float: right;
     }
+    .pageslist {
+        font-size: var(--font-size-pageslist);
+        color: var(--pageslist-color);
+    }
     .pageslist mark {
     }
     .pageslistDash {
@@ -2656,6 +2662,10 @@ h3 {
         float: right;
         margin-right: 1vw;
     }
+    .pageslist {
+        font-size: var(--font-size-pageslist);
+        color: var(--pageslist-color);
+    }
     .pageslist mark {
     }
     .pageslistDash {
@@ -3446,6 +3456,10 @@ h3 {
         width: 10%;
         float: right;
         margin-right: 1vw;
+    }
+    .pageslist {
+        font-size: var(--font-size-pageslist);
+        color: var(--pageslist-color);
     }
     .pageslist mark {
     }

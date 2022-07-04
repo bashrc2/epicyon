@@ -432,6 +432,14 @@ def _page_number_buttons(users_path: str, box_name: str,
                          page_number: int) -> str:
     """Shows selactable page numbers at the bottom of the screen
     """
+    page_number_chars_highlighted = (
+        '⓿', '❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽', '❾',
+        '❿', '⓫', '⓬', '⓭', '⓮', '⓯', '⓰', '⓱', '⓲', '⓳', '⓴'
+    )
+    page_number_chars = (
+        '⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨',
+        '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'
+    )
     pages_width = 3
     min_page_number = page_number - pages_width
     min_page_number = max(min_page_number, 1)
@@ -443,13 +451,13 @@ def _page_number_buttons(users_path: str, box_name: str,
                 '<label class="pageslistDash">────</label>'
             num_str += html_hide_from_screen_reader(separator_str)
         aria_page_str = ''
-        page_str = ' ' + str(page) + ' '
+        page_str = ' ' + page_number_chars[page] + ' '
         curr_page_str = ''
         if page == page_number:
             page_str = \
-                html_hide_from_screen_reader('[<mark>') + \
-                str(page) + \
-                html_hide_from_screen_reader('</mark>]')
+                html_hide_from_screen_reader('<mark>') + \
+                page_number_chars_highlighted[page] + \
+                html_hide_from_screen_reader('</mark>')
             aria_page_str = ' aria-current="true"'
             curr_page_str = 'Current Page, '
         num_str += \
