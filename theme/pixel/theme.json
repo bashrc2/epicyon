@@ -73,6 +73,7 @@
     "column-left-header-background": "#5152a3",
     "column-left-header-color": "white",
     "column-left-fg-color": "black",
+    "pageslist-color": "black",
     "main-fg-color": "black",
     "dropdown-fg-color": "black",
     "dropdown-fg-color-hover": "#222",

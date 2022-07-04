@@ -32,6 +32,7 @@
     --main-bg-color-dm: #222;
     --main-bg-color-report: #221c27;
     --main-header-color-roles: #282237;
+    --pageslist-color: #dddddd;
     --main-fg-color: #dddddd;
     --cw-color: #dddddd;
     --cw-style: normal;
@@ -1865,6 +1866,7 @@ h3 {
     }
     .pageslist {
         font-size: var(--font-size-pageslist);
+        color: var(--pageslist-color);
     }
     .pageslist mark {
     }
@@ -2662,6 +2664,7 @@ h3 {
     }
     .pageslist {
         font-size: var(--font-size-pageslist);
+        color: var(--pageslist-color);
     }
     .pageslist mark {
     }
@@ -3456,6 +3459,7 @@ h3 {
     }
     .pageslist {
         font-size: var(--font-size-pageslist);
+        color: var(--pageslist-color);
     }
     .pageslist mark {
     }
