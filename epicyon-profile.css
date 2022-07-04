@@ -1862,6 +1862,9 @@ h3 {
     .columnIcons img {
         float: right;
     }
+    .pageslist {
+        font-size: var(--font-size);
+    }
     .pageslist mark {
     }
     .pageslistDash {
@@ -2656,6 +2659,9 @@ h3 {
         float: right;
         margin-right: 1vw;
     }
+    .pageslist {
+        font-size: var(--font-size);
+    }
     .pageslist mark {
     }
     .pageslistDash {
@@ -3446,6 +3452,9 @@ h3 {
         width: 10%;
         float: right;
         margin-right: 1vw;
+    }
+    .pageslist {
+        font-size: var(--font-size);
     }
     .pageslist mark {
     }
