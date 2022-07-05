@@ -1008,6 +1008,17 @@ def _auto_tag(base_dir: str, nickname: str, domain: str,
                 append_tags.append('#' + tag_name)
 
 
+def _get_simplified_content(content: str) -> str:
+    """
+    """
+    content_simplified = \
+        content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
+    content_simplified = content_simplified.replace('. ', ' ').strip()
+    if content_simplified.endswith('.'):
+        content_simplified = content_simplified[:len(content_simplified)-1]
+        return content_simplified
+
+
 def add_html_tags(base_dir: str, http_prefix: str,
                   nickname: str, domain: str, content: str,
                   recipients: [], hashtags: {},
@@ -1022,12 +1033,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
     content = _add_music_tag(content, 'nowplaying')
-    content_simplified = \
-        content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
-    content_simplified = content_simplified.replace('. ', ' ').strip()
-    if content_simplified.endswith('.'):
-        content_simplified = content_simplified[:len(content_simplified)-1]
-    words = content_simplified.split(' ')
+    words = _get_simplified_content(content).split(' ')
 
     # remove . for words which are not mentions
     new_words = []
