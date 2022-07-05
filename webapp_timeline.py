@@ -493,7 +493,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
                   shared_items_federated_domains: [],
                   signing_priv_key_pem: str,
                   cw_lists: {}, lists_enabled: str,
-                  timezone: str, bold_reading: bool) -> str:
+                  timezone: str, bold_reading: bool,
+                  dogwhistles: {}) -> str:
     """Show the timeline as html
     """
     enable_timing_log = False
@@ -1000,7 +1001,7 @@ def html_timeline(css_cache: {}, default_timeline: str,
                                                 False, True, use_cache_only,
                                                 cw_lists, lists_enabled,
                                                 timezone, mitm,
-                                                bold_reading)
+                                                bold_reading, dogwhistles)
                     _log_timeline_timing(enable_timing_log,
                                          timeline_start_time, box_name, '12')
 
@@ -1238,7 +1239,8 @@ def html_shares(css_cache: {}, default_timeline: str,
                 shared_items_federated_domains: [],
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str,
-                timezone: str, bold_reading: bool) -> str:
+                timezone: str, bold_reading: bool,
+                dogwhistles: {}) -> str:
     """Show the shares timeline as html
     """
     manually_approve_followers = \
@@ -1269,7 +1271,7 @@ def html_shares(css_cache: {}, default_timeline: str,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading)
+                         bold_reading, dogwhistles)
 
 
 def html_wanted(css_cache: {}, default_timeline: str,
@@ -1298,7 +1300,8 @@ def html_wanted(css_cache: {}, default_timeline: str,
                 shared_items_federated_domains: [],
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str,
-                timezone: str, bold_reading: bool) -> str:
+                timezone: str, bold_reading: bool,
+                dogwhistles: {}) -> str:
     """Show the wanted timeline as html
     """
     manually_approve_followers = \
@@ -1329,7 +1332,7 @@ def html_wanted(css_cache: {}, default_timeline: str,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading)
+                         bold_reading, dogwhistles)
 
 
 def html_inbox(css_cache: {}, default_timeline: str,
@@ -1359,7 +1362,8 @@ def html_inbox(css_cache: {}, default_timeline: str,
                shared_items_federated_domains: [],
                signing_priv_key_pem: str,
                cw_lists: {}, lists_enabled: str,
-               timezone: str, bold_reading: bool) -> str:
+               timezone: str, bold_reading: bool,
+               dogwhistles: {}) -> str:
     """Show the inbox as html
     """
     manually_approve_followers = \
@@ -1390,7 +1394,7 @@ def html_inbox(css_cache: {}, default_timeline: str,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading)
+                         bold_reading, dogwhistles)
 
 
 def html_bookmarks(css_cache: {}, default_timeline: str,
@@ -1420,7 +1424,8 @@ def html_bookmarks(css_cache: {}, default_timeline: str,
                    shared_items_federated_domains: [],
                    signing_priv_key_pem: str,
                    cw_lists: {}, lists_enabled: str,
-                   timezone: str, bold_reading: bool) -> str:
+                   timezone: str, bold_reading: bool,
+                   dogwhistles: {}) -> str:
     """Show the bookmarks as html
     """
     manually_approve_followers = \
@@ -1450,7 +1455,7 @@ def html_bookmarks(css_cache: {}, default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading)
+                         bold_reading, dogwhistles)
 
 
 def html_inbox_dms(css_cache: {}, default_timeline: str,
@@ -1480,7 +1485,8 @@ def html_inbox_dms(css_cache: {}, default_timeline: str,
                    shared_items_federated_domains: [],
                    signing_priv_key_pem: str,
                    cw_lists: {}, lists_enabled: str,
-                   timezone: str, bold_reading: bool) -> str:
+                   timezone: str, bold_reading: bool,
+                   dogwhistles: {}) -> str:
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1506,7 +1512,7 @@ def html_inbox_dms(css_cache: {}, default_timeline: str,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading)
+                         bold_reading, dogwhistles)
 
 
 def html_inbox_replies(css_cache: {}, default_timeline: str,
@@ -1536,7 +1542,8 @@ def html_inbox_replies(css_cache: {}, default_timeline: str,
                        shared_items_federated_domains: [],
                        signing_priv_key_pem: str,
                        cw_lists: {}, lists_enabled: str,
-                       timezone: str, bold_reading: bool) -> str:
+                       timezone: str, bold_reading: bool,
+                       dogwhistles: {}) -> str:
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1560,7 +1567,8 @@ def html_inbox_replies(css_cache: {}, default_timeline: str,
                          allow_local_network_access, text_mode_banner,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
-                         cw_lists, lists_enabled, timezone, bold_reading)
+                         cw_lists, lists_enabled, timezone, bold_reading,
+                         dogwhistles)
 
 
 def html_inbox_media(css_cache: {}, default_timeline: str,
@@ -1590,7 +1598,8 @@ def html_inbox_media(css_cache: {}, default_timeline: str,
                      shared_items_federated_domains: [],
                      signing_priv_key_pem: str,
                      cw_lists: {}, lists_enabled: str,
-                     timezone: str, bold_reading: bool) -> str:
+                     timezone: str, bold_reading: bool,
+                     dogwhistles: {}) -> str:
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1614,7 +1623,8 @@ def html_inbox_media(css_cache: {}, default_timeline: str,
                          allow_local_network_access, text_mode_banner,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
-                         cw_lists, lists_enabled, timezone, bold_reading)
+                         cw_lists, lists_enabled, timezone, bold_reading,
+                         dogwhistles)
 
 
 def html_inbox_blogs(css_cache: {}, default_timeline: str,
@@ -1644,7 +1654,8 @@ def html_inbox_blogs(css_cache: {}, default_timeline: str,
                      shared_items_federated_domains: [],
                      signing_priv_key_pem: str,
                      cw_lists: {}, lists_enabled: str,
-                     timezone: str, bold_reading: bool) -> str:
+                     timezone: str, bold_reading: bool,
+                     dogwhistles: {}) -> str:
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1668,7 +1679,8 @@ def html_inbox_blogs(css_cache: {}, default_timeline: str,
                          allow_local_network_access, text_mode_banner,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
-                         cw_lists, lists_enabled, timezone, bold_reading)
+                         cw_lists, lists_enabled, timezone, bold_reading,
+                         dogwhistles)
 
 
 def html_inbox_features(css_cache: {}, default_timeline: str,
@@ -1699,7 +1711,8 @@ def html_inbox_features(css_cache: {}, default_timeline: str,
                         shared_items_federated_domains: [],
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
-                        timezone: str, bold_reading: bool) -> str:
+                        timezone: str, bold_reading: bool,
+                        dogwhistles: {}) -> str:
     """Show the features timeline as html
     """
     return html_timeline(css_cache, default_timeline,
@@ -1722,7 +1735,8 @@ def html_inbox_features(css_cache: {}, default_timeline: str,
                          allow_local_network_access, text_mode_banner,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
-                         cw_lists, lists_enabled, timezone, bold_reading)
+                         cw_lists, lists_enabled, timezone, bold_reading,
+                         dogwhistles)
 
 
 def html_inbox_news(css_cache: {}, default_timeline: str,
@@ -1752,7 +1766,8 @@ def html_inbox_news(css_cache: {}, default_timeline: str,
                     shared_items_federated_domains: [],
                     signing_priv_key_pem: str,
                     cw_lists: {}, lists_enabled: str,
-                    timezone: str, bold_reading: bool) -> str:
+                    timezone: str, bold_reading: bool,
+                    dogwhistles: {}) -> str:
     """Show the news timeline as html
     """
     return html_timeline(css_cache, default_timeline,
@@ -1775,7 +1790,8 @@ def html_inbox_news(css_cache: {}, default_timeline: str,
                          allow_local_network_access, text_mode_banner,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
-                         cw_lists, lists_enabled, timezone, bold_reading)
+                         cw_lists, lists_enabled, timezone, bold_reading,
+                         dogwhistles)
 
 
 def html_outbox(css_cache: {}, default_timeline: str,
@@ -1805,7 +1821,8 @@ def html_outbox(css_cache: {}, default_timeline: str,
                 shared_items_federated_domains: [],
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str,
-                timezone: str, bold_reading: bool) -> str:
+                timezone: str, bold_reading: bool,
+                dogwhistles: {}) -> str:
     """Show the Outbox as html
     """
     manually_approve_followers = \
@@ -1831,4 +1848,5 @@ def html_outbox(css_cache: {}, default_timeline: str,
                          allow_local_network_access, text_mode_banner,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
-                         cw_lists, lists_enabled, timezone, bold_reading)
+                         cw_lists, lists_enabled, timezone, bold_reading,
+                         dogwhistles)

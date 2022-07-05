@@ -131,6 +131,7 @@ from conversation import update_conversation
 from webapp_hashtagswarm import html_hash_tag_swarm
 from person import valid_sending_actor
 from fitnessFunctions import fitness_performance
+from content import load_dogwhistles
 from content import valid_url_lengths
 from content import remove_script
 
@@ -408,7 +409,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     lists_enabled: str,
                                     timezone: str,
                                     mitm: bool,
-                                    bold_reading: bool) -> None:
+                                    bold_reading: bool,
+                                    dogwhistles: {}) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -434,7 +436,7 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             theme_name, system_language, max_like_count,
                             not_dm, True, True, False, True, False,
                             cw_lists, lists_enabled, timezone, mitm,
-                            bold_reading)
+                            bold_reading, dogwhistles)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -1106,7 +1108,7 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                           show_published_date_only: bool,
                           peertube_instances: [],
                           theme_name: str, max_like_count: int,
-                          cw_lists: {}) -> bool:
+                          cw_lists: {}, dogwhistles: {}) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -1230,7 +1232,7 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             manually_approve_followers,
                             False, True, False, cw_lists,
                             lists_enabled, timezone, mitm,
-                            bold_reading)
+                            bold_reading, dogwhistles)
     return True
 
 
@@ -1250,7 +1252,7 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                              show_published_date_only: bool,
                              peertube_instances: [],
                              theme_name: str, max_like_count: int,
-                             cw_lists: {}) -> bool:
+                             cw_lists: {}, dogwhistles: {}) -> bool:
 
     """Receives an Update activity within the POST section of HTTPServer
     """
@@ -1290,7 +1292,7 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                      show_published_date_only,
                                      peertube_instances,
                                      theme_name, max_like_count,
-                                     cw_lists):
+                                     cw_lists, dogwhistles):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:
@@ -1340,7 +1342,7 @@ def _receive_like(recent_posts_cache: {},
                   theme_name: str, system_language: str,
                   max_like_count: int, cw_lists: {},
                   lists_enabled: str,
-                  bold_reading: bool) -> bool:
+                  bold_reading: bool, dogwhistles: {}) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Like':
@@ -1449,7 +1451,7 @@ def _receive_like(recent_posts_cache: {},
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
-                                    bold_reading)
+                                    bold_reading, dogwhistles)
     return True
 
 
@@ -1469,7 +1471,7 @@ def _receive_undo_like(recent_posts_cache: {},
                        theme_name: str, system_language: str,
                        max_like_count: int, cw_lists: {},
                        lists_enabled: str,
-                       bold_reading: bool) -> bool:
+                       bold_reading: bool, dogwhistles: {}) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -1568,7 +1570,7 @@ def _receive_undo_like(recent_posts_cache: {},
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
-                                    bold_reading)
+                                    bold_reading, dogwhistles)
     return True
 
 
@@ -1588,7 +1590,8 @@ def _receive_reaction(recent_posts_cache: {},
                       allow_local_network_access: bool,
                       theme_name: str, system_language: str,
                       max_like_count: int, cw_lists: {},
-                      lists_enabled: str, bold_reading: bool) -> bool:
+                      lists_enabled: str, bold_reading: bool,
+                      dogwhistles: {}) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'EmojiReact':
@@ -1719,7 +1722,7 @@ def _receive_reaction(recent_posts_cache: {},
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
-                                    bold_reading)
+                                    bold_reading, dogwhistles)
     return True
 
 
@@ -1741,7 +1744,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
                            theme_name: str, system_language: str,
                            max_like_count: int, cw_lists: {},
                            lists_enabled: str,
-                           bold_reading: bool) -> bool:
+                           bold_reading: bool, dogwhistles: {}) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -1858,7 +1861,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
                                     manually_approve_followers,
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
-                                    bold_reading)
+                                    bold_reading, dogwhistles)
     return True
 
 
@@ -1876,7 +1879,8 @@ def _receive_bookmark(recent_posts_cache: {},
                       allow_local_network_access: bool,
                       theme_name: str, system_language: str,
                       max_like_count: int, cw_lists: {},
-                      lists_enabled: {}, bold_reading: bool) -> bool:
+                      lists_enabled: {}, bold_reading: bool,
+                      dogwhistles: {}) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -1973,7 +1977,7 @@ def _receive_bookmark(recent_posts_cache: {},
                                 manually_approve_followers,
                                 False, True, False, cw_lists,
                                 lists_enabled, timezone, mitm,
-                                bold_reading)
+                                bold_reading, dogwhistles)
     return True
 
 
@@ -1993,7 +1997,8 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                            allow_local_network_access: bool,
                            theme_name: str, system_language: str,
                            max_like_count: int, cw_lists: {},
-                           lists_enabled: str, bold_reading: bool) -> bool:
+                           lists_enabled: str, bold_reading: bool,
+                           dogwhistles: {}) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -2090,7 +2095,8 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                                 show_individual_post_icons,
                                 manually_approve_followers,
                                 False, True, False, cw_lists, lists_enabled,
-                                timezone, mitm, bold_reading)
+                                timezone, mitm, bold_reading,
+                                dogwhistles)
     return True
 
 
@@ -2186,7 +2192,8 @@ def _receive_announce(recent_posts_cache: {},
                       allow_deletion: bool,
                       peertube_instances: [],
                       max_like_count: int, cw_lists: {},
-                      lists_enabled: str, bold_reading: bool) -> bool:
+                      lists_enabled: str, bold_reading: bool,
+                      dogwhistles: {}) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -2309,7 +2316,7 @@ def _receive_announce(recent_posts_cache: {},
                                 manually_approve_followers,
                                 False, True, False, cw_lists,
                                 lists_enabled, timezone, mitm,
-                                bold_reading)
+                                bold_reading, dogwhistles)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -3452,7 +3459,7 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                            theme_name: str, system_language: str,
                            max_like_count: int,
                            cw_lists: {}, lists_enabled: bool,
-                           bold_reading: bool) -> None:
+                           bold_reading: bool, dogwhistles: {}) -> None:
     """Updates the votes on a Question/poll
     """
     # if this is a reply to a question then update the votes
@@ -3505,7 +3512,7 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             manually_approve_followers,
                             False, True, False, cw_lists,
                             lists_enabled, timezone, mitm,
-                            bold_reading)
+                            bold_reading, dogwhistles)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,
@@ -3676,7 +3683,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          cw_lists: {}, lists_enabled: str,
                          content_license_url: str,
                          languages_understood: [],
-                         mitm: bool, bold_reading: bool) -> bool:
+                         mitm: bool, bold_reading: bool,
+                         dogwhistles: {}) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -3724,7 +3732,7 @@ def _inbox_after_initial(server, inbox_start_time,
                      allow_local_network_access,
                      theme_name, system_language,
                      max_like_count, cw_lists, lists_enabled,
-                     bold_reading):
+                     bold_reading, dogwhistles):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -3749,7 +3757,7 @@ def _inbox_after_initial(server, inbox_start_time,
                           allow_local_network_access,
                           theme_name, system_language,
                           max_like_count, cw_lists, lists_enabled,
-                          bold_reading):
+                          bold_reading, dogwhistles):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -3775,7 +3783,7 @@ def _inbox_after_initial(server, inbox_start_time,
                          allow_local_network_access,
                          theme_name, system_language,
                          max_like_count, cw_lists, lists_enabled,
-                         bold_reading):
+                         bold_reading, dogwhistles):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -3802,7 +3810,7 @@ def _inbox_after_initial(server, inbox_start_time,
                               allow_local_network_access,
                               theme_name, system_language,
                               max_like_count, cw_lists, lists_enabled,
-                              bold_reading):
+                              bold_reading, dogwhistles):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -3829,7 +3837,7 @@ def _inbox_after_initial(server, inbox_start_time,
                          allow_local_network_access,
                          theme_name, system_language,
                          max_like_count, cw_lists, lists_enabled,
-                         bold_reading):
+                         bold_reading, dogwhistles):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -3856,7 +3864,7 @@ def _inbox_after_initial(server, inbox_start_time,
                               allow_local_network_access,
                               theme_name, system_language,
                               max_like_count, cw_lists, lists_enabled,
-                              bold_reading):
+                              bold_reading, dogwhistles):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -3891,7 +3899,7 @@ def _inbox_after_initial(server, inbox_start_time,
                          allow_deletion,
                          peertube_instances,
                          max_like_count, cw_lists, lists_enabled,
-                         bold_reading):
+                         bold_reading, dogwhistles):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4033,7 +4041,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                theme_name, system_language,
                                max_like_count,
                                cw_lists, lists_enabled,
-                               bold_reading)
+                               bold_reading, dogwhistles)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_question_vote',
                             debug)
@@ -4277,7 +4285,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                                         cw_lists,
                                                         lists_enabled,
                                                         timezone, mitm,
-                                                        bold_reading)
+                                                        bold_reading,
+                                                        dogwhistles)
                         fitness_performance(inbox_start_time,
                                             server.fitness,
                                             'INBOX',
@@ -5237,6 +5246,11 @@ def run_inbox_queue(server,
                                     debug)
                 inbox_start_time = time.time()
 
+        dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
+        if not os.path.isfile(dogwhistles_filename):
+            dogwhistles_filename = base_dir + '/default_dogwhistles.txt'
+        dogwhistles = load_dogwhistles(dogwhistles_filename)
+
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
         # if queue_json['post'].get('id'):
@@ -5328,7 +5342,7 @@ def run_inbox_queue(server,
                                     show_published_date_only,
                                     peertube_instances,
                                     theme_name, max_like_count,
-                                    cw_lists):
+                                    cw_lists, dogwhistles):
             if debug:
                 print('Queue: Update accepted from ' + key_id)
             if os.path.isfile(queue_filename):
@@ -5456,7 +5470,7 @@ def run_inbox_queue(server,
                                  cw_lists, lists_enabled,
                                  content_license_url,
                                  languages_understood, mitm,
-                                 bold_reading)
+                                 bold_reading, dogwhistles)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'handle_after_initial',
                                 debug)

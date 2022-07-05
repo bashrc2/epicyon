@@ -565,5 +565,7 @@
     "Switch to moderation view": "मॉडरेशन दृश्य पर स्विच करें",
     "Minimize attached images": "संलग्न छवियों को छोटा करें",
     "SHOW MEDIA": "मीडिया दिखाएं",
-    "ActivityPub Specification": "गतिविधिपब विशिष्टता"
+    "ActivityPub Specification": "गतिविधिपब विशिष्टता",
+    "Dogwhistle words": "कुत्ते की सीटी शब्द",
+    "Content warnings will be added for the following": "निम्नलिखित के लिए सामग्री चेतावनियां जोड़ दी जाएंगी"
 }

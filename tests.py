@@ -132,6 +132,7 @@ from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
+from content import detect_dogwhistles
 from content import remove_script
 from content import create_edits_html
 from content import content_diff
@@ -7326,6 +7327,30 @@ def _test_remove_end_of_line():
     assert remove_eol(text) == expected
 
 
+def _test_dogwhistles():
+    print('dogwhistles')
+    dogwhistles = {
+        "X-hamstered": "hamsterism",
+        "gerbil": "rodent",
+        "*snake": "slither",
+        "start*end": "something"
+    }
+    content = 'This text does not contain any dogwhistles'
+    assert not detect_dogwhistles(content, dogwhistles)
+    content = 'A gerbil named joe'
+    assert detect_dogwhistles(content, dogwhistles)
+    content = 'A rattlesnake.'
+    assert detect_dogwhistles(content, dogwhistles)
+    content = 'A startthingend.'
+    assert detect_dogwhistles(content, dogwhistles)
+    content = 'This content is unhamstered and yhamstered.'
+    result = detect_dogwhistles(content, dogwhistles)
+    assert result
+    assert result.get('hamstered')
+    assert result['hamstered']['count'] == 2
+    assert result['hamstered']['category'] == "hamsterism"
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7343,6 +7368,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_dogwhistles()
     _test_remove_end_of_line()
     _test_translation_labels()
     _test_color_contrast_value(base_dir)

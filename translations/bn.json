@@ -565,5 +565,7 @@
     "Switch to moderation view": "সংযম দৃশ্যে স্যুইচ করুন",
     "Minimize attached images": "সংযুক্ত ছবি ছোট করুন",
     "SHOW MEDIA": "মিডিয়া দেখান",
-    "ActivityPub Specification": "ActivityPub স্পেসিফিকেশন"
+    "ActivityPub Specification": "ActivityPub স্পেসিফিকেশন",
+    "Dogwhistle words": "কুকুরের হুইসেল শব্দ",
+    "Content warnings will be added for the following": "নিম্নলিখিত জন্য বিষয়বস্তু সতর্কতা যোগ করা হবে"
 }

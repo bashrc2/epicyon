@@ -565,5 +565,7 @@
     "Switch to moderation view": "モデレートビューに切り替えます",
     "Minimize attached images": "添付画像を最小限に抑える",
     "SHOW MEDIA": "メディアを表示",
-    "ActivityPub Specification": "ActivityPubの仕様"
+    "ActivityPub Specification": "ActivityPubの仕様",
+    "Dogwhistle words": "犬笛の言葉",
+    "Content warnings will be added for the following": "以下のコンテンツ警告が追加されます"
 }

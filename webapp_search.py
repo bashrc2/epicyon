@@ -621,7 +621,8 @@ def html_history_search(translate: {}, base_dir: str,
                         signing_priv_key_pem: str,
                         cw_lists: {},
                         lists_enabled: str,
-                        timezone: str, bold_reading: bool) -> str:
+                        timezone: str, bold_reading: bool,
+                        dogwhistles: {}) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -709,7 +710,8 @@ def html_history_search(translate: {}, base_dir: str,
                                     show_individual_post_icons,
                                     False, False, False, False,
                                     cw_lists, lists_enabled,
-                                    timezone, False, bold_reading)
+                                    timezone, False, bold_reading,
+                                    dogwhistles)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -734,7 +736,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                         max_like_count: int,
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
-                        timezone: str, bold_reading: bool) -> str:
+                        timezone: str, bold_reading: bool,
+                        dogwhistles: {}) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -897,7 +900,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     show_public_only,
                                     store_to_sache, False, cw_lists,
                                     lists_enabled, timezone, False,
-                                    bold_reading)
+                                    bold_reading, dogwhistles)
         if post_str:
             hashtag_search_form += separator_str + post_str
         index += 1

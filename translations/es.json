@@ -565,5 +565,7 @@
     "Switch to moderation view": "Cambiar a la vista de moderación",
     "Minimize attached images": "Minimizar imágenes adjuntas",
     "SHOW MEDIA": "MOSTRAR MEDIOS",
-    "ActivityPub Specification": "Especificación de ActivityPub"
+    "ActivityPub Specification": "Especificación de ActivityPub",
+    "Dogwhistle words": "Palabras de silbato para perros",
+    "Content warnings will be added for the following": "Se agregarán advertencias de contenido para lo siguiente"
 }

@@ -213,7 +213,8 @@ def post_message_to_outbox(session, translate: {},
                            max_like_count: int,
                            max_recent_posts: int, cw_lists: {},
                            lists_enabled: str,
-                           content_license_url: str) -> bool:
+                           content_license_url: str,
+                           dogwhistles: {}) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -513,7 +514,7 @@ def post_message_to_outbox(session, translate: {},
                                             False, True, use_cache_only,
                                             cw_lists, lists_enabled,
                                             timezone, mitm,
-                                            bold_reading)
+                                            bold_reading, dogwhistles)
 
     if outbox_announce(recent_posts_cache,
                        base_dir, message_json, debug):

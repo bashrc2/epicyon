@@ -565,5 +565,7 @@
     "Switch to moderation view": "Newid i wedd safoni",
     "Minimize attached images": "Lleihau delweddau sydd ynghlwm",
     "SHOW MEDIA": "DANGOS CYFRYNGAU",
-    "ActivityPub Specification": "Manyleb GweithgareddPub"
+    "ActivityPub Specification": "Manyleb GweithgareddPub",
+    "Dogwhistle words": "Geiriau chwibanogl",
+    "Content warnings will be added for the following": "Bydd rhybuddion cynnwys yn cael eu hychwanegu ar gyfer y canlynol"
 }

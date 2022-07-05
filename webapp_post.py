@@ -62,6 +62,7 @@ from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
+from content import detect_dogwhistles
 from content import create_edits_html
 from content import bold_reading_string
 from content import limit_repeated_words
@@ -1555,6 +1556,30 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
     return content
 
 
+def _add_dogwhistle_warnings(summary: str, content: str,
+                             dogwhistles: {}, translate: {}) -> {}:
+    """Adds dogwhistle warnings for the given content
+    """
+    if not dogwhistles:
+        return summary
+    content_str = str(summary) + ' ' + content
+    detected = detect_dogwhistles(content_str, dogwhistles)
+    if not detected:
+        return summary
+
+    for _, item in detected.items():
+        if not item.get('category'):
+            continue
+        whistle_str = item['category']
+        if translate.get(whistle_str):
+            whistle_str = translate[whistle_str]
+        if summary:
+            summary += ', ' + whistle_str
+        else:
+            summary = whistle_str
+    return summary
+
+
 def individual_post_as_html(signing_priv_key_pem: str,
                             allow_downloads: bool,
                             recent_posts_cache: {}, max_recent_posts: int,
@@ -1583,7 +1608,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             cw_lists: {},
                             lists_enabled: str,
                             timezone: str,
-                            mitm: bool, bold_reading: bool) -> str:
+                            mitm: bool, bold_reading: bool,
+                            dogwhistles: {}) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2142,6 +2168,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if content_str:
         summary_str = get_summary_from_post(post_json_object, system_language,
                                             languages_understood)
+        # add dogwhistle warnings to summary
+        summary_str = _add_dogwhistle_warnings(summary_str, content_str,
+                                               dogwhistles, translate)
+
         content_all_str = str(summary_str) + ' ' + content_str
         # does an emoji indicate a no boost preference?
         # if so then don't show the repeat/announce icon
@@ -2378,7 +2408,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          max_like_count: int, signing_priv_key_pem: str,
                          cw_lists: {}, lists_enabled: str,
                          timezone: str, mitm: bool,
-                         bold_reading: bool) -> str:
+                         bold_reading: bool, dogwhistles: {}) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2447,7 +2477,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 system_language, max_like_count,
                                 False, authorized, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, mitm,
-                                bold_reading)
+                                bold_reading, dogwhistles)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2488,7 +2518,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
                                             timezone, mitm,
-                                            bold_reading) + post_str
+                                            bold_reading,
+                                            dogwhistles) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2527,7 +2558,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
                                             timezone, False,
-                                            bold_reading)
+                                            bold_reading, dogwhistles)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2555,7 +2586,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       max_like_count: int,
                       signing_priv_key_pem: str, cw_lists: {},
                       lists_enabled: str,
-                      timezone: str, bold_reading: bool) -> str:
+                      timezone: str, bold_reading: bool,
+                      dogwhistles: {}) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -2582,7 +2614,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         False, False,
                                         cw_lists, lists_enabled,
                                         timezone, False,
-                                        bold_reading)
+                                        bold_reading, dogwhistles)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2611,7 +2643,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                max_like_count: int, signing_priv_key_pem: str,
                                cw_lists: {}, lists_enabled: str,
                                box_name: str, page_number: int,
-                               timezone: str, bold_reading: bool) -> str:
+                               timezone: str, bold_reading: bool,
+                               dogwhistles: {}) -> str:
     """Returns the emoji picker screen
     """
     reacted_to_post_str = \
@@ -2635,7 +2668,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 max_like_count,
                                 False, False, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, False,
-                                bold_reading)
+                                bold_reading, dogwhistles)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

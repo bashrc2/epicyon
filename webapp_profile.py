@@ -148,7 +148,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                               cw_lists: {}, lists_enabled: str,
                               timezone: str,
                               onion_domain: str, i2p_domain: str,
-                              bold_reading: bool) -> str:
+                              bold_reading: bool, dogwhistles: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -388,7 +388,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                         False, False, False,
                                         cw_lists, lists_enabled,
                                         timezone, False,
-                                        bold_reading)
+                                        bold_reading, dogwhistles)
             i += 1
             if i >= 8:
                 break
@@ -636,7 +636,7 @@ def html_profile(signing_priv_key_pem: str,
                                  system_language, max_like_count,
                                  shared_items_federated_domains, None,
                                  page_number, max_items_per_page, cw_lists,
-                                 lists_enabled)
+                                 lists_enabled, {})
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
@@ -1031,7 +1031,7 @@ def html_profile(signing_priv_key_pem: str,
                                 max_like_count,
                                 signing_priv_key_pem,
                                 cw_lists, lists_enabled,
-                                timezone, bold_reading) + license_str
+                                timezone, bold_reading, {}) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1104,7 +1104,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         max_like_count: int,
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
-                        timezone: str, bold_reading: bool) -> str:
+                        timezone: str, bold_reading: bool,
+                        dogwhistles: {}) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1154,7 +1155,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             True, False, False,
                                             cw_lists, lists_enabled,
                                             timezone, False,
-                                            bold_reading)
+                                            bold_reading, dogwhistles)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1

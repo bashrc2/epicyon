@@ -1008,6 +1008,147 @@ def _auto_tag(base_dir: str, nickname: str, domain: str,
                 append_tags.append('#' + tag_name)
 
 
+def _get_simplified_content(content: str) -> str:
+    """Returns a simplified version of the content suitable for
+    splitting up into individual words
+    """
+    content_simplified = \
+        content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
+    content_simplified = content_simplified.replace('. ', ' ').strip()
+    if content_simplified.endswith('.'):
+        content_simplified = content_simplified[:len(content_simplified)-1]
+    return content_simplified
+
+
+def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
+    """Returns a dict containing any detected dogwhistle words
+    """
+    content = remove_html(content).lower()
+    result = {}
+    words = _get_simplified_content(content).split(' ')
+    for whistle, category in dogwhistles.items():
+        if not category:
+            continue
+        ending = False
+        starting = False
+        whistle = whistle.lower()
+
+        if whistle.startswith('x-'):
+            whistle = whistle[2:]
+            ending = True
+        elif (whistle.startswith('*') or
+              whistle.startswith('~') or
+              whistle.startswith('-')):
+            whistle = whistle[1:]
+            ending = True
+
+        if ending:
+            prev_wrd = ''
+            for wrd in words:
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if wrd.endswith(whistle) or wrd2.endswith(whistle):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+                prev_wrd = wrd
+            continue
+
+        if whistle.lower().endswith('-x'):
+            whistle = whistle[:len(whistle)-2]
+            starting = True
+        elif (whistle.endswith('*') or
+              whistle.endswith('~') or
+              whistle.endswith('-')):
+            whistle = whistle[:len(whistle)-1]
+            starting = True
+
+        if starting:
+            prev_wrd = ''
+            for wrd in words:
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if wrd.startswith(whistle) or wrd2.startswith(whistle):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+                prev_wrd = wrd
+            continue
+
+        if '*' in whistle:
+            whistle_start = whistle.split('*', 1)[0]
+            whistle_end = whistle.split('*', 1)[1]
+            prev_wrd = ''
+            for wrd in words:
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if ((wrd.startswith(whistle_start) and
+                     wrd.endswith(whistle_end)) or
+                    (wrd2.startswith(whistle_start) and
+                     wrd2.endswith(whistle_end))):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+                prev_wrd = wrd
+            continue
+
+        prev_wrd = ''
+        for wrd in words:
+            wrd2 = (prev_wrd + ' ' + wrd).strip()
+            if whistle in (wrd, wrd2):
+                if not result.get(whistle):
+                    result[whistle] = {
+                        "count": 1,
+                        "category": category
+                    }
+                else:
+                    result[whistle]['count'] += 1
+            prev_wrd = wrd
+    return result
+
+
+def load_dogwhistles(filename: str) -> {}:
+    """Loads a list of dogwhistles from file
+    """
+    if not os.path.isfile(filename):
+        return {}
+    dogwhistle_lines = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_dogwhistles:
+            dogwhistle_lines = fp_dogwhistles.readlines()
+    except OSError:
+        print('EX: unable to load dogwhistles from ' + filename)
+        return {}
+    separators = ('->', '=>', ',', ';', '|', '=')
+    dogwhistles = {}
+    for line in dogwhistle_lines:
+        line = remove_eol(line).strip()
+        if not line:
+            continue
+        if line.startswith('#'):
+            continue
+        whistle = None
+        category = None
+        for sep in separators:
+            if sep in line:
+                whistle = line.split(sep, 1)[0].strip()
+                category = line.split(sep, 1)[1].strip()
+                break
+        if not whistle:
+            whistle = line
+        dogwhistles[whistle] = category
+    return dogwhistles
+
+
 def add_html_tags(base_dir: str, http_prefix: str,
                   nickname: str, domain: str, content: str,
                   recipients: [], hashtags: {},
@@ -1022,12 +1163,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
     content = _add_music_tag(content, 'nowplaying')
-    content_simplified = \
-        content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
-    content_simplified = content_simplified.replace('. ', ' ').strip()
-    if content_simplified.endswith('.'):
-        content_simplified = content_simplified[:len(content_simplified)-1]
-    words = content_simplified.split(' ')
+    words = _get_simplified_content(content).split(' ')
 
     # remove . for words which are not mentions
     new_words = []

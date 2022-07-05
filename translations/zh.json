@@ -565,5 +565,7 @@
     "Switch to moderation view": "切换到审核视图",
     "Minimize attached images": "最小化附加图像",
     "SHOW MEDIA": "展示媒体",
-    "ActivityPub Specification": "ActivityPub 规范"
+    "ActivityPub Specification": "ActivityPub 规范",
+    "Dogwhistle words": "狗哨的话",
+    "Content warnings will be added for the following": "将为以下内容添加内容警告"
 }
