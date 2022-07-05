@@ -5118,12 +5118,13 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.dogwhistles = \
                     load_dogwhistles(dogwhistles_filename)
             else:
-                if os.path.isfile(dogwhistles_filename):
-                    try:
-                        os.remove(dogwhistles_filename)
-                    except OSError:
-                        print('EX: _newswire_update unable to delete ' +
-                              dogwhistles_filename)
+                # save an empty file
+                try:
+                    with open(dogwhistles_filename, 'w+',
+                              encoding='utf-8') as fp_dogwhistles:
+                        fp_dogwhistles.write('')
+                except OSError:
+                    print('EX: unable to write ' + dogwhistles_filename)
                 self.server.dogwhistles = {}
 
             # save news tagging rules
