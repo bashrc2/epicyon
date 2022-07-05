@@ -1052,36 +1052,53 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
                         }
                     else:
                         result[whistle]['count'] += 1
-        else:
-            if whistle.lower().endswith('-x'):
-                whistle = whistle[:len(whistle)-2]
-                starting = True
-            elif (whistle.endswith('*') or
-                  whistle.endswith('~') or
-                  whistle.endswith('-')):
-                whistle = whistle[:len(whistle)-1]
-                starting = True
+            continue
 
-            if starting:
-                for wrd in words:
-                    if wrd.startswith(whistle):
-                        if not result.get(whistle):
-                            result[whistle] = {
-                                "count": 1,
-                                "category": category
-                            }
-                        else:
-                            result[whistle]['count'] += 1
-            else:
-                for wrd in words:
-                    if wrd == whistle:
-                        if not result.get(whistle):
-                            result[whistle] = {
-                                "count": 1,
-                                "category": category
-                            }
-                        else:
-                            result[whistle]['count'] += 1
+        if whistle.lower().endswith('-x'):
+            whistle = whistle[:len(whistle)-2]
+            starting = True
+        elif (whistle.endswith('*') or
+              whistle.endswith('~') or
+              whistle.endswith('-')):
+            whistle = whistle[:len(whistle)-1]
+            starting = True
+
+        if starting:
+            for wrd in words:
+                if wrd.startswith(whistle):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+            continue
+
+        if '*' in whistle:
+            whistle_start = whistle.split('*', 1)[0]
+            whistle_end = whistle.split('*', 1)[1]
+            for wrd in words:
+                if wrd.startswith(whistle_start) and \
+                   wrd.endswith(whistle_end):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+            continue
+
+        for wrd in words:
+            if wrd == whistle:
+                if not result.get(whistle):
+                    result[whistle] = {
+                        "count": 1,
+                        "category": category
+                    }
+                else:
+                    result[whistle]['count'] += 1
     return result
 
 

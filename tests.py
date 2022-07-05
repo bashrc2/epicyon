@@ -7332,13 +7332,16 @@ def _test_dogwhistles():
     dogwhistles = {
         "X-hamstered": "hamsterism",
         "gerbil": "rodent",
-        "*snake": "slither"
+        "*snake": "slither",
+        "start*end": "something"
     }
     content = 'This text does not contain any dogwhistles'
     assert not detect_dogwhistles(content, dogwhistles)
     content = 'A gerbil named joe'
     assert detect_dogwhistles(content, dogwhistles)
     content = 'A rattlesnake.'
+    assert detect_dogwhistles(content, dogwhistles)
+    content = 'A startthingend.'
     assert detect_dogwhistles(content, dogwhistles)
     content = 'This content is unhamstered and yhamstered.'
     result = detect_dogwhistles(content, dogwhistles)
