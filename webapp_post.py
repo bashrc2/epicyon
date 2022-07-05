@@ -1583,7 +1583,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             cw_lists: {},
                             lists_enabled: str,
                             timezone: str,
-                            mitm: bool, bold_reading: bool) -> str:
+                            mitm: bool, bold_reading: bool,
+                            dogwhistles: {}) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2378,7 +2379,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          max_like_count: int, signing_priv_key_pem: str,
                          cw_lists: {}, lists_enabled: str,
                          timezone: str, mitm: bool,
-                         bold_reading: bool) -> str:
+                         bold_reading: bool, dogwhistles: {}) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2447,7 +2448,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 system_language, max_like_count,
                                 False, authorized, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, mitm,
-                                bold_reading)
+                                bold_reading, dogwhistles)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2488,7 +2489,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
                                             timezone, mitm,
-                                            bold_reading) + post_str
+                                            bold_reading,
+                                            dogwhistles) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2527,7 +2529,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
                                             timezone, False,
-                                            bold_reading)
+                                            bold_reading, dogwhistles)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2555,7 +2557,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       max_like_count: int,
                       signing_priv_key_pem: str, cw_lists: {},
                       lists_enabled: str,
-                      timezone: str, bold_reading: bool) -> str:
+                      timezone: str, bold_reading: bool,
+                      dogwhistles: {}) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -2582,7 +2585,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         False, False,
                                         cw_lists, lists_enabled,
                                         timezone, False,
-                                        bold_reading)
+                                        bold_reading, dogwhistles)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2611,7 +2614,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                max_like_count: int, signing_priv_key_pem: str,
                                cw_lists: {}, lists_enabled: str,
                                box_name: str, page_number: int,
-                               timezone: str, bold_reading: bool) -> str:
+                               timezone: str, bold_reading: bool,
+                               dogwhistles: {}) -> str:
     """Returns the emoji picker screen
     """
     reacted_to_post_str = \
@@ -2635,7 +2639,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 max_like_count,
                                 False, False, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, False,
-                                bold_reading)
+                                bold_reading, dogwhistles)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

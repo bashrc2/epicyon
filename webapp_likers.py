@@ -41,7 +41,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
                         max_like_count: int, signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
                         box_name: str, default_timeline: str,
-                        bold_reading: bool,
+                        bold_reading: bool, dogwhistles: {},
                         dict_name: str = 'likes') -> str:
     """Returns html for a screen showing who liked a post
     """
@@ -107,7 +107,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                 False, False, False,
                                 False, False, False,
                                 cw_lists, lists_enabled,
-                                timezone, mitm, bold_reading)
+                                timezone, mitm, bold_reading,
+                                dogwhistles)
 
     # show likers beneath the post
     obj = post_json_object

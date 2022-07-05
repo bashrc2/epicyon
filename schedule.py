@@ -142,7 +142,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                                           httpd.max_recent_posts,
                                           httpd.cw_lists,
                                           httpd.lists_enabled,
-                                          httpd.content_license_url):
+                                          httpd.content_license_url,
+                                          httpd.dogwhistles):
                 index_lines.remove(line)
                 try:
                     os.remove(post_filename)
