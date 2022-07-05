@@ -1562,7 +1562,8 @@ def _add_dogwhistle_warnings(summary: str, content: str,
     """
     if not dogwhistles:
         return summary
-    detected = detect_dogwhistles(content, dogwhistles)
+    content_str = str(summary) + ' ' + content
+    detected = detect_dogwhistles(content_str, dogwhistles)
     if not detected:
         return summary
 
