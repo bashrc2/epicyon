@@ -12167,7 +12167,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
-                                           self.server.replies)
+                                           self.server.dogwhistles)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
