@@ -1027,6 +1027,8 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
     result = {}
     words = _get_simplified_content(content).split(' ')
     for whistle, category in dogwhistles.items():
+        if not category:
+            continue
         ending = False
         starting = False
 
