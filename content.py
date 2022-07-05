@@ -1023,7 +1023,7 @@ def _get_simplified_content(content: str) -> str:
 def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
     """Returns a dict containing any detected dogwhistle words
     """
-    content = remove_html(content)
+    content = remove_html(content).lower()
     result = {}
     words = _get_simplified_content(content).split(' ')
     for whistle, category in dogwhistles.items():
@@ -1031,8 +1031,9 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
             continue
         ending = False
         starting = False
+        whistle = whistle.lower()
 
-        if whistle.lower().startswith('x-'):
+        if whistle.startswith('x-'):
             whistle = whistle[2:]
             ending = True
         elif (whistle.startswith('*') or
