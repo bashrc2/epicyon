@@ -48,6 +48,7 @@
     "options-main-visited-color": "#e1c4bc",
     "cw-color": "white",
     "pageslist-color": "white",
+    "pageslist-selected-color": "yellow",
     "main-fg-color": "white",
     "options-fg-color": "white",
     "column-left-fg-color": "white",

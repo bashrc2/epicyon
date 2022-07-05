@@ -33,6 +33,7 @@
     "dropdown-bg-color-hover": "#463b35",
     "cw-color": "#d5c7b7",
     "pageslist-color": "#dddddd",
+    "pageslist-selected-color": "yellow",
     "main-fg-color": "#d5c7b7",
     "column-left-fg-color": "#d5c7b7",
     "button-text": "#d5c7b7",
