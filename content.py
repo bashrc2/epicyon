@@ -1100,7 +1100,7 @@ def load_dogwhistles(filename: str) -> {}:
     separators = ('->', '=>', ',', ';', '|', '=')
     dogwhistles = {}
     for line in dogwhistle_lines:
-        line = line.remove_eol(line).strip()
+        line = remove_eol(line).strip()
         if not line:
             continue
         if line.startswith('#'):
