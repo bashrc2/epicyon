@@ -1027,6 +1027,8 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
     words = _get_simplified_content(content).split(' ')
     for whistle, category in dogwhistles.items():
         ending = False
+        starting = False
+
         if whistle.lower().startswith('x-'):
             whistle = whistle[2:]
             ending = True
@@ -1047,15 +1049,35 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
                     else:
                         result[whistle]['count'] += 1
         else:
-            for wrd in words:
-                if wrd == whistle:
-                    if not result.get(whistle):
-                        result[whistle] = {
-                            "count": 1,
-                            "category": category
-                        }
-                    else:
-                        result[whistle]['count'] += 1
+            if whistle.lower().endswith('-x'):
+                whistle = whistle[:len(whistle)-2]
+                starting = True
+            elif (whistle.endswith('*') or
+                  whistle.endswith('~') or
+                  whistle.endswith('-')):
+                whistle = whistle[:len(whistle)-1]
+                starting = True
+
+            if starting:
+                for wrd in words:
+                    if wrd.startswith(whistle):
+                        if not result.get(whistle):
+                            result[whistle] = {
+                                "count": 1,
+                                "category": category
+                            }
+                        else:
+                            result[whistle]['count'] += 1
+            else:
+                for wrd in words:
+                    if wrd == whistle:
+                        if not result.get(whistle):
+                            result[whistle] = {
+                                "count": 1,
+                                "category": category
+                            }
+                        else:
+                            result[whistle]['count'] += 1
     return result
 
 
@@ -1071,7 +1093,7 @@ def load_dogwhistles(filename: str) -> {}:
     except OSError:
         print('EX: unable to load dogwhistles from ' + filename)
         return {}
-    separators = ('->', ',', ';')
+    separators = ('->', ',', ';', '|')
     dogwhistles = {}
     for line in dogwhistle_lines:
         line = line.remove_eol(line).strip()

@@ -62,6 +62,7 @@ from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
+from content import detect_dogwhistles
 from content import create_edits_html
 from content import bold_reading_string
 from content import limit_repeated_words
@@ -1555,6 +1556,30 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
     return content
 
 
+def _add_dogwhistle_warnings(summary: str, content: str,
+                             dogwhistles: {}, translate: {}) -> {}:
+    """Adds dogwhistle warnings for the given content
+    """
+    if not dogwhistles:
+        return summary
+    detected = detect_dogwhistles(content, dogwhistles)
+    if not detected:
+        return summary
+
+    for whistle, item in detected.items():
+        if not item.get('category'):
+            continue
+        if 'dogwhistle' not in whistle:
+            whistle_str = whistle + ' dogwhistle'
+        else:
+            whistle_str = whistle
+        if summary:
+            summary += ', ' + whistle_str
+        else:
+            summary = whistle_str
+    return summary
+
+
 def individual_post_as_html(signing_priv_key_pem: str,
                             allow_downloads: bool,
                             recent_posts_cache: {}, max_recent_posts: int,
@@ -2143,6 +2168,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if content_str:
         summary_str = get_summary_from_post(post_json_object, system_language,
                                             languages_understood)
+        # add dogwhistle warnings to summary
+        summary_str = _add_dogwhistle_warnings(summary_str, content_str,
+                                               dogwhistles, translate)
+
         content_all_str = str(summary_str) + ' ' + content_str
         # does an emoji indicate a no boost preference?
         # if so then don't show the repeat/announce icon
