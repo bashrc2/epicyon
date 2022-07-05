@@ -1009,7 +1009,8 @@ def _auto_tag(base_dir: str, nickname: str, domain: str,
 
 
 def _get_simplified_content(content: str) -> str:
-    """
+    """Returns a simplified version of the content suitable for
+    splitting up into individual words
     """
     content_simplified = \
         content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
