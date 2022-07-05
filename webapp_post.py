@@ -1574,7 +1574,8 @@ def _add_dogwhistle_warnings(summary: str, content: str,
         if translate.get(whistle_str):
             whistle_str = translate[whistle_str]
         if summary:
-            summary += ', ' + whistle_str
+            if whistle_str not in summary:
+                summary += ', ' + whistle_str
         else:
             summary = whistle_str
     return summary
