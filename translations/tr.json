@@ -565,5 +565,7 @@
     "Switch to moderation view": "Denetleme görünümüne geç",
     "Minimize attached images": "Ekli resimleri simge durumuna küçült",
     "SHOW MEDIA": "MEDYA GÖSTER",
-    "ActivityPub Specification": "ActivityPub Spesifikasyonu"
+    "ActivityPub Specification": "ActivityPub Spesifikasyonu",
+    "Dogwhistle words": "İtiraf sözleri",
+    "Content warnings will be added for the following": "Aşağıdakiler için içerik uyarıları eklenecek"
 }

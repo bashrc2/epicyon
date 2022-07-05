@@ -565,5 +565,7 @@
     "Switch to moderation view": "قم بالتبديل إلى عرض الاعتدال",
     "Minimize attached images": "تصغير الصور المرفقة",
     "SHOW MEDIA": "عرض الوسائط",
-    "ActivityPub Specification": "مواصفات ActivityPub"
+    "ActivityPub Specification": "مواصفات ActivityPub",
+    "Dogwhistle words": "كلمات Dogwhistle",
+    "Content warnings will be added for the following": "ستتم إضافة تحذيرات المحتوى لما يلي"
 }

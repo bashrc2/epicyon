@@ -5106,6 +5106,26 @@ class PubServer(BaseHTTPRequestHandler):
                         print('EX: _newswire_update unable to delete ' +
                               filter_newswire_filename)
 
+            # save dogwhistle words list
+            dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
+            if fields.get('dogwhistleWords'):
+                try:
+                    with open(dogwhistles_filename, 'w+',
+                              encoding='utf-8') as fp_dogwhistles:
+                        fp_dogwhistles.write(fields['dogwhistleWords'])
+                except OSError:
+                    print('EX: unable to write ' + dogwhistles_filename)
+                self.server.dogwhistles = \
+                    load_dogwhistles(dogwhistles_filename)
+            else:
+                if os.path.isfile(dogwhistles_filename):
+                    try:
+                        os.remove(dogwhistles_filename)
+                    except OSError:
+                        print('EX: _newswire_update unable to delete ' +
+                              dogwhistles_filename)
+                self.server.dogwhistles = {}
+
             # save news tagging rules
             hashtag_rules_filename = \
                 base_dir + '/accounts/hashtagrules.txt'
@@ -14978,7 +14998,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      http_prefix,
                                      self.server.default_timeline,
                                      self.server.theme_name,
-                                     access_keys)
+                                     access_keys,
+                                     self.server.dogwhistles)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)

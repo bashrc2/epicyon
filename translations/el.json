@@ -565,5 +565,7 @@
     "Switch to moderation view": "Μετάβαση σε προβολή εποπτείας",
     "Minimize attached images": "Ελαχιστοποιήστε τις συνημμένες εικόνες",
     "SHOW MEDIA": "ΔΕΙΤΕ ΜΕΣΑ",
-    "ActivityPub Specification": "Προδιαγραφές ActivityPub"
+    "ActivityPub Specification": "Προδιαγραφές ActivityPub",
+    "Dogwhistle words": "Σφυρίχτρα λέξεις",
+    "Content warnings will be added for the following": "Θα προστεθούν προειδοποιήσεις περιεχομένου για τα ακόλουθα"
 }

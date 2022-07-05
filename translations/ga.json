@@ -565,5 +565,7 @@
     "Switch to moderation view": "Athraigh go dtí an t-amharc modhnóireachta",
     "Minimize attached images": "Íoslaghdaigh íomhánna ceangailte",
     "SHOW MEDIA": "Taispeáin MEÁIN",
-    "ActivityPub Specification": "Sonraíocht ActivityPub"
+    "ActivityPub Specification": "Sonraíocht ActivityPub",
+    "Dogwhistle words": "Focail feadóg mhadra",
+    "Content warnings will be added for the following": "Cuirfear rabhaidh ábhair leis maidir leis na nithe seo a leanas"
 }

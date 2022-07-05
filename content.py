@@ -1097,7 +1097,7 @@ def load_dogwhistles(filename: str) -> {}:
     except OSError:
         print('EX: unable to load dogwhistles from ' + filename)
         return {}
-    separators = ('->', ',', ';', '|')
+    separators = ('->', '=>', ',', ';', '|', '=')
     dogwhistles = {}
     for line in dogwhistle_lines:
         line = line.remove_eol(line).strip()
@@ -1109,8 +1109,8 @@ def load_dogwhistles(filename: str) -> {}:
         category = None
         for sep in separators:
             if sep in line:
-                whistle = line.split(sep, 1)[0]
-                category = line.split(sep, 1)[1]
+                whistle = line.split(sep, 1)[0].strip()
+                category = line.split(sep, 1)[1].strip()
                 break
         if not whistle:
             whistle = line

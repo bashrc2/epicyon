@@ -565,5 +565,7 @@
     "Switch to moderation view": "Overschakelen naar moderatieweergave",
     "Minimize attached images": "Bijgevoegde afbeeldingen minimaliseren",
     "SHOW MEDIA": "TOON MEDIA",
-    "ActivityPub Specification": "ActivityPub-specificatie"
+    "ActivityPub Specification": "ActivityPub-specificatie",
+    "Dogwhistle words": "Hondenfluitwoorden",
+    "Content warnings will be added for the following": "Er worden inhoudswaarschuwingen toegevoegd voor het volgende:"
 }

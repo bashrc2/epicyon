@@ -1566,13 +1566,12 @@ def _add_dogwhistle_warnings(summary: str, content: str,
     if not detected:
         return summary
 
-    for whistle, item in detected.items():
+    for _, item in detected.items():
         if not item.get('category'):
             continue
-        if 'dogwhistle' not in whistle:
-            whistle_str = whistle + ' dogwhistle'
-        else:
-            whistle_str = whistle
+        whistle_str = item['category']
+        if translate.get(whistle_str):
+            whistle_str = translate[whistle_str]
         if summary:
             summary += ', ' + whistle_str
         else:

@@ -565,5 +565,7 @@
     "Switch to moderation view": "Canvia a la visualització de moderació",
     "Minimize attached images": "Minimitzar les imatges adjuntes",
     "SHOW MEDIA": "MOSTRA ELS MITJANS",
-    "ActivityPub Specification": "Especificació d'ActivityPub"
+    "ActivityPub Specification": "Especificació d'ActivityPub",
+    "Dogwhistle words": "Paraules de xiulet",
+    "Content warnings will be added for the following": "S'afegiran advertències de contingut per al següent"
 }

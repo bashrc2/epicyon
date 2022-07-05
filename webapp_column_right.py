@@ -549,7 +549,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
 def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
                        domain: str, port: int, http_prefix: str,
                        default_timeline: str, theme: str,
-                       access_keys: {}) -> str:
+                       access_keys: {}, dogwhistles: {}) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -644,6 +644,22 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     edit_newswire_form += '      <textarea id="message" ' + \
         'name="filteredWordsNewswire" style="height:50vh" ' + \
         'spellcheck="true">' + filter_str + '</textarea>\n'
+
+    dogwhistle_str = ''
+    for whistle, category in dogwhistles.items():
+        if not category:
+            continue
+        dogwhistle_str += whistle + ' -> ' + category + '\n'
+
+    edit_newswire_form += \
+        '      <br><b><label class="labels">' + \
+        translate['Dogwhistle words'] + '</label></b>\n'
+    edit_newswire_form += '      <br><label class="labels">' + \
+        translate['Content warnings will be added for the following'] + \
+        ':</label>'
+    edit_newswire_form += '      <textarea id="message" ' + \
+        'name="dogwhistleWords" style="height:50vh" ' + \
+        'spellcheck="true">' + dogwhistle_str + '</textarea>\n'
 
     hashtag_rules_str = ''
     hashtag_rules_filename = \
