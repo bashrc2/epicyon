@@ -1017,7 +1017,7 @@ def _get_simplified_content(content: str) -> str:
     content_simplified = content_simplified.replace('. ', ' ').strip()
     if content_simplified.endswith('.'):
         content_simplified = content_simplified[:len(content_simplified)-1]
-        return content_simplified
+    return content_simplified
 
 
 def add_html_tags(base_dir: str, http_prefix: str,
