@@ -1043,8 +1043,10 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
             ending = True
 
         if ending:
+            prev_wrd = ''
             for wrd in words:
-                if wrd.endswith(whistle):
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if wrd.endswith(whistle) or wrd2.endswith(whistle):
                     if not result.get(whistle):
                         result[whistle] = {
                             "count": 1,
@@ -1052,6 +1054,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
                         }
                     else:
                         result[whistle]['count'] += 1
+                prev_wrd = wrd
             continue
 
         if whistle.lower().endswith('-x'):
@@ -1064,8 +1067,10 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
             starting = True
 
         if starting:
+            prev_wrd = ''
             for wrd in words:
-                if wrd.startswith(whistle):
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if wrd.startswith(whistle) or wrd2.startswith(whistle):
                     if not result.get(whistle):
                         result[whistle] = {
                             "count": 1,
@@ -1073,14 +1078,19 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
                         }
                     else:
                         result[whistle]['count'] += 1
+                prev_wrd = wrd
             continue
 
         if '*' in whistle:
             whistle_start = whistle.split('*', 1)[0]
             whistle_end = whistle.split('*', 1)[1]
+            prev_wrd = ''
             for wrd in words:
-                if wrd.startswith(whistle_start) and \
-                   wrd.endswith(whistle_end):
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if ((wrd.startswith(whistle_start) and
+                     wrd.endswith(whistle_end)) or
+                    (wrd2.startswith(whistle_start) and
+                     wrd2.endswith(whistle_end))):
                     if not result.get(whistle):
                         result[whistle] = {
                             "count": 1,
@@ -1088,10 +1098,13 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
                         }
                     else:
                         result[whistle]['count'] += 1
+                prev_wrd = wrd
             continue
 
+        prev_wrd = ''
         for wrd in words:
-            if wrd == whistle:
+            wrd2 = (prev_wrd + ' ' + wrd).strip()
+            if whistle in (wrd, wrd2):
                 if not result.get(whistle):
                     result[whistle] = {
                         "count": 1,
@@ -1099,6 +1112,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
                     }
                 else:
                     result[whistle]['count'] += 1
+            prev_wrd = wrd
     return result
 
 
