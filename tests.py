@@ -7346,8 +7346,6 @@ def _test_dogwhistles():
 
 
 def run_all_tests():
-    _test_dogwhistles()
-    return
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
