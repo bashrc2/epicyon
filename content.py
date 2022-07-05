@@ -1082,7 +1082,6 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
                             }
                         else:
                             result[whistle]['count'] += 1
-                        break
     return result
 
 
