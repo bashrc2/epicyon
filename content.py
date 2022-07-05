@@ -1020,7 +1020,7 @@ def _get_simplified_content(content: str) -> str:
     return content_simplified
 
 
-def get_dogwhistles(content: str, dogwhistles: {}) -> {}:
+def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
     """Returns a dict containing any detected dogwhistle words
     """
     result = {}
@@ -1057,6 +1057,39 @@ def get_dogwhistles(content: str, dogwhistles: {}) -> {}:
                     else:
                         result[whistle]['count'] += 1
     return result
+
+
+def load_dogwhistles(filename: str) -> {}:
+    """Loads a list of dogwhistles from file
+    """
+    if not os.path.isfile(filename):
+        return {}
+    dogwhistle_lines = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_dogwhistles:
+            dogwhistle_lines = fp_dogwhistles.readlines()
+    except OSError:
+        print('EX: unable to load dogwhistles from ' + filename)
+        return {}
+    separators = ('->', ',', ';')
+    dogwhistles = {}
+    for line in dogwhistle_lines:
+        line = line.remove_eol(line).strip()
+        if not line:
+            continue
+        if line.startswith('#'):
+            continue
+        whistle = None
+        category = None
+        for sep in separators:
+            if sep in line:
+                whistle = line.split(sep, 1)[0]
+                category = line.split(sep, 1)[1]
+                break
+        if not whistle:
+            whistle = line
+        dogwhistles[whistle] = category
+    return dogwhistles
 
 
 def add_html_tags(base_dir: str, http_prefix: str,

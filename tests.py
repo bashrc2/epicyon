@@ -132,7 +132,7 @@ from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
-from content import get_dogwhistles
+from content import detect_dogwhistles
 from content import remove_script
 from content import create_edits_html
 from content import content_diff
@@ -7334,11 +7334,11 @@ def _test_dogwhistles():
         "gerbil": "rodent",
     }
     content = 'This text does not contain any dogwhistles'
-    assert not get_dogwhistles(content, dogwhistles)
+    assert not detect_dogwhistles(content, dogwhistles)
     content = 'A gerbil named joe'
-    assert get_dogwhistles(content, dogwhistles)
+    assert detect_dogwhistles(content, dogwhistles)
     content = 'This content is unhamstered and yhamstered.'
-    result = get_dogwhistles(content, dogwhistles)
+    result = detect_dogwhistles(content, dogwhistles)
     assert result
     assert result.get('hamstered')
     assert result['hamstered']['count'] == 2

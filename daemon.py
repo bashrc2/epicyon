@@ -326,6 +326,7 @@ from utils import has_group_type
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
+from content import load_dogwhistles
 from content import valid_url_lengths
 from content import contains_invalid_local_links
 from content import get_price_from_string
@@ -20966,6 +20967,12 @@ def run_daemon(preferred_podcast_formats: [],
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)
+
+    # load a list of dogwhistle words
+    dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
+    if not os.path.isfile(dogwhistles_filename):
+        dogwhistles_filename = base_dir + '/default_dogwhistles.txt'
+    httpd.dogwhistles = load_dogwhistles(dogwhistles_filename)
 
     # list of preferred podcast formats
     # eg ['audio/opus', 'audio/mp3']
