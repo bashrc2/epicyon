@@ -1020,6 +1020,45 @@ def _get_simplified_content(content: str) -> str:
     return content_simplified
 
 
+def get_dogwhistles(content: str, dogwhistles: {}) -> {}:
+    """Returns a dict containing any detected dogwhistle words
+    """
+    result = {}
+    words = _get_simplified_content(content).split(' ')
+    for whistle, category in dogwhistles.items():
+        ending = False
+        if whistle.lower().startswith('x-'):
+            whistle = whistle[2:]
+            ending = True
+        elif (whistle.startswith('*') or
+              whistle.startswith('~') or
+              whistle.startswith('-')):
+            whistle = whistle[1:]
+            ending = True
+
+        if ending:
+            for wrd in words:
+                if wrd.endswith(whistle):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+        else:
+            for wrd in words:
+                if wrd == whistle:
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+    return result
+
+
 def add_html_tags(base_dir: str, http_prefix: str,
                   nickname: str, domain: str, content: str,
                   recipients: [], hashtags: {},
