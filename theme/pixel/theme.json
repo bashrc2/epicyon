@@ -74,6 +74,7 @@
     "column-left-header-color": "white",
     "column-left-fg-color": "black",
     "pageslist-color": "black",
+    "pageslist-selected-color": "purple",
     "main-fg-color": "black",
     "dropdown-fg-color": "black",
     "dropdown-fg-color-hover": "#222",

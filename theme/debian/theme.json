@@ -67,6 +67,7 @@
     "main-header-color-roles": "#ebebf0",
     "cw-color": "#2d2c37",
     "pageslist-color": "#111",
+    "pageslist-selected-color": "blue",
     "main-fg-color": "#2d2c37",
     "login-fg-color": "white",
     "welcome-fg-color": "white",

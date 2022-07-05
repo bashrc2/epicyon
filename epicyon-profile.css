@@ -33,6 +33,7 @@
     --main-bg-color-report: #221c27;
     --main-header-color-roles: #282237;
     --pageslist-color: #dddddd;
+    --pageslist-selected-color: white;
     --main-fg-color: #dddddd;
     --cw-color: #dddddd;
     --cw-style: normal;
@@ -1869,6 +1870,8 @@ h3 {
         color: var(--pageslist-color);
     }
     .pageslist mark {
+        color: var(--pageslist-selected-color);
+        font-weight: bold;
     }
     .pageslistDash {
     }
@@ -2667,6 +2670,8 @@ h3 {
         color: var(--pageslist-color);
     }
     .pageslist mark {
+        color: var(--pageslist-selected-color);
+        font-weight: bold;
     }
     .pageslistDash {
         font-size: var(--font-page-dash-mobile);
@@ -3462,6 +3467,8 @@ h3 {
         color: var(--pageslist-color);
     }
     .pageslist mark {
+        color: var(--pageslist-selected-color);
+        font-weight: bold;
     }
     .pageslistDash {
         font-size: var(--font-page-dash-tiny);

@@ -69,6 +69,7 @@
     "options-main-link-color-hover": "#46eed5",
     "cw-color": "white",
     "pageslist-color": "white",
+    "pageslist-selected-color": "#dddddd",
     "main-fg-color": "white",
     "login-fg-color": "white",
     "welcome-fg-color": "white",

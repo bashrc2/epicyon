@@ -23,6 +23,7 @@
     "gallery-font-size": "35px",
     "gallery-font-size-mobile": "55px",
     "pageslist-color": "#dddddd",
+    "pageslist-selected-color": "white",
     "main-bg-color": "#002365",
     "login-bg-color": "#002365",
     "welcome-bg-color": "#002365",

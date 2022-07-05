@@ -218,6 +218,7 @@
     "main-bg-color-report": "#221c27",
     "main-header-color-roles": "#282237",
     "pageslist-color": "#dddddd",
+    "pageslist-selected-color": "white",
     "main-fg-color": "#dddddd",
     "day-number": "#dddddd",
     "day-number2": "#bbbbbb",
