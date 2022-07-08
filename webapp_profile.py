@@ -1228,6 +1228,8 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
             profile_str += \
                 page_number_buttons(actor, feed_name, page_number,
                                     'buttonheader')
+            # some vertical padding to allow "finger space" on mobile
+            profile_str += '<br><br>'
 
     return profile_str
 
