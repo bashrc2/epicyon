@@ -428,8 +428,8 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
     return tl_str
 
 
-def _page_number_buttons(users_path: str, box_name: str,
-                         page_number: int) -> str:
+def page_number_buttons(users_path: str, box_name: str,
+                        page_number: int, header: str) -> str:
     """Shows selactable page numbers at the bottom of the screen
     """
     pages_width = 3
@@ -451,7 +451,7 @@ def _page_number_buttons(users_path: str, box_name: str,
             curr_page_str = 'Current Page, '
         num_str += \
             '<a href="' + users_path + '/' + box_name + '?page=' + \
-            str(page) + '#timelineposts" class="pageslist" ' + \
+            str(page) + '#' + header + '" class="pageslist" ' + \
             'aria-label="' + curr_page_str + 'Page ' + str(page) + \
             '"' + aria_page_str + ' tabindex="11">' + page_str + '</a>'
     return '<center>\n' + \
@@ -908,7 +908,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
     if page_number > 1:
         tl_str += text_mode_separator
         tl_str += '<br>' + \
-            _page_number_buttons(users_path, box_name, page_number)
+            page_number_buttons(users_path, box_name, page_number,
+                                'timelineposts')
         tl_str += \
             '  <center>\n' + \
             '    <a href="' + users_path + '/' + box_name + \
@@ -1033,7 +1034,8 @@ def html_timeline(css_cache: {}, default_timeline: str,
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
-        tl_str += _page_number_buttons(users_path, box_name, page_number)
+        tl_str += page_number_buttons(users_path, box_name, page_number,
+                                      'timelineposts')
         tl_str += '<br>'
         tl_str += text_mode_separator
     elif item_ctr == 0:
@@ -1152,7 +1154,8 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
 
     if page_number > 1:
         timeline_str += '<br>' + \
-            _page_number_buttons(actor, 'tl' + shares_file_type, page_number)
+            page_number_buttons(actor, 'tl' + shares_file_type, page_number,
+                                'timelineposts')
         timeline_str += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + shares_file_type + '?page=' + \
@@ -1207,7 +1210,8 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '" alt="' + translate['Page down'] + '"></a>\n' + \
             '  </center>\n'
         timeline_str += \
-            _page_number_buttons(actor, 'tl' + shares_file_type, page_number)
+            page_number_buttons(actor, 'tl' + shares_file_type, page_number,
+                                'timelineposts')
         timeline_str += '<br>'
 
     return timeline_str

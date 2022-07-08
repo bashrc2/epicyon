@@ -74,6 +74,7 @@ from webapp_utils import end_edit_section
 from blog import get_blog_address
 from webapp_post import individual_post_as_html
 from webapp_timeline import html_individual_share
+from webapp_timeline import page_number_buttons
 from blocking import get_cw_list_variable
 from blocking import is_blocked
 from content import bold_reading_string
@@ -1223,6 +1224,10 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                 translate['Page down'] + '" alt="' + \
                 translate['Page down'] + '"></a>\n' + \
                 '  </center>\n'
+            # list of page numbers
+            profile_str += \
+                page_number_buttons(actor, feed_name, page_number,
+                                    'buttonheader')
 
     return profile_str
 
