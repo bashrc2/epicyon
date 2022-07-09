@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import standardize_text
 from utils import get_display_name
 from utils import is_group_account
 from utils import has_object_dict
@@ -651,6 +652,8 @@ def html_profile(signing_priv_key_pem: str,
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_json['summary'], False)
+    if profile_description:
+        profile_description = standardize_text(profile_description)
     posts_button = 'button'
     following_button = 'button'
     followers_button = 'button'
