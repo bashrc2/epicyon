@@ -59,21 +59,30 @@ def _standardize_text_range(text: str,
 def standardize_text(text: str) -> str:
     """Converts fancy unicode text to ordinary letters
     """
-    fancy_ranges = (
-        119990, 120094, 120198, 120042, 119990, 120146, 119886
+    char_ranges = (
+        [119886, 'a'],
+        [120146, 'a'],
+        [119990, 'a'],
+        [120042, 'a'],
+        [120198, 'a'],
+        [120094, 'a'],
+        [119990, 'a'],
+        [65345, 'a'],
+        [119886 + 26, 'A'],
+        [120146 + 26, 'A'],
+        [119990 + 26, 'A'],
+        [120042 + 26, 'A'],
+        [120198 + 26, 'A'],
+        [119990 + 26, 'A'],
+        [120094 + 26, 'A'],
+        [65313, 'A'],
+        [119964, 'A']
     )
-
-    for range_start in fancy_ranges:
+    for char_range in char_ranges:
+        range_start = char_range[0]
         range_end = range_start + 26
-        text = _standardize_text_range(text, range_start, range_end, 'a')
-
-        range_start = range_end
-        range_end = range_start + 26
-        text = _standardize_text_range(text, range_start, range_end, 'A')
-
-    text = _standardize_text_range(text, 65345, 65345 + 26, 'a')
-    text = _standardize_text_range(text, 65313, 65313 + 26, 'A')
-    text = _standardize_text_range(text, 119964, 119964 + 26, 'A')
+        offset = char_range[1]
+        text = _standardize_text_range(text, range_start, range_end, offset)
 
     return text
 
