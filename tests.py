@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import standardize_text
 from utils import remove_eol
 from utils import text_in_file
 from utils import convert_published_to_local_timezone
@@ -189,7 +190,6 @@ from blocking import add_cw_from_lists
 from happening import dav_month_via_server
 from happening import dav_day_via_server
 from webapp_theme_designer import color_contrast
-from filters import standardize_text
 
 
 TEST_SERVER_GROUP_RUNNING = False

@@ -40,6 +40,44 @@ INVALID_CHARACTERS = (
 )
 
 
+def _standardize_text_range(text: str,
+                            range_start: int, range_end: int,
+                            offset: str) -> str:
+    """Convert any fancy characters within the given range into ordinary ones
+    """
+    offset = ord(offset)
+    ctr = 0
+    text = list(text)
+    while ctr < len(text):
+        val = ord(text[ctr])
+        if val in range(range_start, range_end):
+            text[ctr] = chr(val - range_start + offset)
+        ctr += 1
+    return "".join(text)
+
+
+def standardize_text(text: str) -> str:
+    """Converts fancy unicode text to ordinary letters
+    """
+    fancy_ranges = (
+        119990, 120094, 120198, 120042, 119990, 120146, 119886
+    )
+
+    for range_start in fancy_ranges:
+        range_end = range_start + 26
+        text = _standardize_text_range(text, range_start, range_end, 'a')
+
+        range_start = range_end
+        range_end = range_start + 26
+        text = _standardize_text_range(text, range_start, range_end, 'A')
+
+    text = _standardize_text_range(text, 65345, 65345 + 26, 'a')
+    text = _standardize_text_range(text, 65313, 65313 + 26, 'A')
+    text = _standardize_text_range(text, 119964, 119964 + 26, 'A')
+
+    return text
+
+
 def remove_eol(line: str):
     """Removes line ending characters
     """
@@ -150,17 +188,19 @@ def get_content_from_post(post_json_object: {}, system_language: str,
             if this_post_json[map_dict].get(system_language):
                 sys_lang = this_post_json[map_dict][system_language]
                 if isinstance(sys_lang, str):
-                    return this_post_json[map_dict][system_language]
+                    content = this_post_json[map_dict][system_language]
+                    return standardize_text(content)
             else:
                 # is there a contentMap/summaryMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
                     if this_post_json[map_dict].get(lang):
-                        return this_post_json[map_dict][lang]
+                        content = this_post_json[map_dict][lang]
+                        return standardize_text(content)
     else:
         if isinstance(this_post_json[content_type], str):
             content = this_post_json[content_type]
-    return content
+    return standardize_text(content)
 
 
 def get_media_descriptions_from_post(post_json_object: {}) -> str:
