@@ -1122,7 +1122,7 @@ def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
     if name_found:
         if dangerous_markup(name_found, False):
             name_found = "*ADVERSARY*"
-    return name_found
+    return standardize_text(name_found)
 
 
 def display_name_is_emoji(display_name: str) -> bool:
