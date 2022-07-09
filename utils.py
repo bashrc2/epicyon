@@ -59,6 +59,9 @@ def _standardize_text_range(text: str,
 def standardize_text(text: str) -> str:
     """Converts fancy unicode text to ordinary letters
     """
+    if not text:
+        return text
+
     char_ranges = (
         [65345, 'a'],
         [119886, 'a'],
