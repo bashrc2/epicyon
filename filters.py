@@ -13,6 +13,44 @@ from utils import text_in_file
 from utils import remove_eol
 
 
+def _standardize_text_range(text: str,
+                            range_start: int, range_end: int,
+                            offset: str) -> str:
+    """Convert any fancy characters within the given range into ordinary ones
+    """
+    offset = ord(offset)
+    ctr = 0
+    text = list(text)
+    while ctr < len(text):
+        val = ord(text[ctr])
+        if val in range(range_start, range_end):
+            text[ctr] = chr(val - range_start + offset)
+        ctr += 1
+    return "".join(text)
+
+
+def standardize_text(text: str) -> str:
+    """Converts fancy unicode text to ordinary letters
+    """
+    fancy_ranges = (
+        119990, 120094, 120198, 120042, 119990, 120146, 119886
+    )
+
+    for range_start in fancy_ranges:
+        range_end = range_start + 26
+        text = _standardize_text_range(text, range_start, range_end, 'a')
+
+        range_start = range_end
+        range_end = range_start + 26
+        text = _standardize_text_range(text, range_start, range_end, 'A')
+
+    text = _standardize_text_range(text, 65345, 65345 + 26, 'a')
+    text = _standardize_text_range(text, 65313, 65313 + 26, 'A')
+    text = _standardize_text_range(text, 119964, 119964 + 26, 'A')
+
+    return text
+
+
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     """Adds a filter for particular words within the content of a incoming posts
     """
@@ -119,6 +157,9 @@ def _is_filtered_base(filename: str, content: str) -> bool:
     """
     if not os.path.isfile(filename):
         return False
+
+    # convert any fancy characters to ordinary ones
+    content = standardize_text(content)
 
     try:
         with open(filename, 'r', encoding='utf-8') as fp_filt:
