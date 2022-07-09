@@ -7399,6 +7399,8 @@ def _test_text_standardize():
 
 
 def run_all_tests():
+    _test_text_standardize()
+    return
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
