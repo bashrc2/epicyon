@@ -11,6 +11,7 @@ import os
 from utils import acct_dir
 from utils import text_in_file
 from utils import remove_eol
+from utils import standardize_text
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -119,6 +120,9 @@ def _is_filtered_base(filename: str, content: str) -> bool:
     """
     if not os.path.isfile(filename):
         return False
+
+    # convert any fancy characters to ordinary ones
+    content = standardize_text(content)
 
     try:
         with open(filename, 'r', encoding='utf-8') as fp_filt:

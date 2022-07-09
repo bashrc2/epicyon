@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import standardize_text
 from utils import remove_eol
 from utils import text_in_file
 from utils import convert_published_to_local_timezone
@@ -7351,6 +7352,52 @@ def _test_dogwhistles():
     assert result['hamstered']['category'] == "hamsterism"
 
 
+def _test_text_standardize():
+    print('text_standardize')
+    expected = 'This is a test'
+
+    result = standardize_text(expected)
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    text = '𝔗𝔥𝔦𝔰 𝔦𝔰 𝔞 𝔱𝔢𝔰𝔱'
+    result = standardize_text(text)
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    text = '𝕿𝖍𝖎𝖘 𝖎𝖘 𝖆 𝖙𝖊𝖘𝖙'
+    result = standardize_text(text)
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    text = '𝓣𝓱𝓲𝓼 𝓲𝓼 𝓪 𝓽𝓮𝓼𝓽'
+    result = standardize_text(text)
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    text = '𝒯𝒽𝒾𝓈 𝒾𝓈 𝒶 𝓉𝑒𝓈𝓉'
+    result = standardize_text(text)
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    text = '𝕋𝕙𝕚𝕤 𝕚𝕤 𝕒 𝕥𝕖𝕤𝕥'
+    result = standardize_text(text)
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    text = 'Ｔｈｉｓ ｉｓ ａ ｔｅｓｔ'
+    result = standardize_text(text)
+    if result != expected:
+        print(result)
+    assert result == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7368,6 +7415,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_text_standardize()
     _test_dogwhistles()
     _test_remove_end_of_line()
     _test_translation_labels()

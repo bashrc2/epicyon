@@ -40,6 +40,57 @@ INVALID_CHARACTERS = (
 )
 
 
+def _standardize_text_range(text: str,
+                            range_start: int, range_end: int,
+                            offset: str) -> str:
+    """Convert any fancy characters within the given range into ordinary ones
+    """
+    offset = ord(offset)
+    ctr = 0
+    text = list(text)
+    while ctr < len(text):
+        val = ord(text[ctr])
+        if val in range(range_start, range_end):
+            text[ctr] = chr(val - range_start + offset)
+        ctr += 1
+    return "".join(text)
+
+
+def standardize_text(text: str) -> str:
+    """Converts fancy unicode text to ordinary letters
+    """
+    char_ranges = (
+        [65345, 'a'],
+        [119886, 'a'],
+        [119990, 'a'],
+        [120042, 'a'],
+        [120094, 'a'],
+        [120146, 'a'],
+        [120198, 'a'],
+        [120302, 'a'],
+        [120354, 'a'],
+        [120406, 'a'],
+        [65313, 'A'],
+        [119912, 'A'],
+        [119964, 'A'],
+        [120016, 'A'],
+        [120068, 'A'],
+        [120120, 'A'],
+        [120172, 'A'],
+        [120224, 'A'],
+        [120328, 'A'],
+        [120380, 'A'],
+        [120432, 'A']
+    )
+    for char_range in char_ranges:
+        range_start = char_range[0]
+        range_end = range_start + 26
+        offset = char_range[1]
+        text = _standardize_text_range(text, range_start, range_end, offset)
+
+    return text
+
+
 def remove_eol(line: str):
     """Removes line ending characters
     """
@@ -150,17 +201,19 @@ def get_content_from_post(post_json_object: {}, system_language: str,
             if this_post_json[map_dict].get(system_language):
                 sys_lang = this_post_json[map_dict][system_language]
                 if isinstance(sys_lang, str):
-                    return this_post_json[map_dict][system_language]
+                    content = this_post_json[map_dict][system_language]
+                    return standardize_text(content)
             else:
                 # is there a contentMap/summaryMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
                     if this_post_json[map_dict].get(lang):
-                        return this_post_json[map_dict][lang]
+                        content = this_post_json[map_dict][lang]
+                        return standardize_text(content)
     else:
         if isinstance(this_post_json[content_type], str):
             content = this_post_json[content_type]
-    return content
+    return standardize_text(content)
 
 
 def get_media_descriptions_from_post(post_json_object: {}) -> str:
