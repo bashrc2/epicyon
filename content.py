@@ -1479,6 +1479,11 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """
+    if boundary == 'LYNX':
+        if debug:
+            print('POST from lynx browser')
+        boundary = '--LYNX'
+
     if not unit_test_data:
         msg_bytes = email.parser.BytesParser().parsebytes(post_bytes)
         message_fields = msg_bytes.get_payload(decode=True).decode('utf-8')
@@ -1486,7 +1491,8 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
         message_fields = unit_test_data
 
     if debug:
-        print('DEBUG: POST arriving ' + message_fields)
+        if 'password' not in message_fields:
+            print('DEBUG: POST arriving ' + message_fields)
 
     message_fields = message_fields.split(boundary)
     fields = {}
@@ -1495,6 +1501,10 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
         'instanceDescription', 'instanceDescriptionShort',
         'subject', 'location', 'imageDescription'
     )
+    if debug:
+        if 'password' not in message_fields:
+            print('DEBUG: POST message_fields: ' + str(message_fields))
+    lynx_content_type = 'Content-Type: text/plain; charset=utf-8\r\n'
     # examine each section of the POST, separated by the boundary
     for fld in message_fields:
         if fld == '--':
@@ -1505,14 +1515,30 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
         if '"' not in post_str:
             continue
         post_key = post_str.split('"', 1)[0]
+        if debug:
+            print('post_key: ' + post_key)
         post_value_str = post_str.split('"', 1)[1]
+        if boundary == '--LYNX':
+            post_value_str = \
+                post_value_str.replace(lynx_content_type, '')
+        if debug and 'password' not in post_key:
+            print('boundary: ' + boundary)
+            print('post_value_str1: ' + post_value_str)
         if ';' in post_value_str:
             if post_key not in fields_with_semicolon_allowed and \
                not post_key.startswith('edited'):
+                if debug:
+                    print('extract_text_fields_in_post exit 1')
                 continue
+        if debug and 'password' not in post_key:
+            print('post_value_str2: ' + post_value_str)
         if '\r\n' not in post_value_str:
+            if debug:
+                print('extract_text_fields_in_post exit 2')
             continue
         post_lines = post_value_str.split('\r\n')
+        if debug and 'password' not in post_key:
+            print('post_lines: ' + str(post_lines))
         post_value = ''
         if len(post_lines) > 2:
             for line in range(2, len(post_lines)-1):
