@@ -4739,25 +4739,28 @@ class PubServer(BaseHTTPRequestHandler):
         users_path = path.replace('/linksdata', '')
         users_path = users_path.replace('/editlinks', '')
         actor_str = self._get_instance_url(calling_domain) + users_path
+
+        boundary = None
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
                 boundary = boundary.split(';')[0]
 
-            # get the nickname
-            nickname = get_nickname_from_actor(actor_str)
-            editor = None
-            if nickname:
-                editor = is_editor(base_dir, nickname)
-            if not nickname or not editor:
-                if not nickname:
-                    print('WARN: nickname not found in ' + actor_str)
-                else:
-                    print('WARN: nickname is not a moderator' + actor_str)
-                self._redirect_headers(actor_str, cookie, calling_domain)
-                self.server.postreq_busy = False
-                return
+        # get the nickname
+        nickname = get_nickname_from_actor(actor_str)
+        editor = None
+        if nickname:
+            editor = is_editor(base_dir, nickname)
+        if not nickname or not editor:
+            if not nickname:
+                print('WARN: nickname not found in ' + actor_str)
+            else:
+                print('WARN: nickname is not a moderator' + actor_str)
+            self._redirect_headers(actor_str, cookie, calling_domain)
+            self.server.postreq_busy = False
+            return
 
+        if self.headers.get('Content-length'):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
@@ -4767,32 +4770,37 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.postreq_busy = False
                 return
 
-            try:
-                # read the bytes of the http form POST
-                post_bytes = self.rfile.read(length)
-            except SocketError as ex:
-                if ex.errno == errno.ECONNRESET:
-                    print('EX: connection was reset while ' +
-                          'reading bytes from http form POST')
-                else:
-                    print('EX: error while reading bytes ' +
-                          'from http form POST')
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
-            except ValueError as ex:
-                print('EX: failed to read bytes for POST, ' + str(ex))
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
+        try:
+            # read the bytes of the http form POST
+            post_bytes = self.rfile.read(length)
+        except SocketError as ex:
+            if ex.errno == errno.ECONNRESET:
+                print('EX: connection was reset while ' +
+                      'reading bytes from http form POST')
+            else:
+                print('EX: error while reading bytes ' +
+                      'from http form POST')
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
+        except ValueError as ex:
+            print('EX: failed to read bytes for POST, ' + str(ex))
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
 
-            links_filename = base_dir + '/accounts/links.txt'
-            about_filename = base_dir + '/accounts/about.md'
-            tos_filename = base_dir + '/accounts/tos.md'
-            specification_filename = base_dir + '/accounts/activitypub.md'
+        links_filename = base_dir + '/accounts/links.txt'
+        about_filename = base_dir + '/accounts/about.md'
+        tos_filename = base_dir + '/accounts/tos.md'
+        specification_filename = base_dir + '/accounts/activitypub.md'
 
+        if not boundary:
+            if b'--LYNX' in post_bytes:
+                boundary = '--LYNX'
+
+        if boundary:
             # extract all of the text fields into a dict
             fields = \
                 extract_text_fields_in_post(post_bytes, boundary, debug)
@@ -4918,6 +4926,7 @@ class PubServer(BaseHTTPRequestHandler):
         users_path = users_path.split('/tags/')[0]
         actor_str = self._get_instance_url(calling_domain) + users_path
         tag_screen_str = actor_str + '/tags/' + hashtag
+
         boundary = None
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
@@ -5007,25 +5016,28 @@ class PubServer(BaseHTTPRequestHandler):
         users_path = path.replace('/newswiredata', '')
         users_path = users_path.replace('/editnewswire', '')
         actor_str = self._get_instance_url(calling_domain) + users_path
+
+        boundary = None
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
                 boundary = boundary.split(';')[0]
 
-            # get the nickname
-            nickname = get_nickname_from_actor(actor_str)
-            moderator = None
-            if nickname:
-                moderator = is_moderator(base_dir, nickname)
-            if not nickname or not moderator:
-                if not nickname:
-                    print('WARN: nickname not found in ' + actor_str)
-                else:
-                    print('WARN: nickname is not a moderator' + actor_str)
-                self._redirect_headers(actor_str, cookie, calling_domain)
-                self.server.postreq_busy = False
-                return
+        # get the nickname
+        nickname = get_nickname_from_actor(actor_str)
+        moderator = None
+        if nickname:
+            moderator = is_moderator(base_dir, nickname)
+        if not nickname or not moderator:
+            if not nickname:
+                print('WARN: nickname not found in ' + actor_str)
+            else:
+                print('WARN: nickname is not a moderator' + actor_str)
+            self._redirect_headers(actor_str, cookie, calling_domain)
+            self.server.postreq_busy = False
+            return
 
+        if self.headers.get('Content-length'):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
@@ -5035,29 +5047,34 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.postreq_busy = False
                 return
 
-            try:
-                # read the bytes of the http form POST
-                post_bytes = self.rfile.read(length)
-            except SocketError as ex:
-                if ex.errno == errno.ECONNRESET:
-                    print('EX: connection was reset while ' +
-                          'reading bytes from http form POST')
-                else:
-                    print('EX: error while reading bytes ' +
-                          'from http form POST')
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
-            except ValueError as ex:
-                print('EX: failed to read bytes for POST, ' + str(ex))
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
+        try:
+            # read the bytes of the http form POST
+            post_bytes = self.rfile.read(length)
+        except SocketError as ex:
+            if ex.errno == errno.ECONNRESET:
+                print('EX: connection was reset while ' +
+                      'reading bytes from http form POST')
+            else:
+                print('EX: error while reading bytes ' +
+                      'from http form POST')
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
+        except ValueError as ex:
+            print('EX: failed to read bytes for POST, ' + str(ex))
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
 
-            newswire_filename = base_dir + '/accounts/newswire.txt'
+        newswire_filename = base_dir + '/accounts/newswire.txt'
 
+        if not boundary:
+            if b'--LYNX' in post_bytes:
+                boundary = '--LYNX'
+
+        if boundary:
             # extract all of the text fields into a dict
             fields = \
                 extract_text_fields_in_post(post_bytes, boundary, debug)
@@ -5276,30 +5293,33 @@ class PubServer(BaseHTTPRequestHandler):
         users_path = path.replace('/newseditdata', '')
         users_path = users_path.replace('/editnewspost', '')
         actor_str = self._get_instance_url(calling_domain) + users_path
+
+        boundary = None
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
                 boundary = boundary.split(';')[0]
 
-            # get the nickname
-            nickname = get_nickname_from_actor(actor_str)
-            editor_role = None
-            if nickname:
-                editor_role = is_editor(base_dir, nickname)
-            if not nickname or not editor_role:
-                if not nickname:
-                    print('WARN: nickname not found in ' + actor_str)
-                else:
-                    print('WARN: nickname is not an editor' + actor_str)
-                if self.server.news_instance:
-                    self._redirect_headers(actor_str + '/tlfeatures',
-                                           cookie, calling_domain)
-                else:
-                    self._redirect_headers(actor_str + '/tlnews',
-                                           cookie, calling_domain)
-                self.server.postreq_busy = False
-                return
+        # get the nickname
+        nickname = get_nickname_from_actor(actor_str)
+        editor_role = None
+        if nickname:
+            editor_role = is_editor(base_dir, nickname)
+        if not nickname or not editor_role:
+            if not nickname:
+                print('WARN: nickname not found in ' + actor_str)
+            else:
+                print('WARN: nickname is not an editor' + actor_str)
+            if self.server.news_instance:
+                self._redirect_headers(actor_str + '/tlfeatures',
+                                       cookie, calling_domain)
+            else:
+                self._redirect_headers(actor_str + '/tlnews',
+                                       cookie, calling_domain)
+            self.server.postreq_busy = False
+            return
 
+        if self.headers.get('Content-length'):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
@@ -5314,27 +5334,32 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.postreq_busy = False
                 return
 
-            try:
-                # read the bytes of the http form POST
-                post_bytes = self.rfile.read(length)
-            except SocketError as ex:
-                if ex.errno == errno.ECONNRESET:
-                    print('EX: connection was reset while ' +
-                          'reading bytes from http form POST')
-                else:
-                    print('EX: error while reading bytes ' +
-                          'from http form POST')
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
-            except ValueError as ex:
-                print('EX: failed to read bytes for POST, ' + str(ex))
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
+        try:
+            # read the bytes of the http form POST
+            post_bytes = self.rfile.read(length)
+        except SocketError as ex:
+            if ex.errno == errno.ECONNRESET:
+                print('EX: connection was reset while ' +
+                      'reading bytes from http form POST')
+            else:
+                print('EX: error while reading bytes ' +
+                      'from http form POST')
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
+        except ValueError as ex:
+            print('EX: failed to read bytes for POST, ' + str(ex))
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
 
+        if not boundary:
+            if b'--LYNX' in post_bytes:
+                boundary = '--LYNX'
+
+        if boundary:
             # extract all of the text fields into a dict
             fields = \
                 extract_text_fields_in_post(post_bytes, boundary, debug)
@@ -5416,19 +5441,22 @@ class PubServer(BaseHTTPRequestHandler):
         users_path = path.replace('/profiledata', '')
         users_path = users_path.replace('/editprofile', '')
         actor_str = self._get_instance_url(calling_domain) + users_path
+
+        boundary = None
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
                 boundary = boundary.split(';')[0]
 
-            # get the nickname
-            nickname = get_nickname_from_actor(actor_str)
-            if not nickname:
-                print('WARN: nickname not found in ' + actor_str)
-                self._redirect_headers(actor_str, cookie, calling_domain)
-                self.server.postreq_busy = False
-                return
+        # get the nickname
+        nickname = get_nickname_from_actor(actor_str)
+        if not nickname:
+            print('WARN: nickname not found in ' + actor_str)
+            self._redirect_headers(actor_str, cookie, calling_domain)
+            self.server.postreq_busy = False
+            return
 
+        if self.headers.get('Content-length'):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
@@ -5439,29 +5467,34 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.postreq_busy = False
                 return
 
-            try:
-                # read the bytes of the http form POST
-                post_bytes = self.rfile.read(length)
-            except SocketError as ex:
-                if ex.errno == errno.ECONNRESET:
-                    print('EX: connection was reset while ' +
-                          'reading bytes from http form POST')
-                else:
-                    print('EX: error while reading bytes ' +
-                          'from http form POST')
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
-            except ValueError as ex:
-                print('EX: failed to read bytes for POST, ' + str(ex))
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
+        try:
+            # read the bytes of the http form POST
+            post_bytes = self.rfile.read(length)
+        except SocketError as ex:
+            if ex.errno == errno.ECONNRESET:
+                print('EX: connection was reset while ' +
+                      'reading bytes from http form POST')
+            else:
+                print('EX: error while reading bytes ' +
+                      'from http form POST')
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
+        except ValueError as ex:
+            print('EX: failed to read bytes for POST, ' + str(ex))
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
 
-            admin_nickname = get_config_param(self.server.base_dir, 'admin')
+        admin_nickname = get_config_param(self.server.base_dir, 'admin')
 
+        if not boundary:
+            if b'--LYNX' in post_bytes:
+                boundary = '--LYNX'
+
+        if boundary:
             # get the various avatar, banner and background images
             actor_changed = True
             profile_media_types = (
