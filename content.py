@@ -1516,6 +1516,7 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
             post_value_str = \
                 post_value_str.replace(lynx_content_type, '')
         if 'password' not in post_key:
+            print('boundary: ' + boundary)
             print('post_value_str1: ' + post_value_str)
         if ';' in post_value_str:
             if post_key not in fields_with_semicolon_allowed and \
