@@ -1495,6 +1495,8 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
         'instanceDescription', 'instanceDescriptionShort',
         'subject', 'location', 'imageDescription'
     )
+    if debug:
+        print('DEBUG: POST message_fields: ' + str(message_fields))
     # examine each section of the POST, separated by the boundary
     for fld in message_fields:
         if fld == '--':
