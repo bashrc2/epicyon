@@ -1480,7 +1480,7 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
     The boundary argument comes from the http header
     """
     if boundary == 'LYNX':
-        boundary == '--LYNX'
+        boundary = '--LYNX'
 
     if not unit_test_data:
         msg_bytes = email.parser.BytesParser().parsebytes(post_bytes)
