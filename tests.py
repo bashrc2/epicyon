@@ -7413,8 +7413,6 @@ def _test_text_standardize():
 
 
 def run_all_tests():
-    _test_extract_text_fields_from_post()
-    return
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
