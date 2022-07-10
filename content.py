@@ -1497,7 +1497,7 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
     )
     if debug:
         print('DEBUG: POST message_fields: ' + str(message_fields))
-    lynx_content_type = 'Content-Type: text/plain; charset=utf-8'
+    lynx_content_type = 'Content-Type: text/plain; charset=utf-8\r\n'
     # examine each section of the POST, separated by the boundary
     for fld in message_fields:
         if fld == '--':
