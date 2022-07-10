@@ -1510,17 +1510,26 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
         if '"' not in post_str:
             continue
         post_key = post_str.split('"', 1)[0]
+        print('post_key: ' + post_key)
         post_value_str = post_str.split('"', 1)[1]
         if boundary == '--LYNX':
             post_value_str = \
                 post_value_str.replace(lynx_content_type, '')
+        if 'password' not in post_key:
+            print('post_value_str1: ' + post_value_str)
         if ';' in post_value_str:
             if post_key not in fields_with_semicolon_allowed and \
                not post_key.startswith('edited'):
+                print('exit 1')
                 continue
+        if 'password' not in post_key:
+            print('post_value_str2: ' + post_value_str)
         if '\r\n' not in post_value_str:
+            print('exit 2')
             continue
         post_lines = post_value_str.split('\r\n')
+        if 'password' not in post_key:
+            print('post_lines: ' + str(post_lines))
         post_value = ''
         if len(post_lines) > 2:
             for line in range(2, len(post_lines)-1):
