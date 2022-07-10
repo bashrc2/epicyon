@@ -1479,6 +1479,9 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """
+    if boundary == 'LYNX':
+        boundary == '--LYNX'
+
     if not unit_test_data:
         msg_bytes = email.parser.BytesParser().parsebytes(post_bytes)
         message_fields = msg_bytes.get_payload(decode=True).decode('utf-8')
