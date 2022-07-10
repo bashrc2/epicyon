@@ -4978,9 +4978,6 @@ class PubServer(BaseHTTPRequestHandler):
             fields = \
                 extract_text_fields_in_post(post_bytes, boundary, debug)
 
-            print('hashtag category POST bytes: ' + str(post_bytes))
-            print('hashtag category POST fields: ' + str(fields))
-
             if fields.get('hashtagCategory'):
                 category_str = fields['hashtagCategory'].lower()
                 if not is_blocked_hashtag(base_dir, category_str) and \
