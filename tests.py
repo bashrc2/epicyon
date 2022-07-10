@@ -5818,6 +5818,20 @@ def _test_markdown_to_html():
 
 def _test_extract_text_fields_from_post():
     print('test_extract_text_fields_in_post')
+    boundary = '--LYNX'
+    form_data = '--LYNX\r\nContent-Disposition: form-data; ' + \
+        'name="fieldName"\r\nContent-Type: text/plain; ' + \
+        'charset=utf-8\r\n\r\nThis is a lynx test\r\n' + \
+        '--LYNX\r\nContent-Disposition: ' + \
+        'form-data; name="submitYes"\r\nContent-Type: text/plain; ' + \
+        'charset=utf-8\r\n\r\nBUTTON\r\n--LYNX--\r\n'
+    debug = True
+    fields = extract_text_fields_in_post(None, boundary, debug, form_data)
+    print('fields: ' + str(fields))
+    assert fields
+    assert fields['fieldName'] == 'This is a lynx test'
+    assert fields['submitYes'] == 'BUTTON'
+
     boundary = '-----------------------------116202748023898664511855843036'
     form_data = '-----------------------------116202748023898664511855' + \
         '843036\r\nContent-Disposition: form-data; name="submitPost"' + \
@@ -5851,20 +5865,6 @@ def _test_extract_text_fields_from_post():
     assert fields['location'] == ''
     assert fields['imageDescription'] == ''
     assert fields['message'] == 'This is a ; test'
-
-    boundary = '--LYNX'
-    form_data = '--LYNX\r\nContent-Disposition: form-data; ' + \
-        'name="fieldName"\r\nContent-Type: text/plain; ' + \
-        'charset=utf-8\r\n\r\nThis is a lynx test\r\n' + \
-        '--LYNX\r\nContent-Disposition: ' + \
-        'form-data; name="submitYes"\r\nContent-Type: text/plain; ' + \
-        'charset=utf-8\r\n\r\nBUTTON\r\n--LYNX--\r\n'
-    debug = True
-    fields = extract_text_fields_in_post(None, boundary, debug, form_data)
-    print('fields: ' + str(fields))
-    assert fields
-    assert fields['fieldName'] == 'This is a lynx test'
-    assert fields['submitYes'] == 'BUTTON'
 
 
 def _test_speaker_replace_link():
@@ -7413,6 +7413,8 @@ def _test_text_standardize():
 
 
 def run_all_tests():
+    _test_extract_text_fields_from_post()
+    return
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
