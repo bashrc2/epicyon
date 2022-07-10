@@ -1485,8 +1485,8 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
     else:
         message_fields = unit_test_data
 
-    if debug:
-        print('DEBUG: POST arriving ' + message_fields)
+#    if debug:
+    print('DEBUG: POST arriving ' + message_fields)
 
     message_fields = message_fields.split(boundary)
     fields = {}
@@ -1495,8 +1495,8 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
         'instanceDescription', 'instanceDescriptionShort',
         'subject', 'location', 'imageDescription'
     )
-    if debug:
-        print('DEBUG: POST message_fields: ' + str(message_fields))
+#    if debug:
+    print('DEBUG: POST message_fields: ' + str(message_fields))
     lynx_content_type = 'Content-Type: text/plain; charset=utf-8\r\n'
     # examine each section of the POST, separated by the boundary
     for fld in message_fields:
