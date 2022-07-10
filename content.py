@@ -1497,6 +1497,7 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
     )
     if debug:
         print('DEBUG: POST message_fields: ' + str(message_fields))
+    lynx_content_type = 'Content-Type: text/plain; charset=utf-8'
     # examine each section of the POST, separated by the boundary
     for fld in message_fields:
         if fld == '--':
@@ -1508,6 +1509,9 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
             continue
         post_key = post_str.split('"', 1)[0]
         post_value_str = post_str.split('"', 1)[1]
+        if boundary == '--LYNX':
+            post_value_str = \
+                post_value_str.replace(lynx_content_type, '')
         if ';' in post_value_str:
             if post_key not in fields_with_semicolon_allowed and \
                not post_key.startswith('edited'):
