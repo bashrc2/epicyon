@@ -914,11 +914,11 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     if in_reply_to or endpoint == 'newdm':
         if in_reply_to:
             new_post_form += \
-                '    <label class="labels">' + placeholder_mentions + \
+                '    <br><label class="labels">' + placeholder_mentions + \
                 '</label><br>\n'
         else:
             new_post_form += \
-                '    <a href="/users/' + nickname + \
+                '    <br><a href="/users/' + nickname + \
                 '/followingaccounts" title="' + \
                 translate['Show a list of addresses to send to'] + '">' \
                 '<label class="labels">' + \

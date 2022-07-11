@@ -133,6 +133,7 @@ from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
+from content import combine_textarea_lines
 from content import detect_dogwhistles
 from content import remove_script
 from content import create_edits_html
@@ -7412,6 +7413,52 @@ def _test_text_standardize():
     assert result == expected
 
 
+def _test_combine_lines():
+    print('combine_lines')
+    text = 'This is a test'
+    expected = text
+    result = combine_textarea_lines(text)
+    if result != expected:
+        print('expected: ' + expected)
+        print('result: ' + result)
+    assert result == expected
+
+    text = 'First line.\n\nSecond line.'
+    expected = 'First line.</p><p>Second line.'
+    result = combine_textarea_lines(text)
+    if result != expected:
+        print('expected: ' + expected)
+        print('result: ' + result)
+    assert result == expected
+
+    text = 'First\nline.\n\nSecond\nline.'
+    expected = 'First line.</p><p>Second line.'
+    result = combine_textarea_lines(text)
+    if result != expected:
+        print('expected: ' + expected)
+        print('result: ' + result)
+    assert result == expected
+
+    # with extra space
+    text = 'First\nline.\n\nSecond \nline.'
+    expected = 'First line.</p><p>Second line.'
+    result = combine_textarea_lines(text)
+    if result != expected:
+        print('expected: ' + expected)
+        print('result: ' + result)
+    assert result == expected
+
+    text = 'Introduction blurb.\n\n* List item 1\n' + \
+        '* List item 2\n* List item 3\n\nFinal blurb.'
+    expected = 'Introduction blurb.</p><p>* List item 1\n' + \
+        '* List item 2\n* List item 3</p><p>Final blurb.'
+    result = combine_textarea_lines(text)
+    if result != expected:
+        print('expected: ' + expected)
+        print('result: ' + result)
+    assert result == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7429,6 +7476,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_combine_lines()
     _test_text_standardize()
     _test_dogwhistles()
     _test_remove_end_of_line()
