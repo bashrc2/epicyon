@@ -7424,7 +7424,7 @@ def _test_combine_lines():
     assert result == expected
 
     text = 'First line.\n\nSecond line.'
-    expected = text
+    expected = 'First line.</p><p>Second line.'
     result = combine_textarea_lines(text)
     if result != expected:
         print('expected: ' + expected)
@@ -7432,7 +7432,7 @@ def _test_combine_lines():
     assert result == expected
 
     text = 'First\nline.\n\nSecond\nline.'
-    expected = 'First line.\n\nSecond line.'
+    expected = 'First line.</p><p>Second line.'
     result = combine_textarea_lines(text)
     if result != expected:
         print('expected: ' + expected)
@@ -7441,7 +7441,7 @@ def _test_combine_lines():
 
     # with extra space
     text = 'First\nline.\n\nSecond \nline.'
-    expected = 'First line.\n\nSecond line.'
+    expected = 'First line.</p><p>Second line.'
     result = combine_textarea_lines(text)
     if result != expected:
         print('expected: ' + expected)

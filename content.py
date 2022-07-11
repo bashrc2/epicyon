@@ -1484,7 +1484,7 @@ def combine_textarea_lines(text: str) -> str:
         para = para.replace('\n', ' ')
         para = para.replace('  ', ' ')
         if ctr > 0:
-            result += '\n\n'
+            result += '</p><p>'
         result += para
         ctr += 1
     return result
