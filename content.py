@@ -1481,8 +1481,14 @@ def combine_textarea_lines(text: str) -> str:
     ctr = 0
     paragraphs = text.split('\n\n')
     for para in paragraphs:
+        para = para.replace('\n* ', '***BULLET POINT*** ')
+        para = para.replace('\n * ', '***BULLET POINT*** ')
+        para = para.replace('\n- ', '***DASH POINT*** ')
+        para = para.replace('\n - ', '***DASH POINT*** ')
         para = para.replace('\n', ' ')
         para = para.replace('  ', ' ')
+        para = para.replace('***BULLET POINT*** ', '\n* ')
+        para = para.replace('***DASH POINT*** ', '\n- ')
         if ctr > 0:
             result += '</p><p>'
         result += para

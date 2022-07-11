@@ -7448,6 +7448,16 @@ def _test_combine_lines():
         print('result: ' + result)
     assert result == expected
 
+    text = 'Introduction blurb.\n\n* List item 1\n' + \
+        '* List item 2\n* List item 3\n\nFinal blurb.'
+    expected = 'Introduction blurb.</p><p>* List item 1\n' + \
+        '* List item 2\n* List item 3</p><p>Final blurb.'
+    result = combine_textarea_lines(text)
+    if result != expected:
+        print('expected: ' + expected)
+        print('result: ' + result)
+    assert result == expected
+
 
 def run_all_tests():
     base_dir = os.getcwd()
