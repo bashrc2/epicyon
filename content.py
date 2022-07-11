@@ -1474,6 +1474,22 @@ def save_media_in_form_post(media_bytes, debug: bool,
     return filename, attachment_media_type
 
 
+def combine_textarea_lines(text: str) -> str:
+    """Combines separate lines
+    """
+    result = ''
+    ctr = 0
+    paragraphs = text.split('\n\n')
+    for para in paragraphs:
+        para = para.replace('\n', ' ')
+        para = para.replace('  ', ' ')
+        if ctr > 0:
+            result += '\n\n'
+        result += para
+        ctr += 1
+    return result
+
+
 def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
                                 unit_test_data: str = None) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
@@ -1546,6 +1562,8 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
                     post_value += '\n'
                 post_value += post_lines[line]
         fields[post_key] = urllib.parse.unquote(post_value)
+        if boundary == '--LYNX' and post_key in ('message', 'bio'):
+            fields[post_key] = combine_textarea_lines(fields[post_key])
     return fields
 
 
