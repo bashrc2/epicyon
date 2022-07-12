@@ -2620,6 +2620,7 @@ class PubServer(BaseHTTPRequestHandler):
                 variable_name = variable_name.replace('themeSetting_', '')
                 theme_designer_params[variable_name] = key
 
+        self.server.css_cache = {}
         set_theme_from_designer(base_dir, theme_name, domain,
                                 theme_designer_params,
                                 allow_local_network_access,
