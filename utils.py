@@ -2409,30 +2409,15 @@ def file_last_modified(filename: str) -> str:
     return modified_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def get_css(base_dir: str, css_filename: str, css_cache: {}) -> str:
+def get_css(base_dir: str, css_filename: str) -> str:
     """Retrieves the css for a given file, or from a cache
     """
     # does the css file exist?
     if not os.path.isfile(css_filename):
         return None
 
-    last_modified = file_last_modified(css_filename)
-
-    # has this already been loaded into the cache?
-    if css_cache.get(css_filename):
-        if css_cache[css_filename][0] == last_modified:
-            # file hasn't changed, so return the version in the cache
-            return css_cache[css_filename][1]
-
     with open(css_filename, 'r', encoding='utf-8') as fp_css:
         css = fp_css.read()
-        if css_cache.get(css_filename):
-            # alter the cache contents
-            css_cache[css_filename][0] = last_modified
-            css_cache[css_filename][1] = css
-        else:
-            # add entry to the cache
-            css_cache[css_filename] = [last_modified, css]
         return css
 
     return None

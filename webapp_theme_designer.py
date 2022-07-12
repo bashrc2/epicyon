@@ -166,7 +166,7 @@ color_to_hex = {
 }
 
 
-def html_theme_designer(css_cache: {}, base_dir: str,
+def html_theme_designer(base_dir: str,
                         nickname: str, domain: str,
                         translate: {}, default_timeline: str,
                         theme_name: str, access_keys: {}) -> str:

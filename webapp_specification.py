@@ -16,7 +16,7 @@ from markdown import markdown_example_numbers
 from markdown import markdown_to_html
 
 
-def html_specification(css_cache: {}, base_dir: str, http_prefix: str,
+def html_specification(base_dir: str, http_prefix: str,
                        domain_full: str, onion_domain: str, translate: {},
                        system_language: str) -> str:
     """Show the specification screen

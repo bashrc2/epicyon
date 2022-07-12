@@ -359,7 +359,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     return html_str
 
 
-def html_links_mobile(css_cache: {}, base_dir: str,
+def html_links_mobile(base_dir: str,
                       nickname: str, domain_full: str,
                       http_prefix: str, translate,
                       timeline_path: str, authorized: bool,
@@ -425,7 +425,7 @@ def html_links_mobile(css_cache: {}, base_dir: str,
     return html_str
 
 
-def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
+def html_edit_links(translate: {}, base_dir: str, path: str,
                     domain: str, port: int, http_prefix: str,
                     default_timeline: str, theme: str,
                     access_keys: {}) -> str:

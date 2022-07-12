@@ -292,7 +292,7 @@ def _html_podcast_soundbites(link_url: str, extension: str,
     return podcast_str
 
 
-def html_podcast_episode(css_cache: {}, translate: {},
+def html_podcast_episode(translate: {},
                          base_dir: str, nickname: str, domain: str,
                          newswire_item: [], theme: str,
                          default_timeline: str,

@@ -102,7 +102,7 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
 
 def html_front_screen(signing_priv_key_pem: str,
                       rss_icon_at_top: bool,
-                      css_cache: {}, icons_as_buttons: bool,
+                      icons_as_buttons: bool,
                       default_timeline: str,
                       recent_posts_cache: {}, max_recent_posts: int,
                       translate: {}, project_version: str,

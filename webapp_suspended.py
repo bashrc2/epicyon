@@ -13,7 +13,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 
 
-def html_suspended(css_cache: {}, base_dir: str) -> str:
+def html_suspended(base_dir: str) -> str:
     """Show the screen for suspended accounts
     """
     suspended_form = ''

@@ -24,7 +24,7 @@ from webapp_utils import html_footer
 from webapp_post import individual_post_as_html
 
 
-def html_confirm_delete(server, css_cache: {},
+def html_confirm_delete(server,
                         recent_posts_cache: {}, max_recent_posts: int,
                         translate, page_number: int,
                         session, base_dir: str, message_id: str,
@@ -118,7 +118,7 @@ def html_confirm_delete(server, css_cache: {},
     return delete_post_str
 
 
-def html_confirm_remove_shared_item(css_cache: {}, translate: {},
+def html_confirm_remove_shared_item(translate: {},
                                     base_dir: str,
                                     actor: str, item_id: str,
                                     calling_domain: str,
@@ -190,7 +190,7 @@ def html_confirm_remove_shared_item(css_cache: {}, translate: {},
     return shares_str
 
 
-def html_confirm_follow(css_cache: {}, translate: {}, base_dir: str,
+def html_confirm_follow(translate: {}, base_dir: str,
                         origin_path_str: str,
                         follow_actor: str,
                         follow_profile_url: str) -> str:
@@ -240,7 +240,7 @@ def html_confirm_follow(css_cache: {}, translate: {}, base_dir: str,
     return follow_str
 
 
-def html_confirm_unfollow(css_cache: {}, translate: {}, base_dir: str,
+def html_confirm_unfollow(translate: {}, base_dir: str,
                           origin_path_str: str,
                           follow_actor: str,
                           follow_profile_url: str) -> str:
@@ -290,7 +290,7 @@ def html_confirm_unfollow(css_cache: {}, translate: {}, base_dir: str,
     return follow_str
 
 
-def html_confirm_unblock(css_cache: {}, translate: {}, base_dir: str,
+def html_confirm_unblock(translate: {}, base_dir: str,
                          origin_path_str: str,
                          block_actor: str,
                          block_profile_url: str) -> str:

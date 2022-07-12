@@ -461,7 +461,7 @@ def page_number_buttons(users_path: str, box_name: str,
         '</center>\n'
 
 
-def html_timeline(css_cache: {}, default_timeline: str,
+def html_timeline(default_timeline: str,
                   recent_posts_cache: {}, max_recent_posts: int,
                   translate: {}, page_number: int,
                   items_per_page: int, session, base_dir: str,
@@ -1217,7 +1217,7 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
     return timeline_str
 
 
-def html_shares(css_cache: {}, default_timeline: str,
+def html_shares(default_timeline: str,
                 recent_posts_cache: {}, max_recent_posts: int,
                 translate: {}, page_number: int, items_per_page: int,
                 session, base_dir: str,
@@ -1251,7 +1251,7 @@ def html_shares(css_cache: {}, default_timeline: str,
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1278,7 +1278,7 @@ def html_shares(css_cache: {}, default_timeline: str,
                          bold_reading, dogwhistles)
 
 
-def html_wanted(css_cache: {}, default_timeline: str,
+def html_wanted(default_timeline: str,
                 recent_posts_cache: {}, max_recent_posts: int,
                 translate: {}, page_number: int, items_per_page: int,
                 session, base_dir: str,
@@ -1312,7 +1312,7 @@ def html_wanted(css_cache: {}, default_timeline: str,
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1339,7 +1339,7 @@ def html_wanted(css_cache: {}, default_timeline: str,
                          bold_reading, dogwhistles)
 
 
-def html_inbox(css_cache: {}, default_timeline: str,
+def html_inbox(default_timeline: str,
                recent_posts_cache: {}, max_recent_posts: int,
                translate: {}, page_number: int, items_per_page: int,
                session, base_dir: str,
@@ -1374,7 +1374,7 @@ def html_inbox(css_cache: {}, default_timeline: str,
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1401,7 +1401,7 @@ def html_inbox(css_cache: {}, default_timeline: str,
                          bold_reading, dogwhistles)
 
 
-def html_bookmarks(css_cache: {}, default_timeline: str,
+def html_bookmarks(default_timeline: str,
                    recent_posts_cache: {}, max_recent_posts: int,
                    translate: {}, page_number: int, items_per_page: int,
                    session, base_dir: str,
@@ -1436,7 +1436,7 @@ def html_bookmarks(css_cache: {}, default_timeline: str,
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1462,7 +1462,7 @@ def html_bookmarks(css_cache: {}, default_timeline: str,
                          bold_reading, dogwhistles)
 
 
-def html_inbox_dms(css_cache: {}, default_timeline: str,
+def html_inbox_dms(default_timeline: str,
                    recent_posts_cache: {}, max_recent_posts: int,
                    translate: {}, page_number: int, items_per_page: int,
                    session, base_dir: str,
@@ -1494,7 +1494,7 @@ def html_inbox_dms(css_cache: {}, default_timeline: str,
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1519,7 +1519,7 @@ def html_inbox_dms(css_cache: {}, default_timeline: str,
                          bold_reading, dogwhistles)
 
 
-def html_inbox_replies(css_cache: {}, default_timeline: str,
+def html_inbox_replies(default_timeline: str,
                        recent_posts_cache: {}, max_recent_posts: int,
                        translate: {}, page_number: int, items_per_page: int,
                        session, base_dir: str,
@@ -1551,7 +1551,7 @@ def html_inbox_replies(css_cache: {}, default_timeline: str,
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1575,7 +1575,7 @@ def html_inbox_replies(css_cache: {}, default_timeline: str,
                          dogwhistles)
 
 
-def html_inbox_media(css_cache: {}, default_timeline: str,
+def html_inbox_media(default_timeline: str,
                      recent_posts_cache: {}, max_recent_posts: int,
                      translate: {}, page_number: int, items_per_page: int,
                      session, base_dir: str,
@@ -1607,7 +1607,7 @@ def html_inbox_media(css_cache: {}, default_timeline: str,
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1631,7 +1631,7 @@ def html_inbox_media(css_cache: {}, default_timeline: str,
                          dogwhistles)
 
 
-def html_inbox_blogs(css_cache: {}, default_timeline: str,
+def html_inbox_blogs(default_timeline: str,
                      recent_posts_cache: {}, max_recent_posts: int,
                      translate: {}, page_number: int, items_per_page: int,
                      session, base_dir: str,
@@ -1663,7 +1663,7 @@ def html_inbox_blogs(css_cache: {}, default_timeline: str,
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1687,7 +1687,7 @@ def html_inbox_blogs(css_cache: {}, default_timeline: str,
                          dogwhistles)
 
 
-def html_inbox_features(css_cache: {}, default_timeline: str,
+def html_inbox_features(default_timeline: str,
                         recent_posts_cache: {}, max_recent_posts: int,
                         translate: {}, page_number: int, items_per_page: int,
                         session, base_dir: str,
@@ -1719,7 +1719,7 @@ def html_inbox_features(css_cache: {}, default_timeline: str,
                         dogwhistles: {}) -> str:
     """Show the features timeline as html
     """
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1743,7 +1743,7 @@ def html_inbox_features(css_cache: {}, default_timeline: str,
                          dogwhistles)
 
 
-def html_inbox_news(css_cache: {}, default_timeline: str,
+def html_inbox_news(default_timeline: str,
                     recent_posts_cache: {}, max_recent_posts: int,
                     translate: {}, page_number: int, items_per_page: int,
                     session, base_dir: str,
@@ -1774,7 +1774,7 @@ def html_inbox_news(css_cache: {}, default_timeline: str,
                     dogwhistles: {}) -> str:
     """Show the news timeline as html
     """
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -1798,7 +1798,7 @@ def html_inbox_news(css_cache: {}, default_timeline: str,
                          dogwhistles)
 
 
-def html_outbox(css_cache: {}, default_timeline: str,
+def html_outbox(default_timeline: str,
                 recent_posts_cache: {}, max_recent_posts: int,
                 translate: {}, page_number: int, items_per_page: int,
                 session, base_dir: str,
@@ -1832,7 +1832,7 @@ def html_outbox(css_cache: {}, default_timeline: str,
     manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
