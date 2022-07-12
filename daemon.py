@@ -2571,6 +2571,7 @@ class PubServer(BaseHTTPRequestHandler):
            'submitThemeDesigner=' not in theme_params:
             if 'submitThemeDesignerReset=' in theme_params:
                 reset_theme_designer_settings(base_dir)
+                self.server.css_cache = {}
                 set_theme(base_dir, theme_name, domain,
                           allow_local_network_access, system_language,
                           dyslexic_font, True)
