@@ -283,7 +283,7 @@ figure {
 mark {
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
-    font-size: 130%;
+    font-size: 110%;
     font-weight: bold;
 }
 
