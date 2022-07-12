@@ -5780,6 +5780,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 get_text_mode_banner(self.server.base_dir)
                             self.server.iconsCache = {}
                             self.server.fontsCache = {}
+                            self.server.css_cache = {}
                             self.server.show_publish_as_icon = \
                                 get_config_param(self.server.base_dir,
                                                  'showPublishAsIcon')
@@ -14321,18 +14322,23 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' in path:
             path = path.split('/')[-1]
         path = base_dir + '/' + path
-        if os.path.isfile(path):
+        css = None
+        if self.server.css_cache.get(path):
+            css = self.server.css_cache[path]
+        elif os.path.isfile(path):
             tries = 0
             while tries < 5:
                 try:
                     css = get_css(self.server.base_dir, path)
                     if css:
+                        self.server.css_cache[path] = css
                         break
                 except BaseException as ex:
-                    print('EX: _get_style_sheet ' +
+                    print('EX: _get_style_sheet ' + path + ' ' +
                           str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
+        if css:
             msg = css.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/css', msglen,
@@ -21011,6 +21017,9 @@ def run_daemon(preferred_podcast_formats: [],
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)
+
+    # caches css files
+    httpd.css_cache = {}
 
     # load a list of dogwhistle words
     dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
