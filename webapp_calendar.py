@@ -103,7 +103,7 @@ def html_calendar_delete_confirm(translate: {}, base_dir: str,
     return delete_post_str
 
 
-def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
+def _html_calendar_day(person_cache: {}, translate: {},
                        base_dir: str, path: str,
                        year: int, month_number: int, day_number: int,
                        nickname: str, domain: str, day_events: [],
@@ -317,7 +317,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
     return calendar_str
 
 
-def html_calendar(person_cache: {}, css_cache: {}, translate: {},
+def html_calendar(person_cache: {}, translate: {},
                   base_dir: str, path: str,
                   http_prefix: str, domain_full: str,
                   text_mode_banner: str, access_keys: {},
@@ -393,7 +393,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
         if events:
             if events.get(str(day_number)):
                 day_events = events[str(day_number)]
-        return _html_calendar_day(person_cache, css_cache,
+        return _html_calendar_day(person_cache,
                                   translate, base_dir, path,
                                   year, month_number, day_number,
                                   nickname, domain, day_events,

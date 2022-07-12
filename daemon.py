@@ -2118,8 +2118,7 @@ class PubServer(BaseHTTPRequestHandler):
                     del self.server.login_failure_count[ip_address]
                 if is_suspended(base_dir, login_nickname):
                     msg = \
-                        html_suspended(self.server.css_cache,
-                                       base_dir).encode('utf-8')
+                        html_suspended(base_dir).encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
                                         msglen, calling_domain)
@@ -2299,8 +2298,7 @@ class PubServer(BaseHTTPRequestHandler):
                         search_handle = ''
                     if '@' in search_handle:
                         msg = \
-                            html_account_info(self.server.css_cache,
-                                              self.server.translate,
+                            html_account_info(self.server.translate,
                                               base_dir, http_prefix,
                                               nickname,
                                               self.server.domain,
@@ -2573,6 +2571,7 @@ class PubServer(BaseHTTPRequestHandler):
            'submitThemeDesigner=' not in theme_params:
             if 'submitThemeDesignerReset=' in theme_params:
                 reset_theme_designer_settings(base_dir)
+                self.server.css_cache = {}
                 set_theme(base_dir, theme_name, domain,
                           allow_local_network_access, system_language,
                           dyslexic_font, True)
@@ -2621,6 +2620,7 @@ class PubServer(BaseHTTPRequestHandler):
                 variable_name = variable_name.replace('themeSetting_', '')
                 theme_designer_params[variable_name] = key
 
+        self.server.css_cache = {}
         set_theme_from_designer(base_dir, theme_name, domain,
                                 theme_designer_params,
                                 allow_local_network_access,
@@ -3073,8 +3073,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Unblocking ' + options_actor)
             msg = \
-                html_confirm_unblock(self.server.css_cache,
-                                     self.server.translate,
+                html_confirm_unblock(self.server.translate,
                                      base_dir,
                                      users_path,
                                      options_actor,
@@ -3093,8 +3092,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Following ' + options_actor)
             msg = \
-                html_confirm_follow(self.server.css_cache,
-                                    self.server.translate,
+                html_confirm_follow(self.server.translate,
                                     base_dir,
                                     users_path,
                                     options_actor,
@@ -3112,8 +3110,7 @@ class PubServer(BaseHTTPRequestHandler):
            '&submitLeave=' in options_confirm_params:
             print('Unfollowing ' + options_actor)
             msg = \
-                html_confirm_unfollow(self.server.css_cache,
-                                      self.server.translate,
+                html_confirm_unfollow(self.server.translate,
                                       base_dir,
                                       users_path,
                                       options_actor,
@@ -3148,8 +3145,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
-            msg = html_new_post(self.server.css_cache,
-                                False, self.server.translate,
+            msg = html_new_post(False, self.server.translate,
                                 base_dir,
                                 http_prefix,
                                 report_path, None,
@@ -3201,8 +3197,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Showing info for ' + options_actor)
                 signing_priv_key_pem = self.server.signing_priv_key_pem
                 msg = \
-                    html_account_info(self.server.css_cache,
-                                      self.server.translate,
+                    html_account_info(self.server.translate,
                                       base_dir,
                                       http_prefix,
                                       chooser_nickname,
@@ -3294,8 +3289,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
-            msg = html_new_post(self.server.css_cache,
-                                False, self.server.translate,
+            msg = html_new_post(False, self.server.translate,
                                 base_dir,
                                 http_prefix,
                                 report_path, None, [],
@@ -5788,6 +5782,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 get_text_mode_banner(self.server.base_dir)
                             self.server.iconsCache = {}
                             self.server.fontsCache = {}
+                            self.server.css_cache = {}
                             self.server.show_publish_as_icon = \
                                 get_config_param(self.server.base_dir,
                                                  'showPublishAsIcon')
@@ -10434,7 +10429,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             delete_str = \
                 html_confirm_delete(self.server,
-                                    self.server.css_cache,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate, page_number,
@@ -11040,7 +11034,6 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
-                                     self.server.css_cache,
                                      icons_as_buttons,
                                      default_timeline,
                                      recent_posts_cache,
@@ -11172,7 +11165,6 @@ class PubServer(BaseHTTPRequestHandler):
                                 msg = \
                                     html_profile(signing_priv_key_pem,
                                                  self.server.rss_icon_at_top,
-                                                 self.server.css_cache,
                                                  icons_as_buttons,
                                                  default_timeline,
                                                  recent_posts_cache,
@@ -11833,8 +11825,7 @@ class PubServer(BaseHTTPRequestHandler):
                         bold_reading = False
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
-                        msg = html_inbox(self.server.css_cache,
-                                         default_timeline,
+                        msg = html_inbox(default_timeline,
                                          recent_posts_cache,
                                          max_recent_posts,
                                          translate,
@@ -12006,8 +11997,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
                         msg = \
-                            html_inbox_dms(self.server.css_cache,
-                                           self.server.default_timeline,
+                            html_inbox_dms(self.server.default_timeline,
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
@@ -12167,8 +12157,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
-                        html_inbox_replies(self.server.css_cache,
-                                           self.server.default_timeline,
+                        html_inbox_replies(self.server.default_timeline,
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
@@ -12325,8 +12314,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
-                        html_inbox_media(self.server.css_cache,
-                                         self.server.default_timeline,
+                        html_inbox_media(self.server.default_timeline,
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
@@ -12484,8 +12472,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
-                        html_inbox_blogs(self.server.css_cache,
-                                         self.server.default_timeline,
+                        html_inbox_blogs(self.server.default_timeline,
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
@@ -12651,8 +12638,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
-                        html_inbox_news(self.server.css_cache,
-                                        self.server.default_timeline,
+                        html_inbox_news(self.server.default_timeline,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
@@ -12822,8 +12808,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
-                        html_inbox_features(self.server.css_cache,
-                                            self.server.default_timeline,
+                        html_inbox_features(self.server.default_timeline,
                                             self.server.recent_posts_cache,
                                             self.server.max_recent_posts,
                                             self.server.translate,
@@ -12947,8 +12932,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
-                        html_shares(self.server.css_cache,
-                                    self.server.default_timeline,
+                        html_shares(self.server.default_timeline,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
@@ -13041,8 +13025,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
                     msg = \
-                        html_wanted(self.server.css_cache,
-                                    self.server.default_timeline,
+                        html_wanted(self.server.default_timeline,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
@@ -13176,8 +13159,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
                         msg = \
-                            html_bookmarks(self.server.css_cache,
-                                           self.server.default_timeline,
+                            html_bookmarks(self.server.default_timeline,
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
@@ -13330,8 +13312,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
                 msg = \
-                    html_outbox(self.server.css_cache,
-                                self.server.default_timeline,
+                    html_outbox(self.server.default_timeline,
                                 self.server.recent_posts_cache,
                                 self.server.max_recent_posts,
                                 self.server.translate,
@@ -13478,8 +13459,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
                         msg = \
-                            html_moderation(self.server.css_cache,
-                                            self.server.default_timeline,
+                            html_moderation(self.server.default_timeline,
                                             self.server.recent_posts_cache,
                                             self.server.max_recent_posts,
                                             self.server.translate,
@@ -13627,7 +13607,6 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
-                                     self.server.css_cache,
                                      self.server.icons_as_buttons,
                                      self.server.default_timeline,
                                      self.server.recent_posts_cache,
@@ -13766,7 +13745,6 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
-                                     self.server.css_cache,
                                      self.server.icons_as_buttons,
                                      self.server.default_timeline,
                                      self.server.recent_posts_cache,
@@ -13904,7 +13882,6 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
-                                     self.server.css_cache,
                                      self.server.icons_as_buttons,
                                      self.server.default_timeline,
                                      self.server.recent_posts_cache,
@@ -14068,7 +14045,6 @@ class PubServer(BaseHTTPRequestHandler):
             msg = \
                 html_profile(self.server.signing_priv_key_pem,
                              self.server.rss_icon_at_top,
-                             self.server.css_cache,
                              self.server.icons_as_buttons,
                              self.server.default_timeline,
                              self.server.recent_posts_cache,
@@ -14348,19 +14324,23 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' in path:
             path = path.split('/')[-1]
         path = base_dir + '/' + path
-        if os.path.isfile(path):
+        css = None
+        if self.server.css_cache.get(path):
+            css = self.server.css_cache[path]
+        elif os.path.isfile(path):
             tries = 0
             while tries < 5:
                 try:
-                    css = get_css(self.server.base_dir, path,
-                                  self.server.css_cache)
+                    css = get_css(self.server.base_dir, path)
                     if css:
+                        self.server.css_cache[path] = css
                         break
                 except BaseException as ex:
-                    print('EX: _get_style_sheet ' +
+                    print('EX: _get_style_sheet ' + path + ' ' +
                           str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
+        if css:
             msg = css.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/css', msglen,
@@ -14857,8 +14837,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(nickname):
                 bold_reading = True
 
-            msg = html_new_post(self.server.css_cache,
-                                media_instance,
+            msg = html_new_post(media_instance,
                                 translate,
                                 base_dir,
                                 http_prefix,
@@ -14997,8 +14976,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.key_shortcuts.get(nickname):
                 access_keys = self.server.key_shortcuts[nickname]
 
-            msg = html_edit_links(self.server.css_cache,
-                                  translate,
+            msg = html_edit_links(translate,
                                   base_dir,
                                   path, domain,
                                   port,
@@ -15031,8 +15009,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.key_shortcuts.get(nickname):
                 access_keys = self.server.key_shortcuts[nickname]
 
-            msg = html_edit_newswire(self.server.css_cache,
-                                     translate,
+            msg = html_edit_newswire(translate,
                                      base_dir,
                                      path, domain,
                                      port,
@@ -15052,11 +15029,11 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _edit_news_post(self, calling_domain: str, path: str,
-                        translate: {}, base_dir: str,
-                        http_prefix: str, domain: str, port: int,
-                        domain_full: str,
-                        cookie: str) -> bool:
+    def _edit_news_post2(self, calling_domain: str, path: str,
+                         translate: {}, base_dir: str,
+                         http_prefix: str, domain: str, port: int,
+                         domain_full: str,
+                         cookie: str) -> bool:
         """Show the edit screen for a news post
         """
         if '/users/' in path and '/editnewspost=' in path:
@@ -15072,8 +15049,7 @@ class PubServer(BaseHTTPRequestHandler):
                 local_actor_url(http_prefix, post_actor, domain_full) + \
                 '/statuses/' + post_id
             path = path.split('/editnewspost=')[0]
-            msg = html_edit_news_post(self.server.css_cache,
-                                      translate, base_dir,
+            msg = html_edit_news_post(translate, base_dir,
                                       path, domain, port,
                                       http_prefix,
                                       post_url,
@@ -15264,8 +15240,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/logout':
             if not self.server.news_instance:
                 msg = \
-                    html_login(self.server.css_cache,
-                               self.server.translate,
+                    html_login(self.server.translate,
                                self.server.base_dir,
                                self.server.http_prefix,
                                self.server.domain_full,
@@ -15898,8 +15873,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.newswire.get(episode_timestamp):
                 pod_episode = self.server.newswire[episode_timestamp]
                 html_str = \
-                    html_podcast_episode(self.server.css_cache,
-                                         self.server.translate,
+                    html_podcast_episode(self.server.translate,
                                          self.server.base_dir,
                                          nickname,
                                          self.server.domain,
@@ -16294,8 +16268,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 self.server.http_prefix + '://' + \
                 self.server.domain_full + users_path
-            msg = html_confirm_remove_shared_item(self.server.css_cache,
-                                                  self.server.translate,
+            msg = html_confirm_remove_shared_item(self.server.translate,
                                                   self.server.base_dir,
                                                   actor, item_id,
                                                   calling_domain, 'shares')
@@ -16327,8 +16300,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 self.server.http_prefix + '://' + \
                 self.server.domain_full + users_path
-            msg = html_confirm_remove_shared_item(self.server.css_cache,
-                                                  self.server.translate,
+            msg = html_confirm_remove_shared_item(self.server.translate,
                                                   self.server.base_dir,
                                                   actor, item_id,
                                                   calling_domain, 'wanted')
@@ -16411,22 +16383,19 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/about'):
             if calling_domain.endswith('.onion'):
                 msg = \
-                    html_about(self.server.css_cache,
-                               self.server.base_dir, 'http',
+                    html_about(self.server.base_dir, 'http',
                                self.server.onion_domain,
                                None, self.server.translate,
                                self.server.system_language)
             elif calling_domain.endswith('.i2p'):
                 msg = \
-                    html_about(self.server.css_cache,
-                               self.server.base_dir, 'http',
+                    html_about(self.server.base_dir, 'http',
                                self.server.i2p_domain,
                                None, self.server.translate,
                                self.server.system_language)
             else:
                 msg = \
-                    html_about(self.server.css_cache,
-                               self.server.base_dir,
+                    html_about(self.server.base_dir,
                                self.server.http_prefix,
                                self.server.domain_full,
                                self.server.onion_domain,
@@ -16444,22 +16413,19 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path in ('/specification', '/protocol', '/activitypub'):
             if calling_domain.endswith('.onion'):
                 msg = \
-                    html_specification(self.server.css_cache,
-                                       self.server.base_dir, 'http',
+                    html_specification(self.server.base_dir, 'http',
                                        self.server.onion_domain,
                                        None, self.server.translate,
                                        self.server.system_language)
             elif calling_domain.endswith('.i2p'):
                 msg = \
-                    html_specification(self.server.css_cache,
-                                       self.server.base_dir, 'http',
+                    html_specification(self.server.base_dir, 'http',
                                        self.server.i2p_domain,
                                        None, self.server.translate,
                                        self.server.system_language)
             else:
                 msg = \
-                    html_specification(self.server.css_cache,
-                                       self.server.base_dir,
+                    html_specification(self.server.base_dir,
                                        self.server.http_prefix,
                                        self.server.domain_full,
                                        self.server.onion_domain,
@@ -16486,8 +16452,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.key_shortcuts[nickname]
 
             msg = \
-                html_access_keys(self.server.css_cache,
-                                 self.server.base_dir,
+                html_access_keys(self.server.base_dir,
                                  nickname, self.server.domain,
                                  self.server.translate,
                                  access_keys,
@@ -16514,8 +16479,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             msg = \
-                html_theme_designer(self.server.css_cache,
-                                    self.server.base_dir,
+                html_theme_designer(self.server.base_dir,
                                     nickname, self.server.domain,
                                     self.server.translate,
                                     self.server.default_timeline,
@@ -16972,8 +16936,7 @@ class PubServer(BaseHTTPRequestHandler):
              not authorized and
              not self.server.news_instance)):
             # request basic auth
-            msg = html_login(self.server.css_cache,
-                             self.server.translate,
+            msg = html_login(self.server.translate,
                              self.server.base_dir,
                              self.server.http_prefix,
                              self.server.domain_full,
@@ -17042,8 +17005,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.key_shortcuts.get(nickname):
                     access_keys = self.server.key_shortcuts[nickname]
                 msg = \
-                    html_newswire_mobile(self.server.css_cache,
-                                         self.server.base_dir,
+                    html_newswire_mobile(self.server.base_dir,
                                          nickname,
                                          self.server.domain,
                                          self.server.domain_full,
@@ -17087,8 +17049,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shared_items_domains = \
                     self.server.shared_items_federated_domains
                 msg = \
-                    html_links_mobile(self.server.css_cache,
-                                      self.server.base_dir, nickname,
+                    html_links_mobile(self.server.base_dir, nickname,
                                       self.server.domain_full,
                                       self.server.http_prefix,
                                       self.server.translate,
@@ -17204,8 +17165,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show a hashtag category from the search screen
         if html_getreq and '/category/' in self.path:
-            msg = html_search_hashtag_category(self.server.css_cache,
-                                               self.server.translate,
+            msg = html_search_hashtag_category(self.server.translate,
                                                self.server.base_dir, self.path,
                                                self.server.domain,
                                                self.server.theme_name)
@@ -17238,7 +17198,6 @@ class PubServer(BaseHTTPRequestHandler):
 
                 # show the calendar screen
                 msg = html_calendar(self.server.person_cache,
-                                    self.server.css_cache,
                                     self.server.translate,
                                     self.server.base_dir, self.path,
                                     self.server.http_prefix,
@@ -17281,7 +17240,6 @@ class PubServer(BaseHTTPRequestHandler):
 
                 # show the calendar screen
                 msg = html_calendar(self.server.person_cache,
-                                    self.server.css_cache,
                                     self.server.translate,
                                     self.server.base_dir, self.path,
                                     self.server.http_prefix,
@@ -17909,14 +17867,14 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             # edit news post
-            if self._edit_news_post(calling_domain, self.path,
-                                    self.server.translate,
-                                    self.server.base_dir,
-                                    self.server.http_prefix,
-                                    self.server.domain,
-                                    self.server.port,
-                                    self.server.domain_full,
-                                    cookie):
+            if self._edit_news_post2(calling_domain, self.path,
+                                     self.server.translate,
+                                     self.server.base_dir,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.port,
+                                     self.server.domain_full,
+                                     cookie):
                 self.server.getreq_busy = False
                 return
 
@@ -18336,8 +18294,7 @@ class PubServer(BaseHTTPRequestHandler):
                 block_domain = block_domain.split('?')[0]
             add_global_block(self.server.base_dir, '*', block_domain)
             msg = \
-                html_account_info(self.server.css_cache,
-                                  self.server.translate,
+                html_account_info(self.server.translate,
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   nickname,
@@ -18374,8 +18331,7 @@ class PubServer(BaseHTTPRequestHandler):
             block_domain = urllib.parse.unquote_plus(block_domain.strip())
             remove_global_block(self.server.base_dir, '*', block_domain)
             msg = \
-                html_account_info(self.server.css_cache,
-                                  self.server.translate,
+                html_account_info(self.server.translate,
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   nickname,
@@ -19117,7 +19073,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.default_timeline,
                                        self.server.translate,
                                        self.server.newswire,
-                                       self.server.css_cache,
                                        fields['subject'],
                                        fields['message'],
                                        filename, attachment_media_type,
@@ -21065,6 +21020,9 @@ def run_daemon(preferred_podcast_formats: [],
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)
 
+    # caches css files
+    httpd.css_cache = {}
+
     # load a list of dogwhistle words
     dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
     if not os.path.isfile(dogwhistles_filename):
@@ -21377,9 +21335,6 @@ def run_daemon(preferred_podcast_formats: [],
         update_blocked_cache(base_dir, httpd.blocked_cache,
                              httpd.blocked_cache_last_updated,
                              httpd.blocked_cache_update_secs)
-
-    # cache to store css files
-    httpd.css_cache = {}
 
     # get the list of custom emoji, for use by the mastodon api
     httpd.custom_emoji = \

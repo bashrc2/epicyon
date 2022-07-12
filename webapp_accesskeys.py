@@ -40,7 +40,7 @@ def load_access_keys_for_accounts(base_dir: str, key_shortcuts: {},
         break
 
 
-def html_access_keys(css_cache: {}, base_dir: str,
+def html_access_keys(base_dir: str,
                      nickname: str, domain: str,
                      translate: {}, access_keys: {},
                      default_access_keys: {},

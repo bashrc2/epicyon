@@ -32,7 +32,7 @@ from blocking import is_blocked
 from session import create_session
 
 
-def html_moderation(css_cache: {}, default_timeline: str,
+def html_moderation(default_timeline: str,
                     recent_posts_cache: {}, max_recent_posts: int,
                     translate: {}, page_number: int, items_per_page: int,
                     session, base_dir: str, wf_request: {}, person_cache: {},
@@ -63,7 +63,7 @@ def html_moderation(css_cache: {}, default_timeline: str,
     This is what you see when selecting the "mod" timeline
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, default_timeline,
+    return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
                          items_per_page, session, base_dir,
@@ -87,7 +87,7 @@ def html_moderation(css_cache: {}, default_timeline: str,
                          timezone, bold_reading, dogwhistles)
 
 
-def html_account_info(css_cache: {}, translate: {},
+def html_account_info(translate: {},
                       base_dir: str, http_prefix: str,
                       nickname: str, domain: str, port: int,
                       search_handle: str, debug: bool,

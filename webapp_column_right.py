@@ -355,7 +355,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
 
 def html_citations(base_dir: str, nickname: str, domain: str,
                    http_prefix: str, default_timeline: str,
-                   translate: {}, newswire: {}, css_cache: {},
+                   translate: {}, newswire: {},
                    blog_title: str, blog_content: str,
                    blog_image_filename: str,
                    blog_image_attachment_media_type: str,
@@ -470,7 +470,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     return html_str + html_footer()
 
 
-def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
+def html_newswire_mobile(base_dir: str, nickname: str,
                          domain: str, domain_full: str,
                          http_prefix: str, translate: {},
                          newswire: {},
@@ -546,7 +546,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
     return html_str
 
 
-def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
+def html_edit_newswire(translate: {}, base_dir: str, path: str,
                        domain: str, port: int, http_prefix: str,
                        default_timeline: str, theme: str,
                        access_keys: {}, dogwhistles: {}) -> str:
@@ -688,7 +688,7 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     return edit_newswire_form
 
 
-def html_edit_news_post(css_cache: {}, translate: {}, base_dir: str, path: str,
+def html_edit_news_post(translate: {}, base_dir: str, path: str,
                         domain: str, port: int, http_prefix: str, postUrl: str,
                         system_language: str) -> str:
     """Edits a news post on the news/features timeline

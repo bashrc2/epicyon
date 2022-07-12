@@ -197,7 +197,7 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
     return drop_down_content
 
 
-def html_new_post(css_cache: {}, media_instance: bool, translate: {},
+def html_new_post(media_instance: bool, translate: {},
                   base_dir: str, http_prefix: str,
                   path: str, in_reply_to: str,
                   mentions: [],
