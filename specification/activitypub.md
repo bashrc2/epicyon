@@ -293,6 +293,8 @@ As an example, if example.com receives the activity
 
 it should dereference the `id` both to ensure that it exists and is a valid object, and that it is not misrepresenting the object. (In this example, Mallory could be spoofing an object allegedly posted by Alice).
 
+If a `published` or `updated` date appears within an object then it SHOULD be in [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time) format: **YYYY-MM-DDTHH:MM:SSZ**. This MAY be converted to local time for display within a user interface.
+
 ### 3.1 Object Identifiers
 All Objects in [ActivityStreams](https://www.w3.org/TR/activitystreams-core) should have unique global identifiers. ActivityPub extends this requirement; all objects distributed by the ActivityPub protocol *MUST* have unique global identifiers, unless they are intentionally transient (short lived activities that are not intended to be able to be looked up, such as some kinds of chat messages or game notifications). These identifiers must fall into one of the following groups:
 

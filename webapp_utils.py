@@ -1399,7 +1399,7 @@ def get_post_attachments_as_html(base_dir: str,
                 attachment_str += '</audio>\n</center>\n'
                 attachment_ctr += 1
     if media_style_added:
-        attachment_str += '</div>'
+        attachment_str += '</div><br>'
     return attachment_str, gallery_str
 
 
