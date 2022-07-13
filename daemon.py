@@ -11751,7 +11751,8 @@ class PubServer(BaseHTTPRequestHandler):
                     allow_deletion: bool,
                     project_version: str,
                     yt_replace_domain: str,
-                    twitter_replacement_domain: str) -> bool:
+                    twitter_replacement_domain: str,
+                    ua_str: str) -> bool:
         """Shows the inbox timeline
         """
         if '/users/' in path:
@@ -11865,7 +11866,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.cw_lists,
                                          self.server.lists_enabled,
                                          timezone, bold_reading,
-                                         self.server.dogwhistles)
+                                         self.server.dogwhistles,
+                                         ua_str)
                         if getreq_start_time:
                             fitness_performance(getreq_start_time,
                                                 self.server.fitness,
@@ -11928,7 +11930,7 @@ class PubServer(BaseHTTPRequestHandler):
                   getreq_start_time,
                   proxy_type: str, cookie: str,
                   debug: str,
-                  curr_session) -> bool:
+                  curr_session, ua_str: str) -> bool:
         """Shows the DMs timeline
         """
         if '/users/' in path:
@@ -12036,7 +12038,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
-                                           self.server.dogwhistles)
+                                           self.server.dogwhistles, ua_str)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -12088,7 +12090,7 @@ class PubServer(BaseHTTPRequestHandler):
                       onion_domain: str, i2p_domain: str,
                       getreq_start_time,
                       proxy_type: str, cookie: str, debug: str,
-                      curr_session) -> bool:
+                      curr_session, ua_str: str) -> bool:
         """Shows the replies timeline
         """
         if '/users/' in path:
@@ -12196,7 +12198,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
-                                           self.server.dogwhistles)
+                                           self.server.dogwhistles,
+                                           ua_str)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12248,7 +12251,7 @@ class PubServer(BaseHTTPRequestHandler):
                              getreq_start_time,
                              proxy_type: str, cookie: str,
                              debug: str,
-                             curr_session) -> bool:
+                             curr_session, ua_str: str) -> bool:
         """Shows the media timeline
         """
         if '/users/' in path:
@@ -12354,7 +12357,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.cw_lists,
                                          self.server.lists_enabled,
                                          timezone, bold_reading,
-                                         self.server.dogwhistles)
+                                         self.server.dogwhistles, ua_str)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12406,7 +12409,7 @@ class PubServer(BaseHTTPRequestHandler):
                              getreq_start_time,
                              proxy_type: str, cookie: str,
                              debug: str,
-                             curr_session) -> bool:
+                             curr_session, ua_str: str) -> bool:
         """Shows the blogs timeline
         """
         if '/users/' in path:
@@ -12512,7 +12515,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.cw_lists,
                                          self.server.lists_enabled,
                                          timezone, bold_reading,
-                                         self.server.dogwhistles)
+                                         self.server.dogwhistles, ua_str)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12565,7 +12568,7 @@ class PubServer(BaseHTTPRequestHandler):
                             getreq_start_time,
                             proxy_type: str, cookie: str,
                             debug: str,
-                            curr_session) -> bool:
+                            curr_session, ua_str: str) -> bool:
         """Shows the news timeline
         """
         if '/users/' in path:
@@ -12679,7 +12682,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles, ua_str)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12731,7 +12734,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 getreq_start_time,
                                 proxy_type: str, cookie: str,
                                 debug: str,
-                                curr_session) -> bool:
+                                curr_session, ua_str: str) -> bool:
         """Shows the features timeline (all local blogs)
         """
         if '/users/' in path:
@@ -12849,7 +12852,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.cw_lists,
                                             self.server.lists_enabled,
                                             timezone, bold_reading,
-                                            self.server.dogwhistles)
+                                            self.server.dogwhistles, ua_str)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12900,7 +12903,7 @@ class PubServer(BaseHTTPRequestHandler):
                               getreq_start_time,
                               proxy_type: str, cookie: str,
                               debug: str,
-                              curr_session) -> bool:
+                              curr_session, ua_str: str) -> bool:
         """Shows the shares timeline
         """
         if '/users/' in path:
@@ -12968,7 +12971,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.signing_priv_key_pem,
                                     self.server.cw_lists,
                                     self.server.lists_enabled, timezone,
-                                    bold_reading, self.server.dogwhistles)
+                                    bold_reading, self.server.dogwhistles,
+                                    ua_str)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12994,7 +12998,7 @@ class PubServer(BaseHTTPRequestHandler):
                               getreq_start_time,
                               proxy_type: str, cookie: str,
                               debug: str,
-                              curr_session) -> bool:
+                              curr_session, ua_str: str) -> bool:
         """Shows the wanted timeline
         """
         if '/users/' in path:
@@ -13062,7 +13066,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
                                     timezone, bold_reading,
-                                    self.server.dogwhistles)
+                                    self.server.dogwhistles, ua_str)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13089,7 +13093,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  getreq_start_time,
                                  proxy_type: str, cookie: str,
                                  debug: str,
-                                 curr_session) -> bool:
+                                 curr_session, ua_str: str) -> bool:
         """Shows the bookmarks timeline
         """
         if '/users/' in path:
@@ -13199,7 +13203,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
-                                           self.server.dogwhistles)
+                                           self.server.dogwhistles, ua_str)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -13250,7 +13254,7 @@ class PubServer(BaseHTTPRequestHandler):
                               getreq_start_time,
                               proxy_type: str, cookie: str,
                               debug: str,
-                              curr_session) -> bool:
+                              curr_session, ua_str: str) -> bool:
         """Shows the outbox timeline
         """
         # get outbox feed for a person
@@ -13350,7 +13354,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 timezone, bold_reading,
-                                self.server.dogwhistles)
+                                self.server.dogwhistles, ua_str)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -13390,7 +13394,7 @@ class PubServer(BaseHTTPRequestHandler):
                            getreq_start_time,
                            proxy_type: str, cookie: str,
                            debug: str,
-                           curr_session) -> bool:
+                           curr_session, ua_str: str) -> bool:
         """Shows the moderation timeline
         """
         if '/users/' in path:
@@ -13498,7 +13502,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.cw_lists,
                                             self.server.lists_enabled,
                                             timezone, bold_reading,
-                                            self.server.dogwhistles)
+                                            self.server.dogwhistles,
+                                            ua_str)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -18091,7 +18096,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.allow_deletion,
                                 self.server.project_version,
                                 self.server.yt_replace_domain,
-                                self.server.twitter_replacement_domain):
+                                self.server.twitter_replacement_domain,
+                                ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18114,7 +18120,7 @@ class PubServer(BaseHTTPRequestHandler):
                               getreq_start_time,
                               proxy_type,
                               cookie, self.server.debug,
-                              curr_session):
+                              curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18137,7 +18143,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   getreq_start_time,
                                   proxy_type,
                                   cookie, self.server.debug,
-                                  curr_session):
+                                  curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18160,7 +18166,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          getreq_start_time,
                                          proxy_type,
                                          cookie, self.server.debug,
-                                         curr_session):
+                                         curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18183,7 +18189,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          getreq_start_time,
                                          proxy_type,
                                          cookie, self.server.debug,
-                                         curr_session):
+                                         curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18206,7 +18212,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         getreq_start_time,
                                         proxy_type,
                                         cookie, self.server.debug,
-                                        curr_session):
+                                        curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18226,7 +18232,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             getreq_start_time,
                                             proxy_type,
                                             cookie, self.server.debug,
-                                            curr_session):
+                                            curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18248,7 +18254,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           getreq_start_time,
                                           proxy_type,
                                           cookie, self.server.debug,
-                                          curr_session):
+                                          curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18266,7 +18272,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           getreq_start_time,
                                           proxy_type,
                                           cookie, self.server.debug,
-                                          curr_session):
+                                          curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18368,7 +18374,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              getreq_start_time,
                                              proxy_type,
                                              cookie, self.server.debug,
-                                             curr_session):
+                                             curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18392,7 +18398,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           getreq_start_time,
                                           proxy_type,
                                           cookie, self.server.debug,
-                                          curr_session):
+                                          curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 
@@ -18416,7 +18422,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        getreq_start_time,
                                        proxy_type,
                                        cookie, self.server.debug,
-                                       curr_session):
+                                       curr_session, ua_str):
                 self.server.getreq_busy = False
                 return
 

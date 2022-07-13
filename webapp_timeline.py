@@ -382,6 +382,14 @@ def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
                                     follow_approvals)
 
 
+def _text_mode_browser(ua_str: str) -> bool:
+    """Does the user agent indicate a text mode browser?
+    """
+    if 'Lynx/' in ua_str:
+        return True
+    return False
+
+
 def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
                        http_prefix: str, translate: {},
                        moderator: bool, editor: bool,
@@ -391,7 +399,8 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
                        authorized: bool, theme: str,
                        default_timeline: str, access_keys: {},
                        box_name: str,
-                       enable_timing_log: bool, timeline_start_time) -> str:
+                       enable_timing_log: bool, timeline_start_time,
+                       ua_str: str) -> str:
     """Ending of the timeline, containing the right column
     """
     # end of timeline-posts
@@ -401,17 +410,19 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
     tl_str += '  </td>\n'
 
     # right column
-    right_column_str = \
-        get_right_column_content(base_dir, nickname, domain_full,
-                                 http_prefix, translate,
-                                 moderator, editor,
-                                 newswire, positive_voting,
-                                 False, None, True,
-                                 show_publish_as_icon,
-                                 rss_icon_at_top,
-                                 publish_button_at_top,
-                                 authorized, True, theme,
-                                 default_timeline, access_keys)
+    right_column_str = ''
+    if not _text_mode_browser(ua_str):
+        right_column_str = \
+            get_right_column_content(base_dir, nickname, domain_full,
+                                     http_prefix, translate,
+                                     moderator, editor,
+                                     newswire, positive_voting,
+                                     False, None, True,
+                                     show_publish_as_icon,
+                                     rss_icon_at_top,
+                                     publish_button_at_top,
+                                     authorized, True, theme,
+                                     default_timeline, access_keys)
     tl_str += '  <td valign="top" class="col-right" ' + \
         'id="newswire" tabindex="-1">\n' + \
         '  <aside>\n' + \
@@ -494,7 +505,7 @@ def html_timeline(default_timeline: str,
                   signing_priv_key_pem: str,
                   cw_lists: {}, lists_enabled: str,
                   timezone: str, bold_reading: bool,
-                  dogwhistles: {}) -> str:
+                  dogwhistles: {}, ua_str: str) -> str:
     """Show the timeline as html
     """
     enable_timing_log = False
@@ -811,12 +822,15 @@ def html_timeline(default_timeline: str,
     domain_full = get_full_domain(domain, port)
 
     # left column
-    left_column_str = \
-        get_left_column_content(base_dir, nickname, domain_full,
-                                http_prefix, translate,
-                                editor, artist, False, None, rss_icon_at_top,
-                                True, False, theme, access_keys,
-                                shared_items_federated_domains)
+    left_column_str = ''
+    if not _text_mode_browser(ua_str):
+        left_column_str = \
+            get_left_column_content(base_dir, nickname, domain_full,
+                                    http_prefix, translate,
+                                    editor, artist, False, None,
+                                    rss_icon_at_top,
+                                    True, False, theme, access_keys,
+                                    shared_items_federated_domains)
     tl_str += '  <td valign="top" class="col-left" ' + \
         'id="links" tabindex="-1">\n' + \
         '  <aside>\n' + \
@@ -872,7 +886,8 @@ def html_timeline(default_timeline: str,
                                    authorized, theme,
                                    default_timeline, access_keys,
                                    box_name,
-                                   enable_timing_log, timeline_start_time) +
+                                   enable_timing_log, timeline_start_time,
+                                   ua_str) +
                 html_footer())
     elif box_name == 'tlwanted':
         max_shares_per_account = items_per_page
@@ -891,7 +906,8 @@ def html_timeline(default_timeline: str,
                                    authorized, theme,
                                    default_timeline, access_keys,
                                    box_name,
-                                   enable_timing_log, timeline_start_time) +
+                                   enable_timing_log, timeline_start_time,
+                                   ua_str) +
                 html_footer())
 
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '7')
@@ -1051,7 +1067,7 @@ def html_timeline(default_timeline: str,
                            authorized, theme,
                            default_timeline, access_keys,
                            box_name,
-                           enable_timing_log, timeline_start_time)
+                           enable_timing_log, timeline_start_time, ua_str)
     tl_str += html_footer()
     return tl_str
 
@@ -1244,7 +1260,7 @@ def html_shares(default_timeline: str,
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str,
                 timezone: str, bold_reading: bool,
-                dogwhistles: {}) -> str:
+                dogwhistles: {}, ua_str: str) -> str:
     """Show the shares timeline as html
     """
     manually_approve_followers = \
@@ -1275,7 +1291,7 @@ def html_shares(default_timeline: str,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading, dogwhistles)
+                         bold_reading, dogwhistles, ua_str)
 
 
 def html_wanted(default_timeline: str,
@@ -1305,7 +1321,7 @@ def html_wanted(default_timeline: str,
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str,
                 timezone: str, bold_reading: bool,
-                dogwhistles: {}) -> str:
+                dogwhistles: {}, ua_str: str) -> str:
     """Show the wanted timeline as html
     """
     manually_approve_followers = \
@@ -1336,7 +1352,7 @@ def html_wanted(default_timeline: str,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading, dogwhistles)
+                         bold_reading, dogwhistles, ua_str)
 
 
 def html_inbox(default_timeline: str,
@@ -1367,7 +1383,7 @@ def html_inbox(default_timeline: str,
                signing_priv_key_pem: str,
                cw_lists: {}, lists_enabled: str,
                timezone: str, bold_reading: bool,
-               dogwhistles: {}) -> str:
+               dogwhistles: {}, ua_str: str) -> str:
     """Show the inbox as html
     """
     manually_approve_followers = \
@@ -1398,7 +1414,7 @@ def html_inbox(default_timeline: str,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading, dogwhistles)
+                         bold_reading, dogwhistles, ua_str)
 
 
 def html_bookmarks(default_timeline: str,
@@ -1429,7 +1445,7 @@ def html_bookmarks(default_timeline: str,
                    signing_priv_key_pem: str,
                    cw_lists: {}, lists_enabled: str,
                    timezone: str, bold_reading: bool,
-                   dogwhistles: {}) -> str:
+                   dogwhistles: {}, ua_str: str) -> str:
     """Show the bookmarks as html
     """
     manually_approve_followers = \
@@ -1459,7 +1475,7 @@ def html_bookmarks(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading, dogwhistles)
+                         bold_reading, dogwhistles, ua_str)
 
 
 def html_inbox_dms(default_timeline: str,
@@ -1490,7 +1506,7 @@ def html_inbox_dms(default_timeline: str,
                    signing_priv_key_pem: str,
                    cw_lists: {}, lists_enabled: str,
                    timezone: str, bold_reading: bool,
-                   dogwhistles: {}) -> str:
+                   dogwhistles: {}, ua_str: str) -> str:
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1516,7 +1532,7 @@ def html_inbox_dms(default_timeline: str,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
-                         bold_reading, dogwhistles)
+                         bold_reading, dogwhistles, ua_str)
 
 
 def html_inbox_replies(default_timeline: str,
@@ -1547,7 +1563,7 @@ def html_inbox_replies(default_timeline: str,
                        signing_priv_key_pem: str,
                        cw_lists: {}, lists_enabled: str,
                        timezone: str, bold_reading: bool,
-                       dogwhistles: {}) -> str:
+                       dogwhistles: {}, ua_str: str) -> str:
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1572,7 +1588,7 @@ def html_inbox_replies(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles)
+                         dogwhistles, ua_str)
 
 
 def html_inbox_media(default_timeline: str,
@@ -1603,7 +1619,7 @@ def html_inbox_media(default_timeline: str,
                      signing_priv_key_pem: str,
                      cw_lists: {}, lists_enabled: str,
                      timezone: str, bold_reading: bool,
-                     dogwhistles: {}) -> str:
+                     dogwhistles: {}, ua_str: str) -> str:
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1628,7 +1644,7 @@ def html_inbox_media(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles)
+                         dogwhistles, ua_str)
 
 
 def html_inbox_blogs(default_timeline: str,
@@ -1659,7 +1675,7 @@ def html_inbox_blogs(default_timeline: str,
                      signing_priv_key_pem: str,
                      cw_lists: {}, lists_enabled: str,
                      timezone: str, bold_reading: bool,
-                     dogwhistles: {}) -> str:
+                     dogwhistles: {}, ua_str: str) -> str:
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1684,7 +1700,7 @@ def html_inbox_blogs(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles)
+                         dogwhistles, ua_str)
 
 
 def html_inbox_features(default_timeline: str,
@@ -1716,7 +1732,7 @@ def html_inbox_features(default_timeline: str,
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
                         timezone: str, bold_reading: bool,
-                        dogwhistles: {}) -> str:
+                        dogwhistles: {}, ua_str: str) -> str:
     """Show the features timeline as html
     """
     return html_timeline(default_timeline,
@@ -1740,7 +1756,7 @@ def html_inbox_features(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles)
+                         dogwhistles, ua_str)
 
 
 def html_inbox_news(default_timeline: str,
@@ -1771,7 +1787,7 @@ def html_inbox_news(default_timeline: str,
                     signing_priv_key_pem: str,
                     cw_lists: {}, lists_enabled: str,
                     timezone: str, bold_reading: bool,
-                    dogwhistles: {}) -> str:
+                    dogwhistles: {}, ua_str: str) -> str:
     """Show the news timeline as html
     """
     return html_timeline(default_timeline,
@@ -1795,7 +1811,7 @@ def html_inbox_news(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles)
+                         dogwhistles, ua_str)
 
 
 def html_outbox(default_timeline: str,
@@ -1826,7 +1842,7 @@ def html_outbox(default_timeline: str,
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str,
                 timezone: str, bold_reading: bool,
-                dogwhistles: {}) -> str:
+                dogwhistles: {}, ua_str: str) -> str:
     """Show the Outbox as html
     """
     manually_approve_followers = \
@@ -1853,4 +1869,4 @@ def html_outbox(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles)
+                         dogwhistles, ua_str)

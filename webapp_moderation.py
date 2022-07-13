@@ -58,7 +58,7 @@ def html_moderation(default_timeline: str,
                     signing_priv_key_pem: str,
                     cw_lists: {}, lists_enabled: str,
                     timezone: str, bold_reading: bool,
-                    dogwhistles: {}) -> str:
+                    dogwhistles: {}, ua_str: str) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -84,7 +84,7 @@ def html_moderation(default_timeline: str,
                          text_mode_banner, access_keys, system_language,
                          max_like_count, shared_items_federated_domains,
                          signing_priv_key_pem, cw_lists, lists_enabled,
-                         timezone, bold_reading, dogwhistles)
+                         timezone, bold_reading, dogwhistles, ua_str)
 
 
 def html_account_info(translate: {},
