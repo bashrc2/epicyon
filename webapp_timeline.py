@@ -385,8 +385,10 @@ def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
 def _text_mode_browser(ua_str: str) -> bool:
     """Does the user agent indicate a text mode browser?
     """
-    if ('Lynx/', 'w3m/', 'Links (', 'eww/') in ua_str:
-        return True
+    text_mode_agents = ('Lynx/', 'w3m/', 'Links (', 'Emacs/')
+    for agent in text_mode_agents:
+        if agent in ua_str:
+            return True
     return False
 
 
