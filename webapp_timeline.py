@@ -793,6 +793,7 @@ def html_timeline(default_timeline: str,
         '</header>\n'
 
     if full_width_tl_button_header:
+        is_text_browser = text_mode_browser(ua_str)
         tl_str += \
             header_buttons_timeline(default_timeline, box_name, page_number,
                                     translate, users_path, media_button,
@@ -807,7 +808,8 @@ def html_timeline(default_timeline: str,
                                     domain, timeline_start_time,
                                     new_calendar_event, calendar_path,
                                     calendar_image, follow_approvals,
-                                    icons_as_buttons, access_keys)
+                                    icons_as_buttons, access_keys,
+                                    is_text_browser)
 
     # start the timeline
     tl_str += \
@@ -844,6 +846,7 @@ def html_timeline(default_timeline: str,
     tl_str += '  <td valign="top" class="col-center" tabindex="-1">\n'
 
     if not full_width_tl_button_header:
+        is_text_browser = text_mode_browser(ua_str)
         tl_str += \
             header_buttons_timeline(default_timeline, box_name, page_number,
                                     translate, users_path, media_button,
@@ -858,7 +861,8 @@ def html_timeline(default_timeline: str,
                                     domain, timeline_start_time,
                                     new_calendar_event, calendar_path,
                                     calendar_image, follow_approvals,
-                                    icons_as_buttons, access_keys)
+                                    icons_as_buttons, access_keys,
+                                    is_text_browser)
 
     tl_str += \
         '  <div id="timelineposts" class="timeline-posts" ' + \
