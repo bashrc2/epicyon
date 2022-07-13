@@ -656,7 +656,7 @@ class PubServer(BaseHTTPRequestHandler):
         if 'audio/' in accept_str:
             if 'text/html' not in accept_str:
                 return False
-        if accept_str.startswith('*'):
+        if accept_str.startswith('*') or 'text/html' in accept_str:
             if self.headers.get('User-Agent'):
                 if text_mode_browser(self.headers['User-Agent']):
                     return True
