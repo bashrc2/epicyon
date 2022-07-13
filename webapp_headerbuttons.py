@@ -323,22 +323,23 @@ def header_buttons_timeline(default_timeline: str,
                     '<span>' + translate['Calendar'] + \
                     '</span></button></a>'
 
-    if not features_header:
-        # the show/hide button, for a simpler header appearance
-        if not icons_as_buttons:
-            tl_str += \
-                '      <a class="imageAnchor" href="' + \
-                users_path + '/minimal" tabindex="3">' + \
-                '<img loading="lazy" decoding="async" src="/icons' + \
-                '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
-                '" alt="| ' + translate['Show/Hide Buttons'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            tl_str += \
-                '<a href="' + users_path + '/minimal' + \
-                '" tabindex="3"><button class="button">' + \
-                '<span>' + translate['Show/Hide Buttons'] + \
-                '</span></button></a>'
+        if not features_header:
+            # the show/hide button, for a simpler header appearance
+            if not icons_as_buttons:
+                tl_str += \
+                    '      <a class="imageAnchor" href="' + \
+                    users_path + '/minimal" tabindex="3">' + \
+                    '<img loading="lazy" decoding="async" src="/icons' + \
+                    '/showhide.png" title="' + \
+                    translate['Show/Hide Buttons'] + \
+                    '" alt="| ' + translate['Show/Hide Buttons'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                tl_str += \
+                    '<a href="' + users_path + '/minimal' + \
+                    '" tabindex="3"><button class="button">' + \
+                    '<span>' + translate['Show/Hide Buttons'] + \
+                    '</span></button></a>'
 
     if features_header:
         tl_str += \
