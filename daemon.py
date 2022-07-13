@@ -660,7 +660,8 @@ class PubServer(BaseHTTPRequestHandler):
             if self.headers.get('User-Agent'):
                 if text_mode_browser(self.headers['User-Agent']):
                     return True
-            return False
+            if 'text/html' not in accept_str:
+                return False
         if 'json' in accept_str:
             return False
         return True
