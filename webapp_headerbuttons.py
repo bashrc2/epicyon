@@ -47,86 +47,23 @@ def header_buttons_timeline(default_timeline: str,
                             calendar_image: str,
                             follow_approvals: str,
                             icons_as_buttons: bool,
-                            access_keys: {}) -> str:
+                            access_keys: {},
+                            is_text_browser: str) -> str:
     """Returns the header at the top of the timeline, containing
     buttons for inbox, outbox, search, calendar, etc
     """
     # start of the button header with inbox, outbox, etc
     tl_str = '<div id="containerHeader" class="containerHeader"><nav>\n'
-    # first button
-    if default_timeline == 'tlmedia':
-        tl_str += \
-            '<a href="' + users_path + '/tlmedia" tabindex="2" ' + \
-            'accesskey="' + access_keys['menuMedia'] + '"'
-        if box_name == 'tlmedia':
-            tl_str += ' aria-current="location"'
-        tl_str += \
-            '><button class="' + \
-            media_button + '"><span>' + translate['Media'] + \
-            '</span></button></a>'
-    elif default_timeline == 'tlblogs':
-        tl_str += \
-            '<a href="' + users_path + \
-            '/tlblogs" tabindex="2"'
-        if box_name == 'tlblogs':
-            tl_str += ' aria-current="location"'
-        tl_str += \
-            '><button class="' + \
-            blogs_button + '" accesskey="' + access_keys['menuBlogs'] + \
-            '"><span>' + translate['Blogs'] + '</span></button></a>'
-    elif default_timeline == 'tlfeatures':
-        tl_str += \
-            '<a href="' + users_path + \
-            '/tlfeatures" tabindex="2"'
-        if box_name == 'tlfeatures':
-            tl_str += ' aria-current="location"'
-        tl_str += \
-            '><button class="' + \
-            features_button + '"><span>' + translate['Features'] + \
-            '</span></button></a>'
-    else:
-        tl_str += \
-            '<a href="' + users_path + \
-            '/inbox" tabindex="2"><button class="' + \
-            inbox_button + '"'
-        if box_name == 'inbox':
-            tl_str += ' aria-current="location"'
-        tl_str += \
-            ' accesskey="' + access_keys['menuInbox'] + '">' + \
-            '<span>' + translate['Inbox'] + '</span></button></a>'
 
     # if this is a news instance and we are viewing the news timeline
     features_header = False
     if default_timeline == 'tlfeatures' and box_name == 'tlfeatures':
         features_header = True
 
-    if not features_header:
-        tl_str += \
-            '<a href="' + users_path + '/dm" tabindex="2"'
-        if box_name == 'dm':
-            tl_str += ' aria-current="location"'
-        tl_str += \
-            '><button class="' + dm_button + \
-            '" accesskey="' + access_keys['menuDM'] + '">' + \
-            '<span>' + html_highlight_label(translate['DM'], new_dm) + \
-            '</span></button></a>'
+    if not is_text_browser:
 
-        replies_index_filename = \
-            acct_dir(base_dir, nickname, domain) + '/tlreplies.index'
-        if os.path.isfile(replies_index_filename):
-            tl_str += \
-                '<a href="' + users_path + '/tlreplies" tabindex="2"'
-            if box_name == 'tlreplies':
-                tl_str += ' aria-current="location"'
-            tl_str += \
-                '><button class="' + replies_button + '" ' + \
-                'accesskey="' + access_keys['menuReplies'] + '"><span>' + \
-                html_highlight_label(translate['Replies'], new_reply) + \
-                '</span></button></a>'
-
-    # typically the media button
-    if default_timeline != 'tlmedia':
-        if not minimal and not features_header:
+        # first button
+        if default_timeline == 'tlmedia':
             tl_str += \
                 '<a href="' + users_path + '/tlmedia" tabindex="2" ' + \
                 'accesskey="' + access_keys['menuMedia'] + '"'
@@ -136,34 +73,72 @@ def header_buttons_timeline(default_timeline: str,
                 '><button class="' + \
                 media_button + '"><span>' + translate['Media'] + \
                 '</span></button></a>'
-    else:
-        if not minimal:
+        elif default_timeline == 'tlblogs':
             tl_str += \
                 '<a href="' + users_path + \
-                '/inbox" tabindex="2"'
-            if box_name == 'inbox':
+                '/tlblogs" tabindex="2"'
+            if box_name == 'tlblogs':
                 tl_str += ' aria-current="location"'
             tl_str += \
                 '><button class="' + \
-                inbox_button + '"><span>' + translate['Inbox'] + \
+                blogs_button + '" accesskey="' + access_keys['menuBlogs'] + \
+                '"><span>' + translate['Blogs'] + '</span></button></a>'
+        elif default_timeline == 'tlfeatures':
+            tl_str += \
+                '<a href="' + users_path + \
+                '/tlfeatures" tabindex="2"'
+            if box_name == 'tlfeatures':
+                tl_str += ' aria-current="location"'
+            tl_str += \
+                '><button class="' + \
+                features_button + '"><span>' + translate['Features'] + \
+                '</span></button></a>'
+        else:
+            tl_str += \
+                '<a href="' + users_path + \
+                '/inbox" tabindex="2"><button class="' + \
+                inbox_button + '"'
+            if box_name == 'inbox':
+                tl_str += ' aria-current="location"'
+            tl_str += \
+                ' accesskey="' + access_keys['menuInbox'] + '">' + \
+                '<span>' + translate['Inbox'] + '</span></button></a>'
+
+        if not features_header:
+            tl_str += \
+                '<a href="' + users_path + '/dm" tabindex="2"'
+            if box_name == 'dm':
+                tl_str += ' aria-current="location"'
+            tl_str += \
+                '><button class="' + dm_button + \
+                '" accesskey="' + access_keys['menuDM'] + '">' + \
+                '<span>' + html_highlight_label(translate['DM'], new_dm) + \
                 '</span></button></a>'
 
-    if not features_header:
-        # typically the blogs button
-        # but may change if this is a blogging oriented instance
-        if default_timeline != 'tlblogs':
-            if not minimal:
-                title_str = translate['Blogs']
-                if default_timeline == 'tlfeatures':
-                    title_str = translate['Article']
+            replies_index_filename = \
+                acct_dir(base_dir, nickname, domain) + '/tlreplies.index'
+            if os.path.isfile(replies_index_filename):
                 tl_str += \
-                    '<a href="' + users_path + \
-                    '/tlblogs" tabindex="2"'
-                if box_name == 'tlblogs':
+                    '<a href="' + users_path + '/tlreplies" tabindex="2"'
+                if box_name == 'tlreplies':
                     tl_str += ' aria-current="location"'
                 tl_str += \
-                    '><button class="' + blogs_button + '" accesskey="' + \
-                    access_keys['menuBlogs'] + '"><span>' + title_str + \
+                    '><button class="' + replies_button + '" ' + \
+                    'accesskey="' + access_keys['menuReplies'] + '"><span>' + \
+                    html_highlight_label(translate['Replies'], new_reply) + \
+                    '</span></button></a>'
+
+        # typically the media button
+        if default_timeline != 'tlmedia':
+            if not minimal and not features_header:
+                tl_str += \
+                    '<a href="' + users_path + '/tlmedia" tabindex="2" ' + \
+                    'accesskey="' + access_keys['menuMedia'] + '"'
+                if box_name == 'tlmedia':
+                    tl_str += ' aria-current="location"'
+                tl_str += \
+                    '><button class="' + \
+                    media_button + '"><span>' + translate['Media'] + \
                     '</span></button></a>'
         else:
             if not minimal:
@@ -177,20 +152,49 @@ def header_buttons_timeline(default_timeline: str,
                     inbox_button + '"><span>' + translate['Inbox'] + \
                     '</span></button></a>'
 
-    # typically the news button
-    # but may change if this is a news oriented instance
-    if default_timeline == 'tlfeatures':
         if not features_header:
-            tl_str += \
-                '<a href="' + users_path + \
-                '/inbox" tabindex="2"'
-            if box_name == 'inbox':
-                tl_str += ' aria-current="location"'
-            tl_str += \
-                '><button class="' + \
-                inbox_button + '" accesskey="' + \
-                access_keys['menuInbox'] + '"><span>' + translate['Inbox'] + \
-                '</span></button></a>'
+            # typically the blogs button
+            # but may change if this is a blogging oriented instance
+            if default_timeline != 'tlblogs':
+                if not minimal:
+                    title_str = translate['Blogs']
+                    if default_timeline == 'tlfeatures':
+                        title_str = translate['Article']
+                    tl_str += \
+                        '<a href="' + users_path + \
+                        '/tlblogs" tabindex="2"'
+                    if box_name == 'tlblogs':
+                        tl_str += ' aria-current="location"'
+                    tl_str += \
+                        '><button class="' + blogs_button + '" accesskey="' + \
+                        access_keys['menuBlogs'] + '"><span>' + title_str + \
+                        '</span></button></a>'
+            else:
+                if not minimal:
+                    tl_str += \
+                        '<a href="' + users_path + \
+                        '/inbox" tabindex="2"'
+                    if box_name == 'inbox':
+                        tl_str += ' aria-current="location"'
+                    tl_str += \
+                        '><button class="' + \
+                        inbox_button + '"><span>' + translate['Inbox'] + \
+                        '</span></button></a>'
+
+        # typically the news button
+        # but may change if this is a news oriented instance
+        if default_timeline == 'tlfeatures':
+            if not features_header:
+                tl_str += \
+                    '<a href="' + users_path + \
+                    '/inbox" tabindex="2"'
+                if box_name == 'inbox':
+                    tl_str += ' aria-current="location"'
+                tl_str += \
+                    '><button class="' + \
+                    inbox_button + '" accesskey="' + \
+                    access_keys['menuInbox'] + '"><span>' + \
+                    translate['Inbox'] + '</span></button></a>'
 
     # show todays events buttons on the first inbox page
     happening_str = ''
@@ -245,45 +249,49 @@ def header_buttons_timeline(default_timeline: str,
                     '<button class="button">' + \
                     translate['Happening This Week'] + '</button></a>'
 
-    if not features_header:
-        # button for the outbox
-        tl_str += \
-            '<a href="' + users_path + '/outbox"'
-        if box_name == 'outbox':
-            tl_str += ' aria-current="location"'
-        tl_str += \
-            '><button class="' + \
-            sent_button + '" tabindex="2" accesskey="' + \
-            access_keys['menuOutbox'] + '">' + \
-            '<span>' + translate['Sent'] + '</span></button></a>'
-
-        # add other buttons
-        tl_str += \
-            shares_button_str + wanted_button_str + bookmarks_button_str + \
-            events_button_str + \
-            moderation_button_str + happening_str + new_post_button_str
-
-    if not features_header:
-        if not icons_as_buttons:
-            # the search icon
+    if not is_text_browser:
+        if not features_header:
+            # button for the outbox
             tl_str += \
-                '<a class="imageAnchor" href="' + users_path + \
-                '/search" accesskey="' + access_keys['menuSearch'] + \
-                '" tabindex="3">' + \
-                '<img loading="lazy" decoding="async" src="/' + \
-                'icons/search.png" title="' + \
-                translate['Search and follow'] + '" alt="| ' + \
-                translate['Search and follow'] + \
-                '" class="timelineicon"/></a>'
-        else:
-            # the search button
+                '<a href="' + users_path + '/outbox"'
+            if box_name == 'outbox':
+                tl_str += ' aria-current="location"'
             tl_str += \
-                '<a href="' + users_path + \
-                '/search" tabindex="3">' + \
-                '<button class="button" ' + \
-                'accesskey="' + access_keys['menuSearch'] + '>' + \
-                '<span>' + translate['Search'] + \
-                '</span></button></a>'
+                '><button class="' + \
+                sent_button + '" tabindex="2" accesskey="' + \
+                access_keys['menuOutbox'] + '">' + \
+                '<span>' + translate['Sent'] + '</span></button></a>'
+
+            # add other buttons
+            tl_str += \
+                shares_button_str + wanted_button_str + \
+                bookmarks_button_str + events_button_str + \
+                moderation_button_str + happening_str + new_post_button_str
+    else:
+        tl_str += happening_str
+
+    if not is_text_browser:
+        if not features_header:
+            if not icons_as_buttons:
+                # the search icon
+                tl_str += \
+                    '<a class="imageAnchor" href="' + users_path + \
+                    '/search" accesskey="' + access_keys['menuSearch'] + \
+                    '" tabindex="3">' + \
+                    '<img loading="lazy" decoding="async" src="/' + \
+                    'icons/search.png" title="' + \
+                    translate['Search and follow'] + '" alt="| ' + \
+                    translate['Search and follow'] + \
+                    '" class="timelineicon"/></a>'
+            else:
+                # the search button
+                tl_str += \
+                    '<a href="' + users_path + \
+                    '/search" tabindex="3">' + \
+                    '<button class="button" ' + \
+                    'accesskey="' + access_keys['menuSearch'] + '>' + \
+                    '<span>' + translate['Search'] + \
+                    '</span></button></a>'
 
     # benchmark 5
     time_diff = int((time.time() - timeline_start_time) * 1000)
@@ -291,45 +299,47 @@ def header_buttons_timeline(default_timeline: str,
         print('TIMELINE TIMING ' + box_name + ' 5 = ' + str(time_diff))
 
     # the calendar button
-    if not features_header:
-        calendar_alt_text = translate['Calendar']
-        if new_calendar_event:
-            # indicate that the calendar icon is highlighted
-            calendar_alt_text = '*' + calendar_alt_text + '*'
-        if not icons_as_buttons:
-            tl_str += \
-                '      <a class="imageAnchor" href="' + \
-                users_path + calendar_path + \
-                '" accesskey="' + access_keys['menuCalendar'] + \
-                '" tabindex="3">' + \
-                '<img loading="lazy" decoding="async" src="/icons/' + \
-                calendar_image + '" title="' + translate['Calendar'] + \
-                '" alt="| ' + calendar_alt_text + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            tl_str += \
-                '<a href="' + users_path + calendar_path + \
-                '" tabindex="3"><button class="button" accesskey="' + \
-                access_keys['menuCalendar'] + '">' + \
-                '<span>' + translate['Calendar'] + \
-                '</span></button></a>'
+    if not is_text_browser:
+        if not features_header:
+            calendar_alt_text = translate['Calendar']
+            if new_calendar_event:
+                # indicate that the calendar icon is highlighted
+                calendar_alt_text = '*' + calendar_alt_text + '*'
+            if not icons_as_buttons:
+                tl_str += \
+                    '      <a class="imageAnchor" href="' + \
+                    users_path + calendar_path + \
+                    '" accesskey="' + access_keys['menuCalendar'] + \
+                    '" tabindex="3">' + \
+                    '<img loading="lazy" decoding="async" src="/icons/' + \
+                    calendar_image + '" title="' + translate['Calendar'] + \
+                    '" alt="| ' + calendar_alt_text + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                tl_str += \
+                    '<a href="' + users_path + calendar_path + \
+                    '" tabindex="3"><button class="button" accesskey="' + \
+                    access_keys['menuCalendar'] + '">' + \
+                    '<span>' + translate['Calendar'] + \
+                    '</span></button></a>'
 
-    if not features_header:
-        # the show/hide button, for a simpler header appearance
-        if not icons_as_buttons:
-            tl_str += \
-                '      <a class="imageAnchor" href="' + \
-                users_path + '/minimal" tabindex="3">' + \
-                '<img loading="lazy" decoding="async" src="/icons' + \
-                '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
-                '" alt="| ' + translate['Show/Hide Buttons'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            tl_str += \
-                '<a href="' + users_path + '/minimal' + \
-                '" tabindex="3"><button class="button">' + \
-                '<span>' + translate['Show/Hide Buttons'] + \
-                '</span></button></a>'
+        if not features_header:
+            # the show/hide button, for a simpler header appearance
+            if not icons_as_buttons:
+                tl_str += \
+                    '      <a class="imageAnchor" href="' + \
+                    users_path + '/minimal" tabindex="3">' + \
+                    '<img loading="lazy" decoding="async" src="/icons' + \
+                    '/showhide.png" title="' + \
+                    translate['Show/Hide Buttons'] + \
+                    '" alt="| ' + translate['Show/Hide Buttons'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                tl_str += \
+                    '<a href="' + users_path + '/minimal' + \
+                    '" tabindex="3"><button class="button">' + \
+                    '<span>' + translate['Show/Hide Buttons'] + \
+                    '</span></button></a>'
 
     if features_header:
         tl_str += \
@@ -340,41 +350,42 @@ def header_buttons_timeline(default_timeline: str,
             '><button class="button">' + \
             '<span>' + translate['User'] + '</span></button></a>'
 
-    # the newswire button to show right column links
-    if not icons_as_buttons:
-        tl_str += \
-            '<a class="imageAnchorMobile" href="' + \
-            users_path + '/newswiremobile">' + \
-            '<img loading="lazy" decoding="async" src="/icons' + \
-            '/newswire.png" title="' + translate['News'] + \
-            '" alt="| ' + translate['News'] + \
-            '" class="timelineicon"/></a>'
-    else:
-        # NOTE: deliberately no \n at end of line
-        tl_str += \
-            '<a href="' + \
-            users_path + '/newswiremobile' + \
-            '" tabindex="2"><button class="buttonMobile">' + \
-            '<span>' + translate['Newswire'] + \
-            '</span></button></a>'
+    if not is_text_browser:
+        # the newswire button to show right column links
+        if not icons_as_buttons:
+            tl_str += \
+                '<a class="imageAnchorMobile" href="' + \
+                users_path + '/newswiremobile">' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
+                '/newswire.png" title="' + translate['News'] + \
+                '" alt="| ' + translate['News'] + \
+                '" class="timelineicon"/></a>'
+        else:
+            # NOTE: deliberately no \n at end of line
+            tl_str += \
+                '<a href="' + \
+                users_path + '/newswiremobile' + \
+                '" tabindex="2"><button class="buttonMobile">' + \
+                '<span>' + translate['Newswire'] + \
+                '</span></button></a>'
 
-    # the links button to show left column links
-    if not icons_as_buttons:
-        tl_str += \
-            '<a class="imageAnchorMobile" href="' + \
-            users_path + '/linksmobile">' + \
-            '<img loading="lazy" decoding="async" src="/icons' + \
-            '/links.png" title="' + translate['Edit Links'] + \
-            '" alt="| ' + translate['Edit Links'] + \
-            '" class="timelineicon"/></a>'
-    else:
-        # NOTE: deliberately no \n at end of line
-        tl_str += \
-            '<a href="' + \
-            users_path + '/linksmobile' + \
-            '" tabindex="2"><button class="buttonMobile">' + \
-            '<span>' + translate['Links'] + \
-            '</span></button></a>'
+        # the links button to show left column links
+        if not icons_as_buttons:
+            tl_str += \
+                '<a class="imageAnchorMobile" href="' + \
+                users_path + '/linksmobile">' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
+                '/links.png" title="' + translate['Edit Links'] + \
+                '" alt="| ' + translate['Edit Links'] + \
+                '" class="timelineicon"/></a>'
+        else:
+            # NOTE: deliberately no \n at end of line
+            tl_str += \
+                '<a href="' + \
+                users_path + '/linksmobile' + \
+                '" tabindex="2"><button class="buttonMobile">' + \
+                '<span>' + translate['Links'] + \
+                '</span></button></a>'
 
     if features_header:
         tl_str += \
