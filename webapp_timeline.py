@@ -341,7 +341,7 @@ def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
     menu_shares = \
         html_hide_from_screen_reader('🤝') + ' ' + shares_str
     menu_wanted = \
-        html_hide_from_screen_reader('⛱') + '  ' + wanted_str
+        html_hide_from_screen_reader('⛱') + ' ' + wanted_str
     menu_blogs = \
         html_hide_from_screen_reader('📝') + ' ' + translate['Blogs']
     menu_newswire = \
