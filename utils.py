@@ -3790,6 +3790,7 @@ def disallow_reply(content: str) -> bool:
         'dont_at_me',
         'do not reply',
         "don't reply",
+        "don't @ me",
         'DontAtMe'
     )
     for diss in disallow_strings:
