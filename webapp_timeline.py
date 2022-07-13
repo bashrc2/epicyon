@@ -382,10 +382,10 @@ def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
                                     follow_approvals)
 
 
-def _text_mode_browser(ua_str: str) -> bool:
+def text_mode_browser(ua_str: str) -> bool:
     """Does the user agent indicate a text mode browser?
     """
-    text_mode_agents = ('Lynx/', 'w3m/', 'Links (', 'Emacs/')
+    text_mode_agents = ('Lynx/', 'w3m/', 'Links (', 'Emacs/', 'ELinks')
     for agent in text_mode_agents:
         if agent in ua_str:
             return True
@@ -413,7 +413,7 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
 
     # right column
     right_column_str = ''
-    if not _text_mode_browser(ua_str):
+    if not text_mode_browser(ua_str):
         right_column_str = \
             get_right_column_content(base_dir, nickname, domain_full,
                                      http_prefix, translate,
@@ -825,7 +825,7 @@ def html_timeline(default_timeline: str,
 
     # left column
     left_column_str = ''
-    if not _text_mode_browser(ua_str):
+    if not text_mode_browser(ua_str):
         left_column_str = \
             get_left_column_content(base_dir, nickname, domain_full,
                                     http_prefix, translate,

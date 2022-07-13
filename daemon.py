@@ -183,6 +183,7 @@ from webapp_confirm import html_confirm_unblock
 from webapp_person_options import person_minimize_images
 from webapp_person_options import person_undo_minimize_images
 from webapp_person_options import html_person_options
+from webapp_timeline import text_mode_browser
 from webapp_timeline import html_shares
 from webapp_timeline import html_wanted
 from webapp_timeline import html_inbox
@@ -657,8 +658,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return False
         if accept_str.startswith('*'):
             if self.headers.get('User-Agent'):
-                if 'ELinks' in self.headers['User-Agent'] or \
-                   'Lynx' in self.headers['User-Agent']:
+                if text_mode_browser(self.headers['User-Agent']):
                     return True
             return False
         if 'json' in accept_str:
