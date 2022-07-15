@@ -3624,7 +3624,7 @@ class PubServer(BaseHTTPRequestHandler):
                        onion_domain: str, i2p_domain: str,
                        debug: bool,
                        curr_session, proxy_type: str) -> None:
-        """Confirms a block
+        """Confirms a block from the person options screen
         """
         users_path = path.split('/blockconfirm')[0]
         origin_path_str = http_prefix + '://' + domain_full + users_path
