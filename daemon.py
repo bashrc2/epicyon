@@ -179,6 +179,7 @@ from webapp_accesskeys import html_access_keys
 from webapp_accesskeys import load_access_keys_for_accounts
 from webapp_confirm import html_confirm_delete
 from webapp_confirm import html_confirm_remove_shared_item
+from webapp_confirm import html_confirm_block
 from webapp_confirm import html_confirm_unblock
 from webapp_person_options import person_minimize_images
 from webapp_person_options import person_undo_minimize_images
@@ -3057,16 +3058,20 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, block button
         # See html_person_options
         if '&submitBlock=' in options_confirm_params:
-            print('Adding block by ' + chooser_nickname +
-                  ' of ' + options_actor)
-            if add_block(base_dir, chooser_nickname,
-                         domain,
-                         options_nickname, options_domain_full):
-                # send block activity
-                self._send_block(http_prefix,
-                                 chooser_nickname, domain_full,
-                                 options_nickname, options_domain_full,
-                                 curr_session, proxy_type)
+            if debug:
+                print('Blocking ' + options_actor)
+            msg = \
+                html_confirm_block(self.server.translate,
+                                   base_dir,
+                                   users_path,
+                                   options_actor,
+                                   options_avatar_url).encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, calling_domain, False)
+            self._write(msg)
+            self.server.postreq_busy = False
+            return
 
         # person options screen, unblock button
         # See html_person_options
