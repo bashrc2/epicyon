@@ -335,3 +335,50 @@ def html_confirm_unblock(translate: {}, base_dir: str,
     block_str += '</div>\n'
     block_str += html_footer()
     return block_str
+
+
+def html_confirm_block(translate: {}, base_dir: str,
+                       origin_path_str: str,
+                       block_actor: str,
+                       block_profile_url: str) -> str:
+    """Asks to confirm blocking an actor
+    """
+    block_domain, _ = get_domain_from_actor(block_actor)
+
+    set_custom_background(base_dir, 'block-background', 'follow-background')
+
+    css_filename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        css_filename = base_dir + '/follow.css'
+
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    block_str = html_header_with_external_style(css_filename,
+                                                instance_title, None)
+    block_str += '<div class="block">\n'
+    block_str += '  <div class="blockAvatar">\n'
+    block_str += '  <center>\n'
+    block_str += '  <a href="' + block_actor + '">\n'
+    block_str += \
+        '  <img loading="lazy" decoding="async" src="' + \
+        block_profile_url + '"/></a>\n'
+    block_actor_nick = get_nickname_from_actor(block_actor)
+    if block_actor_nick:
+        block_str += \
+            '  <p class="blockText">' + translate['Block'] + ' ' + \
+            block_actor_nick + '@' + block_domain + ' ?</p>\n'
+    block_str += '  <form method="POST" action="' + \
+        origin_path_str + '/blockconfirm">\n'
+    block_str += '    <input type="hidden" name="actor" value="' + \
+        block_actor + '">\n'
+    block_str += \
+        '    <button type="submit" class="button" name="submitYes">' + \
+        translate['Yes'] + '</button>\n'
+    block_str += \
+        '    <a href="' + origin_path_str + '"><button class="button">' + \
+        translate['No'] + '</button></a>\n'
+    block_str += '  </form>\n'
+    block_str += '</center>\n'
+    block_str += '</div>\n'
+    block_str += '</div>\n'
+    block_str += html_footer()
+    return block_str

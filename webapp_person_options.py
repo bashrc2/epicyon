@@ -523,10 +523,6 @@ def html_person_options(default_timeline: str,
             '" accesskey="' + access_keys['followButton'] + '">' + \
             translate[follow_str] + '</button>\n'
         options_str += \
-            '    <button type="submit" class="button" name="submit' + \
-            block_str + '" accesskey="' + access_keys['blockButton'] + '">' + \
-            translate[block_str] + '</button>\n'
-        options_str += \
             '    <button type="submit" class="button" name="submitDM" ' + \
             'accesskey="' + access_keys['menuDM'] + '">' + \
             translate['DM'] + '</button>\n'
@@ -547,6 +543,10 @@ def html_person_options(default_timeline: str,
                 'name="submitPersonInfo" accesskey="' + \
                 access_keys['infoButton'] + '">' + \
                 translate['Info'] + '</button>\n'
+        options_str += \
+            '    <button type="submit" class="button" name="submit' + \
+            block_str + '" accesskey="' + access_keys['blockButton'] + '">' + \
+            translate[block_str] + '</button>\n'
 
         person_notes = ''
         if origin_path_str == '/users/' + nickname:
