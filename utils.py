@@ -1071,7 +1071,7 @@ def _is_dangerous_string_simple(content: str, allow_local_network_access: bool,
 
 
 def _valid_html_tag(tag_name: str, content: str) -> bool:
-    """Does the given content have valid code sections?
+    """Does the given tag have opening and closing labels?
     """
     content_lower = content.lower()
     if '<' + tag_name not in content_lower:
