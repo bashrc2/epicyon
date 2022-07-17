@@ -1070,7 +1070,7 @@ def _is_dangerous_string_simple(content: str, allow_local_network_access: bool,
     return False
 
 
-def _valid_html_tag(tag_name: str, content: str) -> bool:
+def _html_tag_has_closing(tag_name: str, content: str) -> bool:
     """Does the given tag have opening and closing labels?
     """
     content_lower = content.lower()
@@ -1106,7 +1106,7 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     if _is_dangerous_string_simple(content, allow_local_network_access,
                                    separators, invalid_strings):
         return True
-    if not _valid_html_tag('code', content):
+    if not _html_tag_has_closing('code', content):
         return True
     invalid_strings = [
         'script', 'noscript', 'pre',
