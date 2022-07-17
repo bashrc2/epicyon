@@ -2644,6 +2644,12 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         if summary != valid_content_warning(summary):
             print('WARN: invalid content warning ' + summary)
             return False
+        if dangerous_markup(summary, allow_local_network_access):
+            if message_json['object'].get('id'):
+                print('REJECT ARBITRARY HTML: ' + message_json['object']['id'])
+            print('REJECT ARBITRARY HTML: bad string in summary - ' +
+                  summary)
+            return False
 
     # check for patches before dangeousMarkup, which excludes code
     if is_git_patch(base_dir, nickname, domain,

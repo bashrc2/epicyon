@@ -45,6 +45,42 @@ def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
     return zoom, latitude, longitude
 
 
+def _geocoords_from_osmorg_link(url: str) -> (int, float, float):
+    """Returns geocoordinates from an OSM map link
+    """
+    osm_domain = 'osm.org'
+    if osm_domain not in url:
+        return None, None, None
+    if 'mlat=' not in url:
+        return None, None, None
+    if 'mlon=' not in url:
+        return None, None, None
+    if 'zoom=' not in url:
+        return None, None, None
+
+    latitude = url.split('mlat=')[1]
+    if '&' in latitude:
+        latitude = latitude.split('&')[0]
+    if not is_float(latitude):
+        return None, None, None
+
+    longitude = url.split('mlon=')[1]
+    if '&' in longitude:
+        longitude = longitude.split('&')[0]
+    if not is_float(longitude):
+        return None, None, None
+
+    zoom = url.split('zoom=')[1]
+    if '&' in zoom:
+        zoom = zoom.split('&')[0]
+    if not zoom.isdigit():
+        return None, None, None
+    zoom = int(zoom)
+    latitude = float(latitude)
+    longitude = float(longitude)
+    return zoom, latitude, longitude
+
+
 def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     """Returns geocoordinates from a Gmaps link
     """
@@ -211,6 +247,8 @@ def geocoords_from_map_link(url: str,
     """
     if osm_domain in url:
         return _geocoords_from_osm_link(url, osm_domain)
+    if 'osm.org' in url and 'mlat=' in url:
+        return _geocoords_from_osmorg_link(url)
     if '.google.co' in url:
         return _geocoords_from_gmaps_link(url)
     if '.bing.co' in url:
