@@ -2578,7 +2578,7 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
 def _estimate_number_of_mentions(content: str) -> int:
     """Returns a rough estimate of the number of mentions
     """
-    return int(content.count('@') / 2)
+    return content.count('>@<')
 
 
 def _estimate_number_of_emoji(content: str) -> int:
