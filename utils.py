@@ -1070,6 +1070,32 @@ def _is_dangerous_string_simple(content: str, allow_local_network_access: bool,
     return False
 
 
+def _valid_html_tag(tag_name: str, content: str) -> bool:
+    """Does the given content have valid code sections?
+    """
+    content_lower = content.lower()
+    if '<' + tag_name not in content_lower:
+        return True
+    sections = content_lower.split('<' + tag_name)
+    ctr = 0
+    end_tag = '</' + tag_name + '>'
+    for section in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        # check that an ending tag exists
+        if end_tag not in section:
+            return False
+        if tag_name == 'code':
+            # check that lines are not too long
+            code_lines = section.split('\n')
+            for line in code_lines:
+                if len(line) >= 60:
+                    return False
+        ctr += 1
+    return True
+
+
 def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
@@ -1080,8 +1106,10 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     if _is_dangerous_string_simple(content, allow_local_network_access,
                                    separators, invalid_strings):
         return True
+    if not _valid_html_tag('code', content):
+        return True
     invalid_strings = [
-        'script', 'noscript', 'code', 'pre',
+        'script', 'noscript', 'pre',
         'canvas', 'style', 'abbr',
         'frame', 'iframe', 'html', 'body',
         'hr', 'allow-popups', 'allow-scripts',
