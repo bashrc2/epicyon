@@ -2584,7 +2584,7 @@ def _estimate_number_of_mentions(content: str) -> int:
 def _estimate_number_of_emoji(content: str) -> int:
     """Returns a rough estimate of the number of emoji
     """
-    return int(content.count(':') / 2)
+    return content.count(' :')
 
 
 def _valid_post_content(base_dir: str, nickname: str, domain: str,
