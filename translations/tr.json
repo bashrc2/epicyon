@@ -567,5 +567,7 @@
     "SHOW MEDIA": "MEDYA GÖSTER",
     "ActivityPub Specification": "ActivityPub Spesifikasyonu",
     "Dogwhistle words": "İtiraf sözleri",
-    "Content warnings will be added for the following": "Aşağıdakiler için içerik uyarıları eklenecek"
+    "Content warnings will be added for the following": "Aşağıdakiler için içerik uyarıları eklenecek",
+    "nowplaying": "şimdioynuyor",
+    "NowPlaying": "ŞimdiOynuyor"
 }

@@ -567,5 +567,7 @@
     "SHOW MEDIA": "미디어 표시",
     "ActivityPub Specification": "ActivityPub 사양",
     "Dogwhistle words": "개 휘파람 단어",
-    "Content warnings will be added for the following": "다음에 대한 콘텐츠 경고가 추가됩니다."
+    "Content warnings will be added for the following": "다음에 대한 콘텐츠 경고가 추가됩니다.",
+    "nowplaying": "지금 재생",
+    "NowPlaying": "지금 재생"
 }

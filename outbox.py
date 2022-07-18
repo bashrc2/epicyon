@@ -198,8 +198,8 @@ def _capitalize_hashtag(content: str, message_json: {},
     """
     if translate.get(original_tag) and \
        translate.get(capitalized_tag):
-        original_tag = translate[original_tag]
-        capitalized_tag = translate[capitalized_tag]
+        original_tag = translate[original_tag].replace(' ', '_')
+        capitalized_tag = translate[capitalized_tag].replace(' ', '_')
 
     if '#' + original_tag not in content:
         return

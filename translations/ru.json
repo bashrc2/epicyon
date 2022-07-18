@@ -567,5 +567,7 @@
     "SHOW MEDIA": "ПОКАЗАТЬ МЕДИА",
     "ActivityPub Specification": "Спецификация ActivityPub",
     "Dogwhistle words": "Собачий свисток",
-    "Content warnings will be added for the following": "Предупреждения о содержании будут добавлены для следующих"
+    "Content warnings will be added for the following": "Предупреждения о содержании будут добавлены для следующих",
+    "nowplaying": "сейчасиграет",
+    "NowPlaying": "СейчасИграет"
 }

@@ -567,5 +567,7 @@
     "SHOW MEDIA": "मीडिया दिखाएं",
     "ActivityPub Specification": "गतिविधिपब विशिष्टता",
     "Dogwhistle words": "कुत्ते की सीटी शब्द",
-    "Content warnings will be added for the following": "निम्नलिखित के लिए सामग्री चेतावनियां जोड़ दी जाएंगी"
+    "Content warnings will be added for the following": "निम्नलिखित के लिए सामग्री चेतावनियां जोड़ दी जाएंगी",
+    "nowplaying": "अब खेल रहे हैं",
+    "NowPlaying": "अब खेल रहे हैं"
 }

@@ -567,5 +567,7 @@
     "SHOW MEDIA": "عرض الوسائط",
     "ActivityPub Specification": "مواصفات ActivityPub",
     "Dogwhistle words": "كلمات Dogwhistle",
-    "Content warnings will be added for the following": "ستتم إضافة تحذيرات المحتوى لما يلي"
+    "Content warnings will be added for the following": "ستتم إضافة تحذيرات المحتوى لما يلي",
+    "nowplaying": "الان العب",
+    "NowPlaying": "الان العب"
 }

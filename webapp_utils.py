@@ -1006,7 +1006,8 @@ def load_individual_post_as_html_from_cache(base_dir: str,
 
 def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
                               nickname: str, domain: str,
-                              display_name: str, in_profile_name: bool) -> str:
+                              display_name: str, in_profile_name: bool,
+                              translate: {}) -> str:
     """Adds emoji icons to display names or CW on individual posts
     """
     if ':' not in display_name:
@@ -1017,7 +1018,8 @@ def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
 #    print('TAG: display_name before tags: ' + display_name)
     display_name = \
         add_html_tags(base_dir, http_prefix,
-                      nickname, domain, display_name, [], emoji_tags)
+                      nickname, domain, display_name, [],
+                      emoji_tags, translate)
     display_name = display_name.replace('<p>', '').replace('</p>', '')
 #    print('TAG: display_name after tags: ' + display_name)
     # convert the emoji dictionary to a list

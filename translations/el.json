@@ -567,5 +567,7 @@
     "SHOW MEDIA": "ΔΕΙΤΕ ΜΕΣΑ",
     "ActivityPub Specification": "Προδιαγραφές ActivityPub",
     "Dogwhistle words": "Σφυρίχτρα λέξεις",
-    "Content warnings will be added for the following": "Θα προστεθούν προειδοποιήσεις περιεχομένου για τα ακόλουθα"
+    "Content warnings will be added for the following": "Θα προστεθούν προειδοποιήσεις περιεχομένου για τα ακόλουθα",
+    "nowplaying": "τώραπαίζει",
+    "NowPlaying": "ΤώραΠαίζει"
 }

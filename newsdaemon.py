@@ -643,7 +643,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 rss_title, system_language,
                                 conversation_id, low_bandwidth,
                                 content_license_url,
-                                languages_understood)
+                                languages_understood, translate)
         if not blog:
             continue
 

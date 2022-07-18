@@ -567,5 +567,7 @@
     "SHOW MEDIA": "MEDIEN ZEIGEN",
     "ActivityPub Specification": "ActivityPub-Spezifikation",
     "Dogwhistle words": "Hundepfeife Worte",
-    "Content warnings will be added for the following": "Inhaltswarnungen werden für Folgendes hinzugefügt"
+    "Content warnings will be added for the following": "Inhaltswarnungen werden für Folgendes hinzugefügt",
+    "nowplaying": "läuftgerade",
+    "NowPlaying": "LäuftGerade"
 }

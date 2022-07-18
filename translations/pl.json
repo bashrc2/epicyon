@@ -567,5 +567,7 @@
     "SHOW MEDIA": "POKAŻ MEDIA",
     "ActivityPub Specification": "Specyfikacja ActivityPub",
     "Dogwhistle words": "Słowa gwizdka na psa",
-    "Content warnings will be added for the following": "Ostrzeżenia dotyczące treści zostaną dodane do następujących"
+    "Content warnings will be added for the following": "Ostrzeżenia dotyczące treści zostaną dodane do następujących",
+    "nowplaying": "terazgra",
+    "NowPlaying": "TerazGra"
 }

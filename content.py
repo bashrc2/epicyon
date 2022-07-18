@@ -1151,7 +1151,7 @@ def load_dogwhistles(filename: str) -> {}:
 
 def add_html_tags(base_dir: str, http_prefix: str,
                   nickname: str, domain: str, content: str,
-                  recipients: [], hashtags: {},
+                  recipients: [], hashtags: {}, translate: {},
                   is_json_content: bool = False) -> str:
     """ Replaces plaintext mentions such as @nick@domain into html
     by matching against known following accounts
@@ -1162,7 +1162,10 @@ def add_html_tags(base_dir: str, http_prefix: str,
     max_word_length = 40
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
-    content = _add_music_tag(content, 'NowPlaying')
+    now_playing_str = 'NowPlaying'
+    if translate.get(now_playing_str):
+        now_playing_str = translate[now_playing_str]
+    content = _add_music_tag(content, now_playing_str)
     words = _get_simplified_content(content).split(' ')
 
     # remove . for words which are not mentions
