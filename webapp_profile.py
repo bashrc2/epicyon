@@ -646,12 +646,12 @@ def html_profile(signing_priv_key_pem: str,
     display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
-                                  profile_json['name'], True)
+                                  profile_json['name'], True, translate)
     domain_full = get_full_domain(domain, port)
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
-                                  profile_json['summary'], False)
+                                  profile_json['summary'], False, translate)
     if profile_description:
         profile_description = standardize_text(profile_description)
     posts_button = 'button'
@@ -2517,7 +2517,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
         display_name = \
             add_emoji_to_display_name(None, base_dir, http_prefix,
                                       actor_nickname, domain,
-                                      display_name, False)
+                                      display_name, False, translate)
         title_str = display_name
 
     if dormant:

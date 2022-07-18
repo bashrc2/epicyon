@@ -190,6 +190,26 @@ def _person_receive_update_outbox(base_dir: str, http_prefix: str,
         print('DEBUG: actor update via c2s - ' + nickname + '@' + domain)
 
 
+def _capitalize_hashtag(content: str, message_json: {},
+                        system_language: str, translate: {},
+                        original_tag: str,
+                        capitalized_tag: str) -> None:
+    """If a nowplaying hashtag exists then ensure it is capitalized
+    """
+    if translate.get(original_tag) and \
+       translate.get(capitalized_tag):
+        original_tag = translate[original_tag].replace(' ', '_')
+        capitalized_tag = translate[capitalized_tag].replace(' ', '_')
+
+    if '#' + original_tag not in content:
+        return
+    content = content.replace('#' + original_tag, '#' + capitalized_tag)
+    if message_json['object'].get('contentMap'):
+        if message_json['object']['contentMap'].get(system_language):
+            message_json['object']['contentMap'][system_language] = content
+    message_json['object']['contentMap'][system_language] = content
+
+
 def post_message_to_outbox(session, translate: {},
                            message_json: {}, post_to_nickname: str,
                            server, base_dir: str, http_prefix: str,
@@ -243,6 +263,10 @@ def post_message_to_outbox(session, translate: {},
     if has_object_dict(message_json):
         content_str = get_base_content_from_post(message_json, system_language)
         if content_str:
+            _capitalize_hashtag(content_str, message_json,
+                                system_language, translate,
+                                'nowplaying', 'NowPlaying')
+
             if dangerous_markup(content_str, allow_local_network_access):
                 print('POST to outbox contains dangerous markup: ' +
                       str(message_json))

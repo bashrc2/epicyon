@@ -567,5 +567,7 @@
     "SHOW MEDIA": "MOSTRA ELS MITJANS",
     "ActivityPub Specification": "Especificació d'ActivityPub",
     "Dogwhistle words": "Paraules de xiulet",
-    "Content warnings will be added for the following": "S'afegiran advertències de contingut per al següent"
+    "Content warnings will be added for the following": "S'afegiran advertències de contingut per al següent",
+    "nowplaying": "arajugant",
+    "NowPlaying": "AraJugant"
 }

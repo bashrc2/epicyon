@@ -567,5 +567,7 @@
     "SHOW MEDIA": "AFFICHER LES MÉDIAS",
     "ActivityPub Specification": "Spécification ActivityPub",
     "Dogwhistle words": "Mots de sifflet de chien",
-    "Content warnings will be added for the following": "Des avertissements de contenu seront ajoutés pour les éléments suivants"
+    "Content warnings will be added for the following": "Des avertissements de contenu seront ajoutés pour les éléments suivants",
+    "nowplaying": "lectureencours",
+    "NowPlaying": "LectureEnCours"
 }

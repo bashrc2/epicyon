@@ -763,6 +763,7 @@ def create_server_alice(path: str, domain: str, port: int,
         test_location = None
         test_is_article = False
         conversation_id = None
+        translate = {}
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
         create_public_post(path, nickname, domain, port, http_prefix,
                            "No wise fish would go anywhere without a porpoise",
@@ -778,7 +779,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Curiouser and curiouser!",
                            test_save_to_file,
@@ -793,7 +794,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "In the gardens of memory, in the palace " +
                            "of dreams, that is where you and I shall meet",
@@ -809,7 +810,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_ALICE_RUNNING
     TEST_SERVER_ALICE_RUNNING = True
@@ -923,6 +924,7 @@ def create_server_bob(path: str, domain: str, port: int,
         test_is_article = False
         conversation_id = None
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+        translate = {}
         create_public_post(path, nickname, domain, port, http_prefix,
                            "It's your life, live it your way.",
                            test_save_to_file,
@@ -937,7 +939,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "One of the things I've realised is that " +
                            "I am very simple",
@@ -953,7 +955,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Quantum physics is a bit of a passion of mine",
                            test_save_to_file,
@@ -968,7 +970,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_BOB_RUNNING
     TEST_SERVER_BOB_RUNNING = True
@@ -1294,6 +1296,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                 if os.path.isfile(os.path.join(outbox_path, name))]) == 0
     low_bandwidth = False
     signing_priv_key_pem = None
+    translate = {}
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -1308,7 +1311,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
-                  content_license_url,
+                  content_license_url, translate,
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
@@ -1665,6 +1668,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     city = 'London, England'
     low_bandwidth = False
     signing_priv_key_pem = None
+    translate = {}
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -1677,7 +1681,7 @@ def test_follow_between_servers(base_dir: str) -> None:
                   languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
-                  content_license_url,
+                  content_license_url, translate,
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
@@ -2029,6 +2033,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     city = 'London, England'
     low_bandwidth = False
     signing_priv_key_pem = None
+    translate = {}
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -2041,7 +2046,7 @@ def test_shared_items_federation(base_dir: str) -> None:
                   languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
-                  content_license_url, True,
+                  content_license_url, translate, True,
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
@@ -2458,6 +2463,7 @@ def test_group_follow(base_dir: str) -> None:
         len([name for name in os.listdir(outbox_path)
              if os.path.isfile(os.path.join(outbox_path, name))])
 
+    translate = {}
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -2470,7 +2476,7 @@ def test_group_follow(base_dir: str) -> None:
                   languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
-                  content_license_url,
+                  content_license_url, translate,
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
@@ -2838,6 +2844,7 @@ def _test_create_person_account(base_dir: str):
     media_type = None
     conversation_id = None
     low_bandwidth = True
+    translate = {}
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     content = \
         "If your \"independent organization\" is government funded...\n\n" + \
@@ -2856,7 +2863,7 @@ def _test_create_person_account(base_dir: str):
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
     assert test_post_json
     assert test_post_json.get('object')
     assert test_post_json['object']['content']
@@ -2882,7 +2889,7 @@ def _test_create_person_account(base_dir: str):
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
     assert test_post_json
     assert test_post_json.get('object')
     assert test_post_json['object']['content']
@@ -3082,6 +3089,7 @@ def test_client_to_server(base_dir: str):
     event_time = '11:45'
     event_end_time = '12:30'
     location = "Kinshasa"
+    translate = {}
     send_result = \
         send_post_via_server(signing_priv_key_pem, __version__,
                              alice_dir, session_alice, 'alice', password,
@@ -3094,7 +3102,7 @@ def test_client_to_server(base_dir: str):
                              system_language, languages_understood,
                              low_bandwidth, content_license_url,
                              event_date, event_time, event_end_time, location,
-                             True, None, None,
+                             translate, True, None, None,
                              conversation_id, None)
     print('send_result: ' + str(send_result))
 
@@ -3683,6 +3691,7 @@ def _test_addemoji(base_dir: str):
     domain = 'testdomain.net'
     port = 3682
     recipients = []
+    translate = {}
     hashtags = {}
     base_dir_original = base_dir
     path = base_dir + '/.tests'
@@ -3709,7 +3718,7 @@ def _test_addemoji(base_dir: str):
     content_modified = \
         add_html_tags(base_dir, http_prefix,
                       nickname, domain, content,
-                      recipients, hashtags, True)
+                      recipients, hashtags, translate, True)
     assert ':lemon:' in content_modified
     assert content_modified.startswith('<p>')
     assert content_modified.endswith('</p>')
@@ -4657,6 +4666,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    translate = {}
     reply = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
@@ -4669,7 +4679,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
     # print(str(reply))
     expected_str = \
         '<p><span class=\"h-card\">' + \
@@ -5588,6 +5598,7 @@ def _test_links_within_post(base_dir: str) -> None:
     conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    translate = {}
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -5601,7 +5612,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
 
     expected_str = \
         '<p>This is a test post with links.<br><br>' + \
@@ -5645,7 +5656,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
     assert post_json_object['object']['content'] == content
     assert post_json_object['object']['contentMap'][system_language] == content
 
@@ -6676,6 +6687,7 @@ def _test_can_replyto(base_dir: str) -> None:
     conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    translate = {}
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -6689,7 +6701,7 @@ def _test_can_replyto(base_dir: str) -> None:
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood)
+                           languages_understood, translate)
     # set the date on the post
     curr_date_str = "2021-09-08T20:45:00Z"
     post_json_object['published'] = curr_date_str

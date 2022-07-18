@@ -1087,7 +1087,7 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
         # match words within the content
         if item.get('words'):
             for word_str in item['words']:
-                if word_str in content:
+                if word_str in content or word_str.title() in content:
                     if cw_text:
                         cw_text = warning + ' / ' + cw_text
                     else:

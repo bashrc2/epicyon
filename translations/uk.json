@@ -567,5 +567,7 @@
     "SHOW MEDIA": "ПОКАЗАТИ ЗМІ",
     "ActivityPub Specification": "Специфікація ActivityPub",
     "Dogwhistle words": "Собачі слова",
-    "Content warnings will be added for the following": "Попередження про вміст буде додано для наступних"
+    "Content warnings will be added for the following": "Попередження про вміст буде додано для наступних",
+    "nowplaying": "заразграє",
+    "NowPlaying": "ЗаразГрає"
 }

@@ -464,7 +464,8 @@ def _desktop_reply_to_post(session, post_id: str,
                            espeak, conversation_id: str,
                            low_bandwidth: bool,
                            content_license_url: str,
-                           signing_priv_key_pem: str) -> None:
+                           signing_priv_key_pem: str,
+                           translate: {}) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
     if '://' not in post_id:
@@ -523,7 +524,7 @@ def _desktop_reply_to_post(session, post_id: str,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             event_date, event_time, event_end_time, location,
-                            debug, post_id, post_id,
+                            translate, debug, post_id, post_id,
                             conversation_id, subject) == 0:
         say_str = 'Reply sent'
     else:
@@ -540,7 +541,8 @@ def _desktop_new_post(session,
                       languages_understood: [],
                       espeak, low_bandwidth: bool,
                       content_license_url: str,
-                      signing_priv_key_pem: str) -> None:
+                      signing_priv_key_pem: str,
+                      translate: {}) -> None:
     """Use the desktop client to create a new post
     """
     conversation_id = None
@@ -596,7 +598,7 @@ def _desktop_new_post(session,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             event_date, event_time, event_end_time, location,
-                            debug, None, None,
+                            translate, debug, None, None,
                             conversation_id, subject) == 0:
         say_str = 'Post sent'
     else:
@@ -1188,7 +1190,8 @@ def _desktop_new_dm(session, to_handle: str,
                     languages_understood: [],
                     espeak, low_bandwidth: bool,
                     content_license_url: str,
-                    signing_priv_key_pem: str) -> None:
+                    signing_priv_key_pem: str,
+                    translate: {}) -> None:
     """Use the desktop client to create a new direct message
     which can include multiple destination handles
     """
@@ -1212,7 +1215,7 @@ def _desktop_new_dm(session, to_handle: str,
                              languages_understood,
                              espeak, low_bandwidth,
                              content_license_url,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem, translate)
 
 
 def _desktop_new_dm_base(session, to_handle: str,
@@ -1224,7 +1227,8 @@ def _desktop_new_dm_base(session, to_handle: str,
                          languages_understood: [],
                          espeak, low_bandwidth: bool,
                          content_license_url: str,
-                         signing_priv_key_pem: str) -> None:
+                         signing_priv_key_pem: str,
+                         translate: {}) -> None:
     """Use the desktop client to create a new direct message
     """
     conversation_id = None
@@ -1323,7 +1327,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             event_date, event_time, event_end_time, location,
-                            debug, None, None,
+                            translate, debug, None, None,
                             conversation_id, subject) == 0:
         say_str = 'Direct message sent'
     else:
@@ -1791,7 +1795,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                    espeak, conversation_id,
                                                    low_bandwidth,
                                                    content_license_url,
-                                                   signing_priv_key_pem)
+                                                   signing_priv_key_pem,
+                                                   translate)
                 refresh_timeline = True
                 print('')
             elif (command_str == 'post' or command_str == 'p' or
@@ -1828,7 +1833,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                         languages_understood,
                                         espeak, low_bandwidth,
                                         content_license_url,
-                                        signing_priv_key_pem)
+                                        signing_priv_key_pem, translate)
                         refresh_timeline = True
                 else:
                     # public post
@@ -1841,7 +1846,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       languages_understood,
                                       espeak, low_bandwidth,
                                       content_license_url,
-                                      signing_priv_key_pem)
+                                      signing_priv_key_pem, translate)
                     refresh_timeline = True
                 print('')
             elif command_str == 'like' or command_str.startswith('like '):

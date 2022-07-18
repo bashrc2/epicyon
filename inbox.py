@@ -3319,7 +3319,8 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    location, system_language, conversation_id,
                                    low_bandwidth,
                                    content_license_url,
-                                   languages_understood, bounce_is_chat)
+                                   languages_understood, bounce_is_chat,
+                                   translate)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sending_handle)
         return False

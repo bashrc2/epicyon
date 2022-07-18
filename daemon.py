@@ -565,7 +565,8 @@ class PubServer(BaseHTTPRequestHandler):
                                conversation_id,
                                self.server.low_bandwidth,
                                self.server.content_license_url,
-                               languages_understood)
+                               languages_understood,
+                               self.server.translate)
         if message_json:
             # name field contains the answer
             message_json['object']['name'] = answer
@@ -6290,7 +6291,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   http_prefix,
                                                   nickname,
                                                   domain_full,
-                                                  bio_str, [], actor_tags)
+                                                  bio_str, [], actor_tags,
+                                                  self.server.translate)
                                 if actor_tags:
                                     actor_json['tag'] = []
                                     for _, tag in actor_tags.items():
@@ -15334,8 +15336,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = self.path.replace('?nodropdown', '')
 
         # redirect music to #nowplaying list
-        if self.path == '/music' or self.path == '/nowplaying':
-            self.path = '/tags/nowplaying'
+        if self.path == '/music' or self.path == '/NowPlaying':
+            self.path = '/tags/NowPlaying'
 
         if self.server.debug:
             print('DEBUG: GET from ' + self.server.base_dir +
@@ -19049,7 +19051,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        conversation_id,
                                        self.server.low_bandwidth,
                                        self.server.content_license_url,
-                                       languages_understood)
+                                       languages_understood,
+                                       self.server.translate)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -19140,7 +19143,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      conversation_id,
                                      self.server.low_bandwidth,
                                      self.server.content_license_url,
-                                     languages_understood)
+                                     languages_understood,
+                                     self.server.translate)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -19195,7 +19199,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           nickname, self.server.domain,
                                           fields['message'],
                                           mentioned_recipients,
-                                          hashtags_dict, True)
+                                          hashtags_dict,
+                                          self.server.translate,
+                                          True)
                         # replace emoji with unicode
                         tags = []
                         for _, tag in hashtags_dict.items():
@@ -19303,7 +19309,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          conversation_id,
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
-                                         languages_understood)
+                                         languages_understood,
+                                         self.server.translate)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -19364,7 +19371,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                conversation_id,
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
-                                               languages_understood)
+                                               languages_understood,
+                                               self.server.translate)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -19437,7 +19445,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                    self.server.low_bandwidth,
                                                    content_license_url,
                                                    languages_understood,
-                                                   reply_is_chat)
+                                                   reply_is_chat,
+                                                   self.server.translate)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -19502,7 +19511,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
                                                languages_understood,
-                                               False)
+                                               False, self.server.translate)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -19546,7 +19555,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['languagesDropdown'],
                                        self.server.low_bandwidth,
                                        self.server.content_license_url,
-                                       languages_understood)
+                                       languages_understood,
+                                       self.server.translate)
                 if message_json:
                     if self._post_to_outbox(message_json,
                                             self.server.project_version,
@@ -19595,7 +19605,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['languagesDropdown'],
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
-                                         languages_understood)
+                                         languages_understood,
+                                         self.server.translate)
                 if message_json:
                     if self.server.debug:
                         print('DEBUG: new Question')

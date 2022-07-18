@@ -142,7 +142,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                     add_emoji_to_display_name(session, base_dir,
                                               http_prefix,
                                               nickname, domain,
-                                              liker_name, False)
+                                              liker_name, False,
+                                              translate)
         else:
             liker_name = get_nickname_from_actor(liker_actor)
             if not liker_name:

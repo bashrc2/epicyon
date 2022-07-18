@@ -1134,7 +1134,8 @@ def _get_post_title_announce_html(base_dir: str,
         announce_display_name = \
             add_emoji_to_display_name(None, base_dir, http_prefix,
                                       nickname, domain,
-                                      announce_display_name, False)
+                                      announce_display_name, False,
+                                      translate)
     _log_post_timing(enable_timing_log, post_start_time, '13.3.1')
     title_str += \
         _announce_with_display_name_html(translate, post_json_object,
@@ -1341,7 +1342,7 @@ def _get_post_title_reply_html(base_dir: str,
         reply_display_name = \
             add_emoji_to_display_name(None, base_dir, http_prefix,
                                       nickname, domain,
-                                      reply_display_name, False)
+                                      reply_display_name, False, translate)
         _log_post_timing(enable_timing_log, post_start_time, '13.6')
 
     title_str += _get_reply_html(translate, in_reply_to, reply_display_name)
@@ -1739,7 +1740,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 display_name = \
                     add_emoji_to_display_name(session, base_dir, http_prefix,
                                               nickname, domain,
-                                              display_name, False)
+                                              display_name, False, translate)
 
     _log_post_timing(enable_timing_log, post_start_time, '7')
 
@@ -1872,7 +1873,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             display_name = \
                 add_emoji_to_display_name(session, base_dir, http_prefix,
                                           nickname, domain,
-                                          display_name, False)
+                                          display_name, False, translate)
         title_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
@@ -2262,7 +2263,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             cw_str = \
                 add_emoji_to_display_name(session, base_dir, http_prefix,
                                           nickname, domain,
-                                          summary_str, False)
+                                          summary_str, False, translate)
             content_str += \
                 '<label class="cw"><span itemprop="description">' + \
                 cw_str + '</span></label>\n'
