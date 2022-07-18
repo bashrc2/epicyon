@@ -1162,7 +1162,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     max_word_length = 40
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
-    content = _add_music_tag(content, 'nowplaying')
+    content = _add_music_tag(content, 'NowPlaying')
     words = _get_simplified_content(content).split(' ')
 
     # remove . for words which are not mentions

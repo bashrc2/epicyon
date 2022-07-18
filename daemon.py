@@ -15334,8 +15334,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = self.path.replace('?nodropdown', '')
 
         # redirect music to #nowplaying list
-        if self.path == '/music' or self.path == '/nowplaying':
-            self.path = '/tags/nowplaying'
+        if self.path == '/music' or self.path == '/NowPlaying':
+            self.path = '/tags/NowPlaying'
 
         if self.server.debug:
             print('DEBUG: GET from ' + self.server.base_dir +
