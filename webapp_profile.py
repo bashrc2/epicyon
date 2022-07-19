@@ -1998,7 +1998,7 @@ def _html_edit_profile_contact_info(nickname: str,
     edit_profile_form += \
         '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a> '
+        translate['Following'] + '</label></a> | '
     edit_profile_form += \
         '<a href="/users/' + nickname + \
         '/followersaccounts"><label class="labels">' + \
