@@ -16393,6 +16393,32 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', 'following accounts done',
                             self.server.debug)
 
+        # show a list of who are your followers
+        if html_getreq and authorized and users_in_path and \
+           self.path.endswith('/followersaccounts'):
+            nickname = get_nickname_from_actor(self.path)
+            if not nickname:
+                self._404()
+                return
+            followers_filename = \
+                acct_dir(self.server.base_dir,
+                         nickname, self.server.domain) + '/followers.txt'
+            if not os.path.isfile(followers_filename):
+                self._404()
+                return
+            msg = html_following_list(self.server.base_dir, followers_filename)
+            msglen = len(msg)
+            self._login_headers('text/html', msglen, calling_domain)
+            self._write(msg.encode('utf-8'))
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', 'followers accounts shown',
+                                self.server.debug)
+            return
+
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', 'followers accounts done',
+                            self.server.debug)
+
         if self.path.endswith('/about'):
             if calling_domain.endswith('.onion'):
                 msg = \
