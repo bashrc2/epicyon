@@ -397,6 +397,7 @@ from crawlers import update_known_crawlers
 from crawlers import blocked_user_agent
 from crawlers import load_known_web_bots
 from qrcode import save_domain_qrcode
+from importFollowing import run_import_following_watchdog
 import os
 
 
@@ -21623,6 +21624,12 @@ def run_daemon(preferred_podcast_formats: [],
     httpd.thrCheckActor = {}
 
     if not unit_test:
+        print('THREAD: Creating import following watchdog')
+        httpd.thrImportFollowing = \
+            thread_with_trace(target=run_import_following_watchdog,
+                              args=(project_version, httpd), daemon=True)
+        httpd.thrImportFollowing.start()
+
         print('THREAD: Creating inbox queue watchdog')
         httpd.thrWatchdog = \
             thread_with_trace(target=run_inbox_queue_watchdog,
