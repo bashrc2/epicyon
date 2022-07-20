@@ -168,6 +168,7 @@ from webapp_minimalbutton import is_minimal
 from webapp_utils import get_avatar_image_url
 from webapp_utils import html_hashtag_blocked
 from webapp_utils import html_following_list
+from webapp_utils import csv_following_list
 from webapp_utils import set_blog_address
 from webapp_utils import html_show_share
 from webapp_utils import get_pwa_theme_colors
@@ -15657,11 +15658,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         # is this a html/ssml/icalendar request?
         html_getreq = False
+        csv_getreq = False
         ssml_getreq = False
         icalendar_getreq = False
         if self._has_accept(calling_domain):
             if self._request_http():
                 html_getreq = True
+            elif self._request_csv():
+                csv_getreq = True
             elif self._request_ssml():
                 ssml_getreq = True
             elif self._request_icalendar():
@@ -16368,8 +16372,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         # show a list of who you are following
-        if html_getreq and authorized and users_in_path and \
-           self.path.endswith('/followingaccounts'):
+        if (authorized and users_in_path and
+            (self.path.endswith('/followingaccounts') or
+             self.path.endswith('/followingaccounts.csv'))):
             nickname = get_nickname_from_actor(self.path)
             if not nickname:
                 self._404()
@@ -16380,10 +16385,22 @@ class PubServer(BaseHTTPRequestHandler):
             if not os.path.isfile(following_filename):
                 self._404()
                 return
-            msg = html_following_list(self.server.base_dir, following_filename)
-            msglen = len(msg)
-            self._login_headers('text/html', msglen, calling_domain)
-            self._write(msg.encode('utf-8'))
+            if self.path.endswith('/followingaccounts.csv'):
+                html_getreq = False
+                csv_getreq = True
+            if html_getreq:
+                msg = html_following_list(self.server.base_dir,
+                                          following_filename)
+                msglen = len(msg)
+                self._login_headers('text/html', msglen, calling_domain)
+                self._write(msg.encode('utf-8'))
+            elif csv_getreq:
+                msg = csv_following_list(following_filename)
+                msglen = len(msg)
+                self._login_headers('text/csv', msglen, calling_domain)
+                self._write(msg.encode('utf-8'))
+            else:
+                self._404()
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'following accounts shown',
                                 self.server.debug)
@@ -16394,7 +16411,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         # show a list of who are your followers
-        if html_getreq and authorized and users_in_path and \
+        if authorized and users_in_path and \
            self.path.endswith('/followersaccounts'):
             nickname = get_nickname_from_actor(self.path)
             if not nickname:
@@ -16406,10 +16423,19 @@ class PubServer(BaseHTTPRequestHandler):
             if not os.path.isfile(followers_filename):
                 self._404()
                 return
-            msg = html_following_list(self.server.base_dir, followers_filename)
-            msglen = len(msg)
-            self._login_headers('text/html', msglen, calling_domain)
-            self._write(msg.encode('utf-8'))
+            if html_getreq:
+                msg = html_following_list(self.server.base_dir,
+                                          followers_filename)
+                msglen = len(msg)
+                self._login_headers('text/html', msglen, calling_domain)
+                self._write(msg.encode('utf-8'))
+            elif csv_getreq:
+                msg = csv_following_list(followers_filename)
+                msglen = len(msg)
+                self._login_headers('text/csv', msglen, calling_domain)
+                self._write(msg.encode('utf-8'))
+            else:
+                self._404()
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'followers accounts shown',
                                 self.server.debug)

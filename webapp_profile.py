@@ -1970,7 +1970,7 @@ def _html_edit_profile_background(news_instance: bool, translate: {}) -> str:
     return edit_profile_form
 
 
-def _html_edit_profile_contact_info(nickname: str,
+def _html_edit_profile_contact_info(nickname: str, domain: str,
                                     email_address: str,
                                     xmpp_address: str,
                                     matrix_address: str,
@@ -1998,9 +1998,13 @@ def _html_edit_profile_contact_info(nickname: str,
     edit_profile_form += \
         '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a> | '
+        translate['Following'] + '</label></a>'
     edit_profile_form += \
-        '<a href="/users/' + nickname + \
+        ' <a href="/users/' + nickname + '/followingaccounts.csv" ' + \
+        'download="' + nickname + '@' + domain + '_following.csv">' + \
+        '<label class="labels">⇩ CSV</label></a>'
+    edit_profile_form += \
+        ' | <a href="/users/' + nickname + \
         '/followersaccounts"><label class="labels">' + \
         translate['Followers'] + '</label></a><br>\n'
 
@@ -2402,7 +2406,7 @@ def html_edit_profile(server, translate: {},
 
     # Contact information
     edit_profile_form += \
-        _html_edit_profile_contact_info(nickname, email_address,
+        _html_edit_profile_contact_info(nickname, domain, email_address,
                                         xmpp_address, matrix_address,
                                         ssb_address, tox_address,
                                         briar_address,

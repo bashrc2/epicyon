@@ -99,6 +99,26 @@ def html_following_list(base_dir: str, following_filename: str) -> str:
     return ''
 
 
+def csv_following_list(following_filename: str) -> str:
+    """Returns a csv of handles being followed
+    """
+    with open(following_filename, 'r', encoding='utf-8') as following_file:
+        msg = following_file.read()
+        following_list = msg.split('\n')
+        following_list.sort()
+        if following_list:
+            following_list_csv = ''
+            for following_address in following_list:
+                if not following_address:
+                    continue
+                if following_list_csv:
+                    following_list_csv += '\n'
+                following_list_csv += following_address + ',true'
+            msg = 'Account address,Show boosts\n' + following_list_csv
+        return msg
+    return ''
+
+
 def html_hashtag_blocked(base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
