@@ -1970,7 +1970,7 @@ def _html_edit_profile_background(news_instance: bool, translate: {}) -> str:
     return edit_profile_form
 
 
-def _html_edit_profile_contact_info(nickname: str, domain: str,
+def _html_edit_profile_contact_info(nickname: str,
                                     email_address: str,
                                     xmpp_address: str,
                                     matrix_address: str,
@@ -1982,7 +1982,6 @@ def _html_edit_profile_contact_info(nickname: str, domain: str,
     """Contact Information section of edit profile screen
     """
     edit_profile_form = begin_edit_section(translate['Contact Details'])
-
     edit_profile_form += edit_text_field(translate['Email'],
                                          'email', email_address)
     edit_profile_form += edit_text_field(translate['XMPP'],
@@ -1995,19 +1994,27 @@ def _html_edit_profile_contact_info(nickname: str, domain: str,
                                          briar_address)
     edit_profile_form += edit_text_field('Cwtch', 'cwtchAddress',
                                          cwtch_address)
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
+
+
+def _html_edit_profile_import_export(nickname: str, domain: str,
+                                     translate: {}) -> str:
+    """Contact Information section of edit profile screen
+    """
+    edit_profile_form = begin_edit_section(translate['Import and Export'])
     edit_profile_form += \
-        '<a href="/users/' + nickname + \
+        '<p><a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
         translate['Following'] + '</label></a>'
     edit_profile_form += \
         ' <a href="/users/' + nickname + '/followingaccounts.csv" ' + \
         'download="' + nickname + '@' + domain + '_following.csv">' + \
-        '<label class="labels">⇩ CSV</label></a>'
+        '<label class="labels">⇩ CSV</label></a></p>\n'
     edit_profile_form += \
-        ' | <a href="/users/' + nickname + \
+        '<p><a href="/users/' + nickname + \
         '/followersaccounts"><label class="labels">' + \
-        translate['Followers'] + '</label></a><br>\n'
-
+        translate['Followers'] + '</label></a><br></p>\n'
     edit_profile_form += end_edit_section()
     return edit_profile_form
 
@@ -2406,11 +2413,15 @@ def html_edit_profile(server, translate: {},
 
     # Contact information
     edit_profile_form += \
-        _html_edit_profile_contact_info(nickname, domain, email_address,
+        _html_edit_profile_contact_info(nickname, email_address,
                                         xmpp_address, matrix_address,
                                         ssb_address, tox_address,
                                         briar_address,
                                         cwtch_address, translate)
+
+    # Import and export
+    edit_profile_form += \
+        _html_edit_profile_import_export(nickname, domain, translate)
 
     # Encryption Keys
     edit_profile_form += \
