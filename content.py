@@ -1422,7 +1422,8 @@ def save_media_in_form_post(media_bytes, debug: bool,
         'opus': 'audio/opus',
         'flac': 'audio/flac',
         'zip': 'application/zip',
-        'csv': 'text/plain'
+        'csv': 'text/csv',
+        'csv2': 'text/plain'
     }
     detected_extension = None
     for extension, content_type in extension_list.items():
@@ -1434,6 +1435,8 @@ def save_media_in_form_post(media_bytes, debug: bool,
                 extension = 'jpg'
             elif extension == 'mpeg':
                 extension = 'mp3'
+            elif extension == 'csv2':
+                extension = 'csv'
             if filename_base:
                 filename = filename_base + '.' + extension
             search_lst = search_str.decode().split('/', maxsplit=1)

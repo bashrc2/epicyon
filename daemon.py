@@ -5505,7 +5505,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'banner', 'search_banner',
                 'instanceLogo',
                 'left_col_image', 'right_col_image',
-                'submitImportFollows'
+                'submitImportFollows',
                 'submitImportTheme'
             )
             profile_media_types_uploaded = {}
