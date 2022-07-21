@@ -1422,7 +1422,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
         'opus': 'audio/opus',
         'flac': 'audio/flac',
         'zip': 'application/zip',
-        'csv': 'text/csv'
+        'csv': 'text/plain'
     }
     detected_extension = None
     for extension, content_type in extension_list.items():
