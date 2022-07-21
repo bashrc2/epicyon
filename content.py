@@ -1484,7 +1484,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
             return None, None
     elif detected_extension == 'csv':
         csv_str = media_bytes[start_pos:]
-        csv_str = svg_str.decode()
+        csv_str = csv_str.decode()
         if not _valid_follows_csv(csv_str):
             return None, None
 
