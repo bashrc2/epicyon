@@ -68,6 +68,10 @@ def _update_import_following(base_dir: str,
             following_domain, following_port = get_domain_from_actor(line)
             if not following_domain:
                 continue
+            if following_nickname == nickname and \
+               following_domain == domain:
+                # don't follow yourself
+                continue
             following_handle = following_nickname + '@' + following_domain
             if is_following_actor(base_dir,
                                   nickname, domain, following_handle):
