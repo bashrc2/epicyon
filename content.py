@@ -1411,7 +1411,8 @@ def save_media_in_form_post(media_bytes, debug: bool,
         'ogg': 'audio/ogg',
         'opus': 'audio/opus',
         'flac': 'audio/flac',
-        'zip': 'application/zip'
+        'zip': 'application/zip',
+        'csv': 'text/csv'
     }
     detected_extension = None
     for extension, content_type in extension_list.items():
@@ -1467,6 +1468,11 @@ def save_media_in_form_post(media_bytes, debug: bool,
         svg_str = media_bytes[start_pos:]
         svg_str = svg_str.decode()
         if dangerous_svg(svg_str, False):
+            return None, None
+    elif detected_extension == 'csv':
+        csv_str = media_bytes[start_pos:]
+        csv_str = svg_str.decode()
+        if ',' not in csv_str:
             return None, None
 
     try:
