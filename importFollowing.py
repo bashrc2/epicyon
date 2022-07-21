@@ -11,6 +11,8 @@ import os
 import time
 import random
 from utils import is_account_dir
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
 from follow import is_following_actor
 from follow import send_follow_request
 from session import create_session
@@ -60,9 +62,13 @@ def _update_import_following(base_dir: str,
                 line = line.split(',')[0].strip()
             if line.startswith('#'):
                 continue
-            if '@' not in line:
+            following_nickname = get_nickname_from_actor(line)
+            if not following_nickname:
                 continue
-            following_handle = line
+            following_domain, following_port = get_domain_from_actor(line)
+            if not following_domain:
+                continue
+            following_handle = following_nickname + '@' + following_domain
             if is_following_actor(base_dir,
                                   nickname, domain, following_handle):
                 # remove the followed handle from the import list
@@ -80,10 +86,7 @@ def _update_import_following(base_dir: str,
             curr_domain = domain
             curr_port = httpd.port
             curr_http_prefix = httpd.http_prefix
-            following_nickname = following_handle.split('@')[0]
-            following_domain = following_handle.split('@')[1]
             following_actor = following_handle
-            following_port = httpd.port
             if ':' in following_domain:
                 following_port = following_handle.split(':')[1]
                 following_domain = following_domain.split(':')[0]
