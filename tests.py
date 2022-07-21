@@ -5408,6 +5408,8 @@ def _test_functions():
         'get_document_loader',
         'run_inbox_queue_watchdog',
         'run_inbox_queue',
+        'run_import_following',
+        'run_import_following_watchdog',
         'run_post_schedule',
         'run_post_schedule_watchdog',
         'str2bool',

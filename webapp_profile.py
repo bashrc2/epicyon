@@ -2003,6 +2003,14 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
     """Contact Information section of edit profile screen
     """
     edit_profile_form = begin_edit_section(translate['Import and Export'])
+
+    edit_profile_form += \
+        '<p><label class="labels">' + \
+        translate['Import Follows'] + '</label>\n'
+    edit_profile_form += '<input type="file" id="import_follows" '
+    edit_profile_form += 'name="submitImportFollows" '
+    edit_profile_form += 'accept=".csv"></p>\n'
+
     edit_profile_form += \
         '<p><a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \

@@ -1359,6 +1359,16 @@ def extract_media_in_form_post(post_bytes, boundary, name: str):
     return media_bytes, post_bytes[:image_start_location] + remainder
 
 
+def _valid_follows_csv(content: str) -> bool:
+    """is the given content a valid csv file containing imported follows?
+    """
+    if ',' not in content:
+        return False
+    if 'Account address,' not in content:
+        return False
+    return True
+
+
 def save_media_in_form_post(media_bytes, debug: bool,
                             filename_base: str = None) -> (str, str):
     """Saves the given media bytes extracted from http form POST
@@ -1396,7 +1406,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
     filename = None
 
     # directly search the binary array for the beginning
-    # of an image
+    # of an image, zip or csv
     extension_list = {
         'png': 'image/png',
         'jpeg': 'image/jpeg',
@@ -1411,7 +1421,9 @@ def save_media_in_form_post(media_bytes, debug: bool,
         'ogg': 'audio/ogg',
         'opus': 'audio/opus',
         'flac': 'audio/flac',
-        'zip': 'application/zip'
+        'zip': 'application/zip',
+        'csv': 'text/csv',
+        'csv2': 'text/plain'
     }
     detected_extension = None
     for extension, content_type in extension_list.items():
@@ -1423,6 +1435,8 @@ def save_media_in_form_post(media_bytes, debug: bool,
                 extension = 'jpg'
             elif extension == 'mpeg':
                 extension = 'mp3'
+            elif extension == 'csv2':
+                extension = 'csv'
             if filename_base:
                 filename = filename_base + '.' + extension
             search_lst = search_str.decode().split('/', maxsplit=1)
@@ -1467,6 +1481,11 @@ def save_media_in_form_post(media_bytes, debug: bool,
         svg_str = media_bytes[start_pos:]
         svg_str = svg_str.decode()
         if dangerous_svg(svg_str, False):
+            return None, None
+    elif detected_extension == 'csv':
+        csv_str = media_bytes[start_pos:]
+        csv_str = csv_str.decode()
+        if not _valid_follows_csv(csv_str):
             return None, None
 
     try:

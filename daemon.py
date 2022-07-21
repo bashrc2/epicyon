@@ -397,6 +397,7 @@ from crawlers import update_known_crawlers
 from crawlers import blocked_user_agent
 from crawlers import load_known_web_bots
 from qrcode import save_domain_qrcode
+from importFollowing import run_import_following_watchdog
 import os
 
 
@@ -5504,6 +5505,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'banner', 'search_banner',
                 'instanceLogo',
                 'left_col_image', 'right_col_image',
+                'submitImportFollows',
                 'submitImportTheme'
             )
             profile_media_types_uploaded = {}
@@ -5517,18 +5519,18 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if debug:
                     print('DEBUG: profile update extracting ' + m_type +
-                          ' image, zip or font from POST')
+                          ' image, zip, csv or font from POST')
                 media_bytes, post_bytes = \
                     extract_media_in_form_post(post_bytes, boundary, m_type)
                 if media_bytes:
                     if debug:
                         print('DEBUG: profile update ' + m_type +
-                              ' image, zip or font was found. ' +
+                              ' image, zip, csv or font was found. ' +
                               str(len(media_bytes)) + ' bytes')
                 else:
                     if debug:
                         print('DEBUG: profile update, no ' + m_type +
-                              ' image, zip or font was found in POST')
+                              ' image, zip, csv or font was found in POST')
                     continue
 
                 # Note: a .temp extension is used here so that at no
@@ -5548,6 +5550,10 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: _profile_edit unable to delete ' +
                                   filename_base)
+                elif m_type == 'submitImportFollows':
+                    filename_base = \
+                        acct_dir(base_dir, nickname, domain) + \
+                        '/import_following.csv'
                 else:
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
@@ -5558,10 +5564,18 @@ class PubServer(BaseHTTPRequestHandler):
                                             filename_base)
                 if filename:
                     print('Profile update POST ' + m_type +
-                          ' media, zip or font filename is ' + filename)
+                          ' media, zip, csv or font filename is ' + filename)
                 else:
                     print('Profile update, no ' + m_type +
-                          ' media, zip or font filename in POST')
+                          ' media, zip, csv or font filename in POST')
+                    continue
+
+                if m_type == 'submitImportFollows':
+                    if os.path.isfile(filename_base):
+                        print(nickname + ' imported follows csv')
+                    else:
+                        print('WARN: failed to import follows from csv for ' +
+                              nickname)
                     continue
 
                 if m_type == 'submitImportTheme':
@@ -21623,6 +21637,12 @@ def run_daemon(preferred_podcast_formats: [],
     httpd.thrCheckActor = {}
 
     if not unit_test:
+        print('THREAD: Creating import following watchdog')
+        httpd.thrImportFollowing = \
+            thread_with_trace(target=run_import_following_watchdog,
+                              args=(project_version, httpd), daemon=True)
+        httpd.thrImportFollowing.start()
+
         print('THREAD: Creating inbox queue watchdog')
         httpd.thrWatchdog = \
             thread_with_trace(target=run_inbox_queue_watchdog,
