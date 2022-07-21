@@ -162,7 +162,7 @@ def run_import_following(base_dir: str, httpd):
     """Sends out follow requests for imported following csv files
     """
     while True:
-        time.sleep(10)
+        time.sleep(20)
 
         # get a list of accounts on the instance, in random sequence
         accounts_list = []
