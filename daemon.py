@@ -5553,7 +5553,7 @@ class PubServer(BaseHTTPRequestHandler):
                 elif m_type == 'submitImportFollows':
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
-                        '/import_following.csv'
+                        '/import_following_test.csv'
                 else:
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
