@@ -15,6 +15,7 @@ import random
 from random import randint
 from hashlib import sha1
 from auth import create_password
+from utils import safe_system_string
 from utils import get_base_content_from_post
 from utils import get_full_domain
 from utils import get_image_extensions
@@ -299,10 +300,13 @@ def _remove_meta_data(image_filename: str, output_filename: str) -> None:
         return
     if os.path.isfile('/usr/bin/exiftool'):
         print('Removing metadata from ' + output_filename + ' using exiftool')
-        os.system('exiftool -all= ' + output_filename)  # nosec
+        cmd = 'exiftool -all= ' + safe_system_string(output_filename)
+        os.system(cmd)  # nosec
     elif os.path.isfile('/usr/bin/mogrify'):
         print('Removing metadata from ' + output_filename + ' using mogrify')
-        os.system('/usr/bin/mogrify -strip ' + output_filename)  # nosec
+        cmd = \
+            '/usr/bin/mogrify -strip ' + safe_system_string(output_filename)
+        os.system(cmd)  # nosec
 
 
 def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
@@ -339,7 +343,9 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
          cam_make, cam_model, cam_serial_number) = \
             spoof_geolocation(base_dir, spoof_city, curr_time_adjusted,
                               decoy_seed, None, None)
-        if os.system('exiftool -artist=@"' + nickname + '@' + domain + '" ' +
+        safe_handle = safe_system_string(nickname + '@' + domain)
+        safe_license_url = safe_system_string(content_license_url)
+        if os.system('exiftool -artist=@"' + safe_handle + '" ' +
                      '-Make="' + cam_make + '" ' +
                      '-Model="' + cam_model + '" ' +
                      '-Comment="' + str(cam_serial_number) + '" ' +
@@ -351,7 +357,7 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
                      '-GPSLongitude=' + str(longitude) + ' ' +
                      '-GPSLatitudeRef=' + latitude_ref + ' ' +
                      '-GPSLatitude=' + str(latitude) + ' ' +
-                     '-copyright="' + content_license_url + '" ' +
+                     '-copyright="' + safe_license_url + '" ' +
                      '-Comment="" ' +
                      output_filename) != 0:  # nosec
             print('ERROR: exiftool failed to run')
@@ -364,8 +370,9 @@ def get_music_metadata(filename: str) -> {}:
     """Returns metadata for a music file
     """
     result = None
+    safe_filename = safe_system_string(filename)
     try:
-        result = subprocess.run(['exiftool', '-v3', filename],
+        result = subprocess.run(['exiftool', '-v3', safe_filename],
                                 stdout=subprocess.PIPE)
     except BaseException as ex:
         print('EX: get_music_metadata failed ' + str(ex))
@@ -417,7 +424,8 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
     cmd = \
         '/usr/bin/convert +noise Multiplicative ' + \
         '-evaluate median 10% -dither Floyd-Steinberg ' + \
-        '-monochrome  ' + image_filename + ' ' + low_bandwidth_filename
+        '-monochrome  ' + safe_system_string(image_filename) + \
+        ' ' + safe_system_string(low_bandwidth_filename)
     print('Low bandwidth image conversion: ' + cmd)
     subprocess.call(cmd, shell=True)
     # wait for conversion to happen
@@ -666,9 +674,11 @@ def path_is_audio(path: str) -> bool:
 def get_image_dimensions(image_filename: str) -> (int, int):
     """Returns the dimensions of an image file
     """
+    safe_image_filename = safe_system_string(image_filename)
     try:
         result = subprocess.run(['identify', '-format', '"%wx%h"',
-                                 image_filename], stdout=subprocess.PIPE)
+                                 safe_image_filename],
+                                stdout=subprocess.PIPE)
     except BaseException:
         print('EX: get_image_dimensions unable to run identify command')
         return None, None

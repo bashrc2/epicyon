@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import safe_system_string
 from utils import text_in_file
 from utils import disallow_announce
 from utils import disallow_reply
@@ -324,8 +325,10 @@ def _play_sound(sound_filename: str,
         return
 
     if player == 'ffplay':
-        os.system('ffplay ' + sound_filename +
-                  ' -autoexit -hide_banner -nodisp 2> /dev/null')
+        cmd = \
+            'ffplay ' + safe_system_string(sound_filename) + \
+            ' -autoexit -hide_banner -nodisp 2> /dev/null'
+        os.system(cmd)
 
 
 def _speaker_espeak(espeak, pitch: int, rate: int, srange: int,
@@ -365,6 +368,7 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
         ' --stdout' + \
         ' "' + text + '" > ' + \
         audio_filename + ' 2> /dev/null'
+    cmd = safe_system_string(cmd)
     try:
         os.system(cmd)
     except OSError as ex:
@@ -388,11 +392,13 @@ def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
             speaker_lang = speaker_str
             break
     say_text = str(say_text).replace('"', "'")
-    speaker_cmd = 'picospeaker ' + \
-        '-l ' + speaker_lang + \
+    speaker_text = html.unescape(str(say_text))
+    speaker_cmd = \
+        'picospeaker ' + \
+        '-l ' + safe_system_string(speaker_lang) + \
         ' -r ' + str(rate) + \
         ' -p ' + str(pitch) + ' "' + \
-        html.unescape(str(say_text)) + '" 2> /dev/null'
+        safe_system_string(speaker_text) + '" 2> /dev/null'
     os.system(speaker_cmd)
 
 
@@ -405,19 +411,30 @@ def _desktop_notification(notification_type: str,
 
     if notification_type == 'notify-send':
         # Ubuntu
-        os.system('notify-send "' + title + '" "' + message + '"')
+        cmd = \
+            'notify-send "' + safe_system_string(title) + \
+            '" "' + safe_system_string(message) + '"'
+        os.system(cmd)
     elif notification_type == 'zenity':
         # Zenity
-        os.system('zenity --notification --title "' + title +
-                  '" --text="' + message + '"')
+        cmd = \
+            'zenity --notification --title "' + safe_system_string(title) + \
+            '" --text="' + safe_system_string(message) + '"'
+        os.system(cmd)
     elif notification_type == 'osascript':
         # Mac
-        os.system("osascript -e 'display notification \"" +
-                  message + "\" with title \"" + title + "\"'")
+        cmd = \
+            "osascript -e 'display notification \"" + \
+            safe_system_string(message) + "\" with title \"" + \
+            safe_system_string(title) + "\"'"
+        os.system(cmd)
     elif notification_type == 'New-BurntToastNotification':
         # Windows
-        os.system("New-BurntToastNotification -Text \"" +
-                  title + "\", '" + message + "'")
+        cmd = \
+            "New-BurntToastNotification -Text \"" + \
+            safe_system_string(title) + "\", '" + \
+            safe_system_string(message) + "'"
+        os.system(cmd)
 
 
 def _text_to_speech(say_str: str, screenreader: str,

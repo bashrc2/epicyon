@@ -3842,3 +3842,11 @@ def get_attachment_property_value(property_value: {}) -> (str, str):
         prop_value_name = 'https://schema.org#value'
         prop_value = property_value[prop_value_name]
     return prop_value_name, prop_value
+
+
+def safe_system_string(text: str) -> str:
+    """Returns a safe version of a string which can be used within a
+    system command
+    """
+    text = text.replace('$(', '(').replace('`', '')
+    return text
