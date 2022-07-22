@@ -452,6 +452,7 @@ def _create_news_mirror(base_dir: str, domain: str,
     no_of_dirs = 0
     for _, dirs, _ in os.walk(mirror_dir):
         no_of_dirs = len(dirs)
+        break
 
     mirror_index_filename = base_dir + '/accounts/newsmirror.txt'
 

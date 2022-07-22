@@ -1559,7 +1559,7 @@ def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
     to news will appear
     """
     filename = '/postcache/' + post_id + '.html'
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue

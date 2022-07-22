@@ -933,6 +933,7 @@ def update_default_themes_list(base_dir: str) -> None:
 def scan_themes_for_scripts(base_dir: str) -> bool:
     """Scans the theme directory for any svg files containing scripts
     """
+    # allow recursive walk
     for subdir, _, files in os.walk(base_dir + '/theme'):
         for fname in files:
             if not fname.endswith('.svg'):
