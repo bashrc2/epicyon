@@ -5088,6 +5088,7 @@ def _test_thread_functions():
     threads_called_in_modules = []
 
     # get the source for each module
+    # Allow recursive walk
     for _, _, files in os.walk('.'):
         for source_file in files:
             if not source_file.endswith('.py'):

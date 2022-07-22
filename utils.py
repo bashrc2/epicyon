@@ -1559,7 +1559,7 @@ def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
     to news will appear
     """
     filename = '/postcache/' + post_id + '.html'
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue
@@ -3842,3 +3842,11 @@ def get_attachment_property_value(property_value: {}) -> (str, str):
         prop_value_name = 'https://schema.org#value'
         prop_value = property_value[prop_value_name]
     return prop_value_name, prop_value
+
+
+def safe_system_string(text: str) -> str:
+    """Returns a safe version of a string which can be used within a
+    system command
+    """
+    text = text.replace('$(', '(').replace('`', '')
+    return text

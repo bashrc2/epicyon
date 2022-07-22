@@ -12,6 +12,7 @@ import base64
 import subprocess
 from pathlib import Path
 from person import get_actor_json
+from utils import safe_system_string
 from utils import contains_pgp_public_key
 from utils import is_pgp_encrypted
 from utils import get_full_domain
@@ -348,7 +349,7 @@ def _pgp_import_pub_key(recipient_pub_key: str) -> str:
     """
     # do a dry run
     cmd_import_pub_key = \
-        'echo "' + recipient_pub_key + \
+        'echo "' + safe_system_string(recipient_pub_key) + \
         '" | gpg --dry-run --import 2> /dev/null'
     proc = subprocess.Popen([cmd_import_pub_key],
                             stdout=subprocess.PIPE, shell=True)
@@ -358,7 +359,8 @@ def _pgp_import_pub_key(recipient_pub_key: str) -> str:
 
     # this time for real
     cmd_import_pub_key = \
-        'echo "' + recipient_pub_key + '" | gpg --import 2> /dev/null'
+        'echo "' + safe_system_string(recipient_pub_key) + \
+        '" | gpg --import 2> /dev/null'
     proc = subprocess.Popen([cmd_import_pub_key],
                             stdout=subprocess.PIPE, shell=True)
     (import_result, err) = proc.communicate()
@@ -367,7 +369,8 @@ def _pgp_import_pub_key(recipient_pub_key: str) -> str:
 
     # get the key id
     cmd_import_pub_key = \
-        'echo "' + recipient_pub_key + '" | gpg --show-keys'
+        'echo "' + safe_system_string(recipient_pub_key) + \
+        '" | gpg --show-keys'
     proc = subprocess.Popen([cmd_import_pub_key],
                             stdout=subprocess.PIPE, shell=True)
     (import_result, err) = proc.communicate()
@@ -395,8 +398,9 @@ def _pgp_encrypt(content: str, recipient_pub_key: str) -> str:
         return None
 
     cmd_encrypt = \
-        'echo "' + content + '" | gpg --encrypt --armor --recipient ' + \
-        key_id + ' 2> /dev/null'
+        'echo "' + safe_system_string(content) + \
+        '" | gpg --encrypt --armor --recipient ' + \
+        safe_system_string(key_id) + ' 2> /dev/null'
     proc = subprocess.Popen([cmd_encrypt],
                             stdout=subprocess.PIPE, shell=True)
     (encrypt_result, _) = proc.communicate()
@@ -452,7 +456,8 @@ def pgp_decrypt(domain: str, content: str, fromHandle: str,
         _pgp_import_pub_key(pub_key)
 
     cmd_decrypt = \
-        'echo "' + content + '" | gpg --decrypt --armor 2> /dev/null'
+        'echo "' + safe_system_string(content) + \
+        '" | gpg --decrypt --armor 2> /dev/null'
     proc = subprocess.Popen([cmd_decrypt],
                             stdout=subprocess.PIPE, shell=True)
     (decrypt_result, _) = proc.communicate()
@@ -486,7 +491,7 @@ def pgp_local_public_key() -> str:
     key_id = _pgp_local_public_key_id()
     if not key_id:
         key_id = ''
-    cmd_str = "gpg --armor --export " + key_id
+    cmd_str = "gpg --armor --export " + safe_system_string(key_id)
     proc = subprocess.Popen([cmd_str],
                             stdout=subprocess.PIPE, shell=True)
     (result, err) = proc.communicate()

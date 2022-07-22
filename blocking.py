@@ -1009,6 +1009,8 @@ def load_cw_lists(base_dir: str, verbose: bool) -> {}:
     if not os.path.isdir(base_dir + '/cwlists'):
         return {}
     result = {}
+    # NOTE: here we do want to allow recursive walk through
+    # possible subdirectories
     for _, _, files in os.walk(base_dir + '/cwlists'):
         for fname in files:
             if not fname.endswith('.json'):

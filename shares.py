@@ -1333,6 +1333,7 @@ def shares_catalog_endpoint(base_dir: str, http_prefix: str,
                     "DFC:description": description
                 }
                 endpoint['DFC:supplies'].append(catalog_item)
+        break
 
     return endpoint
 

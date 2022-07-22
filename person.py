@@ -38,6 +38,7 @@ from roles import set_role
 from roles import set_rolesFromList
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import safe_system_string
 from utils import get_attachment_property_value
 from utils import get_nickname_from_actor
 from utils import remove_html
@@ -162,8 +163,9 @@ def set_profile_image(base_dir: str, http_prefix: str,
         save_json(person_json, person_filename)
 
         cmd = \
-            '/usr/bin/convert ' + image_filename + ' -size ' + \
-            resolution + ' -quality 50 ' + profile_filename
+            '/usr/bin/convert ' + safe_system_string(image_filename) + \
+            ' -size ' + resolution + ' -quality 50 ' + \
+            safe_system_string(profile_filename)
         subprocess.call(cmd, shell=True)
         process_meta_data(base_dir, nickname, domain,
                           profile_filename, profile_filename, city,
