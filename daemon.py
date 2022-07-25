@@ -21113,9 +21113,12 @@ def run_daemon(clacks: str,
     # caches css files
     httpd.css_cache = {}
 
-    httpd.clacks = 'GNU Natalie Nguyen'
-    if clacks:
-        httpd.clacks = clacks
+    httpd.clacks = get_config_param(base_dir, 'clacks')
+    if not httpd.clacks:
+        if clacks:
+            httpd.clacks = clacks
+        else:
+            httpd.clacks = 'GNU Natalie Nguyen'
 
     # load a list of dogwhistle words
     dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
