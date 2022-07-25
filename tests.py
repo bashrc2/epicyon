@@ -838,8 +838,9 @@ def create_server_alice(path: str, domain: str, port: int,
     crawlers_allowed = []
     check_actor_timeout = 2
     preferred_podcast_formats = None
+    clacks = None
     print('Server running: Alice')
-    run_daemon(preferred_podcast_formats,
+    run_daemon(clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
@@ -998,8 +999,9 @@ def create_server_bob(path: str, domain: str, port: int,
     crawlers_allowed = []
     check_actor_timeout = 2
     preferred_podcast_formats = None
+    clacks = None
     print('Server running: Bob')
-    run_daemon(preferred_podcast_formats,
+    run_daemon(clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
@@ -1080,8 +1082,9 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     crawlers_allowed = []
     check_actor_timeout = 2
     preferred_podcast_formats = None
+    clacks = None
     print('Server running: Eve')
-    run_daemon(preferred_podcast_formats,
+    run_daemon(clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,
@@ -1164,8 +1167,9 @@ def create_server_group(path: str, domain: str, port: int,
     crawlers_allowed = []
     check_actor_timeout = 2
     preferred_podcast_formats = None
+    clacks = None
     print('Server running: Group')
-    run_daemon(preferred_podcast_formats,
+    run_daemon(clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
                dyslexic_font,

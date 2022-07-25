@@ -183,6 +183,9 @@ def _command_options() -> None:
                         default=None,
                         help='Name of the screen reader: ' +
                         'espeak/picospeaker/mimic3')
+    parser.add_argument('--clacks', dest='clacks', type=str,
+                        default=None,
+                        help='http header clacks overhead')
     parser.add_argument('--fol', '--follow', dest='follow', type=str,
                         default=None,
                         help='Handle of account to follow. eg. ' +
@@ -3603,7 +3606,8 @@ def _command_options() -> None:
 if __name__ == "__main__":
     argb2, opt2 = _command_options()
     print('allowdeletion: ' + str(argb2.allowdeletion))
-    run_daemon(opt2['preferred_podcast_formats'],
+    run_daemon(argb2.clacks,
+               opt2['preferred_podcast_formats'],
                argb2.check_actor_timeout,
                opt2['crawlers_allowed'],
                argb2.dyslexic_font,
