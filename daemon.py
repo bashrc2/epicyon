@@ -862,7 +862,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Access-Control-Allow-Origin', '*')
             return
         self.send_header('X-AP-Instance-ID', self.server.instance_id)
-        self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
+        self.send_header('X-Clacks-Overhead', self.server.clacks)
         self.send_header('User-Agent',
                          'Epicyon/' + __version__ +
                          '; +' + self.server.http_prefix + '://' +
@@ -21016,7 +21016,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(preferred_podcast_formats: [],
+def run_daemon(clacks: str,
+               preferred_podcast_formats: [],
                check_actor_timeout: int,
                crawlers_allowed: [],
                dyslexic_font: bool,
@@ -21111,6 +21112,13 @@ def run_daemon(preferred_podcast_formats: [],
 
     # caches css files
     httpd.css_cache = {}
+
+    httpd.clacks = get_config_param(base_dir, 'clacks')
+    if not httpd.clacks:
+        if clacks:
+            httpd.clacks = clacks
+        else:
+            httpd.clacks = 'GNU Natalie Nguyen'
 
     # load a list of dogwhistle words
     dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
