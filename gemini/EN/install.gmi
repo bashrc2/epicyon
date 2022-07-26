@@ -91,9 +91,6 @@ And paste the following:
         client_max_body_size 31m;
         client_body_buffer_size 128k;
 
-        limit_conn conn_limit_per_ip 10;
-        limit_req zone=req_limit_per_ip burst=10 nodelay;
-
         index index.html;
         rewrite ^ https://$server_name$request_uri? permanent;
     }
