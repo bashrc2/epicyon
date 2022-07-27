@@ -131,6 +131,7 @@ from conversation import update_conversation
 from webapp_hashtagswarm import html_hash_tag_swarm
 from person import valid_sending_actor
 from fitnessFunctions import fitness_performance
+from content import reject_twitter_summary
 from content import load_dogwhistles
 from content import valid_url_lengths
 from content import remove_script
@@ -567,22 +568,6 @@ def inbox_permitted_message(domain: str, message_json: {},
     return True
 
 
-def _reject_twitter_summary(base_dir: str, nickname: str, domain: str,
-                            summary: str) -> bool:
-    """Returns true if the post should be rejected due to twitter
-    existing within the summary
-    """
-    remove_twitter = \
-        acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
-    if not os.path.isfile(remove_twitter):
-        return False
-    summary_lower = summary.lower()
-    if 'twitter' in summary_lower or \
-       'birdsite' in summary_lower:
-        return True
-    return False
-
-
 def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                              nickname: str, domain: str,
                              post_json_object: {},
@@ -671,13 +656,12 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             if debug:
                 print('WARN: post was filtered out due to content')
             return None
-        if summary_str:
-            if _reject_twitter_summary(base_dir, nickname, domain,
-                                       summary_str):
-                if debug:
-                    print('WARN: post was filtered out due to ' +
-                          'twitter content')
-                return None
+        if reject_twitter_summary(base_dir, nickname, domain,
+                                  summary_str):
+            if debug:
+                print('WARN: post was filtered out due to ' +
+                      'twitter summary')
+            return None
 
     original_post_id = None
     if post_json_object.get('id'):

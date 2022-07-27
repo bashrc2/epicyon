@@ -79,6 +79,7 @@ from media import get_music_metadata
 from media import attach_media
 from media import replace_you_tube
 from media import replace_twitter
+from content import reject_twitter_summary
 from content import words_similarity
 from content import limit_repeated_words
 from content import post_tag_exists
@@ -5026,15 +5027,20 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-
+        if reject_twitter_summary(base_dir, nickname, domain,
+                                  summary_str):
+            print('WARN: announced post has twitter summary ' +
+                  str(announced_json))
+            _reject_announce(announce_filename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
+            return None
         if invalid_ciphertext(content_str):
             print('WARN: announced post contains invalid ciphertext ' +
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
-            print('WARN: Invalid ciphertext within announce ' +
-                  str(announced_json))
             return None
 
         # remove any long words
