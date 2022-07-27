@@ -208,7 +208,7 @@ def run_import_following_watchdog(project_version: str, httpd) -> None:
         httpd.thrImportFollowing.clone(run_import_following)
     httpd.thrImportFollowing.start()
     while True:
-        time.sleep(20)
+        time.sleep(50)
         if httpd.thrImportFollowing.is_alive():
             continue
         httpd.thrImportFollowing.kill()
