@@ -124,6 +124,7 @@ from auth import create_password
 from auth import create_basic_auth_header
 from auth import authorize_basic
 from auth import store_basic_credentials
+from threads import begin_thread
 from threads import thread_with_trace
 from threads import remove_dormant_threads
 from media import process_meta_data
@@ -1660,7 +1661,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     curr_session, proxy_type),
                               daemon=True)
         print('Starting outbox thread')
-        self.server.outboxThread[account_outbox_thread_name][index].start()
+        outbox_thread = \
+            self.server.outboxThread[account_outbox_thread_name][index]
+        begin_thread(outbox_thread, '_post_to_outbox_thread')
         return True
 
     def _update_inbox_queue(self, nickname: str, message_json: {},
@@ -8082,7 +8085,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.person_cache,
                                             self.server.check_actor_timeout),
                                       daemon=True)
-                self.server.thrCheckActor[nickname].start()
+                begin_thread(self.server.thrCheckActor[nickname],
+                             '_show_person_options')
 
             msg = \
                 html_person_options(self.server.default_timeline,
@@ -20962,7 +20966,7 @@ def run_posts_watchdog(project_version: str, httpd) -> None:
     """
     print('THREAD: Starting posts queue watchdog')
     posts_queue_original = httpd.thrPostsQueue.clone(run_posts_queue)
-    httpd.thrPostsQueue.start()
+    begin_thread(httpd.thrPostsQueue, 'run_posts_watchdog')
     while True:
         time.sleep(20)
         if httpd.thrPostsQueue.is_alive():
@@ -20970,7 +20974,7 @@ def run_posts_watchdog(project_version: str, httpd) -> None:
         httpd.thrPostsQueue.kill()
         print('THREAD: restarting posts queue')
         httpd.thrPostsQueue = posts_queue_original.clone(run_posts_queue)
-        httpd.thrPostsQueue.start()
+        begin_thread(httpd.thrPostsQueue, 'run_posts_watchdog 2')
         print('Restarting posts queue...')
 
 
@@ -20979,7 +20983,7 @@ def run_shares_expire_watchdog(project_version: str, httpd) -> None:
     """
     print('THREAD: Starting shares expiry watchdog')
     shares_expire_original = httpd.thrSharesExpire.clone(run_shares_expire)
-    httpd.thrSharesExpire.start()
+    begin_thread(httpd.thrSharesExpire, 'run_shares_expire_watchdog')
     while True:
         time.sleep(20)
         if httpd.thrSharesExpire.is_alive():
@@ -20987,7 +20991,7 @@ def run_shares_expire_watchdog(project_version: str, httpd) -> None:
         httpd.thrSharesExpire.kill()
         print('THREAD: restarting shares watchdog')
         httpd.thrSharesExpire = shares_expire_original.clone(run_shares_expire)
-        httpd.thrSharesExpire.start()
+        begin_thread(httpd.thrSharesExpire, 'run_shares_expire_watchdog 2')
         print('Restarting shares expiry...')
 
 
@@ -21511,7 +21515,7 @@ def run_daemon(clacks: str,
     httpd.thrFitness = \
         thread_with_trace(target=fitness_thread,
                           args=(base_dir, httpd.fitness), daemon=True)
-    httpd.thrFitness.start()
+    begin_thread(httpd.thrFitness, 'run_daemon thrFitness')
 
     httpd.recent_posts_cache = {}
 
@@ -21523,7 +21527,7 @@ def run_daemon(clacks: str,
                                 archive_dir,
                                 httpd.recent_posts_cache,
                                 httpd.maxPostsInBox), daemon=True)
-    httpd.thrCache.start()
+    begin_thread(httpd.thrCache, 'run_daemon thrCache')
 
     # number of mins after which sending posts or updates will expire
     httpd.send_threads_timeout_mins = send_threads_timeout_mins
@@ -21538,9 +21542,9 @@ def run_daemon(clacks: str,
         httpd.thrPostsWatchdog = \
             thread_with_trace(target=run_posts_watchdog,
                               args=(project_version, httpd), daemon=True)
-        httpd.thrPostsWatchdog.start()
+        begin_thread(httpd.thrPostsWatchdog, 'run_daemon thrPostWatchdog')
     else:
-        httpd.thrPostsQueue.start()
+        begin_thread(httpd.thrPostsQueue, 'run_daemon thrPostWatchdog 2')
 
     print('THREAD: Creating expire thread for shared items')
     httpd.thrSharesExpire = \
@@ -21551,9 +21555,11 @@ def run_daemon(clacks: str,
         httpd.thrSharesExpireWatchdog = \
             thread_with_trace(target=run_shares_expire_watchdog,
                               args=(project_version, httpd), daemon=True)
-        httpd.thrSharesExpireWatchdog.start()
+        begin_thread(httpd.thrSharesExpireWatchdog,
+                     'run_daemon thrSharesExpireWatchdog')
     else:
-        httpd.thrSharesExpire.start()
+        begin_thread(httpd.thrSharesExpire,
+                     'run_daemon thrSharesExpireWatchdog 2')
 
     httpd.max_recent_posts = max_recent_posts
     httpd.iconsCache = {}
@@ -21649,38 +21655,44 @@ def run_daemon(clacks: str,
         httpd.thrImportFollowing = \
             thread_with_trace(target=run_import_following_watchdog,
                               args=(project_version, httpd), daemon=True)
-        httpd.thrImportFollowing.start()
+        begin_thread(httpd.thrImportFollowing,
+                     'run_daemon thrImportFollowing')
 
         print('THREAD: Creating inbox queue watchdog')
         httpd.thrWatchdog = \
             thread_with_trace(target=run_inbox_queue_watchdog,
                               args=(project_version, httpd), daemon=True)
-        httpd.thrWatchdog.start()
+        begin_thread(httpd.thrWatchdog, 'run_daemon thrWatchdog')
 
         print('THREAD: Creating scheduled post watchdog')
         httpd.thrWatchdogSchedule = \
             thread_with_trace(target=run_post_schedule_watchdog,
                               args=(project_version, httpd), daemon=True)
-        httpd.thrWatchdogSchedule.start()
+        begin_thread(httpd.thrWatchdogSchedule,
+                     'run_daemon thrWatchdogSchedule')
 
         print('THREAD: Creating newswire watchdog')
         httpd.thrNewswireWatchdog = \
             thread_with_trace(target=run_newswire_watchdog,
                               args=(project_version, httpd), daemon=True)
-        httpd.thrNewswireWatchdog.start()
+        begin_thread(httpd.thrNewswireWatchdog,
+                     'run_daemon thrNewswireWatchdog')
 
         print('THREAD: Creating federated shares watchdog')
         httpd.thrFederatedSharesWatchdog = \
             thread_with_trace(target=run_federated_shares_watchdog,
                               args=(project_version, httpd), daemon=True)
-        httpd.thrFederatedSharesWatchdog.start()
+        begin_thread(httpd.thrFederatedSharesWatchdog,
+                     'run_daemon thrFederatedSharesWatchdog')
     else:
         print('Starting inbox queue')
-        httpd.thrInboxQueue.start()
+        begin_thread(httpd.thrInboxQueue, 'run_daemon start inbox')
         print('Starting scheduled posts daemon')
-        httpd.thrPostSchedule.start()
+        begin_thread(httpd.thrPostSchedule,
+                     'run_daemon start scheduled posts')
         print('Starting federated shares daemon')
-        httpd.thrFederatedSharesDaemon.start()
+        begin_thread(httpd.thrFederatedSharesDaemon,
+                     'run_daemon start federated shares')
 
     if client_to_server:
         print('Running ActivityPub client on ' +

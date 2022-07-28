@@ -135,6 +135,7 @@ from content import reject_twitter_summary
 from content import load_dogwhistles
 from content import valid_url_lengths
 from content import remove_script
+from threads import begin_thread
 
 
 def cache_svg_images(session, base_dir: str, http_prefix: str,
@@ -4433,7 +4434,7 @@ def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
     """
     print('THREAD: Starting inbox queue watchdog ' + project_version)
     inbox_queue_original = httpd.thrInboxQueue.clone(run_inbox_queue)
-    httpd.thrInboxQueue.start()
+    begin_thread(httpd.thrInboxQueue, 'run_inbox_queue_watchdog')
     while True:
         time.sleep(20)
         if not httpd.thrInboxQueue.is_alive() or httpd.restart_inbox_queue:
@@ -4442,7 +4443,7 @@ def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
             print('THREAD: restarting inbox queue watchdog')
             httpd.thrInboxQueue = inbox_queue_original.clone(run_inbox_queue)
             httpd.inbox_queue.clear()
-            httpd.thrInboxQueue.start()
+            begin_thread(httpd.thrInboxQueue, 'run_inbox_queue_watchdog 2')
             print('Restarting inbox queue...')
             httpd.restart_inbox_queue_in_progress = False
             httpd.restart_inbox_queue = False

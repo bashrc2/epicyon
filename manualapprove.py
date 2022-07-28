@@ -19,6 +19,7 @@ from utils import acct_dir
 from utils import text_in_file
 from utils import remove_eol
 from threads import thread_with_trace
+from threads import begin_thread
 from session import create_session
 
 
@@ -105,7 +106,7 @@ def manual_deny_follow_request_thread(session, session_onion, session_i2p,
                                 debug,
                                 project_version,
                                 signing_priv_key_pem), daemon=True)
-    thr.start()
+    begin_thread(thr, 'manual_deny_follow_request_thread')
     send_threads.append(thr)
 
 
@@ -361,5 +362,5 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
                                 project_version,
                                 signing_priv_key_pem,
                                 proxy_type), daemon=True)
-    thr.start()
+    begin_thread(thr, 'manual_approve_follow_request_thread')
     send_threads.append(thr)

@@ -15,10 +15,10 @@ import shutil
 import sys
 import time
 import random
-from socket import error as SocketError
 from time import gmtime, strftime
 from collections import OrderedDict
 from threads import thread_with_trace
+from threads import begin_thread
 from cache import store_person_in_cache
 from cache import get_person_from_cache
 from cache import expire_person_cache
@@ -2548,7 +2548,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                                 post_log, debug, http_prefix,
                                 domain_full), daemon=True)
     send_threads.append(thr)
-    thr.start()
+    begin_thread(thr, 'send_post')
     return 0
 
 
@@ -2967,7 +2967,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                                 post_log, debug,
                                 http_prefix, domain_full), daemon=True)
     send_threads.append(thr)
-    # thr.start()
+    # begin_thread(thr, 'send_signed_json')
     return 0
 
 
@@ -3272,15 +3272,9 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                 shared_item_federation_tokens,
                                 signing_priv_key_pem,
                                 proxy_type), daemon=True)
-    try:
-        send_thread.start()
-    except SocketError as ex:
+    if not begin_thread(send_thread, 'send_to_named_addresses_thread'):
         print('WARN: socket error while starting ' +
-              'thread to send to named addresses. ' + str(ex))
-        return None
-    except ValueError as ex:
-        print('WARN: error while starting ' +
-              'thread to send to named addresses. ' + str(ex))
+              'thread to send to named addresses.')
         return None
     return send_thread
 
@@ -3572,15 +3566,9 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
                                 shared_items_federated_domains,
                                 shared_item_federation_tokens,
                                 signing_priv_key_pem), daemon=True)
-    try:
-        send_thread.start()
-    except SocketError as ex:
-        print('WARN: socket error while starting ' +
-              'thread to send to followers. ' + str(ex))
-        return None
-    except ValueError as ex:
+    if not begin_thread(send_thread, 'send_to_followers_thread'):
         print('WARN: error while starting ' +
-              'thread to send to followers. ' + str(ex))
+              'thread to send to followers.')
         return None
     return send_thread
 
