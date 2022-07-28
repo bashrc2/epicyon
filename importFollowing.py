@@ -17,6 +17,7 @@ from follow import is_following_actor
 from follow import send_follow_request
 from session import create_session
 from session import set_session_for_sender
+from threads import begin_thread
 
 
 def _establish_import_session(httpd,
@@ -206,14 +207,16 @@ def run_import_following_watchdog(project_version: str, httpd) -> None:
     print('THREAD: Starting import following watchdog ' + project_version)
     import_following_original = \
         httpd.thrImportFollowing.clone(run_import_following)
-    httpd.thrImportFollowing.start()
+    begin_thread(httpd.thrImportFollowing,
+                 'run_import_following_watchdog')
     while True:
-        time.sleep(20)
+        time.sleep(50)
         if httpd.thrImportFollowing.is_alive():
             continue
         httpd.thrImportFollowing.kill()
         print('THREAD: restarting import following watchdog')
         httpd.thrImportFollowing = \
             import_following_original.clone(run_import_following)
-        httpd.thrImportFollowing.start()
+        begin_thread(httpd.thrImportFollowing,
+                     'run_import_following_watchdog 2')
         print('Restarting import following...')

@@ -37,6 +37,7 @@ from utils import local_actor_url
 from utils import text_in_file
 from inbox import store_hash_tags
 from session import create_session
+from threads import begin_thread
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
@@ -867,7 +868,7 @@ def run_newswire_watchdog(project_version: str, httpd) -> None:
     print('THREAD: Starting newswire watchdog')
     newswire_original = \
         httpd.thrPostSchedule.clone(run_newswire_daemon)
-    httpd.thrNewswireDaemon.start()
+    begin_thread(httpd.thrNewswireDaemon, 'run_newswire_watchdog')
     while True:
         time.sleep(50)
         if httpd.thrNewswireDaemon.is_alive():
@@ -876,5 +877,5 @@ def run_newswire_watchdog(project_version: str, httpd) -> None:
         print('THREAD: restarting newswire watchdog')
         httpd.thrNewswireDaemon = \
             newswire_original.clone(run_newswire_daemon)
-        httpd.thrNewswireDaemon.start()
+        begin_thread(httpd.thrNewswireDaemon, 'run_newswire_watchdog 2')
         print('Restarting newswire daemon...')

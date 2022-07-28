@@ -45,6 +45,7 @@ from filters import is_filtered_globally
 from siteactive import site_is_active
 from content import get_price_from_string
 from blocking import is_blocked
+from threads import begin_thread
 
 
 def _load_dfc_ids(base_dir: str, system_language: str,
@@ -1610,7 +1611,8 @@ def run_federated_shares_watchdog(project_version: str, httpd) -> None:
     print('THREAD: Starting federated shares watchdog')
     federated_shares_original = \
         httpd.thrPostSchedule.clone(run_federated_shares_daemon)
-    httpd.thrFederatedSharesDaemon.start()
+    begin_thread(httpd.thrFederatedSharesDaemon,
+                 'run_federated_shares_watchdog')
     while True:
         time.sleep(55)
         if httpd.thrFederatedSharesDaemon.is_alive():
@@ -1619,7 +1621,8 @@ def run_federated_shares_watchdog(project_version: str, httpd) -> None:
         print('THREAD: restarting federated shares watchdog')
         httpd.thrFederatedSharesDaemon = \
             federated_shares_original.clone(run_federated_shares_daemon)
-        httpd.thrFederatedSharesDaemon.start()
+        begin_thread(httpd.thrFederatedSharesDaemon,
+                     'run_federated_shares_watchdog 2')
         print('Restarting federated shares daemon...')
 
 

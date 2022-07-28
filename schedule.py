@@ -18,6 +18,7 @@ from utils import acct_dir
 from utils import remove_eol
 from outbox import post_message_to_outbox
 from session import create_session
+from threads import begin_thread
 
 
 def _update_post_schedule(base_dir: str, handle: str, httpd,
@@ -199,7 +200,7 @@ def run_post_schedule_watchdog(project_version: str, httpd) -> None:
     print('THREAD: Starting scheduled post watchdog ' + project_version)
     post_schedule_original = \
         httpd.thrPostSchedule.clone(run_post_schedule)
-    httpd.thrPostSchedule.start()
+    begin_thread(httpd.thrPostSchedule, 'run_post_schedule_watchdog')
     while True:
         time.sleep(20)
         if httpd.thrPostSchedule.is_alive():
@@ -208,7 +209,7 @@ def run_post_schedule_watchdog(project_version: str, httpd) -> None:
         print('THREAD: restarting scheduled post watchdog')
         httpd.thrPostSchedule = \
             post_schedule_original.clone(run_post_schedule)
-        httpd.thrPostSchedule.start()
+        begin_thread(httpd.thrPostSchedule, 'run_post_schedule_watchdog')
         print('Restarting scheduled posts...')
 
 

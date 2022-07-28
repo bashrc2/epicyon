@@ -11,6 +11,7 @@ import threading
 import sys
 import time
 import datetime
+from socket import error as SocketError
 
 
 class thread_with_trace(threading.Thread):
@@ -163,3 +164,22 @@ def remove_dormant_threads(base_dir: str, threads_list: [], debug: bool,
         except OSError:
             print('EX: remove_dormant_threads unable to write ' +
                   send_log_filename)
+
+
+def begin_thread(thread, calling_function: str) -> bool:
+    """Start a thread
+    """
+    try:
+        if not thread.is_alive():
+            thread.start()
+    except SocketError as ex:
+        print('WARN: socket error while starting ' +
+              'thread. ' + calling_function + ' ' + str(ex))
+        return False
+    except ValueError as ex:
+        print('WARN: value error while starting ' +
+              'thread. ' + calling_function + ' ' + str(ex))
+        return False
+    except BaseException:
+        pass
+    return True

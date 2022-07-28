@@ -1941,3 +1941,21 @@ def remove_script(content: str, log_filename: str,
                         print('EX: cannot append to svg script log')
             content = content.replace(text, '')
     return content
+
+
+def reject_twitter_summary(base_dir: str, nickname: str, domain: str,
+                           summary: str) -> bool:
+    """Returns true if the post should be rejected due to twitter
+    existing within the summary
+    """
+    if not summary:
+        return False
+    remove_twitter = \
+        acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
+    if not os.path.isfile(remove_twitter):
+        return False
+    summary_lower = summary.lower()
+    if 'twitter' in summary_lower or \
+       'birdsite' in summary_lower:
+        return True
+    return False
