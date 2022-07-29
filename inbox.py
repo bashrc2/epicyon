@@ -1781,7 +1781,7 @@ def _receive_zot_reaction(recent_posts_cache: {},
             print('DEBUG: ' + message_json['object']['type'] +
                   ' content is not string')
         return False
-    if len(message_json['object']['content']) > 2:
+    if len(message_json['object']['content']) > 4:
         if debug:
             print('DEBUG: content is too long to be an emoji reaction')
         return False
