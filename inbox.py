@@ -1734,6 +1734,182 @@ def _receive_reaction(recent_posts_cache: {},
     return True
 
 
+def _receive_zot_reaction(recent_posts_cache: {},
+                          session, handle: str, base_dir: str,
+                          http_prefix: str, domain: str, port: int,
+                          onion_domain: str,
+                          cached_webfingers: {},
+                          person_cache: {}, message_json: {},
+                          debug: bool,
+                          signing_priv_key_pem: str,
+                          max_recent_posts: int, translate: {},
+                          allow_deletion: bool,
+                          yt_replace_domain: str,
+                          twitter_replacement_domain: str,
+                          peertube_instances: [],
+                          allow_local_network_access: bool,
+                          theme_name: str, system_language: str,
+                          max_like_count: int, cw_lists: {},
+                          lists_enabled: str, bold_reading: bool,
+                          dogwhistles: {}) -> bool:
+    """Receives an zot-style emoji reaction within the POST section of HTTPServer
+    A zot style emoji reaction is an ordinary reply Note whose content is
+    exactly one emoji
+    """
+    if not has_actor(message_json, debug):
+        return False
+    if not has_object_dict(message_json):
+        return False
+    if not message_json['object'].get('type'):
+        return False
+    if not isinstance(message_json['object']['type'], str):
+        return False
+    if message_json['object']['type'] != 'Note':
+        return False
+    if not message_json['object'].get('content'):
+        if debug:
+            print('DEBUG: ' + message_json['object']['type'] +
+                  ' has no "content"')
+        return False
+    if not message_json['object'].get('inReplyTo'):
+        if debug:
+            print('DEBUG: ' + message_json['object']['type'] +
+                  ' has no "inReplyTo"')
+        return False
+    if not isinstance(message_json['object']['content'], str):
+        if debug:
+            print('DEBUG: ' + message_json['object']['type'] +
+                  ' content is not string')
+        return False
+    if len(message_json['object']['content']) > 4:
+        if debug:
+            print('DEBUG: content is too long to be an emoji reaction')
+        return False
+    if not isinstance(message_json['object']['inReplyTo'], str):
+        if debug:
+            print('DEBUG: ' + message_json['object']['type'] +
+                  ' inReplyTo is not string')
+        return False
+    if not valid_emoji_content(message_json['object']['content']):
+        print('_receive_zot_reaction: Invalid emoji reaction: "' +
+              message_json['object']['content'] + '" from ' +
+              message_json['actor'])
+        return False
+    if not has_users_path(message_json['actor']):
+        if debug:
+            print('DEBUG: "users" or "profile" missing from actor in ' +
+                  message_json['object']['type'])
+        return False
+    if '/statuses/' not in message_json['object']['inReplyTo']:
+        if debug:
+            print('DEBUG: "statuses" missing from inReplyTo in ' +
+                  message_json['object']['type'])
+        return False
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
+        print('DEBUG: unknown recipient of zot emoji reaction - ' + handle)
+    if os.path.isfile(base_dir + '/accounts/' + handle +
+                      '/.hideReactionButton'):
+        print('Zot emoji reaction rejected by ' + handle +
+              ' due to their settings')
+        return True
+    # if this post in the outbox of the person?
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
+
+    post_reaction_id = message_json['object']['inReplyTo']
+    emoji_content = remove_html(message_json['object']['content'])
+    if not emoji_content:
+        if debug:
+            print('DEBUG: zot emoji reaction has no content')
+        return True
+    post_filename = locate_post(base_dir, handle_name, handle_dom,
+                                post_reaction_id)
+    if not post_filename:
+        if debug:
+            print('DEBUG: ' +
+                  'zot emoji reaction post not found in inbox or outbox')
+            print(post_reaction_id)
+        return True
+    if debug:
+        print('DEBUG: zot emoji reaction post found in inbox')
+
+    reaction_actor = message_json['actor']
+    handle_name = handle.split('@')[0]
+    handle_dom = handle.split('@')[1]
+    if not _already_reacted(base_dir,
+                            handle_name, handle_dom,
+                            post_reaction_id,
+                            reaction_actor,
+                            emoji_content):
+        _reaction_notify(base_dir, domain, onion_domain, handle,
+                         reaction_actor, post_reaction_id, emoji_content)
+    update_reaction_collection(recent_posts_cache, base_dir, post_filename,
+                               post_reaction_id, reaction_actor,
+                               handle_name, domain, debug, None, emoji_content)
+    # regenerate the html
+    reaction_post_json = load_json(post_filename, 0, 1)
+    if reaction_post_json:
+        if reaction_post_json.get('type'):
+            if reaction_post_json['type'] == 'Announce' and \
+               reaction_post_json.get('object'):
+                if isinstance(reaction_post_json['object'], str):
+                    announce_reaction_url = reaction_post_json['object']
+                    announce_reaction_filename = \
+                        locate_post(base_dir, handle_name,
+                                    domain, announce_reaction_url)
+                    if announce_reaction_filename:
+                        post_reaction_id = announce_reaction_url
+                        post_filename = announce_reaction_filename
+                        update_reaction_collection(recent_posts_cache,
+                                                   base_dir,
+                                                   post_filename,
+                                                   post_reaction_id,
+                                                   reaction_actor,
+                                                   handle_name,
+                                                   domain, debug, None,
+                                                   emoji_content)
+        if reaction_post_json:
+            if debug:
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, handle_name, domain,
+                                             reaction_post_json)
+                print('Reaction post json: ' + str(reaction_post_json))
+                print('Reaction post nickname: ' + handle_name + ' ' + domain)
+                print('Reaction post cache: ' + str(cached_post_filename))
+            page_number = 1
+            show_published_date_only = False
+            show_individual_post_icons = True
+            manually_approve_followers = \
+                follower_approval_active(base_dir, handle_name, domain)
+            not_dm = not is_dm(reaction_post_json)
+            timezone = get_account_timezone(base_dir, handle_name, domain)
+            mitm = False
+            if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+                mitm = True
+            individual_post_as_html(signing_priv_key_pem, False,
+                                    recent_posts_cache, max_recent_posts,
+                                    translate, page_number, base_dir,
+                                    session, cached_webfingers, person_cache,
+                                    handle_name, domain, port,
+                                    reaction_post_json,
+                                    None, True, allow_deletion,
+                                    http_prefix, __version__,
+                                    'inbox',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count, not_dm,
+                                    show_individual_post_icons,
+                                    manually_approve_followers,
+                                    False, True, False, cw_lists,
+                                    lists_enabled, timezone, mitm,
+                                    bold_reading, dogwhistles)
+    return True
+
+
 def _receive_undo_reaction(recent_posts_cache: {},
                            session, handle: str, is_group: bool, base_dir: str,
                            http_prefix: str, domain: str, port: int,
@@ -3803,6 +3979,32 @@ def _inbox_after_initial(server, inbox_start_time,
             print('DEBUG: Reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_reaction',
+                            debug)
+        inbox_start_time = time.time()
+        return False
+
+    if _receive_zot_reaction(recent_posts_cache,
+                             session, handle,
+                             base_dir, http_prefix,
+                             domain, port,
+                             onion_domain,
+                             cached_webfingers,
+                             person_cache,
+                             message_json,
+                             debug, signing_priv_key_pem,
+                             max_recent_posts, translate,
+                             allow_deletion,
+                             yt_replace_domain,
+                             twitter_replacement_domain,
+                             peertube_instances,
+                             allow_local_network_access,
+                             theme_name, system_language,
+                             max_like_count, cw_lists, lists_enabled,
+                             bold_reading, dogwhistles):
+        if debug:
+            print('DEBUG: Zot reaction accepted from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_zot_reaction',
                             debug)
         inbox_start_time = time.time()
         return False
