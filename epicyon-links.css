@@ -103,7 +103,6 @@ body, html {
     font-size: var(--font-size);
     line-height: var(--line-spacing);
     image-rendering: var(--rendering);
-    content-visibility: auto;
 }
 
 blockquote {
@@ -919,7 +918,6 @@ aside .toggle-inside li {
         min-width: 950px;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
-        content-visibility: auto;
     }
     .timeline {
         border: 0;
@@ -1395,7 +1393,6 @@ aside .toggle-inside li {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
-        content-visibility: auto;
     }
     .timeline {
         border: 0;
@@ -1874,7 +1871,6 @@ aside .toggle-inside li {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
-        content-visibility: auto;
     }
     .timeline {
         border: 0;
