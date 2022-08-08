@@ -84,6 +84,7 @@ body, html {
     font-size: var(--font-size);
     line-height: var(--line-spacing);
     image-rendering: var(--rendering);
+    content-visibility: auto;
 }
 
 a, u {
