@@ -32,6 +32,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import is_dm
 from utils import remove_eol
 from utils import text_in_file
 from utils import get_media_descriptions_from_post
@@ -4235,7 +4236,8 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
 
 def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
                              base_dir: str, recent_posts_cache: {},
-                             max_age_days: int, debug: bool) -> int:
+                             max_age_days: int, debug: bool,
+                             keep_dms: bool) -> int:
     """Removes posts older than some number of days
     """
     expired_post_count = 0
@@ -4271,6 +4273,12 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
             continue
         # get time difference
         if not valid_post_date(published_str, max_age_days, debug):
+            if keep_dms:
+                post_json_object = load_json(full_filename)
+                if not post_json_object:
+                    continue
+                if is_dm(post_json_object):
+                    continue
             delete_post(base_dir, http_prefix, nickname, domain,
                         full_filename, debug, recent_posts_cache, True)
             expired_post_count += 1
@@ -4293,6 +4301,11 @@ def expire_posts(base_dir: str, http_prefix: str,
                 base_dir + '/accounts/' + handle + '/.expire_posts_days'
             if not os.path.isfile(expire_posts_filename):
                 continue
+            keep_dms = True
+            expire_dms_filename = \
+                base_dir + '/accounts/' + handle + '/.expire_posts_dms'
+            if os.path.isfile(expire_dms_filename):
+                keep_dms = False
             expire_days_str = None
             try:
                 with open(expire_posts_filename, 'r',
@@ -4313,7 +4326,8 @@ def expire_posts(base_dir: str, http_prefix: str,
                 _expire_posts_for_person(http_prefix,
                                          nickname, domain, base_dir,
                                          recent_posts_cache,
-                                         max_age_days, debug)
+                                         max_age_days, debug,
+                                         keep_dms)
         break
     return expired_post_count
 
