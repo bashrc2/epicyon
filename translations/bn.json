@@ -571,5 +571,6 @@
     "nowplaying": "এখন চলছে",
     "NowPlaying": "এখন চলছে",
     "Import and Export": "আমদানি এবং রপ্তানি",
-    "Import Follows": "আমদানি অনুসরণ করে"
+    "Import Follows": "আমদানি অনুসরণ করে",
+    "Post expiry period in days": "দিনের মধ্যে মেয়াদ শেষ হওয়ার পরে"
 }

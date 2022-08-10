@@ -571,5 +571,6 @@
     "nowplaying": "ora giocando",
     "NowPlaying": "OraGiocando",
     "Import and Export": "Importazione e esportazione",
-    "Import Follows": "Importa segue"
+    "Import Follows": "Importa segue",
+    "Post expiry period in days": "Scadenza post in giorni"
 }

@@ -571,5 +571,6 @@
     "nowplaying": "再生中",
     "NowPlaying": "再生中",
     "Import and Export": "インポートとエクスポート",
-    "Import Follows": "インポートフォロー"
+    "Import Follows": "インポートフォロー",
+    "Post expiry period in days": "投稿の有効期限 (日数)"
 }

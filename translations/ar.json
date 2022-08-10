@@ -571,5 +571,6 @@
     "nowplaying": "الان العب",
     "NowPlaying": "الان العب",
     "Import and Export": "استيراد وتصدير",
-    "Import Follows": "يتبع الاستيراد"
+    "Import Follows": "يتبع الاستيراد",
+    "Post expiry period in days": "فترة ما بعد انتهاء الصلاحية بالأيام"
 }

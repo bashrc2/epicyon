@@ -571,5 +571,6 @@
     "nowplaying": "terazgra",
     "NowPlaying": "TerazGra",
     "Import and Export": "Importuj i eksportuj",
-    "Import Follows": "Importuj obserwuje"
+    "Import Follows": "Importuj obserwuje",
+    "Post expiry period in days": "Okres po wygaśnięciu w dniach"
 }

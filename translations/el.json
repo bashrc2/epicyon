@@ -571,5 +571,6 @@
     "nowplaying": "τώραπαίζει",
     "NowPlaying": "ΤώραΠαίζει",
     "Import and Export": "Εισάγω και εξάγω",
-    "Import Follows": "Ακολουθεί εισαγωγή"
+    "Import Follows": "Ακολουθεί εισαγωγή",
+    "Post expiry period in days": "Η περίοδος μετά τη λήξη σε ημέρες"
 }

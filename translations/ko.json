@@ -571,5 +571,6 @@
     "nowplaying": "지금 재생",
     "NowPlaying": "지금 재생",
     "Import and Export": "가져오기 및 내보내기",
-    "Import Follows": "가져오기 팔로우"
+    "Import Follows": "가져오기 팔로우",
+    "Post expiry period in days": "사후 만료 기간(일)"
 }
