@@ -572,5 +572,6 @@
     "NowPlaying": "الان العب",
     "Import and Export": "استيراد وتصدير",
     "Import Follows": "يتبع الاستيراد",
-    "Post expiry period in days": "فترة ما بعد انتهاء الصلاحية بالأيام"
+    "Post expiry period in days": "فترة ما بعد انتهاء الصلاحية بالأيام",
+    "Keep DMs during post expiry": "احتفظ بالرسائل الخاصّة أثناء انتهاء صلاحية النشر"
 }

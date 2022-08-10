@@ -572,5 +572,6 @@
     "NowPlaying": "ΤώραΠαίζει",
     "Import and Export": "Εισάγω και εξάγω",
     "Import Follows": "Ακολουθεί εισαγωγή",
-    "Post expiry period in days": "Η περίοδος μετά τη λήξη σε ημέρες"
+    "Post expiry period in days": "Η περίοδος μετά τη λήξη σε ημέρες",
+    "Keep DMs during post expiry": "Διατηρήστε τα άμεσα μηνύματα κατά τη λήξη της ανάρτησης"
 }

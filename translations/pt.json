@@ -572,5 +572,6 @@
     "NowPlaying": "AgoraJogando",
     "Import and Export": "Importar e exportar",
     "Import Follows": "Importar seguidores",
-    "Post expiry period in days": "Prazo de expiração em dias"
+    "Post expiry period in days": "Prazo de expiração em dias",
+    "Keep DMs during post expiry": "Manter mensagens diretas durante a expiração da postagem"
 }

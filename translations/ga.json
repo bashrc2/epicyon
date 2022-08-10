@@ -572,5 +572,6 @@
     "NowPlaying": "AnoisAgImirt",
     "Import and Export": "Iompórtáil agus Easpórtáil",
     "Import Follows": "Leanann Iompórtáil",
-    "Post expiry period in days": "Tréimhse iar-éagtha i laethanta"
+    "Post expiry period in days": "Tréimhse iar-éagtha i laethanta",
+    "Keep DMs during post expiry": "Coinnigh Teachtaireachtaí Díreacha nuair a rachaidh postáil in éag"
 }

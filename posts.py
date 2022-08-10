@@ -4286,6 +4286,41 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
     return expired_post_count
 
 
+def get_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str) -> int:
+    """Returns true if dms should expire
+    """
+    keep_dms = True
+    handle = nickname + '@' + domain
+    expire_dms_filename = \
+        base_dir + '/accounts/' + handle + '/.expire_posts_dms'
+    if os.path.isfile(expire_dms_filename):
+        keep_dms = False
+    return keep_dms
+
+
+def set_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str,
+                             keep_dms: bool) -> None:
+    """Sets whether to keep DMs during post expiry for an account
+    """
+    handle = nickname + '@' + domain
+    expire_dms_filename = \
+        base_dir + '/accounts/' + handle + '/.expire_posts_dms'
+    if keep_dms:
+        if os.path.isfile(expire_dms_filename):
+            try:
+                os.remove(expire_dms_filename)
+            except OSError:
+                print('EX: unable to write set_post_expiry_keep_dms False ' +
+                      expire_dms_filename)
+        return
+    try:
+        with open(expire_dms_filename, 'w+', encoding='utf-8') as fp_expire:
+            fp_expire.write('\n')
+    except OSError:
+        print('EX: unable to write set_post_expiry_keep_dms True ' +
+              expire_dms_filename)
+
+
 def expire_posts(base_dir: str, http_prefix: str,
                  recent_posts_cache: {}, debug: bool) -> int:
     """Expires posts for instance accounts
@@ -4301,11 +4336,7 @@ def expire_posts(base_dir: str, http_prefix: str,
                 base_dir + '/accounts/' + handle + '/.expire_posts_days'
             if not os.path.isfile(expire_posts_filename):
                 continue
-            keep_dms = True
-            expire_dms_filename = \
-                base_dir + '/accounts/' + handle + '/.expire_posts_dms'
-            if os.path.isfile(expire_dms_filename):
-                keep_dms = False
+            keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
             expire_days_str = None
             try:
                 with open(expire_posts_filename, 'r',

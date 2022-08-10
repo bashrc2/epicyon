@@ -38,6 +38,7 @@ from theme import get_themes_list
 from person import person_box_json
 from person import get_actor_json
 from person import get_person_avatar_url
+from posts import get_post_expiry_keep_dms
 from posts import get_post_expiry_days
 from posts import get_person_box
 from posts import is_moderator
@@ -2191,6 +2192,10 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
         edit_number_field(translate['Post expiry period in days'],
                           'postExpiryPeriod', post_expiry_period_days,
                           0, 9999999999999999999999, 0)
+    keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
+    edit_profile_form += \
+        edit_check_box(translate['Keep DMs during post expiry'],
+                       'expiryKeepDMs', keep_dms)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form

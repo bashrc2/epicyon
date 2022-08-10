@@ -572,5 +572,6 @@
     "NowPlaying": "现在玩",
     "Import and Export": "进出口",
     "Import Follows": "导入关注",
-    "Post expiry period in days": "到期后天数"
+    "Post expiry period in days": "到期后天数",
+    "Keep DMs during post expiry": "在帖子到期期间保留直接消息"
 }

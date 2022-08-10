@@ -572,5 +572,6 @@
     "NowPlaying": "NuAanHetSpelen",
     "Import and Export": "Importeren en exporteren",
     "Import Follows": "Volgt importeren",
-    "Post expiry period in days": "Na afloopperiode in dagen"
+    "Post expiry period in days": "Na afloopperiode in dagen",
+    "Keep DMs during post expiry": "Directe berichten bewaren tijdens de vervaldatum"
 }

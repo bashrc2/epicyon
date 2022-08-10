@@ -80,6 +80,8 @@ from person import remove_account
 from person import can_remove_post
 from person import person_snooze
 from person import person_unsnooze
+from posts import get_post_expiry_keep_dms
+from posts import set_post_expiry_keep_dms
 from posts import get_post_expiry_days
 from posts import set_post_expiry_days
 from posts import get_original_post_from_announce_url
@@ -6729,6 +6731,18 @@ class PubServer(BaseHTTPRequestHandler):
                             actor_json['manuallyApprovesFollowers'] = \
                                 approve_followers
                             actor_changed = True
+
+                    # keep DMs during post expiry
+                    expire_keep_dms = False
+                    if fields.get('expiryKeepDMs'):
+                        if fields['expiryKeepDMs'] == 'on':
+                            expire_keep_dms = True
+                    curr_keep_dms = \
+                        get_post_expiry_keep_dms(base_dir, nickname, domain)
+                    if curr_keep_dms != expire_keep_dms:
+                        set_post_expiry_keep_dms(base_dir, nickname, domain,
+                                                 expire_keep_dms)
+                        actor_changed = True
 
                     # remove a custom font
                     if fields.get('removeCustomFont'):

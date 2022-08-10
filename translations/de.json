@@ -572,5 +572,6 @@
     "NowPlaying": "LäuftGerade",
     "Import and Export": "Import und Export",
     "Import Follows": "Import folgt",
-    "Post expiry period in days": "Nachablaufzeitraum in Tagen"
+    "Post expiry period in days": "Nachablaufzeitraum in Tagen",
+    "Keep DMs during post expiry": "Bewahren Sie Direktnachrichten während des Ablaufs auf"
 }

@@ -572,5 +572,6 @@
     "NowPlaying": "TerazGra",
     "Import and Export": "Importuj i eksportuj",
     "Import Follows": "Importuj obserwuje",
-    "Post expiry period in days": "Okres po wygaśnięciu w dniach"
+    "Post expiry period in days": "Okres po wygaśnięciu w dniach",
+    "Keep DMs during post expiry": "Zachowaj bezpośrednie wiadomości po wygaśnięciu"
 }

@@ -572,5 +572,6 @@
     "NowPlaying": "再生中",
     "Import and Export": "インポートとエクスポート",
     "Import Follows": "インポートフォロー",
-    "Post expiry period in days": "投稿の有効期限 (日数)"
+    "Post expiry period in days": "投稿の有効期限 (日数)",
+    "Keep DMs during post expiry": "投稿の有効期限が切れるまでダイレクト メッセージを保持する"
 }
