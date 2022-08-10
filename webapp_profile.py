@@ -38,6 +38,7 @@ from theme import get_themes_list
 from person import person_box_json
 from person import get_actor_json
 from person import get_person_avatar_url
+from posts import get_post_expiry_days
 from posts import get_person_box
 from posts import is_moderator
 from posts import parse_user_feed
@@ -58,6 +59,7 @@ from filters import is_filtered
 from follow import is_follower_of_person
 from follow import get_follower_domains
 from webapp_frontscreen import html_front_screen
+from webapp_utils import edit_number_field
 from webapp_utils import html_keyboard_navigation
 from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import scheduled_posts_exist
@@ -2182,6 +2184,13 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
     edit_profile_form += \
         edit_text_field(translate['Time Zone'], 'timeZone',
                         timezone, 'Europe/London')
+
+    post_expiry_period_days = \
+        get_post_expiry_days(base_dir, nickname, domain)
+    edit_profile_form += \
+        edit_number_field(translate['Post expiry period in days'],
+                          'postExpiryPeriod', post_expiry_period_days,
+                          0, 9999999999999999999999, 0)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form

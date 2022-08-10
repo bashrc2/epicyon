@@ -4318,6 +4318,28 @@ def expire_posts(base_dir: str, http_prefix: str,
     return expired_post_count
 
 
+def get_post_expiry_days(base_dir: str, nickname: str, domain: str) -> int:
+    """
+    """
+    handle = nickname + '@' + domain
+    expire_posts_filename = \
+        base_dir + '/accounts/' + handle + '/.expire_posts_days'
+    if not os.path.isfile(expire_posts_filename):
+        return 0
+    days_str = None
+    try:
+        with open(expire_posts_filename, 'r', encoding='utf-8') as fp_expire:
+            days_str = fp_expire.read()
+    except OSError:
+        print('EX: unable to write post expire days ' +
+              expire_posts_filename)
+    if not days_str:
+        return 0
+    if not days_str.isdigit():
+        return 0
+    return int(days_str)
+
+
 def set_post_expiry_days(base_dir: str, nickname: str, domain: str,
                          max_age_days: int) -> None:
     """Sets the number of days after which posts from an account will expire

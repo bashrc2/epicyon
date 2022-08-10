@@ -80,6 +80,8 @@ from person import remove_account
 from person import can_remove_post
 from person import person_snooze
 from person import person_unsnooze
+from posts import get_post_expiry_days
+from posts import set_post_expiry_days
 from posts import get_original_post_from_announce_url
 from posts import save_post_to_box
 from posts import get_instance_actor_key
@@ -6133,6 +6135,22 @@ class PubServer(BaseHTTPRequestHandler):
                             set_account_timezone(base_dir,
                                                  nickname, domain, '')
                             del self.server.account_timezone[nickname]
+                            actor_changed = True
+
+                    # set post expiry period in days
+                    post_expiry_period_days = \
+                        get_post_expiry_days(base_dir, nickname, domain)
+                    if fields.get('postExpiryPeriod'):
+                        if fields['postExpiryPeriod'] != \
+                           str(post_expiry_period_days):
+                            post_expiry_period_days = \
+                                fields['postExpiryPeriod']
+                            set_post_expiry_days(base_dir, nickname, domain,
+                                                 post_expiry_period_days)
+                            actor_changed = True
+                    else:
+                        if post_expiry_period_days > 0:
+                            set_post_expiry_days(base_dir, nickname, domain, 0)
                             actor_changed = True
 
                     # change tox address
