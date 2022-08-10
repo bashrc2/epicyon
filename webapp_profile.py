@@ -2193,7 +2193,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
                           'postExpiryPeriod', post_expiry_period_days,
                           0, 9999999999999999999999, 0)
     keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
-    edit_profile_form += \
+    edit_profile_form += '<br>\n' + \
         edit_check_box(translate['Keep DMs during post expiry'],
                        'expiryKeepDMs', keep_dms)
 
