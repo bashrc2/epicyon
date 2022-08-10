@@ -37,6 +37,7 @@ from posts import send_block_via_server
 from posts import send_undo_block_via_server
 from posts import create_public_post
 from posts import delete_all_posts
+from posts import expire_posts
 from posts import archive_posts
 from posts import send_post_via_server
 from posts import get_public_posts_of_person
@@ -2773,10 +2774,17 @@ def _command_options() -> None:
             print('Archiving with deletion of old posts...')
         else:
             print('Archiving to ' + argb.archive + '...')
+        # archiving is for non-instance posts
         archive_media(base_dir, argb.archive, argb.archiveWeeks)
         archive_posts(base_dir, http_prefix, argb.archive, {},
                       argb.archiveMaxPosts)
         print('Archiving complete')
+        # expiry is for instance posts, where an expiry period
+        # has been set within profile settings
+        expired_count = expire_posts(base_dir, http_prefix, {},
+                                     argb.debug)
+        if expired_count > 0:
+            print(str(expired_count) + ' posts expired')
         sys.exit()
 
     if not argb.domain and not domain:

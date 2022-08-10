@@ -4233,6 +4233,106 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
         break
 
 
+def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
+                             base_dir: str, recent_posts_cache: {},
+                             max_age_days: int, debug: bool) -> int:
+    """Removes posts older than some number of days
+    """
+    expired_post_count = 0
+    if max_age_days <= 0:
+        return expired_post_count
+
+    boxname = 'outbox'
+    box_dir = create_person_dir(nickname, domain, base_dir, boxname)
+
+    posts_in_box = os.scandir(box_dir)
+    for post_filename in posts_in_box:
+        post_filename = post_filename.name
+        if not post_filename.endswith('.json'):
+            continue
+        # Time of file creation
+        full_filename = os.path.join(box_dir, post_filename)
+        if not os.path.isfile(full_filename):
+            continue
+        content = ''
+        try:
+            with open(full_filename, 'r', encoding='utf-8') as fp_content:
+                content = fp_content.read()
+        except OSError:
+            print('EX: expire_posts_for_person unable to open content ' +
+                  full_filename)
+        if '"published":' not in content:
+            continue
+        published_str = content.split('"published":')[1]
+        if '"' not in published_str:
+            continue
+        published_str = published_str.split('"')[1]
+        if not published_str.endswith('Z'):
+            continue
+        # get time difference
+        if not valid_post_date(published_str, max_age_days, debug):
+            delete_post(base_dir, http_prefix, nickname, domain,
+                        full_filename, debug, recent_posts_cache, True)
+            expired_post_count += 1
+
+    return expired_post_count
+
+
+def expire_posts(base_dir: str, http_prefix: str,
+                 recent_posts_cache: {}, debug: bool) -> int:
+    """Expires posts for instance accounts
+    """
+    expired_post_count = 0
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for handle in dirs:
+            if '@' not in handle:
+                continue
+            nickname = handle.split('@')[0]
+            domain = handle.split('@')[1]
+            expire_posts_filename = \
+                base_dir + '/accounts/' + handle + '/.expire_posts_days'
+            if not os.path.isfile(expire_posts_filename):
+                continue
+            expire_days_str = None
+            try:
+                with open(expire_posts_filename, 'r',
+                          encoding='utf-8') as fp_expire:
+                    expire_days_str = fp_expire.read()
+            except OSError:
+                print('EX: expire_posts failed to read days file ' +
+                      expire_posts_filename)
+                continue
+            if not expire_days_str:
+                continue
+            if not expire_days_str.isdigit():
+                continue
+            max_age_days = int(expire_days_str)
+            if max_age_days <= 0:
+                continue
+            expired_post_count += \
+                _expire_posts_for_person(http_prefix,
+                                         nickname, domain, base_dir,
+                                         recent_posts_cache,
+                                         max_age_days, debug)
+        break
+    return expired_post_count
+
+
+def set_post_expiry_days(base_dir: str, nickname: str, domain: str,
+                         max_age_days: int) -> None:
+    """Sets the number of days after which posts from an account will expire
+    """
+    handle = nickname + '@' + domain
+    expire_posts_filename = \
+        base_dir + '/accounts/' + handle + '/.expire_posts_days'
+    try:
+        with open(expire_posts_filename, 'w+', encoding='utf-8') as fp_expire:
+            fp_expire.write(str(max_age_days))
+    except OSError:
+        print('EX: unable to write post expire days ' +
+              expire_posts_filename)
+
+
 def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                              base_dir: str,
                              boxname: str, archive_dir: str,
