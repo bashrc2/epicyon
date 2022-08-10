@@ -571,5 +571,7 @@
     "nowplaying": "заразграє",
     "NowPlaying": "ЗаразГрає",
     "Import and Export": "Імпорт та експорт",
-    "Import Follows": "Імпорт слідує"
+    "Import Follows": "Імпорт слідує",
+    "Post expiry period in days": "Термін після закінчення терміну дії в днях",
+    "Keep DMs during post expiry": "Зберігайте прямі повідомлення протягом терміну дії"
 }

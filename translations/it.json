@@ -571,5 +571,7 @@
     "nowplaying": "ora giocando",
     "NowPlaying": "OraGiocando",
     "Import and Export": "Importazione e esportazione",
-    "Import Follows": "Importa segue"
+    "Import Follows": "Importa segue",
+    "Post expiry period in days": "Scadenza post in giorni",
+    "Keep DMs during post expiry": "Conserva i messaggi diretti durante la scadenza successiva"
 }

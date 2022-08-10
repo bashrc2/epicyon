@@ -571,5 +571,7 @@
     "nowplaying": "nowplaying",
     "NowPlaying": "NowPlaying",
     "Import and Export": "Import and Export",
-    "Import Follows": "Import Follows"
+    "Import Follows": "Import Follows",
+    "Post expiry period in days": "Post expiry period in days",
+    "Keep DMs during post expiry": "Keep DMs during post expiry"
 }

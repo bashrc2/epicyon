@@ -571,5 +571,7 @@
     "nowplaying": "lectureencours",
     "NowPlaying": "LectureEnCours",
     "Import and Export": "Importer et exporter",
-    "Import Follows": "Importer suit"
+    "Import Follows": "Importer suit",
+    "Post expiry period in days": "Délai après expiration en jours",
+    "Keep DMs during post expiry": "Conserver les messages directs après l'expiration"
 }

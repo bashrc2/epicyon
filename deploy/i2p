@@ -7,10 +7,10 @@ if [[ "$1" == 'remove' ]]; then
     echo 'Removing Epicyon i2p instance'
     systemctl stop i2pd
     if [ -f /var/lib/i2pd/tunnels.d/epicyon ]; then
-	rm /var/lib/i2pd/tunnels.d/epicyon
+        rm /var/lib/i2pd/tunnels.d/epicyon
     fi
     if [ -f /etc/i2pd/tunnels.conf.d/epicyon ]; then
-	rm /etc/i2pd/tunnels.conf.d/epicyon
+        rm /etc/i2pd/tunnels.conf.d/epicyon
     fi
     rm /var/lib/i2pd/epicyon.dat
     systemctl restart i2pd
@@ -27,14 +27,14 @@ fi
 
 if [[ "$1" == 'removei2p' ]]; then
     if [ -f /usr/bin/pacman ]; then
-	pacman -R --noconfirm i2pd
+        pacman -R --noconfirm i2pd
     else
-	apt-get -y remove --purge i2pd
+        apt-get -y remove --purge i2pd
     fi
     rm -rf /etc/i2pd
     rm -rf /var/lib/i2pd
     if [ -f /var/log/i2pd/i2pd.log ]; then
-	rm /var/log/i2pd/i2pd.log
+        rm /var/log/i2pd/i2pd.log
     fi
 fi
 
@@ -56,20 +56,20 @@ if [ -f /usr/bin/pacman ]; then
     pacman -Syy
     pacman -S --noconfirm python-pip python-pysocks python-cryptography \
            imagemagick python-pillow python-requests \
-	   perl-image-exiftool python-numpy python-dateutil \
-	   certbot flake8 git i2pd wget qrencode \
-	   proxychains midori bandit
+           perl-image-exiftool python-numpy python-dateutil \
+           certbot flake8 git i2pd wget qrencode \
+           proxychains midori bandit
     pip3 install pyLD pyqrcode pypng
 else
     apt-get update
     apt-get -y install imagemagick python3-cryptography \
-	    python3-dateutil python3-idna python3-requests \
-	    python3-numpy python3-pil.imagetk python3-pip \
-	    python3-setuptools python3-socks python3-idna \
-	    libimage-exiftool-perl python3-flake8 python3-pyld \
-	    python3-django-timezone-field nginx git i2pd wget \
-	    python3-pyqrcode qrencode python3-png \
-	    proxychains midori python3-bandit
+            python3-dateutil python3-idna python3-requests \
+            python3-numpy python3-pil.imagetk python3-pip \
+            python3-setuptools python3-socks python3-idna \
+            libimage-exiftool-perl python3-flake8 python3-pyld \
+            python3-django-timezone-field nginx git i2pd wget \
+            python3-pyqrcode qrencode python3-png \
+            proxychains midori python3-bandit
 fi
 
 if [ ! -d /etc/i2pd ]; then
@@ -82,8 +82,8 @@ if [ ! -d ${install_destination} ]; then
     git clone https://gitlab.com/bashrc2/epicyon ${install_destination}
 
     if [ ! -d ${install_destination} ]; then
-	echo 'Epicyon repo failed to clone'
-	exit 3
+        echo 'Epicyon repo failed to clone'
+        exit 3
     fi
 fi
 
@@ -142,8 +142,8 @@ sed -i "s|tunnelsdir =.*|tunnelsdir = $tunnels_dir|g" /etc/i2pd/i2pd.conf
 echo 'Enabling ipv6'
 if [ -f /etc/sysctl.conf ]; then
     if grep -q 'net.ipv6.conf.all.disable_ipv6' /etc/sysctl.conf; then
-	sed -i 's|net.ipv6.conf.all.disable_ipv6.*|net.ipv6.conf.all.disable_ipv6 = 0|g' /etc/sysctl.conf
-	/sbin/sysctl -p -q
+        sed -i 's|net.ipv6.conf.all.disable_ipv6.*|net.ipv6.conf.all.disable_ipv6 = 0|g' /etc/sysctl.conf
+        /sbin/sysctl -p -q
     fi
 fi
 sed -i 's|#ipv6 =|ipv6 =|g' /etc/i2pd/i2pd.conf
@@ -161,7 +161,7 @@ sed -i 's|# nat =|nat =|g' /etc/i2pd/i2pd.conf
 sed -i 's|nat =.*|nat = true|g' /etc/i2pd/i2pd.conf
 
 if [ ! -d /run/i2pd ]; then
-    mkdir /run/i2pd    
+    mkdir /run/i2pd
 fi
 chown -R i2pd:i2pd /run/i2pd
 
@@ -300,7 +300,7 @@ if [ ! -f /etc/nginx/nginx.conf ]; then
       echo '}'; } > /etc/nginx/nginx.conf
 else
     if ! grep -q 'include /etc/nginx/sites-enabled' /etc/nginx/nginx.conf; then
-	echo 'include /etc/nginx/sites-enabled/*.conf;' >> /etc/nginx/nginx.conf
+        echo 'include /etc/nginx/sites-enabled/*.conf;' >> /etc/nginx/nginx.conf
     fi
 fi
 if [ ! -d /etc/nginx/conf.d ]; then
@@ -315,25 +315,25 @@ fi
 
 if [ -f /usr/bin/pacman ]; then
     if [ ! -f /lib/systemd/system/nginx.service ]; then
-	echo 'Creating nginx daemon'
-	{ echo '[Unit]';
-	  echo 'Description=A high performance web server and a reverse proxy server';
-	  echo 'Documentation=man:nginx(8)';
-	  echo 'After=network.target nss-lookup.target';
-	  echo ''
-	  echo '[Service]';
-	  echo 'Type=forking';
-	  echo 'PIDFile=/run/nginx.pid';
-	  echo "ExecStartPre=$(which nginx) -t -q -g 'daemon on; master_process on;'";
-	  echo "ExecStart=$(which nginx) -g 'daemon on; master_process on;'";
-	  echo "ExecReload=$(which nginx) -g 'daemon on; master_process on;' -s reload";
-	  echo 'ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid';
-	  echo 'TimeoutStopSec=5';
-	  echo 'KillMode=mixed';
-	  echo '';
-	  echo '[Install]';
-	  echo 'WantedBy=multi-user.target'; } > /etc/systemd/system/nginx.service
-	systemctl enable nginx
+        echo 'Creating nginx daemon'
+        { echo '[Unit]';
+          echo 'Description=A high performance web server and a reverse proxy server';
+          echo 'Documentation=man:nginx(8)';
+          echo 'After=network.target nss-lookup.target';
+          echo ''
+          echo '[Service]';
+          echo 'Type=forking';
+          echo 'PIDFile=/run/nginx.pid';
+          echo "ExecStartPre=$(which nginx) -t -q -g 'daemon on; master_process on;'";
+          echo "ExecStart=$(which nginx) -g 'daemon on; master_process on;'";
+          echo "ExecReload=$(which nginx) -g 'daemon on; master_process on;' -s reload";
+          echo 'ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid';
+          echo 'TimeoutStopSec=5';
+          echo 'KillMode=mixed';
+          echo '';
+          echo '[Install]';
+          echo 'WantedBy=multi-user.target'; } > /etc/systemd/system/nginx.service
+        systemctl enable nginx
     fi
 fi
 
@@ -402,25 +402,25 @@ systemctl restart nginx
   echo 'localnet 127.0.0.0/255.0.0.0';
   echo '[ProxyList]';
   echo 'http    127.0.0.1 4444';
-  echo 'socks5 	127.0.0.1 4447'; } > /etc/proxychains.conf
+  echo 'socks5  127.0.0.1 4447'; } > /etc/proxychains.conf
 
 # set up a desktop icon
 for d in /home/*/ ; do
     CURRUSER=$(echo "$d" | awk -F '/' '{print $3}')
     if [ -d "/home/${CURRUSER}/Desktop" ]; then
-	{ echo '#!/usr/bin/env xdg-open';
-	  echo '[Desktop Entry]';
-	  echo 'Name=Epicyon I2P';
-	  echo 'GenericName=P2P Social Network';
-	  echo 'Comment=P2P Social Network';
-	  echo "Exec=proxychains midori http://${I2P_DOMAIN}";
-	  echo 'Icon=org.midori_browser.Midori';
-	  echo 'Type=Application';
-	  echo 'Terminal=false';
-	  echo 'Categories=Internet;SocialNetwork;';
-	  echo 'StartupWMClass=Epicyon';
-	  echo 'Keywords=Epicyon;P2P;I2P;'; } > "/home/${CURRUSER}/Desktop/${username}.desktop"
-	chown "$CURRUSER":"$CURRUSER" "/home/${CURRUSER}/Desktop/${username}.desktop"
+        { echo '#!/usr/bin/env xdg-open';
+          echo '[Desktop Entry]';
+          echo 'Name=Epicyon I2P';
+          echo 'GenericName=P2P Social Network';
+          echo 'Comment=P2P Social Network';
+          echo "Exec=proxychains midori http://${I2P_DOMAIN}";
+          echo 'Icon=org.midori_browser.Midori';
+          echo 'Type=Application';
+          echo 'Terminal=false';
+          echo 'Categories=Internet;SocialNetwork;';
+          echo 'StartupWMClass=Epicyon';
+          echo 'Keywords=Epicyon;P2P;I2P;'; } > "/home/${CURRUSER}/Desktop/${username}.desktop"
+        chown "$CURRUSER":"$CURRUSER" "/home/${CURRUSER}/Desktop/${username}.desktop"
     fi
 done
 

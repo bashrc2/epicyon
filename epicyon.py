@@ -26,6 +26,7 @@ from roles import set_role
 from webfinger import webfinger_handle
 from bookmarks import send_bookmark_via_server
 from bookmarks import send_undo_bookmark_via_server
+from posts import set_post_expiry_days
 from posts import get_instance_actor_key
 from posts import send_mute_via_server
 from posts import send_undo_mute_via_server
@@ -37,6 +38,7 @@ from posts import send_block_via_server
 from posts import send_undo_block_via_server
 from posts import create_public_post
 from posts import delete_all_posts
+from posts import expire_posts
 from posts import archive_posts
 from posts import send_post_via_server
 from posts import get_public_posts_of_person
@@ -214,6 +216,10 @@ def _command_options() -> None:
     parser.add_argument('-p', '--port', dest='port', type=int,
                         default=None,
                         help='Port number to run on')
+    parser.add_argument('--expiryDays', dest='expiryDays', type=int,
+                        default=None,
+                        help='Number of days after which posts expire ' +
+                        'for the given account')
     parser.add_argument('--check-actor-timeout', dest='check_actor_timeout',
                         type=int, default=2,
                         help='Timeout in seconds used for checking is ' +
@@ -1572,6 +1578,13 @@ def _command_options() -> None:
             time.sleep(1)
         sys.exit()
 
+    if argb.expiryDays is not None and argb.nickname and argb.domain:
+        set_post_expiry_days(base_dir, argb.nickname, argb.domain,
+                             argb.expiryDays)
+        print('Post expiry for ' + argb.nickname + ' set to ' +
+              str(argb.expiryDays))
+        sys.exit()
+
     if argb.dav:
         if not argb.nickname:
             print('Please specify a nickname with --nickname')
@@ -2773,10 +2786,17 @@ def _command_options() -> None:
             print('Archiving with deletion of old posts...')
         else:
             print('Archiving to ' + argb.archive + '...')
+        # archiving is for non-instance posts
         archive_media(base_dir, argb.archive, argb.archiveWeeks)
         archive_posts(base_dir, http_prefix, argb.archive, {},
                       argb.archiveMaxPosts)
         print('Archiving complete')
+        # expiry is for instance posts, where an expiry period
+        # has been set within profile settings
+        expired_count = expire_posts(base_dir, http_prefix, {},
+                                     argb.debug)
+        if expired_count > 0:
+            print(str(expired_count) + ' posts expired')
         sys.exit()
 
     if not argb.domain and not domain:

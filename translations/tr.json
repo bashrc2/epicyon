@@ -571,5 +571,7 @@
     "nowplaying": "şimdioynuyor",
     "NowPlaying": "ŞimdiOynuyor",
     "Import and Export": "İthalat ve ihracat",
-    "Import Follows": "Takipleri İçe Aktar"
+    "Import Follows": "Takipleri İçe Aktar",
+    "Post expiry period in days": "Gün olarak sona erme süresi",
+    "Keep DMs during post expiry": "Direkt Mesajları sona erme süresi boyunca saklayın"
 }

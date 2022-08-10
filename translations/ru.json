@@ -571,5 +571,7 @@
     "nowplaying": "сейчасиграет",
     "NowPlaying": "СейчасИграет",
     "Import and Export": "Импорт и экспорт",
-    "Import Follows": "Импорт подписок"
+    "Import Follows": "Импорт подписок",
+    "Post expiry period in days": "Срок действия в днях",
+    "Keep DMs during post expiry": "Сохраняйте личные сообщения в течение срока действия после истечения срока действия"
 }
