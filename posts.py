@@ -4319,7 +4319,7 @@ def expire_posts(base_dir: str, http_prefix: str,
 
 
 def get_post_expiry_days(base_dir: str, nickname: str, domain: str) -> int:
-    """
+    """Returns the post expiry period for the given account
     """
     handle = nickname + '@' + domain
     expire_posts_filename = \
