@@ -26,6 +26,7 @@ from roles import set_role
 from webfinger import webfinger_handle
 from bookmarks import send_bookmark_via_server
 from bookmarks import send_undo_bookmark_via_server
+from posts import set_post_expiry_days
 from posts import get_instance_actor_key
 from posts import send_mute_via_server
 from posts import send_undo_mute_via_server
@@ -215,6 +216,10 @@ def _command_options() -> None:
     parser.add_argument('-p', '--port', dest='port', type=int,
                         default=None,
                         help='Port number to run on')
+    parser.add_argument('--expiryDays', dest='expiryDays', type=int,
+                        default=None,
+                        help='Number of days after which posts expire ' +
+                        'for the given account')
     parser.add_argument('--check-actor-timeout', dest='check_actor_timeout',
                         type=int, default=2,
                         help='Timeout in seconds used for checking is ' +
@@ -1571,6 +1576,13 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        sys.exit()
+
+    if argb.expiryDays is not None and argb.nickname and argb.domain:
+        set_post_expiry_days(base_dir, argb.nickname, argb.domain,
+                             argb.expiryDays)
+        print('Post expiry for ' + argb.nickname + ' set to ' +
+              str(argb.expiryDays))
         sys.exit()
 
     if argb.dav:
