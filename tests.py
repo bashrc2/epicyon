@@ -4756,13 +4756,13 @@ def get_function_calls(name: str, lines: [], start_line_ctr: int,
     return calls_functions
 
 
-def _function_args_match(call_args: [], func_args: []):
-    """Do the function arguments match the function call arguments
+def _function_args_match(call_args: [], func_args: []) -> bool:
+    """Do the function arguments match the function call arguments?
     """
     if len(call_args) == len(func_args):
         return True
 
-    # count non-optional arguments
+    # count non-optional arguments in function call
     call_args_ctr = 0
     for arg1 in call_args:
         if arg1 == 'self':
@@ -4770,6 +4770,7 @@ def _function_args_match(call_args: [], func_args: []):
         if '=' not in arg1 or arg1.startswith("'"):
             call_args_ctr += 1
 
+    # count non-optional arguments in function def
     func_args_ctr = 0
     for arg2 in func_args:
         if arg2 == 'self':
