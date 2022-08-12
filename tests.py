@@ -4757,7 +4757,7 @@ def get_function_calls(name: str, lines: [], start_line_ctr: int,
 
 
 def _function_args_match(call_args: [], func_args: []):
-    """Do the function artuments match the function call arguments
+    """Do the function arguments match the function call arguments
     """
     if len(call_args) == len(func_args):
         return True
@@ -5213,20 +5213,24 @@ def _test_functions():
 
     for _, _, files in os.walk('.'):
         for source_file in files:
+            # is this really a source file?
             if not source_file.endswith('.py'):
                 continue
             if source_file.startswith('.#'):
                 continue
             if source_file.startswith('flycheck_'):
                 continue
+            # get the module name
             mod_name = source_file.replace('.py', '')
             modules[mod_name] = {
                 'functions': []
             }
+            # load the module source
             source_str = ''
             with open(source_file, 'r', encoding='utf-8') as fp_src:
                 source_str = fp_src.read()
                 modules[mod_name]['source'] = source_str
+            # go through the source line by line
             with open(source_file, 'r', encoding='utf-8') as fp_src:
                 lines = fp_src.readlines()
                 modules[mod_name]['lines'] = lines
@@ -5234,6 +5238,7 @@ def _test_functions():
                 prev_line = 'start'
                 method_name = ''
                 for line in lines:
+                    # what group is this module in?
                     if '__module_group__' in line:
                         if '=' in line:
                             group_name = line.split('=')[1].strip()
@@ -5245,6 +5250,7 @@ def _test_functions():
                             else:
                                 if mod_name not in mod_groups[group_name]:
                                     mod_groups[group_name].append(mod_name)
+                    # reading function lines
                     if not line.strip().startswith('def '):
                         if line_count > 0:
                             line_count += 1
@@ -5266,9 +5272,11 @@ def _test_functions():
                                     line_count = 0
                         prev_line = line
                         continue
+                    # reading function def
                     prev_line = line
                     line_count = 1
                     method_name = line.split('def ', 1)[1].split('(')[0]
+                    # get list of arguments with spaces removed
                     method_args = \
                         source_str.split('def ' + method_name + '(')[1]
                     method_args = method_args.split(')')[0]
@@ -5279,6 +5287,7 @@ def _test_functions():
                         function[mod_name] = [method_name]
                     if method_name not in modules[mod_name]['functions']:
                         modules[mod_name]['functions'].append(method_name)
+                    # create an entry for this function
                     function_properties[method_name] = {
                         "args": method_args,
                         "module": mod_name,
@@ -5358,6 +5367,7 @@ def _test_functions():
                 if line_str.startswith('class '):
                     line_ctr += 1
                     continue
+                # detect a call to this function
                 if name + '(' in line:
                     mod_list = \
                         function_properties[name]['calledInModule']
@@ -5369,11 +5379,14 @@ def _test_functions():
                     if name in exclude_funcs:
                         line_ctr += 1
                         continue
+                    # get the function call arguments
                     call_args = \
                         _get_function_call_args(name,
                                                 modules[mod_name]['lines'],
                                                 line_ctr)
+                    # get the function def arguments
                     func_args = function_properties[name]['args']
+                    # match the call arguments to the definition arguments
                     if not _function_args_match(call_args, func_args):
                         print('Call to function ' + name +
                               ' does not match its arguments')
