@@ -15720,10 +15720,8 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', 'fonts',
                             self.server.debug)
 
-        if self.path == '/sharedInbox' or \
-           self.path == '/users/inbox' or \
-           self.path == '/actor/inbox' or \
-           self.path == '/users/' + self.server.domain:
+        if self.path in ('/sharedInbox', '/users/inbox', '/actor/inbox',
+                         '/users/' + self.server.domain):
             # if shared inbox is not enabled
             if not self.server.enable_shared_inbox:
                 self._503()
@@ -15812,7 +15810,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.followingItemsPerPage,
                                          self.server.debug, 'following')
                 return
-            elif '/followers?page=' in self.path:
+            if '/followers?page=' in self.path:
                 self._get_following_json(self.server.base_dir,
                                          self.path,
                                          calling_domain, referer_domain,
@@ -15822,7 +15820,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.followingItemsPerPage,
                                          self.server.debug, 'followers')
                 return
-            elif '/followrequests?page=' in self.path:
+            if '/followrequests?page=' in self.path:
                 self._get_following_json(self.server.base_dir,
                                          self.path,
                                          calling_domain, referer_domain,
@@ -15996,36 +15994,33 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', 'graph',
                                     self.server.debug)
                 return
-            else:
-                graph = graph.replace('.json', '')
-                if graph == 'post':
-                    graph = '_POST'
-                elif graph == 'inbox':
-                    graph = 'INBOX'
-                elif graph == 'get':
-                    graph = '_GET'
-                watch_points_json = \
-                    sorted_watch_points(self.server.fitness, graph)
-                msg_str = json.dumps(watch_points_json,
-                                     ensure_ascii=False)
-                msg_str = self._convert_domains(calling_domain,
-                                                referer_domain,
-                                                msg_str)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                self._set_headers('application/json', msglen,
-                                  None, calling_domain, False)
-                self._write(msg)
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', 'graph json',
-                                    self.server.debug)
-                return
+            graph = graph.replace('.json', '')
+            if graph == 'post':
+                graph = '_POST'
+            elif graph == 'inbox':
+                graph = 'INBOX'
+            elif graph == 'get':
+                graph = '_GET'
+            watch_points_json = \
+                sorted_watch_points(self.server.fitness, graph)
+            msg_str = json.dumps(watch_points_json,
+                                 ensure_ascii=False)
+            msg_str = self._convert_domains(calling_domain,
+                                            referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('application/json', msglen,
+                              None, calling_domain, False)
+            self._write(msg)
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', 'graph json',
+                                self.server.debug)
+            return
 
         # show the main blog page
-        if html_getreq and (self.path == '/blog' or
-                            self.path == '/blog/' or
-                            self.path == '/blogs' or
-                            self.path == '/blogs/'):
+        if html_getreq and \
+           self.path in ('/blog', '/blog/', '/blogs', '/blogs/'):
             if '/rss.xml' not in self.path:
                 curr_session = \
                     self._establish_session("show the main blog page",
@@ -16593,8 +16588,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', 'show welcome profile screen',
                                     self.server.debug)
                 return
-            else:
-                self.path = self.path.replace('/welcome_profile', '')
+            self.path = self.path.replace('/welcome_profile', '')
 
         # the final welcome screen
         if html_getreq and authorized and \
@@ -16618,8 +16612,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', 'show welcome final screen',
                                     self.server.debug)
                 return
-            else:
-                self.path = self.path.replace('/welcome_final', '')
+            self.path = self.path.replace('/welcome_final', '')
 
         # if not authorized then show the login screen
         if html_getreq and self.path != '/login' and \
@@ -16643,15 +16636,10 @@ class PubServer(BaseHTTPRequestHandler):
         # manifest images used to create a home screen icon
         # when selecting "add to home screen" in browsers
         # which support progressive web apps
-        if self.path == '/logo72.png' or \
-           self.path == '/logo96.png' or \
-           self.path == '/logo128.png' or \
-           self.path == '/logo144.png' or \
-           self.path == '/logo150.png' or \
-           self.path == '/logo192.png' or \
-           self.path == '/logo256.png' or \
-           self.path == '/logo512.png' or \
-           self.path == '/apple-touch-icon.png':
+        if self.path in ('/logo72.png', '/logo96.png', '/logo128.png',
+                         '/logo144.png', '/logo150.png', '/logo192.png',
+                         '/logo256.png', '/logo512.png',
+                         '/apple-touch-icon.png'):
             media_filename = \
                 self.server.base_dir + '/img' + self.path
             if os.path.isfile(media_filename):
