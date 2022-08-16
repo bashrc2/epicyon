@@ -10774,7 +10774,6 @@ class PubServer(BaseHTTPRequestHandler):
                               path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domain_full: str, port: int,
-                              onion_domain: str, i2p_domain: str,
                               getreq_start_time,
                               proxy_type: str, cookie: str,
                               debug: str,
@@ -11018,15 +11017,10 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _show_roles(self, authorized: bool,
-                    calling_domain: str, referer_domain: str,
-                    path: str,
-                    base_dir: str, http_prefix: str,
-                    domain: str, domain_full: str, port: int,
-                    onion_domain: str, i2p_domain: str,
-                    getreq_start_time,
-                    proxy_type: str, cookie: str,
-                    debug: str,
+    def _show_roles(self, calling_domain: str, referer_domain: str,
+                    path: str, base_dir: str, http_prefix: str,
+                    domain: str, getreq_start_time,
+                    proxy_type: str, cookie: str, debug: str,
                     curr_session) -> bool:
         """Show roles within profile screen
         """
@@ -11142,16 +11136,10 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _show_skills(self, authorized: bool,
-                     calling_domain: str, referer_domain: str,
-                     path: str,
-                     base_dir: str, http_prefix: str,
-                     domain: str, domain_full: str, port: int,
-                     onion_domain: str, i2p_domain: str,
-                     getreq_start_time,
-                     proxy_type: str, cookie: str,
-                     debug: str,
-                     curr_session) -> bool:
+    def _show_skills(self, calling_domain: str, referer_domain: str,
+                     path: str, base_dir: str, http_prefix: str,
+                     domain: str, getreq_start_time, proxy_type: str,
+                     cookie: str, debug: str, curr_session) -> bool:
         """Show skills on the profile screen
         """
         named_status = path.split('/users/')[1]
@@ -11278,7 +11266,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.fitness,
                                                     '_GET',
                                                     '_show_skills json',
-                                                    self.server.debug)
+                                                    debug)
                             else:
                                 self._404()
                         return True
@@ -11376,10 +11364,9 @@ class PubServer(BaseHTTPRequestHandler):
         result = self._show_post_from_file(post_filename, liked_by,
                                            react_by, react_emoji,
                                            authorized, calling_domain,
-                                           referer_domain, path,
+                                           referer_domain,
                                            base_dir, http_prefix, nickname,
-                                           domain, domain_full, port,
-                                           onion_domain, i2p_domain,
+                                           domain, port,
                                            getreq_start_time,
                                            proxy_type, cookie, debug,
                                            include_create_wrapper,
@@ -11392,12 +11379,9 @@ class PubServer(BaseHTTPRequestHandler):
     def _show_likers_of_post(self, authorized: bool,
                              calling_domain: str, path: str,
                              base_dir: str, http_prefix: str,
-                             domain: str, domain_full: str, port: int,
-                             onion_domain: str, i2p_domain: str,
-                             getreq_start_time,
-                             proxy_type: str, cookie: str,
-                             debug: str,
-                             curr_session) -> bool:
+                             domain: str, port: int,
+                             getreq_start_time, cookie: str,
+                             debug: str, curr_session) -> bool:
         """Show the likers of a post
         """
         if not authorized:
@@ -11452,18 +11436,15 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_show_likers_of_post',
-                            self.server.debug)
+                            debug)
         return True
 
     def _show_announcers_of_post(self, authorized: bool,
                                  calling_domain: str, path: str,
                                  base_dir: str, http_prefix: str,
-                                 domain: str, domain_full: str, port: int,
-                                 onion_domain: str, i2p_domain: str,
-                                 getreq_start_time,
-                                 proxy_type: str, cookie: str,
-                                 debug: str,
-                                 curr_session) -> bool:
+                                 domain: str, port: int,
+                                 getreq_start_time, cookie: str,
+                                 debug: str, curr_session) -> bool:
         """Show the announcers of a post
         """
         if not authorized:
@@ -11520,17 +11501,15 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_show_announcers_of_post',
-                            self.server.debug)
+                            debug)
         return True
 
     def _show_post_from_file(self, post_filename: str, liked_by: str,
                              react_by: str, react_emoji: str,
                              authorized: bool,
                              calling_domain: str, referer_domain: str,
-                             path: str,
                              base_dir: str, http_prefix: str, nickname: str,
-                             domain: str, domain_full: str, port: int,
-                             onion_domain: str, i2p_domain: str,
+                             domain: str, port: int,
                              getreq_start_time,
                              proxy_type: str, cookie: str,
                              debug: str, include_create_wrapper: bool,
@@ -11607,7 +11586,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', '_show_post_from_file',
-                                self.server.debug)
+                                debug)
         else:
             if self._secure_mode(curr_session, proxy_type):
                 if not include_create_wrapper and \
@@ -11632,7 +11611,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', '_show_post_from_file json',
-                                    self.server.debug)
+                                    debug)
             else:
                 self._404()
         self.server.getreq_busy = False
@@ -11643,7 +11622,6 @@ class PubServer(BaseHTTPRequestHandler):
                               path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domain_full: str, port: int,
-                              onion_domain: str, i2p_domain: str,
                               getreq_start_time,
                               proxy_type: str, cookie: str,
                               debug: str,
@@ -11721,10 +11699,9 @@ class PubServer(BaseHTTPRequestHandler):
         result = self._show_post_from_file(post_filename, liked_by,
                                            react_by, react_emoji,
                                            authorized, calling_domain,
-                                           referer_domain, path,
+                                           referer_domain,
                                            base_dir, http_prefix, nickname,
-                                           domain, domain_full, port,
-                                           onion_domain, i2p_domain,
+                                           domain, port,
                                            getreq_start_time,
                                            proxy_type, cookie, debug,
                                            include_create_wrapper,
@@ -11738,8 +11715,7 @@ class PubServer(BaseHTTPRequestHandler):
                           calling_domain: str, referer_domain: str,
                           path: str,
                           base_dir: str, http_prefix: str,
-                          domain: str, domain_full: str, port: int,
-                          onion_domain: str, i2p_domain: str,
+                          domain: str, port: int,
                           getreq_start_time,
                           proxy_type: str, cookie: str,
                           debug: str,
@@ -11770,10 +11746,9 @@ class PubServer(BaseHTTPRequestHandler):
         result = self._show_post_from_file(post_filename, liked_by,
                                            react_by, react_emoji,
                                            authorized, calling_domain,
-                                           referer_domain, path,
+                                           referer_domain,
                                            base_dir, http_prefix, nickname,
-                                           domain, domain_full, port,
-                                           onion_domain, i2p_domain,
+                                           domain, port,
                                            getreq_start_time,
                                            proxy_type, cookie, debug,
                                            include_create_wrapper,
@@ -11787,11 +11762,9 @@ class PubServer(BaseHTTPRequestHandler):
                     calling_domain: str, referer_domain: str,
                     path: str,
                     base_dir: str, http_prefix: str,
-                    domain: str, domain_full: str, port: int,
-                    onion_domain: str, i2p_domain: str,
+                    domain: str, port: int,
                     getreq_start_time,
-                    proxy_type: str, cookie: str,
-                    debug: str,
+                    cookie: str, debug: str,
                     recent_posts_cache: {}, curr_session,
                     default_timeline: str,
                     max_recent_posts: int,
@@ -11973,13 +11946,10 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _show_dms(self, authorized: bool,
                   calling_domain: str, referer_domain: str,
-                  path: str,
-                  base_dir: str, http_prefix: str,
-                  domain: str, domain_full: str, port: int,
-                  onion_domain: str, i2p_domain: str,
+                  path: str, base_dir: str, http_prefix: str,
+                  domain: str, port: int,
                   getreq_start_time,
-                  proxy_type: str, cookie: str,
-                  debug: str,
+                  cookie: str, debug: str,
                   curr_session, ua_str: str) -> bool:
         """Shows the DMs timeline
         """
@@ -12136,10 +12106,9 @@ class PubServer(BaseHTTPRequestHandler):
                       calling_domain: str, referer_domain: str,
                       path: str,
                       base_dir: str, http_prefix: str,
-                      domain: str, domain_full: str, port: int,
-                      onion_domain: str, i2p_domain: str,
+                      domain: str, port: int,
                       getreq_start_time,
-                      proxy_type: str, cookie: str, debug: str,
+                      cookie: str, debug: str,
                       curr_session, ua_str: str) -> bool:
         """Shows the replies timeline
         """
@@ -12296,11 +12265,9 @@ class PubServer(BaseHTTPRequestHandler):
                              calling_domain: str, referer_domain: str,
                              path: str,
                              base_dir: str, http_prefix: str,
-                             domain: str, domain_full: str, port: int,
-                             onion_domain: str, i2p_domain: str,
+                             domain: str, port: int,
                              getreq_start_time,
-                             proxy_type: str, cookie: str,
-                             debug: str,
+                             cookie: str, debug: str,
                              curr_session, ua_str: str) -> bool:
         """Shows the media timeline
         """
@@ -12454,11 +12421,9 @@ class PubServer(BaseHTTPRequestHandler):
                              calling_domain: str, referer_domain: str,
                              path: str,
                              base_dir: str, http_prefix: str,
-                             domain: str, domain_full: str, port: int,
-                             onion_domain: str, i2p_domain: str,
+                             domain: str, port: int,
                              getreq_start_time,
-                             proxy_type: str, cookie: str,
-                             debug: str,
+                             cookie: str, debug: str,
                              curr_session, ua_str: str) -> bool:
         """Shows the blogs timeline
         """
@@ -12613,11 +12578,9 @@ class PubServer(BaseHTTPRequestHandler):
                             calling_domain: str, referer_domain: str,
                             path: str,
                             base_dir: str, http_prefix: str,
-                            domain: str, domain_full: str, port: int,
-                            onion_domain: str, i2p_domain: str,
+                            domain: str, port: int,
                             getreq_start_time,
-                            proxy_type: str, cookie: str,
-                            debug: str,
+                            cookie: str, debug: str,
                             curr_session, ua_str: str) -> bool:
         """Shows the news timeline
         """
@@ -12777,13 +12740,10 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _show_features_timeline(self, authorized: bool,
                                 calling_domain: str, referer_domain: str,
-                                path: str,
-                                base_dir: str, http_prefix: str,
-                                domain: str, domain_full: str, port: int,
-                                onion_domain: str, i2p_domain: str,
+                                path: str, base_dir: str, http_prefix: str,
+                                domain: str, port: int,
                                 getreq_start_time,
-                                proxy_type: str, cookie: str,
-                                debug: str,
+                                cookie: str, debug: str,
                                 curr_session, ua_str: str) -> bool:
         """Shows the features timeline (all local blogs)
         """
@@ -12948,11 +12908,9 @@ class PubServer(BaseHTTPRequestHandler):
     def _show_shares_timeline(self, authorized: bool,
                               calling_domain: str, path: str,
                               base_dir: str, http_prefix: str,
-                              domain: str, domain_full: str, port: int,
-                              onion_domain: str, i2p_domain: str,
+                              domain: str, port: int,
                               getreq_start_time,
-                              proxy_type: str, cookie: str,
-                              debug: str,
+                              cookie: str, debug: str,
                               curr_session, ua_str: str) -> bool:
         """Shows the shares timeline
         """
@@ -13043,11 +13001,9 @@ class PubServer(BaseHTTPRequestHandler):
     def _show_wanted_timeline(self, authorized: bool,
                               calling_domain: str, path: str,
                               base_dir: str, http_prefix: str,
-                              domain: str, domain_full: str, port: int,
-                              onion_domain: str, i2p_domain: str,
+                              domain: str, port: int,
                               getreq_start_time,
-                              proxy_type: str, cookie: str,
-                              debug: str,
+                              cookie: str, debug: str,
                               curr_session, ua_str: str) -> bool:
         """Shows the wanted timeline
         """
@@ -13138,11 +13094,9 @@ class PubServer(BaseHTTPRequestHandler):
                                  calling_domain: str, referer_domain: str,
                                  path: str,
                                  base_dir: str, http_prefix: str,
-                                 domain: str, domain_full: str, port: int,
-                                 onion_domain: str, i2p_domain: str,
+                                 domain: str, port: int,
                                  getreq_start_time,
-                                 proxy_type: str, cookie: str,
-                                 debug: str,
+                                 cookie: str, debug: str,
                                  curr_session, ua_str: str) -> bool:
         """Shows the bookmarks timeline
         """
@@ -13299,12 +13253,11 @@ class PubServer(BaseHTTPRequestHandler):
                               calling_domain: str, referer_domain: str,
                               path: str,
                               base_dir: str, http_prefix: str,
-                              domain: str, domain_full: str, port: int,
-                              onion_domain: str, i2p_domain: str,
+                              domain: str, port: int,
                               getreq_start_time,
-                              proxy_type: str, cookie: str,
-                              debug: str,
-                              curr_session, ua_str: str) -> bool:
+                              cookie: str, debug: str,
+                              curr_session, ua_str: str,
+                              proxy_type: str) -> bool:
         """Shows the outbox timeline
         """
         # get outbox feed for a person
@@ -13413,7 +13366,7 @@ class PubServer(BaseHTTPRequestHandler):
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_outbox_timeline',
-                                    self.server.debug)
+                                    debug)
             else:
                 if self._secure_mode(curr_session, proxy_type):
                     msg_str = json.dumps(outbox_feed,
@@ -13429,7 +13382,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_outbox_timeline json',
-                                        self.server.debug)
+                                        debug)
                 else:
                     self._404()
             return True
@@ -13437,13 +13390,9 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _show_mod_timeline(self, authorized: bool,
                            calling_domain: str, referer_domain: str,
-                           path: str,
-                           base_dir: str, http_prefix: str,
-                           domain: str, domain_full: str, port: int,
-                           onion_domain: str, i2p_domain: str,
-                           getreq_start_time,
-                           proxy_type: str, cookie: str,
-                           debug: str,
+                           path: str, base_dir: str, http_prefix: str,
+                           domain: str, port: int, getreq_start_time,
+                           cookie: str, debug: str,
                            curr_session, ua_str: str) -> bool:
         """Shows the moderation timeline
         """
@@ -18017,12 +17966,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
-                                     self.server.domain_full,
                                      self.server.port,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain,
                                      getreq_start_time,
-                                     proxy_type,
                                      cookie, self.server.debug,
                                      curr_session):
             self.server.getreq_busy = False
@@ -18034,12 +17979,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.server.domain,
-                                         self.server.domain_full,
                                          self.server.port,
-                                         self.server.onion_domain,
-                                         self.server.i2p_domain,
                                          getreq_start_time,
-                                         proxy_type,
                                          cookie, self.server.debug,
                                          curr_session):
             self.server.getreq_busy = False
@@ -18059,8 +18000,6 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain,
                                           self.server.domain_full,
                                           self.server.port,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain,
                                           getreq_start_time,
                                           proxy_type, cookie,
                                           self.server.debug,
@@ -18074,16 +18013,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # roles on profile screen
         if self.path.endswith('/roles') and users_in_path:
-            if self._show_roles(authorized,
-                                calling_domain, referer_domain,
+            if self._show_roles(calling_domain, referer_domain,
                                 self.path,
                                 self.server.base_dir,
                                 self.server.http_prefix,
                                 self.server.domain,
-                                self.server.domain_full,
-                                self.server.port,
-                                self.server.onion_domain,
-                                self.server.i2p_domain,
                                 getreq_start_time,
                                 proxy_type,
                                 cookie, self.server.debug,
@@ -18097,16 +18031,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show skills on the profile page
         if self.path.endswith('/skills') and users_in_path:
-            if self._show_skills(authorized,
-                                 calling_domain, referer_domain,
+            if self._show_skills(calling_domain, referer_domain,
                                  self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
                                  self.server.domain,
-                                 self.server.domain_full,
-                                 self.server.port,
-                                 self.server.onion_domain,
-                                 self.server.i2p_domain,
                                  getreq_start_time,
                                  proxy_type,
                                  cookie, self.server.debug,
@@ -18125,10 +18054,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.base_dir,
                                       self.server.http_prefix,
                                       self.server.domain,
-                                      self.server.domain_full,
                                       self.server.port,
-                                      self.server.onion_domain,
-                                      self.server.i2p_domain,
                                       getreq_start_time,
                                       proxy_type,
                                       cookie, self.server.debug,
@@ -18147,8 +18073,6 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain,
                                           self.server.domain_full,
                                           self.server.port,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain,
                                           getreq_start_time,
                                           proxy_type,
                                           cookie, self.server.debug,
@@ -18168,12 +18092,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.base_dir,
                                 self.server.http_prefix,
                                 self.server.domain,
-                                self.server.domain_full,
                                 self.server.port,
-                                self.server.onion_domain,
-                                self.server.i2p_domain,
                                 getreq_start_time,
-                                proxy_type,
                                 cookie, self.server.debug,
                                 self.server.recent_posts_cache,
                                 curr_session,
@@ -18202,12 +18122,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.base_dir,
                               self.server.http_prefix,
                               self.server.domain,
-                              self.server.domain_full,
                               self.server.port,
-                              self.server.onion_domain,
-                              self.server.i2p_domain,
                               getreq_start_time,
-                              proxy_type,
                               cookie, self.server.debug,
                               curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18225,12 +18141,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain,
-                                  self.server.domain_full,
                                   self.server.port,
-                                  self.server.onion_domain,
-                                  self.server.i2p_domain,
                                   getreq_start_time,
-                                  proxy_type,
                                   cookie, self.server.debug,
                                   curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18248,12 +18160,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.server.domain,
-                                         self.server.domain_full,
                                          self.server.port,
-                                         self.server.onion_domain,
-                                         self.server.i2p_domain,
                                          getreq_start_time,
-                                         proxy_type,
                                          cookie, self.server.debug,
                                          curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18271,12 +18179,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.server.domain,
-                                         self.server.domain_full,
                                          self.server.port,
-                                         self.server.onion_domain,
-                                         self.server.i2p_domain,
                                          getreq_start_time,
-                                         proxy_type,
                                          cookie, self.server.debug,
                                          curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18294,12 +18198,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
-                                        self.server.domain_full,
                                         self.server.port,
-                                        self.server.onion_domain,
-                                        self.server.i2p_domain,
                                         getreq_start_time,
-                                        proxy_type,
                                         cookie, self.server.debug,
                                         curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18314,12 +18214,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.base_dir,
                                             self.server.http_prefix,
                                             self.server.domain,
-                                            self.server.domain_full,
                                             self.server.port,
-                                            self.server.onion_domain,
-                                            self.server.i2p_domain,
                                             getreq_start_time,
-                                            proxy_type,
                                             cookie, self.server.debug,
                                             curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18336,12 +18232,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           self.server.domain,
-                                          self.server.domain_full,
                                           self.server.port,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain,
                                           getreq_start_time,
-                                          proxy_type,
                                           cookie, self.server.debug,
                                           curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18354,12 +18246,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           self.server.domain,
-                                          self.server.domain_full,
                                           self.server.port,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain,
                                           getreq_start_time,
-                                          proxy_type,
                                           cookie, self.server.debug,
                                           curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18456,12 +18344,8 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.base_dir,
                                              self.server.http_prefix,
                                              self.server.domain,
-                                             self.server.domain_full,
                                              self.server.port,
-                                             self.server.onion_domain,
-                                             self.server.i2p_domain,
                                              getreq_start_time,
-                                             proxy_type,
                                              cookie, self.server.debug,
                                              curr_session, ua_str):
                 self.server.getreq_busy = False
@@ -18480,14 +18364,11 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           self.server.domain,
-                                          self.server.domain_full,
                                           self.server.port,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain,
                                           getreq_start_time,
-                                          proxy_type,
                                           cookie, self.server.debug,
-                                          curr_session, ua_str):
+                                          curr_session, ua_str,
+                                          proxy_type):
                 self.server.getreq_busy = False
                 return
 
@@ -18504,12 +18385,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.base_dir,
                                        self.server.http_prefix,
                                        self.server.domain,
-                                       self.server.domain_full,
                                        self.server.port,
-                                       self.server.onion_domain,
-                                       self.server.i2p_domain,
                                        getreq_start_time,
-                                       proxy_type,
                                        cookie, self.server.debug,
                                        curr_session, ua_str):
                 self.server.getreq_busy = False
