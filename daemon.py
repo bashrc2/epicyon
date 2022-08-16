@@ -3231,9 +3231,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                 self.server.postreq_busy = False
                 return
-            else:
-                self._404()
-                return
+            self._404()
+            return
 
         # person options screen, snooze button
         # See html_person_options
@@ -4174,7 +4173,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               getreq_start_time,
                                               onion_domain, i2p_domain,
                                               cookie, debug, authorized,
-                                              curr_session, curr_proxy_type)
+                                              curr_session)
                     return
                 else:
                     show_published_date_only = \
@@ -4270,13 +4269,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.postreq_busy = False
                     return
-                else:
-                    actor_str = \
-                        self._get_instance_url(calling_domain) + users_path
-                    self._redirect_headers(actor_str + '/search',
-                                           cookie, calling_domain)
-                    self.server.postreq_busy = False
-                    return
+                actor_str = \
+                    self._get_instance_url(calling_domain) + users_path
+                self._redirect_headers(actor_str + '/search',
+                                       cookie, calling_domain)
+                self.server.postreq_busy = False
+                return
             elif (search_str.startswith(':') or
                   search_str.endswith(' emoji')):
                 # eg. "cat emoji"
@@ -7894,11 +7892,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
 
     def _get_newswire_feed(self, calling_domain: str, path: str,
-                           base_dir: str, http_prefix: str,
-                           domain: str, port: int, proxy_type: str,
-                           getreq_start_time,
-                           debug: bool,
-                           curr_session) -> None:
+                           proxy_type: str, getreq_start_time,
+                           debug: bool, curr_session) -> None:
         """Returns the newswire feed
         """
         curr_session = \
@@ -7931,10 +7926,8 @@ class PubServer(BaseHTTPRequestHandler):
                   path + ' ' + calling_domain)
         self._404()
 
-    def _get_hashtag_categories_feed(self, authorized: bool,
-                                     calling_domain: str, path: str,
-                                     base_dir: str, http_prefix: str,
-                                     domain: str, port: int, proxy_type: str,
+    def _get_hashtag_categories_feed(self, calling_domain: str, path: str,
+                                     base_dir: str, proxy_type: str,
                                      getreq_start_time,
                                      debug: bool,
                                      curr_session) -> None:
@@ -8016,7 +8009,7 @@ class PubServer(BaseHTTPRequestHandler):
                              onion_domain: str, i2p_domain: str,
                              cookie: str, debug: bool,
                              authorized: bool,
-                             curr_session, proxy_type: str) -> None:
+                             curr_session) -> None:
         """Show person options screen
         """
         back_to_path = ''
@@ -8175,8 +8168,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(origin_path_str_absolute, cookie,
                                calling_domain)
 
-    def _show_media(self, calling_domain: str,
-                    path: str, base_dir: str,
+    def _show_media(self, path: str, base_dir: str,
                     getreq_start_time) -> None:
         """Returns a media file
         """
@@ -8263,7 +8255,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
-    def _show_emoji(self, calling_domain: str, path: str,
+    def _show_emoji(self, path: str,
                     base_dir: str, getreq_start_time) -> None:
         """Returns an emoji image
         """
@@ -8297,7 +8289,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
-    def _show_icon(self, calling_domain: str, path: str,
+    def _show_icon(self, path: str,
                    base_dir: str, getreq_start_time) -> None:
         """Shows an icon
         """
@@ -8332,26 +8324,25 @@ class PubServer(BaseHTTPRequestHandler):
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', '_show_icon', self.server.debug)
             return
-        else:
-            if os.path.isfile(media_filename):
-                media_binary = None
-                try:
-                    with open(media_filename, 'rb') as av_file:
-                        media_binary = av_file.read()
-                except OSError:
-                    print('EX: unable to read icon image ' + media_filename)
-                if media_binary:
-                    mime_type = media_file_mime_type(media_filename)
-                    self._set_headers_etag(media_filename,
-                                           mime_type,
-                                           media_binary, None,
-                                           self.server.domain_full,
-                                           False, None)
-                    self._write(media_binary)
-                    self.server.iconsCache[media_str] = media_binary
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_show_icon', self.server.debug)
-                return
+        if os.path.isfile(media_filename):
+            media_binary = None
+            try:
+                with open(media_filename, 'rb') as av_file:
+                    media_binary = av_file.read()
+            except OSError:
+                print('EX: unable to read icon image ' + media_filename)
+            if media_binary:
+                mime_type = media_file_mime_type(media_filename)
+                self._set_headers_etag(media_filename,
+                                       mime_type,
+                                       media_binary, None,
+                                       self.server.domain_full,
+                                       False, None)
+                self._write(media_binary)
+                self.server.iconsCache[media_str] = media_binary
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', '_show_icon', self.server.debug)
+            return
         self._404()
 
     def _show_specification_image(self, path: str,
@@ -8535,7 +8526,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
                         getreq_start_time,
-                        curr_session, proxy_type: str) -> None:
+                        curr_session) -> None:
         """Return the result of a hashtag search
         """
         page_number = 1
@@ -8721,11 +8712,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -8760,8 +8751,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.project_version,
                             self.server.signing_priv_key_pem,
                             self.server.domain,
-                            self.server.onion_domain,
-                            self.server.i2p_domain)
+                            onion_domain,
+                            i2p_domain)
         announce_filename = None
         if announce_json:
             # save the announce straight to the outbox
@@ -8905,11 +8896,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -9262,11 +9253,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -9456,11 +9447,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -9655,11 +9646,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -9870,11 +9861,11 @@ class PubServer(BaseHTTPRequestHandler):
             return
         emoji_content = urllib.parse.unquote_plus(emoji_content_encoded)
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -10161,11 +10152,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -10308,11 +10299,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.onion/' in actor:
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -15796,12 +15787,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         if self.path == '/categories.xml':
-            self._get_hashtag_categories_feed(authorized,
-                                              calling_domain, self.path,
+            self._get_hashtag_categories_feed(calling_domain, self.path,
                                               self.server.base_dir,
-                                              self.server.http_prefix,
-                                              self.server.domain,
-                                              self.server.port,
                                               proxy_type,
                                               getreq_start_time,
                                               self.server.debug,
@@ -15810,10 +15797,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path == '/newswire.xml':
             self._get_newswire_feed(calling_domain, self.path,
-                                    self.server.base_dir,
-                                    self.server.http_prefix,
-                                    self.server.domain,
-                                    self.server.port,
                                     proxy_type,
                                     getreq_start_time,
                                     self.server.debug,
@@ -16195,8 +16178,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.i2p_domain,
                                           cookie, self.server.debug,
                                           authorized,
-                                          curr_session,
-                                          proxy_type)
+                                          curr_session)
                 return
 
             fitness_performance(getreq_start_time, self.server.fitness,
@@ -16910,8 +16892,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # emoji images
         if '/emoji/' in self.path:
-            self._show_emoji(calling_domain, self.path,
-                             self.server.base_dir,
+            self._show_emoji(self.path, self.server.base_dir,
                              getreq_start_time)
             return
 
@@ -16926,8 +16907,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = self.path.replace('/system/media_attachments/files/',
                                           '/media/')
         if '/media/' in self.path:
-            self._show_media(calling_domain,
-                             self.path, self.server.base_dir,
+            self._show_media(self.path, self.server.base_dir,
                              getreq_start_time)
             return
 
@@ -16958,8 +16938,8 @@ class PubServer(BaseHTTPRequestHandler):
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/icons/'):
-            self._show_icon(calling_domain, self.path,
-                            self.server.base_dir, getreq_start_time)
+            self._show_icon(self.path, self.server.base_dir,
+                            getreq_start_time)
             return
 
         # show images within https://instancedomain/activitypub
@@ -17211,8 +17191,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  getreq_start_time,
-                                 curr_session,
-                                 proxy_type)
+                                 curr_session)
             self.server.getreq_busy = False
             return
 
