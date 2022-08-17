@@ -14358,7 +14358,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(qr_filename, 'rb') as av_file:
                         media_binary = av_file.read()
                         break
-                except BaseException as ex:
+                except OSError as ex:
                     print('EX: _show_qrcode ' + str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
@@ -14405,7 +14405,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(banner_filename, 'rb') as av_file:
                         media_binary = av_file.read()
                         break
-                except BaseException as ex:
+                except OSError as ex:
                     print('EX: _search_screen_banner ' +
                           str(tries) + ' ' + str(ex))
                     time.sleep(1)
@@ -14449,7 +14449,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(banner_filename, 'rb') as av_file:
                         media_binary = av_file.read()
                         break
-                except BaseException as ex:
+                except OSError as ex:
                     print('EX: _column_image ' + str(tries) + ' ' + str(ex))
                     time.sleep(1)
                     tries += 1
@@ -14493,7 +14493,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 with open(bg_filename, 'rb') as av_file:
                                     bg_binary = av_file.read()
                                     break
-                            except BaseException as ex:
+                            except OSError as ex:
                                 print('EX: _show_background_image ' +
                                       str(tries) + ' ' + str(ex))
                                 time.sleep(1)
@@ -14538,7 +14538,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(bg_filename, 'rb') as av_file:
                             bg_binary = av_file.read()
                             break
-                    except BaseException as ex:
+                    except OSError as ex:
                         print('EX: _show_default_profile_background ' +
                               str(tries) + ' ' + str(ex))
                         time.sleep(1)
@@ -16610,7 +16610,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(media_filename, 'rb') as av_file:
                             media_binary = av_file.read()
                             break
-                    except BaseException as ex:
+                    except OSError as ex:
                         print('EX: manifest logo ' +
                               str(tries) + ' ' + str(ex))
                         time.sleep(1)
@@ -16652,7 +16652,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(screen_filename, 'rb') as av_file:
                             media_binary = av_file.read()
                             break
-                    except BaseException as ex:
+                    except OSError as ex:
                         print('EX: manifest screenshot ' +
                               str(tries) + ' ' + str(ex))
                         time.sleep(1)
@@ -16694,7 +16694,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(icon_filename, 'rb') as av_file:
                             media_binary = av_file.read()
                             break
-                    except BaseException as ex:
+                    except OSError as ex:
                         print('EX: login screen image ' +
                               str(tries) + ' ' + str(ex))
                         time.sleep(1)
@@ -20807,7 +20807,7 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
                     with open(token_filename, 'r',
                               encoding='utf-8') as fp_tok:
                         token = fp_tok.read()
-                except BaseException as ex:
+                except OSError as ex:
                     print('WARN: Unable to read token for ' +
                           nickname + ' ' + str(ex))
                 if not token:
