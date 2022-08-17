@@ -2011,11 +2011,10 @@ class PubServer(BaseHTTPRequestHandler):
                                'epicyon=; SameSite=Strict',
                                calling_domain)
 
-    def _show_login_screen(self, path: str, calling_domain: str, cookie: str,
+    def _show_login_screen(self, calling_domain: str, cookie: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
-                           onion_domain: str, i2p_domain: str,
-                           debug: bool) -> None:
+                           onion_domain: str, i2p_domain: str) -> None:
         """Shows the login screen
         """
         # ensure that there is a minimum delay between failed login
@@ -2056,7 +2055,7 @@ class PubServer(BaseHTTPRequestHandler):
         login_nickname, login_password, register = \
             html_get_login_credentials(login_params,
                                        self.server.last_login_time,
-                                       self.server.domain)
+                                       domain)
         if login_nickname:
             if is_system_account(login_nickname):
                 print('Invalid username login: ' + login_nickname +
@@ -9098,12 +9097,10 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, calling_domain)
 
     def _newswire_unvote(self, calling_domain: str, path: str,
-                         cookie: str,
-                         base_dir: str, http_prefix: str,
-                         domain: str, domain_full: str, port: int,
+                         cookie: str, base_dir: str, http_prefix: str,
+                         domain_full: str,
                          onion_domain: str, i2p_domain: str,
-                         getreq_start_time,
-                         proxy_type: str, debug: bool,
+                         getreq_start_time, debug: bool,
                          newswire: {}):
         """Remove vote for a newswire item
         """
@@ -9149,8 +9146,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(origin_path_str_absolute,
                                cookie, calling_domain)
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_newswire_unvote',
-                            self.server.debug)
+                            '_GET', '_newswire_unvote', debug)
 
     def _follow_deny_button(self, calling_domain: str, path: str,
                             cookie: str,
@@ -10004,12 +10000,9 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _reaction_picker(self, calling_domain: str, path: str,
                          base_dir: str, http_prefix: str,
-                         domain: str, domain_full: str, port: int,
-                         onion_domain: str, i2p_domain: str,
-                         getreq_start_time,
-                         proxy_type: str, cookie: str,
-                         debug: str,
-                         curr_session) -> None:
+                         domain: str, port: int,
+                         getreq_start_time, cookie: str,
+                         debug: str, curr_session) -> None:
         """Press the emoji reaction picker icon at the bottom of the post
         """
         page_number = 1
@@ -10048,7 +10041,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         post_json_object = None
         reaction_post_filename = \
-            locate_post(self.server.base_dir,
+            locate_post(base_dir,
                         self.post_to_nickname, domain, reaction_url)
         if reaction_post_filename:
             post_json_object = load_json(reaction_post_filename)
@@ -10074,13 +10067,13 @@ class PubServer(BaseHTTPRequestHandler):
             html_emoji_reaction_picker(self.server.recent_posts_cache,
                                        self.server.max_recent_posts,
                                        self.server.translate,
-                                       self.server.base_dir,
+                                       base_dir,
                                        curr_session,
                                        self.server.cached_webfingers,
                                        self.server.person_cache,
                                        self.post_to_nickname,
                                        domain, port, post_json_object,
-                                       self.server.http_prefix,
+                                       http_prefix,
                                        self.server.project_version,
                                        self.server.yt_replace_domain,
                                        self.server.twitter_replacement_domain,
@@ -10104,7 +10097,7 @@ class PubServer(BaseHTTPRequestHandler):
         fitness_performance(getreq_start_time,
                             self.server.fitness,
                             '_GET', '_reaction_picker',
-                            self.server.debug)
+                            debug)
 
     def _bookmark_button(self, calling_domain: str, path: str,
                          base_dir: str, http_prefix: str,
@@ -10174,7 +10167,7 @@ class PubServer(BaseHTTPRequestHandler):
                       base_dir, self.server.federation_list,
                       self.post_to_nickname, domain, port,
                       cc_list, http_prefix, bookmark_url, bookmark_actor,
-                      self.server.debug)
+                      debug)
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('bookmark.png'):
             del self.server.iconsCache['bookmark.png']
@@ -10250,7 +10243,7 @@ class PubServer(BaseHTTPRequestHandler):
             '?page=' + str(page_number) + timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_bookmark_button',
-                            self.server.debug)
+                            debug)
         self._redirect_headers(actor_path_str, cookie,
                                calling_domain)
 
@@ -10404,12 +10397,11 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _delete_button(self, calling_domain: str, path: str,
                        base_dir: str, http_prefix: str,
-                       domain: str, domain_full: str, port: int,
+                       domain_full: str,
                        onion_domain: str, i2p_domain: str,
                        getreq_start_time,
                        proxy_type: str, cookie: str,
-                       debug: str,
-                       curr_session) -> None:
+                       debug: str, curr_session) -> None:
         """Delete button is pressed on a post
         """
         if not cookie:
@@ -10461,11 +10453,11 @@ class PubServer(BaseHTTPRequestHandler):
                                        cookie, calling_domain)
                 return
 
-            if self.server.onion_domain:
+            if onion_domain:
                 if '.onion/' in actor:
                     curr_session = self.server.session_onion
                     proxy_type = 'tor'
-            if self.server.i2p_domain:
+            if i2p_domain:
                 if '.onion/' in actor:
                     curr_session = self.server.session_i2p
                     proxy_type = 'i2p'
@@ -10512,7 +10504,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = 'http://' + i2p_domain + users_path
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_delete_button',
-                            self.server.debug)
+                            debug)
         self._redirect_headers(actor + '/' + timeline_str,
                                cookie, calling_domain)
 
@@ -10520,10 +10512,8 @@ class PubServer(BaseHTTPRequestHandler):
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str, port: int,
                      onion_domain: str, i2p_domain: str,
-                     getreq_start_time,
-                     proxy_type: str, cookie: str,
-                     debug: str,
-                     curr_session):
+                     getreq_start_time, cookie: str,
+                     debug: str, curr_session):
         """Mute button is pressed
         """
         mute_url = path.split('?mute=')[1]
@@ -13544,11 +13534,8 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _show_shares_feed(self, authorized: bool,
                           calling_domain: str, referer_domain: str,
-                          path: str,
-                          base_dir: str, http_prefix: str,
-                          domain: str, domain_full: str, port: int,
-                          onion_domain: str, i2p_domain: str,
-                          getreq_start_time,
+                          path: str, base_dir: str, http_prefix: str,
+                          domain: str, port: int, getreq_start_time,
                           proxy_type: str, cookie: str,
                           debug: str, shares_file_type: str,
                           curr_session) -> bool:
@@ -13651,7 +13638,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_shares_feed',
-                                        self.server.debug)
+                                        debug)
                     self.server.getreq_busy = False
                     return True
             else:
@@ -13669,7 +13656,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_shares_feed json',
-                                        self.server.debug)
+                                        debug)
                 else:
                     self._404()
                 return True
@@ -13677,14 +13664,10 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _show_following_feed(self, authorized: bool,
                              calling_domain: str, referer_domain: str,
-                             path: str,
-                             base_dir: str, http_prefix: str,
-                             domain: str, domain_full: str, port: int,
-                             onion_domain: str, i2p_domain: str,
-                             getreq_start_time,
+                             path: str, base_dir: str, http_prefix: str,
+                             domain: str, port: int, getreq_start_time,
                              proxy_type: str, cookie: str,
-                             debug: str,
-                             curr_session) -> bool:
+                             debug: str, curr_session) -> bool:
         """Shows the following feed
         """
         following = \
@@ -13789,7 +13772,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_following_feed',
-                                        self.server.debug)
+                                        debug)
                     return True
             else:
                 if self._secure_mode(curr_session, proxy_type):
@@ -13806,7 +13789,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_following_feed json',
-                                        self.server.debug)
+                                        debug)
                 else:
                     self._404()
                 return True
@@ -13814,14 +13797,10 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _show_followers_feed(self, authorized: bool,
                              calling_domain: str, referer_domain: str,
-                             path: str,
-                             base_dir: str, http_prefix: str,
-                             domain: str, domain_full: str, port: int,
-                             onion_domain: str, i2p_domain: str,
-                             getreq_start_time,
+                             path: str, base_dir: str, http_prefix: str,
+                             domain: str, port: int, getreq_start_time,
                              proxy_type: str, cookie: str,
-                             debug: str,
-                             curr_session) -> bool:
+                             debug: str, curr_session) -> bool:
         """Shows the followers feed
         """
         followers = \
@@ -13927,7 +13906,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_followers_feed',
-                                        self.server.debug)
+                                        debug)
                     return True
             else:
                 if self._secure_mode(curr_session, proxy_type):
@@ -13944,7 +13923,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_followers_feed json',
-                                        self.server.debug)
+                                        debug)
                 else:
                     self._404()
             return True
@@ -13952,7 +13931,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _get_featured_collection(self, calling_domain: str,
                                  referer_domain: str,
-                                 base_dir: str, path: str,
+                                 base_dir: str,
                                  http_prefix: str,
                                  nickname: str, domain: str,
                                  domain_full: str,
@@ -14006,7 +13985,7 @@ class PubServer(BaseHTTPRequestHandler):
                              calling_domain: str,
                              referer_domain: str, path: str,
                              base_dir: str, http_prefix: str,
-                             domain: str, domain_full: str, port: int,
+                             domain: str,
                              onion_domain: str, i2p_domain: str,
                              getreq_start_time,
                              proxy_type: str, cookie: str,
@@ -14085,7 +14064,7 @@ class PubServer(BaseHTTPRequestHandler):
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
                                 '_GET', '_show_person_profile',
-                                self.server.debug)
+                                debug)
             if self.server.debug:
                 print('DEBUG: html actor sent')
         else:
@@ -14120,11 +14099,10 @@ class PubServer(BaseHTTPRequestHandler):
     def _show_instance_actor(self, calling_domain: str,
                              referer_domain: str, path: str,
                              base_dir: str, http_prefix: str,
-                             domain: str, domain_full: str, port: int,
+                             domain: str, domain_full: str,
                              onion_domain: str, i2p_domain: str,
                              getreq_start_time,
-                             proxy_type: str, cookie: str,
-                             debug: str,
+                             cookie: str, debug: str,
                              enable_shared_inbox: bool) -> bool:
         """Shows the instance actor
         """
@@ -14190,14 +14168,13 @@ class PubServer(BaseHTTPRequestHandler):
         fitness_performance(getreq_start_time,
                             self.server.fitness,
                             '_GET', '_show_instance_actor',
-                            self.server.debug)
+                            debug)
         return True
 
     def _show_blog_page(self, authorized: bool,
                         calling_domain: str, path: str,
                         base_dir: str, http_prefix: str,
-                        domain: str, domain_full: str, port: int,
-                        onion_domain: str, i2p_domain: str,
+                        domain: str, port: int,
                         getreq_start_time,
                         proxy_type: str, cookie: str,
                         translate: {}, debug: str,
@@ -14240,7 +14217,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.peertube_instances,
                              self.server.system_language,
                              self.server.person_cache,
-                             self.server.debug)
+                             debug)
         if msg is not None:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -14250,7 +14227,7 @@ class PubServer(BaseHTTPRequestHandler):
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
                                 '_GET', '_show_blog_page',
-                                self.server.debug)
+                                debug)
             return True
         self._404()
         return True
@@ -14315,7 +14292,7 @@ class PubServer(BaseHTTPRequestHandler):
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
                                 '_GET', '_redirect_to_login_screen',
-                                self.server.debug)
+                                debug)
             return True
         return False
 
@@ -14411,8 +14388,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _search_screen_banner(self, calling_domain: str, path: str,
-                              base_dir: str, domain: str, port: int,
+    def _search_screen_banner(self, path: str,
+                              base_dir: str, domain: str,
                               getreq_start_time) -> bool:
         """Shows a banner image on the search screen
         """
@@ -14459,8 +14436,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _column_image(self, side: str, calling_domain: str, path: str,
-                      base_dir: str, domain: str, port: int,
+    def _column_image(self, side: str, path: str, base_dir: str, domain: str,
                       getreq_start_time) -> bool:
         """Shows an image at the top of the left/right column
         """
@@ -14503,7 +14479,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _show_background_image(self, calling_domain: str, path: str,
+    def _show_background_image(self, path: str,
                                base_dir: str, getreq_start_time) -> bool:
         """Show a background image
         """
@@ -14551,8 +14527,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _show_default_profile_background(self, calling_domain: str, path: str,
-                                         base_dir: str, theme_name: str,
+    def _show_default_profile_background(self, base_dir: str, theme_name: str,
                                          getreq_start_time) -> bool:
         """If a background image is missing after searching for a handle
         then substitute this image
@@ -14599,7 +14574,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _show_share_image(self, calling_domain: str, path: str,
+    def _show_share_image(self, path: str,
                           base_dir: str, getreq_start_time) -> bool:
         """Show a shared item image
         """
@@ -14796,7 +14771,7 @@ class PubServer(BaseHTTPRequestHandler):
                        domain: str, domain_full: str,
                        getreq_start_time, cookie,
                        no_drop_down: bool, conversation_id: str,
-                       curr_session, proxy_type: str) -> bool:
+                       curr_session) -> bool:
         """Shows the new post screen
         """
         is_new_post_endpoint = False
@@ -15296,11 +15271,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           '/users/' + nickname + '/statuses/')
 
         # instance actor
-        if self.path == '/actor' or \
-           self.path == '/users/instance.actor' or \
-           self.path == '/users/actor' or \
-           self.path == '/Actor' or \
-           self.path == '/users/Actor':
+        if self.path in ('/actor', '/users/instance.actor', '/users/actor',
+                         '/Actor', '/users/Actor'):
             self.path = '/users/inbox'
             if self._show_instance_actor(calling_domain, referer_domain,
                                          self.path,
@@ -15308,11 +15280,9 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.http_prefix,
                                          self.server.domain,
                                          self.server.domain_full,
-                                         self.server.port,
                                          self.server.onion_domain,
                                          self.server.i2p_domain,
                                          getreq_start_time,
-                                         proxy_type,
                                          None, self.server.debug,
                                          self.server.enable_shared_inbox):
                 return
@@ -15953,7 +15923,6 @@ class PubServer(BaseHTTPRequestHandler):
             # return the featured posts collection
             self._get_featured_collection(calling_domain, referer_domain,
                                           self.server.base_dir,
-                                          self.path,
                                           self.server.http_prefix,
                                           nickname, self.server.domain,
                                           self.server.domain_full,
@@ -16067,10 +16036,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
-                                        self.server.domain_full,
                                         self.server.port,
-                                        self.server.onion_domain,
-                                        self.server.i2p_domain,
                                         getreq_start_time,
                                         proxy_type,
                                         cookie, self.server.translate,
@@ -16782,26 +16748,23 @@ class PubServer(BaseHTTPRequestHandler):
         # search screen banner image
         if users_in_path:
             if self.path.endswith('/search_banner.png'):
-                if self._search_screen_banner(calling_domain, self.path,
+                if self._search_screen_banner(self.path,
                                               self.server.base_dir,
                                               self.server.domain,
-                                              self.server.port,
                                               getreq_start_time):
                     return
 
             if self.path.endswith('/left_col_image.png'):
-                if self._column_image('left', calling_domain, self.path,
+                if self._column_image('left', self.path,
                                       self.server.base_dir,
                                       self.server.domain,
-                                      self.server.port,
                                       getreq_start_time):
                     return
 
             if self.path.endswith('/right_col_image.png'):
-                if self._column_image('right', calling_domain, self.path,
+                if self._column_image('right', self.path,
                                       self.server.base_dir,
                                       self.server.domain,
-                                      self.server.port,
                                       getreq_start_time):
                     return
 
@@ -16810,15 +16773,14 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         if self.path.startswith('/defaultprofilebackground'):
-            self._show_default_profile_background(calling_domain, self.path,
-                                                  self.server.base_dir,
+            self._show_default_profile_background(self.server.base_dir,
                                                   self.server.theme_name,
                                                   getreq_start_time)
             return
 
         # show a background image on the login or person options page
         if '-background.' in self.path:
-            if self._show_background_image(calling_domain, self.path,
+            if self._show_background_image(self.path,
                                            self.server.base_dir,
                                            getreq_start_time):
                 return
@@ -16863,8 +16825,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
         if '/sharefiles/' in self.path:
-            if self._show_share_image(calling_domain, self.path,
-                                      self.server.base_dir,
+            if self._show_share_image(self.path, self.server.base_dir,
                                       getreq_start_time):
                 return
 
@@ -17421,13 +17382,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie,
                                   self.server.base_dir,
                                   self.server.http_prefix,
-                                  self.server.domain,
                                   self.server.domain_full,
-                                  self.server.port,
                                   self.server.onion_domain,
                                   self.server.i2p_domain,
                                   getreq_start_time,
-                                  proxy_type,
                                   self.server.debug,
                                   self.server.newswire)
             self.server.getreq_busy = False
@@ -17592,12 +17550,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain,
-                                  self.server.domain_full,
                                   self.server.port,
-                                  self.server.onion_domain,
-                                  self.server.i2p_domain,
                                   getreq_start_time,
-                                  proxy_type,
                                   cookie, self.server.debug,
                                   curr_session)
             self.server.getreq_busy = False
@@ -17633,9 +17587,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._delete_button(calling_domain, self.path,
                                 self.server.base_dir,
                                 self.server.http_prefix,
-                                self.server.domain,
                                 self.server.domain_full,
-                                self.server.port,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
                                 getreq_start_time,
@@ -17660,8 +17612,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.onion_domain,
                               self.server.i2p_domain,
                               getreq_start_time,
-                              proxy_type, cookie,
-                              self.server.debug,
+                              cookie, self.server.debug,
                               curr_session)
             self.server.getreq_busy = False
             return
@@ -17922,7 +17873,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain_full,
                                    getreq_start_time,
                                    cookie, no_drop_down, conversation_id,
-                                   curr_session, proxy_type):
+                                   curr_session):
                 self.server.getreq_busy = False
                 return
 
@@ -18390,10 +18341,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain,
-                                  self.server.domain_full,
                                   self.server.port,
-                                  self.server.onion_domain,
-                                  self.server.i2p_domain,
                                   getreq_start_time,
                                   proxy_type,
                                   cookie, self.server.debug, 'shares',
@@ -18411,10 +18359,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
-                                     self.server.domain_full,
                                      self.server.port,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain,
                                      getreq_start_time,
                                      proxy_type,
                                      cookie, self.server.debug,
@@ -18432,10 +18377,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
-                                     self.server.domain_full,
                                      self.server.port,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain,
                                      getreq_start_time,
                                      proxy_type,
                                      cookie, self.server.debug,
@@ -18454,8 +18396,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
-                                     self.server.domain_full,
-                                     self.server.port,
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
                                      getreq_start_time,
@@ -19021,8 +18961,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.max_replies,
                                          self.server.debug)
                         return 1
-                    else:
-                        return -1
+                    return -1
             elif post_type == 'newblog':
                 # citations button on newblog screen
                 if citations_button_press:
@@ -19106,8 +19045,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.max_replies,
                                          self.server.debug)
                         return 1
-                    else:
-                        return -1
+                    return -1
             elif post_type == 'editblogpost':
                 print('Edited blog post received')
                 post_filename = \
@@ -19271,8 +19209,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.max_replies,
                                          self.server.debug)
                         return 1
-                    else:
-                        return -1
+                    return -1
             elif post_type == 'newfollowers':
                 city = get_spoofed_city(self.server.city,
                                         self.server.base_dir,
@@ -19333,8 +19270,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.max_replies,
                                          self.server.debug)
                         return 1
-                    else:
-                        return -1
+                    return -1
             elif post_type == 'newdm':
                 message_json = None
                 print('A DM was posted')
@@ -19409,8 +19345,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.max_replies,
                                          self.server.debug)
                         return 1
-                    else:
-                        return -1
+                    return -1
             elif post_type == 'newreminder':
                 message_json = None
                 handle = nickname + '@' + self.server.domain_full
@@ -19923,22 +19858,22 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('Host'):
             calling_domain = decoded_host(self.headers['Host'])
             if self.server.onion_domain:
-                if calling_domain != self.server.domain and \
-                   calling_domain != self.server.domain_full and \
-                   calling_domain != self.server.onion_domain:
+                if calling_domain not in (self.server.domain,
+                                          self.server.domain_full,
+                                          self.server.onion_domain):
                     print('POST domain blocked: ' + calling_domain)
                     self._400()
                     return
             elif self.server.i2p_domain:
-                if calling_domain != self.server.domain and \
-                   calling_domain != self.server.domain_full and \
-                   calling_domain != self.server.i2p_domain:
+                if calling_domain not in (self.server.domain,
+                                          self.server.domain_full,
+                                          self.server.i2p_domain):
                     print('POST domain blocked: ' + calling_domain)
                     self._400()
                     return
             else:
-                if calling_domain != self.server.domain and \
-                   calling_domain != self.server.domain_full:
+                if calling_domain not in (self.server.domain,
+                                          self.server.domain_full):
                     print('POST domain blocked: ' + calling_domain)
                     self._400()
                     return
@@ -20033,15 +19968,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         # login screen
         if self.path.startswith('/login'):
-            self._show_login_screen(self.path, calling_domain, cookie,
+            self._show_login_screen(calling_domain, cookie,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
                                     self.server.domain_full,
                                     self.server.port,
                                     self.server.onion_domain,
-                                    self.server.i2p_domain,
-                                    self.server.debug)
+                                    self.server.i2p_domain)
             self.server.postreq_busy = False
             return
 
@@ -20623,7 +20557,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         # check content length before reading bytes
-        if self.path == '/sharedInbox' or self.path == '/inbox':
+        if self.path in ('/sharedInbox', '/inbox'):
             length = 0
             if self.headers.get('Content-length'):
                 length = int(self.headers['Content-length'])
@@ -20658,7 +20592,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # check content length after reading bytes
-        if self.path == '/sharedInbox' or self.path == '/inbox':
+        if self.path in ('/sharedInbox', '/inbox'):
             len_message = len(message_bytes)
             if len_message > 10240:
                 print('WARN: post to shared inbox is too long ' +
@@ -20787,17 +20721,16 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.postreq_busy = False
             return
-        else:
-            if self.path == '/sharedInbox' or self.path == '/inbox':
-                if self.server.debug:
-                    print('INBOX: POST to shared inbox')
-                queue_status = \
-                    self._update_inbox_queue('inbox', message_json,
-                                             message_bytes,
-                                             self.server.debug)
-                if queue_status in range(0, 4):
-                    self.server.postreq_busy = False
-                    return
+        if self.path in ('/sharedInbox', '/inbox'):
+            if self.server.debug:
+                print('INBOX: POST to shared inbox')
+            queue_status = \
+                self._update_inbox_queue('inbox', message_json,
+                                         message_bytes,
+                                         self.server.debug)
+            if queue_status in range(0, 4):
+                self.server.postreq_busy = False
+                return
         self._200()
         self.server.postreq_busy = False
 
