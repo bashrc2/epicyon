@@ -10638,10 +10638,8 @@ class PubServer(BaseHTTPRequestHandler):
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
-                          getreq_start_time,
-                          proxy_type: str, cookie: str,
-                          debug: str,
-                          curr_session):
+                          getreq_start_time, cookie: str,
+                          debug: str, curr_session):
         """Undo mute button is pressed
         """
         mute_url = path.split('?unmute=')[1]
@@ -10761,13 +10759,11 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _show_replies_to_post(self, authorized: bool,
                               calling_domain: str, referer_domain: str,
-                              path: str,
-                              base_dir: str, http_prefix: str,
+                              path: str, base_dir: str, http_prefix: str,
                               domain: str, domain_full: str, port: int,
                               getreq_start_time,
                               proxy_type: str, cookie: str,
-                              debug: str,
-                              curr_session) -> bool:
+                              debug: str, curr_session) -> bool:
         """Shows the replies to a post
         """
         if not ('/statuses/' in path and '/users/' in path):
@@ -10881,7 +10877,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', '_show_replies_to_post',
-                                    self.server.debug)
+                                    debug)
             else:
                 if self._secure_mode(curr_session, proxy_type):
                     msg_str = json.dumps(replies_json, ensure_ascii=False)
@@ -10896,7 +10892,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitness_performance(getreq_start_time, self.server.fitness,
                                         '_GET', '_show_replies_to_post json',
-                                        self.server.debug)
+                                        debug)
                 else:
                     self._404()
             return True
@@ -10986,7 +10982,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', '_show_replies_to_post',
-                                    self.server.debug)
+                                    debug)
             else:
                 if self._secure_mode(curr_session, proxy_type):
                     msg_str = json.dumps(replies_json, ensure_ascii=False)
@@ -11001,7 +10997,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitness_performance(getreq_start_time, self.server.fitness,
                                         '_GET', '_show_replies_to_post json',
-                                        self.server.debug)
+                                        debug)
                 else:
                     self._404()
             return True
@@ -11104,8 +11100,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       cookie, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time, self.server.fitness,
-                                        '_GET', '_show_roles',
-                                        self.server.debug)
+                                        '_GET', '_show_roles', debug)
             else:
                 if self._secure_mode(curr_session, proxy_type):
                     roles_list = get_actor_roles_list(actor_json)
@@ -11119,8 +11114,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time, self.server.fitness,
-                                        '_GET', '_show_roles json',
-                                        self.server.debug)
+                                        '_GET', '_show_roles json', debug)
                 else:
                     self._404()
             return True
@@ -12236,12 +12230,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_replies json',
                                         self.server.debug)
                 return True
-            else:
-                if debug:
-                    nickname = path.replace('/users/', '')
-                    nickname = nickname.replace('/tlreplies', '')
-                    print('DEBUG: ' + nickname +
-                          ' was not authorized to access ' + path)
+            if debug:
+                nickname = path.replace('/users/', '')
+                nickname = nickname.replace('/tlreplies', '')
+                print('DEBUG: ' + nickname +
+                      ' was not authorized to access ' + path)
         if path != '/tlreplies':
             # not the replies inbox
             if debug:
@@ -12392,12 +12385,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_media_timeline json',
                                         self.server.debug)
                 return True
-            else:
-                if debug:
-                    nickname = path.replace('/users/', '')
-                    nickname = nickname.replace('/tlmedia', '')
-                    print('DEBUG: ' + nickname +
-                          ' was not authorized to access ' + path)
+            if debug:
+                nickname = path.replace('/users/', '')
+                nickname = nickname.replace('/tlmedia', '')
+                print('DEBUG: ' + nickname +
+                      ' was not authorized to access ' + path)
         if path != '/tlmedia':
             # not the media inbox
             if debug:
@@ -12549,12 +12541,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_blogs_timeline json',
                                         self.server.debug)
                 return True
-            else:
-                if debug:
-                    nickname = path.replace('/users/', '')
-                    nickname = nickname.replace('/tlblogs', '')
-                    print('DEBUG: ' + nickname +
-                          ' was not authorized to access ' + path)
+            if debug:
+                nickname = path.replace('/users/', '')
+                nickname = nickname.replace('/tlblogs', '')
+                print('DEBUG: ' + nickname +
+                      ' was not authorized to access ' + path)
         if path != '/tlblogs':
             # not the blogs inbox
             if debug:
@@ -12714,11 +12705,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_news_timeline json',
                                         self.server.debug)
                 return True
-            else:
-                if debug:
-                    nickname = 'news'
-                    print('DEBUG: ' + nickname +
-                          ' was not authorized to access ' + path)
+            if debug:
+                nickname = 'news'
+                print('DEBUG: ' + nickname +
+                      ' was not authorized to access ' + path)
         if path != '/tlnews':
             # not the news inbox
             if debug:
@@ -12881,11 +12871,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_features_timeline json',
                                         self.server.debug)
                 return True
-            else:
-                if debug:
-                    nickname = 'news'
-                    print('DEBUG: ' + nickname +
-                          ' was not authorized to access ' + path)
+            if debug:
+                nickname = 'news'
+                print('DEBUG: ' + nickname +
+                      ' was not authorized to access ' + path)
         if path != '/tlfeatures':
             # not the features inbox
             if debug:
@@ -17632,8 +17621,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
                                    getreq_start_time,
-                                   proxy_type, cookie,
-                                   self.server.debug,
+                                   cookie, self.server.debug,
                                    curr_session)
             self.server.getreq_busy = False
             return
