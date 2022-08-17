@@ -1279,7 +1279,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   known_crawlers)
 
     def _show_vcard(self, base_dir: str, path: str, calling_domain: str,
-                    referer_domain: str, domain: str, debug: bool) -> bool:
+                    referer_domain: str, domain: str) -> bool:
         """Returns a vcard for the given account
         """
         if not self._has_accept(calling_domain):
@@ -2212,9 +2212,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _moderator_actions(self, path: str, calling_domain: str, cookie: str,
                            base_dir: str, http_prefix: str,
-                           domain: str, domain_full: str, port: int,
-                           onion_domain: str, i2p_domain: str,
-                           debug: bool) -> None:
+                           domain: str, port: int, debug: bool) -> None:
         """Actions on the moderator screen
         """
         users_path = path.replace('/moderationaction', '')
@@ -2454,8 +2452,7 @@ class PubServer(BaseHTTPRequestHandler):
                        base_dir: str, http_prefix: str, nickname: str,
                        domain: str, domain_full: str,
                        onion_domain: str, i2p_domain: str,
-                       debug: bool, access_keys: {},
-                       default_timeline: str) -> None:
+                       access_keys: {}, default_timeline: str) -> None:
         """Receive POST from webapp_accesskeys
         """
         users_path = '/users/' + nickname
@@ -2542,7 +2539,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _theme_designer_edit(self, calling_domain: str, cookie: str,
                              base_dir: str, http_prefix: str, nickname: str,
                              domain: str, domain_full: str,
-                             onion_domain: str, i2p_domain: str, debug: bool,
+                             onion_domain: str, i2p_domain: str,
                              default_timeline: str, theme_name: str,
                              allow_local_network_access: bool,
                              system_language: str,
@@ -2685,8 +2682,7 @@ class PubServer(BaseHTTPRequestHandler):
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
-                        debug: bool,
-                        curr_session, proxy_type: str) -> None:
+                        debug: bool, curr_session) -> None:
         """Receive POST from person options screen
         """
         page_number = 1
@@ -4345,7 +4341,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _receive_vote(self, calling_domain: str, cookie: str,
                       path: str, http_prefix: str, domain_full: str,
-                      onion_domain: str, i2p_domain: str, debug: bool,
+                      onion_domain: str, i2p_domain: str,
                       curr_session, proxy_type: str) -> None:
         """Receive a vote via POST
         """
@@ -4488,9 +4484,8 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _remove_share(self, calling_domain: str, cookie: str,
                       authorized: bool, path: str,
-                      base_dir: str, http_prefix: str,
-                      domain_full: str, onion_domain: str, i2p_domain: str,
-                      debug: bool) -> None:
+                      base_dir: str, http_prefix: str, domain_full: str,
+                      onion_domain: str, i2p_domain: str) -> None:
         """Removes a shared item
         """
         users_path = path.split('/rmshare')[0]
@@ -4561,8 +4556,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _remove_wanted(self, calling_domain: str, cookie: str,
                        authorized: bool, path: str,
                        base_dir: str, http_prefix: str,
-                       domain_full: str, onion_domain: str, i2p_domain: str,
-                       debug: bool) -> None:
+                       domain_full: str,
+                       onion_domain: str, i2p_domain: str) -> None:
         """Removes a wanted item
         """
         users_path = path.split('/rmwanted')[0]
@@ -4634,7 +4629,6 @@ class PubServer(BaseHTTPRequestHandler):
                              path: str, base_dir: str, http_prefix: str,
                              domain: str, domain_full: str,
                              onion_domain: str, i2p_domain: str,
-                             debug: bool,
                              curr_session, proxy_type: str) -> None:
         """Endpoint for removing posts after confirmation
         """
@@ -7649,32 +7643,30 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Sent favicon from cache: ' + calling_domain)
             return
-        else:
-            if os.path.isfile(favicon_filename):
-                fav_binary = None
-                try:
-                    with open(favicon_filename, 'rb') as fav_file:
-                        fav_binary = fav_file.read()
-                except OSError:
-                    print('EX: unable to read favicon ' + favicon_filename)
-                if fav_binary:
-                    self._set_headers_etag(favicon_filename,
-                                           fav_type,
-                                           fav_binary, None,
-                                           self.server.domain_full,
-                                           False, None)
-                    self._write(fav_binary)
-                    self.server.iconsCache[fav_filename] = fav_binary
-                    if self.server.debug:
-                        print('Sent favicon from file: ' + calling_domain)
-                    return
+        if os.path.isfile(favicon_filename):
+            fav_binary = None
+            try:
+                with open(favicon_filename, 'rb') as fav_file:
+                    fav_binary = fav_file.read()
+            except OSError:
+                print('EX: unable to read favicon ' + favicon_filename)
+            if fav_binary:
+                self._set_headers_etag(favicon_filename,
+                                       fav_type,
+                                       fav_binary, None,
+                                       self.server.domain_full,
+                                       False, None)
+                self._write(fav_binary)
+                self.server.iconsCache[fav_filename] = fav_binary
+                if self.server.debug:
+                    print('Sent favicon from file: ' + calling_domain)
+                return
         if debug:
             print('favicon not sent: ' + calling_domain)
         self._404()
 
     def _get_speaker(self, calling_domain: str, referer_domain: str,
-                     path: str,
-                     base_dir: str, domain: str, debug: bool) -> None:
+                     path: str, base_dir: str, domain: str) -> None:
         """Returns the speaker file used for TTS and
         accessed via c2s
         """
@@ -7698,8 +7690,8 @@ class PubServer(BaseHTTPRequestHandler):
                           None, calling_domain, False)
         self._write(msg)
 
-    def _get_exported_theme(self, path: str, base_dir: str, domain_full: str,
-                            debug: bool) -> None:
+    def _get_exported_theme(self, path: str, base_dir: str,
+                            domain_full: str) -> None:
         """Returns an exported theme zip file
         """
         filename = path.split('/exports/', 1)[1]
@@ -7755,31 +7747,29 @@ class PubServer(BaseHTTPRequestHandler):
                           path + ' ' + calling_domain)
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', '_get_fonts cache',
-                                    self.server.debug)
+                                    debug)
                 return
-            else:
-                if os.path.isfile(font_filename):
-                    font_binary = None
-                    try:
-                        with open(font_filename, 'rb') as fontfile:
-                            font_binary = fontfile.read()
-                    except OSError:
-                        print('EX: unable to load font ' + font_filename)
-                    if font_binary:
-                        self._set_headers_etag(font_filename,
-                                               font_type,
-                                               font_binary, None,
-                                               self.server.domain_full,
-                                               False, None)
-                        self._write(font_binary)
-                        self.server.fontsCache[font_str] = font_binary
-                    if debug:
-                        print('font sent from file: ' +
-                              path + ' ' + calling_domain)
-                    fitness_performance(getreq_start_time, self.server.fitness,
-                                        '_GET', '_get_fonts',
-                                        self.server.debug)
-                    return
+            if os.path.isfile(font_filename):
+                font_binary = None
+                try:
+                    with open(font_filename, 'rb') as fontfile:
+                        font_binary = fontfile.read()
+                except OSError:
+                    print('EX: unable to load font ' + font_filename)
+                if font_binary:
+                    self._set_headers_etag(font_filename,
+                                           font_type,
+                                           font_binary, None,
+                                           self.server.domain_full,
+                                           False, None)
+                    self._write(font_binary)
+                    self.server.fontsCache[font_str] = font_binary
+                if debug:
+                    print('font sent from file: ' +
+                          path + ' ' + calling_domain)
+                fitness_performance(getreq_start_time, self.server.fitness,
+                                    '_GET', '_get_fonts', debug)
+                return
         if debug:
             print('font not found: ' + path + ' ' + calling_domain)
         self._404()
@@ -7787,8 +7777,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _get_rss2feed(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, port: int, proxy_type: str,
-                      getreq_start_time,
-                      debug: bool,
+                      getreq_start_time, debug: bool,
                       curr_session) -> None:
         """Returns an RSS2 feed for the blog
         """
@@ -8394,7 +8383,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self._404()
 
-    def _show_help_screen_image(self, calling_domain: str, path: str,
+    def _show_help_screen_image(self, path: str,
                                 base_dir: str, getreq_start_time) -> None:
         """Shows a help screen image
         """
@@ -8614,7 +8603,7 @@ class PubServer(BaseHTTPRequestHandler):
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
                              getreq_start_time,
-                             curr_session, proxy_type: str) -> None:
+                             curr_session) -> None:
         """Return an RSS 2 feed for a hashtag
         """
         hashtag = path.split('/tags/rss2/')[1]
@@ -8845,16 +8834,12 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
         self._redirect_headers(actor_path_str, cookie, calling_domain)
 
-    def _undo_announce_button(self, calling_domain: str, path: str,
-                              base_dir: str,
-                              cookie: str, proxy_type: str,
-                              http_prefix: str,
-                              domain: str, domain_full: str, port: int,
+    def _announce_button_undo(self, calling_domain: str, path: str,
+                              base_dir: str, cookie: str, proxy_type: str,
+                              http_prefix: str, domain: str, domain_full: str,
                               onion_domain: str, i2p_domain: str,
-                              getreq_start_time,
-                              repeat_private: bool, debug: bool,
-                              recent_posts_cache: {},
-                              curr_session) -> None:
+                              getreq_start_time, debug: bool,
+                              recent_posts_cache: {}, curr_session) -> None:
         """Undo announce/repeat button was pressed
         """
         page_number = 1
@@ -9042,10 +9027,9 @@ class PubServer(BaseHTTPRequestHandler):
     def _newswire_vote(self, calling_domain: str, path: str,
                        cookie: str,
                        base_dir: str, http_prefix: str,
-                       domain: str, domain_full: str, port: int,
+                       domain_full: str,
                        onion_domain: str, i2p_domain: str,
                        getreq_start_time,
-                       proxy_type: str, debug: bool,
                        newswire: {}):
         """Vote for a newswire item
         """
@@ -9149,13 +9133,10 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', '_newswire_unvote', debug)
 
     def _follow_deny_button(self, calling_domain: str, path: str,
-                            cookie: str,
-                            base_dir: str, http_prefix: str,
+                            cookie: str, base_dir: str, http_prefix: str,
                             domain: str, domain_full: str, port: int,
                             onion_domain: str, i2p_domain: str,
-                            getreq_start_time,
-                            proxy_type: str, debug: bool,
-                            curr_session) -> None:
+                            getreq_start_time, debug: bool) -> None:
         """Follow deny button was pressed
         """
         origin_path_str = path.split('/followdeny=')[0]
@@ -9175,8 +9156,8 @@ class PubServer(BaseHTTPRequestHandler):
             manual_deny_follow_request_thread(self.server.session,
                                               self.server.session_onion,
                                               self.server.session_i2p,
-                                              self.server.onion_domain,
-                                              self.server.i2p_domain,
+                                              onion_domain,
+                                              i2p_domain,
                                               base_dir, http_prefix,
                                               follower_nickname,
                                               domain, port,
@@ -15191,7 +15172,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self._show_vcard(self.server.base_dir,
                             self.path, calling_domain, referer_domain,
-                            self.server.domain, self.server.debug):
+                            self.server.domain):
             return
 
         # Since fediverse crawlers are quite active,
@@ -15664,8 +15645,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and '/exports/' in self.path:
             self._get_exported_theme(self.path,
                                      self.server.base_dir,
-                                     self.server.domain_full,
-                                     self.server.debug)
+                                     self.server.domain_full)
             return
 
         # get fonts
@@ -15800,8 +15780,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._get_speaker(calling_domain, referer_domain,
                                   self.path,
                                   self.server.base_dir,
-                                  self.server.domain,
-                                  self.server.debug)
+                                  self.server.domain)
             else:
                 xml_str = \
                     get_ssml_box(self.server.base_dir,
@@ -16840,7 +16819,7 @@ class PubServer(BaseHTTPRequestHandler):
         # help screen images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/helpimages/'):
-            self._show_help_screen_image(calling_domain, self.path,
+            self._show_help_screen_image(self.path,
                                          self.server.base_dir,
                                          getreq_start_time)
             return
@@ -17064,8 +17043,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
                                           getreq_start_time,
-                                          curr_session,
-                                          proxy_type)
+                                          curr_session)
                 self.server.getreq_busy = False
                 return
             self._hashtag_search(calling_domain,
@@ -17324,17 +17302,15 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo an announce/repeat from the web interface
         if authorized and html_getreq and '?unrepeat=' in self.path:
-            self._undo_announce_button(calling_domain, self.path,
+            self._announce_button_undo(calling_domain, self.path,
                                        self.server.base_dir,
                                        cookie, proxy_type,
                                        self.server.http_prefix,
                                        self.server.domain,
                                        self.server.domain_full,
-                                       self.server.port,
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
                                        getreq_start_time,
-                                       repeat_private,
                                        self.server.debug,
                                        self.server.recent_posts_cache,
                                        curr_session)
@@ -17352,14 +17328,10 @@ class PubServer(BaseHTTPRequestHandler):
                                 cookie,
                                 self.server.base_dir,
                                 self.server.http_prefix,
-                                self.server.domain,
                                 self.server.domain_full,
-                                self.server.port,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
                                 getreq_start_time,
-                                proxy_type,
-                                self.server.debug,
                                 self.server.newswire)
             self.server.getreq_busy = False
             return
@@ -17416,9 +17388,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
                                      getreq_start_time,
-                                     proxy_type,
-                                     self.server.debug,
-                                     curr_session)
+                                     self.server.debug)
             self.server.getreq_busy = False
             return
 
@@ -20047,10 +20017,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
-                                    self.server.domain_full,
                                     self.server.port,
-                                    self.server.onion_domain,
-                                    self.server.i2p_domain,
                                     self.server.debug)
             self.server.postreq_busy = False
             return
@@ -20114,7 +20081,6 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain_full,
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
-                                   self.server.debug,
                                    curr_session,
                                    proxy_type)
                 self.server.postreq_busy = False
@@ -20128,8 +20094,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.http_prefix,
                                    self.server.domain_full,
                                    self.server.onion_domain,
-                                   self.server.i2p_domain,
-                                   self.server.debug)
+                                   self.server.i2p_domain)
                 self.server.postreq_busy = False
                 return
 
@@ -20141,8 +20106,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.http_prefix,
                                     self.server.domain_full,
                                     self.server.onion_domain,
-                                    self.server.i2p_domain,
-                                    self.server.debug)
+                                    self.server.i2p_domain)
                 self.server.postreq_busy = False
                 return
 
@@ -20167,7 +20131,6 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain_full,
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
-                                          self.server.debug,
                                           curr_session, proxy_type)
                 self.server.postreq_busy = False
                 return
@@ -20270,8 +20233,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
                                      self.server.debug,
-                                     curr_session,
-                                     proxy_type)
+                                     curr_session)
                 self.server.postreq_busy = False
                 return
 
@@ -20295,7 +20257,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domain_full,
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
-                                    self.server.debug,
                                     access_keys,
                                     self.server.default_timeline)
                 self.server.postreq_busy = False
@@ -20323,7 +20284,6 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain_full,
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
-                                          self.server.debug,
                                           self.server.default_timeline,
                                           self.server.theme_name,
                                           allow_local_network_access,
