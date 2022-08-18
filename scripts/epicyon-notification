@@ -115,6 +115,37 @@ function sendNotification {
 
     hasSent=
 
+    # see https://ntfy.sh
+    # You will need to create these two files containing the ntfy
+    # service url and topic
+    ntfy_url_file=/home/${ADMIN_USERNAME}/.ntfy_url
+    ntfy_topic_file=/home/${ADMIN_USERNAME}/.ntfy_topic
+
+    if [ "$MESSAGE" ]; then
+        if [ -f "$ntfy_topic_file" ]; then
+            ntfy_topic=$(cat "$ntfy_topic_file")
+            if [ "$ntfy_topic" ]; then
+                if [ -f "$ntfy_url_file" ]; then
+                    ntfy_url=$(cat "$ntfy_url_file")
+                else
+                    # use the default service url
+                    ntfy_url="ntfy.sh"
+                fi
+
+                curl_command='curl'
+                if [ -f /var/lib/tor/hidden_service_matrix/hostname ]; then
+                    curl_command='torsocks curl'
+                fi
+
+                if [ ! "$SUBJECT" ]; then
+                    SUBJECT="$PROJECT_NAME"
+                fi
+                ${curl_command} -H "Title: ${SUBJECT}" -H "Priority: default" -H "Tags: loudspeaker" -d "${MESSAGE}" "${ntfy_url}/${ntfy_topic}"
+                hasSent=1
+            fi
+        fi
+    fi
+
     if [ -d /etc/prosody ]; then
         if [ -f /usr/bin/sendxmpp ]; then
             # generate a random password for a temporary user account
