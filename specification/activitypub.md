@@ -205,6 +205,23 @@ Alyssa is relieved, and likes Ben's post:
 
 She POSTs this message to her outbox. (Since it's an activity, her server knows it doesn't need to wrap it in a Create object).
 
+She reacts to Ben's post with an emoji.
+
+### Example X
+``` json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "EmojiReact",
+  "id": "https://instancedomain/users/alyssa/statuses/64832334",
+  "to": ["https://chatty.example/users/ben"],
+  "actor": "https://instancedomain/users/alyssa",
+  "object": "https://chatty.example/users/ben/statuses/51086",
+  "content": "📖"
+}
+```
+
+And also POSTs the reaction message to her outbox.
+
 Feeling happy about things, she decides to post a public message to her followers. Soon the following message is blasted to all the members of her followers collection, and since it has the special Public group addressed, is generally readable by anyone.
 
 ### Example 6
