@@ -6,7 +6,7 @@
       "file_hash": "3419d2a831e8a39857bdc13e6aaa420f",
       "file_url": "https://osskb.org/api/file_contents/3419d2a831e8a39857bdc13e6aaa420f",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -17,8 +17,8 @@
       "release_date": "2021-08-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -34,126 +34,126 @@
     {
       "component": "epicyon",
       "file": "acceptreject.py",
-      "file_hash": "934e77e796b213195eed3006af5359ea",
-      "file_url": "https://osskb.org/api/file_contents/934e77e796b213195eed3006af5359ea",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "52a4e37fe17ae40c068fc925dfd15261",
+      "file_url": "https://osskb.org/api/file_contents/52a4e37fe17ae40c068fc925dfd15261",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-231",
-      "matched": "99%",
-      "oss_lines": "1-231",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "52a4e37fe17ae40c068fc925dfd15261",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "5429967b"
     }
   ],
   "announce.py": [
     {
       "component": "epicyon",
       "file": "announce.py",
-      "file_hash": "29a0e6b611f53673c07c804a95d4e932",
-      "file_url": "https://osskb.org/api/file_contents/29a0e6b611f53673c07c804a95d4e932",
-      "id": "snippet",
-      "latest": "a8f17d37",
+      "file_hash": "407a17a739e481c1971830cbde766eef",
+      "file_url": "https://osskb.org/api/file_contents/407a17a739e481c1971830cbde766eef",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-43,54-303,300-445",
-      "matched": "97%",
-      "oss_lines": "1-43,191-440,270-415",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2021-10-06",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "407a17a739e481c1971830cbde766eef",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "0d85cee797d7f057363a7b1f23eadb05",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "a8f17d37"
+      "version": "5429967b"
     }
   ],
   "auth.py": [
     {
       "component": "epicyon",
       "file": "auth.py",
-      "file_hash": "71c0c0f078f156dadfbf6cd70be6739f",
-      "file_url": "https://osskb.org/api/file_contents/71c0c0f078f156dadfbf6cd70be6739f",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "c388ede2e78b71a7b662ef2e7123cfd2",
+      "file_url": "https://osskb.org/api/file_contents/c388ede2e78b71a7b662ef2e7123cfd2",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-305",
-      "matched": "99%",
-      "oss_lines": "6-310",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-04-05",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "c388ede2e78b71a7b662ef2e7123cfd2",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "47edfad9"
+      "version": "5429967b"
     }
   ],
   "availability.py": [
@@ -163,14 +163,14 @@
       "file_hash": "f77f327a4dfefb1124ee2ccb233062fc",
       "file_url": "https://osskb.org/api/file_contents/f77f327a4dfefb1124ee2ccb233062fc",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -185,8 +185,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -212,27 +212,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-74,103-168,172-230,225-316,307-1104",
-      "matched": "98%",
-      "oss_lines": "37-110,99-164,165-223,243-334,421-1218",
+      "lines": "1-168,186-282,271-1106",
+      "matched": "99%",
+      "oss_lines": "37-204,211-307,421-1256",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "1ea121be8b160722d3a6a5e88c8044b9",
+      "source_hash": "d4a6a43dafd57b7b7256bf9128d2cee1",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "8e88dc854644baca443bb7bcead0aa26",
@@ -244,84 +244,84 @@
     {
       "component": "epicyon",
       "file": "blog.py",
-      "file_hash": "2b15e4eb2313da6986883d40089d3c42",
-      "file_url": "https://osskb.org/api/file_contents/2b15e4eb2313da6986883d40089d3c42",
-      "id": "snippet",
-      "latest": "dd6cc93a",
+      "file_hash": "af675a4ab3c6e1ab3c55bab7d5e95cbc",
+      "file_url": "https://osskb.org/api/file_contents/af675a4ab3c6e1ab3c55bab7d5e95cbc",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "322-488,504-629,648-785,792-942",
-      "matched": "61%",
-      "oss_lines": "277-443,467-592,677-814,816-966",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2021-07-02",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "af675a4ab3c6e1ab3c55bab7d5e95cbc",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "643492656561e183bbfb691a1319a217",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "dd6cc93a"
+      "version": "5429967b"
     }
   ],
   "bookmarks.py": [
     {
       "component": "epicyon",
       "file": "bookmarks.py",
-      "file_hash": "134208359eb0b5481735c9b12ae69ee0",
-      "file_url": "https://osskb.org/api/file_contents/134208359eb0b5481735c9b12ae69ee0",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "b23e442fd43563d95ea93c626a7dc03e",
+      "file_url": "https://osskb.org/api/file_contents/b23e442fd43563d95ea93c626a7dc03e",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-40,30-670",
-      "matched": "99%",
-      "oss_lines": "1-40,585-1225",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-05-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "b23e442fd43563d95ea93c626a7dc03e",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "42b3ac8e"
+      "version": "5429967b"
     }
   ],
   "briar.py": [
@@ -331,14 +331,14 @@
       "file_hash": "48d9d804c08dc42a31270e6857743af1",
       "file_url": "https://osskb.org/api/file_contents/48d9d804c08dc42a31270e6857743af1",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -353,8 +353,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -370,168 +370,168 @@
     {
       "component": "epicyon",
       "file": "cache.py",
-      "file_hash": "de4079e45ac908765197ae07ba6f1be8",
-      "file_url": "https://osskb.org/api/file_contents/de4079e45ac908765197ae07ba6f1be8",
-      "id": "snippet",
-      "latest": "42b3ac8e",
+      "file_hash": "57541e99e626937ea77e7bf4f1aa912b",
+      "file_url": "https://osskb.org/api/file_contents/57541e99e626937ea77e7bf4f1aa912b",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-197",
-      "matched": "99%",
-      "oss_lines": "1-197",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-04-05",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "57541e99e626937ea77e7bf4f1aa912b",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "47edfad9"
+      "version": "5429967b"
     }
   ],
   "categories.py": [
     {
       "component": "epicyon",
       "file": "categories.py",
-      "file_hash": "397479da44f175aa3de2650b8154b10b",
-      "file_url": "https://osskb.org/api/file_contents/397479da44f175aa3de2650b8154b10b",
-      "id": "snippet",
-      "latest": "42b3ac8e",
+      "file_hash": "356fbc25f5da5aaf2d8a872756d4951f",
+      "file_url": "https://osskb.org/api/file_contents/356fbc25f5da5aaf2d8a872756d4951f",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-216",
-      "matched": "99%",
-      "oss_lines": "8-223",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "356fbc25f5da5aaf2d8a872756d4951f",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "city.py": [
     {
       "component": "epicyon",
       "file": "city.py",
-      "file_hash": "474fe1162d09011f14ebe0f31ae0f5f6",
-      "file_url": "https://osskb.org/api/file_contents/474fe1162d09011f14ebe0f31ae0f5f6",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "4ba03f7343696f8dbc2c5df8b9984b91",
+      "file_url": "https://osskb.org/api/file_contents/4ba03f7343696f8dbc2c5df8b9984b91",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-359",
-      "matched": "99%",
-      "oss_lines": "7-365",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "4ba03f7343696f8dbc2c5df8b9984b91",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "content.py": [
     {
       "component": "epicyon",
       "file": "content.py",
-      "file_hash": "62ce6381eed5a152a16e59882c621f0e",
-      "file_url": "https://osskb.org/api/file_contents/62ce6381eed5a152a16e59882c621f0e",
+      "file_hash": "cc0610b0f6a9524fc44fdb6fe797b8e1",
+      "file_url": "https://osskb.org/api/file_contents/cc0610b0f6a9524fc44fdb6fe797b8e1",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1407-1492,1517-1562,1606-1791,1787-1943",
-      "matched": "24%",
-      "oss_lines": "1275-1360,1325-1370,1385-1570,1688-1844",
+      "lines": "1170-1407,1407-1492,1517-1562,1606-1958",
+      "matched": "36%",
+      "oss_lines": "1025-1262,1282-1367,1332-1377,1392-1744",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "1747680f627bb58498f111ffc5fc0506",
+      "source_hash": "6e26b3756bd0edeea3e236c5dac92189",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "5429967b"
     }
   ],
   "context.py": [
@@ -541,14 +541,14 @@
       "file_hash": "9dcd68667fbcc274ceca47ad563de33c",
       "file_url": "https://osskb.org/api/file_contents/9dcd68667fbcc274ceca47ad563de33c",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -563,8 +563,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -580,84 +580,84 @@
     {
       "component": "epicyon",
       "file": "conversation.py",
-      "file_hash": "9b5a5889b5da1acf2b6d43b9668fa1a1",
-      "file_url": "https://osskb.org/api/file_contents/9b5a5889b5da1acf2b6d43b9668fa1a1",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "b22c31798d2f630f583ce91abf745cae",
+      "file_url": "https://osskb.org/api/file_contents/b22c31798d2f630f583ce91abf745cae",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-100",
-      "matched": "99%",
-      "oss_lines": "1-100",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "b22c31798d2f630f583ce91abf745cae",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "crawlers.py": [
     {
       "component": "epicyon",
       "file": "crawlers.py",
-      "file_hash": "0b562dad6aa2cc4481049c6d7b59d229",
-      "file_url": "https://osskb.org/api/file_contents/0b562dad6aa2cc4481049c6d7b59d229",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "c29faec47898154272fed3a659b1b314",
+      "file_url": "https://osskb.org/api/file_contents/c29faec47898154272fed3a659b1b314",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-180",
-      "matched": "99%",
-      "oss_lines": "1-180",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-04-05",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "c29faec47898154272fed3a659b1b314",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "47edfad9"
+      "version": "5429967b"
     }
   ],
   "cwtch.py": [
@@ -667,14 +667,14 @@
       "file_hash": "7447fd0a3c2c283fbbf64114ecb51d91",
       "file_url": "https://osskb.org/api/file_contents/7447fd0a3c2c283fbbf64114ecb51d91",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -689,8 +689,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -706,51 +706,47 @@
     {
       "component": "epicyon",
       "file": "daemon.py",
-      "file_hash": "f8b260a8083e1dee2df94d48e61e20e2",
-      "file_url": "https://osskb.org/api/file_contents/f8b260a8083e1dee2df94d48e61e20e2",
+      "file_hash": "bb7fe659899e73d77530a477e66c5bbf",
+      "file_url": "https://osskb.org/api/file_contents/bb7fe659899e73d77530a477e66c5bbf",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "47edfad9",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         },
         {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/CC-BY-4.0.txt",
-          "copyleft": "no",
           "name": "CC-BY-4.0",
-          "osadl_updated": "2022-05-31 16:02",
-          "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/CC-BY-4.0.html"
         }
       ],
-      "lines": "5182-5290,5281-6474,6475-6852,6847-7385,7379-8119",
-      "matched": "36%",
-      "oss_lines": "5038-5146,5635-6828,6392-6769,6948-7486,2984-3724",
+      "lines": "5279-6134,6140-6488,6489-6687,6695-6878,6873-7670,7664-8097",
+      "matched": "34%",
+      "oss_lines": "5098-5953,5918-6266,6395-6593,6500-6683,6868-7665,2926-3359",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "6054944442c1e2ab1b4355fb930ba3da",
+      "source_hash": "f4b1f95ac31f476fd2268467760cad3c",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "47edfad9"
     }
   ],
   "delete.py": [
@@ -760,14 +756,14 @@
       "file_hash": "12463bfc447735b9c90af51a37dabda6",
       "file_url": "https://osskb.org/api/file_contents/12463bfc447735b9c90af51a37dabda6",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -782,8 +778,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -798,32 +794,32 @@
   "deploy/i2p": [
     {
       "component": "epicyon",
-      "file": "deploy/i2p",
-      "file_hash": "638ac84256412a03da95fdb9f722fbf1",
-      "file_url": "https://osskb.org/api/file_contents/638ac84256412a03da95fdb9f722fbf1",
-      "id": "file",
-      "latest": "ef5ce403",
+      "file": "i2p",
+      "file_hash": "71e960e24865311eca148df6e1a336ab",
+      "file_url": "https://osskb.org/api/file_contents/71e960e24865311eca148df6e1a336ab",
+      "id": "snippet",
+      "latest": "823b4c33",
       "licenses": [],
-      "lines": "all",
-      "matched": "100%",
-      "oss_lines": "all",
+      "lines": "1-226,240-443",
+      "matched": "96%",
+      "oss_lines": "8-233,331-534",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2021-12-07",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "638ac84256412a03da95fdb9f722fbf1",
+      "source_hash": "c9f1e71e6efa73c9aa527b0b9527b573",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "94b082430bca99a22921d59469996687",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "e2cc26b4"
     }
   ],
   "deploy/onion": [
@@ -833,7 +829,7 @@
       "file_hash": "8a099b16f7ab77859111b22fa004ac6e",
       "file_url": "https://osskb.org/api/file_contents/8a099b16f7ab77859111b22fa004ac6e",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -844,8 +840,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -871,36 +867,32 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         },
         {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/CC-BY-4.0.txt",
-          "copyleft": "no",
           "name": "CC-BY-4.0",
-          "osadl_updated": "2022-05-31 16:02",
-          "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/CC-BY-4.0.html"
         }
       ],
-      "lines": "1-182,172-348,369-1548,1539-2591",
-      "matched": "99%",
-      "oss_lines": "1-182,197-373,1379-2558,1703-2755",
+      "lines": "1-176,182-350,370-404,431-1565,1556-2608",
+      "matched": "98%",
+      "oss_lines": "4-179,180-348,319-353,1379-2513,1703-2755",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "aed24b0d15806e78f601125a866f15b5",
+      "source_hash": "fa22dadcb6e6436a67ca854f01b3d92c",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "8e88dc854644baca443bb7bcead0aa26",
@@ -915,14 +907,14 @@
       "file_hash": "d72220164a89e393b6b32e504c9fa3f7",
       "file_url": "https://osskb.org/api/file_contents/d72220164a89e393b6b32e504c9fa3f7",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -937,8 +929,8 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -957,14 +949,14 @@
       "file_hash": "570308c0946c0a7984064359d5417b49",
       "file_url": "https://osskb.org/api/file_contents/570308c0946c0a7984064359d5417b49",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -979,8 +971,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -999,14 +991,14 @@
       "file_hash": "28028dc040fdd816005d105ef2ca0c94",
       "file_url": "https://osskb.org/api/file_contents/28028dc040fdd816005d105ef2ca0c94",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -1021,8 +1013,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1038,51 +1030,203 @@
     {
       "component": "epicyon",
       "file": "epicyon.py",
-      "file_hash": "fb9d865e581ccedc887d4a1ea92a1248",
-      "file_url": "https://osskb.org/api/file_contents/fb9d865e581ccedc887d4a1ea92a1248",
+      "file_hash": "b9c36096532d5820d99485f85718ccee",
+      "file_url": "https://osskb.org/api/file_contents/b9c36096532d5820d99485f85718ccee",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         },
         {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/CC-BY-4.0.txt",
-          "copyleft": "no",
           "name": "CC-BY-4.0",
-          "osadl_updated": "2022-05-31 16:02",
-          "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/CC-BY-4.0.html"
         }
       ],
-      "lines": "171-1820,1812-2455,2501-2982,2980-3657",
-      "matched": "94%",
-      "oss_lines": "1456-3105,1529-2172,2495-2976,3213-3890",
+      "lines": "189-1591,1582-2798,2793-3681",
+      "matched": "95%",
+      "oss_lines": "193-1595,2437-3653,3218-4106",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "41f7ad554c3d8ab7c20fe14e9aedcf27",
+      "source_hash": "a344a52ca4dfd01a4c477e9443b0bfc6",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "5429967b"
+    }
+  ],
+  "epicyon_groups_ActivityPub.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_ActivityPub_Core.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_ActivityPub_Security.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Commandline-Interface_ActivityPub.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Commandline-Interface_Core.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Core.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Core_Accessibility.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Core_Security.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Timeline_Core.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Timeline_Security.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Web-Interface-Columns_Core.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Web-Interface_Accessibility.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
+    }
+  ],
+  "epicyon_groups_Web-Interface_Core.dot": [
+    {
+      "id": "none",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      }
     }
   ],
   "feeds.py": [
@@ -1092,14 +1236,14 @@
       "file_hash": "823fd5a41d7164bb412fcd1d58ce08b7",
       "file_url": "https://osskb.org/api/file_contents/823fd5a41d7164bb412fcd1d58ce08b7",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -1114,8 +1258,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1141,7 +1285,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -1156,8 +1300,8 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1176,14 +1320,14 @@
       "file_hash": "3d770518ba9569df318a90de97ae0d24",
       "file_url": "https://osskb.org/api/file_contents/3d770518ba9569df318a90de97ae0d24",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -1198,8 +1342,8 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1215,84 +1359,84 @@
     {
       "component": "epicyon",
       "file": "follow.py",
-      "file_hash": "0afce0368b3adea2a14689d6b271ce78",
-      "file_url": "https://osskb.org/api/file_contents/0afce0368b3adea2a14689d6b271ce78",
-      "id": "snippet",
-      "latest": "42b3ac8e",
+      "file_hash": "fe4b340b5fd787e58662dd5e35615674",
+      "file_url": "https://osskb.org/api/file_contents/fe4b340b5fd787e58662dd5e35615674",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "315-414,406-532,535-673,665-1197,1195-1394,1402-1477",
-      "matched": "79%",
-      "oss_lines": "307-406,490-616,531-669,708-1240,1215-1414,1397-1472",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-05-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "fe4b340b5fd787e58662dd5e35615674",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "42b3ac8e"
+      "version": "5429967b"
     }
   ],
   "followingCalendar.py": [
     {
       "component": "epicyon",
       "file": "followingCalendar.py",
-      "file_hash": "e1fba69c04e631d8f9fd318082df2b1c",
-      "file_url": "https://osskb.org/api/file_contents/e1fba69c04e631d8f9fd318082df2b1c",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "feabc89e40be1edcd09532a3d714b42f",
+      "file_url": "https://osskb.org/api/file_contents/feabc89e40be1edcd09532a3d714b42f",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "30-181",
-      "matched": "83%",
-      "oss_lines": "11-162",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "feabc89e40be1edcd09532a3d714b42f",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "fonts/Absortile-Bold.woff2": [
@@ -1313,8 +1457,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1344,8 +1488,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1375,8 +1519,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1406,8 +1550,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1437,8 +1581,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1468,8 +1612,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1499,8 +1643,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1530,8 +1674,8 @@
       "release_date": "2020-12-14",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1561,8 +1705,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1592,8 +1736,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1623,8 +1767,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1654,8 +1798,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1685,8 +1829,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1716,8 +1860,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1747,8 +1891,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1778,8 +1922,8 @@
       "release_date": "2021-03-12",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1809,8 +1953,8 @@
       "release_date": "2021-03-12",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1840,8 +1984,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1871,8 +2015,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1902,8 +2046,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1933,8 +2077,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1964,8 +2108,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -1995,8 +2139,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2026,8 +2170,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2057,8 +2201,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2077,7 +2221,7 @@
       "file_hash": "b0ac8709499298dfecaad21597ae0c21",
       "file_url": "https://osskb.org/api/file_contents/b0ac8709499298dfecaad21597ae0c21",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -2088,8 +2232,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2105,37 +2249,68 @@
     {
       "component": "epicyon",
       "file": "gemini/EN/index.gmi",
-      "file_hash": "817ae877e5c1f6137faf0b3b8ae5c5b4",
-      "file_url": "https://osskb.org/api/file_contents/817ae877e5c1f6137faf0b3b8ae5c5b4",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "dad1ed7681af568070b573a9ed4996d9",
+      "file_url": "https://osskb.org/api/file_contents/dad1ed7681af568070b573a9ed4996d9",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
+          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-only.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
-          "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "name": "AGPL-3.0-only",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
-          "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
+          "url": "https://spdx.org/licenses/AGPL-3.0-only.html"
         }
       ],
-      "lines": "9-50",
-      "matched": "82%",
-      "oss_lines": "10-51",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
+      "purl": [
+        "pkg:gitlab/bashrc2/epicyon"
+      ],
+      "release_date": "2022-07-02",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      },
+      "source_hash": "dad1ed7681af568070b573a9ed4996d9",
+      "status": "pending",
+      "url": "https://gitlab.com/bashrc2/epicyon",
+      "url_hash": "d60076595f98154655b58e94438741a8",
+      "vendor": "bashrc2",
+      "version": "5429967b"
+    }
+  ],
+  "gemini/EN/install.gmi": [
+    {
+      "component": "epicyon",
+      "file": "gemini/EN/install.gmi",
+      "file_hash": "2c949ac6fc2ee79c88f3f023cc643fac",
+      "file_url": "https://osskb.org/api/file_contents/2c949ac6fc2ee79c88f3f023cc643fac",
+      "id": "snippet",
+      "latest": "42b3ac8e",
+      "licenses": [],
+      "lines": "1-53,64-179",
+      "matched": "93%",
+      "oss_lines": "1-53,62-177",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2021-12-07",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "dad1ed7681af568070b573a9ed4996d9",
+      "source_hash": "b53a961bc965f1a02d8540e8f2d87145",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "94b082430bca99a22921d59469996687",
@@ -2143,44 +2318,13 @@
       "version": "e2cc26b4"
     }
   ],
-  "gemini/EN/install.gmi": [
-    {
-      "component": "epicyon",
-      "file": "gemini/EN/install.gmi",
-      "file_hash": "ff6deb409ca8fd68dcf3cdce18fc1a79",
-      "file_url": "https://osskb.org/api/file_contents/ff6deb409ca8fd68dcf3cdce18fc1a79",
-      "id": "file",
-      "latest": "ef5ce403",
-      "licenses": [],
-      "lines": "all",
-      "matched": "100%",
-      "oss_lines": "all",
-      "purl": [
-        "pkg:gitlab/bashrc2/epicyon"
-      ],
-      "release_date": "2022-06-04",
-      "server": {
-        "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
-        },
-        "version": "4.5.4"
-      },
-      "source_hash": "ff6deb409ca8fd68dcf3cdce18fc1a79",
-      "status": "pending",
-      "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
-      "vendor": "bashrc2",
-      "version": "ef5ce403"
-    }
-  ],
   "gemini/EN/upgrade.gmi": [
     {
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -2190,84 +2334,84 @@
     {
       "component": "epicyon",
       "file": "git.py",
-      "file_hash": "1cabaac65f7cf456816901e8dbe34032",
-      "file_url": "https://osskb.org/api/file_contents/1cabaac65f7cf456816901e8dbe34032",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "52dd18a58c05ec8b981bb85ea442b5b3",
+      "file_url": "https://osskb.org/api/file_contents/52dd18a58c05ec8b981bb85ea442b5b3",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-221",
-      "matched": "99%",
-      "oss_lines": "1-221",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-05-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "52dd18a58c05ec8b981bb85ea442b5b3",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "42b3ac8e"
+      "version": "5429967b"
     }
   ],
   "happening.py": [
     {
       "component": "epicyon",
       "file": "happening.py",
-      "file_hash": "55703ff8cd1901a27e5a721a404fd677",
-      "file_url": "https://osskb.org/api/file_contents/55703ff8cd1901a27e5a721a404fd677",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "ee44eccc2412b1e64e91b0c58c206262",
+      "file_url": "https://osskb.org/api/file_contents/ee44eccc2412b1e64e91b0c58c206262",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-746,737-1371",
-      "matched": "99%",
-      "oss_lines": "318-1063,1177-1811",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "ee44eccc2412b1e64e91b0c58c206262",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "5429967b"
     }
   ],
   "httpsig.py": [
@@ -2277,14 +2421,14 @@
       "file_hash": "f8bbd74b4c7ebc896b26e995a68f6df6",
       "file_url": "https://osskb.org/api/file_contents/f8bbd74b4c7ebc896b26e995a68f6df6",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -2299,8 +2443,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2319,14 +2463,14 @@
       "file_hash": "3c7be88c964d95b6bfdfced820c2f324",
       "file_url": "https://osskb.org/api/file_contents/3c7be88c964d95b6bfdfced820c2f324",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -2341,8 +2485,8 @@
       "release_date": "2021-10-06",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2359,8 +2503,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -2380,27 +2524,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "2888-3012,3022-3315,3312-3858,3853-4530,4520-5495",
-      "matched": "47%",
-      "oss_lines": "2851-2975,2856-3149,3859-4405,4093-4770,4092-5067",
+      "lines": "3496-3920,3933-4068,4058-4644,4637-5555,5563-5705",
+      "matched": "38%",
+      "oss_lines": "3184-3608,3600-3735,4122-4708,5367-6285,4092-4234",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "1dc1231af201b93b982db6e97e2dd92b",
+      "source_hash": "03958cee078a89ed8b4de34c764ace8c",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
@@ -2412,115 +2556,115 @@
     {
       "component": "epicyon",
       "file": "install-desktop-client",
-      "file_hash": "94f3bc203a5228f4432654c913b977de",
-      "file_url": "https://osskb.org/api/file_contents/94f3bc203a5228f4432654c913b977de",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "090d031316ba5e9c6b1dcd881d2cbbb1",
+      "file_url": "https://osskb.org/api/file_contents/090d031316ba5e9c6b1dcd881d2cbbb1",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [],
-      "lines": "1-149",
-      "matched": "99%",
-      "oss_lines": "1-149",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2021-05-31",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "090d031316ba5e9c6b1dcd881d2cbbb1",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "398b52b3f1d7e94bb7c21a73d50d4735",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "1d3ff5f6"
+      "version": "5429967b"
     }
   ],
   "languages.py": [
     {
       "component": "epicyon",
       "file": "languages.py",
-      "file_hash": "94363fbd997722f188a9323887c57186",
-      "file_url": "https://osskb.org/api/file_contents/94363fbd997722f188a9323887c57186",
-      "id": "snippet",
-      "latest": "42b3ac8e",
+      "file_hash": "77283c8e57c67cee5b4af86ce3220ff3",
+      "file_url": "https://osskb.org/api/file_contents/77283c8e57c67cee5b4af86ce3220ff3",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-67,79-326",
-      "matched": "96%",
-      "oss_lines": "1-67,75-322",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-04-05",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "77283c8e57c67cee5b4af86ce3220ff3",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "47edfad9"
+      "version": "5429967b"
     }
   ],
   "like.py": [
     {
       "component": "epicyon",
       "file": "like.py",
-      "file_hash": "114ef7bd44c000cbaae5485d77d89601",
-      "file_url": "https://osskb.org/api/file_contents/114ef7bd44c000cbaae5485d77d89601",
-      "id": "snippet",
-      "latest": "47edfad9",
+      "file_hash": "d74b42643665fba045e2696b2aebbaee",
+      "file_url": "https://osskb.org/api/file_contents/d74b42643665fba045e2696b2aebbaee",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-487",
-      "matched": "99%",
-      "oss_lines": "1-487",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-04-05",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "d74b42643665fba045e2696b2aebbaee",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "47edfad9"
+      "version": "5429967b"
     }
   ],
   "linked_data_sig.py": [
@@ -2530,14 +2674,14 @@
       "file_hash": "1de363afddfa48768de8a748cb25c494",
       "file_url": "https://osskb.org/api/file_contents/1de363afddfa48768de8a748cb25c494",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -2552,8 +2696,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2579,27 +2723,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-52,56-365",
-      "matched": "98%",
-      "oss_lines": "1-52,45-354",
+      "lines": "1-53,57-197,200-365",
+      "matched": "97%",
+      "oss_lines": "15-67,54-194,275-440",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "8861626cb6c51bb1158c8aac02947f27",
+      "source_hash": "9c434759f5126180c578d70bebf049fb",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
@@ -2621,7 +2765,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -2636,8 +2780,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2652,58 +2796,43 @@
   "markdown.py": [
     {
       "component": "epicyon",
-      "file": "webapp_utils.py",
-      "file_hash": "08b5d41102ae4037ff46b4e8150da6c4",
-      "file_url": "https://osskb.org/api/file_contents/08b5d41102ae4037ff46b4e8150da6c4",
-      "id": "snippet",
-      "latest": "73da0240",
+      "file": "markdown.py",
+      "file_hash": "cca1f68cf36a785f74563e383547fddc",
+      "file_url": "https://osskb.org/api/file_contents/cca1f68cf36a785f74563e383547fddc",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
-        {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-only.txt",
-          "copyleft": "yes",
-          "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
-          "name": "AGPL-3.0-only",
-          "osadl_updated": "2022-05-31 16:02",
-          "patent_hints": "yes",
-          "source": "scancode",
-          "url": "https://spdx.org/licenses/AGPL-3.0-only.html"
-        },
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
-        },
-        {
-          "name": "CC-BY-3.0",
-          "source": "scancode",
-          "url": "https://spdx.org/licenses/CC-BY-3.0.html"
         }
       ],
-      "lines": "137-175",
-      "matched": "9%",
-      "oss_lines": "73-111",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2021-05-31",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "cca1f68cf36a785f74563e383547fddc",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "398b52b3f1d7e94bb7c21a73d50d4735",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "1d3ff5f6"
+      "version": "5429967b"
     }
   ],
   "mastoapiv1.py": [
@@ -2713,14 +2842,14 @@
       "file_hash": "608ca22ae0d7e4bf391a8f18298257c7",
       "file_url": "https://osskb.org/api/file_contents/608ca22ae0d7e4bf391a8f18298257c7",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -2735,8 +2864,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2755,14 +2884,14 @@
       "file_hash": "e76b3f17cef82ec751907fc15f8c07b6",
       "file_url": "https://osskb.org/api/file_contents/e76b3f17cef82ec751907fc15f8c07b6",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -2777,8 +2906,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -2804,27 +2933,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-39,251-283,288-361,396-466,464-591,584-651,656-686",
-      "matched": "63%",
-      "oss_lines": "6-44,29-61,47-120,110-180,241-368,318-385,349-379",
+      "lines": "1-36,254-293,285-380,403-444,438-658,672-696",
+      "matched": "65%",
+      "oss_lines": "6-41,32-71,61-156,110-151,188-408,362-386",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2021-09-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "e4bd67820a8ae0efb4ebd84cfcdb8727",
+      "source_hash": "8454c8763137b869ab897ee41ac0a73e",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "93451a04990f28bd8b8b3e5193b1ae66",
@@ -2836,134 +2965,92 @@
     {
       "component": "epicyon",
       "file": "metadata.py",
-      "file_hash": "66add210473f1626bee275774f9c8362",
-      "file_url": "https://osskb.org/api/file_contents/66add210473f1626bee275774f9c8362",
-      "id": "snippet",
-      "latest": "47edfad9",
+      "file_hash": "3bc67ef9f955dd983c8f744c51e1e4f4",
+      "file_url": "https://osskb.org/api/file_contents/3bc67ef9f955dd983c8f744c51e1e4f4",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-230",
-      "matched": "99%",
-      "oss_lines": "1-230",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "3bc67ef9f955dd983c8f744c51e1e4f4",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "migrate.py": [
     {
       "component": "epicyon",
       "file": "migrate.py",
-      "file_hash": "32ec643a5bf1aa1e55a06c857e338704",
-      "file_url": "https://osskb.org/api/file_contents/32ec643a5bf1aa1e55a06c857e338704",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "e8e3d4bc0ce2a4b84ab84b91e427c41d",
+      "file_url": "https://osskb.org/api/file_contents/e8e3d4bc0ce2a4b84ab84b91e427c41d",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-208",
-      "matched": "99%",
-      "oss_lines": "1-208",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-05-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "e8e3d4bc0ce2a4b84ab84b91e427c41d",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "42b3ac8e"
+      "version": "5429967b"
     }
   ],
   "newsdaemon.py": [
     {
       "component": "epicyon",
       "file": "newsdaemon.py",
-      "file_hash": "1d9543be14e11b2b0c55804824bc2fdf",
-      "file_url": "https://osskb.org/api/file_contents/1d9543be14e11b2b0c55804824bc2fdf",
-      "id": "snippet",
-      "latest": "5926b174",
-      "licenses": [
-        {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
-          "copyleft": "yes",
-          "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
-          "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
-          "patent_hints": "yes",
-          "source": "scancode",
-          "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
-        }
-      ],
-      "lines": "271-484,489-530,579-815,812-874",
-      "matched": "62%",
-      "oss_lines": "308-521,474-515,546-782,796-858",
-      "purl": [
-        "pkg:gitlab/bashrc2/epicyon"
-      ],
-      "release_date": "2021-09-04",
-      "server": {
-        "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
-        },
-        "version": "4.5.4"
-      },
-      "source_hash": "c4d1d9f54757f69ebe13298dc77ecf0e",
-      "status": "pending",
-      "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "93451a04990f28bd8b8b3e5193b1ae66",
-      "vendor": "bashrc2",
-      "version": "5926b174"
-    }
-  ],
-  "newswire.py": [
-    {
-      "component": "epicyon",
-      "file": "newswire.py",
-      "file_hash": "077413078f14bf4775c42d722e5431c4",
-      "file_url": "https://osskb.org/api/file_contents/077413078f14bf4775c42d722e5431c4",
+      "file_hash": "a9a90ab8b6ef09e12f026810d4bb3713",
+      "file_url": "https://osskb.org/api/file_contents/a9a90ab8b6ef09e12f026810d4bb3713",
       "id": "snippet",
       "latest": "42b3ac8e",
       "licenses": [
@@ -2972,27 +3059,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-502,492-1638",
-      "matched": "99%",
-      "oss_lines": "1-502,687-1833",
+      "lines": "1-45,75-475,468-881",
+      "matched": "97%",
+      "oss_lines": "1-45,100-500,543-956",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "c28260f7e309f070a7aed9b061aa39de",
+      "source_hash": "de5199ce16bdfc7e2a53abfc71f4bc57",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
@@ -3000,46 +3087,88 @@
       "version": "42b3ac8e"
     }
   ],
-  "notifyOnPost.py": [
+  "newswire.py": [
     {
       "component": "epicyon",
-      "file": "notifyOnPost.py",
-      "file_hash": "f17027f2f38bc48e10ab010e4d79efa6",
-      "file_url": "https://osskb.org/api/file_contents/f17027f2f38bc48e10ab010e4d79efa6",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file": "newswire.py",
+      "file_hash": "c28260f7e309f070a7aed9b061aa39de",
+      "file_url": "https://osskb.org/api/file_contents/c28260f7e309f070a7aed9b061aa39de",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-116",
-      "matched": "99%",
-      "oss_lines": "1-116",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      },
+      "source_hash": "c28260f7e309f070a7aed9b061aa39de",
+      "status": "pending",
+      "url": "https://gitlab.com/bashrc2/epicyon",
+      "url_hash": "d60076595f98154655b58e94438741a8",
+      "vendor": "bashrc2",
+      "version": "5429967b"
+    }
+  ],
+  "notifyOnPost.py": [
+    {
+      "component": "epicyon",
+      "file": "notifyOnPost.py",
+      "file_hash": "d188e1ffb1695bc2bc19de485ac4cca0",
+      "file_url": "https://osskb.org/api/file_contents/d188e1ffb1695bc2bc19de485ac4cca0",
+      "id": "file",
+      "latest": "5429967b",
+      "licenses": [
+        {
+          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
+          "copyleft": "yes",
+          "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
+          "name": "AGPL-3.0-or-later",
+          "osadl_updated": "2022-08-12 16:45",
+          "patent_hints": "yes",
+          "source": "scancode",
+          "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
+        }
+      ],
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
+      "purl": [
+        "pkg:gitlab/bashrc2/epicyon"
+      ],
+      "release_date": "2022-07-02",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "d188e1ffb1695bc2bc19de485ac4cca0",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "ontology/DFC/DFC_BusinessOntology.owl": [
@@ -3047,8 +3176,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3059,8 +3188,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3071,8 +3200,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3083,8 +3212,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3095,8 +3224,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3107,8 +3236,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3119,8 +3248,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3131,8 +3260,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3143,8 +3272,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3155,8 +3284,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3176,23 +3305,23 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-143,205-550,539-719",
-      "matched": "92%",
-      "oss_lines": "2-144,250-595,587-767",
+      "lines": "1-164,205-550,539-719",
+      "matched": "95%",
+      "oss_lines": "127-290,230-575,587-767",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -3218,27 +3347,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "2-698,692-1031,1021-1219,1224-1565,1565-1854",
+      "lines": "1-548,539-1068,1063-1221,1226-1567,1567-1856",
       "matched": "99%",
-      "oss_lines": "534-1230,1392-1731,1055-1253,1386-1727,1680-1969",
+      "oss_lines": "166-713,1017-1546,1157-1315,1386-1727,1680-1969",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "13da25790aa4692e6fabf9b38c390dc2",
+      "source_hash": "5c6e168125971fdadeb92311f3622367",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "8e88dc854644baca443bb7bcead0aa26",
@@ -3250,59 +3379,17 @@
     {
       "component": "epicyon",
       "file": "petnames.py",
-      "file_hash": "ff09c1d892b51e9afa4dedbfd2e526eb",
-      "file_url": "https://osskb.org/api/file_contents/ff09c1d892b51e9afa4dedbfd2e526eb",
-      "id": "snippet",
-      "latest": "ef5ce403",
-      "licenses": [
-        {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
-          "copyleft": "yes",
-          "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
-          "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
-          "patent_hints": "yes",
-          "source": "scancode",
-          "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
-        }
-      ],
-      "lines": "1-140",
-      "matched": "99%",
-      "oss_lines": "1-140",
-      "purl": [
-        "pkg:gitlab/bashrc2/epicyon"
-      ],
-      "release_date": "2022-02-08",
-      "server": {
-        "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
-        },
-        "version": "4.5.4"
-      },
-      "source_hash": "f6c1cf219b4cf93ddbf74af87173f2c9",
-      "status": "pending",
-      "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
-      "vendor": "bashrc2",
-      "version": "823b4c33"
-    }
-  ],
-  "pgp.py": [
-    {
-      "component": "epicyon",
-      "file": "pgp.py",
-      "file_hash": "9259e7339cb375f1080f347269239e29",
-      "file_url": "https://osskb.org/api/file_contents/9259e7339cb375f1080f347269239e29",
+      "file_hash": "f6c1cf219b4cf93ddbf74af87173f2c9",
+      "file_url": "https://osskb.org/api/file_contents/f6c1cf219b4cf93ddbf74af87173f2c9",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -3314,15 +3401,57 @@
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "9259e7339cb375f1080f347269239e29",
+      "source_hash": "f6c1cf219b4cf93ddbf74af87173f2c9",
+      "status": "pending",
+      "url": "https://gitlab.com/bashrc2/epicyon",
+      "url_hash": "d60076595f98154655b58e94438741a8",
+      "vendor": "bashrc2",
+      "version": "5429967b"
+    }
+  ],
+  "pgp.py": [
+    {
+      "component": "epicyon",
+      "file": "pgp.py",
+      "file_hash": "9259e7339cb375f1080f347269239e29",
+      "file_url": "https://osskb.org/api/file_contents/9259e7339cb375f1080f347269239e29",
+      "id": "snippet",
+      "latest": "5429967b",
+      "licenses": [
+        {
+          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
+          "copyleft": "yes",
+          "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
+          "name": "AGPL-3.0-or-later",
+          "osadl_updated": "2022-08-12 16:45",
+          "patent_hints": "yes",
+          "source": "scancode",
+          "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
+        }
+      ],
+      "lines": "1-833",
+      "matched": "99%",
+      "oss_lines": "352-1184",
+      "purl": [
+        "pkg:gitlab/bashrc2/epicyon"
+      ],
+      "release_date": "2022-06-04",
+      "server": {
+        "kb_version": {
+          "daily": "22.08.17",
+          "monthly": "22.07"
+        },
+        "version": "4.5.4"
+      },
+      "source_hash": "9e5085027b5cb6a53b5a6e6a8101fa80",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "8e88dc854644baca443bb7bcead0aa26",
@@ -3344,27 +3473,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1832-1974,1966-2300,2289-5679",
-      "matched": "68%",
-      "oss_lines": "1842-1984,2219-2553,4767-8157",
+      "lines": "1968-2302,2291-4247,4393-4976,4966-5840",
+      "matched": "64%",
+      "oss_lines": "2219-2553,3582-5538,4767-5350,4905-5779",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "85b0389c6d926ae53fe4ff0f671fa18e",
+      "source_hash": "e8a58717a34e7eaeb1c3e7e9e7fc4fd6",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "8e88dc854644baca443bb7bcead0aa26",
@@ -3379,13 +3508,13 @@
       "file_hash": "bb5a4fcd9af8a6946c017dade5a0b22c",
       "file_url": "https://osskb.org/api/file_contents/bb5a4fcd9af8a6946c017dade5a0b22c",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/BSD-3-Clause.txt",
           "copyleft": "no",
           "name": "BSD-3-Clause",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "no",
           "source": "scancode",
           "url": "https://spdx.org/licenses/BSD-3-Clause.html"
@@ -3400,8 +3529,8 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -3420,14 +3549,14 @@
       "file_hash": "e87076f836731c3338152518d56ff8b0",
       "file_url": "https://osskb.org/api/file_contents/e87076f836731c3338152518d56ff8b0",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -3442,8 +3571,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -3459,126 +3588,126 @@
     {
       "component": "epicyon",
       "file": "question.py",
-      "file_hash": "ff6fd721954b9df15ce24f29f8be2aa2",
-      "file_url": "https://osskb.org/api/file_contents/ff6fd721954b9df15ce24f29f8be2aa2",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "a4b2f6e6e690dcaf9ac4b936ad1b6d5b",
+      "file_url": "https://osskb.org/api/file_contents/a4b2f6e6e690dcaf9ac4b936ad1b6d5b",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-85,98-153",
-      "matched": "90%",
-      "oss_lines": "1-85,69-124",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "a4b2f6e6e690dcaf9ac4b936ad1b6d5b",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "reaction.py": [
     {
       "component": "epicyon",
       "file": "reaction.py",
-      "file_hash": "1cabd9e2fbb0ae463729aeaf4747e316",
-      "file_url": "https://osskb.org/api/file_contents/1cabd9e2fbb0ae463729aeaf4747e316",
-      "id": "snippet",
-      "latest": "47edfad9",
+      "file_hash": "604b269595ff4a4194d5c85d7aa40f72",
+      "file_url": "https://osskb.org/api/file_contents/604b269595ff4a4194d5c85d7aa40f72",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-454,490-650",
-      "matched": "94%",
-      "oss_lines": "5-458,356-516",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-04-05",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "604b269595ff4a4194d5c85d7aa40f72",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "47edfad9"
+      "version": "5429967b"
     }
   ],
   "roles.py": [
     {
       "component": "epicyon",
       "file": "roles.py",
-      "file_hash": "2146a44f85455d4427cd8b123c0a73a4",
-      "file_url": "https://osskb.org/api/file_contents/2146a44f85455d4427cd8b123c0a73a4",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "e4b60801f72bc3b470516e8aaa5231fe",
+      "file_url": "https://osskb.org/api/file_contents/e4b60801f72bc3b470516e8aaa5231fe",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-298",
-      "matched": "99%",
-      "oss_lines": "1-298",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "e4b60801f72bc3b470516e8aaa5231fe",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "schedule.py": [
@@ -3595,27 +3724,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-237",
-      "matched": "99%",
-      "oss_lines": "1-237",
+      "lines": "1-203,206-238",
+      "matched": "98%",
+      "oss_lines": "1-203,202-234",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "802423b7911a380e12cd652d4b6596f9",
+      "source_hash": "ea39afe7dc88a98131524002ce2c1337",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
@@ -3628,8 +3757,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3642,7 +3771,7 @@
       "file_hash": "31c72aa9598ff7d00cff6f434541aad6",
       "file_url": "https://osskb.org/api/file_contents/31c72aa9598ff7d00cff6f434541aad6",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -3653,8 +3782,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -3671,8 +3800,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3683,8 +3812,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3697,7 +3826,7 @@
       "file_hash": "795389f777c891257a22ec233f907537",
       "file_url": "https://osskb.org/api/file_contents/795389f777c891257a22ec233f907537",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -3708,8 +3837,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -3726,8 +3855,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3738,8 +3867,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3752,14 +3881,14 @@
       "file_hash": "1901dea4c4b6465f8d6eea64d178b95d",
       "file_url": "https://osskb.org/api/file_contents/1901dea4c4b6465f8d6eea64d178b95d",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "file_header",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -3769,7 +3898,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -3784,8 +3913,8 @@
       "release_date": "2021-12-07",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -3802,8 +3931,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3814,8 +3943,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3826,8 +3955,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3838,8 +3967,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3850,8 +3979,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3862,8 +3991,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3874,8 +4003,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3886,8 +4015,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3898,8 +4027,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3909,42 +4038,42 @@
     {
       "component": "epicyon",
       "file": "session.py",
-      "file_hash": "5df5227c0da0a73cd759a293937b6297",
-      "file_url": "https://osskb.org/api/file_contents/5df5227c0da0a73cd759a293937b6297",
-      "id": "snippet",
-      "latest": "42b3ac8e",
+      "file_hash": "09f96ab956e9340c481a56f74469a46f",
+      "file_url": "https://osskb.org/api/file_contents/09f96ab956e9340c481a56f74469a46f",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-857",
-      "matched": "99%",
-      "oss_lines": "357-1213",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-05-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "09f96ab956e9340c481a56f74469a46f",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "42b3ac8e"
+      "version": "5429967b"
     }
   ],
   "setup.py": [
@@ -3952,8 +4081,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -3973,27 +4102,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-1111,1102-1863",
+      "lines": "1-1134,1127-1867",
       "matched": "99%",
-      "oss_lines": "1-1111,1635-2396",
+      "oss_lines": "1-1134,1635-2375",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "9e92be356dcd23fa6544d528ccfaeb8d",
+      "source_hash": "53d99bae6b8a84b94ebb1382467a8960",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
@@ -4005,42 +4134,42 @@
     {
       "component": "epicyon",
       "file": "siteactive.py",
-      "file_hash": "d46cf118b97a089b2ea54a19dfe208e5",
-      "file_url": "https://osskb.org/api/file_contents/d46cf118b97a089b2ea54a19dfe208e5",
-      "id": "snippet",
-      "latest": "47edfad9",
+      "file_hash": "d3a99697624041b8cd74800c2b632d0f",
+      "file_url": "https://osskb.org/api/file_contents/d3a99697624041b8cd74800c2b632d0f",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-139",
-      "matched": "99%",
-      "oss_lines": "1-139",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "d3a99697624041b8cd74800c2b632d0f",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "skills.py": [
@@ -4050,14 +4179,14 @@
       "file_hash": "fa1df9b1f52aadbe8b8360aaac2a2015",
       "file_url": "https://osskb.org/api/file_contents/fa1df9b1f52aadbe8b8360aaac2a2015",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -4072,8 +4201,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4092,14 +4221,14 @@
       "file_hash": "d6c101b6e19c232b3227975cc7767b25",
       "file_url": "https://osskb.org/api/file_contents/d6c101b6e19c232b3227975cc7767b25",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -4114,8 +4243,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4131,47 +4260,52 @@
     {
       "component": "epicyon",
       "file": "speaker.py",
-      "file_hash": "197fde67852fde8a822dfd557c9f77b4",
-      "file_url": "https://osskb.org/api/file_contents/197fde67852fde8a822dfd557c9f77b4",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "2323ad783fdacba2bce7f0fd8455a042",
+      "file_url": "https://osskb.org/api/file_contents/2323ad783fdacba2bce7f0fd8455a042",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         },
         {
+          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/GPL-1.0-or-later.txt",
+          "copyleft": "yes",
+          "incompatible_with": "Apache-1.0, Apache-1.1, Apache-2.0, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "GPL-1.0-or-later",
+          "osadl_updated": "2022-08-12 16:45",
+          "patent_hints": "no",
           "source": "scancode",
           "url": "https://spdx.org/licenses/GPL-1.0-or-later.html"
         }
       ],
-      "lines": "1-587",
-      "matched": "99%",
-      "oss_lines": "1-587",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "2323ad783fdacba2bce7f0fd8455a042",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "5429967b"
     }
   ],
   "ssb.py": [
@@ -4181,14 +4315,14 @@
       "file_hash": "c66a22547cb6f59ee2bf22164113a5e3",
       "file_url": "https://osskb.org/api/file_contents/c66a22547cb6f59ee2bf22164113a5e3",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -4203,8 +4337,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4223,7 +4357,7 @@
       "file_hash": "80d10a9c527842eb43c9a4f03f21c5bd",
       "file_url": "https://osskb.org/api/file_contents/80d10a9c527842eb43c9a4f03f21c5bd",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -4234,8 +4368,8 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4261,36 +4395,32 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         },
         {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/CC-BY-4.0.txt",
-          "copyleft": "no",
           "name": "CC-BY-4.0",
-          "osadl_updated": "2022-05-31 16:02",
-          "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/CC-BY-4.0.html"
         }
       ],
-      "lines": "4651-4698,4687-4923,4915-5729,5782-7320,7469-7503",
-      "matched": "35%",
-      "oss_lines": "2815-2862,4954-5190,4895-5709,5626-7164,7088-7122",
+      "lines": "4974-5748,5801-5837,5831-6799,6796-7339",
+      "matched": "30%",
+      "oss_lines": "5093-5867,5596-5632,5626-6594,6669-7212",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "f6ea468b985093f0573cb9ee1198471b",
+      "source_hash": "b23079a157a87e8406c52242ee6cc572",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
@@ -4312,27 +4442,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-948",
+      "lines": "1-944",
       "matched": "99%",
-      "oss_lines": "651-1598",
+      "oss_lines": "640-1583",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "405f2f2ed1a931c66f6082796a025559",
+      "source_hash": "1fa10b2d6191ffd0e46f8d40f17b7a47",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
@@ -4358,8 +4488,8 @@
       "release_date": "2021-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4378,7 +4508,7 @@
       "file_hash": "bfc6cbf834c515ebf6cd82d9d5e7de6f",
       "file_url": "https://osskb.org/api/file_contents/bfc6cbf834c515ebf6cd82d9d5e7de6f",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -4389,8 +4519,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4409,7 +4539,7 @@
       "file_hash": "e6981c6d43024081b9fec13235a48f37",
       "file_url": "https://osskb.org/api/file_contents/e6981c6d43024081b9fec13235a48f37",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -4420,8 +4550,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4440,7 +4570,7 @@
       "file_hash": "fb73dd63647efe22b9b0d673fb16c19c",
       "file_url": "https://osskb.org/api/file_contents/fb73dd63647efe22b9b0d673fb16c19c",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -4451,8 +4581,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4471,7 +4601,7 @@
       "file_hash": "0208bcf4859109b4559a7f78ccfc0a85",
       "file_url": "https://osskb.org/api/file_contents/0208bcf4859109b4559a7f78ccfc0a85",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -4482,8 +4612,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4502,7 +4632,7 @@
       "file_hash": "e6981c6d43024081b9fec13235a48f37",
       "file_url": "https://osskb.org/api/file_contents/e6981c6d43024081b9fec13235a48f37",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -4513,8 +4643,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4533,7 +4663,7 @@
       "file_hash": "bfc6cbf834c515ebf6cd82d9d5e7de6f",
       "file_url": "https://osskb.org/api/file_contents/bfc6cbf834c515ebf6cd82d9d5e7de6f",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -4544,8 +4674,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4562,8 +4692,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -4574,8 +4704,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -4588,7 +4718,7 @@
       "file_hash": "01d2f26634dac1a31eee852a1a301e44",
       "file_url": "https://osskb.org/api/file_contents/01d2f26634dac1a31eee852a1a301e44",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [],
       "lines": "all",
       "matched": "100%",
@@ -4599,8 +4729,8 @@
       "release_date": "2021-05-31",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4616,42 +4746,42 @@
     {
       "component": "epicyon",
       "file": "threads.py",
-      "file_hash": "69a7cc5607372a36c587ee18d7e3b89f",
-      "file_url": "https://osskb.org/api/file_contents/69a7cc5607372a36c587ee18d7e3b89f",
+      "file_hash": "152ffc05b0e7888b9773ca81c93d5cbc",
+      "file_url": "https://osskb.org/api/file_contents/152ffc05b0e7888b9773ca81c93d5cbc",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-164",
+      "lines": "1-182",
       "matched": "99%",
-      "oss_lines": "1-164",
+      "oss_lines": "1-182",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-04-05",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "152ffc05b0e7888b9773ca81c93d5cbc",
+      "source_hash": "18284321cc31ba5b42dbf3f56e150a07",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "47edfad9"
+      "version": "5429967b"
     }
   ],
   "tox.py": [
@@ -4661,14 +4791,14 @@
       "file_hash": "2bffa60a7fd35219165e36f2386f97ff",
       "file_url": "https://osskb.org/api/file_contents/2bffa60a7fd35219165e36f2386f97ff",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -4683,8 +4813,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4701,8 +4831,8 @@
       "id": "none",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       }
@@ -4722,27 +4852,27 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1162-1408,1405-1799,1790-2108,2100-3358,3353-3801,3807-3844",
-      "matched": "70%",
-      "oss_lines": "1053-1299,1322-1716,2566-2884,2350-3608,3326-3774,3708-3745",
+      "lines": "1405-1568,1563-1815,1827-2108,2100-3429,3420-3851",
+      "matched": "63%",
+      "oss_lines": "1322-1485,1641-1893,2566-2847,2350-3679,3650-4081",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "1bba662fd06bfd7680c375dfeb3eb130",
+      "source_hash": "64e74f056249a70cc292b28e311d09b7",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "8e88dc854644baca443bb7bcead0aa26",
@@ -4757,14 +4887,14 @@
       "file_hash": "23e435038b01aea1b45b26c3027f9be5",
       "file_url": "https://osskb.org/api/file_contents/23e435038b01aea1b45b26c3027f9be5",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -4779,8 +4909,8 @@
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4806,7 +4936,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -4821,8 +4951,8 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4841,14 +4971,14 @@
       "file_hash": "4326e70724138b09333db07339209114",
       "file_url": "https://osskb.org/api/file_contents/4326e70724138b09333db07339209114",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -4863,8 +4993,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4890,7 +5020,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -4898,15 +5028,15 @@
       ],
       "lines": "1-142,159-393,403-474,494-545,549-608",
       "matched": "91%",
-      "oss_lines": "1-142,177-411,346-417,412-463,454-513",
+      "oss_lines": "1-142,154-388,346-417,412-463,454-513",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -4922,42 +5052,42 @@
     {
       "component": "epicyon",
       "file": "webapp_column_left.py",
-      "file_hash": "0e70013858f080acd1fdc6b3bc5ebb8b",
-      "file_url": "https://osskb.org/api/file_contents/0e70013858f080acd1fdc6b3bc5ebb8b",
+      "file_hash": "b13a011f1266e9f857feabd979048019",
+      "file_url": "https://osskb.org/api/file_contents/b13a011f1266e9f857feabd979048019",
       "id": "snippet",
-      "latest": "73da0240",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "102-176,175-246,249-369,366-510,519-568",
-      "matched": "79%",
-      "oss_lines": "46-120,146-217,180-300,306-450,429-478",
+      "lines": "1-574",
+      "matched": "99%",
+      "oss_lines": "1-574",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2021-05-31",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "97b59a8b61ca609d9a8359df59f1ae7c",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "398b52b3f1d7e94bb7c21a73d50d4735",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "1d3ff5f6"
+      "version": "5429967b"
     }
   ],
   "webapp_column_right.py": [
@@ -4974,23 +5104,23 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "102-139,148-178,190-258,283-584,587-632,658-765",
-      "matched": "76%",
-      "oss_lines": "89-126,120-150,166-234,275-576,537-582,584-691",
+      "lines": "27-81,102-173,194-258,283-584,587-632,658-765",
+      "matched": "83%",
+      "oss_lines": "19-73,89-160,171-235,275-576,537-582,584-691",
       "purl": [
         "pkg:pypi/epicyon"
       ],
       "release_date": "2021-02-03",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5009,14 +5139,14 @@
       "file_hash": "adbe765dca20db5b9a93116262ac7060",
       "file_url": "https://osskb.org/api/file_contents/adbe765dca20db5b9a93116262ac7060",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5031,8 +5161,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5048,17 +5178,17 @@
     {
       "component": "epicyon",
       "file": "webapp_create_post.py",
-      "file_hash": "9d8b38555f469b7844f759d7617ed63f",
-      "file_url": "https://osskb.org/api/file_contents/9d8b38555f469b7844f759d7617ed63f",
+      "file_hash": "34a8c7a581eace0b3f655fa42bb7e6c1",
+      "file_url": "https://osskb.org/api/file_contents/34a8c7a581eace0b3f655fa42bb7e6c1",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5066,24 +5196,24 @@
       ],
       "lines": "1-963",
       "matched": "99%",
-      "oss_lines": "381-1343",
+      "oss_lines": "1-963",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "ba8e189aea8e9396925e0e72fbc89eb9",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "5429967b"
     }
   ],
   "webapp_frontscreen.py": [
@@ -5093,14 +5223,14 @@
       "file_hash": "8ff6b0eb9e07f68dbb5c9d0047ebb99d",
       "file_url": "https://osskb.org/api/file_contents/8ff6b0eb9e07f68dbb5c9d0047ebb99d",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5115,8 +5245,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5142,7 +5272,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5157,8 +5287,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5174,42 +5304,42 @@
     {
       "component": "epicyon",
       "file": "webapp_headerbuttons.py",
-      "file_hash": "977e9e244418379e5382205a1c6212bd",
-      "file_url": "https://osskb.org/api/file_contents/977e9e244418379e5382205a1c6212bd",
+      "file_hash": "868c5671bcb0ccc9abb61f42d6ad8c0f",
+      "file_url": "https://osskb.org/api/file_contents/868c5671bcb0ccc9abb61f42d6ad8c0f",
       "id": "snippet",
-      "latest": "42b3ac8e",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-174,175-256,259-405",
-      "matched": "98%",
-      "oss_lines": "63-236,133-214,271-417",
+      "lines": "1-405",
+      "matched": "99%",
+      "oss_lines": "254-658",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-04-05",
+      "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "05eae7ef62f49f07181de42436e93381",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "ef9c7a524f13773771c91cbe9c5d3dd9",
+      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
       "vendor": "bashrc2",
-      "version": "47edfad9"
+      "version": "ef5ce403"
     }
   ],
   "webapp_likers.py": [
@@ -5226,7 +5356,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5241,8 +5371,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5268,7 +5398,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5283,8 +5413,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5310,7 +5440,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5318,15 +5448,15 @@
       ],
       "lines": "1-350",
       "matched": "99%",
-      "oss_lines": "1-350",
+      "oss_lines": "209-558",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5342,42 +5472,42 @@
     {
       "component": "epicyon",
       "file": "webapp_minimalbutton.py",
-      "file_hash": "47b1a8f4693d7240ee5181c36288a698",
-      "file_url": "https://osskb.org/api/file_contents/47b1a8f4693d7240ee5181c36288a698",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "5175f8b0acd68c755d53d963454762df",
+      "file_url": "https://osskb.org/api/file_contents/5175f8b0acd68c755d53d963454762df",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-45",
-      "matched": "97%",
-      "oss_lines": "1-45",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "5175f8b0acd68c755d53d963454762df",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "webapp_moderation.py": [
@@ -5394,7 +5524,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5409,8 +5539,8 @@
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5436,7 +5566,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5451,8 +5581,8 @@
       "release_date": "2021-09-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5468,84 +5598,84 @@
     {
       "component": "epicyon",
       "file": "webapp_podcast.py",
-      "file_hash": "4a11a8277cbcd133733c138b9e38969b",
-      "file_url": "https://osskb.org/api/file_contents/4a11a8277cbcd133733c138b9e38969b",
+      "file_hash": "1e4f0d5458f766530db5430aae2862be",
+      "file_url": "https://osskb.org/api/file_contents/1e4f0d5458f766530db5430aae2862be",
       "id": "snippet",
-      "latest": "42b3ac8e",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-111,110-461",
+      "lines": "1-461",
       "matched": "99%",
-      "oss_lines": "1-111,380-731",
+      "oss_lines": "1-461",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-05-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "8dc274bda11075c36ad46b46dc2fa03e",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "26a51a1798a2817daaf5aa7276ca4a3b",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "42b3ac8e"
+      "version": "5429967b"
     }
   ],
   "webapp_post.py": [
     {
       "component": "epicyon",
       "file": "webapp_post.py",
-      "file_hash": "c590fab62720907801e0af31aba906a1",
-      "file_url": "https://osskb.org/api/file_contents/c590fab62720907801e0af31aba906a1",
+      "file_hash": "bf13ff1515704fa58183150dffe5bd09",
+      "file_url": "https://osskb.org/api/file_contents/bf13ff1515704fa58183150dffe5bd09",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-508,504-1353,1358-1560,1583-1849,1846-2723",
+      "lines": "1-508,504-1560,1583-2723",
       "matched": "99%",
-      "oss_lines": "2-509,1191-2040,1359-1561,1557-1823,2559-3436",
+      "oss_lines": "2-509,2058-3114,1556-2696",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-06-04",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "1a16d090155521409005f9d9e1123cb8",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "8e88dc854644baca443bb7bcead0aa26",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "ef5ce403"
+      "version": "5429967b"
     }
   ],
   "webapp_profile.py": [
@@ -5562,36 +5692,32 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         },
         {
-          "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/CC-BY-4.0.txt",
-          "copyleft": "no",
           "name": "CC-BY-4.0",
-          "osadl_updated": "2022-05-31 16:02",
-          "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/CC-BY-4.0.html"
         }
       ],
-      "lines": "3-636,627-1238,1232-2011,2024-2234,2231-2582",
+      "lines": "1-222,218-813,808-1240,1242-2248,2245-2596",
       "matched": "99%",
-      "oss_lines": "3-636,1106-1717,1515-2294,1985-2195,2390-2741",
+      "oss_lines": "35-256,625-1220,1106-1538,2142-3148,2390-2741",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
-      "source_hash": "55d4a428fc2fd794fd69a5dc54b8e0d7",
+      "source_hash": "caef9d7eabfe7376b6c24651914b7d2f",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
       "url_hash": "8e88dc854644baca443bb7bcead0aa26",
@@ -5603,42 +5729,42 @@
     {
       "component": "epicyon",
       "file": "webapp_question.py",
-      "file_hash": "84fa8b55bb9ecfb2cf3a1912bc1ab061",
-      "file_url": "https://osskb.org/api/file_contents/84fa8b55bb9ecfb2cf3a1912bc1ab061",
-      "id": "snippet",
-      "latest": "42b3ac8e",
+      "file_hash": "ffb3ca35de17b0f43555ef9323e06a79",
+      "file_url": "https://osskb.org/api/file_contents/ffb3ca35de17b0f43555ef9323e06a79",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-107",
-      "matched": "99%",
-      "oss_lines": "1-107",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "ffb3ca35de17b0f43555ef9323e06a79",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "webapp_search.py": [
@@ -5655,7 +5781,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5670,8 +5796,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5686,43 +5812,43 @@
   "webapp_specification.py": [
     {
       "component": "epicyon",
-      "file": "epicyon-1.2.0/webapp_about.py",
-      "file_hash": "1bed219d9818e3e7d37ea03b7572539a",
-      "file_url": "https://osskb.org/api/file_contents/1bed219d9818e3e7d37ea03b7572539a",
+      "file": "webapp_specification.py",
+      "file_hash": "6ffacf091968477fb0f9e667e5455311",
+      "file_url": "https://osskb.org/api/file_contents/6ffacf091968477fb0f9e667e5455311",
       "id": "snippet",
-      "latest": "1.3.0",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-44",
-      "matched": "62%",
-      "oss_lines": "1-44",
+      "lines": "1-69",
+      "matched": "98%",
+      "oss_lines": "1-69",
       "purl": [
-        "pkg:pypi/epicyon"
+        "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2021-02-03",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "b2ce9073894157ccaaeae679776b1650",
       "status": "pending",
-      "url": "https://pypi.org/project/epicyon",
-      "url_hash": "b2989ed1f7d5477a031318db2e9c6cad",
-      "vendor": "Bob Mottram",
-      "version": "1.2.0"
+      "url": "https://gitlab.com/bashrc2/epicyon",
+      "url_hash": "d60076595f98154655b58e94438741a8",
+      "vendor": "bashrc2",
+      "version": "5429967b"
     }
   ],
   "webapp_suspended.py": [
@@ -5732,14 +5858,14 @@
       "file_hash": "f925e1d87508da69d4c1501d7c5c0654",
       "file_url": "https://osskb.org/api/file_contents/f925e1d87508da69d4c1501d7c5c0654",
       "id": "snippet",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -5754,8 +5880,8 @@
       "release_date": "2022-02-08",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5781,23 +5907,23 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-179,171-399",
+      "lines": "1-399",
       "matched": "99%",
-      "oss_lines": "1-179,228-456",
+      "oss_lines": "3-401",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5823,23 +5949,23 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "721-841,847-1189,1179-1396,1386-1632,1622-1877",
-      "matched": "62%",
-      "oss_lines": "685-805,771-1113,1549-1766,1552-1798,1528-1783",
+      "lines": "847-1189,1183-1401,1390-1524,1516-1662,1653-1877",
+      "matched": "56%",
+      "oss_lines": "771-1113,1552-1770,1552-1686,1528-1674,1528-1752",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-04-05",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5855,42 +5981,42 @@
     {
       "component": "epicyon",
       "file": "webapp_tos.py",
-      "file_hash": "6c0803d8dc12129842e84caae94ea423",
-      "file_url": "https://osskb.org/api/file_contents/6c0803d8dc12129842e84caae94ea423",
-      "id": "snippet",
-      "latest": "42b3ac8e",
+      "file_hash": "63d1c1aa3c0d1fae25d0966c26318042",
+      "file_url": "https://osskb.org/api/file_contents/63d1c1aa3c0d1fae25d0966c26318042",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-57",
-      "matched": "98%",
-      "oss_lines": "1-57",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "63d1c1aa3c0d1fae25d0966c26318042",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "webapp_utils.py": [
@@ -5907,7 +6033,7 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-only",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-only.html"
@@ -5917,23 +6043,23 @@
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "415-849,857-1152,1208-1261,1289-1532,1533-1877",
-      "matched": "72%",
-      "oss_lines": "351-785,976-1271,1102-1155,1119-1362,1701-2045",
+      "lines": "501-849,857-1152,1208-1261,1289-1532,1533-1877",
+      "matched": "68%",
+      "oss_lines": "439-787,976-1271,1102-1155,1119-1362,1701-2045",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
       "release_date": "2022-05-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
@@ -5949,168 +6075,168 @@
     {
       "component": "epicyon",
       "file": "webapp_welcome.py",
-      "file_hash": "a212c01b2d92c692484c6e6787c30f87",
-      "file_url": "https://osskb.org/api/file_contents/a212c01b2d92c692484c6e6787c30f87",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "18d4dce01fd45e74bf40f995749af40f",
+      "file_url": "https://osskb.org/api/file_contents/18d4dce01fd45e74bf40f995749af40f",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-105",
-      "matched": "99%",
-      "oss_lines": "1-105",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "18d4dce01fd45e74bf40f995749af40f",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "webapp_welcome_final.py": [
     {
       "component": "epicyon",
       "file": "webapp_welcome_final.py",
-      "file_hash": "16f69e948cb5d6cc5d2706d0c85db8a7",
-      "file_url": "https://osskb.org/api/file_contents/16f69e948cb5d6cc5d2706d0c85db8a7",
-      "id": "snippet",
-      "latest": "5926b174",
+      "file_hash": "152ea7d002c2a1c7566f46f921d24373",
+      "file_url": "https://osskb.org/api/file_contents/152ea7d002c2a1c7566f46f921d24373",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-80",
-      "matched": "98%",
-      "oss_lines": "1-80",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2021-08-02",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "152ea7d002c2a1c7566f46f921d24373",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "bb6a249e703a2febece4fc3180193394",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "b30d256f"
+      "version": "5429967b"
     }
   ],
   "webapp_welcome_profile.py": [
     {
       "component": "epicyon",
       "file": "webapp_welcome_profile.py",
-      "file_hash": "c853a926d597bf1d7f8182b4b087f535",
-      "file_url": "https://osskb.org/api/file_contents/c853a926d597bf1d7f8182b4b087f535",
-      "id": "snippet",
-      "latest": "ef5ce403",
+      "file_hash": "35e77533d31bbc9d1f7acf33cb241c1a",
+      "file_url": "https://osskb.org/api/file_contents/35e77533d31bbc9d1f7acf33cb241c1a",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "1-133",
-      "matched": "99%",
-      "oss_lines": "1-133",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2022-02-08",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "35e77533d31bbc9d1f7acf33cb241c1a",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "d0c0ff44e466c2b609148ba01790dc81",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "823b4c33"
+      "version": "5429967b"
     }
   ],
   "webfinger.py": [
     {
       "component": "epicyon",
       "file": "webfinger.py",
-      "file_hash": "02fc25dddc54f672e098c90b9994e325",
-      "file_url": "https://osskb.org/api/file_contents/02fc25dddc54f672e098c90b9994e325",
-      "id": "snippet",
-      "latest": "a8f17d37",
+      "file_hash": "a943c163585a9d9615801edb11946fc4",
+      "file_url": "https://osskb.org/api/file_contents/a943c163585a9d9615801edb11946fc4",
+      "id": "file",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
         }
       ],
-      "lines": "7-94,118-174,203-318,391-530",
-      "matched": "74%",
-      "oss_lines": "6-93,117-173,234-349,354-493",
+      "lines": "all",
+      "matched": "100%",
+      "oss_lines": "all",
       "purl": [
         "pkg:gitlab/bashrc2/epicyon"
       ],
-      "release_date": "2021-10-06",
+      "release_date": "2022-07-02",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
       "source_hash": "a943c163585a9d9615801edb11946fc4",
       "status": "pending",
       "url": "https://gitlab.com/bashrc2/epicyon",
-      "url_hash": "0d85cee797d7f057363a7b1f23eadb05",
+      "url_hash": "d60076595f98154655b58e94438741a8",
       "vendor": "bashrc2",
-      "version": "a8f17d37"
+      "version": "5429967b"
     }
   ],
   "xmpp.py": [
@@ -6120,14 +6246,14 @@
       "file_hash": "f99232bd58fb3a4ab6effd1169207063",
       "file_url": "https://osskb.org/api/file_contents/f99232bd58fb3a4ab6effd1169207063",
       "id": "file",
-      "latest": "ef5ce403",
+      "latest": "5429967b",
       "licenses": [
         {
           "checklist_url": "https://www.osadl.org/fileadmin/checklists/unreflicenses/AGPL-3.0-or-later.txt",
           "copyleft": "yes",
           "incompatible_with": "Apache-1.0, Apache-1.1, BSD-4-Clause, BSD-4-Clause-UC, FTL, IJG, OpenSSL, Python-2.0, zlib-acknowledgement, XFree86-1.1",
           "name": "AGPL-3.0-or-later",
-          "osadl_updated": "2022-05-31 16:02",
+          "osadl_updated": "2022-08-12 16:45",
           "patent_hints": "yes",
           "source": "scancode",
           "url": "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -6142,8 +6268,8 @@
       "release_date": "2022-06-04",
       "server": {
         "kb_version": {
-          "daily": "22.07.22",
-          "monthly": "22.06"
+          "daily": "22.08.17",
+          "monthly": "22.07"
         },
         "version": "4.5.4"
       },
