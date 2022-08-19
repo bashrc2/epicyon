@@ -2027,7 +2027,7 @@ def _html_edit_notifications(base_dir: str, nickname: str, domain: str,
 
     edit_profile_form = begin_edit_section(translate['Notifications'])
     edit_profile_form += edit_text_field(translate['ntfy URL'],
-                                         'ntfyURL', ntfy_url)
+                                         'ntfyUrl', ntfy_url)
     edit_profile_form += edit_text_field(translate['ntfy topic'],
                                          'ntfyTopic', ntfy_topic)
     edit_profile_form += end_edit_section()
