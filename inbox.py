@@ -201,28 +201,29 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
                     image_data = fp_svg.read()
             except OSError:
                 print('EX: unable to read svg file data')
-            if image_data:
-                image_data = image_data.decode()
-                cleaned_up = \
-                    remove_script(image_data, log_filename, actor, url)
-                if cleaned_up != image_data:
-                    # write the cleaned up svg image
-                    svg_written = False
-                    cleaned_up = cleaned_up.encode('utf-8')
-                    try:
-                        with open(image_filename, 'wb') as im_file:
-                            im_file.write(cleaned_up)
-                            svg_written = True
-                    except OSError:
-                        print('EX: unable to write cleaned up svg ' + url)
-                    if svg_written:
-                        # change the url to be the local version
-                        obj['attachment'][index]['url'] = \
-                            http_prefix + '://' + domain_full + '/media/' + \
-                            post_id + '_' + filename
-                        cached = True
-                else:
+            if not image_data:
+                continue
+            image_data = image_data.decode()
+            cleaned_up = \
+                remove_script(image_data, log_filename, actor, url)
+            if cleaned_up != image_data:
+                # write the cleaned up svg image
+                svg_written = False
+                cleaned_up = cleaned_up.encode('utf-8')
+                try:
+                    with open(image_filename, 'wb') as im_file:
+                        im_file.write(cleaned_up)
+                        svg_written = True
+                except OSError:
+                    print('EX: unable to write cleaned up svg ' + url)
+                if svg_written:
+                    # change the url to be the local version
+                    obj['attachment'][index]['url'] = \
+                        http_prefix + '://' + domain_full + '/media/' + \
+                        post_id + '_' + filename
                     cached = True
+            else:
+                cached = True
     return cached
 
 
