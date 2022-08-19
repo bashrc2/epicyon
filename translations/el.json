@@ -573,5 +573,8 @@
     "Import and Export": "Εισάγω και εξάγω",
     "Import Follows": "Ακολουθεί εισαγωγή",
     "Post expiry period in days": "Η περίοδος μετά τη λήξη σε ημέρες",
-    "Keep DMs during post expiry": "Διατηρήστε τα άμεσα μηνύματα κατά τη λήξη της ανάρτησης"
+    "Keep DMs during post expiry": "Διατηρήστε τα άμεσα μηνύματα κατά τη λήξη της ανάρτησης",
+    "Notifications": "Ειδοποιήσεις",
+    "ntfy URL": "ntfy URL",
+    "ntfy topic": "ntfy θέμα"
 }

@@ -573,5 +573,8 @@
     "Import and Export": "가져오기 및 내보내기",
     "Import Follows": "팔로잉 목록 가져오기",
     "Post expiry period in days": "포스트 만료 기간(일)",
-    "Keep DMs during post expiry": "만료 후 DM 보관"
+    "Keep DMs during post expiry": "만료 후 DM 보관",
+    "Notifications": "알림",
+    "ntfy URL": "ntfy URL",
+    "ntfy topic": "ntfy 주제"
 }

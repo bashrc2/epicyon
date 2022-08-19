@@ -573,5 +573,8 @@
     "Import and Export": "استيراد وتصدير",
     "Import Follows": "يتبع الاستيراد",
     "Post expiry period in days": "فترة ما بعد انتهاء الصلاحية بالأيام",
-    "Keep DMs during post expiry": "احتفظ بالرسائل الخاصّة أثناء انتهاء صلاحية النشر"
+    "Keep DMs during post expiry": "احتفظ بالرسائل الخاصّة أثناء انتهاء صلاحية النشر",
+    "Notifications": "إشعارات",
+    "ntfy URL": "ntfy URL",
+    "ntfy topic": "موضوع ntfy"
 }

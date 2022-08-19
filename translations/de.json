@@ -573,5 +573,8 @@
     "Import and Export": "Import und Export",
     "Import Follows": "Import folgt",
     "Post expiry period in days": "Nachablaufzeitraum in Tagen",
-    "Keep DMs during post expiry": "Bewahren Sie Direktnachrichten während des Ablaufs auf"
+    "Keep DMs during post expiry": "Bewahren Sie Direktnachrichten während des Ablaufs auf",
+    "Notifications": "Benachrichtigungen",
+    "ntfy URL": "ntfy-URL",
+    "ntfy topic": "ntfy-Thema"
 }

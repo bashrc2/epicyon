@@ -6182,6 +6182,32 @@ class PubServer(BaseHTTPRequestHandler):
                             set_cwtch_address(actor_json, '')
                             actor_changed = True
 
+                    # change ntfy url
+                    if fields.get('ntfyUrl'):
+                        ntfy_url_file = \
+                            base_dir + '/accounts/' + \
+                            nickname + '@' + domain + '/.ntfy_url'
+                        try:
+                            with open(ntfy_url_file, 'w+',
+                                      encoding='utf-8') as fp_ntfy:
+                                fp_ntfy.write(fields['ntfyUrl'])
+                        except OSError:
+                            print('EX: unable to save ntfy url ' +
+                                  ntfy_url_file)
+
+                    # change ntfy topic
+                    if fields.get('ntfyTopic'):
+                        ntfy_topic_file = \
+                            base_dir + '/accounts/' + \
+                            nickname + '@' + domain + '/.ntfy_topic'
+                        try:
+                            with open(ntfy_topic_file, 'w+',
+                                      encoding='utf-8') as fp_ntfy:
+                                fp_ntfy.write(fields['ntfyTopic'])
+                        except OSError:
+                            print('EX: unable to save ntfy topic ' +
+                                  ntfy_topic_file)
+
                     # change Enigma public key
                     currentenigma_pub_key = get_enigma_pub_key(actor_json)
                     if fields.get('enigmapubkey'):

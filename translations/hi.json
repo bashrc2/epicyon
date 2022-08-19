@@ -573,5 +573,8 @@
     "Import and Export": "आयात और निर्यात",
     "Import Follows": "आयात का अनुसरण करता है",
     "Post expiry period in days": "दिनों में समाप्ति अवधि पोस्ट करें",
-    "Keep DMs during post expiry": "समाप्ति के बाद सीधे संदेश रखें"
+    "Keep DMs during post expiry": "समाप्ति के बाद सीधे संदेश रखें",
+    "Notifications": "सूचनाएं",
+    "ntfy URL": "एनटीएफई यूआरएल",
+    "ntfy topic": "एनटीएफई विषय"
 }

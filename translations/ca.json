@@ -573,5 +573,8 @@
     "Import and Export": "Importació i Exportació",
     "Import Follows": "Segueix la importació",
     "Post expiry period in days": "Període posterior a la caducitat en dies",
-    "Keep DMs during post expiry": "Conserveu els missatges directes durant la caducitat posterior"
+    "Keep DMs during post expiry": "Conserveu els missatges directes durant la caducitat posterior",
+    "Notifications": "Notificacions",
+    "ntfy URL": "URL ntfy",
+    "ntfy topic": "tema ntfy"
 }

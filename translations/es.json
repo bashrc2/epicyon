@@ -573,5 +573,8 @@
     "Import and Export": "Importar y exportar",
     "Import Follows": "Importar seguimientos",
     "Post expiry period in days": "Período de vencimiento posterior en días",
-    "Keep DMs during post expiry": "Conservar los mensajes directos durante el vencimiento de la publicación"
+    "Keep DMs during post expiry": "Conservar los mensajes directos durante el vencimiento de la publicación",
+    "Notifications": "Notificaciones",
+    "ntfy URL": "URL ntfy",
+    "ntfy topic": "tema ntfy"
 }

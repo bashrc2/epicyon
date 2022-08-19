@@ -573,5 +573,8 @@
     "Import and Export": "Ingiza na Hamisha",
     "Import Follows": "Ingiza Inafuata",
     "Post expiry period in days": "Kipindi cha baada ya kumalizika kwa siku",
-    "Keep DMs during post expiry": "Weka Ujumbe wa Moja kwa Moja wakati wa kuisha kwa chapisho"
+    "Keep DMs during post expiry": "Weka Ujumbe wa Moja kwa Moja wakati wa kuisha kwa chapisho",
+    "Notifications": "Arifa",
+    "ntfy URL": "ntfy URL",
+    "ntfy topic": "mada ya ntfy"
 }
