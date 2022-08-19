@@ -573,5 +573,8 @@
     "Import and Export": "Mewnforio ac Allforio",
     "Import Follows": "Mewnforio Dilyn",
     "Post expiry period in days": "Cyfnod ar ôl dod i ben mewn dyddiau",
-    "Keep DMs during post expiry": "Cadwch Negeseuon Uniongyrchol pan ddaw'r post i ben"
+    "Keep DMs during post expiry": "Cadwch Negeseuon Uniongyrchol pan ddaw'r post i ben",
+    "Notifications": "Hysbysiadau",
+    "ntfy URL": "ntfy URL",
+    "ntfy topic": "pwnc ntfy"
 }

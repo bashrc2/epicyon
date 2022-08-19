@@ -573,5 +573,8 @@
     "Import and Export": "Import and Export",
     "Import Follows": "Import Follows",
     "Post expiry period in days": "Post expiry period in days",
-    "Keep DMs during post expiry": "Keep DMs during post expiry"
+    "Keep DMs during post expiry": "Keep DMs during post expiry",
+    "Notifications": "Notifications",
+    "ntfy URL": "ntfy URL",
+    "ntfy topic": "ntfy topic"
 }

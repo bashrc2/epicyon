@@ -573,5 +573,8 @@
     "Import and Export": "Iompórtáil agus Easpórtáil",
     "Import Follows": "Leanann Iompórtáil",
     "Post expiry period in days": "Tréimhse iar-éagtha i laethanta",
-    "Keep DMs during post expiry": "Coinnigh Teachtaireachtaí Díreacha nuair a rachaidh postáil in éag"
+    "Keep DMs during post expiry": "Coinnigh Teachtaireachtaí Díreacha nuair a rachaidh postáil in éag",
+    "Notifications": "Fógraí",
+    "ntfy URL": "ntfy URL",
+    "ntfy topic": "topaic ntfy"
 }

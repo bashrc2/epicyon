@@ -2001,6 +2001,39 @@ def _html_edit_profile_contact_info(nickname: str,
     return edit_profile_form
 
 
+def _html_edit_notifications(base_dir: str, nickname: str, domain: str,
+                             translate: {}) -> str:
+    """Notifications settings
+    """
+    ntfy_url = "ntfy.sh"
+    ntfy_topic = ''
+
+    ntfy_url_file = \
+        base_dir + '/accounts/' + nickname + '@' + domain + '/.ntfy_url'
+    ntfy_topic_file = \
+        base_dir + '/accounts/' + nickname + '@' + domain + '/.ntfy_topic'
+    if os.path.isfile(ntfy_url_file):
+        try:
+            with open(ntfy_url_file, 'r', encoding='utf-8') as fp_ntfy:
+                ntfy_url = fp_ntfy.read()
+        except OSError:
+            print('EX: unable to read ' + ntfy_url_file)
+    if os.path.isfile(ntfy_topic_file):
+        try:
+            with open(ntfy_topic_file, 'r', encoding='utf-8') as fp_ntfy:
+                ntfy_topic = fp_ntfy.read()
+        except OSError:
+            print('EX: unable to read ' + ntfy_topic_file)
+
+    edit_profile_form = begin_edit_section(translate['Notifications'])
+    edit_profile_form += edit_text_field(translate['ntfy URL'],
+                                         'ntfyURL', ntfy_url)
+    edit_profile_form += edit_text_field(translate['ntfy topic'],
+                                         'ntfyTopic', ntfy_topic)
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
+
+
 def _html_edit_profile_import_export(nickname: str, domain: str,
                                      translate: {}) -> str:
     """Contact Information section of edit profile screen
@@ -2440,6 +2473,9 @@ def html_edit_profile(server, translate: {},
                                         ssb_address, tox_address,
                                         briar_address,
                                         cwtch_address, translate)
+
+    # notification settings
+    _html_edit_notifications(base_dir, nickname, domain, translate)
 
     # Import and export
     edit_profile_form += \

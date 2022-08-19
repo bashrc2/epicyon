@@ -573,5 +573,8 @@
     "Import and Export": "Import û Export",
     "Import Follows": "Import Follows",
     "Post expiry period in days": "Demjimêra qedandinê di çend rojan de",
-    "Keep DMs during post expiry": "Di dema qedandina postê de Peyamên Rasterast biparêzin"
+    "Keep DMs during post expiry": "Di dema qedandina postê de Peyamên Rasterast biparêzin",
+    "Notifications": "Notifications",
+    "ntfy URL": "ntfy URL",
+    "ntfy topic": "mijara ntfy"
 }
