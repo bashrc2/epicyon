@@ -2475,7 +2475,8 @@ def html_edit_profile(server, translate: {},
                                         cwtch_address, translate)
 
     # notification settings
-    _html_edit_notifications(base_dir, nickname, domain, translate)
+    edit_profile_form += \
+        _html_edit_notifications(base_dir, nickname, domain, translate)
 
     # Import and export
     edit_profile_form += \
