@@ -3082,29 +3082,30 @@ def _like_notify(base_dir: str, domain: str,
         print('_like_notify liker_handle: ' +
               str(liker_nickname) + '@' + str(liker_domain))
         liker_handle = actor
-    if liker_handle != handle:
-        like_str = liker_handle + ' ' + url + '?likedBy=' + actor
-        prev_like_file = account_dir + '/.prevLike'
-        # was there a previous like notification?
-        if os.path.isfile(prev_like_file):
-            # is it the same as the current notification ?
-            with open(prev_like_file, 'r', encoding='utf-8') as fp_like:
-                prev_like_str = fp_like.read()
-                if prev_like_str == like_str:
-                    return
-        try:
-            with open(prev_like_file, 'w+', encoding='utf-8') as fp_like:
-                fp_like.write(like_str)
-        except OSError:
-            print('EX: ERROR: unable to save previous like notification ' +
-                  prev_like_file)
+    if liker_handle == handle:
+        return
+    like_str = liker_handle + ' ' + url + '?likedBy=' + actor
+    prev_like_file = account_dir + '/.prevLike'
+    # was there a previous like notification?
+    if os.path.isfile(prev_like_file):
+        # is it the same as the current notification ?
+        with open(prev_like_file, 'r', encoding='utf-8') as fp_like:
+            prev_like_str = fp_like.read()
+            if prev_like_str == like_str:
+                return
+    try:
+        with open(prev_like_file, 'w+', encoding='utf-8') as fp_like:
+            fp_like.write(like_str)
+    except OSError:
+        print('EX: ERROR: unable to save previous like notification ' +
+              prev_like_file)
 
-        try:
-            with open(like_file, 'w+', encoding='utf-8') as fp_like:
-                fp_like.write(like_str)
-        except OSError:
-            print('EX: ERROR: unable to write like notification file ' +
-                  like_file)
+    try:
+        with open(like_file, 'w+', encoding='utf-8') as fp_like:
+            fp_like.write(like_str)
+    except OSError:
+        print('EX: ERROR: unable to write like notification file ' +
+              like_file)
 
 
 def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
@@ -3144,31 +3145,32 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
         print('_reaction_notify reaction_handle: ' +
               str(reaction_nickname) + '@' + str(reaction_domain))
         reaction_handle = actor
-    if reaction_handle != handle:
-        reaction_str = \
-            reaction_handle + ' ' + url + '?reactBy=' + actor + \
-            ';emoj=' + emoji_content
-        prev_reaction_file = account_dir + '/.prevReaction'
-        # was there a previous reaction notification?
-        if os.path.isfile(prev_reaction_file):
-            # is it the same as the current notification ?
-            with open(prev_reaction_file, 'r', encoding='utf-8') as fp_react:
-                prev_reaction_str = fp_react.read()
-                if prev_reaction_str == reaction_str:
-                    return
-        try:
-            with open(prev_reaction_file, 'w+', encoding='utf-8') as fp_react:
-                fp_react.write(reaction_str)
-        except OSError:
-            print('EX: ERROR: unable to save previous reaction notification ' +
-                  prev_reaction_file)
+    if reaction_handle == handle:
+        return
+    reaction_str = \
+        reaction_handle + ' ' + url + '?reactBy=' + actor + \
+        ';emoj=' + emoji_content
+    prev_reaction_file = account_dir + '/.prevReaction'
+    # was there a previous reaction notification?
+    if os.path.isfile(prev_reaction_file):
+        # is it the same as the current notification ?
+        with open(prev_reaction_file, 'r', encoding='utf-8') as fp_react:
+            prev_reaction_str = fp_react.read()
+            if prev_reaction_str == reaction_str:
+                return
+    try:
+        with open(prev_reaction_file, 'w+', encoding='utf-8') as fp_react:
+            fp_react.write(reaction_str)
+    except OSError:
+        print('EX: ERROR: unable to save previous reaction notification ' +
+              prev_reaction_file)
 
-        try:
-            with open(reaction_file, 'w+', encoding='utf-8') as fp_react:
-                fp_react.write(reaction_str)
-        except OSError:
-            print('EX: ERROR: unable to write reaction notification file ' +
-                  reaction_file)
+    try:
+        with open(reaction_file, 'w+', encoding='utf-8') as fp_react:
+            fp_react.write(reaction_str)
+    except OSError:
+        print('EX: ERROR: unable to write reaction notification file ' +
+              reaction_file)
 
 
 def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
