@@ -118,8 +118,21 @@ function sendNotification {
     # see https://ntfy.sh
     # You will need to create these two files containing the ntfy
     # service url and topic
-    ntfy_url_file=/home/${ADMIN_USERNAME}/.ntfy_url
-    ntfy_topic_file=/home/${ADMIN_USERNAME}/.ntfy_topic
+    ntfy_url_file=/home/${USERNAME}/.ntfy_url
+    ntfy_topic_file=/home/${USERNAME}/.ntfy_topic
+
+    # get ntfy settings from the account directory
+    epicyon_config_file=${epicyonInstallDir}/config.json
+    if [ -f "${epicyon_config_file}" ]; then
+        epicyon_domain=$(cat "$epicyon_config_file" | awk -F '"domain": "' '{print $2}' | awk -F '"' '{print $1}')
+        if [ "${epicyon_domain}" ]; then
+            epicyon_account_dir="${epicyonInstallDir}/accounts/${USERNAME}@${epicyon_domain}"
+            if [ -d "${epicyon_account_dir}" ]; then
+                ntfy_url_file=${epicyon_account_dir}/.ntfy_url
+                ntfy_topic_file=${epicyon_account_dir}/.ntfy_topic
+            fi
+        fi
+    fi
 
     if [ "$MESSAGE" ]; then
         if [ -f "$ntfy_topic_file" ]; then
