@@ -68,7 +68,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_header_with_person_markup
 from webapp_utils import html_footer
 from webapp_utils import add_emoji_to_display_name
-from webapp_utils import get_banner_file
+from webapp_utils import get_profile_background_file
 from webapp_utils import html_post_separator
 from webapp_utils import edit_check_box
 from webapp_utils import edit_text_field
@@ -420,7 +420,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     image and avatar
     """
     banner_file, _ = \
-        get_banner_file(base_dir, nickname, domain, theme)
+        get_profile_background_file(base_dir, nickname, domain, theme)
     html_str = \
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
@@ -2304,7 +2304,7 @@ def html_edit_profile(server, translate: {},
 
     # filename of the banner shown at the top
     banner_file, _ = \
-        get_banner_file(base_dir, nickname, domain, theme)
+        get_profile_background_file(base_dir, nickname, domain, theme)
 
     display_nickname = nickname
     is_bot = is_group = follow_dms = remove_twitter = ''
