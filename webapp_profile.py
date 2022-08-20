@@ -68,7 +68,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_header_with_person_markup
 from webapp_utils import html_footer
 from webapp_utils import add_emoji_to_display_name
-from webapp_utils import get_banner_file
+from webapp_utils import get_profile_background_file
 from webapp_utils import html_post_separator
 from webapp_utils import edit_check_box
 from webapp_utils import edit_text_field
@@ -404,8 +404,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         profile_str + html_footer()
 
 
-def _get_profile_header(http_prefix: str, nickname: str,
-                        domain_full: str, translate: {},
+def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
+                        domain: str, domain_full: str, translate: {},
                         default_timeline: str,
                         display_name: str,
                         profile_description_short: str,
@@ -419,6 +419,8 @@ def _get_profile_header(http_prefix: str, nickname: str,
     """The header of the profile screen, containing background
     image and avatar
     """
+    banner_file, _ = \
+        get_profile_background_file(base_dir, nickname, domain, theme)
     html_str = \
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
@@ -427,7 +429,7 @@ def _get_profile_header(http_prefix: str, nickname: str,
         'accesskey="' + access_keys['menuTimeline'] + '">\n' + \
         '        <img class="profileBackground" ' + \
         'alt="" ' + \
-        'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '      <figcaption>\n' + \
         '        <a href="/users/' + \
         nickname + '/' + default_timeline + '" title="' + \
@@ -904,9 +906,9 @@ def html_profile(signing_priv_key_pem: str,
             pinned_content = pin_file.read()
 
     profile_header_str = \
-        _get_profile_header(http_prefix,
+        _get_profile_header(base_dir, http_prefix,
                             nickname,
-                            domain_full, translate,
+                            domain, domain_full, translate,
                             default_timeline, display_name,
                             profile_description_short,
                             login_button, avatar_url, theme,
@@ -2302,7 +2304,7 @@ def html_edit_profile(server, translate: {},
 
     # filename of the banner shown at the top
     banner_file, _ = \
-        get_banner_file(base_dir, nickname, domain, theme)
+        get_profile_background_file(base_dir, nickname, domain, theme)
 
     display_nickname = nickname
     is_bot = is_group = follow_dms = remove_twitter = ''

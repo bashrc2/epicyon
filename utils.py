@@ -496,7 +496,7 @@ def get_audio_extensions() -> []:
 def get_image_extensions() -> []:
     """Returns a list of the possible image file extensions
     """
-    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico', 'jxl')
+    return ('jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico', 'jxl', 'png')
 
 
 def get_image_mime_type(image_filename: str) -> str:

@@ -547,11 +547,12 @@ def _get_image_file(base_dir: str, name: str, directory: str,
     banner_extensions = get_image_extensions()
     banner_file = ''
     banner_filename = ''
+    im_name = name
     for ext in banner_extensions:
-        banner_file_test = name + '.' + ext
+        banner_file_test = im_name + '.' + ext
         banner_filename_test = directory + '/' + banner_file_test
         if os.path.isfile(banner_filename_test):
-            banner_file = name + '_' + theme + '.' + ext
+            banner_file = banner_file_test
             banner_filename = banner_filename_test
             return banner_file, banner_filename
     # if not found then use the default image
@@ -573,6 +574,15 @@ def get_banner_file(base_dir: str,
     """
     account_dir = acct_dir(base_dir, nickname, domain)
     return _get_image_file(base_dir, 'banner', account_dir, theme)
+
+
+def get_profile_background_file(base_dir: str,
+                                nickname: str, domain: str,
+                                theme: str) -> (str, str):
+    """Gets the image for the profile background
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    return _get_image_file(base_dir, 'image', account_dir, theme)
 
 
 def get_search_banner_file(base_dir: str,
