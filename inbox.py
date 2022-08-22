@@ -380,6 +380,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
             add_tag_map_links(tag_maps_dir, tag_name, map_links,
                               published, post_url)
         hashtag_added = False
+        print('**** tag_line ' + tag_line.replace('\n', '<CR>'))
         if not os.path.isfile(tags_filename):
             try:
                 with open(tags_filename, 'w+', encoding='utf-8') as tags_file:
@@ -395,6 +396,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
             except OSError:
                 pass
             if post_url not in content:
+                print('**** tag_line2 ' + content.replace('\n', '<CR>'))
                 content = tag_line + content
                 try:
                     with open(tags_filename, 'w+',

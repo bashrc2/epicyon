@@ -482,7 +482,7 @@ def _hashtag_map_to_kml(base_dir: str, tag_name: str,
         map_links = []
         try:
             with open(tag_map_filename, 'r', encoding='utf-8') as fp_tag:
-                map_links = fp_tag.readlines()
+                map_links = fp_tag.read().split('\n')
         except OSError:
             print('EX: unable to read tag map links ' + tag_map_filename)
         if map_links:
