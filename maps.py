@@ -9,10 +9,27 @@ __module_group__ = "Core"
 
 
 import os
+import datetime
 from utils import is_float
 from utils import acct_dir
 from utils import load_json
 from utils import save_json
+
+
+def get_location_from_tags(tags: []) -> str:
+    """Returns the location from the tags list
+    """
+    for tag_item in tags:
+        if not tag_item.get('type'):
+            continue
+        if tag_item['type'] != 'Place':
+            continue
+        if not tag_item.get('name'):
+            continue
+        if not isinstance(tag_item['name'], str):
+            continue
+        return tag_item['name'].replace('\n', ' ')
+    return None
 
 
 def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
@@ -360,3 +377,83 @@ def get_map_preferences_coords(base_dir: str,
                 maps_json['longitude'], \
                 maps_json['zoom']
     return None, None, None
+
+
+def get_map_links_from_post_content(content: str) -> []:
+    """Returns a list of map links
+    """
+    osm_domain = 'openstreetmap.org'
+    sections = content.split('://')
+    map_links = []
+    ctr = 0
+    for link_str in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        url = link_str
+        if '"' in link_str:
+            url = link_str.split('"')[0]
+        if '<' in link_str:
+            url = link_str.split('<')[0]
+        zoom, latitude, longitude = geocoords_from_map_link(url, osm_domain)
+        if not latitude:
+            continue
+        if not longitude:
+            continue
+        if not zoom:
+            continue
+        if url not in map_links:
+            map_links.append(url)
+        ctr += 1
+    return map_links
+
+
+def add_tag_map_links(tag_maps_dir: str, tag_name: str,
+                      map_links: [], published: str, post_url: str) -> None:
+    """Appends to a hashtag file containing map links
+    This is used to show a map for a particular hashtag
+    """
+    tag_map_filename = tag_maps_dir + '/' + tag_name + '.txt'
+
+    # read the existing map links
+    existing_map_links = []
+    if os.path.isfile(tag_map_filename):
+        try:
+            with open(tag_map_filename, 'r', encoding='utf-8') as fp_tag:
+                existing_map_links = fp_tag.read().split('\n')
+        except OSError:
+            print('EX: error reading tag map ' + tag_map_filename)
+
+    # combine map links with the existing list
+    secs_since_epoch = \
+        (datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ') -
+         datetime.datetime(1970, 1, 1)).total_seconds()
+    links_changed = False
+    for link in map_links:
+        line = str(secs_since_epoch) + ' ' + link + ' ' + post_url
+        if line in existing_map_links:
+            continue
+        links_changed = True
+        existing_map_links = [line] + existing_map_links
+    if not links_changed:
+        return
+
+    # sort the list of map links
+    existing_map_links.sort(reverse=True)
+    map_links_str = ''
+    ctr = 0
+    for link in existing_map_links:
+        if not link:
+            continue
+        map_links_str += link + '\n'
+        ctr += 1
+        # don't allow the list to grow indefinitely
+        if ctr >= 2000:
+            break
+
+    # save the tag
+    try:
+        with open(tag_map_filename, 'w+', encoding='utf-8') as fp_tag:
+            fp_tag.write(map_links_str)
+    except OSError:
+        print('EX: error writing tag map ' + tag_map_filename)
