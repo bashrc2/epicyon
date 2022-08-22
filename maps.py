@@ -511,7 +511,7 @@ def _hashtag_map_to_kml(base_dir: str, tag_name: str,
                 kml_str += '  <name>' + str(place_ctr) + '</name>\n'
                 kml_str += '  <description><![CDATA[\n'
                 kml_str += '<a href="' + post_id + '">' + \
-                    post_id + '</a>\n]]\n'
+                    post_id + '</a>\n]]>\n'
                 kml_str += '  </description>\n'
                 kml_str += '  <Point>\n'
                 kml_str += '    <coordinates>' + str(longitude) + ',' + \
