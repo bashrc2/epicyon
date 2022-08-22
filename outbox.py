@@ -40,7 +40,6 @@ from media import replace_you_tube
 from media import replace_twitter
 from media import get_media_path
 from media import create_media_dirs
-from inbox import store_hash_tags
 from inbox import inbox_update_index
 from announce import outbox_announce
 from announce import outbox_undo_announce
@@ -408,10 +407,6 @@ def post_message_to_outbox(session, translate: {},
         print('DEBUG: save_post_to_box')
     if message_json['type'] != 'Upgrade':
         outbox_name = 'outbox'
-
-        store_hash_tags(base_dir, post_to_nickname, domain,
-                        http_prefix, domain_full,
-                        message_json, translate)
 
         # if this is a blog post or an event then save to its own box
         if message_json['type'] == 'Create':
