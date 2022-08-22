@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Weka Ujumbe wa Moja kwa Moja wakati wa kuisha kwa chapisho",
     "Notifications": "Arifa",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "mada ya ntfy"
+    "ntfy topic": "mada ya ntfy",
+    "Last hour": "Saa iliyopita",
+    "Last 3 hours": "Saa 3 zilizopita",
+    "Last 6 hours": "Saa 6 zilizopita",
+    "Last 12 hours": "Saa 12 zilizopita",
+    "Last day": "Siku ya mwisho",
+    "Last 2 days": "Siku 2 zilizopita",
+    "Last week": "Wiki iliyopita",
+    "Last 2 weeks": "Wiki 2 zilizopita",
+    "Last month": "Mwezi uliopita",
+    "Last 6 months": "Miezi 6 iliyopita",
+    "Last year": "Mwaka jana"
 }

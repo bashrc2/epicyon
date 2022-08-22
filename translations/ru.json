@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Сохраняйте личные сообщения в течение срока действия после истечения срока действия",
     "Notifications": "Уведомления",
     "ntfy URL": "URL-адрес ntfy",
-    "ntfy topic": "ntfy тема"
+    "ntfy topic": "ntfy тема",
+    "Last hour": "Последний час",
+    "Last 3 hours": "Последние 3 часов",
+    "Last 6 hours": "Последние 6 часов",
+    "Last 12 hours": "Последние 12 часов",
+    "Last day": "Последний день",
+    "Last 2 days": "Последние 2 дня",
+    "Last week": "Прошлая неделя",
+    "Last 2 weeks": "Последние 2 недели",
+    "Last month": "Прошлый месяц",
+    "Last 6 months": "Последние 6 месяцев",
+    "Last year": "Прошедший год"
 }

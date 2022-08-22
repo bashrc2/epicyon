@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "احتفظ بالرسائل الخاصّة أثناء انتهاء صلاحية النشر",
     "Notifications": "إشعارات",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "موضوع ntfy"
+    "ntfy topic": "موضوع ntfy",
+    "Last hour": "الساعة الأخيرة",
+    "Last 3 hours": "آخر 3 ساعات",
+    "Last 6 hours": "آخر 6 ساعات",
+    "Last 12 hours": "آخر 12 ساعة",
+    "Last day": "بالأمس",
+    "Last 2 days": "آخر يومين",
+    "Last week": "الأسبوع الماضي",
+    "Last 2 weeks": "آخر أسبوعين",
+    "Last month": "الشهر الماضي",
+    "Last 6 months": "آخر 6 أشهر",
+    "Last year": "العام الماضي"
 }

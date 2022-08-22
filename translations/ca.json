@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Conserveu els missatges directes durant la caducitat posterior",
     "Notifications": "Notificacions",
     "ntfy URL": "URL ntfy",
-    "ntfy topic": "tema ntfy"
+    "ntfy topic": "tema ntfy",
+    "Last hour": "Última hora",
+    "Last 3 hours": "Últimes 3 hores",
+    "Last 6 hours": "Últimes 6 hores",
+    "Last 12 hours": "Últimes 12 hores",
+    "Last day": "L'últim dia",
+    "Last 2 days": "2 darrers dies",
+    "Last week": "La setmana passada",
+    "Last 2 weeks": "Últimes 2 setmanes",
+    "Last month": "El mes passat",
+    "Last 6 months": "Últims 6 mesos",
+    "Last year": "L'any passat"
 }

@@ -572,5 +572,16 @@
     "Keep DMs during post expiry": "Keep DMs during post expiry",
     "Notifications": "Notifications",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "ntfy topic"
+    "ntfy topic": "ntfy topic",
+    "Last hour": "Last hour",
+    "Last 3 hours": "Last 3 hours",
+    "Last 6 hours": "Last 6 hours",
+    "Last 12 hours": "Last 12 hours",
+    "Last day": "Last day",
+    "Last 2 days": "Last 2 days",
+    "Last week": "Last week",
+    "Last 2 weeks": "Last 2 weeks",
+    "Last month": "Last month",
+    "Last 6 months": "Last 6 months",
+    "Last year": "Last year"
 }

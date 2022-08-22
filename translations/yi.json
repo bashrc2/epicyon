@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "האַלטן דירעקט אַרטיקלען בעשאַס פּאָסטן עקספּיירי",
     "Notifications": "נאָוטאַפאַקיישאַנז",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "ntfy טעמע"
+    "ntfy topic": "ntfy טעמע",
+    "Last hour": "לעצטע שעה",
+    "Last 3 hours": "לעצטע 3 שעה",
+    "Last 6 hours": "לעצטע 6 שעה",
+    "Last 12 hours": "לעצטע 12 שעה",
+    "Last day": "לעצטע טאג",
+    "Last 2 days": "לעצטע 2 טעג",
+    "Last week": "לעצטע וואָך",
+    "Last 2 weeks": "לעצטע 2 וואָכן",
+    "Last month": "לעצטע מאנאט",
+    "Last 6 months": "לעצטע 6 חדשים",
+    "Last year": "לעצטע יאר"
 }

@@ -40,6 +40,7 @@ from webapp_utils import html_post_separator
 from webapp_utils import html_search_result_share
 from webapp_post import individual_post_as_html
 from webapp_hashtagswarm import html_hash_tag_swarm
+from maps import html_hashtag_maps
 
 
 def html_search_emoji(translate: {}, base_dir: str, search_str: str) -> str:
@@ -823,6 +824,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         hashtag_search_form += '    </center>\n'
         hashtag_search_form += '  </form>\n'
         hashtag_search_form += '</div>\n'
+
+    hashtag_search_form += html_hashtag_maps(base_dir, hashtag, translate)
 
     if start_index > 0:
         # previous page link

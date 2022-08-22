@@ -942,7 +942,8 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
     return filename
 
 
-def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str) -> None:
+def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
+                           nickname: str) -> None:
     """Writes the post url for hashtags to a file
     This allows posts for a hashtag to be quickly looked up
     """
@@ -955,25 +956,37 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str) -> None:
         os.mkdir(tags_dir)
     tag_name = tag['name']
     tags_filename = tags_dir + '/' + tag_name[1:] + '.txt'
-    tagline = new_post_id + '\n'
+
+    new_post_id = new_post_id.replace('/', '#')
 
     if not os.path.isfile(tags_filename):
+        days_diff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
+        days_since_epoch = days_diff.days
+        tag_line = \
+            str(days_since_epoch) + '  ' + nickname + '  ' + \
+            new_post_id + '\n'
         # create a new tags index file
         try:
             with open(tags_filename, 'w+', encoding='utf-8') as tags_file:
-                tags_file.write(tagline)
+                tags_file.write(tag_line)
         except OSError:
             print('EX: _update_hashtags_index unable to write tags file ' +
                   tags_filename)
     else:
         # prepend to tags index file
-        if not text_in_file(tagline, tags_filename):
+        if not text_in_file(new_post_id, tags_filename):
+            days_diff = \
+                datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
+            days_since_epoch = days_diff.days
+            tag_line = \
+                str(days_since_epoch) + '  ' + nickname + '  ' + \
+                new_post_id + '\n'
             try:
                 with open(tags_filename, 'r+', encoding='utf-8') as tags_file:
                     content = tags_file.read()
-                    if tagline not in content:
+                    if tag_line not in content:
                         tags_file.seek(0, 0)
-                        tags_file.write(tagline + content)
+                        tags_file.write(tag_line + content)
             except OSError as ex:
                 print('EX: Failed to write entry to tags file ' +
                       tags_filename + ' ' + str(ex))
@@ -1530,7 +1543,7 @@ def _create_post_base(base_dir: str,
             if not post_tag_exists(tag['type'], tag['name'], tags):
                 tags.append(tag)
             if is_public:
-                _update_hashtags_index(base_dir, tag, new_post_id)
+                _update_hashtags_index(base_dir, tag, new_post_id, nickname)
         # print('Content tags: ' + str(tags))
 
     sensitive, summary = \

@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "समाप्ति के बाद सीधे संदेश रखें",
     "Notifications": "सूचनाएं",
     "ntfy URL": "एनटीएफई यूआरएल",
-    "ntfy topic": "एनटीएफई विषय"
+    "ntfy topic": "एनटीएफई विषय",
+    "Last hour": "अंतिम घंटा",
+    "Last 3 hours": "पिछले 3 घंटे",
+    "Last 6 hours": "पिछले 6 घंटे",
+    "Last 12 hours": "पिछले 12 घंटे",
+    "Last day": "आखरी दिन",
+    "Last 2 days": "पिछले 2 दिन",
+    "Last week": "पिछले सप्ताह",
+    "Last 2 weeks": "पिछले 2 सप्ताह",
+    "Last month": "पिछले महीने",
+    "Last 6 months": "पिछले 6 महीने",
+    "Last year": "पिछले साल"
 }

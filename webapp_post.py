@@ -99,22 +99,7 @@ from maps import html_open_street_map
 from maps import set_map_preferences_coords
 from maps import set_map_preferences_url
 from maps import geocoords_from_map_link
-
-
-def _get_location_from_tags(tags: []) -> str:
-    """Returns the location from the tags list
-    """
-    for tag_item in tags:
-        if not tag_item.get('type'):
-            continue
-        if tag_item['type'] != 'Place':
-            continue
-        if not tag_item.get('name'):
-            continue
-        if not isinstance(tag_item['name'], str):
-            continue
-        return tag_item['name'].replace('\n', ' ')
-    return None
+from maps import get_location_from_tags
 
 
 def _html_post_metadata_open_graph(domain: str, post_json_object: {},
@@ -2298,7 +2283,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
         # show embedded map if the location contains a map url
         location_str = \
-            _get_location_from_tags(post_json_object['object']['tag'])
+            get_location_from_tags(post_json_object['object']['tag'])
         if location_str:
             if '://' in location_str and '.' in location_str:
                 bounding_box_degrees = 0.001

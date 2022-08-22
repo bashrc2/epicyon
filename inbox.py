@@ -136,6 +136,10 @@ from content import load_dogwhistles
 from content import valid_url_lengths
 from content import remove_script
 from threads import begin_thread
+from maps import get_map_links_from_post_content
+from maps import get_location_from_tags
+from maps import add_tag_map_links
+from maps import geocoords_from_map_link
 
 
 def cache_svg_images(session, base_dir: str, http_prefix: str,
@@ -327,6 +331,32 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         print('Creating tags directory')
         os.mkdir(tags_dir)
 
+    # obtain any map links and these can be associated with hashtags
+    # get geolocations from content
+    map_links = []
+    published = None
+    if post_json_object['object'].get('content'):
+        published = post_json_object['object']['published']
+        post_content = post_json_object['object']['content']
+        map_links += get_map_links_from_post_content(post_content)
+    # get geolocation from tags
+    location_str = \
+        get_location_from_tags(post_json_object['object']['tag'])
+    if location_str:
+        if '://' in location_str and '.' in location_str:
+            zoom, latitude, longitude = geocoords_from_map_link(location_str)
+            if latitude and longitude and zoom and \
+               location_str not in map_links:
+                map_links.append(location_str)
+    tag_maps_dir = base_dir + '/tagmaps'
+    if map_links:
+        # add tagmaps directory if it doesn't exist
+        if not os.path.isdir(tag_maps_dir):
+            print('Creating tagmaps directory')
+            os.mkdir(tag_maps_dir)
+
+    post_url = remove_id_ending(post_json_object['id'])
+    post_url = post_url.replace('/', '#')
     hashtags_ctr = 0
     for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
@@ -341,12 +371,13 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         if not valid_hash_tag(tag_name):
             continue
         tags_filename = tags_dir + '/' + tag_name + '.txt'
-        post_url = remove_id_ending(post_json_object['id'])
-        post_url = post_url.replace('/', '#')
         days_diff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
         days_since_epoch = days_diff.days
         tag_line = \
             str(days_since_epoch) + '  ' + nickname + '  ' + post_url + '\n'
+        if map_links and published:
+            add_tag_map_links(tag_maps_dir, tag_name, map_links,
+                              published, post_url)
         hashtag_added = False
         if not os.path.isfile(tags_filename):
             try:
@@ -366,8 +397,8 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                 content = tag_line + content
                 try:
                     with open(tags_filename, 'w+',
-                              encoding='utf-8') as tags_file:
-                        tags_file.write(content)
+                              encoding='utf-8') as tags_file2:
+                        tags_file2.write(content)
                         hashtag_added = True
                 except OSError as ex:
                     print('EX: Failed to write entry to tags file ' +

@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "投稿の有効期限が切れるまでダイレクト メッセージを保持する",
     "Notifications": "通知",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "ntfy トピック"
+    "ntfy topic": "ntfy トピック",
+    "Last hour": "最後の時間",
+    "Last 3 hours": "過去 3 時間",
+    "Last 6 hours": "過去 6 時間",
+    "Last 12 hours": "過去 12 時間",
+    "Last day": "最終日",
+    "Last 2 days": "過去 2 日間",
+    "Last week": "先週",
+    "Last 2 weeks": "過去 2 週間",
+    "Last month": "先月",
+    "Last 6 months": "過去 6 か月",
+    "Last year": "去年"
 }

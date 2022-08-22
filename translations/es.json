@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Conservar los mensajes directos durante el vencimiento de la publicación",
     "Notifications": "Notificaciones",
     "ntfy URL": "URL ntfy",
-    "ntfy topic": "tema ntfy"
+    "ntfy topic": "tema ntfy",
+    "Last hour": "Ultima hora",
+    "Last 3 hours": "últimas 3 horas",
+    "Last 6 hours": "últimas 6 horas",
+    "Last 12 hours": "últimas 12 horas",
+    "Last day": "Último día",
+    "Last 2 days": "últimos 2 días",
+    "Last week": "La semana pasada",
+    "Last 2 weeks": "últimas 2 semanas",
+    "Last month": "El mes pasado",
+    "Last 6 months": "últimos 6 meses",
+    "Last year": "El año pasado"
 }
