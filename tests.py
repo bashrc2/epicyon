@@ -192,6 +192,7 @@ from happening import dav_month_via_server
 from happening import dav_day_via_server
 from webapp_theme_designer import color_contrast
 from maps import get_map_links_from_post_content
+from maps import geocoords_from_map_link
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -7521,8 +7522,16 @@ def _test_hashtag_maps():
     map_links = get_map_links_from_post_content(content)
     link = "www.google.com/maps/@52.217291,-3.0811865,20.04z"
     assert link in map_links
+    zoom, latitude, longitude = geocoords_from_map_link(link)
+    assert zoom
+    assert latitude
+    assert longitude
     link = "www.openstreetmap.org/#map=19/52.90860/-3.59917"
     assert link in map_links
+    zoom, latitude, longitude = geocoords_from_map_link(link)
+    assert zoom
+    assert latitude
+    assert longitude
     assert len(map_links) == 2
 
 

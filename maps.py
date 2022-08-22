@@ -486,8 +486,8 @@ def _hashtag_map_to_kml(base_dir: str, tag_name: str,
         except OSError:
             print('EX: unable to read tag map links ' + tag_map_filename)
         if map_links:
-            start_secs_since_epoch = start_hours_since_epoch * 60 * 60
-            end_secs_since_epoch = end_hours_since_epoch * 60 * 60
+            start_secs_since_epoch = int(start_hours_since_epoch * 60 * 60)
+            end_secs_since_epoch = int(end_hours_since_epoch * 60 * 60)
             for link_line in map_links:
                 link_line = link_line.strip().split(' ')
                 if len(link_line) < 3:
@@ -599,22 +599,23 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
             _hashtag_map_kml_within_hours(base_dir, tag_name, hours)
         if not new_kml_str:
             continue
-        if new_kml_str != kml_str:
-            kml_str = new_kml_str
-            period_str2 = period_str.replace('Last ', '').lower()
-            endpoint_str = \
-                '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
-            download_filename = \
-                (tag_name + '-' +
-                 period_str.lower()).replace(' ', '_') + '.kml'
-            if html_str:
-                html_str += ' '
-            description = period_str
-            if translate.get(period_str):
-                description = translate[period_str]
-            html_str += '<a href="' + endpoint_str + \
-                '" download="' + download_filename + '">' + \
-                description + '</a>'
+        if new_kml_str == kml_str:
+            continue
+        kml_str = new_kml_str
+        period_str2 = period_str.replace('Last ', '').lower()
+        endpoint_str = \
+            '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
+        download_filename = \
+            (tag_name + '-' +
+             period_str.lower()).replace(' ', '_') + '.kml'
+        if html_str:
+            html_str += ' '
+        description = period_str
+        if translate.get(period_str):
+            description = translate[period_str]
+        html_str += '<a href="' + endpoint_str + \
+            '" download="' + download_filename + '">' + \
+            description + '</a>'
     if html_str:
         html_str = '<center>' + html_str + '</center>\n'
     return html_str
