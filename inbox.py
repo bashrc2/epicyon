@@ -355,9 +355,6 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
             print('Creating tagmaps directory')
             os.mkdir(tag_maps_dir)
 
-    post_url = remove_id_ending(post_json_object['id'])
-    post_url = post_url.replace('/', '#')
-
     hashtags_ctr = 0
     for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
@@ -374,13 +371,15 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         tags_filename = tags_dir + '/' + tag_name + '.txt'
         days_diff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
         days_since_epoch = days_diff.days
+        post_url = remove_id_ending(post_json_object['id'])
+        post_url = post_url.replace('/', '#')
         tag_line = \
             str(days_since_epoch) + '  ' + nickname + '  ' + post_url + '\n'
         if map_links and published:
             add_tag_map_links(tag_maps_dir, tag_name, map_links,
                               published, post_url)
         hashtag_added = False
-        print('**** tag_line ' + tag_line.replace('\n', '<CR>'))
+        print('**** tag_line3 ' + tag_line.replace('\n', '<CR>'))
         if not os.path.isfile(tags_filename):
             try:
                 with open(tags_filename, 'w+', encoding='utf-8') as tags_file:
@@ -396,7 +395,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
             except OSError:
                 pass
             if post_url not in content:
-                print('**** tag_line2 ' + content.replace('\n', '<CR>'))
+                print('**** tag_line4 ' + content.replace('\n', '<CR>'))
                 content = tag_line + content
                 try:
                     with open(tags_filename, 'w+',
