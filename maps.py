@@ -120,7 +120,10 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
         return None, None, None
     zoom = coords[2]
     if not zoom.isdigit():
-        return None, None, None
+        if is_float(str(zoom)):
+            zoom = int(float(str(zoom)))
+        else:
+            return None, None, None
     latitude = coords[0]
     if not is_float(latitude):
         return None, None, None
@@ -391,10 +394,12 @@ def get_map_links_from_post_content(content: str) -> []:
             ctr += 1
             continue
         url = link_str
-        if '"' in link_str:
-            url = link_str.split('"')[0]
-        if '<' in link_str:
-            url = link_str.split('<')[0]
+        if '"' in url:
+            url = url.split('"')[0]
+        if '<' in url:
+            url = url.split('<')[0]
+        if not url:
+            continue
         zoom, latitude, longitude = geocoords_from_map_link(url, osm_domain)
         if not latitude:
             continue

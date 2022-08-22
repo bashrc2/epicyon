@@ -191,6 +191,7 @@ from blocking import add_cw_from_lists
 from happening import dav_month_via_server
 from happening import dav_day_via_server
 from webapp_theme_designer import color_contrast
+from maps import get_map_links_from_post_content
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -7492,6 +7493,39 @@ def _test_combine_lines():
     assert result == expected
 
 
+def _test_hashtag_maps():
+    print('hashtag_maps')
+    content = \
+        "<p>This is a test, with a couple of links and a " + \
+        "<a href=\"https://epicyon.libreserver.org/tags/Hashtag\" " + \
+        "class=\"mention hashtag\" rel=\"tag\" tabindex=\"10\">#" + \
+        "<span>Hashtag</span></a><br><br>" + \
+        "<a href=\"https://" + \
+        "www.openstreetmap.org/#map=19/52.90860/-3.59917\" " + \
+        "tabindex=\"10\" rel=\"nofollow noopener noreferrer\" " + \
+        "target=\"_blank\"><span class=\"invisible\">https://" + \
+        "</span><span class=\"ellipsis\">" + \
+        "www.openstreetmap.org/#map=19/52.90860/-</span><span " + \
+        "class=\"invisible\">3.59917</span></a><br><br>" + \
+        "<a href=\"https://" + \
+        "www.google.com/maps/@52.217291,-3.0811865,20.04z\" " + \
+        "tabindex=\"10\" rel=\"nofollow noopener noreferrer\" " + \
+        "target=\"_blank\"><span class=\"invisible\">" + \
+        "https://</span><span class=\"ellipsis\">" + \
+        "www.google.com/maps/@52.217291,-3.081186</span>" + \
+        "<span class=\"invisible\">5,20.04z</span></a><br><br>" + \
+        "<a href=\"https://" + \
+        "epicyon.libreserver.org/tags/AnotherHashtag\" " + \
+        "class=\"mention hashtag\" rel=\"tag\" tabindex=\"10\">#" + \
+        "<span>AnotherHashtag</span></a></p>"
+    map_links = get_map_links_from_post_content(content)
+    link = "www.google.com/maps/@52.217291,-3.0811865,20.04z"
+    assert link in map_links
+    link = "www.openstreetmap.org/#map=19/52.90860/-3.59917"
+    assert link in map_links
+    assert len(map_links) == 2
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7509,6 +7543,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_hashtag_maps()
     _test_combine_lines()
     _test_text_standardize()
     _test_dogwhistles()
