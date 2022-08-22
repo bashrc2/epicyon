@@ -1208,7 +1208,7 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             continue
         try:
             tag_filename = os.path.join(directory, filename)
-        except BaseException:
+        except OSError:
             print('EX: _remove_tags_for_nickname unable to join ' +
                   str(directory) + ' ' + str(filename))
             continue
