@@ -139,6 +139,7 @@ from threads import begin_thread
 from maps import get_map_links_from_post_content
 from maps import get_location_from_tags
 from maps import add_tag_map_links
+from maps import geocoords_from_map_link
 
 
 def cache_svg_images(session, base_dir: str, http_prefix: str,
@@ -343,7 +344,9 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         get_location_from_tags(post_json_object['object']['tag'])
     if location_str:
         if '://' in location_str and '.' in location_str:
-            if location_str not in map_links:
+            zoom, latitude, longitude = geocoords_from_map_link(location_str)
+            if latitude and longitude and zoom and \
+               location_str not in map_links:
                 map_links.append(location_str)
     tag_maps_dir = base_dir + '/tagmaps'
     if map_links:
