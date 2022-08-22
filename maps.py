@@ -457,3 +457,158 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
             fp_tag.write(map_links_str)
     except OSError:
         print('EX: error writing tag map ' + tag_map_filename)
+
+
+def _hashtag_map_to_kml(base_dir: str, tag_name: str,
+                        start_hours_since_epoch: int,
+                        end_hours_since_epoch: int) -> str:
+    """Returns the KML for a given hashtag between the given times
+    """
+    place_ctr = 0
+    osm_domain = 'openstreetmap.org'
+    tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
+
+    kml_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    kml_str += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+    kml_str += '<Document>\n'
+
+    if os.path.isfile(tag_map_filename):
+        map_links = []
+        try:
+            with open(tag_map_filename, 'r', encoding='utf-8') as fp_tag:
+                map_links = fp_tag.readlines()
+        except OSError:
+            print('EX: unable to read tag map links ' + tag_map_filename)
+        if map_links:
+            start_secs_since_epoch = start_hours_since_epoch * 60 * 60
+            end_secs_since_epoch = end_hours_since_epoch * 60 * 60
+            for link_line in map_links:
+                link_line = link_line.strip().split(' ')
+                if len(link_line) < 3:
+                    continue
+                secs_since_epoch = int(link_line[0])
+                if secs_since_epoch < start_secs_since_epoch or \
+                   secs_since_epoch > end_secs_since_epoch:
+                    continue
+                map_link = link_line[1]
+                zoom, latitude, longitude = \
+                    geocoords_from_map_link(map_link, osm_domain)
+                if not zoom:
+                    continue
+                if not latitude:
+                    continue
+                if not longitude:
+                    continue
+                post_id = link_line[2]
+                place_ctr += 1
+                kml_str += '<Placemark id="' + str(place_ctr) + '">\n'
+                kml_str += '  <name>' + str(place_ctr) + '</name>\n'
+                kml_str += '  <description><![CDATA[\n'
+                kml_str += '<a href="' + post_id + '">' + \
+                    post_id + '</a>\n]]\n'
+                kml_str += '  </description>\n'
+                kml_str += '  <Point>\n'
+                kml_str += '    <coordinates>' + str(longitude) + ',' + \
+                    str(latitude) + ',0</coordinates>\n'
+                kml_str += '  </Point>\n'
+                kml_str += '</Placemark>\n'
+
+    kml_str += '</Document>\n'
+    kml_str += '</kml>'
+    if place_ctr == 0:
+        return None
+    return kml_str
+
+
+def _hashtag_map_kml_within_hours(base_dir: str, tag_name: str,
+                                  hours: int) -> str:
+    """Returns kml for a hashtag containing maps for the last number of hours
+    """
+    secs_since_epoch = \
+        (datetime.datetime.utcnow() -
+         datetime.datetime(1970, 1, 1)).total_seconds()
+    end_hours_since_epoch = int(secs_since_epoch / (60 * 60))
+    start_hours_since_epoch = end_hours_since_epoch - hours
+    kml_str = \
+        _hashtag_map_to_kml(base_dir, tag_name,
+                            start_hours_since_epoch,
+                            end_hours_since_epoch)
+    return kml_str
+
+
+def _get_tagmaps_time_periods() -> {}:
+    """dict of time periods for map display
+    """
+    return {
+        "Last hour": -1,
+        "Last 3 hours": -3,
+        "Last 6 hours": -6,
+        "Last 12 hours": -12,
+        "Last day": -24,
+        "Last two days": -48,
+        "Last week": -24 * 7,
+        "Last two weeks": -24 * 7 * 2,
+        "Last month": -24 * 7 * 4,
+        "Last six months": -24 * 7 * 4 * 6,
+        "Last year": -24 * 7 * 4 * 12
+    }
+
+
+def kml_from_tagmaps_path(base_dir: str, path: str) -> str:
+    """Returns kml for a given tagmaps path
+    /tagmaps/tagname-time_period
+    """
+    if '/tagmaps/' not in path:
+        return None
+    time_period = _get_tagmaps_time_periods()
+    tag_name = path.split('/tagmaps/')[1]
+    if '-' in tag_name:
+        tag_name = tag_name.split('-')[0]
+    if not tag_name:
+        return None
+    for period_str, hours in time_period.items():
+        period_str2 = period_str.replace('Last ', '').lower()
+        endpoint_str = \
+            '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
+        if path == endpoint_str:
+            return _hashtag_map_kml_within_hours(base_dir, tag_name,
+                                                 hours)
+    return None
+
+
+def html_hashtag_maps(base_dir: str, tag_name: str,
+                      translate: {}) -> str:
+    """Returns html for maps associated with a hashtag
+    """
+    tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
+    if not os.path.isfile(tag_map_filename):
+        return ''
+
+    time_period = _get_tagmaps_time_periods()
+
+    html_str = ''
+    kml_str = None
+    for period_str, hours in time_period.items():
+        new_kml_str = \
+            _hashtag_map_kml_within_hours(base_dir, tag_name, hours)
+        if not new_kml_str:
+            continue
+        if new_kml_str != kml_str:
+            kml_str = new_kml_str
+            period_str2 = period_str.replace('Last ', '').lower()
+            endpoint_str = \
+                '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
+            download_filename = \
+                (tag_name + '-' +
+                 period_str.lower()).replace(' ', '_') + '.kml'
+            if html_str:
+                html_str += ' '
+            description = period_str
+            if translate.get(period_str):
+                description = translate[period_str]
+            html_str += '<a href="' + endpoint_str + \
+                '" download="' + download_filename + '">' + \
+                description + '</a>'
+    if html_str:
+        html_str = '<center>' + html_str + '</center>\n'
+    return html_str

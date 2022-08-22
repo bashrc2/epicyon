@@ -403,6 +403,7 @@ from crawlers import blocked_user_agent
 from crawlers import load_known_web_bots
 from qrcode import save_domain_qrcode
 from importFollowing import run_import_following_watchdog
+from maps import kml_from_tagmaps_path
 import os
 
 
@@ -14243,6 +14244,7 @@ class PubServer(BaseHTTPRequestHandler):
            '/statuses/' not in path and \
            '/emoji/' not in path and \
            '/tags/' not in path and \
+           '/tagmaps/' not in path and \
            '/avatars/' not in path and \
            '/favicons/' not in path and \
            '/headers/' not in path and \
@@ -17083,6 +17085,24 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.i2p_domain,
                                  getreq_start_time,
                                  curr_session)
+            self.server.getreq_busy = False
+            return
+
+        # hashtag map kml
+        if self.path.startswith('/tagmaps/') or \
+           (authorized and '/tagmaps/' in self.path):
+            kml_str = kml_from_tagmaps_path(self.server.base_dir, self.path)
+            if kml_str:
+                msg = kml_str.encode('utf-8')
+                msglen = len(msg)
+                header_type = \
+                    'application/vnd.google-earth.kml+xml; charset=utf-8'
+                self._set_headers(header_type, msglen,
+                                  None, calling_domain, True)
+                self._write(msg)
+                self.server.getreq_busy = False
+                return
+            self._404()
             self.server.getreq_busy = False
             return
 
