@@ -7523,15 +7523,19 @@ def _test_hashtag_maps():
     link = "www.google.com/maps/@52.217291,-3.0811865,20.04z"
     assert link in map_links
     zoom, latitude, longitude = geocoords_from_map_link(link)
-    assert zoom
+    assert zoom == 20
     assert latitude
+    assert int(latitude * 1000) == 52217
     assert longitude
+    assert int(longitude * 1000) == -3081
     link = "www.openstreetmap.org/#map=19/52.90860/-3.59917"
     assert link in map_links
     zoom, latitude, longitude = geocoords_from_map_link(link)
-    assert zoom
+    assert zoom == 19
     assert latitude
+    assert int(latitude * 1000) == 52908
     assert longitude
+    assert int(longitude * 1000) == -3599
     assert len(map_links) == 2
 
 
