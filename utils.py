@@ -1900,6 +1900,35 @@ def delete_cached_html(base_dir: str, nickname: str, domain: str,
                       str(cached_post_filename))
 
 
+def _remove_post_id_from_tag_index(tag_index_filename: str,
+                                   post_id: str) -> None:
+    """Remove post_id from the tag index file
+    """
+    lines = None
+    with open(tag_index_filename, 'r', encoding='utf-8') as index_file:
+        lines = index_file.readlines()
+    if not lines:
+        return
+    newlines = ''
+    for file_line in lines:
+        if post_id in file_line:
+            # skip over the deleted post
+            continue
+        newlines += file_line
+    if not newlines.strip():
+        # if there are no lines then remove the hashtag file
+        try:
+            os.remove(tag_index_filename)
+        except OSError:
+            print('EX: _delete_hashtags_on_post ' +
+                  'unable to delete tag index ' + str(tag_index_filename))
+    else:
+        # write the new hashtag index without the given post in it
+        with open(tag_index_filename, 'w+',
+                  encoding='utf-8') as index_file:
+            index_file.write(newlines)
+
+
 def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
     """Removes hashtags when a post is deleted
     """
@@ -1926,33 +1955,13 @@ def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
         if not tag.get('name'):
             continue
         # find the index file for this tag
+        tag_map_filename = base_dir + '/tagmaps/' + tag['name'][1:] + '.txt'
+        if os.path.isfile(tag_map_filename):
+            _remove_post_id_from_tag_index(tag_map_filename, post_id)
+        # find the index file for this tag
         tag_index_filename = base_dir + '/tags/' + tag['name'][1:] + '.txt'
-        if not os.path.isfile(tag_index_filename):
-            continue
-        # remove post_id from the tag index file
-        lines = None
-        with open(tag_index_filename, 'r', encoding='utf-8') as index_file:
-            lines = index_file.readlines()
-        if not lines:
-            continue
-        newlines = ''
-        for file_line in lines:
-            if post_id in file_line:
-                # skip over the deleted post
-                continue
-            newlines += file_line
-        if not newlines.strip():
-            # if there are no lines then remove the hashtag file
-            try:
-                os.remove(tag_index_filename)
-            except OSError:
-                print('EX: _delete_hashtags_on_post ' +
-                      'unable to delete tag index ' + str(tag_index_filename))
-        else:
-            # write the new hashtag index without the given post in it
-            with open(tag_index_filename, 'w+',
-                      encoding='utf-8') as index_file:
-                index_file.write(newlines)
+        if os.path.isfile(tag_index_filename):
+            _remove_post_id_from_tag_index(tag_index_filename, post_id)
 
 
 def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
