@@ -531,8 +531,8 @@ def _hashtag_map_kml_within_hours(base_dir: str, tag_name: str,
     """Returns kml for a hashtag containing maps for the last number of hours
     """
     secs_since_epoch = \
-        (datetime.datetime.utcnow() -
-         datetime.datetime(1970, 1, 1)).total_seconds()
+        int((datetime.datetime.utcnow() -
+             datetime.datetime(1970, 1, 1)).total_seconds())
     end_hours_since_epoch = int(secs_since_epoch / (60 * 60))
     start_hours_since_epoch = end_hours_since_epoch - hours
     kml_str = \
@@ -578,7 +578,7 @@ def kml_from_tagmaps_path(base_dir: str, path: str) -> str:
             '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
         if path == endpoint_str:
             return _hashtag_map_kml_within_hours(base_dir, tag_name,
-                                                 hours)
+                                                 abs(hours))
     return None
 
 
@@ -596,7 +596,7 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
     kml_str = None
     for period_str, hours in time_period.items():
         new_kml_str = \
-            _hashtag_map_kml_within_hours(base_dir, tag_name, hours)
+            _hashtag_map_kml_within_hours(base_dir, tag_name, abs(hours))
         if not new_kml_str:
             continue
         if new_kml_str == kml_str:
