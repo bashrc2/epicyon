@@ -426,8 +426,8 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
 
     # combine map links with the existing list
     secs_since_epoch = \
-        (datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ') -
-         datetime.datetime(1970, 1, 1)).total_seconds()
+        int((datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ') -
+             datetime.datetime(1970, 1, 1)).total_seconds())
     links_changed = False
     for link in map_links:
         line = str(secs_since_epoch) + ' ' + link + ' ' + post_url
