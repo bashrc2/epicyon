@@ -378,6 +378,8 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         if map_links and published:
             add_tag_map_links(tag_maps_dir, tag_name, map_links,
                               published, post_url)
+            post_url = remove_id_ending(post_json_object['id'])
+            post_url = post_url.replace('/', '#')
         hashtag_added = False
         print('**** tag_line3 ' + tag_line.replace('\n', '<CR>'))
         if not os.path.isfile(tags_filename):
