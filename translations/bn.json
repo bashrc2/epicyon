@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "পোস্টের মেয়াদ শেষ হওয়ার সময় সরাসরি বার্তা রাখুন",
     "Notifications": "বিজ্ঞপ্তি",
     "ntfy URL": "ntfy ইউআরএল",
-    "ntfy topic": "ntfy বিষয়"
+    "ntfy topic": "ntfy বিষয়",
+    "Last hour": "শেষ ঘন্টা",
+    "Last 3 hours": "শেষ ৩ ঘন্টা",
+    "Last 6 hours": "শেষ ৬ ঘণ্টা",
+    "Last 12 hours": "শেষ 12 ঘন্টা",
+    "Last day": "শেষ দিন",
+    "Last 2 days": "গত ২ দিন",
+    "Last week": "গত সপ্তাহে",
+    "Last 2 weeks": "গত ২ সপ্তাহ",
+    "Last month": "গত মাসে",
+    "Last 6 months": "গত ৬ মাস",
+    "Last year": "গত বছর"
 }

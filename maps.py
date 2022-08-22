@@ -551,11 +551,11 @@ def _get_tagmaps_time_periods() -> {}:
         "Last 6 hours": -6,
         "Last 12 hours": -12,
         "Last day": -24,
-        "Last two days": -48,
+        "Last 2 days": -48,
         "Last week": -24 * 7,
-        "Last two weeks": -24 * 7 * 2,
+        "Last 2 weeks": -24 * 7 * 2,
         "Last month": -24 * 7 * 4,
-        "Last six months": -24 * 7 * 4 * 6,
+        "Last 6 months": -24 * 7 * 4 * 6,
         "Last year": -24 * 7 * 4 * 12
     }
 

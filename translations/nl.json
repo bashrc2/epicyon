@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Directe berichten bewaren tijdens de vervaldatum",
     "Notifications": "Meldingen",
     "ntfy URL": "ntfy-URL",
-    "ntfy topic": "ntfy onderwerp"
+    "ntfy topic": "ntfy onderwerp",
+    "Last hour": "Laatste uur",
+    "Last 3 hours": "Laatste 3 uur",
+    "Last 6 hours": "Laatste 6 uur",
+    "Last 12 hours": "Laatste 12 uur",
+    "Last day": "Laatste dag",
+    "Last 2 days": "Laatste 2 dagen",
+    "Last week": "Vorige week",
+    "Last 2 weeks": "Afgelopen 2 weken",
+    "Last month": "Vorige maand",
+    "Last 6 months": "Afgelopen 6 maanden",
+    "Last year": "Afgelopen jaar"
 }

@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Coinnigh Teachtaireachtaí Díreacha nuair a rachaidh postáil in éag",
     "Notifications": "Fógraí",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "topaic ntfy"
+    "ntfy topic": "topaic ntfy",
+    "Last hour": "Uair dheireanach",
+    "Last 3 hours": "3 uair an chloig caite",
+    "Last 6 hours": "6 uair an chloig caite",
+    "Last 12 hours": "12 uair an chloig caite",
+    "Last day": "Lá deirneach",
+    "Last 2 days": "2 lá seo caite",
+    "Last week": "An tseachtain seo caite",
+    "Last 2 weeks": "2 sheachtain anuas",
+    "Last month": "An mhí seo caite",
+    "Last 6 months": "6 mhí anuas",
+    "Last year": "Anuraidh"
 }

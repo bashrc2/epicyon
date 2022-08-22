@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Διατηρήστε τα άμεσα μηνύματα κατά τη λήξη της ανάρτησης",
     "Notifications": "Ειδοποιήσεις",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "ntfy θέμα"
+    "ntfy topic": "ntfy θέμα",
+    "Last hour": "Τελευταία ώρα",
+    "Last 3 hours": "Τελευταίες 3 ώρες",
+    "Last 6 hours": "Τελευταίες 6 ώρες",
+    "Last 12 hours": "Τελευταίες 12 ώρες",
+    "Last day": "Τελευταία μέρα",
+    "Last 2 days": "Τελευταίες 2 μέρες",
+    "Last week": "Την προηγούμενη εβδομάδα",
+    "Last 2 weeks": "Τελευταίες 2 εβδομάδες",
+    "Last month": "Τον προηγούμενο μήνα",
+    "Last 6 months": "Τελευταίοι 6 μήνες",
+    "Last year": "Πέρυσι"
 }

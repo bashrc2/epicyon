@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Direkt Mesajları sona erme süresi boyunca saklayın",
     "Notifications": "Bildirimler",
     "ntfy URL": "ntfy URL'si",
-    "ntfy topic": "ntfy konusu"
+    "ntfy topic": "ntfy konusu",
+    "Last hour": "Son saat",
+    "Last 3 hours": "son 3 saat",
+    "Last 6 hours": "son 6 saat",
+    "Last 12 hours": "son 12 saat",
+    "Last day": "Son gun",
+    "Last 2 days": "son 2 gün",
+    "Last week": "Geçen hafta",
+    "Last 2 weeks": "Son 2 hafta",
+    "Last month": "Geçen ay",
+    "Last 6 months": "Son 6 ay",
+    "Last year": "Geçen yıl"
 }

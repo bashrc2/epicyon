@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "Cadwch Negeseuon Uniongyrchol pan ddaw'r post i ben",
     "Notifications": "Hysbysiadau",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "pwnc ntfy"
+    "ntfy topic": "pwnc ntfy",
+    "Last hour": "Awr olaf",
+    "Last 3 hours": "3 awr diwethaf",
+    "Last 6 hours": "6 awr diwethaf",
+    "Last 12 hours": "12 awr diwethaf",
+    "Last day": "Diwrnod olaf",
+    "Last 2 days": "2 ddiwrnod diwethaf",
+    "Last week": "Wythnos diwethaf",
+    "Last 2 weeks": "2 wythnos diwethaf",
+    "Last month": "Mis diwethaf",
+    "Last 6 months": "6 mis diwethaf",
+    "Last year": "Blwyddyn diwethaf"
 }

@@ -576,5 +576,16 @@
     "Keep DMs during post expiry": "만료 후 DM 보관",
     "Notifications": "알림",
     "ntfy URL": "ntfy URL",
-    "ntfy topic": "ntfy 주제"
+    "ntfy topic": "ntfy 주제",
+    "Last hour": "지난 시간",
+    "Last 3 hours": "지난 3시간",
+    "Last 6 hours": "지난 6시간",
+    "Last 12 hours": "지난 12시간",
+    "Last day": "마지막 날",
+    "Last 2 days": "지난 2일",
+    "Last week": "지난주",
+    "Last 2 weeks": "지난 2주",
+    "Last month": "지난 달",
+    "Last 6 months": "지난 6개월",
+    "Last year": "작년"
 }
