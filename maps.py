@@ -419,6 +419,7 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
     This is used to show a map for a particular hashtag
     """
     tag_map_filename = tag_maps_dir + '/' + tag_name + '.txt'
+    post_url = post_url.replace('#', '/')
 
     # read the existing map links
     existing_map_links = []
