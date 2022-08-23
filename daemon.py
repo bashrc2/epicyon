@@ -3898,7 +3898,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        self.server.map_format)
                 if hashtag_str:
                     msg = hashtag_str.encode('utf-8')
                     msglen = len(msg)
@@ -8601,7 +8602,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 timezone, bold_reading,
-                                self.server.dogwhistles)
+                                self.server.dogwhistles,
+                                self.server.map_format)
         if hashtag_str:
             msg = hashtag_str.encode('utf-8')
             msglen = len(msg)
@@ -17091,7 +17093,8 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag map kml
         if self.path.startswith('/tagmaps/') or \
            (authorized and '/tagmaps/' in self.path):
-            kml_str = kml_from_tagmaps_path(self.server.base_dir, self.path)
+            kml_str = kml_from_tagmaps_path(self.server.base_dir, self.path,
+                                            self.server.map_format)
             if kml_str:
                 msg = kml_str.encode('utf-8')
                 msglen = len(msg)
@@ -20823,7 +20826,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(clacks: str,
+def run_daemon(map_format: str,
+               clacks: str,
                preferred_podcast_formats: [],
                check_actor_timeout: int,
                crawlers_allowed: [],
@@ -20947,6 +20951,9 @@ def run_daemon(clacks: str,
     httpd.nodeinfo_is_active = False
     httpd.vcard_is_active = False
     httpd.masto_api_is_active = False
+
+    # use kml or gpx format for hashtag maps
+    httpd.map_format = map_format.lower()
 
     httpd.dyslexic_font = dyslexic_font
 
