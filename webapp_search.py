@@ -410,9 +410,6 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
             copyfile(base_dir +
                      '/theme/' + theme + '/search_banner.png',
                      search_banner_filename)
-            search_banner_file, search_banner_filename = \
-                get_search_banner_file(base_dir,
-                                       search_nickname, domain, theme)
 
     # show a banner above the search box
     search_banner_file, search_banner_filename = \
