@@ -403,7 +403,7 @@ from crawlers import blocked_user_agent
 from crawlers import load_known_web_bots
 from qrcode import save_domain_qrcode
 from importFollowing import run_import_following_watchdog
-from maps import kml_from_tagmaps_path
+from maps import map_format_from_tagmaps_path
 import os
 
 
@@ -17093,8 +17093,9 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag map kml
         if self.path.startswith('/tagmaps/') or \
            (authorized and '/tagmaps/' in self.path):
-            map_str = kml_from_tagmaps_path(self.server.base_dir, self.path,
-                                            self.server.map_format)
+            map_str = \
+                map_format_from_tagmaps_path(self.server.base_dir, self.path,
+                                             self.server.map_format)
             if map_str:
                 msg = map_str.encode('utf-8')
                 msglen = len(msg)

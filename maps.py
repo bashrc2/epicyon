@@ -619,9 +619,9 @@ def _get_tagmaps_time_periods() -> {}:
     }
 
 
-def kml_from_tagmaps_path(base_dir: str, path: str,
-                          map_format: str) -> str:
-    """Returns kml for a given tagmaps path
+def map_format_from_tagmaps_path(base_dir: str, path: str,
+                                 map_format: str) -> str:
+    """Returns gpx/kml for a given tagmaps path
     /tagmaps/tagname-time_period
     """
     if '/tagmaps/' not in path:
