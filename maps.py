@@ -581,7 +581,8 @@ def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
 
 def _hashtag_map_within_hours(base_dir: str, tag_name: str,
                               hours: int, map_format: str) -> str:
-    """Returns kml for a hashtag containing maps for the last number of hours
+    """Returns gpx/kml for a hashtag containing maps for the
+    last number of hours
     """
     secs_since_epoch = \
         int((datetime.datetime.utcnow() -
