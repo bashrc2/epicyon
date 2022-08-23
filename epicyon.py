@@ -735,6 +735,9 @@ def _command_options() -> None:
                         help='Category of item being shared')
     parser.add_argument('--location', dest='location', type=str, default=None,
                         help='Location/City of item being shared')
+    parser.add_argument('--mapFormat', dest='mapFormat', type=str,
+                        default='kml',
+                        help='Format for hashtag maps GPX/KML')
     parser.add_argument('--duration', dest='duration', type=str, default=None,
                         help='Duration for which to share an item')
     parser.add_argument('--registration', dest='registration', type=str,
@@ -3380,6 +3383,12 @@ def _command_options() -> None:
     if not registration:
         registration = False
 
+    map_format = get_config_param(base_dir, 'mapFormat')
+    if map_format:
+        argb.mapFormat = map_format
+    else:
+        set_config_param(base_dir, 'mapFormat', argb.mapFormat)
+
     minimumvotes = get_config_param(base_dir, 'minvotes')
     if minimumvotes:
         argb.minimumvotes = int(minimumvotes)
@@ -3626,7 +3635,8 @@ def _command_options() -> None:
 if __name__ == "__main__":
     argb2, opt2 = _command_options()
     print('allowdeletion: ' + str(argb2.allowdeletion))
-    run_daemon(argb2.clacks,
+    run_daemon(argb2.mapFormat,
+               argb2.clacks,
                opt2['preferred_podcast_formats'],
                argb2.check_actor_timeout,
                opt2['crawlers_allowed'],

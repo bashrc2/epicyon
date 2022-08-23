@@ -403,7 +403,7 @@ from crawlers import blocked_user_agent
 from crawlers import load_known_web_bots
 from qrcode import save_domain_qrcode
 from importFollowing import run_import_following_watchdog
-from maps import kml_from_tagmaps_path
+from maps import map_format_from_tagmaps_path
 import os
 
 
@@ -3853,7 +3853,10 @@ class PubServer(BaseHTTPRequestHandler):
                 search_str = search_str.split('&')[0]
             search_str = \
                 urllib.parse.unquote_plus(search_str.strip())
-            search_str = search_str.lower().strip()
+            search_str = search_str.strip()
+            # hashtags can be combined case
+            if not search_str.startswith('#'):
+                search_str = search_str.lower()
             print('search_str: ' + search_str)
             if search_for_emoji:
                 search_str = ':' + search_str + ':'
@@ -3898,7 +3901,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        self.server.map_format)
                 if hashtag_str:
                     msg = hashtag_str.encode('utf-8')
                     msglen = len(msg)
@@ -8601,7 +8605,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 timezone, bold_reading,
-                                self.server.dogwhistles)
+                                self.server.dogwhistles,
+                                self.server.map_format)
         if hashtag_str:
             msg = hashtag_str.encode('utf-8')
             msglen = len(msg)
@@ -17091,12 +17096,18 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag map kml
         if self.path.startswith('/tagmaps/') or \
            (authorized and '/tagmaps/' in self.path):
-            kml_str = kml_from_tagmaps_path(self.server.base_dir, self.path)
-            if kml_str:
-                msg = kml_str.encode('utf-8')
+            map_str = \
+                map_format_from_tagmaps_path(self.server.base_dir, self.path,
+                                             self.server.map_format)
+            if map_str:
+                msg = map_str.encode('utf-8')
                 msglen = len(msg)
-                header_type = \
-                    'application/vnd.google-earth.kml+xml; charset=utf-8'
+                if self.server.map_format == 'gpx':
+                    header_type = \
+                        'application/gpx+xml; charset=utf-8'
+                else:
+                    header_type = \
+                        'application/vnd.google-earth.kml+xml; charset=utf-8'
                 self._set_headers(header_type, msglen,
                                   None, calling_domain, True)
                 self._write(msg)
@@ -20823,7 +20834,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(clacks: str,
+def run_daemon(map_format: str,
+               clacks: str,
                preferred_podcast_formats: [],
                check_actor_timeout: int,
                crawlers_allowed: [],
@@ -20947,6 +20959,9 @@ def run_daemon(clacks: str,
     httpd.nodeinfo_is_active = False
     httpd.vcard_is_active = False
     httpd.masto_api_is_active = False
+
+    # use kml or gpx format for hashtag maps
+    httpd.map_format = map_format.lower()
 
     httpd.dyslexic_font = dyslexic_font
 

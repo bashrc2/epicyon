@@ -738,7 +738,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
                         timezone: str, bold_reading: bool,
-                        dogwhistles: {}) -> str:
+                        dogwhistles: {}, map_format: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -792,18 +792,24 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     if nickname:
         hashtag_search_form += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
-            hashtag + '</a></h1>\n'
+            hashtag + '</a>'
     else:
         hashtag_search_form += '<center>\n' + \
-            '<h1>#' + hashtag + '</h1>\n'
+            '<h1>#' + hashtag
 
     # RSS link for hashtag feed
-    hashtag_search_form += '<a href="/tags/rss2/' + hashtag + '">'
+    hashtag_search_form += ' <a href="/tags/rss2/' + hashtag + '">'
     hashtag_search_form += \
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" decoding="async" ' + \
         'alt="RSS 2.0" title="RSS 2.0" src="/' + \
-        'icons/logorss.png" /></a></center>\n'
+        'icons/logorss.png" /></a></h1>\n'
+
+    # maps for geolocations with this hashtag
+    maps_str = html_hashtag_maps(base_dir, hashtag, translate, map_format)
+    if maps_str:
+        maps_str = '<center>' + maps_str + '</center>\n'
+    hashtag_search_form += maps_str
 
     # edit the category for this hashtag
     if is_editor(base_dir, nickname):
@@ -824,8 +830,6 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         hashtag_search_form += '    </center>\n'
         hashtag_search_form += '  </form>\n'
         hashtag_search_form += '</div>\n'
-
-    hashtag_search_form += html_hashtag_maps(base_dir, hashtag, translate)
 
     if start_index > 0:
         # previous page link
