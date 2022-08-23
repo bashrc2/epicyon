@@ -8610,7 +8610,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.dogwhistles,
                                 self.server.map_format,
                                 self.server.access_keys,
-                                self.server.default_timeline)
+                                'search')
         if hashtag_str:
             msg = hashtag_str.encode('utf-8')
             msglen = len(msg)
