@@ -404,6 +404,20 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     search_banner_file, search_banner_filename = \
         get_search_banner_file(base_dir, search_nickname, domain, theme)
 
+    # if there is no search banner then use the default
+    if not search_banner_filename:
+        if os.path.isfile(base_dir +
+                          '/theme/default/search_banner.png'):
+            banner_filename = \
+                acct_dir(base_dir, search_nickname, domain) + \
+                '/search_banner.png'
+            copyfile(base_dir +
+                     '/theme/default/search_banner.png',
+                     banner_filename)
+            search_banner_file, search_banner_filename = \
+                get_search_banner_file(base_dir,
+                                       search_nickname, domain, theme)
+
     text_mode_banner_str = html_keyboard_navigation(text_mode_banner, {}, {})
     if text_mode_banner_str is None:
         text_mode_banner_str = ''
