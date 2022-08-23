@@ -589,8 +589,9 @@ def _hashtag_map_within_hours(base_dir: str, tag_name: str,
     secs_since_epoch = \
         int((datetime.datetime.utcnow() -
              datetime.datetime(1970, 1, 1)).total_seconds())
-    end_hours_since_epoch = int(secs_since_epoch / (60 * 60))
-    start_hours_since_epoch = end_hours_since_epoch - abs(hours)
+    curr_hours_since_epoch = int(secs_since_epoch / (60 * 60))
+    start_hours_since_epoch = curr_hours_since_epoch - abs(hours)
+    end_hours_since_epoch = curr_hours_since_epoch + 2
     if map_format == 'gpx':
         map_str = \
             _hashtag_map_to_gpx(base_dir, tag_name,
