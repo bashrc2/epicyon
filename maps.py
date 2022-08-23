@@ -676,8 +676,10 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
         if translate.get(period_str):
             description = translate[period_str]
         html_str += '<a href="' + endpoint_str + \
-            '" download="' + download_filename + '">' + \
-            description + '</a>'
+            '">' + description + '</a>'
+#        html_str += '<a href="' + endpoint_str + \
+#            '" download="' + download_filename + '">' + \
+#            description + '</a>'
     if html_str:
         html_str = '🌍 ' + html_str
     return html_str
