@@ -184,7 +184,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
         tag_display_name = tag_name
         tag_map_filename = os.path.join(base_dir + '/tagmaps', tag_name)
         if os.path.isfile(tag_map_filename):
-            tag_display_name = '🌍' + tag_name
+            tag_display_name = '📌' + tag_name
         tag_swarm_str += \
             '<a href="' + actor + '/tags/' + tag_name + \
             '" class="hashtagswarm">' + tag_display_name + '</a>\n'
