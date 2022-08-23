@@ -400,26 +400,23 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     follow_str = \
         html_header_with_external_style(css_filename, instance_title, None)
 
+    # set a search banner
+    search_banner_filename = \
+        acct_dir(base_dir, search_nickname, domain) + \
+        '/search_banner.png'
+    if not os.path.isfile(search_banner_filename):
+        if os.path.isfile(base_dir +
+                          '/theme/' + theme + '/search_banner.png'):
+            copyfile(base_dir +
+                     '/theme/' + theme + '/search_banner.png',
+                     search_banner_filename)
+            search_banner_file, search_banner_filename = \
+                get_search_banner_file(base_dir,
+                                       search_nickname, domain, theme)
+
     # show a banner above the search box
     search_banner_file, search_banner_filename = \
         get_search_banner_file(base_dir, search_nickname, domain, theme)
-
-    # if there is no search banner then use the default
-    print('***search_banner1: ' + str(search_banner_file))
-    print('***search_banner2: ' + str(search_banner_filename))
-    if search_banner_filename:
-        if not os.path.isfile(search_banner_filename):
-            if os.path.isfile(base_dir +
-                              '/theme/default/search_banner.png'):
-                banner_filename = \
-                    acct_dir(base_dir, search_nickname, domain) + \
-                    '/search_banner.png'
-                copyfile(base_dir +
-                         '/theme/default/search_banner.png',
-                         banner_filename)
-                search_banner_file, search_banner_filename = \
-                    get_search_banner_file(base_dir,
-                                           search_nickname, domain, theme)
 
     text_mode_banner_str = html_keyboard_navigation(text_mode_banner, {}, {})
     if text_mode_banner_str is None:
