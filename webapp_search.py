@@ -792,7 +792,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     if nickname:
         hashtag_search_form += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
-            hashtag + '</a></h1>\n'
+            hashtag + '</a>'
     else:
         hashtag_search_form += '<center>\n' + \
             '<h1>#' + hashtag
