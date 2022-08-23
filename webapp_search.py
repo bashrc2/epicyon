@@ -795,21 +795,21 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             hashtag + '</a></h1>\n'
     else:
         hashtag_search_form += '<center>\n' + \
-            '<h1>#' + hashtag + '</h1>\n'
-
-    # maps for geolocations with this hashtag
-    maps_str = html_hashtag_maps(base_dir, hashtag, translate)
-    if maps_str:
-        maps_str += ' '
-    hashtag_search_form += maps_str
+            '<h1>#' + hashtag + '</h1>'
 
     # RSS link for hashtag feed
-    hashtag_search_form += '<a href="/tags/rss2/' + hashtag + '">'
+    hashtag_search_form += ' <a href="/tags/rss2/' + hashtag + '">'
     hashtag_search_form += \
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" decoding="async" ' + \
         'alt="RSS 2.0" title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a></center>\n'
+
+    # maps for geolocations with this hashtag
+    maps_str = html_hashtag_maps(base_dir, hashtag, translate)
+    if maps_str:
+        maps_str = '<center>' + maps_str + '</center>\n'
+    hashtag_search_form += maps_str
 
     # edit the category for this hashtag
     if is_editor(base_dir, nickname):
