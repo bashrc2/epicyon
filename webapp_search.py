@@ -30,6 +30,7 @@ from skills import get_skills_from_list
 from categories import get_hashtag_category
 from feeds import rss2tag_header
 from feeds import rss2tag_footer
+from webapp_utils import get_banner_file
 from webapp_utils import html_common_emoji
 from webapp_utils import set_custom_background
 from webapp_utils import html_keyboard_navigation
@@ -738,7 +739,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
                         timezone: str, bold_reading: bool,
-                        dogwhistles: {}, map_format: str) -> str:
+                        dogwhistles: {}, map_format: str,
+                        access_keys: {}, box_name: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -784,16 +786,33 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     if end_index >= no_of_lines and no_of_lines > 0:
         end_index = no_of_lines - 1
 
-    # add the page title
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     hashtag_search_form = \
         html_header_with_external_style(css_filename, instance_title, None)
+
     if nickname:
+        # banner at top
+        banner_file, _ = \
+            get_banner_file(base_dir, nickname, domain, theme_name)
+        hashtag_search_form += \
+            '<header>\n' + \
+            '<a href="/users/' + nickname + '/' + box_name + '" title="' + \
+            translate['Switch to timeline view'] + '" alt="' + \
+            translate['Switch to timeline view'] + '" ' + \
+            'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+            access_keys['menuTimeline'] + '">\n'
+        hashtag_search_form += '<img loading="lazy" decoding="async" ' + \
+            'class="timeline-banner" alt="" ' + \
+            'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+            '</header>\n'
+
+        # add the page title
         hashtag_search_form += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
             hashtag + '</a>'
     else:
+        # add the page title
         hashtag_search_form += '<center>\n' + \
             '<h1>#' + hashtag
 

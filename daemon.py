@@ -3902,7 +3902,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
                                         self.server.dogwhistles,
-                                        self.server.map_format)
+                                        self.server.map_format,
+                                        self.server.access_keys,
+                                        'search')
                 if hashtag_str:
                     msg = hashtag_str.encode('utf-8')
                     msglen = len(msg)
@@ -8606,7 +8608,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.lists_enabled,
                                 timezone, bold_reading,
                                 self.server.dogwhistles,
-                                self.server.map_format)
+                                self.server.map_format,
+                                self.server.access_keys,
+                                self.server.default_timeline)
         if hashtag_str:
             msg = hashtag_str.encode('utf-8')
             msglen = len(msg)
