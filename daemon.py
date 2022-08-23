@@ -17093,13 +17093,17 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag map kml
         if self.path.startswith('/tagmaps/') or \
            (authorized and '/tagmaps/' in self.path):
-            kml_str = kml_from_tagmaps_path(self.server.base_dir, self.path,
+            map_str = kml_from_tagmaps_path(self.server.base_dir, self.path,
                                             self.server.map_format)
-            if kml_str:
-                msg = kml_str.encode('utf-8')
+            if map_str:
+                msg = map_str.encode('utf-8')
                 msglen = len(msg)
-                header_type = \
-                    'application/vnd.google-earth.kml+xml; charset=utf-8'
+                if self.server.map_format == 'gpx':
+                    header_type = \
+                        'application/gpx+xml; charset=utf-8'
+                else:
+                    header_type = \
+                        'application/vnd.google-earth.kml+xml; charset=utf-8'
                 self._set_headers(header_type, msglen,
                                   None, calling_domain, True)
                 self._write(msg)
