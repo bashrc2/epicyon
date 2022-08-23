@@ -405,7 +405,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
         get_search_banner_file(base_dir, search_nickname, domain, theme)
 
     # if there is no search banner then use the default
-    print('***search_banner1: ' + str(search_banner))
+    print('***search_banner1: ' + str(search_banner_file))
     print('***search_banner2: ' + str(search_banner_filename))
     if search_banner_filename:
         if not os.path.isfile(search_banner_filename):
