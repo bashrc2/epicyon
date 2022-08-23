@@ -182,7 +182,8 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     tag_swarm_str = ''
     for tag_name in tag_swarm:
         tag_display_name = tag_name
-        tag_map_filename = os.path.join(base_dir + '/tagmaps', tag_name)
+        tag_map_filename = \
+            os.path.join(base_dir + '/tagmaps', tag_name + '.txt')
         if os.path.isfile(tag_map_filename):
             tag_display_name = '📌' + tag_name
         tag_swarm_str += \
