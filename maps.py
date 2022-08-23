@@ -553,6 +553,9 @@ def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
                 if len(link_line) < 3:
                     continue
                 secs_since_epoch = int(link_line[0])
+                print('***maptest secs_since_epoch ' + str(secs_since_epoch))
+                print('***maptest start_secs_since_epoch ' + str(start_secs_since_epoch))
+                print('***maptest end_secs_since_epoch ' + str(end_secs_since_epoch))
                 if secs_since_epoch < start_secs_since_epoch or \
                    secs_since_epoch > end_secs_since_epoch:
                     continue
