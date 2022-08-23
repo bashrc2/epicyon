@@ -797,6 +797,12 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         hashtag_search_form += '<center>\n' + \
             '<h1>#' + hashtag + '</h1>\n'
 
+    # maps for geolocations with this hashtag
+    maps_str = html_hashtag_maps(base_dir, hashtag, translate)
+    if maps_str:
+        maps_str += ' '
+    hashtag_search_form += maps_str
+
     # RSS link for hashtag feed
     hashtag_search_form += '<a href="/tags/rss2/' + hashtag + '">'
     hashtag_search_form += \
@@ -824,8 +830,6 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         hashtag_search_form += '    </center>\n'
         hashtag_search_form += '  </form>\n'
         hashtag_search_form += '</div>\n'
-
-    hashtag_search_form += html_hashtag_maps(base_dir, hashtag, translate)
 
     if start_index > 0:
         # previous page link
