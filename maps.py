@@ -587,7 +587,7 @@ def _hashtag_map_within_hours(base_dir: str, tag_name: str,
         int((datetime.datetime.utcnow() -
              datetime.datetime(1970, 1, 1)).total_seconds())
     end_hours_since_epoch = int(secs_since_epoch / (60 * 60))
-    start_hours_since_epoch = end_hours_since_epoch - hours
+    start_hours_since_epoch = end_hours_since_epoch - abs(hours)
     if map_format == 'gpx':
         map_str = \
             _hashtag_map_to_gpx(base_dir, tag_name,
@@ -637,7 +637,6 @@ def map_format_from_tagmaps_path(base_dir: str, path: str,
         endpoint_str = \
             '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
         if path == endpoint_str:
-            hours = abs(hours)
             return _hashtag_map_within_hours(base_dir, tag_name,
                                              hours, map_format)
     return None
@@ -656,7 +655,6 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
     html_str = ''
     map_str = None
     for period_str, hours in time_period.items():
-        hours = abs(hours)
         new_map_str = \
             _hashtag_map_within_hours(base_dir, tag_name, hours,
                                       map_format)
