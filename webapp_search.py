@@ -801,7 +801,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             translate['Search and follow'] + '" alt="' + \
             translate['Search and follow'] + '" ' + \
             'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
-            access_keys['menuTimeline'] + '">\n'
+            access_keys['menuSearch'] + '">\n'
         hashtag_search_form += '<img loading="lazy" decoding="async" ' + \
             'class="timeline-banner" alt="" ' + \
             'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
