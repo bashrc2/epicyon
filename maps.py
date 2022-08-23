@@ -680,5 +680,5 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
             '" download="' + download_filename + '">' + \
             description + '</a>'
     if html_str:
-        html_str = '🌍 ' + html_str
+        html_str = '📌 ' + html_str
     return html_str
