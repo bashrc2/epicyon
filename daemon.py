@@ -17163,16 +17163,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.key_shortcuts.get(nickname):
                     access_keys = self.server.key_shortcuts[nickname]
 
-                banner_filename = \
-                    acct_dir(base_dir, nickname, self.server.domain) + \
-                    '/search_banner.png'
-                if not os.path.isfile(banner_filename):
-                    if os.path.isfile(base_dir +
-                                      '/theme/default/search_banner.png'):
-                        copyfile(base_dir +
-                                 '/theme/default/search_banner.png',
-                                 banner_filename)
-
                 # show the search screen
                 msg = html_search(self.server.translate,
                                   self.server.base_dir, self.path,
