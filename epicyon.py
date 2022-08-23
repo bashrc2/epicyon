@@ -736,7 +736,7 @@ def _command_options() -> None:
     parser.add_argument('--location', dest='location', type=str, default=None,
                         help='Location/City of item being shared')
     parser.add_argument('--mapFormat', dest='mapFormat', type=str,
-                        default='kml',
+                        default='gpx',
                         help='Format for hashtag maps GPX/KML')
     parser.add_argument('--duration', dest='duration', type=str, default=None,
                         help='Duration for which to share an item')
