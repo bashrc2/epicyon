@@ -569,7 +569,7 @@ def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
                 place_ctr += 1
                 gpx_str += '<wpt lat="' + str(latitude) + \
                     '" lon="' + str(longitude) + '">\n'
-                gpx_str += '  <name>' + str(place_ctr) + '</name>\n'
+                gpx_str += '  <name>' + post_id + '</name>\n'
                 gpx_str += '  <link href="' + post_id + '"/>\n'
                 gpx_str += '</wpt>\n'
 
