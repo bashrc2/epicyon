@@ -536,7 +536,7 @@ def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
     tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
 
     gpx_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    gpx_str = '<gpx version="1.0">\n'
+    gpx_str += '<gpx version="1.0">\n'
 
     if os.path.isfile(tag_map_filename):
         map_links = []
@@ -567,11 +567,11 @@ def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
                     continue
                 post_id = link_line[2]
                 place_ctr += 1
-                gpx_str = '<wpt lat="' + str(latitude) + \
+                gpx_str += '<wpt lat="' + str(latitude) + \
                     '" lon="' + str(longitude) + '">\n'
                 gpx_str += '  <name>' + str(place_ctr) + '</name>\n'
                 gpx_str += '  <link href="' + post_id + '"/></link>\n'
-                gpx_str = '</wpt>\n'
+                gpx_str += '</wpt>\n'
 
     gpx_str += '</gpx>'
     if place_ctr == 0:
