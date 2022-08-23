@@ -798,8 +798,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         hashtag_search_form += \
             '<header>\n' + \
             '<a href="/users/' + nickname + '/' + box_name + '" title="' + \
-            translate['Switch to timeline view'] + '" alt="' + \
-            translate['Switch to timeline view'] + '" ' + \
+            translate['Search and follow'] + '" alt="' + \
+            translate['Search and follow'] + '" ' + \
             'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
             access_keys['menuTimeline'] + '">\n'
         hashtag_search_form += '<img loading="lazy" decoding="async" ' + \
