@@ -14,6 +14,7 @@ from utils import is_float
 from utils import acct_dir
 from utils import load_json
 from utils import save_json
+from utils import locate_post
 
 
 def get_location_from_tags(tags: []) -> str:
@@ -467,7 +468,8 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
 
 def _hashtag_map_to_kml(base_dir: str, tag_name: str,
                         start_hours_since_epoch: int,
-                        end_hours_since_epoch: int) -> str:
+                        end_hours_since_epoch: int,
+                        nickname: str, domain: str) -> str:
     """Returns the KML for a given hashtag between the given times
     """
     place_ctr = 0
@@ -492,10 +494,12 @@ def _hashtag_map_to_kml(base_dir: str, tag_name: str,
                 link_line = link_line.strip().split(' ')
                 if len(link_line) < 3:
                     continue
+                # is this geocoordinate within the time range?
                 secs_since_epoch = int(link_line[0])
                 if secs_since_epoch < start_secs_since_epoch or \
                    secs_since_epoch > end_secs_since_epoch:
                     continue
+                # get the geocoordinates from the map link
                 map_link = link_line[1]
                 zoom, latitude, longitude = \
                     geocoords_from_map_link(map_link, osm_domain)
@@ -506,6 +510,14 @@ def _hashtag_map_to_kml(base_dir: str, tag_name: str,
                 if not longitude:
                     continue
                 post_id = link_line[2]
+                # check if the post is muted, and exclude the
+                # geolocation if it is
+                if nickname:
+                    post_filename = \
+                        locate_post(base_dir, nickname, domain, post_id)
+                    if post_filename:
+                        if os.path.isfile(post_filename + '.muted'):
+                            continue
                 place_ctr += 1
                 kml_str += '<Placemark id="' + str(place_ctr) + '">\n'
                 kml_str += '  <name>' + str(place_ctr) + '</name>\n'
@@ -528,7 +540,8 @@ def _hashtag_map_to_kml(base_dir: str, tag_name: str,
 
 def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
                         start_hours_since_epoch: int,
-                        end_hours_since_epoch: int) -> str:
+                        end_hours_since_epoch: int,
+                        nickname: str, domain: str) -> str:
     """Returns the GPX for a given hashtag between the given times
     """
     place_ctr = 0
@@ -552,10 +565,12 @@ def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
                 link_line = link_line.strip().split(' ')
                 if len(link_line) < 3:
                     continue
+                # is this geocoordinate within the time range?
                 secs_since_epoch = int(link_line[0])
                 if secs_since_epoch < start_secs_since_epoch or \
                    secs_since_epoch > end_secs_since_epoch:
                     continue
+                # get the geocoordinates from the map link
                 map_link = link_line[1]
                 zoom, latitude, longitude = \
                     geocoords_from_map_link(map_link, osm_domain)
@@ -566,6 +581,14 @@ def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
                 if not longitude:
                     continue
                 post_id = link_line[2]
+                # check if the post is muted, and exclude the
+                # geolocation if it is
+                if nickname:
+                    post_filename = \
+                        locate_post(base_dir, nickname, domain, post_id)
+                    if post_filename:
+                        if os.path.isfile(post_filename + '.muted'):
+                            continue
                 place_ctr += 1
                 gpx_str += '<wpt lat="' + str(latitude) + \
                     '" lon="' + str(longitude) + '">\n'
@@ -580,7 +603,8 @@ def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
 
 
 def _hashtag_map_within_hours(base_dir: str, tag_name: str,
-                              hours: int, map_format: str) -> str:
+                              hours: int, map_format: str,
+                              nickname: str, domain: str) -> str:
     """Returns gpx/kml for a hashtag containing maps for the
     last number of hours
     """
@@ -594,12 +618,14 @@ def _hashtag_map_within_hours(base_dir: str, tag_name: str,
         map_str = \
             _hashtag_map_to_gpx(base_dir, tag_name,
                                 start_hours_since_epoch,
-                                end_hours_since_epoch)
+                                end_hours_since_epoch,
+                                nickname, domain)
     else:
         map_str = \
             _hashtag_map_to_kml(base_dir, tag_name,
                                 start_hours_since_epoch,
-                                end_hours_since_epoch)
+                                end_hours_since_epoch,
+                                nickname, domain)
     return map_str
 
 
@@ -622,7 +648,8 @@ def _get_tagmaps_time_periods() -> {}:
 
 
 def map_format_from_tagmaps_path(base_dir: str, path: str,
-                                 map_format: str) -> str:
+                                 map_format: str,
+                                 domain: str) -> str:
     """Returns gpx/kml for a given tagmaps path
     /tagmaps/tagname-time_period
     """
@@ -639,13 +666,20 @@ def map_format_from_tagmaps_path(base_dir: str, path: str,
         endpoint_str = \
             '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
         if path == endpoint_str:
+            nickname = None
+            if '/users/' in path:
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
             return _hashtag_map_within_hours(base_dir, tag_name,
-                                             hours, map_format)
+                                             hours, map_format,
+                                             nickname, domain)
     return None
 
 
 def html_hashtag_maps(base_dir: str, tag_name: str,
-                      translate: {}, map_format: str) -> str:
+                      translate: {}, map_format: str,
+                      nickname: str, domain: str) -> str:
     """Returns html for maps associated with a hashtag
     """
     tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
@@ -659,7 +693,7 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
     for period_str, hours in time_period.items():
         new_map_str = \
             _hashtag_map_within_hours(base_dir, tag_name, hours,
-                                      map_format)
+                                      map_format, nickname, domain)
         if not new_map_str:
             continue
         if new_map_str == map_str:
