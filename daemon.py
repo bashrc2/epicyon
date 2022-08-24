@@ -17102,7 +17102,8 @@ class PubServer(BaseHTTPRequestHandler):
            (authorized and '/tagmaps/' in self.path):
             map_str = \
                 map_format_from_tagmaps_path(self.server.base_dir, self.path,
-                                             self.server.map_format)
+                                             self.server.map_format,
+                                             self.server.domain)
             if map_str:
                 msg = map_str.encode('utf-8')
                 msglen = len(msg)

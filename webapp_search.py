@@ -836,7 +836,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         'icons/logorss.png" /></a></h1>\n'
 
     # maps for geolocations with this hashtag
-    maps_str = html_hashtag_maps(base_dir, hashtag, translate, map_format)
+    maps_str = html_hashtag_maps(base_dir, hashtag, translate, map_format,
+                                 nickname, domain)
     if maps_str:
         maps_str = '<center>' + maps_str + '</center>\n'
     hashtag_search_form += maps_str
