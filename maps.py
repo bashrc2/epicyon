@@ -466,19 +466,24 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
         print('EX: error writing tag map ' + tag_map_filename)
 
 
-def _hashtag_map_to_kml(base_dir: str, tag_name: str,
-                        start_hours_since_epoch: int,
-                        end_hours_since_epoch: int,
-                        nickname: str, domain: str) -> str:
-    """Returns the KML for a given hashtag between the given times
+def _hashtag_map_to_format(base_dir: str, tag_name: str,
+                           start_hours_since_epoch: int,
+                           end_hours_since_epoch: int,
+                           nickname: str, domain: str,
+                           map_format: str) -> str:
+    """Returns the KML/GPX for a given hashtag between the given times
     """
     place_ctr = 0
     osm_domain = 'openstreetmap.org'
     tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
 
-    kml_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    kml_str += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
-    kml_str += '<Document>\n'
+    if map_format == 'gpx':
+        map_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        map_str += '<gpx version="1.0">\n'
+    else:
+        map_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        map_str += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+        map_str += '<Document>\n'
 
     if os.path.isfile(tag_map_filename):
         map_links = []
@@ -519,87 +524,33 @@ def _hashtag_map_to_kml(base_dir: str, tag_name: str,
                         if os.path.isfile(post_filename + '.muted'):
                             continue
                 place_ctr += 1
-                kml_str += '<Placemark id="' + str(place_ctr) + '">\n'
-                kml_str += '  <name>' + str(place_ctr) + '</name>\n'
-                kml_str += '  <description><![CDATA[\n'
-                kml_str += '<a href="' + post_id + '">' + \
-                    post_id + '</a>\n]]>\n'
-                kml_str += '  </description>\n'
-                kml_str += '  <Point>\n'
-                kml_str += '    <coordinates>' + str(longitude) + ',' + \
-                    str(latitude) + ',0</coordinates>\n'
-                kml_str += '  </Point>\n'
-                kml_str += '</Placemark>\n'
+                if map_format == 'gpx':
+                    map_str += '<wpt lat="' + str(latitude) + \
+                        '" lon="' + str(longitude) + '">\n'
+                    map_str += '  <name>' + post_id + '</name>\n'
+                    map_str += '  <link href="' + post_id + '"/>\n'
+                    map_str += '</wpt>\n'
+                else:
+                    map_str += '<Placemark id="' + str(place_ctr) + '">\n'
+                    map_str += '  <name>' + str(place_ctr) + '</name>\n'
+                    map_str += '  <description><![CDATA[\n'
+                    map_str += '<a href="' + post_id + '">' + \
+                        post_id + '</a>\n]]>\n'
+                    map_str += '  </description>\n'
+                    map_str += '  <Point>\n'
+                    map_str += '    <coordinates>' + str(longitude) + ',' + \
+                        str(latitude) + ',0</coordinates>\n'
+                    map_str += '  </Point>\n'
+                    map_str += '</Placemark>\n'
 
-    kml_str += '</Document>\n'
-    kml_str += '</kml>'
+    if map_format == 'gpx':
+        map_str += '</gpx>'
+    else:
+        map_str += '</Document>\n'
+        map_str += '</kml>'
     if place_ctr == 0:
         return None
-    return kml_str
-
-
-def _hashtag_map_to_gpx(base_dir: str, tag_name: str,
-                        start_hours_since_epoch: int,
-                        end_hours_since_epoch: int,
-                        nickname: str, domain: str) -> str:
-    """Returns the GPX for a given hashtag between the given times
-    """
-    place_ctr = 0
-    osm_domain = 'openstreetmap.org'
-    tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
-
-    gpx_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    gpx_str += '<gpx version="1.0">\n'
-
-    if os.path.isfile(tag_map_filename):
-        map_links = []
-        try:
-            with open(tag_map_filename, 'r', encoding='utf-8') as fp_tag:
-                map_links = fp_tag.read().split('\n')
-        except OSError:
-            print('EX: unable to read tag map links ' + tag_map_filename)
-        if map_links:
-            start_secs_since_epoch = int(start_hours_since_epoch * 60 * 60)
-            end_secs_since_epoch = int(end_hours_since_epoch * 60 * 60)
-            for link_line in map_links:
-                link_line = link_line.strip().split(' ')
-                if len(link_line) < 3:
-                    continue
-                # is this geocoordinate within the time range?
-                secs_since_epoch = int(link_line[0])
-                if secs_since_epoch < start_secs_since_epoch or \
-                   secs_since_epoch > end_secs_since_epoch:
-                    continue
-                # get the geocoordinates from the map link
-                map_link = link_line[1]
-                zoom, latitude, longitude = \
-                    geocoords_from_map_link(map_link, osm_domain)
-                if not zoom:
-                    continue
-                if not latitude:
-                    continue
-                if not longitude:
-                    continue
-                post_id = link_line[2]
-                # check if the post is muted, and exclude the
-                # geolocation if it is
-                if nickname:
-                    post_filename = \
-                        locate_post(base_dir, nickname, domain, post_id)
-                    if post_filename:
-                        if os.path.isfile(post_filename + '.muted'):
-                            continue
-                place_ctr += 1
-                gpx_str += '<wpt lat="' + str(latitude) + \
-                    '" lon="' + str(longitude) + '">\n'
-                gpx_str += '  <name>' + post_id + '</name>\n'
-                gpx_str += '  <link href="' + post_id + '"/>\n'
-                gpx_str += '</wpt>\n'
-
-    gpx_str += '</gpx>'
-    if place_ctr == 0:
-        return None
-    return gpx_str
+    return map_str
 
 
 def _hashtag_map_within_hours(base_dir: str, tag_name: str,
@@ -614,18 +565,11 @@ def _hashtag_map_within_hours(base_dir: str, tag_name: str,
     curr_hours_since_epoch = int(secs_since_epoch / (60 * 60))
     start_hours_since_epoch = curr_hours_since_epoch - abs(hours)
     end_hours_since_epoch = curr_hours_since_epoch + 2
-    if map_format == 'gpx':
-        map_str = \
-            _hashtag_map_to_gpx(base_dir, tag_name,
-                                start_hours_since_epoch,
-                                end_hours_since_epoch,
-                                nickname, domain)
-    else:
-        map_str = \
-            _hashtag_map_to_kml(base_dir, tag_name,
-                                start_hours_since_epoch,
-                                end_hours_since_epoch,
-                                nickname, domain)
+    map_str = \
+        _hashtag_map_to_format(base_dir, tag_name,
+                               start_hours_since_epoch,
+                               end_hours_since_epoch,
+                               nickname, domain, map_format)
     return map_str
 
 
