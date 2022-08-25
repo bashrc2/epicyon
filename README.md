@@ -12,6 +12,7 @@ Key features:
  * Supports common web browsers and [shell browsers](https://lynx.invisible-island.net).
  * Will not drain your mobile or laptop battery.
  * Customisable themes. It doesn't have to look bland.
+ * Geospatial hashtags.
  * Does not require much RAM, either on server or client.
  * Suitable for installation on single board computers.
  * No timeline algorithms.
