@@ -466,6 +466,35 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
         print('EX: error writing tag map ' + tag_map_filename)
 
 
+def _gpx_location(latitude: float, longitude: float, post_id: str) -> str:
+    """Returns a gpx waypoint
+    """
+    map_str = '<wpt lat="' + str(latitude) + \
+        '" lon="' + str(longitude) + '">\n'
+    map_str += '  <name>' + post_id + '</name>\n'
+    map_str += '  <link href="' + post_id + '"/>\n'
+    map_str += '</wpt>\n'
+    return map_str
+
+
+def _kml_location(place_ctr: int,
+                  latitude: float, longitude: float, post_id: str) -> str:
+    """Returns a kml placemark
+    """
+    map_str = '<Placemark id="' + str(place_ctr) + '">\n'
+    map_str += '  <name>' + str(place_ctr) + '</name>\n'
+    map_str += '  <description><![CDATA[\n'
+    map_str += '<a href="' + post_id + '">' + \
+        post_id + '</a>\n]]>\n'
+    map_str += '  </description>\n'
+    map_str += '  <Point>\n'
+    map_str += '    <coordinates>' + str(longitude) + ',' + \
+        str(latitude) + ',0</coordinates>\n'
+    map_str += '  </Point>\n'
+    map_str += '</Placemark>\n'
+    return map_str
+
+
 def _hashtag_map_to_format(base_dir: str, tag_name: str,
                            start_hours_since_epoch: int,
                            end_hours_since_epoch: int,
@@ -525,23 +554,10 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
                             continue
                 place_ctr += 1
                 if map_format == 'gpx':
-                    map_str += '<wpt lat="' + str(latitude) + \
-                        '" lon="' + str(longitude) + '">\n'
-                    map_str += '  <name>' + post_id + '</name>\n'
-                    map_str += '  <link href="' + post_id + '"/>\n'
-                    map_str += '</wpt>\n'
+                    map_str += _gpx_location(latitude, longitude, post_id)
                 else:
-                    map_str += '<Placemark id="' + str(place_ctr) + '">\n'
-                    map_str += '  <name>' + str(place_ctr) + '</name>\n'
-                    map_str += '  <description><![CDATA[\n'
-                    map_str += '<a href="' + post_id + '">' + \
-                        post_id + '</a>\n]]>\n'
-                    map_str += '  </description>\n'
-                    map_str += '  <Point>\n'
-                    map_str += '    <coordinates>' + str(longitude) + ',' + \
-                        str(latitude) + ',0</coordinates>\n'
-                    map_str += '  </Point>\n'
-                    map_str += '</Placemark>\n'
+                    map_str += \
+                        _kml_location(place_ctr, latitude, longitude, post_id)
 
     if map_format == 'gpx':
         map_str += '</gpx>'
