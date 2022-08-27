@@ -816,15 +816,21 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             return None
         if calling_domain.endswith('.onion'):
-            actor = http_prefix + '://' + onion_domain + '/users/' + nickname
+            actor = 'http://' + onion_domain + '/users/' + nickname
         elif calling_domain.endswith('.i2p'):
-            actor = http_prefix + '://' + i2p_domain + '/users/' + nickname
+            actor = 'http://' + i2p_domain + '/users/' + nickname
         else:
             actor = http_prefix + '://' + domain + '/users/' + nickname
-        actor_json = \
-            get_person_from_cache(base_dir, actor, person_cache)
+        actor_json = get_person_from_cache(base_dir, actor, person_cache)
         if not actor_json:
-            return None
+            actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+            if not os.path.isfile(actor_filename):
+                return None
+            actor_json = load_json(actor_filename)
+            if not actor_json:
+                return None
+            store_person_in_cache(base_dir, actor, actor_json,
+                                  person_cache, False)
         if not actor_json.get('publicKey'):
             return None
         return actor_json['publicKey']
