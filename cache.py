@@ -149,6 +149,8 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
         return None
     if '#/publicKey' in person_url:
         person_url = person_url.replace('#/publicKey', '')
+    elif '/main-key' in person_url:
+        person_url = person_url.replace('/main-key', '')
     else:
         person_url = person_url.replace('#main-key', '')
     users_paths = get_user_paths()

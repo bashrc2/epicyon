@@ -923,6 +923,8 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
     """
     if path.endswith('#/publicKey'):
         path = path.replace('#/publicKey', '')
+    elif path.endswith('/main-key'):
+        path = path.replace('/main-key', '')
     elif path.endswith('#main-key'):
         path = path.replace('#main-key', '')
     # is this a shared inbox lookup?
