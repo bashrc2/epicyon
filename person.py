@@ -921,7 +921,9 @@ def add_alternate_domains(actor_json: {}, domain: str,
 def person_lookup(domain: str, path: str, base_dir: str) -> {}:
     """Lookup the person for an given nickname
     """
-    if path.endswith('#main-key'):
+    if path.endswith('#/publicKey'):
+        path = path.replace('#/publicKey', '')
+    elif path.endswith('#main-key'):
         path = path.replace('#main-key', '')
     # is this a shared inbox lookup?
     is_shared_inbox = False

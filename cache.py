@@ -147,7 +147,10 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
     """
     if not person_url:
         return None
-    person_url = person_url.replace('#main-key', '')
+    if '#/publicKey' in person_url:
+        person_url = person_url.replace('#/publicKey', '')
+    else:
+        person_url = person_url.replace('#main-key', '')
     users_paths = get_user_paths()
     for possible_users_path in users_paths:
         if person_url.endswith(possible_users_path + 'inbox'):

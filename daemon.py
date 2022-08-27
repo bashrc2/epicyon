@@ -709,7 +709,7 @@ class PubServer(BaseHTTPRequestHandler):
             if signature_item.startswith('keyId='):
                 if '"' in signature_item:
                     key_id = signature_item.split('"')[1]
-                    # remove #main-key
+                    # remove #/main-key or #main-key
                     if '#' in key_id:
                         key_id = key_id.split('#')[0]
                     return key_id
