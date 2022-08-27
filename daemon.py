@@ -795,6 +795,42 @@ class PubServer(BaseHTTPRequestHandler):
             print('AUTH: secure mode authorization failed for ' + key_id)
         return False
 
+    def _get_account_pub_key(self, path: str, person_cache: {},
+                             base_dir: str, http_prefix: str,
+                             domain: str, onion_domain: str,
+                             i2p_domain: str,
+                             calling_domain: str) -> str:
+        """Returns the public key for an account
+        """
+        if not has_users_path(path):
+            return None
+        nickname = path.split('/users/')[1]
+        if '#' not in nickname:
+            return None
+        if '#main-key' in nickname:
+            nickname = nickname.split('#main-key')[0]
+        elif '/main-key' in nickname:
+            nickname = nickname.split('/main-key')[0]
+        elif '#/publicKey' in nickname:
+            nickname = nickname.split('#/publicKey')[0]
+        else:
+            return None
+        if calling_domain.endswith('.onion'):
+            actor = http_prefix + '://' + onion_domain + '/users/' + nickname
+        elif calling_domain.endswith('.i2p'):
+            actor = http_prefix + '://' + i2p_domain + '/users/' + nickname
+        else:
+            actor = http_prefix + '://' + domain + '/users/' + nickname
+        actor_json = \
+            get_person_from_cache(base_dir, actor, person_cache)
+        if not actor_json:
+            return None
+        if not actor_json.get('publicKey'):
+            return None
+        if not actor_json['publicKey'].get('publicKeyPem'):
+            return None
+        return actor_json['publicKey']['publicKeyPem']
+
     def _login_headers(self, file_format: str, length: int,
                        calling_domain: str) -> None:
         self.send_response(200)
@@ -15210,6 +15246,22 @@ class PubServer(BaseHTTPRequestHandler):
         if self._show_vcard(self.server.base_dir,
                             self.path, calling_domain, referer_domain,
                             self.server.domain):
+            return
+
+        # getting the public key for an account
+        acct_pub_key_str = \
+            self._get_account_pub_key(self.path, self.server.person_cache,
+                                      self.server.base_dir,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain,
+                                      calling_domain)
+        if acct_pub_key_str:
+            msg = acct_pub_key_str.encode('utf-8')
+            msglen = len(msg)
+            self._logout_headers('text/plain', msglen, calling_domain)
+            self._write(msg)
             return
 
         # Since fediverse crawlers are quite active,
