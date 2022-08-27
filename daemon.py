@@ -824,7 +824,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
             if not os.path.isfile(actor_filename):
                 return None
-            actor_json = load_json(actor_filename)
+            actor_json = load_json(actor_filename, 1, 1)
             if not actor_json:
                 return None
             store_person_in_cache(base_dir, actor, actor_json,
