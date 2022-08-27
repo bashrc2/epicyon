@@ -827,9 +827,7 @@ class PubServer(BaseHTTPRequestHandler):
             return None
         if not actor_json.get('publicKey'):
             return None
-        if not actor_json['publicKey'].get('publicKeyPem'):
-            return None
-        return actor_json['publicKey']['publicKeyPem']
+        return actor_json['publicKey']
 
     def _login_headers(self, file_format: str, length: int,
                        calling_domain: str) -> None:
@@ -15249,7 +15247,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # getting the public key for an account
-        acct_pub_key_str = \
+        acct_pub_key_json = \
             self._get_account_pub_key(self.path, self.server.person_cache,
                                       self.server.base_dir,
                                       self.server.http_prefix,
@@ -15257,10 +15255,12 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.onion_domain,
                                       self.server.i2p_domain,
                                       calling_domain)
-        if acct_pub_key_str:
-            msg = acct_pub_key_str.encode('utf-8')
+        if acct_pub_key_json:
+            msg_str = json.dumps(acct_pub_key_json, ensure_ascii=False)
+            msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            self._logout_headers('text/plain', msglen, calling_domain)
+            self._set_headers('application/json',
+                              msglen, None, calling_domain, False)
             self._write(msg)
             return
 
