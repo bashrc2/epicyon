@@ -802,7 +802,7 @@ class PubServer(BaseHTTPRequestHandler):
                              calling_domain: str) -> str:
         """Returns the public key for an account
         """
-        if not has_users_path(path):
+        if '/users/' not in path:
             return None
         nickname = path.split('/users/')[1]
         if '#' not in nickname:
