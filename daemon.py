@@ -805,8 +805,6 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' not in path:
             return None
         nickname = path.split('/users/')[1]
-        if '#' not in nickname:
-            return None
         if '#main-key' in nickname:
             nickname = nickname.split('#main-key')[0]
         elif '/main-key' in nickname:
