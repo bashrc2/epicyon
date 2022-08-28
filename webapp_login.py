@@ -192,7 +192,7 @@ def html_login(translate: {},
         ' placeholder="' + translate['Enter Password'] + '" ' + \
         'pattern="{8,256}" name="password" tabindex="1" required>'
     if in_text_mode:
-        login_form += '<br>'
+        login_form += '<br><br>'
     login_form += \
         '\n' + login_button_str + register_button_str + '\n' + \
         '  </div>\n' + \
