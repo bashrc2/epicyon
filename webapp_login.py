@@ -27,7 +27,8 @@ def html_get_login_credentials(login_params: str,
     """Receives login credentials via HTTPServer POST
     """
     if not login_params.startswith('username='):
-        return None, None, None
+        if '&username=' not in login_params:
+            return None, None, None
     # minimum time between login attempts
     curr_time = int(time.time())
     if curr_time < last_login_time + 10:
