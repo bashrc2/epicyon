@@ -2270,10 +2270,12 @@ class PubServer(BaseHTTPRequestHandler):
                             login_str += login_prm + '='
                         else:
                             if '&' in login_prm:
-                                login_str += '&' + login_prm.split('&')[1]
+                                login_str += \
+                                    '&' + login_prm.split('&')[1] + '='
                         skip_param = False
                         if 'password' in login_prm:
                             skip_param = True
+                    login_str = login_str[:len(login_str) - 1]
                 print(login_str)
             self._401('No login credentials were posted')
             self.server.postreq_busy = False
