@@ -587,5 +587,8 @@
     "Last 2 weeks": "Последние 2 недели",
     "Last month": "Прошлый месяц",
     "Last 6 months": "Последние 6 месяцев",
-    "Last year": "Прошедший год"
+    "Last year": "Прошедший год",
+    "Unauthorized": "Неавторизованный",
+    "No login credentials were posted": "Учетные данные для входа не были отправлены",
+    "Credentials are too long": "Учетные данные слишком длинные"
 }

@@ -587,5 +587,8 @@
     "Last 2 weeks": "Wiki 2 zilizopita",
     "Last month": "Mwezi uliopita",
     "Last 6 months": "Miezi 6 iliyopita",
-    "Last year": "Mwaka jana"
+    "Last year": "Mwaka jana",
+    "Unauthorized": "Haijaidhinishwa",
+    "No login credentials were posted": "Hakuna kitambulisho cha kuingia kilichochapishwa",
+    "Credentials are too long": "Kitambulisho ni kirefu sana"
 }

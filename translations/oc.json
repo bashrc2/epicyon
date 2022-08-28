@@ -583,5 +583,8 @@
     "Last 2 weeks": "Last 2 weeks",
     "Last month": "Last month",
     "Last 6 months": "Last 6 months",
-    "Last year": "Last year"
+    "Last year": "Last year",
+    "Unauthorized": "Unauthorized",
+    "No login credentials were posted": "No login credentials were posted",
+    "Credentials are too long": "Credentials are too long"
 }

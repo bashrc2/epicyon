@@ -177,6 +177,7 @@ from webapp_utils import csv_following_list
 from webapp_utils import set_blog_address
 from webapp_utils import html_show_share
 from webapp_utils import get_pwa_theme_colors
+from webapp_utils import text_mode_browser
 from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
 from webapp_about import html_about
@@ -190,7 +191,6 @@ from webapp_confirm import html_confirm_unblock
 from webapp_person_options import person_minimize_images
 from webapp_person_options import person_undo_minimize_images
 from webapp_person_options import html_person_options
-from webapp_timeline import text_mode_browser
 from webapp_timeline import html_shares
 from webapp_timeline import html_wanted
 from webapp_timeline import html_inbox
@@ -1058,6 +1058,15 @@ class PubServer(BaseHTTPRequestHandler):
             self._http_return_code(200, 'Ok',
                                    'This is nothing less ' +
                                    'than an utter triumph', None)
+
+    def _401(self, post_msg: str) -> None:
+        if self.server.translate:
+            ok_str = self.server.translate[post_msg]
+            self._http_return_code(401, self.server.translate['Unauthorized'],
+                                   ok_str, None)
+        else:
+            self._http_return_code(401, 'Unauthorized',
+                                   post_msg, None)
 
     def _201(self, etag: str) -> None:
         if self.server.translate:
@@ -2050,11 +2059,12 @@ class PubServer(BaseHTTPRequestHandler):
                                'epicyon=; SameSite=Strict',
                                calling_domain)
 
-    def _show_login_screen(self, calling_domain: str, cookie: str,
+    def _post_login_screen(self, calling_domain: str, cookie: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
-                           onion_domain: str, i2p_domain: str) -> None:
-        """Shows the login screen
+                           onion_domain: str, i2p_domain: str,
+                           ua_str: str, debug: bool) -> None:
+        """POST to login screen, containing credentials
         """
         # ensure that there is a minimum delay between failed login
         # attempts, to mitigate brute force
@@ -2067,8 +2077,7 @@ class PubServer(BaseHTTPRequestHandler):
         length = int(self.headers['Content-length'])
         if length > 512:
             print('Login failed - credentials too long')
-            self.send_response(401)
-            self.end_headers()
+            self._401('Credentials are too long')
             self.server.postreq_busy = False
             return
 
@@ -2095,7 +2104,7 @@ class PubServer(BaseHTTPRequestHandler):
             html_get_login_credentials(login_params,
                                        self.server.last_login_time,
                                        domain)
-        if login_nickname:
+        if login_nickname and login_password:
             if is_system_account(login_nickname):
                 print('Invalid username login: ' + login_nickname +
                       ' (system account)')
@@ -2176,7 +2185,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.postreq_busy = False
                     return
                 # login success - redirect with authorization
-                print('====== Login success: ' + login_nickname)
+                print('====== Login success: ' + login_nickname +
+                      ' ' + ua_str)
                 # re-activate account if needed
                 activate_account(base_dir, login_nickname, domain)
                 # This produces a deterministic token based
@@ -2246,6 +2256,33 @@ class PubServer(BaseHTTPRequestHandler):
                                            cookie_str, calling_domain)
                 self.server.postreq_busy = False
                 return
+        else:
+            print('WARN: No login credentials presented to /login')
+            if debug:
+                # be careful to avoid logging the password
+                login_str = login_params
+                if '=' in login_params:
+                    login_params_list = login_params.split('=')
+                    login_str = ''
+                    skip_param = False
+                    for login_prm in login_params_list:
+                        if not skip_param:
+                            login_str += login_prm + '='
+                        else:
+                            len_str = login_prm.split('&')[0]
+                            if len(len_str) > 0:
+                                login_str += login_prm + '*'
+                            len_str = ''
+                            if '&' in login_prm:
+                                login_str += \
+                                    '&' + login_prm.split('&')[1] + '='
+                        skip_param = False
+                        if 'password' in login_prm:
+                            skip_param = True
+                    login_str = login_str[:len(login_str) - 1]
+                print(login_str)
+            self._401('No login credentials were posted')
+            self.server.postreq_busy = False
         self._200()
         self.server.postreq_busy = False
 
@@ -15287,7 +15324,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.http_prefix,
                                self.server.domain_full,
                                self.server.system_language,
-                               False).encode('utf-8')
+                               False, ua_str).encode('utf-8')
                 msglen = len(msg)
                 self._logout_headers('text/html', msglen, calling_domain)
                 self._write(msg)
@@ -16995,7 +17032,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.http_prefix,
                              self.server.domain_full,
                              self.server.system_language,
-                             True).encode('utf-8')
+                             True, ua_str).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
@@ -20042,16 +20079,17 @@ class PubServer(BaseHTTPRequestHandler):
                             '_POST', 'start',
                             self.server.debug)
 
-        # login screen
+        # POST to login screen, containing credentials
         if self.path.startswith('/login'):
-            self._show_login_screen(calling_domain, cookie,
+            self._post_login_screen(calling_domain, cookie,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
                                     self.server.domain_full,
                                     self.server.port,
                                     self.server.onion_domain,
-                                    self.server.i2p_domain)
+                                    self.server.i2p_domain,
+                                    ua_str, self.server.debug)
             self.server.postreq_busy = False
             return
 

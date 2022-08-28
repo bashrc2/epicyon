@@ -587,5 +587,8 @@
     "Last 2 weeks": "Últimes 2 setmanes",
     "Last month": "El mes passat",
     "Last 6 months": "Últims 6 mesos",
-    "Last year": "L'any passat"
+    "Last year": "L'any passat",
+    "Unauthorized": "No autoritzat",
+    "No login credentials were posted": "No s'ha publicat cap credencial d'inici de sessió",
+    "Credentials are too long": "Les credencials són massa llargues"
 }

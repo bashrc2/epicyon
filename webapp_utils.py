@@ -1887,3 +1887,13 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
             ctr += 1
         line_ctr += 1
     return html_str
+
+
+def text_mode_browser(ua_str: str) -> bool:
+    """Does the user agent indicate a text mode browser?
+    """
+    text_mode_agents = ('Lynx/', 'w3m/', 'Links (', 'Emacs/', 'ELinks')
+    for agent in text_mode_agents:
+        if agent in ua_str:
+            return True
+    return False

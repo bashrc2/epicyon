@@ -587,5 +587,8 @@
     "Last 2 weeks": "過去 2 週間",
     "Last month": "先月",
     "Last 6 months": "過去 6 か月",
-    "Last year": "去年"
+    "Last year": "去年",
+    "Unauthorized": "無許可",
+    "No login credentials were posted": "ログイン認証情報が投稿されていません",
+    "Credentials are too long": "資格情報が長すぎます"
 }

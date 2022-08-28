@@ -587,5 +587,8 @@
     "Last 2 weeks": "Letzte 2 Wochen",
     "Last month": "Im vergangenen Monat",
     "Last 6 months": "Letzte 6 Monate",
-    "Last year": "Vergangenes Jahr"
+    "Last year": "Vergangenes Jahr",
+    "Unauthorized": "Unbefugt",
+    "No login credentials were posted": "Es wurden keine Zugangsdaten gepostet",
+    "Credentials are too long": "Anmeldeinformationen sind zu lang"
 }

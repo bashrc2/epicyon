@@ -587,5 +587,8 @@
     "Last 2 weeks": "Останні 2 тижні",
     "Last month": "Минулого місяця",
     "Last 6 months": "Останні 6 місяців",
-    "Last year": "Минулого року"
+    "Last year": "Минулого року",
+    "Unauthorized": "Несанкціонований",
+    "No login credentials were posted": "Облікові дані для входу не опубліковано",
+    "Credentials are too long": "Облікові дані задовгі"
 }

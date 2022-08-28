@@ -587,5 +587,8 @@
     "Last 2 weeks": "पिछले 2 सप्ताह",
     "Last month": "पिछले महीने",
     "Last 6 months": "पिछले 6 महीने",
-    "Last year": "पिछले साल"
+    "Last year": "पिछले साल",
+    "Unauthorized": "अनधिकृत",
+    "No login credentials were posted": "कोई लॉगिन क्रेडेंशियल पोस्ट नहीं किया गया था",
+    "Credentials are too long": "क्रेडेंशियल बहुत लंबे हैं"
 }

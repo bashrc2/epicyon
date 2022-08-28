@@ -17,23 +17,25 @@ from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
+from webapp_utils import text_mode_browser
 from theme import get_text_mode_logo
 
 
-def html_get_login_credentials(loginParams: str,
+def html_get_login_credentials(login_params: str,
                                last_login_time: int,
                                domain: str) -> (str, str, bool):
     """Receives login credentials via HTTPServer POST
     """
-    if not loginParams.startswith('username='):
-        return None, None, None
+    if not login_params.startswith('username='):
+        if '&username=' not in login_params:
+            return None, None, None
     # minimum time between login attempts
     curr_time = int(time.time())
-    if curr_time < last_login_time+10:
+    if curr_time < last_login_time + 10:
         return None, None, None
-    if '&' not in loginParams:
+    if '&' not in login_params:
         return None, None, None
-    login_args = loginParams.split('&')
+    login_args = login_params.split('&')
     nickname = None
     password = None
     register = False
@@ -58,7 +60,8 @@ def html_login(translate: {},
                base_dir: str,
                http_prefix: str, domain: str,
                system_language: str,
-               autocomplete: bool) -> str:
+               autocomplete: bool,
+               ua_str: str) -> str:
     """Shows the login screen
     """
     accounts = no_of_accounts(base_dir)
@@ -132,19 +135,19 @@ def html_login(translate: {},
                     translate[idx] + \
                     '</p>'
             register_button_str = \
-                '<button type="submit" name="register">' + \
+                '<button type="submit" name="register" tabindex="1">' + \
                 translate['Register'] + '</button>'
 
     tos_str = \
-        '<p class="login-text"><a href="/about">' + \
+        '<p class="login-text"><a href="/about" tabindex="2">' + \
         translate['About this Instance'] + '</a></p>' + \
-        '<p class="login-text"><a href="/terms">' + \
+        '<p class="login-text"><a href="/terms" tabindex="2">' + \
         translate['Terms of Service'] + '</a></p>'
 
     login_button_str = ''
     if accounts > 0:
         login_button_str = \
-            '<button type="submit" name="submit">' + \
+            '<button type="submit" name="submit" tabindex="1">' + \
             translate['Login'] + '</button>'
 
     autocomplete_nickname_str = 'autocomplete="username"'
@@ -177,18 +180,25 @@ def html_login(translate: {},
         translate['Nickname'] + '</b></label>\n' + \
         '    <input type="text" ' + autocomplete_nickname_str + \
         ' placeholder="' + translate['Enter Nickname'] + '" ' + \
-        'pattern="' + nickname_pattern + '" name="username" ' + \
-        'required autofocus>\n' + \
-        '\n' + \
+        'pattern="' + nickname_pattern + '" name="username" tabindex="1" ' + \
+        'required autofocus>'
+    in_text_mode = text_mode_browser(ua_str)
+    if in_text_mode:
+        login_form += '<br>'
+    login_form += \
+        '\n\n' + \
         '    <label for="password"><b>' + \
         translate['Password'] + '</b></label>\n' + \
         '    <input type="password" ' + autocomplete_password_str + \
         ' placeholder="' + translate['Enter Password'] + '" ' + \
-        'pattern="{8,256}" name="password" required>\n' + \
-        login_button_str + register_button_str + '\n' + \
+        'pattern="{8,256}" name="password" tabindex="1" required>'
+    if in_text_mode:
+        login_form += '<br><br>'
+    login_form += \
+        '\n' + login_button_str + register_button_str + '\n' + \
         '  </div>\n' + \
         '</form>\n' + \
-        '<a href="https://gitlab.com/bashrc2/epicyon">' + \
+        '<a href="https://gitlab.com/bashrc2/epicyon" tabindex="2">' + \
         '<img loading="lazy" decoding="async" class="license" title="' + \
         translate['Get the source code'] + '" alt="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>\n'

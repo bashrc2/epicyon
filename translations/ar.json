@@ -587,5 +587,8 @@
     "Last 2 weeks": "آخر أسبوعين",
     "Last month": "الشهر الماضي",
     "Last 6 months": "آخر 6 أشهر",
-    "Last year": "العام الماضي"
+    "Last year": "العام الماضي",
+    "Unauthorized": "غير مصرح",
+    "No login credentials were posted": "لم يتم نشر بيانات اعتماد تسجيل الدخول",
+    "Credentials are too long": "أوراق الاعتماد طويلة جدًا"
 }

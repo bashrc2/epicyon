@@ -587,5 +587,8 @@
     "Last 2 weeks": "2 hefteyên dawî",
     "Last month": "meha borî",
     "Last 6 months": "6 mehên dawî",
-    "Last year": "Sala borî"
+    "Last year": "Sala borî",
+    "Unauthorized": "Bêmaf",
+    "No login credentials were posted": "Tu pêbaweriyên têketinê nehatin şandin",
+    "Credentials are too long": "Bawernameyên pir dirêj in"
 }

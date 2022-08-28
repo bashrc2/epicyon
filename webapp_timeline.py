@@ -23,6 +23,7 @@ from utils import remove_eol
 from follow import follower_approval_active
 from person import is_person_snoozed
 from markdown import markdown_to_html
+from webapp_utils import text_mode_browser
 from webapp_utils import html_keyboard_navigation
 from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import html_post_separator
@@ -380,16 +381,6 @@ def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
                                     nav_access_keys,
                                     None, users_path, translate,
                                     follow_approvals)
-
-
-def text_mode_browser(ua_str: str) -> bool:
-    """Does the user agent indicate a text mode browser?
-    """
-    text_mode_agents = ('Lynx/', 'w3m/', 'Links (', 'Emacs/', 'ELinks')
-    for agent in text_mode_agents:
-        if agent in ua_str:
-            return True
-    return False
 
 
 def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,

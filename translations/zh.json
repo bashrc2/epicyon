@@ -587,5 +587,8 @@
     "Last 2 weeks": "过去 2 周",
     "Last month": "上个月",
     "Last 6 months": "过去 6 个月",
-    "Last year": "去年"
+    "Last year": "去年",
+    "Unauthorized": "未经授权",
+    "No login credentials were posted": "未发布登录凭据",
+    "Credentials are too long": "凭据太长"
 }
