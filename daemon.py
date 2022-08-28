@@ -2053,7 +2053,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _show_login_screen(self, calling_domain: str, cookie: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
-                           onion_domain: str, i2p_domain: str) -> None:
+                           onion_domain: str, i2p_domain: str,
+                           ua_str: str) -> None:
         """Shows the login screen
         """
         # ensure that there is a minimum delay between failed login
@@ -2176,7 +2177,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.postreq_busy = False
                     return
                 # login success - redirect with authorization
-                print('====== Login success: ' + login_nickname)
+                print('====== Login success: ' + login_nickname +
+                      ' ' + ua_str)
                 # re-activate account if needed
                 activate_account(base_dir, login_nickname, domain)
                 # This produces a deterministic token based
@@ -20051,7 +20053,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domain_full,
                                     self.server.port,
                                     self.server.onion_domain,
-                                    self.server.i2p_domain)
+                                    self.server.i2p_domain,
+                                    ua_str)
             self.server.postreq_busy = False
             return
 
