@@ -587,5 +587,8 @@
     "Last 2 weeks": "2 wythnos diwethaf",
     "Last month": "Mis diwethaf",
     "Last 6 months": "6 mis diwethaf",
-    "Last year": "Blwyddyn diwethaf"
+    "Last year": "Blwyddyn diwethaf",
+    "Unauthorized": "Anawdurdodedig",
+    "No login credentials were posted": "Ni bostiwyd unrhyw fanylion mewngofnodi",
+    "Credentials are too long": "Mae manylion yn rhy hir"
 }

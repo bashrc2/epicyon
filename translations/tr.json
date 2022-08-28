@@ -587,5 +587,8 @@
     "Last 2 weeks": "Son 2 hafta",
     "Last month": "Geçen ay",
     "Last 6 months": "Son 6 ay",
-    "Last year": "Geçen yıl"
+    "Last year": "Geçen yıl",
+    "Unauthorized": "Yetkisiz",
+    "No login credentials were posted": "Giriş bilgileri gönderilmedi",
+    "Credentials are too long": "Kimlik bilgileri çok uzun"
 }

@@ -587,5 +587,8 @@
     "Last 2 weeks": "Τελευταίες 2 εβδομάδες",
     "Last month": "Τον προηγούμενο μήνα",
     "Last 6 months": "Τελευταίοι 6 μήνες",
-    "Last year": "Πέρυσι"
+    "Last year": "Πέρυσι",
+    "Unauthorized": "Ανεξουσιοδότητος",
+    "No login credentials were posted": "Δεν δημοσιεύτηκαν διαπιστευτήρια σύνδεσης",
+    "Credentials are too long": "Τα διαπιστευτήρια είναι πολύ μεγάλα"
 }

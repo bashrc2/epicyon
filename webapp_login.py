@@ -30,7 +30,7 @@ def html_get_login_credentials(loginParams: str,
         return None, None, None
     # minimum time between login attempts
     curr_time = int(time.time())
-    if curr_time < last_login_time+10:
+    if curr_time < last_login_time + 10:
         return None, None, None
     if '&' not in loginParams:
         return None, None, None

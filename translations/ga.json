@@ -587,5 +587,8 @@
     "Last 2 weeks": "2 sheachtain anuas",
     "Last month": "An mhí seo caite",
     "Last 6 months": "6 mhí anuas",
-    "Last year": "Anuraidh"
+    "Last year": "Anuraidh",
+    "Unauthorized": "Neamhúdaraithe",
+    "No login credentials were posted": "Níor postáladh aon dintiúir logáil isteach",
+    "Credentials are too long": "Tá dintiúir ró-fhada"
 }

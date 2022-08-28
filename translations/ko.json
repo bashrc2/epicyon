@@ -587,5 +587,8 @@
     "Last 2 weeks": "지난 2주",
     "Last month": "지난 달",
     "Last 6 months": "지난 6개월",
-    "Last year": "작년"
+    "Last year": "작년",
+    "Unauthorized": "무단",
+    "No login credentials were posted": "게시된 로그인 자격 증명이 없습니다.",
+    "Credentials are too long": "자격 증명이 너무 깁니다."
 }

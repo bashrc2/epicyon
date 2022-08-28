@@ -587,5 +587,8 @@
     "Last 2 weeks": "গত ২ সপ্তাহ",
     "Last month": "গত মাসে",
     "Last 6 months": "গত ৬ মাস",
-    "Last year": "গত বছর"
+    "Last year": "গত বছর",
+    "Unauthorized": "অননুমোদিত",
+    "No login credentials were posted": "কোনো লগইন শংসাপত্র পোস্ট করা হয়নি",
+    "Credentials are too long": "শংসাপত্রগুলি খুব দীর্ঘ৷"
 }

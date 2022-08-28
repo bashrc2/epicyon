@@ -1059,6 +1059,15 @@ class PubServer(BaseHTTPRequestHandler):
                                    'This is nothing less ' +
                                    'than an utter triumph', None)
 
+    def _401(self, post_msg: str) -> None:
+        if self.server.translate:
+            ok_str = self.server.translate[post_msg]
+            self._http_return_code(401, self.server.translate['Unauthorized'],
+                                   ok_str, None)
+        else:
+            self._http_return_code(401, 'Unauthorized',
+                                   post_msg, None)
+
     def _201(self, etag: str) -> None:
         if self.server.translate:
             done_str = self.server.translate['It is done']
@@ -2050,12 +2059,12 @@ class PubServer(BaseHTTPRequestHandler):
                                'epicyon=; SameSite=Strict',
                                calling_domain)
 
-    def _show_login_screen(self, calling_domain: str, cookie: str,
+    def _post_login_screen(self, calling_domain: str, cookie: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
                            ua_str: str) -> None:
-        """Shows the login screen
+        """POST to login screen, containing credentials
         """
         # ensure that there is a minimum delay between failed login
         # attempts, to mitigate brute force
@@ -2068,8 +2077,7 @@ class PubServer(BaseHTTPRequestHandler):
         length = int(self.headers['Content-length'])
         if length > 512:
             print('Login failed - credentials too long')
-            self.send_response(401)
-            self.end_headers()
+            self._401('Credentials are too long')
             self.server.postreq_busy = False
             return
 
@@ -2096,7 +2104,7 @@ class PubServer(BaseHTTPRequestHandler):
             html_get_login_credentials(login_params,
                                        self.server.last_login_time,
                                        domain)
-        if login_nickname:
+        if login_nickname and login_password:
             if is_system_account(login_nickname):
                 print('Invalid username login: ' + login_nickname +
                       ' (system account)')
@@ -2248,6 +2256,10 @@ class PubServer(BaseHTTPRequestHandler):
                                            cookie_str, calling_domain)
                 self.server.postreq_busy = False
                 return
+        else:
+            print('WARN: No login credentials presented to /login')
+            self._401('No login credentials were posted')
+            self.server.postreq_busy = False
         self._200()
         self.server.postreq_busy = False
 
@@ -20044,9 +20056,9 @@ class PubServer(BaseHTTPRequestHandler):
                             '_POST', 'start',
                             self.server.debug)
 
-        # login screen
+        # POST to login screen, containing credentials
         if self.path.startswith('/login'):
-            self._show_login_screen(calling_domain, cookie,
+            self._post_login_screen(calling_domain, cookie,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
