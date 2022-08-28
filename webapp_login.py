@@ -136,9 +136,9 @@ def html_login(translate: {},
                 translate['Register'] + '</button>'
 
     tos_str = \
-        '<p class="login-text"><a href="/about">' + \
+        '<p class="login-text"><a href="/about" tabindex="2">' + \
         translate['About this Instance'] + '</a></p>' + \
-        '<p class="login-text"><a href="/terms">' + \
+        '<p class="login-text"><a href="/terms" tabindex="2">' + \
         translate['Terms of Service'] + '</a></p>'
 
     login_button_str = ''
@@ -188,7 +188,7 @@ def html_login(translate: {},
         login_button_str + register_button_str + '\n' + \
         '  </div>\n' + \
         '</form>\n' + \
-        '<a href="https://gitlab.com/bashrc2/epicyon">' + \
+        '<a href="https://gitlab.com/bashrc2/epicyon" tabindex="2">' + \
         '<img loading="lazy" decoding="async" class="license" title="' + \
         translate['Get the source code'] + '" alt="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>\n'
