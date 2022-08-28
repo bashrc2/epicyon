@@ -132,7 +132,7 @@ def html_login(translate: {},
                     translate[idx] + \
                     '</p>'
             register_button_str = \
-                '<button type="submit" name="register">' + \
+                '<button type="submit" name="register" tabindex="1">' + \
                 translate['Register'] + '</button>'
 
     tos_str = \
@@ -144,7 +144,7 @@ def html_login(translate: {},
     login_button_str = ''
     if accounts > 0:
         login_button_str = \
-            '<button type="submit" name="submit">' + \
+            '<button type="submit" name="submit" tabindex="1">' + \
             translate['Login'] + '</button>'
 
     autocomplete_nickname_str = 'autocomplete="username"'
@@ -177,14 +177,14 @@ def html_login(translate: {},
         translate['Nickname'] + '</b></label>\n' + \
         '    <input type="text" ' + autocomplete_nickname_str + \
         ' placeholder="' + translate['Enter Nickname'] + '" ' + \
-        'pattern="' + nickname_pattern + '" name="username" ' + \
+        'pattern="' + nickname_pattern + '" name="username" tabindex="1" ' + \
         'required autofocus>\n' + \
         '\n' + \
         '    <label for="password"><b>' + \
         translate['Password'] + '</b></label>\n' + \
         '    <input type="password" ' + autocomplete_password_str + \
         ' placeholder="' + translate['Enter Password'] + '" ' + \
-        'pattern="{8,256}" name="password" required>\n' + \
+        'pattern="{8,256}" name="password" tabindex="1" required>\n' + \
         login_button_str + register_button_str + '\n' + \
         '  </div>\n' + \
         '</form>\n' + \
