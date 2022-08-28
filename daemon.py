@@ -2269,8 +2269,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if not skip_param:
                             login_str += login_prm + '='
                         else:
-                            if len(login_prm.split('&')[0]) > 0:
+                            len_str = login_prm.split('&')[0]
+                            if len(len_str) > 0:
                                 login_str += login_prm + '*'
+                            len_str = ''
                             if '&' in login_prm:
                                 login_str += \
                                     '&' + login_prm.split('&')[1] + '='
