@@ -2259,7 +2259,22 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('WARN: No login credentials presented to /login')
             if debug:
-                print(login_params)
+                # be careful to avoid logging the password
+                login_str = login_params
+                if '=' in login_params:
+                    login_params_list = login_params.split('=')
+                    login_str = ''
+                    skip_param = False
+                    for login_prm in login_params_list:
+                        if not skip_param:
+                            login_str += login_prm + '='
+                        else:
+                            if '&' in login_prm:
+                                login_str += '&' + login_prm.split('&')[1]
+                        skip_param = False
+                        if 'password' in login_prm:
+                            skip_param = True
+                print(login_str)
             self._401('No login credentials were posted')
             self.server.postreq_busy = False
         self._200()
