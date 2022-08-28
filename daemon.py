@@ -177,6 +177,7 @@ from webapp_utils import csv_following_list
 from webapp_utils import set_blog_address
 from webapp_utils import html_show_share
 from webapp_utils import get_pwa_theme_colors
+from webapp_utils import text_mode_browser
 from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
 from webapp_about import html_about
@@ -190,7 +191,6 @@ from webapp_confirm import html_confirm_unblock
 from webapp_person_options import person_minimize_images
 from webapp_person_options import person_undo_minimize_images
 from webapp_person_options import html_person_options
-from webapp_timeline import text_mode_browser
 from webapp_timeline import html_shares
 from webapp_timeline import html_wanted
 from webapp_timeline import html_inbox
@@ -15287,7 +15287,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.http_prefix,
                                self.server.domain_full,
                                self.server.system_language,
-                               False).encode('utf-8')
+                               False, ua_str).encode('utf-8')
                 msglen = len(msg)
                 self._logout_headers('text/html', msglen, calling_domain)
                 self._write(msg)
@@ -16995,7 +16995,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.http_prefix,
                              self.server.domain_full,
                              self.server.system_language,
-                             True).encode('utf-8')
+                             True, ua_str).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)

@@ -17,6 +17,7 @@ from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
+from webapp_utils import text_mode_browser
 from theme import get_text_mode_logo
 
 
@@ -58,7 +59,8 @@ def html_login(translate: {},
                base_dir: str,
                http_prefix: str, domain: str,
                system_language: str,
-               autocomplete: bool) -> str:
+               autocomplete: bool,
+               ua_str: str) -> str:
     """Shows the login screen
     """
     accounts = no_of_accounts(base_dir)
@@ -178,14 +180,21 @@ def html_login(translate: {},
         '    <input type="text" ' + autocomplete_nickname_str + \
         ' placeholder="' + translate['Enter Nickname'] + '" ' + \
         'pattern="' + nickname_pattern + '" name="username" tabindex="1" ' + \
-        'required autofocus>\n' + \
-        '\n' + \
+        'required autofocus>'
+    in_text_mode = text_mode_browser(ua_str)
+    if in_text_mode:
+        login_form += '<br>'
+    login_form += \
+        '\n\n' + \
         '    <label for="password"><b>' + \
         translate['Password'] + '</b></label>\n' + \
         '    <input type="password" ' + autocomplete_password_str + \
         ' placeholder="' + translate['Enter Password'] + '" ' + \
-        'pattern="{8,256}" name="password" tabindex="1" required>\n' + \
-        login_button_str + register_button_str + '\n' + \
+        'pattern="{8,256}" name="password" tabindex="1" required>'
+    if in_text_mode:
+        login_form += '<br>'
+    login_form += \
+        '\n' + login_button_str + register_button_str + '\n' + \
         '  </div>\n' + \
         '</form>\n' + \
         '<a href="https://gitlab.com/bashrc2/epicyon" tabindex="2">' + \
