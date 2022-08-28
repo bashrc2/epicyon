@@ -2063,7 +2063,7 @@ class PubServer(BaseHTTPRequestHandler):
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
-                           ua_str: str) -> None:
+                           ua_str: str, debug: bool) -> None:
         """POST to login screen, containing credentials
         """
         # ensure that there is a minimum delay between failed login
@@ -2258,6 +2258,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         else:
             print('WARN: No login credentials presented to /login')
+            if debug:
+                print(login_params)
             self._401('No login credentials were posted')
             self.server.postreq_busy = False
         self._200()
@@ -20066,7 +20068,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.port,
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
-                                    ua_str)
+                                    ua_str, self.server.debug)
             self.server.postreq_busy = False
             return
 

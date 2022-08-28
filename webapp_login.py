@@ -21,20 +21,20 @@ from webapp_utils import text_mode_browser
 from theme import get_text_mode_logo
 
 
-def html_get_login_credentials(loginParams: str,
+def html_get_login_credentials(login_params: str,
                                last_login_time: int,
                                domain: str) -> (str, str, bool):
     """Receives login credentials via HTTPServer POST
     """
-    if not loginParams.startswith('username='):
+    if not login_params.startswith('username='):
         return None, None, None
     # minimum time between login attempts
     curr_time = int(time.time())
     if curr_time < last_login_time + 10:
         return None, None, None
-    if '&' not in loginParams:
+    if '&' not in login_params:
         return None, None, None
-    login_args = loginParams.split('&')
+    login_args = login_params.split('&')
     nickname = None
     password = None
     register = False
