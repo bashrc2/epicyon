@@ -5871,9 +5871,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if check_name_and_bio:
                             redirect_path = 'previewAvatar'
 
+                    # change the theme from edit profile screen
                     if nickname == admin_nickname or \
                        is_artist(base_dir, nickname):
-                        # change theme
                         if fields.get('themeDropdown'):
                             if self.server.theme_name != \
                                fields['themeDropdown']:
