@@ -233,13 +233,13 @@ python3 epicyon.py --archive [directory]
 Which will move old posts to the given directory. You can also specify the number of weeks after which images will be archived, and the maximum number of posts within in/outboxes.
 
 ``` bash
-python3 epicyon.py --archive [directory] --archiveweeks 4 --maxposts 256
+python3 epicyon.py --archive [directory] --archiveweeks 4 --maxposts 32000
 ```
 
 If you want old posts to be deleted for data minimization purposes then the archive location can be set to */dev/null*.
 
 ``` bash
-python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 256
+python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 32000
 ```
 
 ## Blocking and unblocking
