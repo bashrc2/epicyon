@@ -224,6 +224,8 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 
 ## Archiving and Expiring posts
 
+As a general rule, all posts will be retained unless otherwise specified. However, on systems with finite and small disk storage running out of space is a show-stopping catastrophe and so clearing down old posts is highly advisable. You can achieve this using the archive commandline option, and optionally also with a cron job.
+
 You can archive old posts and expire posts as specified within account profile settings with:
 
 ``` bash
