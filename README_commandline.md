@@ -242,6 +242,12 @@ If you want old posts to be deleted for data minimization purposes then the arch
 python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 32000
 ```
 
+You can put this command into a cron job to ensure that old posts are cleared down regularly. In */etc/crontab* add an entry such as:
+
+``` bash
+*/60 * * * * root cd /opt/epicyon && /usr/bin/python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 32000
+```
+
 ## Blocking and unblocking
 
 Whether you are using the **--federate** option to define a set of allowed instances or not, you may want to block particular accounts even inside of the perimeter. To block an account:
