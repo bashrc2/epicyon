@@ -542,6 +542,7 @@ def reset_theme_designer_settings(base_dir: str) -> None:
     if os.path.isfile(custom_variables_file):
         try:
             os.remove(custom_variables_file)
+            print('Theme designer settings were reset')
         except OSError:
             print('EX: unable to remove theme designer settings on reset')
 
