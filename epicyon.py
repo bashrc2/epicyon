@@ -575,7 +575,7 @@ def _command_options() -> None:
                         default=None,
                         help='Archive old files to the given directory')
     parser.add_argument('--archiveweeks', dest='archiveWeeks', type=int,
-                        default=4,
+                        default=0,
                         help='Specify the number of weeks after which ' +
                         'media will be archived')
     parser.add_argument('--maxposts', dest='archiveMaxPosts', type=int,
