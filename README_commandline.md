@@ -222,24 +222,32 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
                    --undolike [url] --password [c2s password]
 ```
 
-## Archiving posts
+## Archiving and Expiring posts
 
-You can archive old posts with:
+As a general rule, all posts will be retained unless otherwise specified. However, on systems with finite and small disk storage running out of space is a show-stopping catastrophe and so clearing down old posts is highly advisable. You can achieve this using the archive commandline option, and optionally also with a cron job.
+
+You can archive old posts and expire posts as specified within account profile settings with:
 
 ``` bash
 python3 epicyon.py --archive [directory]
 ```
 
-Which will move old posts to the given directory. You can also specify the number of weeks after which images will be archived, and the maximum number of posts within in/outboxes.
+Which will move old posts to the given directory and delete any expired posts. You can also specify the number of weeks after which images will be archived, and the maximum number of posts within in/outboxes.
 
 ``` bash
-python3 epicyon.py --archive [directory] --archiveweeks 4 --maxposts 256
+python3 epicyon.py --archive [directory] --archiveweeks 4 --maxposts 32000
 ```
 
 If you want old posts to be deleted for data minimization purposes then the archive location can be set to */dev/null*.
 
 ``` bash
-python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 256
+python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 32000
+```
+
+You can put this command into a cron job to ensure that old posts are cleared down regularly. In */etc/crontab* add an entry such as:
+
+``` bash
+*/60 * * * * root cd /opt/epicyon && /usr/bin/python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 32000
 ```
 
 ## Blocking and unblocking
