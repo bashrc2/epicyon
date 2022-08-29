@@ -222,15 +222,15 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
                    --undolike [url] --password [c2s password]
 ```
 
-## Archiving posts
+## Archiving and Expiring posts
 
-You can archive old posts with:
+You can archive old posts and expire posts as specified within account profile settings with:
 
 ``` bash
 python3 epicyon.py --archive [directory]
 ```
 
-Which will move old posts to the given directory. You can also specify the number of weeks after which images will be archived, and the maximum number of posts within in/outboxes.
+Which will move old posts to the given directory and delete any expired posts. You can also specify the number of weeks after which images will be archived, and the maximum number of posts within in/outboxes.
 
 ``` bash
 python3 epicyon.py --archive [directory] --archiveweeks 4 --maxposts 32000
