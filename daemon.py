@@ -5875,36 +5875,38 @@ class PubServer(BaseHTTPRequestHandler):
                        is_artist(base_dir, nickname):
                         # change theme
                         if fields.get('themeDropdown'):
-                            self.server.theme_name = fields['themeDropdown']
-                            set_theme(base_dir, self.server.theme_name, domain,
-                                      allow_local_network_access,
-                                      system_language,
-                                      self.server.dyslexic_font, True)
-                            self.server.text_mode_banner = \
-                                get_text_mode_banner(self.server.base_dir)
-                            self.server.iconsCache = {}
-                            self.server.fontsCache = {}
-                            self.server.css_cache = {}
-                            self.server.show_publish_as_icon = \
-                                get_config_param(self.server.base_dir,
-                                                 'showPublishAsIcon')
-                            self.server.full_width_tl_button_header = \
-                                get_config_param(self.server.base_dir,
-                                                 'fullWidthTlButtonHeader')
-                            self.server.icons_as_buttons = \
-                                get_config_param(self.server.base_dir,
-                                                 'iconsAsButtons')
-                            self.server.rss_icon_at_top = \
-                                get_config_param(self.server.base_dir,
-                                                 'rssIconAtTop')
-                            self.server.publish_button_at_top = \
-                                get_config_param(self.server.base_dir,
-                                                 'publishButtonAtTop')
-                            set_news_avatar(base_dir,
-                                            fields['themeDropdown'],
-                                            http_prefix,
-                                            domain,
-                                            domain_full)
+                            if self.server.theme_name != \
+                               fields['themeDropdown']:
+                                self.server.theme_name = \
+                                    fields['themeDropdown']
+                                set_theme(base_dir, self.server.theme_name,
+                                          domain, allow_local_network_access,
+                                          system_language,
+                                          self.server.dyslexic_font, True)
+                                self.server.text_mode_banner = \
+                                    get_text_mode_banner(self.server.base_dir)
+                                self.server.iconsCache = {}
+                                self.server.fontsCache = {}
+                                self.server.css_cache = {}
+                                self.server.show_publish_as_icon = \
+                                    get_config_param(self.server.base_dir,
+                                                     'showPublishAsIcon')
+                                self.server.full_width_tl_button_header = \
+                                    get_config_param(self.server.base_dir,
+                                                     'fullWidthTlButtonHeader')
+                                self.server.icons_as_buttons = \
+                                    get_config_param(self.server.base_dir,
+                                                     'iconsAsButtons')
+                                self.server.rss_icon_at_top = \
+                                    get_config_param(self.server.base_dir,
+                                                     'rssIconAtTop')
+                                self.server.publish_button_at_top = \
+                                    get_config_param(self.server.base_dir,
+                                                     'publishButtonAtTop')
+                                set_news_avatar(base_dir,
+                                                fields['themeDropdown'],
+                                                http_prefix,
+                                                domain, domain_full)
 
                     if nickname == admin_nickname:
                         # change media instance status
