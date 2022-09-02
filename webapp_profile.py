@@ -1513,10 +1513,10 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     if os.path.isfile(editors_file):
         with open(editors_file, 'r', encoding='utf-8') as edit_file:
             editors = edit_file.read()
+    subtitle = translate['A list of editor nicknames. One per line.']
     role_assign_str += \
         edit_text_area('<b>' + translate['Site Editors'] + '</b>',
-                       translate['A list of editor nicknames. One per line.'],
-                       'editors', editors, 200, '', False)
+                       subtitle, 'editors', editors, 200, '', False)
 
     # counselors
     counselors = ''
@@ -1544,10 +1544,10 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     if os.path.isfile(devops_file):
         with open(devops_file, 'r', encoding='utf-8') as edit_file:
             devops = edit_file.read()
+    subtitle = translate['A list of devops nicknames. One per line.']
     role_assign_str += \
         edit_text_area('<b>' + translate['Site DevOps'] + '</b>',
-                       translate['A list of devops nicknames. One per line.'],
-                       'devopslist', devops, 200, '', False)
+                       subtitle, 'devopslist', devops, 200, '', False)
 
     role_assign_str += end_edit_section()
 
