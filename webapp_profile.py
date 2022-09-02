@@ -2437,7 +2437,7 @@ def html_edit_profile(server, translate: {},
                                             media_instance_str,
                                             blogs_instance_str,
                                             news_instance_str)
-    if is_devops(base_dir, nickname):
+    if is_admin or is_devops(base_dir, nickname):
         system_monitor_str = _html_system_monitor(nickname, translate)
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
