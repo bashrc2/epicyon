@@ -6715,7 +6715,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                      'devops')
                                 else:
                                     # nicknames on separate lines
-                                    eds = fields['devopslist'].split('\n')
+                                    dos = fields['devopslist'].split('\n')
                                     try:
                                         with open(devops_file, 'w+',
                                                   encoding='utf-8') as dofile:
