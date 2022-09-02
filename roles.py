@@ -302,12 +302,18 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
     """Sets the roles from a list returned from the edit profile screen under
     role assignments
     """
-    if not fields.get(list_name):
-        return
     # check for admin user
     if not path.startswith('/users/' + admin_nickname + '/'):
         return
     roles_filename = base_dir + '/accounts/' + list_filename
+    if not fields.get(list_name):
+        if os.path.isfile(roles_filename):
+            _clear_role_status(base_dir, role_name)
+            try:
+                os.remove(roles_filename)
+            except OSError:
+                print('EX: failed to remove roles file ' + roles_filename)
+        return
     _clear_role_status(base_dir, role_name)
     if ',' in fields[list_name]:
         # if the list was given as comma separated
