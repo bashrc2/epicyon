@@ -152,13 +152,8 @@ from blocking import remove_global_block
 from blocking import is_blocked_hashtag
 from blocking import is_blocked_domain
 from blocking import get_domain_blocklist
+from roles import set_roles_from_list
 from roles import get_actor_roles_list
-from roles import set_role
-from roles import clear_moderator_status
-from roles import clear_editor_status
-from roles import clear_devops_status
-from roles import clear_counselor_status
-from roles import clear_artist_status
 from blog import path_contains_blog_link
 from blog import html_blog_page_rss2
 from blog import html_blog_page_rss3
@@ -6547,335 +6542,29 @@ class PubServer(BaseHTTPRequestHandler):
                                                              si_tokens)
 
                         # change moderators list
-                        if fields.get('moderators'):
-                            if path.startswith('/users/' +
-                                               admin_nickname + '/'):
-                                moderators_file = \
-                                    base_dir + \
-                                    '/accounts/moderators.txt'
-                                clear_moderator_status(base_dir)
-                                if ',' in fields['moderators']:
-                                    # if the list was given as comma separated
-                                    mods = fields['moderators'].split(',')
-                                    try:
-                                        with open(moderators_file, 'w+',
-                                                  encoding='utf-8') as modfile:
-                                            for mod_nick in mods:
-                                                mod_nick = mod_nick.strip()
-                                                mod_dir = base_dir + \
-                                                    '/accounts/' + mod_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(mod_dir):
-                                                    modfile.write(mod_nick +
-                                                                  '\n')
-                                    except OSError:
-                                        print('EX: ' +
-                                              'unable to write moderators ' +
-                                              moderators_file)
-
-                                    for mod_nick in mods:
-                                        mod_nick = mod_nick.strip()
-                                        mod_dir = base_dir + \
-                                            '/accounts/' + mod_nick + \
-                                            '@' + domain
-                                        if os.path.isdir(mod_dir):
-                                            set_role(base_dir,
-                                                     mod_nick, domain,
-                                                     'moderator')
-                                else:
-                                    # nicknames on separate lines
-                                    mods = fields['moderators'].split('\n')
-                                    try:
-                                        with open(moderators_file, 'w+',
-                                                  encoding='utf-8') as modfile:
-                                            for mod_nick in mods:
-                                                mod_nick = mod_nick.strip()
-                                                mod_dir = \
-                                                    base_dir + \
-                                                    '/accounts/' + mod_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(mod_dir):
-                                                    modfile.write(mod_nick +
-                                                                  '\n')
-                                    except OSError:
-                                        print('EX: ' +
-                                              'unable to write moderators 2 ' +
-                                              moderators_file)
-
-                                    for mod_nick in mods:
-                                        mod_nick = mod_nick.strip()
-                                        mod_dir = \
-                                            base_dir + \
-                                            '/accounts/' + \
-                                            mod_nick + '@' + \
-                                            domain
-                                        if os.path.isdir(mod_dir):
-                                            set_role(base_dir,
-                                                     mod_nick, domain,
-                                                     'moderator')
+                        set_roles_from_list(base_dir, domain, admin_nickname,
+                                            'moderators', 'moderator', fields,
+                                            path, 'moderators.txt')
 
                         # change site editors list
-                        if fields.get('editors'):
-                            if path.startswith('/users/' +
-                                               admin_nickname + '/'):
-                                editors_file = \
-                                    base_dir + \
-                                    '/accounts/editors.txt'
-                                clear_editor_status(base_dir)
-                                if ',' in fields['editors']:
-                                    # if the list was given as comma separated
-                                    eds = fields['editors'].split(',')
-                                    try:
-                                        with open(editors_file, 'w+',
-                                                  encoding='utf-8') as edfil:
-                                            for ed_nick in eds:
-                                                ed_nick = ed_nick.strip()
-                                                ed_dir = base_dir + \
-                                                    '/accounts/' + ed_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(ed_dir):
-                                                    edfil.write(ed_nick + '\n')
-                                    except OSError as ex:
-                                        print('EX: unable to write editors ' +
-                                              editors_file + ' ' + str(ex))
-
-                                    for ed_nick in eds:
-                                        ed_nick = ed_nick.strip()
-                                        ed_dir = base_dir + \
-                                            '/accounts/' + ed_nick + \
-                                            '@' + domain
-                                        if os.path.isdir(ed_dir):
-                                            set_role(base_dir,
-                                                     ed_nick, domain,
-                                                     'editor')
-                                else:
-                                    # nicknames on separate lines
-                                    eds = fields['editors'].split('\n')
-                                    try:
-                                        with open(editors_file, 'w+',
-                                                  encoding='utf-8') as edfile:
-                                            for ed_nick in eds:
-                                                ed_nick = ed_nick.strip()
-                                                ed_dir = \
-                                                    base_dir + \
-                                                    '/accounts/' + ed_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(ed_dir):
-                                                    edfile.write(ed_nick +
-                                                                 '\n')
-                                    except OSError as ex:
-                                        print('EX: unable to write editors ' +
-                                              editors_file + ' ' + str(ex))
-
-                                    for ed_nick in eds:
-                                        ed_nick = ed_nick.strip()
-                                        ed_dir = \
-                                            base_dir + \
-                                            '/accounts/' + \
-                                            ed_nick + '@' + \
-                                            domain
-                                        if os.path.isdir(ed_dir):
-                                            set_role(base_dir,
-                                                     ed_nick, domain,
-                                                     'editor')
+                        set_roles_from_list(base_dir, domain, admin_nickname,
+                                            'editors', 'editor', fields,
+                                            path, 'editors.txt')
 
                         # change site devops list
-                        if fields.get('devopslist'):
-                            if path.startswith('/users/' +
-                                               admin_nickname + '/'):
-                                devops_file = \
-                                    base_dir + \
-                                    '/accounts/devops.txt'
-                                clear_devops_status(base_dir)
-                                if ',' in fields['devopslist']:
-                                    # if the list was given as comma separated
-                                    dos = fields['devopslist'].split(',')
-                                    try:
-                                        with open(devops_file, 'w+',
-                                                  encoding='utf-8') as dofil:
-                                            for do_nick in dos:
-                                                do_nick = do_nick.strip()
-                                                do_dir = base_dir + \
-                                                    '/accounts/' + do_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(do_dir):
-                                                    dofil.write(do_nick + '\n')
-                                    except OSError as ex:
-                                        print('EX: unable to write devops ' +
-                                              devops_file + ' ' + str(ex))
-
-                                    for do_nick in dos:
-                                        do_nick = do_nick.strip()
-                                        do_dir = base_dir + \
-                                            '/accounts/' + do_nick + \
-                                            '@' + domain
-                                        if os.path.isdir(do_dir):
-                                            set_role(base_dir,
-                                                     do_nick, domain,
-                                                     'devops')
-                                else:
-                                    # nicknames on separate lines
-                                    dos = fields['devopslist'].split('\n')
-                                    try:
-                                        with open(devops_file, 'w+',
-                                                  encoding='utf-8') as dofile:
-                                            for do_nick in dos:
-                                                do_nick = do_nick.strip()
-                                                do_dir = \
-                                                    base_dir + \
-                                                    '/accounts/' + do_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(do_dir):
-                                                    dofile.write(do_nick +
-                                                                 '\n')
-                                    except OSError as ex:
-                                        print('EX: unable to write devops ' +
-                                              devops_file + ' ' + str(ex))
-
-                                    for do_nick in dos:
-                                        do_nick = do_nick.strip()
-                                        do_dir = \
-                                            base_dir + \
-                                            '/accounts/' + \
-                                            do_nick + '@' + \
-                                            domain
-                                        if os.path.isdir(do_dir):
-                                            set_role(base_dir,
-                                                     do_nick, domain,
-                                                     'devops')
+                        set_roles_from_list(base_dir, domain, admin_nickname,
+                                            'devopslist', 'devops', fields,
+                                            path, 'devops.txt')
 
                         # change site counselors list
-                        if fields.get('counselors'):
-                            if path.startswith('/users/' +
-                                               admin_nickname + '/'):
-                                counselors_file = \
-                                    base_dir + \
-                                    '/accounts/counselors.txt'
-                                clear_counselor_status(base_dir)
-                                if ',' in fields['counselors']:
-                                    # if the list was given as comma separated
-                                    eds = fields['counselors'].split(',')
-                                    try:
-                                        with open(counselors_file, 'w+',
-                                                  encoding='utf-8') as edfile:
-                                            for ed_nick in eds:
-                                                ed_nick = ed_nick.strip()
-                                                ed_dir = base_dir + \
-                                                    '/accounts/' + ed_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(ed_dir):
-                                                    edfile.write(ed_nick +
-                                                                 '\n')
-                                    except OSError as ex:
-                                        print('EX: ' +
-                                              'unable to write counselors ' +
-                                              counselors_file + ' ' + str(ex))
-
-                                    for ed_nick in eds:
-                                        ed_nick = ed_nick.strip()
-                                        ed_dir = base_dir + \
-                                            '/accounts/' + ed_nick + \
-                                            '@' + domain
-                                        if os.path.isdir(ed_dir):
-                                            set_role(base_dir,
-                                                     ed_nick, domain,
-                                                     'counselor')
-                                else:
-                                    # nicknames on separate lines
-                                    eds = fields['counselors'].split('\n')
-                                    try:
-                                        with open(counselors_file, 'w+',
-                                                  encoding='utf-8') as edfile:
-                                            for ed_nick in eds:
-                                                ed_nick = ed_nick.strip()
-                                                ed_dir = \
-                                                    base_dir + \
-                                                    '/accounts/' + ed_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(ed_dir):
-                                                    edfile.write(ed_nick +
-                                                                 '\n')
-                                    except OSError as ex:
-                                        print('EX: ' +
-                                              'unable to write counselors ' +
-                                              counselors_file + ' ' + str(ex))
-
-                                    for ed_nick in eds:
-                                        ed_nick = ed_nick.strip()
-                                        ed_dir = \
-                                            base_dir + \
-                                            '/accounts/' + \
-                                            ed_nick + '@' + \
-                                            domain
-                                        if os.path.isdir(ed_dir):
-                                            set_role(base_dir,
-                                                     ed_nick, domain,
-                                                     'counselor')
+                        set_roles_from_list(base_dir, domain, admin_nickname,
+                                            'counselors', 'counselor', fields,
+                                            path, 'counselors.txt')
 
                         # change site artists list
-                        if fields.get('artists'):
-                            if path.startswith('/users/' +
-                                               admin_nickname + '/'):
-                                artists_file = \
-                                    base_dir + \
-                                    '/accounts/artists.txt'
-                                clear_artist_status(base_dir)
-                                if ',' in fields['artists']:
-                                    # if the list was given as comma separated
-                                    eds = fields['artists'].split(',')
-                                    try:
-                                        with open(artists_file, 'w+',
-                                                  encoding='utf-8') as edfil:
-                                            for ed_nick in eds:
-                                                ed_nick = ed_nick.strip()
-                                                ed_dir = base_dir + \
-                                                    '/accounts/' + ed_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(ed_dir):
-                                                    edfil.write(ed_nick + '\n')
-                                    except OSError as ex:
-                                        print('EX: unable to write artists ' +
-                                              artists_file + ' ' + str(ex))
-
-                                    for ed_nick in eds:
-                                        ed_nick = ed_nick.strip()
-                                        ed_dir = base_dir + \
-                                            '/accounts/' + ed_nick + \
-                                            '@' + domain
-                                        if os.path.isdir(ed_dir):
-                                            set_role(base_dir,
-                                                     ed_nick, domain,
-                                                     'artist')
-                                else:
-                                    # nicknames on separate lines
-                                    eds = fields['artists'].split('\n')
-                                    try:
-                                        with open(artists_file, 'w+',
-                                                  encoding='utf-8') as edfil:
-                                            for ed_nick in eds:
-                                                ed_nick = ed_nick.strip()
-                                                ed_dir = \
-                                                    base_dir + \
-                                                    '/accounts/' + ed_nick + \
-                                                    '@' + domain
-                                                if os.path.isdir(ed_dir):
-                                                    edfil.write(ed_nick +
-                                                                '\n')
-                                    except OSError as ex:
-                                        print('EX: unable to write artists ' +
-                                              artists_file + ' ' + str(ex))
-
-                                    for ed_nick in eds:
-                                        ed_nick = ed_nick.strip()
-                                        ed_dir = \
-                                            base_dir + \
-                                            '/accounts/' + \
-                                            ed_nick + '@' + \
-                                            domain
-                                        if os.path.isdir(ed_dir):
-                                            set_role(base_dir,
-                                                     ed_nick, domain,
-                                                     'artist')
+                        set_roles_from_list(base_dir, domain, admin_nickname,
+                                            'artists', 'artist', fields,
+                                            path, 'artists.txt')
 
                     # remove scheduled posts
                     if fields.get('removeScheduledPosts'):

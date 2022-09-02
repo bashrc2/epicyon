@@ -1622,7 +1622,7 @@ def edit_check_box(label: str, name: str, checked: bool) -> str:
         'name="' + name + '"' + checked_str + '> ' + label + '<br>\n'
 
 
-def edit_text_area(label: str, name: str, value: str,
+def edit_text_area(label: str, subtitle: str, name: str, value: str,
                    height: int, placeholder: str, spellcheck: bool) -> str:
     """Returns html for editing a textarea field
     """
@@ -1631,6 +1631,8 @@ def edit_text_area(label: str, name: str, value: str,
     text = ''
     if label:
         text = '<label class="labels">' + label + '</label><br>\n'
+        if subtitle:
+            text += subtitle + '<br>\n'
     text += \
         '      <textarea id="message" placeholder=' + \
         '"' + placeholder + '" '

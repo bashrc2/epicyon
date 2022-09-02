@@ -38,48 +38,8 @@ def _clear_role_status(base_dir: str, role: str) -> None:
         roles_list = get_actor_roles_list(actor_json)
         if role in roles_list:
             roles_list.remove(role)
-            set_rolesFromList(actor_json, roles_list)
+            actor_roles_from_list(actor_json, roles_list)
             save_json(actor_json, filename)
-
-
-def clear_editor_status(base_dir: str) -> None:
-    """Removes editor status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when editors are appointed or removed
-    """
-    _clear_role_status(base_dir, 'editor')
-
-
-def clear_devops_status(base_dir: str) -> None:
-    """Removes devops status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when devops are appointed or removed
-    """
-    _clear_role_status(base_dir, 'devops')
-
-
-def clear_counselor_status(base_dir: str) -> None:
-    """Removes counselor status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when counselors are appointed or removed
-    """
-    _clear_role_status(base_dir, 'editor')
-
-
-def clear_artist_status(base_dir: str) -> None:
-    """Removes artist status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when artists are appointed or removed
-    """
-    _clear_role_status(base_dir, 'artist')
-
-
-def clear_moderator_status(base_dir: str) -> None:
-    """Removes moderator status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when moderators are appointed or removed
-    """
-    _clear_role_status(base_dir, 'moderator')
 
 
 def _add_role(base_dir: str, nickname: str, domain: str,
@@ -212,7 +172,7 @@ def _set_actor_role(actor_json: {}, role_name: str) -> bool:
     return True
 
 
-def set_rolesFromList(actor_json: {}, roles_list: []) -> None:
+def actor_roles_from_list(actor_json: {}, roles_list: []) -> None:
     """Sets roles from a list
     """
     # clear Roles from the occupation list
@@ -285,7 +245,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
             if role not in roles_list:
                 roles_list.append(role)
                 roles_list.sort()
-                set_rolesFromList(actor_json, roles_list)
+                actor_roles_from_list(actor_json, roles_list)
                 actor_changed = True
         else:
             # remove the role
@@ -293,7 +253,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
                 _remove_role(base_dir, nickname, role_files[role])
             if role in roles_list:
                 roles_list.remove(role)
-                set_rolesFromList(actor_json, roles_list)
+                actor_roles_from_list(actor_json, roles_list)
                 actor_changed = True
         if actor_changed:
             save_json(actor_json, actor_filename)
@@ -334,3 +294,64 @@ def is_devops(base_dir: str, nickname: str) -> bool:
             if devops == nickname:
                 return True
     return False
+
+
+def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
+                        list_name: str, role_name: str, fields: [], path: str,
+                        list_filename: str) -> None:
+    """Sets the roles from a list returned from the edit profile screen under
+    role assignments
+    """
+    # check for admin user
+    if not path.startswith('/users/' + admin_nickname + '/'):
+        return
+    roles_filename = base_dir + '/accounts/' + list_filename
+    if not fields.get(list_name):
+        if os.path.isfile(roles_filename):
+            _clear_role_status(base_dir, role_name)
+            try:
+                os.remove(roles_filename)
+            except OSError:
+                print('EX: failed to remove roles file ' + roles_filename)
+        return
+    _clear_role_status(base_dir, role_name)
+    if ',' in fields[list_name]:
+        # if the list was given as comma separated
+        roles_list = fields[list_name].split(',')
+        try:
+            with open(roles_filename, 'w+',
+                      encoding='utf-8') as rolesfile:
+                for roles_nick in roles_list:
+                    roles_nick = roles_nick.strip()
+                    roles_dir = acct_dir(base_dir, roles_nick, domain)
+                    if os.path.isdir(roles_dir):
+                        rolesfile.write(roles_nick + '\n')
+        except OSError as ex:
+            print('EX: unable to write ' + list_name + ' ' +
+                  roles_filename + ' ' + str(ex))
+
+        for roles_nick in roles_list:
+            roles_nick = roles_nick.strip()
+            roles_dir = acct_dir(base_dir, roles_nick, domain)
+            if os.path.isdir(roles_dir):
+                set_role(base_dir, roles_nick, domain, role_name)
+    else:
+        # nicknames on separate lines
+        roles_list = fields[list_name].split('\n')
+        try:
+            with open(roles_filename, 'w+',
+                      encoding='utf-8') as rolesfile:
+                for roles_nick in roles_list:
+                    roles_nick = roles_nick.strip()
+                    roles_dir = acct_dir(base_dir, roles_nick, domain)
+                    if os.path.isdir(roles_dir):
+                        rolesfile.write(roles_nick + '\n')
+        except OSError as ex:
+            print('EX: unable to write  ' + list_name + ' ' +
+                  roles_filename + ' ' + str(ex))
+
+        for roles_nick in roles_list:
+            roles_nick = roles_nick.strip()
+            roles_dir = acct_dir(base_dir, roles_nick, domain)
+            if os.path.isdir(roles_dir):
+                set_role(base_dir, roles_nick, domain, role_name)

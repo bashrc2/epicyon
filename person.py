@@ -35,7 +35,7 @@ from posts import create_moderation
 from auth import store_basic_credentials
 from auth import remove_password
 from roles import set_role
-from roles import set_rolesFromList
+from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
 from utils import safe_system_string
@@ -860,7 +860,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
         admin_name = get_config_param(base_dir, 'admin')
         if person_json['id'].endswith('/users/' + admin_name):
             roles_list = ["admin", "moderator", "editor"]
-            set_rolesFromList(person_json, roles_list)
+            actor_roles_from_list(person_json, roles_list)
             update_actor = True
 
     # remove the old roles format
