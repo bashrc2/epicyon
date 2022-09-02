@@ -1532,8 +1532,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         with open(counselors_file, 'r', encoding='utf-8') as co_file:
             counselors = co_file.read()
     role_assign_str += \
-        edit_text_area(translate['Counselors'], 'counselors', counselors,
-                       200, '', False)
+        edit_text_area('<b>' + translate['Counselors'] + '</b>',
+                       'counselors', counselors, 200, '', False)
 
     # artists
     artists = ''
@@ -1542,8 +1542,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         with open(artists_file, 'r', encoding='utf-8') as art_file:
             artists = art_file.read()
     role_assign_str += \
-        edit_text_area(translate['Artists'], 'artists', artists,
-                       200, '', False)
+        edit_text_area('<b>' + translate['Artists'] + '</b>',
+                       'artists', artists, 200, '', False)
 
     # site devops
     devops = ''
