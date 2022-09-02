@@ -1631,8 +1631,8 @@ def edit_text_area(label: str, subtitle: str, name: str, value: str,
     text = ''
     if label:
         text = '<label class="labels">' + label + '</label><br>\n'
-    if subtitle:
-        text = '<label class="labels">' + subtitle + '</label><br>\n'
+        if subtitle:
+            text += '<label class="labels">' + subtitle + '</label><br>\n'
     text += \
         '      <textarea id="message" placeholder=' + \
         '"' + placeholder + '" '
