@@ -590,5 +590,8 @@
     "Last year": "去年",
     "Unauthorized": "未经授权",
     "No login credentials were posted": "未发布登录凭据",
-    "Credentials are too long": "凭据太长"
+    "Credentials are too long": "凭据太长",
+    "Site DevOps": "站点 DevOps",
+    "A list of devops nicknames. One per line.": "devops 昵称列表。 每行一个。",
+    "devops": "devops"
 }

@@ -590,5 +590,8 @@
     "Last year": "L'any passat",
     "Unauthorized": "No autoritzat",
     "No login credentials were posted": "No s'ha publicat cap credencial d'inici de sessió",
-    "Credentials are too long": "Les credencials són massa llargues"
+    "Credentials are too long": "Les credencials són massa llargues",
+    "Site DevOps": "Lloc DevOps",
+    "A list of devops nicknames. One per line.": "Una llista de sobrenoms de devops. Un per línia.",
+    "devops": "devops"
 }

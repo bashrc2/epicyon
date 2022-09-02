@@ -590,5 +590,8 @@
     "Last year": "Afgelopen jaar",
     "Unauthorized": "Ongeautoriseerd",
     "No login credentials were posted": "Er zijn geen inloggegevens gepost",
-    "Credentials are too long": "Inloggegevens zijn te lang"
+    "Credentials are too long": "Inloggegevens zijn te lang",
+    "Site DevOps": "Site DevOps",
+    "A list of devops nicknames. One per line.": "Een lijst met devops-bijnamen. Een per regel.",
+    "devops": "devops"
 }

@@ -590,5 +590,8 @@
     "Last year": "Πέρυσι",
     "Unauthorized": "Ανεξουσιοδότητος",
     "No login credentials were posted": "Δεν δημοσιεύτηκαν διαπιστευτήρια σύνδεσης",
-    "Credentials are too long": "Τα διαπιστευτήρια είναι πολύ μεγάλα"
+    "Credentials are too long": "Τα διαπιστευτήρια είναι πολύ μεγάλα",
+    "Site DevOps": "DevOps ιστότοπου",
+    "A list of devops nicknames. One per line.": "Μια λίστα με ψευδώνυμα devops. Ένα ανά γραμμή.",
+    "devops": "devops"
 }
