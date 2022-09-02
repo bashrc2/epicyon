@@ -82,6 +82,7 @@ from webapp_timeline import page_number_buttons
 from blocking import get_cw_list_variable
 from blocking import is_blocked
 from content import bold_reading_string
+from roles import is_devops
 
 THEME_FORMATS = '.zip, .gz'
 
@@ -1531,8 +1532,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         with open(counselors_file, 'r', encoding='utf-8') as co_file:
             counselors = co_file.read()
     role_assign_str += \
-        edit_text_area(translate['Counselors'], 'counselors', counselors,
-                       200, '', False)
+        edit_text_area('<b>' + translate['Counselors'] + '</b>',
+                       'counselors', counselors, 200, '', False)
 
     # artists
     artists = ''
@@ -1541,8 +1542,24 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         with open(artists_file, 'r', encoding='utf-8') as art_file:
             artists = art_file.read()
     role_assign_str += \
-        edit_text_area(translate['Artists'], 'artists', artists,
-                       200, '', False)
+        edit_text_area('<b>' + translate['Artists'] + '</b>',
+                       'artists', artists, 200, '', False)
+
+    # site devops
+    devops = ''
+    devops_file = base_dir + '/accounts/devops.txt'
+    if os.path.isfile(devops_file):
+        with open(devops_file, 'r', encoding='utf-8') as edit_file:
+            devops = edit_file.read()
+    role_assign_str += \
+        '  <b><label class="labels">' + \
+        translate['Site DevOps'] + '</label></b><br>\n' + \
+        '  ' + \
+        translate['A list of devops nicknames. One per line.'] + \
+        '  <textarea id="message" name="devopslist" placeholder="" ' + \
+        'style="height:200px" spellcheck="false">' + \
+        devops + '</textarea>'
+
     role_assign_str += end_edit_section()
 
     # Video section
@@ -2420,7 +2437,8 @@ def html_edit_profile(server, translate: {},
                                             media_instance_str,
                                             blogs_instance_str,
                                             news_instance_str)
-            system_monitor_str = _html_system_monitor(nickname, translate)
+    if is_admin or is_devops(base_dir, nickname):
+        system_monitor_str = _html_system_monitor(nickname, translate)
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     edit_profile_form = \

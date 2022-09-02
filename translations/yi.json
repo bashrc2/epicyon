@@ -590,5 +590,8 @@
     "Last year": "לעצטע יאר",
     "Unauthorized": "אַנאָטערייזד",
     "No login credentials were posted": "קיין לאָגין קראַדענטשאַלז זענען אַרייַנגעשיקט",
-    "Credentials are too long": "קראַדענטשאַלז זענען צו לאַנג"
+    "Credentials are too long": "קראַדענטשאַלז זענען צו לאַנג",
+    "Site DevOps": "וועבזייטל DevOps",
+    "A list of devops nicknames. One per line.": "א רשימה פון דיוואָפּס ניקניימז. איינער פּער שורה.",
+    "devops": "devops"
 }

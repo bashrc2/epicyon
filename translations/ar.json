@@ -590,5 +590,8 @@
     "Last year": "العام الماضي",
     "Unauthorized": "غير مصرح",
     "No login credentials were posted": "لم يتم نشر بيانات اعتماد تسجيل الدخول",
-    "Credentials are too long": "أوراق الاعتماد طويلة جدًا"
+    "Credentials are too long": "أوراق الاعتماد طويلة جدًا",
+    "Site DevOps": "DevOps الموقع",
+    "A list of devops nicknames. One per line.": "قائمة بأسماء المطورين. واحد في كل سطر.",
+    "devops": "devops"
 }

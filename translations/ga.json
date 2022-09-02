@@ -590,5 +590,8 @@
     "Last year": "Anuraidh",
     "Unauthorized": "Neamhúdaraithe",
     "No login credentials were posted": "Níor postáladh aon dintiúir logáil isteach",
-    "Credentials are too long": "Tá dintiúir ró-fhada"
+    "Credentials are too long": "Tá dintiúir ró-fhada",
+    "Site DevOps": "Suíomh DevOps",
+    "A list of devops nicknames. One per line.": "Tá liosta devops leasainmneacha. Ceann in aghaidh an líne.",
+    "devops": "devops"
 }

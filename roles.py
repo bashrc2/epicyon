@@ -14,6 +14,7 @@ from utils import get_status_number
 from utils import remove_domain_port
 from utils import acct_dir
 from utils import text_in_file
+from utils import get_config_param
 
 
 def _clear_role_status(base_dir: str, role: str) -> None:
@@ -47,6 +48,14 @@ def clear_editor_status(base_dir: str) -> None:
     rarely when editors are appointed or removed
     """
     _clear_role_status(base_dir, 'editor')
+
+
+def clear_devops_status(base_dir: str) -> None:
+    """Removes devops status from all accounts
+    This could be slow if there are many users, but only happens
+    rarely when devops are appointed or removed
+    """
+    _clear_role_status(base_dir, 'devops')
 
 
 def clear_counselor_status(base_dir: str) -> None:
@@ -296,3 +305,32 @@ def actor_has_role(actor_json: {}, role_name: str) -> bool:
     """
     roles_list = get_actor_roles_list(actor_json)
     return role_name in roles_list
+
+
+def is_devops(base_dir: str, nickname: str) -> bool:
+    """Returns true if the given nickname has the devops role
+    """
+    devops_file = base_dir + '/accounts/devops.txt'
+
+    if not os.path.isfile(devops_file):
+        admin_name = get_config_param(base_dir, 'admin')
+        if not admin_name:
+            return False
+        if admin_name == nickname:
+            return True
+        return False
+
+    with open(devops_file, 'r', encoding='utf-8') as fp_mod:
+        lines = fp_mod.readlines()
+        if len(lines) == 0:
+            # if there is nothing in the file
+            admin_name = get_config_param(base_dir, 'admin')
+            if not admin_name:
+                return False
+            if admin_name == nickname:
+                return True
+        for devops in lines:
+            devops = devops.strip('\n').strip('\r')
+            if devops == nickname:
+                return True
+    return False

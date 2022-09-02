@@ -586,5 +586,8 @@
     "Last year": "Last year",
     "Unauthorized": "Unauthorized",
     "No login credentials were posted": "No login credentials were posted",
-    "Credentials are too long": "Credentials are too long"
+    "Credentials are too long": "Credentials are too long",
+    "Site DevOps": "Site DevOps",
+    "A list of devops nicknames. One per line.": "A list of devops nicknames. One per line.",
+    "devops": "devops"
 }

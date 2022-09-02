@@ -590,5 +590,8 @@
     "Last year": "पिछले साल",
     "Unauthorized": "अनधिकृत",
     "No login credentials were posted": "कोई लॉगिन क्रेडेंशियल पोस्ट नहीं किया गया था",
-    "Credentials are too long": "क्रेडेंशियल बहुत लंबे हैं"
+    "Credentials are too long": "क्रेडेंशियल बहुत लंबे हैं",
+    "Site DevOps": "साइट देवऑप्स",
+    "A list of devops nicknames. One per line.": "देवोप्स उपनामों की एक सूची। प्रति पंक्ति एक।",
+    "devops": "devops"
 }

@@ -156,6 +156,7 @@ from roles import get_actor_roles_list
 from roles import set_role
 from roles import clear_moderator_status
 from roles import clear_editor_status
+from roles import clear_devops_status
 from roles import clear_counselor_status
 from roles import clear_artist_status
 from blog import path_contains_blog_link
@@ -6677,6 +6678,71 @@ class PubServer(BaseHTTPRequestHandler):
                                             set_role(base_dir,
                                                      ed_nick, domain,
                                                      'editor')
+
+                        # change site devops list
+                        if fields.get('devopslist'):
+                            if path.startswith('/users/' +
+                                               admin_nickname + '/'):
+                                devops_file = \
+                                    base_dir + \
+                                    '/accounts/devops.txt'
+                                clear_devops_status(base_dir)
+                                if ',' in fields['devopslist']:
+                                    # if the list was given as comma separated
+                                    dos = fields['devopslist'].split(',')
+                                    try:
+                                        with open(devops_file, 'w+',
+                                                  encoding='utf-8') as dofil:
+                                            for do_nick in dos:
+                                                do_nick = do_nick.strip()
+                                                do_dir = base_dir + \
+                                                    '/accounts/' + do_nick + \
+                                                    '@' + domain
+                                                if os.path.isdir(do_dir):
+                                                    dofil.write(do_nick + '\n')
+                                    except OSError as ex:
+                                        print('EX: unable to write devops ' +
+                                              devops_file + ' ' + str(ex))
+
+                                    for do_nick in dos:
+                                        do_nick = do_nick.strip()
+                                        do_dir = base_dir + \
+                                            '/accounts/' + do_nick + \
+                                            '@' + domain
+                                        if os.path.isdir(do_dir):
+                                            set_role(base_dir,
+                                                     do_nick, domain,
+                                                     'devops')
+                                else:
+                                    # nicknames on separate lines
+                                    dos = fields['devopslist'].split('\n')
+                                    try:
+                                        with open(devops_file, 'w+',
+                                                  encoding='utf-8') as dofile:
+                                            for do_nick in dos:
+                                                do_nick = do_nick.strip()
+                                                do_dir = \
+                                                    base_dir + \
+                                                    '/accounts/' + do_nick + \
+                                                    '@' + domain
+                                                if os.path.isdir(do_dir):
+                                                    dofile.write(do_nick +
+                                                                 '\n')
+                                    except OSError as ex:
+                                        print('EX: unable to write devops ' +
+                                              devops_file + ' ' + str(ex))
+
+                                    for do_nick in dos:
+                                        do_nick = do_nick.strip()
+                                        do_dir = \
+                                            base_dir + \
+                                            '/accounts/' + \
+                                            do_nick + '@' + \
+                                            domain
+                                        if os.path.isdir(do_dir):
+                                            set_role(base_dir,
+                                                     do_nick, domain,
+                                                     'devops')
 
                         # change site counselors list
                         if fields.get('counselors'):

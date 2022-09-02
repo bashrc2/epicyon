@@ -590,5 +590,8 @@
     "Last year": "Прошедший год",
     "Unauthorized": "Неавторизованный",
     "No login credentials were posted": "Учетные данные для входа не были отправлены",
-    "Credentials are too long": "Учетные данные слишком длинные"
+    "Credentials are too long": "Учетные данные слишком длинные",
+    "Site DevOps": "DevOps сайта",
+    "A list of devops nicknames. One per line.": "Список псевдонимов devops. По одному на строку.",
+    "devops": "devops"
 }

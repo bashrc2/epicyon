@@ -590,5 +590,8 @@
     "Last year": "Geçen yıl",
     "Unauthorized": "Yetkisiz",
     "No login credentials were posted": "Giriş bilgileri gönderilmedi",
-    "Credentials are too long": "Kimlik bilgileri çok uzun"
+    "Credentials are too long": "Kimlik bilgileri çok uzun",
+    "Site DevOps": "Site DevOps",
+    "A list of devops nicknames. One per line.": "Devops takma adlarının listesi. Her satıra bir tane.",
+    "devops": "devops"
 }

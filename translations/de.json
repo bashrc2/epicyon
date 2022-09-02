@@ -590,5 +590,8 @@
     "Last year": "Vergangenes Jahr",
     "Unauthorized": "Unbefugt",
     "No login credentials were posted": "Es wurden keine Zugangsdaten gepostet",
-    "Credentials are too long": "Anmeldeinformationen sind zu lang"
+    "Credentials are too long": "Anmeldeinformationen sind zu lang",
+    "Site DevOps": "Site-DevOps",
+    "A list of devops nicknames. One per line.": "Eine Liste von Entwickler-Spitznamen. Eine pro Zeile.",
+    "devops": "devops"
 }

@@ -133,6 +133,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                         url += '?autoplay=0'
                     else:
                         url = url.replace('?autoplay=1', '?autoplay=0')
+                if not url:
+                    continue
                 content += \
                     "<center>\n<span itemprop=\"video\">\n" + \
                     "<iframe loading=\"lazy\" " + \
@@ -211,6 +213,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
             if '"' not in url:
                 continue
             url = url.split('"')[0]
+            if not url:
+                continue
             if url.endswith('/trending') or \
                url.endswith('/home') or \
                url.endswith('/overview') or \

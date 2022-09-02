@@ -590,5 +590,8 @@
     "Last year": "Sala borî",
     "Unauthorized": "Bêmaf",
     "No login credentials were posted": "Tu pêbaweriyên têketinê nehatin şandin",
-    "Credentials are too long": "Bawernameyên pir dirêj in"
+    "Credentials are too long": "Bawernameyên pir dirêj in",
+    "Site DevOps": "Malpera DevOps",
+    "A list of devops nicknames. One per line.": "Lîsteya navên devops. Her rêzek yek.",
+    "devops": "devops"
 }

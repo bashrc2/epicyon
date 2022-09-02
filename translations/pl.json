@@ -590,5 +590,8 @@
     "Last year": "Ostatni rok",
     "Unauthorized": "Nieautoryzowany",
     "No login credentials were posted": "Nie opublikowano danych logowania",
-    "Credentials are too long": "Poświadczenia są za długie"
+    "Credentials are too long": "Poświadczenia są za długie",
+    "Site DevOps": "Deweloperzy witryny",
+    "A list of devops nicknames. One per line.": "Lista pseudonimów Devopa. Jeden na linię.",
+    "devops": "devops"
 }
