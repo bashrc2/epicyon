@@ -895,7 +895,7 @@ def html_edit_blog(media_instance: bool, translate: {},
     content_str = content_str.replace('<p>', '').replace('</p>', '\n')
 
     edit_blog_form += \
-        edit_text_area(placeholder_message, 'message', content_str,
+        edit_text_area(placeholder_message, None, 'message', content_str,
                        message_box_height, '', True)
     edit_blog_form += date_and_location
     if not media_instance:

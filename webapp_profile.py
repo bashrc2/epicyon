@@ -1423,7 +1423,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                         'instanceDescriptionShort', instance_description_short)
     instance_str += '<br>\n'
     instance_str += \
-        edit_text_area(translate['Instance Description'],
+        edit_text_area(translate['Instance Description'], None,
                        'instanceDescription', instance_description, 200,
                        '', True)
     instance_str += \
@@ -1493,23 +1493,20 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     instance_str += end_edit_section()
 
     # Role assignments section
+    role_assign_str = \
+        begin_edit_section(translate['Role Assignment']) + \
+        '  <b><label class="labels">'
+
+    # site moderators
     moderators = ''
     moderators_file = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderators_file):
         with open(moderators_file, 'r', encoding='utf-8') as mod_file:
             moderators = mod_file.read()
-    # site moderators
-    role_assign_str = \
-        begin_edit_section(translate['Role Assignment']) + \
-        '  <b><label class="labels">' + \
-        translate['Moderators'] + '</label></b><br>\n' + \
-        '  ' + \
-        translate['A list of moderator nicknames. One per line.'] + \
-        '  <textarea id="message" name="moderators" placeholder="' + \
-        translate['List of moderator nicknames'] + \
-        '..." style="height:200px" spellcheck="false">' + \
-        moderators + '</textarea>'
-
+    subtitle = translate['A list of moderator nicknames. One per line.']
+    role_assign_str += \
+        edit_text_area('<b>' + translate['Moderators'] + '</b>', subtitle,
+                       'moderators', moderators, 200, '', False)
     # site editors
     editors = ''
     editors_file = base_dir + '/accounts/editors.txt'
@@ -1517,13 +1514,9 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         with open(editors_file, 'r', encoding='utf-8') as edit_file:
             editors = edit_file.read()
     role_assign_str += \
-        '  <b><label class="labels">' + \
-        translate['Site Editors'] + '</label></b><br>\n' + \
-        '  ' + \
-        translate['A list of editor nicknames. One per line.'] + \
-        '  <textarea id="message" name="editors" placeholder="" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        editors + '</textarea>'
+        edit_text_area('<b>' + translate['Site Editors'] + '</b>',
+                       translate['A list of editor nicknames. One per line.'],
+                       'editors', editors, 200, '', False)
 
     # counselors
     counselors = ''
@@ -1532,7 +1525,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         with open(counselors_file, 'r', encoding='utf-8') as co_file:
             counselors = co_file.read()
     role_assign_str += \
-        edit_text_area('<b>' + translate['Counselors'] + '</b>',
+        edit_text_area('<b>' + translate['Counselors'] + '</b>', None,
                        'counselors', counselors, 200, '', False)
 
     # artists
@@ -1542,7 +1535,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         with open(artists_file, 'r', encoding='utf-8') as art_file:
             artists = art_file.read()
     role_assign_str += \
-        edit_text_area('<b>' + translate['Artists'] + '</b>',
+        edit_text_area('<b>' + translate['Artists'] + '</b>', None,
                        'artists', artists, 200, '', False)
 
     # site devops
@@ -1552,13 +1545,9 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         with open(devops_file, 'r', encoding='utf-8') as edit_file:
             devops = edit_file.read()
     role_assign_str += \
-        '  <b><label class="labels">' + \
-        translate['Site DevOps'] + '</label></b><br>\n' + \
-        '  ' + \
-        translate['A list of devops nicknames. One per line.'] + \
-        '  <textarea id="message" name="devopslist" placeholder="" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        devops + '</textarea>'
+        edit_text_area('<b>' + translate['Site DevOps'] + '</b>',
+                       translate['A list of devops nicknames. One per line.'],
+                       'devopslist', devops, 200, '', False)
 
     role_assign_str += end_edit_section()
 
@@ -1568,8 +1557,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     for url in peertube_instances:
         peertube_instances_str += url + '\n'
     peertube_str += \
-        edit_text_area(translate['Peertube Instances'], 'ptInstances',
-                       peertube_instances_str, 200, '', False)
+        edit_text_area(translate['Peertube Instances'], None,
+                       'ptInstances', peertube_instances_str, 200, '', False)
     peertube_str += \
         '      <br>\n'
     yt_replace_domain = get_config_param(base_dir, "youtubedomain")
@@ -1675,7 +1664,7 @@ def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
     edit_profile_form = begin_edit_section(translate['Git Projects'])
     idx = 'List of project names that you wish to receive git patches for'
     edit_profile_form += \
-        edit_text_area(translate[idx], 'gitProjects', git_projects_str,
+        edit_text_area(translate[idx], None, 'gitProjects', git_projects_str,
                        100, '', False)
     edit_profile_form += end_edit_section()
     return edit_profile_form
@@ -1696,7 +1685,7 @@ def _html_edit_profile_shared_items(base_dir: str, translate: {}) -> str:
     edit_profile_form = begin_edit_section(translate['Shares'])
     idx = 'List of domains which can access the shared items catalog'
     edit_profile_form += \
-        edit_text_area(translate[idx], 'shareDomainList',
+        edit_text_area(translate[idx], None, 'shareDomainList',
                        shared_items_str, 200, '', False)
     edit_profile_form += end_edit_section()
     return edit_profile_form
@@ -1849,12 +1838,12 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     idx = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
     edit_profile_form += \
-        edit_text_area(translate['Blocked accounts'], 'blocked', blocked_str,
-                       200, '', False)
+        edit_text_area(translate['Blocked accounts'], None, 'blocked',
+                       blocked_str, 200, '', False)
 
     idx = 'Direct messages are always allowed from these instances.'
     edit_profile_form += \
-        edit_text_area(translate['Direct Message permitted instances'],
+        edit_text_area(translate['Direct Message permitted instances'], None,
                        'dmAllowedInstances', dm_allowed_instances_str,
                        200, '', False)
 
@@ -1880,7 +1869,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                 user_agents_blocked_str += '\n'
             user_agents_blocked_str += uagent
         edit_profile_form += \
-            edit_text_area(translate['Blocked User Agents'],
+            edit_text_area(translate['Blocked User Agents'], None,
                            'userAgentsBlockedStr', user_agents_blocked_str,
                            200, '', False)
 
@@ -1894,7 +1883,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                 crawlers_allowed_str += '\n'
             crawlers_allowed_str += uagent
         edit_profile_form += \
-            edit_text_area(translate['Web Bots Allowed'],
+            edit_text_area(translate['Web Bots Allowed'], None,
                            'crawlersAllowedStr', crawlers_allowed_str,
                            200, '', False)
 
@@ -2097,7 +2086,7 @@ def _html_edit_profile_encryption_keys(pgp_fingerprint: str,
     edit_profile_form += edit_text_field(translate['PGP Fingerprint'],
                                          'openpgp', pgp_fingerprint)
     edit_profile_form += \
-        edit_text_area(translate['PGP'], 'pgp', pgp_pub_key, 600,
+        edit_text_area(translate['PGP'], None, 'pgp', pgp_pub_key, 600,
                        '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
 
     edit_profile_form += end_edit_section()
@@ -2182,7 +2171,8 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
                         display_nickname)
 
     edit_profile_form += \
-        edit_text_area(translate['Your bio'], 'bio', bio_str, 200, '', True)
+        edit_text_area(translate['Your bio'], None, 'bio', bio_str,
+                       200, '', True)
 
     edit_profile_form += \
         '      <label class="labels">' + translate['Avatar image'] + \
