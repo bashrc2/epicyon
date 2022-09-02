@@ -38,7 +38,7 @@ def _clear_role_status(base_dir: str, role: str) -> None:
         roles_list = get_actor_roles_list(actor_json)
         if role in roles_list:
             roles_list.remove(role)
-            set_rolesFromList(actor_json, roles_list)
+            actor_roles_from_list(actor_json, roles_list)
             save_json(actor_json, filename)
 
 
@@ -172,7 +172,7 @@ def _set_actor_role(actor_json: {}, role_name: str) -> bool:
     return True
 
 
-def set_rolesFromList(actor_json: {}, roles_list: []) -> None:
+def actor_roles_from_list(actor_json: {}, roles_list: []) -> None:
     """Sets roles from a list
     """
     # clear Roles from the occupation list
@@ -245,7 +245,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
             if role not in roles_list:
                 roles_list.append(role)
                 roles_list.sort()
-                set_rolesFromList(actor_json, roles_list)
+                actor_roles_from_list(actor_json, roles_list)
                 actor_changed = True
         else:
             # remove the role
@@ -253,7 +253,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
                 _remove_role(base_dir, nickname, role_files[role])
             if role in roles_list:
                 roles_list.remove(role)
-                set_rolesFromList(actor_json, roles_list)
+                actor_roles_from_list(actor_json, roles_list)
                 actor_changed = True
         if actor_changed:
             save_json(actor_json, actor_filename)

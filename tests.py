@@ -107,7 +107,7 @@ from skills import set_skill_level
 from skills import actor_skill_value
 from skills import set_skills_from_dict
 from skills import actor_has_skill
-from roles import set_rolesFromList
+from roles import actor_roles_from_list
 from roles import set_role
 from roles import actor_has_role
 from auth import constant_time_string_check
@@ -6420,7 +6420,7 @@ def _test_roles() -> None:
         ]
     }
     test_roles_list = ["admin", "moderator"]
-    set_rolesFromList(actor_json, test_roles_list)
+    actor_roles_from_list(actor_json, test_roles_list)
     assert actor_has_role(actor_json, "admin")
     assert actor_has_role(actor_json, "moderator")
     assert not actor_has_role(actor_json, "editor")
