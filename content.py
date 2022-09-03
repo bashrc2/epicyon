@@ -742,8 +742,8 @@ def post_tag_exists(tagType: str, tagName: str, tags: {}) -> bool:
     return False
 
 
-def _add_mention(word_str: str, http_prefix: str, following: str,
-                 petnames: str, replace_mentions: {},
+def _add_mention(word_str: str, http_prefix: str, following: [],
+                 petnames: [], replace_mentions: {},
                  recipients: [], tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and
     recipients list
@@ -771,8 +771,7 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                     'type': 'Mention'
                 }
                 replace_mentions[word_str] = \
-                    "<span class=\"h-card\"><a href=\"" + http_prefix + \
-                    "://" + replace_domain + "/@" + possible_nickname + \
+                    "<span class=\"h-card\"><a href=\"" + recipient_actor + \
                     "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
                     possible_nickname + "</span></a></span>"
                 return True
@@ -798,9 +797,8 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                         'type': 'Mention'
                     }
                     replace_mentions[word_str] = \
-                        "<span class=\"h-card\"><a href=\"" + http_prefix + \
-                        "://" + replace_domain + "/@" + replace_nickname + \
-                        "\" tabindex=\"10\" " + \
+                        "<span class=\"h-card\"><a href=\"" + \
+                        recipient_actor + "\" tabindex=\"10\" " + \
                         "class=\"u-url mention\">@<span>" + \
                         replace_nickname + "</span></a></span>"
                     return True
