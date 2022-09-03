@@ -3995,13 +3995,16 @@ class PubServer(BaseHTTPRequestHandler):
                         break
                 # skill search
                 search_str = search_str.replace('*', '').strip()
+                nickname = get_nickname_from_actor(actor_str)
                 skill_str = \
                     html_skills_search(actor_str,
                                        self.server.translate,
                                        base_dir,
                                        search_str,
                                        self.server.instance_only_skills_search,
-                                       64)
+                                       64, nickname, domain,
+                                       self.server.theme_name,
+                                       self.server.access_keys)
                 if skill_str:
                     msg = skill_str.encode('utf-8')
                     msglen = len(msg)

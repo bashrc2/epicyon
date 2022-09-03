@@ -502,7 +502,9 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
 
 def html_skills_search(actor: str, translate: {}, base_dir: str,
                        skillsearch: str, instance_only: bool,
-                       posts_per_page: int) -> str:
+                       posts_per_page: int,
+                       nickname: str, domain: str, theme_name: str,
+                       access_keys: {}) -> str:
     """Show a page containing search results for a skill
     """
     if skillsearch.startswith('*'):
@@ -596,6 +598,24 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
         get_config_param(base_dir, 'instanceTitle')
     skill_search_form = \
         html_header_with_external_style(css_filename, instance_title, None)
+
+    # show top banner
+    if nickname and domain and theme_name:
+        banner_file, _ = \
+            get_banner_file(base_dir, nickname, domain, theme_name)
+        skill_search_form += \
+            '<header>\n' + \
+            '<a href="/users/' + nickname + '/search" title="' + \
+            translate['Search and follow'] + '" alt="' + \
+            translate['Search and follow'] + '" ' + \
+            'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+            access_keys['menuSearch'] + '">\n'
+        skill_search_form += \
+            '<img loading="lazy" decoding="async" ' + \
+            'class="timeline-banner" alt="" ' + \
+            'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+            '</header>\n'
+
     skill_search_form += \
         '<center><h1><a href = "' + actor + '/search">' + \
         translate['Skills search'] + ': ' + \
