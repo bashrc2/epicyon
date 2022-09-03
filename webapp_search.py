@@ -249,7 +249,9 @@ def html_search_shared_items(translate: {},
                              domain_full: str, actor: str,
                              calling_domain: str,
                              shared_items_federated_domains: [],
-                             shares_file_type: str) -> str:
+                             shares_file_type: str,
+                             nickname: str, domain: str, theme_name: str,
+                             access_keys: {}) -> str:
     """Search results for shared items
     """
     curr_page = 1
@@ -270,6 +272,24 @@ def html_search_shared_items(translate: {},
         title_str = translate['Shared Items Search']
     else:
         title_str = translate['Wanted Items Search']
+
+    # show top banner
+    if nickname and domain and theme_name:
+        banner_file, _ = \
+            get_banner_file(base_dir, nickname, domain, theme_name)
+        shared_items_form += \
+            '<header>\n' + \
+            '<a href="/users/' + nickname + '/search" title="' + \
+            translate['Search and follow'] + '" alt="' + \
+            translate['Search and follow'] + '" ' + \
+            'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+            access_keys['menuSearch'] + '">\n'
+        shared_items_form += \
+            '<img loading="lazy" decoding="async" ' + \
+            'class="timeline-banner" alt="" ' + \
+            'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+            '</header>\n'
+
     shared_items_form += \
         '<center><h1>' + \
         '<a href="' + actor + '/search">' + title_str + '</a></h1></center>'

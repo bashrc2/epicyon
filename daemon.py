@@ -4379,6 +4379,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # wanted items search
                 shared_items_federated_domains = \
                     self.server.shared_items_federated_domains
+                nickname = get_nickname_from_actor(actor_str)
                 wanted_items_str = \
                     html_search_shared_items(self.server.translate,
                                              base_dir,
@@ -4388,7 +4389,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              domain_full,
                                              actor_str, calling_domain,
                                              shared_items_federated_domains,
-                                             'wanted')
+                                             'wanted', nickname, domain,
+                                             self.server.theme_name,
+                                             self.server.access_keys)
                 if wanted_items_str:
                     msg = wanted_items_str.encode('utf-8')
                     msglen = len(msg)
@@ -4401,6 +4404,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # shared items search
                 shared_items_federated_domains = \
                     self.server.shared_items_federated_domains
+                nickname = get_nickname_from_actor(actor_str)
                 shared_items_str = \
                     html_search_shared_items(self.server.translate,
                                              base_dir,
@@ -4410,7 +4414,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              domain_full,
                                              actor_str, calling_domain,
                                              shared_items_federated_domains,
-                                             'shares')
+                                             'shares', nickname, domain,
+                                             self.server.theme_name,
+                                             self.server.access_keys)
                 if shared_items_str:
                     msg = shared_items_str.encode('utf-8')
                     msglen = len(msg)
