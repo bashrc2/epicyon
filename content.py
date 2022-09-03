@@ -829,8 +829,7 @@ def _add_mention(word_str: str, http_prefix: str, following: [],
                 'type': 'Mention'
             }
             replace_mentions[word_str] = \
-                "<span class=\"h-card\"><a href=\"" + http_prefix + \
-                "://" + possible_domain + "/@" + possible_nickname + \
+                "<span class=\"h-card\"><a href=\"" + recipient_actor + \
                 "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
                 possible_nickname + "</span></a></span>"
             return True
@@ -847,8 +846,7 @@ def _add_mention(word_str: str, http_prefix: str, following: [],
         'type': 'Mention'
     }
     replace_mentions[word_str] = \
-        "<span class=\"h-card\"><a href=\"" + http_prefix + \
-        "://" + possible_domain + "/@" + possible_nickname + \
+        "<span class=\"h-card\"><a href=\"" + recipient_actor + \
         "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
         possible_nickname + "</span></a></span>"
     return True
