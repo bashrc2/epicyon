@@ -655,7 +655,7 @@ def html_history_search(translate: {}, base_dir: str,
                         cw_lists: {},
                         lists_enabled: str,
                         timezone: str, bold_reading: bool,
-                        dogwhistles: {}) -> str:
+                        dogwhistles: {}, access_keys: {}) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -682,6 +682,22 @@ def html_history_search(translate: {}, base_dir: str,
     history_search_title = '🔍 ' + translate['Your Posts']
     if box_name == 'bookmarks':
         history_search_title = '🔍 ' + translate['Bookmarks']
+
+    if nickname and domain and theme_name:
+        banner_file, _ = \
+            get_banner_file(base_dir, nickname, domain, theme_name)
+        history_search_form += \
+            '<header>\n' + \
+            '<a href="/users/' + nickname + '/search" title="' + \
+            translate['Search and follow'] + '" alt="' + \
+            translate['Search and follow'] + '" ' + \
+            'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+            access_keys['menuSearch'] + '">\n'
+        history_search_form += \
+            '<img loading="lazy" decoding="async" ' + \
+            'class="timeline-banner" alt="" ' + \
+            'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+            '</header>\n'
 
     history_search_form += \
         '<center><h1><a href="' + actor + '/search">' + \

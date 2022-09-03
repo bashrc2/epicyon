@@ -4081,7 +4081,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        self.server.access_keys)
                 if history_str:
                     msg = history_str.encode('utf-8')
                     msglen = len(msg)
@@ -4162,7 +4163,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        self.server.access_keys)
                 if bookmarks_str:
                     msg = bookmarks_str.encode('utf-8')
                     msglen = len(msg)
