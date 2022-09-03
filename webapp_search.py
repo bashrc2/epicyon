@@ -44,7 +44,9 @@ from webapp_hashtagswarm import html_hash_tag_swarm
 from maps import html_hashtag_maps
 
 
-def html_search_emoji(translate: {}, base_dir: str, search_str: str) -> str:
+def html_search_emoji(translate: {}, base_dir: str, search_str: str,
+                      nickname: str, domain: str, theme: str,
+                      access_keys: {}) -> str:
     """Search results for emoji
     """
     # emoji.json is generated so that it can be customized and the changes
@@ -66,6 +68,24 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str) -> str:
         get_config_param(base_dir, 'instanceTitle')
     emoji_form = \
         html_header_with_external_style(css_filename, instance_title, None)
+
+    # show top banner
+    if nickname and domain and theme:
+        banner_file, _ = \
+            get_banner_file(base_dir, nickname, domain, theme)
+        emoji_form += \
+            '<header>\n' + \
+            '<a href="/users/' + nickname + '/search" title="' + \
+            translate['Search and follow'] + '" alt="' + \
+            translate['Search and follow'] + '" ' + \
+            'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+            access_keys['menuSearch'] + '">\n'
+        emoji_form += \
+            '<img loading="lazy" decoding="async" ' + \
+            'class="timeline-banner" alt="" ' + \
+            'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+            '</header>\n'
+
     emoji_form += '<center><h1>' + \
         translate['Emoji Search'] + \
         '</h1></center>'

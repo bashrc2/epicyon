@@ -4355,10 +4355,13 @@ class PubServer(BaseHTTPRequestHandler):
                     search_str = \
                         search_str.replace(' emoji', '')
                 # emoji search
+                nickname = get_nickname_from_actor(actor_str)
                 emoji_str = \
                     html_search_emoji(self.server.translate,
-                                      base_dir,
-                                      search_str)
+                                      base_dir, search_str,
+                                      nickname, domain,
+                                      self.server.theme_name,
+                                      self.server.access_keys)
                 if emoji_str:
                     msg = emoji_str.encode('utf-8')
                     msglen = len(msg)
