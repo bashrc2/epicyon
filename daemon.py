@@ -3995,13 +3995,16 @@ class PubServer(BaseHTTPRequestHandler):
                         break
                 # skill search
                 search_str = search_str.replace('*', '').strip()
+                nickname = get_nickname_from_actor(actor_str)
                 skill_str = \
                     html_skills_search(actor_str,
                                        self.server.translate,
                                        base_dir,
                                        search_str,
                                        self.server.instance_only_skills_search,
-                                       64)
+                                       64, nickname, domain,
+                                       self.server.theme_name,
+                                       self.server.access_keys)
                 if skill_str:
                     msg = skill_str.encode('utf-8')
                     msglen = len(msg)
@@ -4081,7 +4084,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        self.server.access_keys)
                 if history_str:
                     msg = history_str.encode('utf-8')
                     msglen = len(msg)
@@ -4162,7 +4166,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        self.server.access_keys)
                 if bookmarks_str:
                     msg = bookmarks_str.encode('utf-8')
                     msglen = len(msg)
@@ -4355,10 +4360,13 @@ class PubServer(BaseHTTPRequestHandler):
                     search_str = \
                         search_str.replace(' emoji', '')
                 # emoji search
+                nickname = get_nickname_from_actor(actor_str)
                 emoji_str = \
                     html_search_emoji(self.server.translate,
-                                      base_dir,
-                                      search_str)
+                                      base_dir, search_str,
+                                      nickname, domain,
+                                      self.server.theme_name,
+                                      self.server.access_keys)
                 if emoji_str:
                     msg = emoji_str.encode('utf-8')
                     msglen = len(msg)
@@ -4371,6 +4379,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # wanted items search
                 shared_items_federated_domains = \
                     self.server.shared_items_federated_domains
+                nickname = get_nickname_from_actor(actor_str)
                 wanted_items_str = \
                     html_search_shared_items(self.server.translate,
                                              base_dir,
@@ -4380,7 +4389,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              domain_full,
                                              actor_str, calling_domain,
                                              shared_items_federated_domains,
-                                             'wanted')
+                                             'wanted', nickname, domain,
+                                             self.server.theme_name,
+                                             self.server.access_keys)
                 if wanted_items_str:
                     msg = wanted_items_str.encode('utf-8')
                     msglen = len(msg)
@@ -4393,6 +4404,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # shared items search
                 shared_items_federated_domains = \
                     self.server.shared_items_federated_domains
+                nickname = get_nickname_from_actor(actor_str)
                 shared_items_str = \
                     html_search_shared_items(self.server.translate,
                                              base_dir,
@@ -4402,7 +4414,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              domain_full,
                                              actor_str, calling_domain,
                                              shared_items_federated_domains,
-                                             'shares')
+                                             'shares', nickname, domain,
+                                             self.server.theme_name,
+                                             self.server.access_keys)
                 if shared_items_str:
                     msg = shared_items_str.encode('utf-8')
                     msglen = len(msg)

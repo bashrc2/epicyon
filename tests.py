@@ -4697,7 +4697,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     # print(str(reply))
     expected_str = \
         '<p><span class=\"h-card\">' + \
-        '<a href=\"https://rat.site/@ninjarodent\" tabindex="10" ' + \
+        '<a href=\"https://rat.site/users/ninjarodent\" tabindex="10" ' + \
         'class=\"u-url mention\">@<span>ninjarodent</span>' + \
         '</a></span> This is a test.</p>'
     if reply['object']['content'] != expected_str:
@@ -4707,7 +4707,8 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     reply['object']['contentMap'][system_language] = reply['object']['content']
     assert reply['object']['tag'][0]['type'] == 'Mention'
     assert reply['object']['tag'][0]['name'] == '@ninjarodent@rat.site'
-    assert reply['object']['tag'][0]['href'] == 'https://rat.site/@ninjarodent'
+    assert reply['object']['tag'][0]['href'] == \
+        'https://rat.site/users/ninjarodent'
     assert len(reply['object']['to']) == 1
     assert reply['object']['to'][0].endswith('#Public')
     assert len(reply['object']['cc']) >= 1

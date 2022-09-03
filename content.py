@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import get_user_paths
 from utils import convert_published_to_local_timezone
 from utils import has_object_dict
 from utils import valid_hash_tag
@@ -742,8 +743,28 @@ def post_tag_exists(tagType: str, tagName: str, tags: {}) -> bool:
     return False
 
 
-def _add_mention(word_str: str, http_prefix: str, following: str,
-                 petnames: str, replace_mentions: {},
+def _mention_to_url(base_dir: str, http_prefix: str,
+                    domain: str, nickname: str) -> str:
+    """Convert https://somedomain/@somenick to
+    https://somedomain/users/somenick
+    This uses the hack of trying the cache directory to see if
+    there is a matching actor
+    """
+    possible_paths = get_user_paths()
+    cache_dir = base_dir + '/cache/actors'
+    cache_path_start = cache_dir + '/' + http_prefix + ':##' + domain
+    for users_path in possible_paths:
+        users_path = users_path.replace('/', '#')
+        possible_cache_entry = \
+            cache_path_start + users_path + nickname + '.json'
+        if os.path.isfile(possible_cache_entry):
+            return http_prefix + '://' + \
+                domain + users_path.replace('#', '/') + nickname
+    return http_prefix + '://' + domain + '/users/' + nickname
+
+
+def _add_mention(base_dir: str, word_str: str, http_prefix: str,
+                 following: [], petnames: [], replace_mentions: {},
                  recipients: [], tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and
     recipients list
@@ -761,8 +782,9 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
             if possible_nickname == follow_nick:
                 follow_str = remove_eol(follow)
                 replace_domain = follow_str.split('@')[1]
-                recipient_actor = http_prefix + "://" + \
-                    replace_domain + "/@" + possible_nickname
+                recipient_actor = \
+                    _mention_to_url(base_dir, http_prefix,
+                                    replace_domain, possible_nickname)
                 if recipient_actor not in recipients:
                     recipients.append(recipient_actor)
                 tags[word_str] = {
@@ -771,8 +793,7 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                     'type': 'Mention'
                 }
                 replace_mentions[word_str] = \
-                    "<span class=\"h-card\"><a href=\"" + http_prefix + \
-                    "://" + replace_domain + "/@" + possible_nickname + \
+                    "<span class=\"h-card\"><a href=\"" + recipient_actor + \
                     "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
                     possible_nickname + "</span></a></span>"
                 return True
@@ -788,8 +809,9 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                     follow_str = remove_eol(follow)
                     replace_nickname = follow_str.split('@')[0]
                     replace_domain = follow_str.split('@')[1]
-                    recipient_actor = http_prefix + "://" + \
-                        replace_domain + "/@" + replace_nickname
+                    recipient_actor = \
+                        _mention_to_url(base_dir, http_prefix,
+                                        replace_domain, replace_nickname)
                     if recipient_actor not in recipients:
                         recipients.append(recipient_actor)
                     tags[word_str] = {
@@ -798,9 +820,8 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                         'type': 'Mention'
                     }
                     replace_mentions[word_str] = \
-                        "<span class=\"h-card\"><a href=\"" + http_prefix + \
-                        "://" + replace_domain + "/@" + replace_nickname + \
-                        "\" tabindex=\"10\" " + \
+                        "<span class=\"h-card\"><a href=\"" + \
+                        recipient_actor + "\" tabindex=\"10\" " + \
                         "class=\"u-url mention\">@<span>" + \
                         replace_nickname + "</span></a></span>"
                     return True
@@ -821,8 +842,9 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
         for follow in following:
             if remove_eol(follow) != possible_handle:
                 continue
-            recipient_actor = http_prefix + "://" + \
-                possible_domain + "/@" + possible_nickname
+            recipient_actor = \
+                _mention_to_url(base_dir, http_prefix,
+                                possible_domain, possible_nickname)
             if recipient_actor not in recipients:
                 recipients.append(recipient_actor)
             tags[word_str] = {
@@ -831,16 +853,16 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
                 'type': 'Mention'
             }
             replace_mentions[word_str] = \
-                "<span class=\"h-card\"><a href=\"" + http_prefix + \
-                "://" + possible_domain + "/@" + possible_nickname + \
+                "<span class=\"h-card\"><a href=\"" + recipient_actor + \
                 "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
                 possible_nickname + "</span></a></span>"
             return True
     # @nick@domain
     if not (possible_domain == 'localhost' or '.' in possible_domain):
         return False
-    recipient_actor = http_prefix + "://" + \
-        possible_domain + "/@" + possible_nickname
+    recipient_actor = \
+        _mention_to_url(base_dir, http_prefix,
+                        possible_domain, possible_nickname)
     if recipient_actor not in recipients:
         recipients.append(recipient_actor)
     tags[word_str] = {
@@ -849,8 +871,7 @@ def _add_mention(word_str: str, http_prefix: str, following: str,
         'type': 'Mention'
     }
     replace_mentions[word_str] = \
-        "<span class=\"h-card\"><a href=\"" + http_prefix + \
-        "://" + possible_domain + "/@" + possible_nickname + \
+        "<span class=\"h-card\"><a href=\"" + recipient_actor + \
         "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
         possible_nickname + "</span></a></span>"
     return True
@@ -1225,8 +1246,9 @@ def add_html_tags(base_dir: str, http_prefix: str,
                 long_words_list.append(word_str)
             first_char = word_str[0]
             if first_char == '@':
-                if _add_mention(word_str, http_prefix, following, petnames,
-                                replace_mentions, recipients, hashtags):
+                if _add_mention(base_dir, word_str, http_prefix, following,
+                                petnames, replace_mentions, recipients,
+                                hashtags):
                     prev_word_str = ''
                     continue
             elif first_char == '#':
