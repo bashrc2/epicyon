@@ -1537,7 +1537,9 @@ Ever feel like corporate social media is deliberately pressing your buttons or g
       Forward port 443 from your internet router to your server. If you have dynamic DNS make sure its configured. Add a TLS certificate:
     </p>
     <div class="shell">
-      certbot certonly -n --server https://acme-v02.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
+        systemctl stop nginx<br>
+        certbot certonly -n --server https://acme-v02.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL<br>
+        systemctl start nginx
     </div>
     <p class="intro">
       Restart your web server:
