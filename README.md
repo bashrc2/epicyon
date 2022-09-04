@@ -71,6 +71,13 @@ In the most common case you'll be using systemd to set up a daemon to run the se
 
 The following instructions install Epicyon to the **/opt** directory. It's not essential that it be installed there, and it could be in any other preferred directory.
 
+Clone the repo, or if you downloaded the tarball then extract it into the **/opt** directory.
+
+``` bash
+cd /opt
+git clone https://gitlab.com/bashrc2/epicyon
+```
+
 Add a dedicated user so that we don't have to run as root.
 
 ``` bash
