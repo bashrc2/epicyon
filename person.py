@@ -1776,6 +1776,12 @@ def valid_sending_actor(session, base_dir: str,
     if not actor_json.get('preferredUsername'):
         print('REJECT: no preferredUsername within actor ' + str(actor_json))
         return False
+
+    actor_spam_filter_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
+    if not os.path.isfile(actor_spam_filter_filename):
+        return True
+
     # does the actor have a bio ?
     if not unit_test:
         bio_str = ''
