@@ -11667,7 +11667,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_feed = \
                     person_box_json(recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -11701,7 +11700,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # if no page was specified then show the first
                             inbox_feed = \
                                 person_box_json(recent_posts_cache,
-                                                curr_session,
                                                 base_dir,
                                                 domain,
                                                 port,
@@ -11844,7 +11842,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_dm_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -11872,7 +11869,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # if no page was specified then show the first
                             inbox_dm_feed = \
                                 person_box_json(self.server.recent_posts_cache,
-                                                curr_session,
                                                 base_dir,
                                                 domain,
                                                 port,
@@ -12005,7 +12001,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_replies_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12034,7 +12029,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_replies_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12165,7 +12159,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_media_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12194,7 +12187,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_media_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12322,7 +12314,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_blogs_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12351,7 +12342,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_blogs_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12480,7 +12470,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_news_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12512,7 +12501,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_news_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12644,7 +12632,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_features_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12676,7 +12663,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_features_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -13002,7 +12988,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 bookmarks_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -13031,7 +13016,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # if no page was specified then show the first
                             bookmarks_feed = \
                                 person_box_json(self.server.recent_posts_cache,
-                                                curr_session,
                                                 base_dir,
                                                 domain,
                                                 port,
@@ -13163,7 +13147,6 @@ class PubServer(BaseHTTPRequestHandler):
         # get outbox feed for a person
         outbox_feed = \
             person_box_json(self.server.recent_posts_cache,
-                            curr_session,
                             base_dir, domain, port, path,
                             http_prefix, MAX_POSTS_IN_FEED, 'outbox',
                             authorized,
@@ -13191,7 +13174,6 @@ class PubServer(BaseHTTPRequestHandler):
                 page_str = '?page=' + str(page_number)
                 outbox_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir, domain, port,
                                     path + page_str,
                                     http_prefix,
@@ -13302,7 +13284,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 moderation_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -13330,7 +13311,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # if no page was specified then show the first
                             moderation_feed = \
                                 person_box_json(self.server.recent_posts_cache,
-                                                curr_session,
                                                 base_dir,
                                                 domain,
                                                 port,

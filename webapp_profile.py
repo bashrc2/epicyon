@@ -1130,7 +1130,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
             '/users/' + nickname + '/' + box_name + '?page=' + \
             str(curr_page)
         outbox_feed = \
-            person_box_json({}, session, base_dir, domain,
+            person_box_json({}, base_dir, domain,
                             port,
                             outbox_feed_path_str,
                             http_prefix,

@@ -56,7 +56,7 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
             '/users/' + nickname + '/' + box_name + \
             '?page=' + str(curr_page)
         outbox_feed = \
-            person_box_json({}, session, base_dir, domain, port,
+            person_box_json({}, base_dir, domain, port,
                             outbox_feed_path_str,
                             http_prefix, 10, box_name,
                             authorized, 0, False, 0)

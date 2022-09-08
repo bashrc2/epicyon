@@ -963,7 +963,7 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
 
 
 def person_box_json(recent_posts_cache: {},
-                    session, base_dir: str, domain: str, port: int, path: str,
+                    base_dir: str, domain: str, port: int, path: str,
                     http_prefix: str, no_of_items: int, boxname: str,
                     authorized: bool,
                     newswire_votes_threshold: int, positive_voting: bool,
