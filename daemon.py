@@ -20361,13 +20361,28 @@ class PubServer(BaseHTTPRequestHandler):
                             '_POST', 'check path',
                             self.server.debug)
 
+        is_media_content = False
+        if self.headers['Content-type'].startswith('image/') or \
+           self.headers['Content-type'].startswith('video/') or \
+           self.headers['Content-type'].startswith('audio/'):
+            is_media_content = True
+
+        # check that the content length string is not too long
+        if isinstance(self.headers['Content-length'], str):
+            if not is_media_content:
+                max_content_size = self.server.maxMessageLength
+            else:
+                max_content_size = self.server.maxMediaSize
+            if len(self.headers['Content-length']) > max_content_size:
+                self._400()
+                self.server.postreq_busy = False
+                return
+
         # read the message and convert it into a python dictionary
         length = int(self.headers['Content-length'])
         if self.server.debug:
             print('DEBUG: content-length: ' + str(length))
-        if not self.headers['Content-type'].startswith('image/') and \
-           not self.headers['Content-type'].startswith('video/') and \
-           not self.headers['Content-type'].startswith('audio/'):
+        if not is_media_content:
             if length > self.server.maxMessageLength:
                 print('Maximum message length exceeded ' + str(length))
                 self._400()
