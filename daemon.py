@@ -17617,7 +17617,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if reply_handle not in reply_to_list:
                                 reply_to_list.append(reply_handle)
                         if ment.startswith('page='):
-                            reply_page_str = ment.replace('page=', '') 
+                            reply_page_str = ment.replace('page=', '')
                             if len(reply_page_str) > 5:
                                 reply_page_str = "1"
                             if reply_page_str.isdigit():

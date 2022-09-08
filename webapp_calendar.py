@@ -341,16 +341,19 @@ def html_calendar(person_cache: {}, translate: {},
                 if '=' in part:
                     if part.split('=')[0] == 'year':
                         num_str = part.split('=')[1]
-                        if num_str.isdigit():
-                            year = int(num_str)
+                        if len(num_str) <= 5:
+                            if num_str.isdigit():
+                                year = int(num_str)
                     elif part.split('=')[0] == 'month':
                         num_str = part.split('=')[1]
-                        if num_str.isdigit():
-                            month_number = int(num_str)
+                        if len(num_str) <= 3:
+                            if num_str.isdigit():
+                                month_number = int(num_str)
                     elif part.split('=')[0] == 'day':
                         num_str = part.split('=')[1]
-                        if num_str.isdigit():
-                            day_number = int(num_str)
+                        if len(num_str) <= 3:
+                            if num_str.isdigit():
+                                day_number = int(num_str)
                     elif part.split('=')[0] == 'ical':
                         bool_str = part.split('=')[1]
                         if bool_str.lower().startswith('t'):

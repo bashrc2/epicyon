@@ -986,6 +986,8 @@ def person_box_json(recent_posts_cache: {},
     page_number = None
     if '?page=' in path:
         page_number = path.split('?page=')[1]
+        if len(page_number) > 5:
+            page_number = 1
         if page_number == 'true':
             page_number = 1
         else:
