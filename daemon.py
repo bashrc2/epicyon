@@ -20446,9 +20446,9 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the content length string is not too long
         if isinstance(self.headers['Content-length'], str):
             if not is_media_content:
-                max_content_size = self.server.maxMessageLength
+                max_content_size = len(str(self.server.maxMessageLength))
             else:
-                max_content_size = self.server.maxMediaSize
+                max_content_size = len(str(self.server.maxMediaSize))
             if len(self.headers['Content-length']) > max_content_size:
                 self._400()
                 self.server.postreq_busy = False
