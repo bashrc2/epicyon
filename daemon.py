@@ -18437,6 +18437,14 @@ class PubServer(BaseHTTPRequestHandler):
             print(endpoint_type.upper() + ' has no content-length')
             self._400()
             return
+
+        # check that the content length string is not too long
+        if isinstance(self.headers['Content-length'], str):
+            max_content_size = len(str(self.server.maxMessageLength))
+            if len(self.headers['Content-length']) > max_content_size:
+                self._400()
+                return
+
         length = int(self.headers['Content-length'])
         if length > self.server.max_post_length:
             print(endpoint_type.upper() +
