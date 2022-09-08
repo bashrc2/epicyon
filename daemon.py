@@ -3887,6 +3887,8 @@ class PubServer(BaseHTTPRequestHandler):
             page_number_str = path.split('/searchhandle?page=')[1]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
             path = path.split('?page=')[0]
@@ -4442,6 +4444,8 @@ class PubServer(BaseHTTPRequestHandler):
             page_number_str = path.split('?page=')[1]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
             path = path.split('?page=')[0]
@@ -4765,6 +4769,8 @@ class PubServer(BaseHTTPRequestHandler):
                     remove_post_confirm_params.split('pageNumber=')[1]
                 if '&' in page_number_str:
                     page_number_str = page_number_str.split('&')[0]
+                if len(page_number_str) > 5:
+                    page_number_str = "1"
                 if page_number_str.isdigit():
                     page_number = int(page_number_str)
             year_str = None
@@ -7901,6 +7907,8 @@ class PubServer(BaseHTTPRequestHandler):
                 options_profile_url = \
                     '/users/' + options_profile_url + '/avatar.' + ext
                 back_to_path = 'moderation'
+            if len(options_page_number) > 5:
+                options_page_number = "1"
             if options_page_number.isdigit():
                 page_number = int(options_page_number)
             options_link = None
@@ -8401,6 +8409,8 @@ class PubServer(BaseHTTPRequestHandler):
             page_number_str = path.split('?page=')[1]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         hashtag = path.split('/tags/')[1]
@@ -8563,6 +8573,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -8743,6 +8755,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9093,6 +9107,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9287,6 +9303,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9472,6 +9490,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9686,6 +9706,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9885,6 +9907,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9989,6 +10013,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -10136,6 +10162,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -10278,6 +10306,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         delete_url = path.split('?delete=')[1]
@@ -10400,6 +10430,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         actor = \
@@ -10526,6 +10558,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         actor = \
@@ -11653,6 +11687,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
+                            if len(page_number) > 5:
+                                page_number = "1"
                             if page_number.isdigit():
                                 page_number = int(page_number)
                             else:
@@ -11822,6 +11858,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
+                            if len(page_number) > 5:
+                                page_number = "1"
                             if page_number.isdigit():
                                 page_number = int(page_number)
                             else:
@@ -11982,6 +12020,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12140,6 +12180,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12295,6 +12337,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12452,6 +12496,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12614,6 +12660,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12765,6 +12813,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12858,6 +12908,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12965,6 +13017,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
+                            if len(page_number) > 5:
+                                page_number = "1"
                             if page_number.isdigit():
                                 page_number = int(page_number)
                             else:
@@ -13119,6 +13173,8 @@ class PubServer(BaseHTTPRequestHandler):
             if '?page=' in nickname:
                 page_number = nickname.split('?page=')[1]
                 nickname = nickname.split('?page=')[0]
+                if len(page_number) > 5:
+                    page_number = "1"
                 if page_number.isdigit():
                     page_number = int(page_number)
                 else:
@@ -13260,6 +13316,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
+                            if len(page_number) > 5:
+                                page_number = "1"
                             if page_number.isdigit():
                                 page_number = int(page_number)
                             else:
@@ -13413,6 +13471,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number_str = path.split('?page=')[1]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
+                    if len(page_number_str) > 5:
+                        page_number_str = "1"
                     if page_number_str.isdigit():
                         page_number = int(page_number_str)
                     search_path = path.split('?page=')[0]
@@ -13543,6 +13603,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number_str = path.split('?page=')[1]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
+                    if len(page_number_str) > 5:
+                        page_number_str = "1"
                     if page_number_str.isdigit():
                         page_number = int(page_number_str)
                     search_path = path.split('?page=')[0]
@@ -13676,6 +13738,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number_str = path.split('?page=')[1]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
+                    if len(page_number_str) > 5:
+                        page_number_str = "1"
                     if page_number_str.isdigit():
                         page_number = int(page_number_str)
                     search_path = path.split('?page=')[0]
@@ -14045,6 +14109,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
                 if page_number < 1:
@@ -17551,7 +17617,9 @@ class PubServer(BaseHTTPRequestHandler):
                             if reply_handle not in reply_to_list:
                                 reply_to_list.append(reply_handle)
                         if ment.startswith('page='):
-                            reply_page_str = ment.replace('page=', '')
+                            reply_page_str = ment.replace('page=', '') 
+                            if len(reply_page_str) > 5:
+                                reply_page_str = "1"
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
 #                        if m.startswith('actor='):
@@ -17573,6 +17641,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 reply_to_list.append(reply_handle)
                         if ment.startswith('page='):
                             reply_page_str = ment.replace('page=', '')
+                            if len(reply_page_str) > 5:
+                                reply_page_str = "1"
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
                     in_reply_to_url = mentions_list[0]
@@ -17594,6 +17664,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 reply_to_list.append(reply_handle)
                         if ment.startswith('page='):
                             reply_page_str = ment.replace('page=', '')
+                            if len(reply_page_str) > 5:
+                                reply_page_str = "1"
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
 #                        if m.startswith('actor='):
@@ -17625,6 +17697,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 reply_to_list.append(reply_handle)
                         elif ment.startswith('page='):
                             reply_page_str = ment.replace('page=', '')
+                            if len(reply_page_str) > 5:
+                                reply_page_str = "1"
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
                         elif ment.startswith('category='):
@@ -19484,6 +19558,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
                 path = path.split('?page=')[0]
