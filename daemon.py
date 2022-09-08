@@ -19432,7 +19432,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                int_duration = int(fields['duration'])
+                if isinstance(fields['duration'], str):
+                    if len(fields['duration']) > 5:
+                        return -1
+                int_duration_days = int(fields['duration'])
                 languages_understood = \
                     get_understood_languages(self.server.base_dir,
                                              self.server.http_prefix,
@@ -19452,7 +19455,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['imageDescription'],
                                          city,
                                          fields['subject'],
-                                         int_duration,
+                                         int_duration_days,
                                          fields['languagesDropdown'],
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
