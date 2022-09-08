@@ -2801,8 +2801,9 @@ class PubServer(BaseHTTPRequestHandler):
             page_number_str = options_confirm_params.split('pageNumber=')[1]
             if '&' in page_number_str:
                 page_number_str = page_number_str.split('&')[0]
-            if page_number_str.isdigit():
-                page_number = int(page_number_str)
+            if len(page_number_str) < 5:
+                if page_number_str.isdigit():
+                    page_number = int(page_number_str)
 
         # actor for the person
         options_actor = options_confirm_params.split('actor=')[1]
@@ -4804,7 +4805,10 @@ class PubServer(BaseHTTPRequestHandler):
                     get_nickname_from_actor(remove_post_actor)
                 if self.post_to_nickname:
                     if month_str and year_str:
-                        if month_str.isdigit() and year_str.isdigit():
+                        if len(month_str) <= 3 and \
+                           len(year_str) <= 3 and \
+                           month_str.isdigit() and \
+                           year_str.isdigit():
                             year_int = int(year_str)
                             month_int = int(month_str)
                             remove_calendar_event(base_dir,
