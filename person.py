@@ -963,7 +963,7 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
 
 
 def person_box_json(recent_posts_cache: {},
-                    session, base_dir: str, domain: str, port: int, path: str,
+                    base_dir: str, domain: str, port: int, path: str,
                     http_prefix: str, no_of_items: int, boxname: str,
                     authorized: bool,
                     newswire_votes_threshold: int, positive_voting: bool,
@@ -986,6 +986,8 @@ def person_box_json(recent_posts_cache: {},
     page_number = None
     if '?page=' in path:
         page_number = path.split('?page=')[1]
+        if len(page_number) > 5:
+            page_number = 1
         if page_number == 'true':
             page_number = 1
         else:
@@ -1776,6 +1778,12 @@ def valid_sending_actor(session, base_dir: str,
     if not actor_json.get('preferredUsername'):
         print('REJECT: no preferredUsername within actor ' + str(actor_json))
         return False
+
+    actor_spam_filter_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
+    if not os.path.isfile(actor_spam_filter_filename):
+        return True
+
     # does the actor have a bio ?
     if not unit_test:
         bio_str = ''

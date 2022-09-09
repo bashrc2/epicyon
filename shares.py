@@ -462,6 +462,8 @@ def get_shares_feed_for_person(base_dir: str,
     page_number = None
     if '?page=' in path:
         page_number = path.split('?page=')[1]
+        if len(page_number) > 5:
+            page_number = 1
         if page_number == 'true':
             page_number = 1
         else:

@@ -2801,8 +2801,9 @@ class PubServer(BaseHTTPRequestHandler):
             page_number_str = options_confirm_params.split('pageNumber=')[1]
             if '&' in page_number_str:
                 page_number_str = page_number_str.split('&')[0]
-            if page_number_str.isdigit():
-                page_number = int(page_number_str)
+            if len(page_number_str) < 5:
+                if page_number_str.isdigit():
+                    page_number = int(page_number_str)
 
         # actor for the person
         options_actor = options_confirm_params.split('actor=')[1]
@@ -3887,6 +3888,8 @@ class PubServer(BaseHTTPRequestHandler):
             page_number_str = path.split('/searchhandle?page=')[1]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
             path = path.split('?page=')[0]
@@ -4442,6 +4445,8 @@ class PubServer(BaseHTTPRequestHandler):
             page_number_str = path.split('?page=')[1]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
             path = path.split('?page=')[0]
@@ -4765,6 +4770,8 @@ class PubServer(BaseHTTPRequestHandler):
                     remove_post_confirm_params.split('pageNumber=')[1]
                 if '&' in page_number_str:
                     page_number_str = page_number_str.split('&')[0]
+                if len(page_number_str) > 5:
+                    page_number_str = "1"
                 if page_number_str.isdigit():
                     page_number = int(page_number_str)
             year_str = None
@@ -4798,7 +4805,10 @@ class PubServer(BaseHTTPRequestHandler):
                     get_nickname_from_actor(remove_post_actor)
                 if self.post_to_nickname:
                     if month_str and year_str:
-                        if month_str.isdigit() and year_str.isdigit():
+                        if len(month_str) <= 3 and \
+                           len(year_str) <= 3 and \
+                           month_str.isdigit() and \
+                           year_str.isdigit():
                             year_int = int(year_str)
                             month_int = int(month_str)
                             remove_calendar_event(base_dir,
@@ -7901,6 +7911,8 @@ class PubServer(BaseHTTPRequestHandler):
                 options_profile_url = \
                     '/users/' + options_profile_url + '/avatar.' + ext
                 back_to_path = 'moderation'
+            if len(options_page_number) > 5:
+                options_page_number = "1"
             if options_page_number.isdigit():
                 page_number = int(options_page_number)
             options_link = None
@@ -8401,6 +8413,8 @@ class PubServer(BaseHTTPRequestHandler):
             page_number_str = path.split('?page=')[1]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         hashtag = path.split('/tags/')[1]
@@ -8563,6 +8577,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -8743,6 +8759,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9093,6 +9111,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9287,6 +9307,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9472,6 +9494,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9686,6 +9710,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9885,6 +9911,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -9989,6 +10017,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -10136,6 +10166,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         timeline_str = 'inbox'
@@ -10278,6 +10310,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         delete_url = path.split('?delete=')[1]
@@ -10400,6 +10434,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         actor = \
@@ -10526,6 +10562,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
         actor = \
@@ -11629,7 +11667,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_feed = \
                     person_box_json(recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -11653,6 +11690,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
+                            if len(page_number) > 5:
+                                page_number = "1"
                             if page_number.isdigit():
                                 page_number = int(page_number)
                             else:
@@ -11661,7 +11700,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # if no page was specified then show the first
                             inbox_feed = \
                                 person_box_json(recent_posts_cache,
-                                                curr_session,
                                                 base_dir,
                                                 domain,
                                                 port,
@@ -11804,7 +11842,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_dm_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -11822,6 +11859,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
+                            if len(page_number) > 5:
+                                page_number = "1"
                             if page_number.isdigit():
                                 page_number = int(page_number)
                             else:
@@ -11830,7 +11869,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # if no page was specified then show the first
                             inbox_dm_feed = \
                                 person_box_json(self.server.recent_posts_cache,
-                                                curr_session,
                                                 base_dir,
                                                 domain,
                                                 port,
@@ -11963,7 +12001,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_replies_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -11982,6 +12019,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -11990,7 +12029,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_replies_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12121,7 +12159,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_media_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12140,6 +12177,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12148,7 +12187,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_media_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12276,7 +12314,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_blogs_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12295,6 +12332,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12303,7 +12342,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_blogs_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12432,7 +12470,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_news_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12452,6 +12489,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12462,7 +12501,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_news_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12594,7 +12632,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 inbox_features_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12614,6 +12651,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12624,7 +12663,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # if no page was specified then show the first
                         inbox_features_feed = \
                             person_box_json(self.server.recent_posts_cache,
-                                            curr_session,
                                             base_dir,
                                             domain,
                                             port,
@@ -12765,6 +12803,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12858,6 +12898,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
                         if page_number.isdigit():
                             page_number = int(page_number)
                         else:
@@ -12946,7 +12988,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 bookmarks_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -12965,6 +13006,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
+                            if len(page_number) > 5:
+                                page_number = "1"
                             if page_number.isdigit():
                                 page_number = int(page_number)
                             else:
@@ -12973,7 +13016,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # if no page was specified then show the first
                             bookmarks_feed = \
                                 person_box_json(self.server.recent_posts_cache,
-                                                curr_session,
                                                 base_dir,
                                                 domain,
                                                 port,
@@ -13105,7 +13147,6 @@ class PubServer(BaseHTTPRequestHandler):
         # get outbox feed for a person
         outbox_feed = \
             person_box_json(self.server.recent_posts_cache,
-                            curr_session,
                             base_dir, domain, port, path,
                             http_prefix, MAX_POSTS_IN_FEED, 'outbox',
                             authorized,
@@ -13119,6 +13160,8 @@ class PubServer(BaseHTTPRequestHandler):
             if '?page=' in nickname:
                 page_number = nickname.split('?page=')[1]
                 nickname = nickname.split('?page=')[0]
+                if len(page_number) > 5:
+                    page_number = "1"
                 if page_number.isdigit():
                     page_number = int(page_number)
                 else:
@@ -13131,7 +13174,6 @@ class PubServer(BaseHTTPRequestHandler):
                 page_str = '?page=' + str(page_number)
                 outbox_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir, domain, port,
                                     path + page_str,
                                     http_prefix,
@@ -13242,7 +13284,6 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 moderation_feed = \
                     person_box_json(self.server.recent_posts_cache,
-                                    curr_session,
                                     base_dir,
                                     domain,
                                     port,
@@ -13260,6 +13301,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
+                            if len(page_number) > 5:
+                                page_number = "1"
                             if page_number.isdigit():
                                 page_number = int(page_number)
                             else:
@@ -13268,7 +13311,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # if no page was specified then show the first
                             moderation_feed = \
                                 person_box_json(self.server.recent_posts_cache,
-                                                curr_session,
                                                 base_dir,
                                                 domain,
                                                 port,
@@ -13413,6 +13455,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number_str = path.split('?page=')[1]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
+                    if len(page_number_str) > 5:
+                        page_number_str = "1"
                     if page_number_str.isdigit():
                         page_number = int(page_number_str)
                     search_path = path.split('?page=')[0]
@@ -13543,6 +13587,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number_str = path.split('?page=')[1]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
+                    if len(page_number_str) > 5:
+                        page_number_str = "1"
                     if page_number_str.isdigit():
                         page_number = int(page_number_str)
                     search_path = path.split('?page=')[0]
@@ -13676,6 +13722,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number_str = path.split('?page=')[1]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
+                    if len(page_number_str) > 5:
+                        page_number_str = "1"
                     if page_number_str.isdigit():
                         page_number = int(page_number_str)
                     search_path = path.split('?page=')[0]
@@ -14045,6 +14093,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
                 if page_number < 1:
@@ -17552,6 +17602,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 reply_to_list.append(reply_handle)
                         if ment.startswith('page='):
                             reply_page_str = ment.replace('page=', '')
+                            if len(reply_page_str) > 5:
+                                reply_page_str = "1"
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
 #                        if m.startswith('actor='):
@@ -17573,6 +17625,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 reply_to_list.append(reply_handle)
                         if ment.startswith('page='):
                             reply_page_str = ment.replace('page=', '')
+                            if len(reply_page_str) > 5:
+                                reply_page_str = "1"
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
                     in_reply_to_url = mentions_list[0]
@@ -17594,6 +17648,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 reply_to_list.append(reply_handle)
                         if ment.startswith('page='):
                             reply_page_str = ment.replace('page=', '')
+                            if len(reply_page_str) > 5:
+                                reply_page_str = "1"
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
 #                        if m.startswith('actor='):
@@ -17625,6 +17681,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 reply_to_list.append(reply_handle)
                         elif ment.startswith('page='):
                             reply_page_str = ment.replace('page=', '')
+                            if len(reply_page_str) > 5:
+                                reply_page_str = "1"
                             if reply_page_str.isdigit():
                                 reply_page_number = int(reply_page_str)
                         elif ment.startswith('category='):
@@ -18363,6 +18421,14 @@ class PubServer(BaseHTTPRequestHandler):
             print(endpoint_type.upper() + ' has no content-length')
             self._400()
             return
+
+        # check that the content length string is not too long
+        if isinstance(self.headers['Content-length'], str):
+            max_content_size = len(str(self.server.maxMessageLength))
+            if len(self.headers['Content-length']) > max_content_size:
+                self._400()
+                return
+
         length = int(self.headers['Content-length'])
         if length > self.server.max_post_length:
             print(endpoint_type.upper() +
@@ -19346,7 +19412,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                int_duration = int(fields['duration'])
+                if isinstance(fields['duration'], str):
+                    if len(fields['duration']) > 5:
+                        return -1
+                int_duration_days = int(fields['duration'])
                 languages_understood = \
                     get_understood_languages(self.server.base_dir,
                                              self.server.http_prefix,
@@ -19366,7 +19435,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['imageDescription'],
                                          city,
                                          fields['subject'],
-                                         int_duration,
+                                         int_duration_days,
                                          fields['languagesDropdown'],
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
@@ -19484,6 +19553,8 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
                 page_number_str = page_number_str.split('#')[0]
+            if len(page_number_str) > 5:
+                page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
                 path = path.split('?page=')[0]
@@ -20361,13 +20432,28 @@ class PubServer(BaseHTTPRequestHandler):
                             '_POST', 'check path',
                             self.server.debug)
 
+        is_media_content = False
+        if self.headers['Content-type'].startswith('image/') or \
+           self.headers['Content-type'].startswith('video/') or \
+           self.headers['Content-type'].startswith('audio/'):
+            is_media_content = True
+
+        # check that the content length string is not too long
+        if isinstance(self.headers['Content-length'], str):
+            if not is_media_content:
+                max_content_size = len(str(self.server.maxMessageLength))
+            else:
+                max_content_size = len(str(self.server.maxMediaSize))
+            if len(self.headers['Content-length']) > max_content_size:
+                self._400()
+                self.server.postreq_busy = False
+                return
+
         # read the message and convert it into a python dictionary
         length = int(self.headers['Content-length'])
         if self.server.debug:
             print('DEBUG: content-length: ' + str(length))
-        if not self.headers['Content-type'].startswith('image/') and \
-           not self.headers['Content-type'].startswith('video/') and \
-           not self.headers['Content-type'].startswith('audio/'):
+        if not is_media_content:
             if length > self.server.maxMessageLength:
                 print('Maximum message length exceeded ' + str(length))
                 self._400()

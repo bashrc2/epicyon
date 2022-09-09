@@ -355,8 +355,7 @@ def _speaker_mimic3(pitch: int, rate: int, srange: int,
     if pitch > 75:
         voice = 'en_US/vctk_low'
     length_scale = str(1.2 - (rate / 600.0))
-    if srange > 100:
-        srange = 100
+    srange = min(srange, 100)
     noise_w = str(srange / 100.0)
     text = html.unescape(say_text).replace('"', "'")
     if not text:
@@ -1701,9 +1700,13 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         post_index_str = command_str.split('read ')[1]
                     else:
                         post_index_str = command_str.split('show ')[1]
+                    if len(post_index_str) > 5:
+                        post_index_str = "1"
                 if box_json and post_index_str.isdigit():
                     _desktop_clear_screen()
                     _desktop_show_banner()
+                    if len(post_index_str) > 5:
+                        post_index_str = "1"
                     post_index = int(post_index_str)
                     post_json_object = \
                         _read_local_box_post(session, nickname, domain,
@@ -1764,6 +1767,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 elif not actor_json and box_json:
                     _desktop_clear_screen()
                     _desktop_show_banner()
+                    if len(post_index_str) > 5:
+                        post_index_str = "1"
                     post_index = int(post_index_str)
                     actor_json = \
                         _desktop_show_profile(session, nickname, domain,
@@ -1870,6 +1875,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -1909,6 +1916,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -1941,6 +1950,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -1983,6 +1994,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -2015,6 +2028,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -2046,6 +2061,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -2082,6 +2099,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                     else:
@@ -2128,6 +2147,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -2160,6 +2181,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -2203,6 +2226,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -2236,6 +2261,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_page = 1
                 if ' ' in command_str:
                     page_num = command_str.split(' ')[-1].strip()
+                    if len(page_num) > 5:
+                        page_num = "1"
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 follow_requests_json = \
@@ -2255,6 +2282,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_page = 1
                 if ' ' in command_str:
                     page_num = command_str.split(' ')[-1].strip()
+                    if len(page_num) > 5:
+                        page_num = "1"
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 following_json = \
@@ -2275,6 +2304,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_page = 1
                 if ' ' in command_str:
                     page_num = command_str.split(' ')[-1].strip()
+                    if len(page_num) > 5:
+                        page_num = "1"
                     if page_num.isdigit():
                         curr_page = int(page_num)
                 followers_json = \
@@ -2484,6 +2515,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
@@ -2555,6 +2588,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
+                    if len(post_index) > 5:
+                        post_index = "1"
                     if post_index.isdigit():
                         curr_index = int(post_index)
                 if curr_index > 0 and box_json:
