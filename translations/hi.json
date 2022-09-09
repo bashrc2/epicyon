@@ -593,5 +593,6 @@
     "Credentials are too long": "क्रेडेंशियल बहुत लंबे हैं",
     "Site DevOps": "साइट देवऑप्स",
     "A list of devops nicknames. One per line.": "देवोप्स उपनामों की एक सूची। प्रति पंक्ति एक।",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts": "स्पैम खातों को अस्वीकार करें"
 }

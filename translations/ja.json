@@ -593,5 +593,6 @@
     "Credentials are too long": "資格情報が長すぎます",
     "Site DevOps": "サイト DevOps",
     "A list of devops nicknames. One per line.": "DevOps ニックネームのリスト。 1 行に 1 つ。",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts": "スパムアカウントを拒否"
 }

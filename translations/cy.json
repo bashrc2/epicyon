@@ -593,5 +593,6 @@
     "Credentials are too long": "Mae manylion yn rhy hir",
     "Site DevOps": "Gwefan DevOps",
     "A list of devops nicknames. One per line.": "Mae rhestr o devops llysenwau. Un i bob llinell.",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts": "Gwrthod cyfrifon sbam"
 }

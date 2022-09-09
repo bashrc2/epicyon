@@ -593,5 +593,6 @@
     "Credentials are too long": "Tá dintiúir ró-fhada",
     "Site DevOps": "Suíomh DevOps",
     "A list of devops nicknames. One per line.": "Tá liosta devops leasainmneacha. Ceann in aghaidh an líne.",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts": "Diúltaigh cuntais turscair"
 }

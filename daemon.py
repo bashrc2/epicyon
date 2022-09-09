@@ -6612,6 +6612,32 @@ class PubServer(BaseHTTPRequestHandler):
                                 approve_followers
                             actor_changed = True
 
+                    # reject spam actors
+                    reject_spam_actors = False
+                    if fields.get('rejectSpamActors'):
+                        if fields['rejectSpamActors'] == 'on':
+                            reject_spam_actors = True
+                    curr_reject_spam_actors = False
+                    actor_spam_filter_filename = \
+                        acct_dir(base_dir, nickname, domain) + \
+                        '/.reject_spam_actors'
+                    if os.path.isfile(actor_spam_filter_filename):
+                        curr_reject_spam_actors = True
+                    if reject_spam_actors != curr_reject_spam_actors:
+                        if reject_spam_actors:
+                            try:
+                                with open(actor_spam_filter_filename, 'w+',
+                                          encoding='utf-8') as fp_spam:
+                                    fp_spam.write('\n')
+                            except OSError:
+                                print('EX: unable to write reject spam actors')
+                        else:
+                            try:
+                                os.remove(actor_spam_filter_filename)
+                            except OSError:
+                                print('EX: ' +
+                                      'unable to remove reject spam actors')
+
                     # keep DMs during post expiry
                     expire_keep_dms = False
                     if fields.get('expiryKeepDMs'):

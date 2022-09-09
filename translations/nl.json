@@ -593,5 +593,6 @@
     "Credentials are too long": "Inloggegevens zijn te lang",
     "Site DevOps": "Site DevOps",
     "A list of devops nicknames. One per line.": "Een lijst met devops-bijnamen. Een per regel.",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts": "Spamaccounts afwijzen"
 }
