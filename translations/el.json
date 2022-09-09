@@ -593,5 +593,6 @@
     "Credentials are too long": "Τα διαπιστευτήρια είναι πολύ μεγάλα",
     "Site DevOps": "DevOps ιστότοπου",
     "A list of devops nicknames. One per line.": "Μια λίστα με ψευδώνυμα devops. Ένα ανά γραμμή.",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts", ""
 }

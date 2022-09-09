@@ -593,5 +593,6 @@
     "Credentials are too long": "Les credencials són massa llargues",
     "Site DevOps": "Lloc DevOps",
     "A list of devops nicknames. One per line.": "Una llista de sobrenoms de devops. Un per línia.",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts", ""
 }

@@ -593,5 +593,6 @@
     "Credentials are too long": "Poświadczenia są za długie",
     "Site DevOps": "Deweloperzy witryny",
     "A list of devops nicknames. One per line.": "Lista pseudonimów Devopa. Jeden na linię.",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts", ""
 }

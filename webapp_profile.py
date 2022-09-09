@@ -2094,6 +2094,7 @@ def _html_edit_profile_encryption_keys(pgp_fingerprint: str,
 
 def _html_edit_profile_options(is_admin: bool,
                                manually_approves_followers: str,
+                               reject_spam_actors: str,
                                is_bot: str, is_group: str,
                                follow_dms: str, remove_twitter: str,
                                notify_likes: str, notify_reactions: str,
@@ -2106,6 +2107,9 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(translate['Approve follower requests'],
                        'approveFollowers', manually_approves_followers)
+    edit_profile_form += \
+        edit_check_box(translate['Reject spam accounts'],
+                       'rejectSpamActors', reject_spam_actors)
     edit_profile_form += \
         edit_check_box(translate['This is a bot account'],
                        'isBot', is_bot)
@@ -2321,7 +2325,8 @@ def html_edit_profile(server, translate: {},
     pgp_pub_key = enigma_pub_key = ''
     pgp_fingerprint = xmpp_address = matrix_address = ''
     ssb_address = blog_address = tox_address = ''
-    cwtch_address = briar_address = manually_approves_followers = ''
+    cwtch_address = briar_address = ''
+    manually_approves_followers = reject_spam_actors = ''
 
     actor_json = load_json(actor_filename)
     if actor_json:
@@ -2354,6 +2359,11 @@ def html_edit_profile(server, translate: {},
                 manually_approves_followers = 'checked'
             else:
                 manually_approves_followers = ''
+        reject_spam_actors = ''
+        actor_spam_filter_filename = \
+            acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
+        if os.path.isfile(actor_spam_filter_filename):
+            reject_spam_actors = 'checked'
         if actor_json.get('type'):
             if actor_json['type'] == 'Service':
                 is_bot = 'checked'
@@ -2469,6 +2479,7 @@ def html_edit_profile(server, translate: {},
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
+                                   reject_spam_actors,
                                    is_bot, is_group, follow_dms,
                                    remove_twitter,
                                    notify_likes, notify_reactions,

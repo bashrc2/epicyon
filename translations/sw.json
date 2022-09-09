@@ -593,5 +593,6 @@
     "Credentials are too long": "Kitambulisho ni kirefu sana",
     "Site DevOps": "Tovuti ya DevOps",
     "A list of devops nicknames. One per line.": "Orodha ya majina ya utani ya devops. Moja kwa kila mstari.",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts", ""
 }

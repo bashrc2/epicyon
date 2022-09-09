@@ -593,5 +593,6 @@
     "Credentials are too long": "Облікові дані задовгі",
     "Site DevOps": "Сайт DevOps",
     "A list of devops nicknames. One per line.": "Список ніків devops. По одному на рядок.",
-    "devops": "devops"
+    "devops": "devops",
+    "Reject spam accounts", ""
 }
