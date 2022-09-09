@@ -1110,7 +1110,7 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
         return True
     invalid_strings = [
         'script', 'noscript', 'pre',
-        'canvas', 'style', 'abbr',
+        'canvas', 'style', 'abbr', 'input',
         'frame', 'iframe', 'html', 'body',
         'hr', 'allow-popups', 'allow-scripts',
         'amp-'
