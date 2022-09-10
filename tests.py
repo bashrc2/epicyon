@@ -1826,7 +1826,9 @@ def test_shared_items_federation(base_dir: str) -> None:
     bob_instance_actor_json = \
         get_json(signing_priv_key_pem, session_client,
                  'http://' + bob_address + '/@actor', test_headers, {}, True,
-                 __version__, 'http', 'somedomain.or.other', 10, True)
+                 __version__, 'http', 'somedomain.or.other', 10, False)
+    if not bob_instance_actor_json:
+        print('Unable to get json for ' + 'http://' + bob_address + '/@actor')
     assert bob_instance_actor_json
     pprint(bob_instance_actor_json)
     assert bob_instance_actor_json['name'] == 'ACTOR'
