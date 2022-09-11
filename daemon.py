@@ -1279,12 +1279,11 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if self._has_accept(calling_domain):
+                protocol_str = 'application/json'
                 if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json', msglen,
-                                      None, calling_domain, True)
-                else:
-                    self._set_headers('application/json', msglen,
-                                      None, calling_domain, True)
+                    protocol_str = 'application/ld+json'
+                self._set_headers(protocol_str, msglen,
+                                  None, calling_domain, True)
             else:
                 self._set_headers('application/ld+json', msglen,
                                   None, calling_domain, True)
@@ -7465,8 +7464,12 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg_str.encode('utf-8')
 
         msglen = len(msg)
-        self._set_headers('application/json', msglen,
-                          None, calling_domain, False)
+        if 'application/ld+json' in self.headers['Accept']:
+            self._set_headers('application/ld+json', msglen,
+                              None, calling_domain, False)
+        else:
+            self._set_headers('application/json', msglen,
+                              None, calling_domain, False)
         self._write(msg)
         if self.server.debug:
             print('Sent manifest: ' + calling_domain)
@@ -7601,8 +7604,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
-        self._set_headers('application/json', msglen,
-                          None, calling_domain, False)
+        if 'application/ld+json' in self.headers['Accept']:
+            self._set_headers('application/ld+json', msglen,
+                              None, calling_domain, False)
+        else:
+            self._set_headers('application/json', msglen,
+                              None, calling_domain, False)
         self._write(msg)
 
     def _get_exported_theme(self, path: str, base_dir: str,
@@ -10813,6 +10820,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
                     msglen = len(msg)
                     self._set_headers(protocol_str, msglen, None,
                                       calling_domain, False)
@@ -10918,6 +10927,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
                     msglen = len(msg)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
@@ -11037,7 +11048,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json', msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time, self.server.fitness,
@@ -11169,8 +11183,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                                 msg_str)
                                 msg = msg_str.encode('utf-8')
                                 msglen = len(msg)
-                                self._set_headers('application/json',
-                                                  msglen, None,
+                                protocol_str = 'application/json'
+                                if 'application/ld+json' in \
+                                   self.headers['Accept']:
+                                    protocol_str = 'application/ld+json'
+                                self._set_headers(protocol_str, msglen, None,
                                                   calling_domain, False)
                                 self._write(msg)
                                 fitness_performance(getreq_start_time,
@@ -11516,8 +11533,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                 msg_str)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('application/json',
-                                  msglen,
+                protocol_str = 'application/json'
+                if 'application/ld+json' in self.headers['Accept']:
+                    protocol_str = 'application/ld+json'
+                self._set_headers(protocol_str, msglen,
                                   None, calling_domain, False)
                 self._write(msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
@@ -11832,7 +11851,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                         msg_str)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
-                        self._set_headers('application/json', msglen,
+                        protocol_str = 'application/json'
+                        if 'application/ld+json' in self.headers['Accept']:
+                            protocol_str = 'application/ld+json'
+                        self._set_headers(protocol_str, msglen,
                                           None, calling_domain, False)
                         self._write(msg)
                         fitness_performance(getreq_start_time,
@@ -11989,8 +12011,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                         msg_str)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
-                        self._set_headers('application/json',
-                                          msglen,
+                        protocol_str = 'application/json'
+                        if 'application/ld+json' in self.headers['Accept']:
+                            protocol_str = 'application/ld+json'
+                        self._set_headers(protocol_str, msglen,
                                           None, calling_domain, False)
                         self._write(msg)
                         fitness_performance(getreq_start_time,
@@ -12149,7 +12173,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json', msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time,
@@ -12459,8 +12486,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json',
-                                      msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time,
@@ -12623,8 +12652,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json',
-                                      msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time,
@@ -12789,8 +12820,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json',
-                                      msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time,
@@ -13137,7 +13170,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                         msg_str)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
-                        self._set_headers('application/json', msglen,
+                        protocol_str = 'application/json'
+                        if 'application/ld+json' in self.headers['Accept']:
+                            protocol_str = 'application/ld+json'
+                        self._set_headers(protocol_str, msglen,
                                           None, calling_domain, False)
                         self._write(msg)
                         fitness_performance(getreq_start_time,
@@ -13286,7 +13322,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json', msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time,
@@ -13432,7 +13471,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                         msg_str)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
-                        self._set_headers('application/json', msglen,
+                        protocol_str = 'application/json'
+                        if 'application/ld+json' in self.headers['Accept']:
+                            protocol_str = 'application/ld+json'
+                        self._set_headers(protocol_str, msglen,
                                           None, calling_domain, False)
                         self._write(msg)
                         fitness_performance(getreq_start_time,
@@ -13572,7 +13614,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json', msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time,
@@ -13707,7 +13752,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json', msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time,
@@ -13843,7 +13891,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json', msglen,
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
                     fitness_performance(getreq_start_time,
@@ -13875,7 +13926,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
-        self._set_headers('application/json', msglen,
+        protocol_str = 'application/json'
+        if 'application/ld+json' in self.headers['Accept']:
+            protocol_str = 'application/ld+json'
+        self._set_headers(protocol_str, msglen,
                           None, calling_domain, False)
         self._write(msg)
 
@@ -13903,7 +13957,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
-        self._set_headers('application/json', msglen,
+        protocol_str = 'application/json'
+        if 'application/ld+json' in self.headers['Accept']:
+            protocol_str = 'application/ld+json'
+        self._set_headers(protocol_str, msglen,
                           None, calling_domain, False)
         self._write(msg)
 
@@ -14996,8 +15053,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
-        self._set_headers('application/json',
-                          msglen, None, calling_domain, False)
+        protocol_str = 'application/json'
+        if 'application/ld+json' in self.headers['Accept']:
+            protocol_str = 'application/ld+json'
+        self._set_headers(protocol_str, msglen,
+                          None, calling_domain, False)
         self._write(msg)
 
     def _send_block(self, http_prefix: str,
@@ -15147,8 +15207,11 @@ class PubServer(BaseHTTPRequestHandler):
             msg_str = json.dumps(acct_pub_key_json, ensure_ascii=False)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            self._set_headers('application/json',
-                              msglen, None, calling_domain, False)
+            protocol_str = 'application/json'
+            if 'application/ld+json' in self.headers['Accept']:
+                protocol_str = 'application/ld+json'
+            self._set_headers(protocol_str, msglen,
+                              None, calling_domain, False)
             self._write(msg)
             return
 
@@ -15402,8 +15465,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json',
-                                      msglen, None, calling_domain, False)
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
+                                      None, calling_domain, False)
                     self._write(msg)
                     return
                 elif catalog_type == 'csv':
@@ -15501,8 +15567,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    self._set_headers('application/json',
-                                      msglen, None, calling_domain, False)
+                    protocol_str = 'application/json'
+                    if 'application/ld+json' in self.headers['Accept']:
+                        protocol_str = 'application/ld+json'
+                    self._set_headers(protocol_str, msglen,
+                                      None, calling_domain, False)
                     self._write(msg)
                     return
                 elif catalog_type == 'csv':
@@ -15855,8 +15924,11 @@ class PubServer(BaseHTTPRequestHandler):
                                             msg_str)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            self._set_headers('application/json',
-                              msglen, None, calling_domain, False)
+            protocol_str = 'application/json'
+            if 'application/ld+json' in self.headers['Accept']:
+                protocol_str = 'application/ld+json'
+            self._set_headers(protocol_str, msglen,
+                              None, calling_domain, False)
             self._write(msg)
             return
 
@@ -15924,7 +15996,10 @@ class PubServer(BaseHTTPRequestHandler):
                                             msg_str)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            self._set_headers('application/json', msglen,
+            protocol_str = 'application/json'
+            if 'application/ld+json' in self.headers['Accept']:
+                protocol_str = 'application/ld+json'
+            self._set_headers(protocol_str, msglen,
                               None, calling_domain, False)
             self._write(msg)
             fitness_performance(getreq_start_time, self.server.fitness,
@@ -16007,8 +16082,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                 msg_str)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('application/json',
-                                  msglen,
+                protocol_str = 'application/json'
+                if 'application/ld+json' in self.headers['Accept']:
+                    protocol_str = 'application/ld+json'
+                self._set_headers(protocol_str, msglen,
                                   None, calling_domain, False)
                 self._write(msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
@@ -18415,8 +18492,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                 msg_str)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('application/json',
-                                  msglen,
+                protocol_str = 'application/json'
+                if 'application/ld+json' in self.headers['Accept']:
+                    protocol_str = 'application/ld+json'
+                self._set_headers(protocol_str, msglen,
                                   None, calling_domain, False)
                 self._write(msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
@@ -19766,8 +19845,10 @@ class PubServer(BaseHTTPRequestHandler):
                                             msg_str)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            self._set_headers('application/json',
-                              msglen,
+            protocol_str = 'application/json'
+            if 'application/ld+json' in self.headers['Accept']:
+                protocol_str = 'application/ld+json'
+            self._set_headers(protocol_str, msglen,
                               None, calling_domain, False)
             self._write(msg)
             return True
