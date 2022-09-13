@@ -3862,3 +3862,13 @@ def safe_system_string(text: str) -> str:
     """
     text = text.replace('$(', '(').replace('`', '')
     return text
+
+
+def get_json_content_from_accept(accept: str) -> str:
+    """returns the json content type for the given accept
+    """
+    protocol_str = 'application/json'
+    if accept:
+        if 'application/ld+json' in accept:
+            protocol_str = 'application/ld+json'
+    return protocol_str

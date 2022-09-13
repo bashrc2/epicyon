@@ -258,6 +258,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import get_json_content_from_accept
 from utils import remove_eol
 from utils import text_in_file
 from utils import is_onion_request
@@ -1279,10 +1280,8 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if self._has_accept(calling_domain):
-                protocol_str = 'application/json'
-                if self.headers.get('Accept'):
-                    if 'application/ld+json' in self.headers['Accept']:
-                        protocol_str = 'application/ld+json'
+                protocol_str = \
+                    get_json_content_from_accept(self.headers.get('Accept'))
                 self._set_headers(protocol_str, msglen,
                                   None, calling_domain, True)
             else:
@@ -1474,10 +1473,8 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if self._has_accept(calling_domain):
-                protocol_str = 'application/json'
-                if self.headers.get('Accept'):
-                    if 'application/ld+json' in self.headers['Accept']:
-                        protocol_str = 'application/ld+json'
+                protocol_str = \
+                    get_json_content_from_accept(self.headers.get('Accept'))
                 self._set_headers(protocol_str, msglen,
                                   None, calling_domain, True)
             else:
@@ -1553,10 +1550,9 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 if self._has_accept(calling_domain):
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers.get('Accept')
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, True)
                 else:
@@ -7465,10 +7461,8 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg_str.encode('utf-8')
 
         msglen = len(msg)
-        protocol_str = 'application/json'
-        if self.headers.get('Accept'):
-            if 'application/ld+json' in self.headers['Accept']:
-                protocol_str = 'application/ld+json'
+        protocol_str = \
+            get_json_content_from_accept(self.headers['Accept'])
         self._set_headers(protocol_str, msglen,
                           None, calling_domain, False)
         self._write(msg)
@@ -7605,10 +7599,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
-        protocol_str = 'application/json'
-        if self.headers.get('Accept'):
-            if 'application/ld+json' in self.headers['Accept']:
-                protocol_str = 'application/ld+json'
+        protocol_str = \
+            get_json_content_from_accept(self.headers['Accept'])
         self._set_headers(protocol_str, msglen,
                           None, calling_domain, False)
         self._write(msg)
@@ -10820,10 +10812,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     referer_domain,
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    protocol_str = \
+                        get_json_content_from_accept(self.headers['Accept'])
                     msglen = len(msg)
                     self._set_headers(protocol_str, msglen, None,
                                       calling_domain, False)
@@ -10928,10 +10918,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     referer_domain,
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    protocol_str = \
+                        get_json_content_from_accept(self.headers['Accept'])
                     msglen = len(msg)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
@@ -11051,10 +11039,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    protocol_str = \
+                        get_json_content_from_accept(self.headers['Accept'])
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -11187,10 +11173,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                                 msg_str)
                                 msg = msg_str.encode('utf-8')
                                 msglen = len(msg)
-                                protocol_str = 'application/json'
-                                if 'application/ld+json' in \
-                                   self.headers['Accept']:
-                                    protocol_str = 'application/ld+json'
+                                accept_str = self.headers['Accept']
+                                protocol_str = \
+                                    get_json_content_from_accept(accept_str)
                                 self._set_headers(protocol_str, msglen, None,
                                                   calling_domain, False)
                                 self._write(msg)
@@ -11537,10 +11522,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 msg_str)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
-                protocol_str = 'application/json'
-                if self.headers.get('Accept'):
-                    if 'application/ld+json' in self.headers['Accept']:
-                        protocol_str = 'application/ld+json'
+                protocol_str = \
+                    get_json_content_from_accept(self.headers['Accept'])
                 self._set_headers(protocol_str, msglen,
                                   None, calling_domain, False)
                 self._write(msg)
@@ -11856,10 +11839,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                         msg_str)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
-                        protocol_str = 'application/json'
-                        if self.headers.get('Accept'):
-                            if 'application/ld+json' in self.headers['Accept']:
-                                protocol_str = 'application/ld+json'
+                        accept_str = self.headers['Accept']
+                        protocol_str = \
+                            get_json_content_from_accept(accept_str)
                         self._set_headers(protocol_str, msglen,
                                           None, calling_domain, False)
                         self._write(msg)
@@ -12017,10 +11999,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                         msg_str)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
-                        protocol_str = 'application/json'
-                        if self.headers.get('Accept'):
-                            if 'application/ld+json' in self.headers['Accept']:
-                                protocol_str = 'application/ld+json'
+                        accept_str = self.headers['Accept']
+                        protocol_str = \
+                            get_json_content_from_accept(accept_str)
                         self._set_headers(protocol_str, msglen,
                                           None, calling_domain, False)
                         self._write(msg)
@@ -12180,10 +12161,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -12339,10 +12319,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -12498,10 +12477,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -12665,10 +12643,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -12834,10 +12811,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -13185,10 +13161,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                         msg_str)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
-                        protocol_str = 'application/json'
-                        if self.headers.get('Accept'):
-                            if 'application/ld+json' in self.headers['Accept']:
-                                protocol_str = 'application/ld+json'
+                        accept_str = self.headers['Accept']
+                        protocol_str = \
+                            get_json_content_from_accept(accept_str)
                         self._set_headers(protocol_str, msglen,
                                           None, calling_domain, False)
                         self._write(msg)
@@ -13338,10 +13313,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -13488,10 +13462,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                         msg_str)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
-                        protocol_str = 'application/json'
-                        if self.headers.get('Accept'):
-                            if 'application/ld+json' in self.headers['Accept']:
-                                protocol_str = 'application/ld+json'
+                        accept_str = self.headers['Accept']
+                        protocol_str = \
+                            get_json_content_from_accept(accept_str)
                         self._set_headers(protocol_str, msglen,
                                           None, calling_domain, False)
                         self._write(msg)
@@ -13632,10 +13605,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -13771,10 +13743,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -13911,10 +13882,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -13947,10 +13917,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
-        protocol_str = 'application/json'
-        if self.headers.get('Accept'):
-            if 'application/ld+json' in self.headers['Accept']:
-                protocol_str = 'application/ld+json'
+        accept_str = self.headers['Accept']
+        protocol_str = \
+            get_json_content_from_accept(accept_str)
         self._set_headers(protocol_str, msglen,
                           None, calling_domain, False)
         self._write(msg)
@@ -13979,10 +13948,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
-        protocol_str = 'application/json'
-        if self.headers.get('Accept'):
-            if 'application/ld+json' in self.headers['Accept']:
-                protocol_str = 'application/ld+json'
+        accept_str = self.headers['Accept']
+        protocol_str = \
+            get_json_content_from_accept(accept_str)
         self._set_headers(protocol_str, msglen,
                           None, calling_domain, False)
         self._write(msg)
@@ -15076,10 +15044,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         msg_str)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
-        protocol_str = 'application/json'
-        if self.headers.get('Accept'):
-            if 'application/ld+json' in self.headers['Accept']:
-                protocol_str = 'application/ld+json'
+        accept_str = self.headers['Accept']
+        protocol_str = \
+            get_json_content_from_accept(accept_str)
         self._set_headers(protocol_str, msglen,
                           None, calling_domain, False)
         self._write(msg)
@@ -15231,10 +15198,9 @@ class PubServer(BaseHTTPRequestHandler):
             msg_str = json.dumps(acct_pub_key_json, ensure_ascii=False)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            protocol_str = 'application/json'
-            if self.headers.get('Accept'):
-                if 'application/ld+json' in self.headers['Accept']:
-                    protocol_str = 'application/ld+json'
+            accept_str = self.headers['Accept']
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
             self._set_headers(protocol_str, msglen,
                               None, calling_domain, False)
             self._write(msg)
@@ -15490,10 +15456,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -15593,10 +15558,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     msg_str)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
-                    protocol_str = 'application/json'
-                    if self.headers.get('Accept'):
-                        if 'application/ld+json' in self.headers['Accept']:
-                            protocol_str = 'application/ld+json'
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
                     self._set_headers(protocol_str, msglen,
                                       None, calling_domain, False)
                     self._write(msg)
@@ -15951,10 +15915,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             msg_str)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            protocol_str = 'application/json'
-            if self.headers.get('Accept'):
-                if 'application/ld+json' in self.headers['Accept']:
-                    protocol_str = 'application/ld+json'
+            accept_str = self.headers['Accept']
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
             self._set_headers(protocol_str, msglen,
                               None, calling_domain, False)
             self._write(msg)
@@ -16024,10 +15987,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             msg_str)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            protocol_str = 'application/json'
-            if self.headers.get('Accept'):
-                if 'application/ld+json' in self.headers['Accept']:
-                    protocol_str = 'application/ld+json'
+            accept_str = self.headers['Accept']
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
             self._set_headers(protocol_str, msglen,
                               None, calling_domain, False)
             self._write(msg)
@@ -16111,10 +16073,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                 msg_str)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
-                protocol_str = 'application/json'
-                if self.headers.get('Accept'):
-                    if 'application/ld+json' in self.headers['Accept']:
-                        protocol_str = 'application/ld+json'
+                accept_str = self.headers['Accept']
+                protocol_str = \
+                    get_json_content_from_accept(accept_str)
                 self._set_headers(protocol_str, msglen,
                                   None, calling_domain, False)
                 self._write(msg)
@@ -18522,10 +18483,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                 msg_str)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
-                protocol_str = 'application/json'
-                if self.headers.get('Accept'):
-                    if 'application/ld+json' in self.headers['Accept']:
-                        protocol_str = 'application/ld+json'
+                accept_str = self.headers['Accept']
+                protocol_str = \
+                    get_json_content_from_accept(accept_str)
                 self._set_headers(protocol_str, msglen,
                                   None, calling_domain, False)
                 self._write(msg)
@@ -19876,10 +19836,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             msg_str)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            protocol_str = 'application/json'
-            if self.headers.get('Accept'):
-                if 'application/ld+json' in self.headers['Accept']:
-                    protocol_str = 'application/ld+json'
+            accept_str = self.headers['Accept']
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
             self._set_headers(protocol_str, msglen,
                               None, calling_domain, False)
             self._write(msg)
