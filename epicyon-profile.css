@@ -1126,6 +1126,7 @@ h3 {
         min-width: 950px;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+        image-rendering: var(--rendering);
     }
     h1 {
         font-family:   var(--header-font);
@@ -1932,6 +1933,7 @@ h3 {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+        image-rendering: var(--rendering);
     }
     h1 {
         font-family:   var(--header-font);
@@ -2728,6 +2730,7 @@ h3 {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+        image-rendering: var(--rendering);
     }
     h1 {
         font-family:   var(--header-font);
