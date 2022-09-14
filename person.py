@@ -622,7 +622,10 @@ def save_person_qrcode(base_dir: str,
         return
     handle = get_full_domain('@' + nickname + '@' + qrcode_domain, port)
     url = pyqrcode.create(handle)
-    url.png(qrcode_filename, scale)
+    try:
+        url.png(qrcode_filename, scale)
+    except ModuleNotFoundError:
+        print('EX: pyqrcode png module not found')
 
 
 def create_person(base_dir: str, nickname: str, domain: str, port: int,

@@ -3805,11 +3805,12 @@ def disallow_announce(content: str) -> bool:
         "don't boost",
         'boost_denied',
         'boosts_denied',
-        'BoostDenied',
-        'BoostsDenied'
+        'boostdenied',
+        'boostsdenied'
     )
+    content_lower = content.lower()
     for diss in disallow_strings:
-        if diss in content:
+        if diss in content_lower:
             return True
     return False
 
@@ -3828,10 +3829,12 @@ def disallow_reply(content: str) -> bool:
         'do not reply',
         "don't reply",
         "don't @ me",
-        'DontAtMe'
+        'dont@me',
+        'dontatme'
     )
+    content_lower = content.lower()
     for diss in disallow_strings:
-        if diss in content:
+        if diss in content_lower:
             return True
     return False
 
@@ -3859,3 +3862,13 @@ def safe_system_string(text: str) -> str:
     """
     text = text.replace('$(', '(').replace('`', '')
     return text
+
+
+def get_json_content_from_accept(accept: str) -> str:
+    """returns the json content type for the given accept
+    """
+    protocol_str = 'application/json'
+    if accept:
+        if 'application/ld+json' in accept:
+            protocol_str = 'application/ld+json'
+    return protocol_str
