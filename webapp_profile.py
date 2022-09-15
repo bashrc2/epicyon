@@ -184,6 +184,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                        signing_priv_key_pem, session)
     if not profile_json:
         return None
+    if not profile_json.get('id'):
+        return None
 
     person_url = profile_json['id']
     search_domain, search_port = get_domain_from_actor(person_url)
