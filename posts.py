@@ -131,7 +131,8 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
 
 def no_of_followers_on_domain(base_dir: str, handle: str,
                               domain: str, follow_file='followers.txt') -> int:
-    """Returns the number of followers of the given handle from the given domain
+    """Returns the number of followers of the given handle from the
+    given domain
     """
     filename = base_dir + '/accounts/' + handle + '/' + follow_file
     if not os.path.isfile(filename):

@@ -15,7 +15,8 @@ from utils import standardize_text
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
-    """Adds a filter for particular words within the content of a incoming posts
+    """Adds a filter for particular words within the content of a
+    incoming posts
     """
     filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filters_filename):

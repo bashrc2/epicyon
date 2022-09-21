@@ -1784,9 +1784,9 @@ def _receive_zot_reaction(recent_posts_cache: {},
                           max_like_count: int, cw_lists: {},
                           lists_enabled: str, bold_reading: bool,
                           dogwhistles: {}) -> bool:
-    """Receives an zot-style emoji reaction within the POST section of HTTPServer
-    A zot style emoji reaction is an ordinary reply Note whose content is
-    exactly one emoji
+    """Receives an zot-style emoji reaction within the POST section of
+    HTTPServer A zot style emoji reaction is an ordinary reply Note whose
+    content is exactly one emoji
     """
     if not has_actor(message_json, debug):
         return False
