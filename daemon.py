@@ -17787,6 +17787,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 ment.replace('sharedesc:', '').strip()
                             share_description = \
                                 share_description.replace('_', ' ')
+                    in_reply_to_url = mentions_list[0]
                 else:
                     # single parameter
                     if in_reply_to_url.startswith('mention='):
