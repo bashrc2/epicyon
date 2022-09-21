@@ -1616,7 +1616,7 @@ class JsonLdProcessor(object):
         # object is IRI, bnode, or literal
         if o['type'] == 'IRI':
             quad += '<' + o['value'] + '>'
-        elif(o['type'] == 'blank node'):
+        elif (o['type'] == 'blank node'):
             # normalization mode
             if bnode is not None:
                 quad += '_:a' if o['value'] == bnode else '_:z'
@@ -1676,8 +1676,8 @@ class JsonLdProcessor(object):
         :return: True if the triples are the same, False if not.
         """
         for attr in ['subject', 'predicate', 'object']:
-            if(t1[attr]['type'] != t2[attr]['type'] or
-                    t1[attr]['value'] != t2[attr]['value']):
+            if t1[attr]['type'] != t2[attr]['type'] or \
+               t1[attr]['value'] != t2[attr]['value']:
                 return False
 
         if t1['object'].get('language') != t2['object'].get('language'):
@@ -1718,8 +1718,8 @@ class JsonLdProcessor(object):
 
         # recursively compact object
         if _is_object(element):
-            if(options['link'] and '@id' in element and
-                    element['@id'] in options['link']):
+            if options['link'] and '@id' in element and \
+               element['@id'] in options['link']:
                 # check for a linked element to reuse
                 linked = options['link'][element['@id']]
                 for link in linked:
@@ -1815,9 +1815,9 @@ class JsonLdProcessor(object):
 
                 # skip array processing for keywords that aren't
                 # @graph or @list
-                if(expanded_property != '@graph' and
-                        expanded_property != '@list' and
-                        _is_keyword(expanded_property)):
+                if expanded_property != '@graph' and \
+                   expanded_property != '@list' and \
+                   _is_keyword(expanded_property):
                     # use keyword alias and add value as is
                     alias = self._compact_iri(active_ctx, expanded_property)
                     JsonLdProcessor.add_value(rval, alias, expanded_value)
@@ -2530,16 +2530,17 @@ class JsonLdProcessor(object):
                 # 4. Have no keys other than: @id, rdf:first, rdf:rest
                 #   and, optionally, @type where the value is rdf:List.
                 node_key_count = len(node.keys())
-                while(property == RDF_REST and
-                      _is_object(referenced_once.get(node['@id'])) and
-                      _is_array(node[RDF_FIRST]) and
-                      len(node[RDF_FIRST]) == 1 and
-                      _is_array(node[RDF_REST]) and
-                      len(node[RDF_REST]) == 1 and
-                      (node_key_count == 3 or (node_key_count == 4 and
-                                               _is_array(node.get('@type')) and
-                                               len(node['@type']) == 1 and
-                                               node['@type'][0] == RDF_LIST))):
+                while (property == RDF_REST and
+                       _is_object(referenced_once.get(node['@id'])) and
+                       _is_array(node[RDF_FIRST]) and
+                       len(node[RDF_FIRST]) == 1 and
+                       _is_array(node[RDF_REST]) and
+                       len(node[RDF_REST]) == 1 and
+                       (node_key_count == 3 or
+                        (node_key_count == 4 and
+                         _is_array(node.get('@type')) and
+                         len(node['@type']) == 1 and
+                         node['@type'][0] == RDF_LIST))):
                     list_.append(node[RDF_FIRST][0])
                     list_nodes.append(node['@id'])
 
@@ -3175,7 +3176,7 @@ class JsonLdProcessor(object):
             # reference; note that a circular reference won't occur when the
             # embed flag is `@link` as the above check will short-circuit
             # before reaching this point
-            if(flags['embed'] == '@never' or self._creates_circular_reference(
+            if (flags['embed'] == '@never' or self._creates_circular_reference(
                     subject, state['subjectStack'])):
                 self._add_frame_output(parent, property, output)
                 continue
@@ -4612,7 +4613,7 @@ def permutations(elements):
         for i in range(length):
             e = elements[i]
             is_left = left[e]
-            if((k is None or e > k) and
+            if ((k is None or e > k) and
                     ((is_left and i > 0 and e > elements[i - 1]) or
                      (not is_left and i < last and e > elements[i + 1]))):
                 k, pos = e, i

@@ -23,7 +23,8 @@ from threads import begin_thread
 
 def _update_post_schedule(base_dir: str, handle: str, httpd,
                           max_scheduled_posts: int) -> None:
-    """Checks if posts are due to be delivered and if so moves them to the outbox
+    """Checks if posts are due to be delivered and if so moves them to
+    the outbox
     """
     schedule_index_filename = \
         base_dir + '/accounts/' + handle + '/schedule.index'

@@ -3686,9 +3686,9 @@ def _test_web_links():
         '<p>Test1 test2 #YetAnotherExcessivelyLongwindedAndBoringHashtag</p>'
     test_fn_str = add_web_links(example_text)
     result_text = remove_long_words(test_fn_str, 40, [])
-    assert(result_text ==
-           '<p>Test1 test2 '
-           '#YetAnotherExcessivelyLongwindedAndBorin\ngHashtag</p>')
+    assert (result_text ==
+            '<p>Test1 test2 '
+            '#YetAnotherExcessivelyLongwindedAndBorin\ngHashtag</p>')
 
     example_text = \
         "<p>Don't remove a p2p link " + \
