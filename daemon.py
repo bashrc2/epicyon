@@ -21029,7 +21029,9 @@ def run_daemon(map_format: str,
     fitness_filename = base_dir + '/accounts/fitness.json'
     httpd.fitness = {}
     if os.path.isfile(fitness_filename):
-        httpd.fitness = load_json(fitness_filename)
+        fitness = load_json(fitness_filename)
+        if fitness is not None:
+            httpd.fitness = fitness
 
     # initialize authorized fetch key
     httpd.signing_priv_key_pem = None

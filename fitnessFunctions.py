@@ -20,6 +20,8 @@ def fitness_performance(startTime, fitness_state: {},
                         debug: bool) -> None:
     """Log a performance watchpoint
     """
+    if fitness_state is None:
+        return
     if 'performance' not in fitness_state:
         fitness_state['performance'] = {}
     if fitness_id not in fitness_state['performance']:
