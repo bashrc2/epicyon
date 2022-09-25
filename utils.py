@@ -3901,7 +3901,7 @@ def remove_inverted_text(text: str, system_language: str) -> str:
             replaced_chars += 1
         index += 1
 
-    if replaced_chars > 3:
+    if replaced_chars > 2:
         text = text[::-1]
 
     return text
