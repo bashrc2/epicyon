@@ -685,7 +685,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             get_media_descriptions_from_post(post_json_object)
         content_all = \
             summary_str + ' ' + content_str + ' ' + media_descriptions
-        if is_filtered(base_dir, nickname, domain, content_all):
+        if is_filtered(base_dir, nickname, domain, content_all,
+                       system_language):
             if debug:
                 print('WARN: post was filtered out due to content')
             return None
@@ -2924,7 +2925,8 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     content_all = content_str
     if summary:
         content_all = summary + ' ' + content_str + ' ' + media_descriptions
-    if is_filtered(base_dir, nickname, domain, content_all):
+    if is_filtered(base_dir, nickname, domain, content_all,
+                   system_language):
         print('REJECT: content filtered')
         return False
     if message_json['object'].get('inReplyTo'):
@@ -4222,7 +4224,8 @@ def _inbox_after_initial(server, inbox_start_time,
         # is the sending actor valid?
         if not valid_sending_actor(session, base_dir, nickname, domain,
                                    person_cache, post_json_object,
-                                   signing_priv_key_pem, debug, unit_test):
+                                   signing_priv_key_pem, debug, unit_test,
+                                   system_language):
             if debug:
                 print('Inbox sending actor is not valid ' +
                       str(post_json_object))
@@ -4856,7 +4859,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                             max_followers: int,
                             this_domain: str, onion_domain: str,
                             i2p_domain: str, signing_priv_key_pem: str,
-                            unit_test: bool) -> bool:
+                            unit_test: bool, system_language: str) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not message_json['type'].startswith('Follow'):
@@ -4972,7 +4975,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
     if not valid_sending_actor(curr_session, base_dir,
                                nickname_to_follow, domain_to_follow,
                                person_cache, message_json,
-                               signing_priv_key_pem, debug, unit_test):
+                               signing_priv_key_pem, debug, unit_test,
+                               system_language):
         print('REJECT spam follow request ' + approve_handle)
         return False
 
@@ -5536,7 +5540,8 @@ def run_inbox_queue(server,
                                    debug, project_version,
                                    max_followers, domain,
                                    onion_domain, i2p_domain,
-                                   signing_priv_key_pem, unit_test):
+                                   signing_priv_key_pem, unit_test,
+                                   system_language):
             if os.path.isfile(queue_filename):
                 try:
                     os.remove(queue_filename)

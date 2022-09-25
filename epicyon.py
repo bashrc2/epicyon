@@ -1242,9 +1242,12 @@ def _command_options() -> None:
     if argb.rss:
         timeout_sec = 20
         session = create_session(None)
+        if not argb.language:
+            argb.language = 'en'
         test_rss = get_rss(base_dir, domain, session, argb.rss,
                            False, False, 1000, 1000, 1000, 1000, debug,
-                           preferred_podcast_formats, timeout_sec)
+                           preferred_podcast_formats, timeout_sec,
+                           argb.language)
         pprint(test_rss)
         sys.exit()
 

@@ -854,7 +854,8 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
         return False
 
     # check that the description is valid
-    if is_filtered(base_dir, nickname, domain, description):
+    if is_filtered(base_dir, nickname, domain, description,
+                   system_language):
         return False
 
     # convert to the expected time format

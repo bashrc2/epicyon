@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import remove_inverted_text
 from utils import standardize_text
 from utils import remove_eol
 from utils import text_in_file
@@ -7550,6 +7551,18 @@ def _test_hashtag_maps():
     assert len(map_links) == 2
 
 
+def _test_uninvert():
+    print('test_uninvert')
+    text = 'ʇsǝʇ ɐ sı sıɥʇ'
+    expected = "this is a test"
+    result = remove_inverted_text(text, 'en')
+    if result != expected:
+        print('text: ' + text)
+        print('expected: ' + expected)
+        print('result: ' + result)
+    assert result == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7567,6 +7580,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_uninvert()
     _test_hashtag_maps()
     _test_combine_lines()
     _test_text_standardize()

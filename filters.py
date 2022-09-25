@@ -12,6 +12,7 @@ from utils import acct_dir
 from utils import text_in_file
 from utils import remove_eol
 from utils import standardize_text
+from utils import remove_inverted_text
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -115,12 +116,15 @@ def _is_twitter_post(content: str) -> bool:
     return False
 
 
-def _is_filtered_base(filename: str, content: str) -> bool:
+def _is_filtered_base(filename: str, content: str,
+                      system_language: str) -> bool:
     """Uses the given file containing filtered words to check
     the given content
     """
     if not os.path.isfile(filename):
         return False
+
+    content = remove_inverted_text(content, system_language)
 
     # convert any fancy characters to ordinary ones
     content = standardize_text(content)
@@ -147,20 +151,23 @@ def _is_filtered_base(filename: str, content: str) -> bool:
     return False
 
 
-def is_filtered_globally(base_dir: str, content: str) -> bool:
+def is_filtered_globally(base_dir: str, content: str,
+                         system_language: str) -> bool:
     """Is the given content globally filtered?
     """
     global_filters_filename = base_dir + '/accounts/filters.txt'
-    if _is_filtered_base(global_filters_filename, content):
+    if _is_filtered_base(global_filters_filename, content,
+                         system_language):
         return True
     return False
 
 
 def is_filtered_bio(base_dir: str,
-                    nickname: str, domain: str, bio: str) -> bool:
+                    nickname: str, domain: str, bio: str,
+                    system_language: str) -> bool:
     """Should the given actor bio be filtered out?
     """
-    if is_filtered_globally(base_dir, bio):
+    if is_filtered_globally(base_dir, bio, system_language):
         return True
 
     if not nickname or not domain:
@@ -168,17 +175,17 @@ def is_filtered_bio(base_dir: str,
 
     account_filters_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
-    return _is_filtered_base(account_filters_filename, bio)
+    return _is_filtered_base(account_filters_filename, bio, system_language)
 
 
 def is_filtered(base_dir: str, nickname: str, domain: str,
-                content: str) -> bool:
+                content: str, system_language: str) -> bool:
     """Should the given content be filtered out?
     This is a simple type of filter which just matches words, not a regex
     You can add individual words or use word1+word2 to indicate that two
     words must be present although not necessarily adjacent
     """
-    if is_filtered_globally(base_dir, content):
+    if is_filtered_globally(base_dir, content, system_language):
         return True
 
     if not nickname or not domain:
@@ -192,4 +199,5 @@ def is_filtered(base_dir: str, nickname: str, domain: str,
 
     account_filters_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
-    return _is_filtered_base(account_filters_filename, content)
+    return _is_filtered_base(account_filters_filename, content,
+                             system_language)

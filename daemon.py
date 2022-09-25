@@ -5001,7 +5001,8 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _set_hashtag_category(self, calling_domain: str, cookie: str,
                               path: str, base_dir: str,
-                              domain: str, debug: bool) -> None:
+                              domain: str, debug: bool,
+                              system_language: str) -> None:
         """On the screen after selecting a hashtag from the swarm, this sets
         the category for that tag
         """
@@ -5089,7 +5090,8 @@ class PubServer(BaseHTTPRequestHandler):
             if fields.get('hashtagCategory'):
                 category_str = fields['hashtagCategory'].lower()
                 if not is_blocked_hashtag(base_dir, category_str) and \
-                   not is_filtered(base_dir, nickname, domain, category_str):
+                   not is_filtered(base_dir, nickname, domain, category_str,
+                                   system_language):
                     set_hashtag_category(base_dir, hashtag,
                                          category_str, False)
             else:
@@ -5813,7 +5815,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if not skill_name:
                             skill_ctr += 1
                             continue
-                        if is_filtered(base_dir, nickname, domain, skill_name):
+                        if is_filtered(base_dir, nickname, domain, skill_name,
+                                       system_language):
                             skill_ctr += 1
                             continue
                         skill_value = \
@@ -5876,7 +5879,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 remove_html(fields['displayNickname'])
                             if not is_filtered(base_dir,
                                                nickname, domain,
-                                               display_name):
+                                               display_name,
+                                               system_language):
                                 actor_json['name'] = display_name
                             else:
                                 actor_json['name'] = nickname
@@ -6439,7 +6443,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['bio'] != actor_json['summary']:
                             bio_str = remove_html(fields['bio'])
                             if not is_filtered(base_dir,
-                                               nickname, domain, bio_str):
+                                               nickname, domain, bio_str,
+                                               system_language):
                                 actor_tags = {}
                                 actor_json['summary'] = \
                                     add_html_tags(base_dir,
@@ -14905,7 +14910,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     access_keys,
                                     default_reply_interval_hrs,
                                     self.server.cw_lists,
-                                    self.server.lists_enabled)
+                                    self.server.lists_enabled,
+                                    self.server.system_language)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -20043,7 +20049,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.path,
                                        self.server.base_dir,
                                        self.server.domain,
-                                       self.server.debug)
+                                       self.server.debug,
+                                       self.server.system_language)
             self.server.postreq_busy = False
             return
 

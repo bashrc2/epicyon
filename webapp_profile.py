@@ -1615,12 +1615,14 @@ def _html_edit_profile_skills(base_dir: str, nickname: str, domain: str,
                               translate: {}) -> str:
     """skills section of Edit Profile screen
     """
+    system_language = 'en'
     skills = get_skills(base_dir, nickname, domain)
     skills_str = ''
     skill_ctr = 1
     if skills:
         for skill_desc, skill_value in skills.items():
-            if is_filtered(base_dir, nickname, domain, skill_desc):
+            if is_filtered(base_dir, nickname, domain, skill_desc,
+                           system_language):
                 continue
             skills_str += \
                 '<p><input type="text" placeholder="' + translate['Skill'] + \
@@ -2296,7 +2298,8 @@ def html_edit_profile(server, translate: {},
                       crawlers_allowed: [],
                       access_keys: {},
                       default_reply_interval_hrs: int,
-                      cw_lists: {}, lists_enabled: str) -> str:
+                      cw_lists: {}, lists_enabled: str,
+                      system_language: str) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2348,12 +2351,14 @@ def html_edit_profile(server, translate: {},
         pgp_pub_key = get_pgp_pub_key(actor_json)
         pgp_fingerprint = get_pgp_fingerprint(actor_json)
         if actor_json.get('name'):
-            if not is_filtered(base_dir, nickname, domain, actor_json['name']):
+            if not is_filtered(base_dir, nickname, domain, actor_json['name'],
+                               system_language):
                 display_nickname = actor_json['name']
         if actor_json.get('summary'):
             bio_str = \
                 actor_json['summary'].replace('<p>', '').replace('</p>', '')
-            if is_filtered(base_dir, nickname, domain, bio_str):
+            if is_filtered(base_dir, nickname, domain, bio_str,
+                           system_language):
                 bio_str = ''
             bio_str = remove_html(bio_str)
         if actor_json.get('manuallyApprovesFollowers'):

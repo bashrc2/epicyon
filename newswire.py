@@ -210,7 +210,8 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
                              mirrored: bool,
                              tags: [],
                              max_tags: int, session, debug: bool,
-                             podcast_properties: {}) -> None:
+                             podcast_properties: {},
+                             system_language: str) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
@@ -220,7 +221,7 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
     all_text = title + ' ' + description
 
     # check that none of the text is filtered against
-    if is_filtered(base_dir, None, None, all_text):
+    if is_filtered(base_dir, None, None, all_text, system_language):
         return
 
     title = limit_word_lengths(title, 13)
@@ -723,7 +724,8 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                      max_feed_item_size_kb: int,
                      max_categories_feed_item_size_kb: int,
                      session, debug: bool,
-                     preferred_podcast_formats: []) -> {}:
+                     preferred_podcast_formats: [],
+                     system_language: str) -> {}:
     """Converts an xml RSS 2.0 string to a dictionary
     """
     if '<item>' not in xml_str:
@@ -812,7 +814,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                                          votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug,
-                                         podcast_properties)
+                                         podcast_properties, system_language)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -827,7 +829,8 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                      max_feed_item_size_kb: int,
                      max_categories_feed_item_size_kb: int,
                      session, debug: bool,
-                     preferred_podcast_formats: []) -> {}:
+                     preferred_podcast_formats: [],
+                     system_language: str) -> {}:
     """Converts an xml RSS 1.0 string to a dictionary
     https://validator.w3.org/feed/docs/rss1.html
     """
@@ -918,7 +921,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                                          votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug,
-                                         podcast_properties)
+                                         podcast_properties, system_language)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -932,7 +935,8 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                        max_posts_per_source: int,
                        max_feed_item_size_kb: int,
                        session, debug: bool,
-                       preferred_podcast_formats: []) -> {}:
+                       preferred_podcast_formats: [],
+                       system_language: str) -> {}:
     """Converts an atom feed string to a dictionary
     """
     if '<entry>' not in xml_str:
@@ -1012,7 +1016,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                                          votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug,
-                                         podcast_properties)
+                                         podcast_properties, system_language)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -1025,7 +1029,8 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
                          moderated: bool, mirrored: bool,
                          max_posts_per_source: int,
                          max_feed_item_size_kb: int,
-                         session, debug: bool) -> {}:
+                         session, debug: bool,
+                         system_language: str) -> {}:
     """Converts a json feed string to a dictionary
     See https://jsonfeed.org/version/1.1
     """
@@ -1125,7 +1130,7 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
                                          votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug,
-                                         None)
+                                         None, system_language)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -1139,7 +1144,8 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
                           moderated: bool, mirrored: bool,
                           max_posts_per_source: int,
                           max_feed_item_size_kb: int,
-                          session, debug: bool) -> {}:
+                          session, debug: bool,
+                          system_language: str) -> {}:
     """Converts an atom-style YouTube feed string to a dictionary
     """
     if '<entry>' not in xml_str:
@@ -1214,7 +1220,7 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
                                          votes_status, post_filename,
                                          description, moderated, mirrored,
                                          [], 32, session, debug,
-                                         podcast_properties)
+                                         podcast_properties, system_language)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -1229,7 +1235,8 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                      max_feed_item_size_kb: int,
                      max_categories_feed_item_size_kb: int,
                      session, debug: bool,
-                     preferred_podcast_formats: []) -> {}:
+                     preferred_podcast_formats: [],
+                     system_language: str) -> {}:
     """Converts an xml string to a dictionary
     """
     if '<yt:videoId>' in xml_str and '<yt:channelId>' in xml_str:
@@ -1238,31 +1245,35 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                                      xml_str, moderated, mirrored,
                                      max_posts_per_source,
                                      max_feed_item_size_kb,
-                                     session, debug)
+                                     session, debug,
+                                     system_language)
     if 'rss version="2.0"' in xml_str:
         return _xml2str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
                                 max_categories_feed_item_size_kb,
                                 session, debug,
-                                preferred_podcast_formats)
+                                preferred_podcast_formats,
+                                system_language)
     if '<?xml version="1.0"' in xml_str:
         return _xml1str_to_dict(base_dir, domain,
                                 xml_str, moderated, mirrored,
                                 max_posts_per_source, max_feed_item_size_kb,
                                 max_categories_feed_item_size_kb,
-                                session, debug, preferred_podcast_formats)
+                                session, debug, preferred_podcast_formats,
+                                system_language)
     if 'xmlns="http://www.w3.org/2005/Atom"' in xml_str:
         return _atom_feed_to_dict(base_dir, domain,
                                   xml_str, moderated, mirrored,
                                   max_posts_per_source, max_feed_item_size_kb,
-                                  session, debug, preferred_podcast_formats)
+                                  session, debug, preferred_podcast_formats,
+                                  system_language)
     if 'https://jsonfeed.org/version/1' in xml_str:
         return _json_feed_v1to_dict(base_dir, domain,
                                     xml_str, moderated, mirrored,
                                     max_posts_per_source,
                                     max_feed_item_size_kb,
-                                    session, debug)
+                                    session, debug, system_language)
     return {}
 
 
@@ -1284,7 +1295,7 @@ def get_rss(base_dir: str, domain: str, session, url: str,
             max_feed_item_size_kb: int,
             max_categories_feed_item_size_kb: int, debug: bool,
             preferred_podcast_formats: [],
-            timeout_sec: int) -> {}:
+            timeout_sec: int, system_language: str) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -1321,7 +1332,8 @@ def get_rss(base_dir: str, domain: str, session, url: str,
                                         max_feed_item_size_kb,
                                         max_categories_feed_item_size_kb,
                                         session, debug,
-                                        preferred_podcast_formats)
+                                        preferred_podcast_formats,
+                                        system_language)
             print('WARN: feed is too large, ' +
                   'or contains invalid characters: ' + url)
         else:
@@ -1498,7 +1510,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                                              description, moderated, False,
                                              tags_from_post,
                                              max_tags, session, debug,
-                                             None)
+                                             None, system_language)
 
             ctr += 1
             if ctr >= max_blogs_per_account:
@@ -1609,7 +1621,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                              max_feed_item_size_kb,
                              max_categories_feed_item_size_kb, debug,
                              preferred_podcast_formats,
-                             timeout_sec)
+                             timeout_sec, system_language)
         if items_list:
             for date_str, item in items_list.items():
                 result[date_str] = item

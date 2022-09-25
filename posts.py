@@ -432,7 +432,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
             display_name = '*ADVERSARY*'
         elif is_filtered(base_dir,
                          nickname, domain,
-                         display_name):
+                         display_name, 'en'):
             display_name = '*FILTERED*'
         # have they moved?
         if person_json.get('movedTo'):
@@ -5189,7 +5189,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if summary_str:
             content_all = \
                 summary_str + ' ' + content_str + ' ' + media_descriptions
-        if is_filtered(base_dir, nickname, domain, content_all):
+        if is_filtered(base_dir, nickname, domain, content_all,
+                       system_language):
             print('WARN: announced post has been filtered ' +
                   str(announced_json))
             _reject_announce(announce_filename,

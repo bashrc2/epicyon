@@ -1749,7 +1749,8 @@ def valid_sending_actor(session, base_dir: str,
                         person_cache: {},
                         post_json_object: {},
                         signing_priv_key_pem: str,
-                        debug: bool, unit_test: bool) -> bool:
+                        debug: bool, unit_test: bool,
+                        system_language: str) -> bool:
     """When a post arrives in the inbox this is used to check that
     the sending actor is valid
     """
@@ -1827,7 +1828,8 @@ def valid_sending_actor(session, base_dir: str,
         if contains_invalid_chars(bio_str):
             print('REJECT: post actor bio contains invalid characters')
             return False
-        if is_filtered_bio(base_dir, nickname, domain, bio_str):
+        if is_filtered_bio(base_dir, nickname, domain, bio_str,
+                           system_language):
             print('REJECT: post actor bio contains filtered text')
             return False
     else:

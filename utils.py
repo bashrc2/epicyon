@@ -3872,3 +3872,36 @@ def get_json_content_from_accept(accept: str) -> str:
         if 'application/ld+json' in accept:
             protocol_str = 'application/ld+json'
     return protocol_str
+
+
+def remove_inverted_text(text: str, system_language: str) -> str:
+    """Removes any inverted text from the given string
+    """
+    if system_language != 'en':
+        return text
+
+    inverted_lower = [*"zʎxʍʌnʇsɹbdouɯʃʞɾıɥƃɟǝpɔqɐ"]
+    inverted_upper = [*"Z⅄XMᴧ∩⊥SᴚΌԀOᴎW⅂⋊ſIH⅁ℲƎ◖Ↄ𐐒∀"]
+
+    replaced_chars = 0
+
+    index = 0
+    z_value = ord('z')
+    for test_ch in inverted_lower:
+        if test_ch in text:
+            text = text.replace(test_ch, chr(z_value - index))
+            replaced_chars += 1
+        index += 1
+
+    index = 0
+    z_value = ord('Z')
+    for test_ch in inverted_upper:
+        if test_ch in text:
+            text = text.replace(test_ch, chr(z_value - index))
+            replaced_chars += 1
+        index += 1
+
+    if replaced_chars > 1:
+        text = text[::-1]
+
+    return text

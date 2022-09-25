@@ -73,9 +73,11 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
         return None
 
     # check that the content is valid
-    if is_filtered(base_dir, nickname, domain, post_json_object['name']):
+    if is_filtered(base_dir, nickname, domain, post_json_object['name'],
+                   system_language):
         return None
-    if is_filtered(base_dir, nickname, domain, post_json_object['content']):
+    if is_filtered(base_dir, nickname, domain, post_json_object['content'],
+                   system_language):
         return None
 
     # get the content
@@ -84,7 +86,8 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
         if isinstance(post_json_object['license'], dict):
             if post_json_object['license'].get('name'):
                 if is_filtered(base_dir, nickname, domain,
-                               post_json_object['license']['name']):
+                               post_json_object['license']['name'],
+                               system_language):
                     return None
                 content += '<p>' + post_json_object['license']['name'] + '</p>'
     post_content = post_json_object['content']

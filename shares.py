@@ -315,7 +315,8 @@ def add_share(base_dir: str,
     """
     if is_filtered_globally(base_dir,
                             display_name + ' ' + summary + ' ' +
-                            item_type + ' ' + item_category):
+                            item_type + ' ' + item_category,
+                            system_language):
         print('Shared item was filtered due to content')
         return
     shares_filename = \
@@ -1826,7 +1827,7 @@ def _dfc_to_shares_format(catalog_json: {},
 
         all_text = \
             item['DFC:description'] + ' ' + item_type + ' ' + item_category
-        if is_filtered_globally(base_dir, all_text):
+        if is_filtered_globally(base_dir, all_text, system_language):
             continue
 
         dfc_id = None
