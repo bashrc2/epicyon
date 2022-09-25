@@ -7562,8 +7562,19 @@ def _test_uninvert():
         print('result: ' + result)
     assert result == expected
 
+    text = '<p>Some ordinary text</p><p>ʇsǝʇ ɐ sı sıɥʇ</p>'
+    expected = "<p>Some ordinary text</p><p>this is a test</p>"
+    result = remove_inverted_text(text, 'en')
+    if result != expected:
+        print('text: ' + text)
+        print('expected: ' + expected)
+        print('result: ' + result)
+    assert result == expected
+
 
 def run_all_tests():
+    _test_uninvert()
+    return
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())

@@ -3880,28 +3880,47 @@ def remove_inverted_text(text: str, system_language: str) -> str:
     if system_language != 'en':
         return text
 
-    inverted_lower = [*"zʎxʍʌnʇsɹbdouɯʃʞɾıɥƃɟǝpɔqɐ"]
-    inverted_upper = [*"Z⅄XMᴧ∩⊥SᴚΌԀOᴎW⅂⋊ſIH⅁ℲƎ◖Ↄ𐐒∀"]
+    inverted_lower = [*"_ʎ_ʍʌ_ʇsɹ____ɯʃʞɾıɥƃɟǝpɔqɐ"]
+    inverted_upper = [*"_⅄_Mᴧ∩⊥SᴚΌԀ_ᴎ_⅂⋊ſ__⅁ℲƎ◖Ↄ𐐒∀"]
 
-    replaced_chars = 0
+    start_separator = ''
+    separator = '\n'
+    if '</p>' in text:
+        text = text.replace('<p>', '')
+        start_separator = '<p>'
+        separator = '</p>'
+    paragraphs = text.split(separator)
+    new_text = ''
+    for para in paragraphs:
+        replaced_chars = 0
 
-    index = 0
-    z_value = ord('z')
-    for test_ch in inverted_lower:
-        if test_ch in text:
-            text = text.replace(test_ch, chr(z_value - index))
-            replaced_chars += 1
-        index += 1
+        index = 0
+        z_value = ord('z')
+        for test_ch in inverted_lower:
+            if test_ch == '_':
+                index += 1
+                continue
+            if test_ch in para:
+                para = para.replace(test_ch, chr(z_value - index))
+                replaced_chars += 1
+            index += 1
 
-    index = 0
-    z_value = ord('Z')
-    for test_ch in inverted_upper:
-        if test_ch in text:
-            text = text.replace(test_ch, chr(z_value - index))
-            replaced_chars += 1
-        index += 1
+        index = 0
+        z_value = ord('Z')
+        for test_ch in inverted_upper:
+            if test_ch == '_':
+                index += 1
+                continue
+            if test_ch in para:
+                para = para.replace(test_ch, chr(z_value - index))
+                replaced_chars += 1
+            index += 1
 
-    if replaced_chars > 2:
-        text = text[::-1]
+        if replaced_chars > 2:
+            para = para[::-1]
+        if para:
+            new_text += start_separator + para
+            if separator in text:
+                new_text += separator
 
-    return text
+    return new_text
