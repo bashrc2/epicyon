@@ -3880,8 +3880,8 @@ def remove_inverted_text(text: str, system_language: str) -> str:
     if system_language != 'en':
         return text
 
-    inverted_lower = [*"_ʎ_ʍʌ_ʇsɹ____ɯʃʞɾıɥƃɟǝpɔqɐ"]
-    inverted_upper = [*"_⅄_Mᴧ∩⊥SᴚΌԀ_ᴎ_⅂⋊ſ__⅁ℲƎ◖Ↄ𐐒∀"]
+    inverted_lower = [*"_ʎ_ʍʌ_ʇsɹ____ɯʃʞɾıɥƃɟǝ_ɔ_ɐ"]
+    inverted_upper = [*"_⅄__ᴧ∩⊥SᴚΌԀ_ᴎ_⅂⋊ſ__⅁ℲƎ◖Ↄ𐐒∀"]
 
     start_separator = ''
     separator = '\n'
