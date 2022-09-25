@@ -7573,8 +7573,6 @@ def _test_uninvert():
 
 
 def run_all_tests():
-    _test_uninvert()
-    return
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
