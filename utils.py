@@ -3891,30 +3891,21 @@ def remove_inverted_text(text: str, system_language: str) -> str:
         separator = '</p>'
     paragraphs = text.split(separator)
     new_text = ''
+    inverted_list = (inverted_lower, inverted_upper)
+    z_value = (ord('z'), ord('Z'))
     for para in paragraphs:
         replaced_chars = 0
 
-        index = 0
-        z_value = ord('z')
-        for test_ch in inverted_lower:
-            if test_ch == '_':
+        for idx in range(2):
+            index = 0
+            for test_ch in inverted_list[idx]:
+                if test_ch == '_':
+                    index += 1
+                    continue
+                if test_ch in para:
+                    para = para.replace(test_ch, chr(z_value[idx] - index))
+                    replaced_chars += 1
                 index += 1
-                continue
-            if test_ch in para:
-                para = para.replace(test_ch, chr(z_value - index))
-                replaced_chars += 1
-            index += 1
-
-        index = 0
-        z_value = ord('Z')
-        for test_ch in inverted_upper:
-            if test_ch == '_':
-                index += 1
-                continue
-            if test_ch in para:
-                para = para.replace(test_ch, chr(z_value - index))
-                replaced_chars += 1
-            index += 1
 
         if replaced_chars > 2:
             para = para[::-1]

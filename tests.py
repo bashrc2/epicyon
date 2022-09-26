@@ -7553,8 +7553,8 @@ def _test_hashtag_maps():
 
 def _test_uninvert():
     print('test_uninvert')
-    text = 'ʇsǝʇ ɐ sı sıɥʇ'
-    expected = "this is a test"
+    text = 'ʇsƎʇ ɐ sı sıɥ⊥'
+    expected = "This is a tEst"
     result = remove_inverted_text(text, 'en')
     if result != expected:
         print('text: ' + text)
