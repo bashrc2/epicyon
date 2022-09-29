@@ -97,6 +97,10 @@ a:link {
     text-decoration: none;
 }
 
+a:link[type=application/activity+json]::before {
+    content: '\2B5A '; /*⭚ */
+}
+
 a:link:hover {
     color: var(--options-main-link-color-hover);
 }
