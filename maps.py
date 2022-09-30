@@ -365,8 +365,7 @@ def set_map_preferences_coords(base_dir: str, nickname: str, domain: str,
     save_json(maps_json, maps_filename)
 
 
-def get_map_preferences_coords(base_dir: str,
-                               nickname: str,
+def get_map_preferences_coords(base_dir: str, nickname: str,
                                domain: str) -> (float, float, int):
     """Gets the preferred maps website coordinates for an account
     """
