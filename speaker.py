@@ -1,7 +1,7 @@
 __filename__ = "speaker.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -11,72 +11,73 @@ import os
 import html
 import random
 import urllib.parse
-from utils import removeIdEnding
-from utils import isDM
-from utils import isReply
-from utils import camelCaseSplit
-from utils import getDomainFromActor
-from utils import getNicknameFromActor
-from utils import getGenderFromBio
-from utils import getDisplayName
-from utils import removeHtml
-from utils import loadJson
-from utils import saveJson
-from utils import isPGPEncrypted
-from utils import hasObjectDict
-from utils import acctDir
-from utils import localActorUrl
-from content import htmlReplaceQuoteMarks
+from utils import get_cached_post_filename
+from utils import remove_id_ending
+from utils import is_dm
+from utils import is_reply
+from utils import camel_case_split
+from utils import get_domain_from_actor
+from utils import get_nickname_from_actor
+from utils import get_gender_from_bio
+from utils import get_display_name
+from utils import remove_html
+from utils import load_json
+from utils import save_json
+from utils import is_pgp_encrypted
+from utils import has_object_dict
+from utils import acct_dir
+from utils import local_actor_url
+from content import html_replace_quote_marks
 
-speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
+SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
 
 
-def getSpeakerPitch(displayName: str, screenreader: str, gender) -> int:
+def get_speaker_pitch(display_name: str, screenreader: str, gender) -> int:
     """Returns the speech synthesis pitch for the given name
     """
-    random.seed(displayName)
-    rangeMin = 1
-    rangeMax = 100
+    random.seed(display_name)
+    range_min = 1
+    range_max = 100
     if 'She' in gender:
-        rangeMin = 50
+        range_min = 50
     elif 'Him' in gender:
-        rangeMax = 50
+        range_max = 50
     if screenreader == 'picospeaker':
-        rangeMin = -6
-        rangeMax = 3
+        range_min = -6
+        range_max = 3
         if 'She' in gender:
-            rangeMin = -1
+            range_min = -1
         elif 'Him' in gender:
-            rangeMax = -1
-    return random.randint(rangeMin, rangeMax)
+            range_max = -1
+    return random.randint(range_min, range_max)
 
 
-def getSpeakerRate(displayName: str, screenreader: str) -> int:
+def get_speaker_rate(display_name: str, screenreader: str) -> int:
     """Returns the speech synthesis rate for the given name
     """
-    random.seed(displayName)
+    random.seed(display_name)
     if screenreader == 'picospeaker':
         return random.randint(-40, -20)
     return random.randint(50, 120)
 
 
-def getSpeakerRange(displayName: str) -> int:
+def get_speaker_range(display_name: str) -> int:
     """Returns the speech synthesis range for the given name
     """
-    random.seed(displayName)
+    random.seed(display_name)
     return random.randint(300, 800)
 
 
-def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
+def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
     """Screen readers may not always pronounce correctly, so you
     can have a file which specifies conversions. File should contain
     line items such as:
     Epicyon -> Epi-cyon
     """
-    pronounceFilename = baseDir + '/accounts/speaker_pronounce.txt'
-    convertDict = {}
+    pronounce_filename = base_dir + '/accounts/speaker_pronounce.txt'
+    convert_dict = {}
     if translate:
-        convertDict = {
+        convert_dict = {
             "Epicyon": "Epi-cyon",
             "espeak": "e-speak",
             "emoji": "emowji",
@@ -104,13 +105,17 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "Tor": "Toor",
             "memes": "meemes",
             "Memes": "Meemes",
-            "rofl": "roll on the floor laughing",
-            "ROFL": "roll on the floor laughing",
+            "rofl": translate["laughing"],
+            "ROFL": translate["laughing"],
+            "lmao": translate["laughing"],
+            "LMAO": translate["laughing"],
             "fwiw": "for what it's worth",
             "fyi": "for your information",
             "irl": "in real life",
             "IRL": "in real life",
             "imho": "in my opinion",
+            "afaik": "as far as I know",
+            "AFAIK": "as far as I know",
             "fediverse": "fediiverse",
             "Fediverse": "Fediiverse",
             " foss ": " free and open source software ",
@@ -124,6 +129,7 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "#nowplaying": translate["hashtag"] + " now-playing",
             "#NowPlaying": translate["hashtag"] + " now-playing",
             "#": translate["hashtag"] + ' ',
+            "¯\\_(ツ)_/¯": translate["shrug"],
             ":D": '. ' + translate["laughing"],
             ":-D": '. ' + translate["laughing"],
             ":)": '. ' + translate["smile"],
@@ -139,10 +145,10 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "(": ",",
             ")": ","
         }
-    if os.path.isfile(pronounceFilename):
-        with open(pronounceFilename, 'r') as fp:
-            pronounceList = fp.readlines()
-            for conversion in pronounceList:
+    if os.path.isfile(pronounce_filename):
+        with open(pronounce_filename, 'r', encoding='utf-8') as fp_pro:
+            pronounce_list = fp_pro.readlines()
+            for conversion in pronounce_list:
                 separator = None
                 if '->' in conversion:
                     separator = '->'
@@ -157,148 +163,150 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
 
                 text = conversion.split(separator)[0].strip()
                 converted = conversion.split(separator)[1].strip()
-                convertDict[text] = converted
-    for text, converted in convertDict.items():
-        if text in sayText:
-            sayText = sayText.replace(text, converted)
-    return sayText
+                convert_dict[text] = converted
+    for text, converted in convert_dict.items():
+        if text in say_text:
+            say_text = say_text.replace(text, converted)
+    return say_text
 
 
-def speakerReplaceLinks(sayText: str, translate: {},
-                        detectedLinks: []) -> str:
+def speaker_replace_links(say_text: str, translate: {},
+                          detected_links: []) -> str:
     """Replaces any links in the given text with "link to [domain]".
     Instead of reading out potentially very long and meaningless links
     """
-    text = sayText
+    text = say_text
     text = text.replace('?v=', '__v=')
-    for ch in speakerRemoveChars:
-        text = text.replace(ch, ' ')
+    for char in SPEAKER_REMOVE_CHARS:
+        text = text.replace(char, ' ')
     text = text.replace('__v=', '?v=')
     replacements = {}
-    wordsList = text.split(' ')
+    words_list = text.split(' ')
     if translate.get('Linked'):
-        linkedStr = translate['Linked']
+        linked_str = translate['Linked']
     else:
-        linkedStr = 'Linked'
-    prevWord = ''
-    for word in wordsList:
+        linked_str = 'Linked'
+    prev_word = ''
+    for word in words_list:
         if word.startswith('v='):
             replacements[word] = ''
         if word.startswith(':'):
             if word.endswith(':'):
                 replacements[word] = ', emowji ' + word.replace(':', '') + ','
                 continue
-        if word.startswith('@') and not prevWord.endswith('RT'):
+        if word.startswith('@') and not prev_word.endswith('RT'):
             # replace mentions, but not re-tweets
             if translate.get('mentioning'):
                 replacements[word] = \
                     translate['mentioning'] + ' ' + word[1:] + ', '
-        prevWord = word
+        prev_word = word
 
         domain = None
-        domainFull = None
+        domain_full = None
         if 'https://' in word:
             domain = word.split('https://')[1]
-            domainFull = 'https://' + domain
+            domain_full = 'https://' + domain
         elif 'http://' in word:
             domain = word.split('http://')[1]
-            domainFull = 'http://' + domain
+            domain_full = 'http://' + domain
         if not domain:
             continue
         if '/' in domain:
             domain = domain.split('/')[0]
         if domain.startswith('www.'):
             domain = domain.replace('www.', '')
-        replacements[domainFull] = '. ' + linkedStr + ' ' + domain + '.'
-        detectedLinks.append(domainFull)
-    for replaceStr, newStr in replacements.items():
-        sayText = sayText.replace(replaceStr, newStr)
-    return sayText.replace('..', '.')
+        replacements[domain_full] = '. ' + linked_str + ' ' + domain + '.'
+        detected_links.append(domain_full)
+    for replace_str, new_str in replacements.items():
+        say_text = say_text.replace(replace_str, new_str)
+    return say_text.replace('..', '.')
 
 
-def _addSSMLemphasis(sayText: str) -> str:
+def _add_ssm_lemphasis(say_text: str) -> str:
     """Adds emphasis to *emphasised* text
     """
-    if '*' not in sayText:
-        return sayText
-    text = sayText
-    for ch in speakerRemoveChars:
-        text = text.replace(ch, ' ')
-    wordsList = text.split(' ')
+    if '*' not in say_text:
+        return say_text
+    text = say_text
+    for char in SPEAKER_REMOVE_CHARS:
+        text = text.replace(char, ' ')
+    words_list = text.split(' ')
     replacements = {}
-    for word in wordsList:
+    for word in words_list:
         if word.startswith('*'):
             if word.endswith('*'):
                 replacements[word] = \
                     '<emphasis level="strong">' + \
                     word.replace('*', '') + \
                     '</emphasis>'
-    for replaceStr, newStr in replacements.items():
-        sayText = sayText.replace(replaceStr, newStr)
-    return sayText
+    for replace_str, new_str in replacements.items():
+        say_text = say_text.replace(replace_str, new_str)
+    return say_text
 
 
-def _removeEmojiFromText(sayText: str) -> str:
+def _remove_emoji_from_text(say_text: str) -> str:
     """Removes :emoji: from the given text
     """
-    if ':' not in sayText:
-        return sayText
-    text = sayText
-    for ch in speakerRemoveChars:
-        text = text.replace(ch, ' ')
-    wordsList = text.split(' ')
+    if ':' not in say_text:
+        return say_text
+    text = say_text
+    for char in SPEAKER_REMOVE_CHARS:
+        text = text.replace(char, ' ')
+    words_list = text.split(' ')
     replacements = {}
-    for word in wordsList:
+    for word in words_list:
         if word.startswith(':'):
             if word.endswith(':'):
                 replacements[word] = ''
-    for replaceStr, newStr in replacements.items():
-        sayText = sayText.replace(replaceStr, newStr)
-    return sayText.replace('  ', ' ').strip()
+    for replace_str, new_str in replacements.items():
+        say_text = say_text.replace(replace_str, new_str)
+    return say_text.replace('  ', ' ').strip()
 
 
-def _speakerEndpointJson(displayName: str, summary: str,
-                         content: str, sayContent: str,
-                         imageDescription: str,
-                         links: [], gender: str, postId: str,
-                         postDM: bool, postReply: bool,
-                         followRequestsExist: bool,
-                         followRequestsList: [],
-                         likedBy: str, published: str, postCal: bool,
-                         postShare: bool, themeName: str,
-                         isDirect: bool, replyToYou: bool) -> {}:
+def _speaker_endpoint_json(display_name: str, summary: str,
+                           content: str, say_content: str,
+                           image_description: str,
+                           links: [], gender: str, post_id: str,
+                           post_dm: bool, post_reply: bool,
+                           follow_requests_exist: bool,
+                           follow_requests_list: [],
+                           liked_by: str, published: str, post_cal: bool,
+                           post_share: bool, theme_name: str,
+                           is_direct: bool, reply_to_you: bool) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
-    speakerJson = {
-        "name": displayName,
+    speaker_json = {
+        "name": display_name,
         "summary": summary,
         "content": content,
-        "say": sayContent,
+        "say": say_content,
         "published": published,
-        "imageDescription": imageDescription,
+        "imageDescription": image_description,
         "detectedLinks": links,
-        "id": postId,
-        "direct": isDirect,
-        "replyToYou": replyToYou,
+        "id": post_id,
+        "direct": is_direct,
+        "replyToYou": reply_to_you,
         "notify": {
-            "theme": themeName,
-            "dm": postDM,
-            "reply": postReply,
-            "followRequests": followRequestsExist,
-            "followRequestsList": followRequestsList,
-            "likedBy": likedBy,
-            "calendar": postCal,
-            "share": postShare
+            "theme": theme_name,
+            "dm": post_dm,
+            "reply": post_reply,
+            "followRequests": follow_requests_exist,
+            "followRequestsList": follow_requests_list,
+            "likedBy": liked_by,
+            "calendar": post_cal,
+            "share": post_share
         }
     }
     if gender:
-        speakerJson['gender'] = gender
-    return speakerJson
+        speaker_json['gender'] = gender
+    return speaker_json
 
 
-def _SSMLheader(systemLanguage: str, instanceTitle: str) -> str:
+def _ssml_header(system_language: str, box_name: str, summary: str) -> str:
     """Returns a header for an SSML document
     """
+    if summary:
+        summary = ': ' + summary
     return '<?xml version="1.0"?>\n' + \
         '<speak xmlns="http://www.w3.org/2001/10/synthesis"\n' + \
         '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + \
@@ -306,27 +314,25 @@ def _SSMLheader(systemLanguage: str, instanceTitle: str) -> str:
         '         http://www.w3.org/TR/speech-synthesis11/synthesis.xsd"\n' + \
         '       version="1.1">\n' + \
         '  <metadata>\n' + \
-        '    <dc:title xml:lang="' + systemLanguage + '">' + \
-        instanceTitle + ' inbox</dc:title>\n' + \
+        '    <dc:title xml:lang="' + system_language + '">' + \
+        box_name + summary + '</dc:title>\n' + \
         '  </metadata>\n'
 
 
-def _speakerEndpointSSML(displayName: str, summary: str,
-                         content: str, imageDescription: str,
-                         links: [], language: str,
-                         instanceTitle: str,
-                         gender: str) -> str:
+def _speaker_endpoint_ssml(display_name: str, summary: str,
+                           content: str, language: str,
+                           gender: str, box_name: str) -> str:
     """Returns an SSML endpoint for the TTS speaker
     https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language
     https://www.w3.org/TR/speech-synthesis/
     """
-    langShort = 'en'
+    lang_short = 'en'
     if language:
-        langShort = language[:2]
+        lang_short = language[:2]
     if not gender:
         gender = 'neutral'
     else:
-        if langShort == 'en':
+        if lang_short == 'en':
             gender = gender.lower()
             if 'he/him' in gender:
                 gender = 'male'
@@ -335,12 +341,14 @@ def _speakerEndpointSSML(displayName: str, summary: str,
             else:
                 gender = 'neutral'
 
-    content = _addSSMLemphasis(content)
-    voiceParams = 'name="' + displayName + '" gender="' + gender + '"'
-    return _SSMLheader(langShort, instanceTitle) + \
+    content = _add_ssm_lemphasis(content)
+    voice_params = 'name="' + display_name + '" gender="' + gender + '"'
+    if summary is None:
+        summary = ''
+    return _ssml_header(lang_short, box_name, summary) + \
         '  <p>\n' + \
         '    <s xml:lang="' + language + '">\n' + \
-        '      <voice ' + voiceParams + '>\n' + \
+        '      <voice ' + voice_params + '>\n' + \
         '        ' + content + '\n' + \
         '      </voice>\n' + \
         '    </s>\n' + \
@@ -348,204 +356,232 @@ def _speakerEndpointSSML(displayName: str, summary: str,
         '</speak>\n'
 
 
-def getSSMLbox(baseDir: str, path: str,
-               domain: str,
-               systemLanguage: str,
-               instanceTitle: str,
-               boxName: str) -> str:
+def get_ssml_box(base_dir: str, path: str,
+                 domain: str,
+                 system_language: str,
+                 box_name: str) -> str:
     """Returns SSML for the given timeline
     """
     nickname = path.split('/users/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
-    speakerFilename = \
-        acctDir(baseDir, nickname, domain) + '/speaker.json'
-    if not os.path.isfile(speakerFilename):
+    speaker_filename = \
+        acct_dir(base_dir, nickname, domain) + '/speaker.json'
+    if not os.path.isfile(speaker_filename):
         return None
-    speakerJson = loadJson(speakerFilename)
-    if not speakerJson:
+    speaker_json = load_json(speaker_filename)
+    if not speaker_json:
         return None
     gender = None
-    if speakerJson.get('gender'):
-        gender = speakerJson['gender']
-    return _speakerEndpointSSML(speakerJson['name'],
-                                speakerJson['summary'],
-                                speakerJson['say'],
-                                speakerJson['imageDescription'],
-                                speakerJson['detectedLinks'],
-                                systemLanguage,
-                                instanceTitle, gender)
+    if speaker_json.get('gender'):
+        gender = speaker_json['gender']
+    return _speaker_endpoint_ssml(speaker_json['name'],
+                                  speaker_json['summary'],
+                                  speaker_json['say'],
+                                  system_language,
+                                  gender, box_name)
 
 
-def speakableText(baseDir: str, content: str, translate: {}) -> (str, []):
+def speakable_text(base_dir: str, content: str, translate: {}) -> (str, []):
     """Convert the given text to a speakable version
     which includes changes for prononciation
     """
     content = str(content)
-    if isPGPEncrypted(content):
+    if is_pgp_encrypted(content):
         return content, []
 
     # replace some emoji before removing html
     if ' <3' in content:
         content = content.replace(' <3', ' ' + translate['heart'])
-    content = removeHtml(htmlReplaceQuoteMarks(content))
-    detectedLinks = []
-    content = speakerReplaceLinks(content, translate, detectedLinks)
+    content = remove_html(html_replace_quote_marks(content))
+    detected_links = []
+    content = speaker_replace_links(content, translate, detected_links)
     # replace all double spaces
     while '  ' in content:
         content = content.replace('  ', ' ')
     content = content.replace(' . ', '. ').strip()
-    sayContent = _speakerPronounce(baseDir, content, translate)
+    say_content = _speaker_pronounce(base_dir, content, translate)
     # replace all double spaces
-    while '  ' in sayContent:
-        sayContent = sayContent.replace('  ', ' ')
-    return sayContent.replace(' . ', '. ').strip(), detectedLinks
+    while '  ' in say_content:
+        say_content = say_content.replace('  ', ' ')
+    return say_content.replace(' . ', '. ').strip(), detected_links
 
 
-def _postToSpeakerJson(baseDir: str, httpPrefix: str,
-                       nickname: str, domain: str, domainFull: str,
-                       postJsonObject: {}, personCache: {},
-                       translate: {}, announcingActor: str,
-                       themeName: str) -> {}:
+def _post_to_speaker_json(base_dir: str, http_prefix: str,
+                          nickname: str, domain_full: str,
+                          post_json_object: {}, person_cache: {},
+                          translate: {}, announcing_actor: str,
+                          theme_name: str) -> {}:
     """Converts an ActivityPub post into some Json containing
     speech synthesis parameters.
     NOTE: There currently appears to be no standardized json
     format for speech synthesis
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_dict(post_json_object):
         return
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return
-    if not isinstance(postJsonObject['object']['content'], str):
+    if not isinstance(post_json_object['object']['content'], str):
         return
-    detectedLinks = []
-    content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
+    detected_links = []
+    content = urllib.parse.unquote_plus(post_json_object['object']['content'])
     content = html.unescape(content)
     content = content.replace('<p>', '').replace('</p>', ' ')
-    if not isPGPEncrypted(content):
+    if not is_pgp_encrypted(content):
         # replace some emoji before removing html
         if ' <3' in content:
             content = content.replace(' <3', ' ' + translate['heart'])
-        content = removeHtml(htmlReplaceQuoteMarks(content))
-        content = speakerReplaceLinks(content, translate, detectedLinks)
+        content = remove_html(html_replace_quote_marks(content))
+        content = speaker_replace_links(content, translate, detected_links)
         # replace all double spaces
         while '  ' in content:
             content = content.replace('  ', ' ')
         content = content.replace(' . ', '. ').strip()
-        sayContent = content
-        sayContent = _speakerPronounce(baseDir, content, translate)
+        say_content = content
+        say_content = _speaker_pronounce(base_dir, content, translate)
         # replace all double spaces
-        while '  ' in sayContent:
-            sayContent = sayContent.replace('  ', ' ')
-        sayContent = sayContent.replace(' . ', '. ').strip()
+        while '  ' in say_content:
+            say_content = say_content.replace('  ', ' ')
+        say_content = say_content.replace(' . ', '. ').strip()
     else:
-        sayContent = content
+        say_content = content
 
-    imageDescription = ''
-    if postJsonObject['object'].get('attachment'):
-        attachList = postJsonObject['object']['attachment']
-        if isinstance(attachList, list):
-            for img in attachList:
+    image_description = ''
+    if post_json_object['object'].get('attachment'):
+        attach_list = post_json_object['object']['attachment']
+        if isinstance(attach_list, list):
+            for img in attach_list:
                 if not isinstance(img, dict):
                     continue
                 if img.get('name'):
                     if isinstance(img['name'], str):
-                        imageDescription += \
+                        image_description += \
                             img['name'] + '. '
 
-    isDirect = isDM(postJsonObject)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
-    replyToYou = isReply(postJsonObject, actor)
+    is_direct = is_dm(post_json_object)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
+    reply_to_you = is_reply(post_json_object, actor)
 
     published = ''
-    if postJsonObject['object'].get('published'):
-        published = postJsonObject['object']['published']
+    if post_json_object['object'].get('published'):
+        published = post_json_object['object']['published']
 
     summary = ''
-    if postJsonObject['object'].get('summary'):
-        if isinstance(postJsonObject['object']['summary'], str):
+    if post_json_object['object'].get('summary'):
+        if isinstance(post_json_object['object']['summary'], str):
+            post_json_object_summary = post_json_object['object']['summary']
             summary = \
-                urllib.parse.unquote_plus(postJsonObject['object']['summary'])
+                urllib.parse.unquote_plus(post_json_object_summary)
             summary = html.unescape(summary)
 
-    speakerName = \
-        getDisplayName(baseDir, postJsonObject['actor'], personCache)
-    if not speakerName:
+    speaker_name = \
+        get_display_name(base_dir, post_json_object['actor'], person_cache)
+    if not speaker_name:
         return
-    speakerName = _removeEmojiFromText(speakerName)
-    speakerName = speakerName.replace('_', ' ')
-    speakerName = camelCaseSplit(speakerName)
-    gender = getGenderFromBio(baseDir, postJsonObject['actor'],
-                              personCache, translate)
-    if announcingActor:
-        announcedNickname = getNicknameFromActor(announcingActor)
-        announcedDomain, announcedport = getDomainFromActor(announcingActor)
-        if announcedNickname and announcedDomain:
-            announcedHandle = announcedNickname + '@' + announcedDomain
-            sayContent = \
+    speaker_name = _remove_emoji_from_text(speaker_name)
+    speaker_name = speaker_name.replace('_', ' ')
+    speaker_name = camel_case_split(speaker_name)
+    gender = get_gender_from_bio(base_dir, post_json_object['actor'],
+                                 person_cache, translate)
+    if announcing_actor:
+        announced_nickname = get_nickname_from_actor(announcing_actor)
+        announced_domain, _ = \
+            get_domain_from_actor(announcing_actor)
+        if announced_nickname and announced_domain:
+            announced_handle = announced_nickname + '@' + announced_domain
+            say_content = \
                 translate['announces'] + ' ' + \
-                announcedHandle + '. ' + sayContent
+                announced_handle + '. ' + say_content
             content = \
                 translate['announces'] + ' ' + \
-                announcedHandle + '. ' + content
-    postId = None
-    if postJsonObject['object'].get('id'):
-        postId = removeIdEnding(postJsonObject['object']['id'])
+                announced_handle + '. ' + content
+    post_id = None
+    if post_json_object['object'].get('id'):
+        post_id = remove_id_ending(post_json_object['object']['id'])
 
-    followRequestsExist = False
-    followRequestsList = []
-    accountsDir = acctDir(baseDir, nickname, domainFull)
-    approveFollowsFilename = accountsDir + '/followrequests.txt'
-    if os.path.isfile(approveFollowsFilename):
-        with open(approveFollowsFilename, 'r') as fp:
-            follows = fp.readlines()
+    follow_requests_exist = False
+    follow_requests_list = []
+    accounts_dir = acct_dir(base_dir, nickname, domain_full)
+    approve_follows_filename = accounts_dir + '/followrequests.txt'
+    if os.path.isfile(approve_follows_filename):
+        with open(approve_follows_filename, 'r', encoding='utf-8') as fp_foll:
+            follows = fp_foll.readlines()
             if len(follows) > 0:
-                followRequestsExist = True
-                for i in range(len(follows)):
+                follow_requests_exist = True
+                for i, _ in enumerate(follows):
                     follows[i] = follows[i].strip()
-                followRequestsList = follows
-    postDM = False
-    dmFilename = accountsDir + '/.newDM'
-    if os.path.isfile(dmFilename):
-        postDM = True
-    postReply = False
-    replyFilename = accountsDir + '/.newReply'
-    if os.path.isfile(replyFilename):
-        postReply = True
-    likedBy = ''
-    likeFilename = accountsDir + '/.newLike'
-    if os.path.isfile(likeFilename):
-        with open(likeFilename, 'r') as fp:
-            likedBy = fp.read()
-    calendarFilename = accountsDir + '/.newCalendar'
-    postCal = os.path.isfile(calendarFilename)
-    shareFilename = accountsDir + '/.newShare'
-    postShare = os.path.isfile(shareFilename)
+                follow_requests_list = follows
+    post_dm = False
+    dm_filename = accounts_dir + '/.newDM'
+    if os.path.isfile(dm_filename):
+        post_dm = True
+    post_reply = False
+    reply_filename = accounts_dir + '/.newReply'
+    if os.path.isfile(reply_filename):
+        post_reply = True
+    liked_by = ''
+    like_filename = accounts_dir + '/.newLike'
+    if os.path.isfile(like_filename):
+        with open(like_filename, 'r', encoding='utf-8') as fp_like:
+            liked_by = fp_like.read()
+    calendar_filename = accounts_dir + '/.newCalendar'
+    post_cal = os.path.isfile(calendar_filename)
+    share_filename = accounts_dir + '/.newShare'
+    post_share = os.path.isfile(share_filename)
 
-    return _speakerEndpointJson(speakerName, summary,
-                                content, sayContent, imageDescription,
-                                detectedLinks, gender, postId,
-                                postDM, postReply,
-                                followRequestsExist,
-                                followRequestsList,
-                                likedBy, published,
-                                postCal, postShare, themeName,
-                                isDirect, replyToYou)
+    return _speaker_endpoint_json(speaker_name, summary,
+                                  content, say_content, image_description,
+                                  detected_links, gender, post_id,
+                                  post_dm, post_reply,
+                                  follow_requests_exist,
+                                  follow_requests_list,
+                                  liked_by, published,
+                                  post_cal, post_share, theme_name,
+                                  is_direct, reply_to_you)
 
 
-def updateSpeaker(baseDir: str, httpPrefix: str,
-                  nickname: str, domain: str, domainFull: str,
-                  postJsonObject: {}, personCache: {},
-                  translate: {}, announcingActor: str,
-                  themeName: str) -> None:
+def update_speaker(base_dir: str, http_prefix: str,
+                   nickname: str, domain: str, domain_full: str,
+                   post_json_object: {}, person_cache: {},
+                   translate: {}, announcing_actor: str,
+                   theme_name: str,
+                   system_language: str, box_name: str) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
-    speakerJson = \
-        _postToSpeakerJson(baseDir, httpPrefix,
-                           nickname, domain, domainFull,
-                           postJsonObject, personCache,
-                           translate, announcingActor,
-                           themeName)
-    speakerFilename = acctDir(baseDir, nickname, domain) + '/speaker.json'
-    saveJson(speakerJson, speakerFilename)
+    speaker_json = \
+        _post_to_speaker_json(base_dir, http_prefix,
+                              nickname, domain_full,
+                              post_json_object, person_cache,
+                              translate, announcing_actor,
+                              theme_name)
+    if not speaker_json:
+        return
+    account_dir = acct_dir(base_dir, nickname, domain)
+    speaker_filename = account_dir + '/speaker.json'
+    save_json(speaker_json, speaker_filename)
+
+    # save the ssml
+    cached_ssml_filename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
+    if not cached_ssml_filename:
+        return
+    cached_ssml_filename = cached_ssml_filename.replace('.html', '.ssml')
+    if box_name == 'outbox':
+        cached_ssml_filename = \
+            cached_ssml_filename.replace('/postcache/', '/outbox/')
+    gender = None
+    if speaker_json.get('gender'):
+        gender = speaker_json['gender']
+    ssml_str = \
+        _speaker_endpoint_ssml(speaker_json['name'],
+                               speaker_json['summary'],
+                               speaker_json['say'],
+                               system_language,
+                               gender, box_name)
+    try:
+        with open(cached_ssml_filename, 'w+', encoding='utf-8') as fp_ssml:
+            fp_ssml.write(ssml_str)
+    except OSError:
+        print('EX: unable to write ssml ' + cached_ssml_filename)

@@ -1,7 +1,7 @@
 __filename__ = "follow.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -9,186 +9,204 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
-from utils import removeDomainPort
-from utils import hasObjectDict
-from utils import hasUsersPath
-from utils import getFullDomain
-from utils import isSystemAccount
-from utils import getFollowersList
-from utils import validNickname
-from utils import domainPermitted
-from utils import getDomainFromActor
-from utils import getNicknameFromActor
-from utils import getStatusNumber
-from utils import followPerson
-from posts import sendSignedJson
-from posts import getPersonBox
-from utils import loadJson
-from utils import saveJson
-from utils import isAccountDir
-from utils import getUserPaths
-from utils import acctDir
-from utils import hasGroupType
-from utils import isGroupAccount
-from utils import localActorUrl
-from acceptreject import createAccept
-from acceptreject import createReject
-from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
-from session import getJson
-from session import postJson
-from cache import getPersonPubKey
+from utils import has_object_string_object
+from utils import has_object_string_type
+from utils import remove_domain_port
+from utils import has_users_path
+from utils import get_full_domain
+from utils import get_followers_list
+from utils import valid_nickname
+from utils import domain_permitted
+from utils import get_domain_from_actor
+from utils import get_nickname_from_actor
+from utils import get_status_number
+from utils import follow_person
+from posts import send_signed_json
+from posts import get_person_box
+from utils import load_json
+from utils import save_json
+from utils import is_account_dir
+from utils import get_user_paths
+from utils import acct_dir
+from utils import has_group_type
+from utils import local_actor_url
+from utils import text_in_file
+from utils import remove_eol
+from acceptreject import create_accept
+from acceptreject import create_reject
+from webfinger import webfinger_handle
+from auth import create_basic_auth_header
+from session import get_json
+from session import post_json
 
 
-def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
+def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
     """Creates initial lastseen files for all follows.
     The lastseen files are used to generate the Zzz icons on
     follows/following lists on the profile screen.
     """
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
-            followingFilename = accountDir + '/following.txt'
-            if not os.path.isfile(followingFilename):
+            account_dir = os.path.join(base_dir + '/accounts', acct)
+            following_filename = account_dir + '/following.txt'
+            if not os.path.isfile(following_filename):
                 continue
-            lastSeenDir = accountDir + '/lastseen'
-            if not os.path.isdir(lastSeenDir):
-                os.mkdir(lastSeenDir)
-            with open(followingFilename, 'r') as fp:
-                followingHandles = fp.readlines()
-                for handle in followingHandles:
-                    if '#' in handle:
-                        continue
-                    if '@' not in handle:
-                        continue
-                    handle = handle.replace('\n', '')
-                    nickname = handle.split('@')[0]
-                    domain = handle.split('@')[1]
-                    if nickname.startswith('!'):
-                        nickname = nickname[1:]
-                    actor = localActorUrl(httpPrefix, nickname, domain)
-                    lastSeenFilename = \
-                        lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
-                    if not os.path.isfile(lastSeenFilename):
-                        with open(lastSeenFilename, 'w+') as fp:
-                            fp.write(str(100))
+            last_seen_dir = account_dir + '/lastseen'
+            if not os.path.isdir(last_seen_dir):
+                os.mkdir(last_seen_dir)
+            following_handles = []
+            try:
+                with open(following_filename, 'r',
+                          encoding='utf-8') as fp_foll:
+                    following_handles = fp_foll.readlines()
+            except OSError:
+                print('EX: create_initial_last_seen ' + following_filename)
+            for handle in following_handles:
+                if '#' in handle:
+                    continue
+                if '@' not in handle:
+                    continue
+                handle = remove_eol(handle)
+                nickname = handle.split('@')[0]
+                domain = handle.split('@')[1]
+                if nickname.startswith('!'):
+                    nickname = nickname[1:]
+                actor = local_actor_url(http_prefix, nickname, domain)
+                last_seen_filename = \
+                    last_seen_dir + '/' + actor.replace('/', '#') + '.txt'
+                if not os.path.isfile(last_seen_filename):
+                    try:
+                        with open(last_seen_filename, 'w+',
+                                  encoding='utf-8') as fp_last:
+                            fp_last.write(str(100))
+                    except OSError:
+                        print('EX: create_initial_last_seen 2 ' +
+                              last_seen_filename)
         break
 
 
-def _preApprovedFollower(baseDir: str,
-                         nickname: str, domain: str,
-                         approveHandle: str) -> bool:
+def _pre_approved_follower(base_dir: str,
+                           nickname: str, domain: str,
+                           approve_handle: str) -> bool:
     """Is the given handle an already manually approved follower?
     """
-    handle = nickname + '@' + domain
-    accountDir = baseDir + '/accounts/' + handle
-    approvedFilename = accountDir + '/approved.txt'
-    if os.path.isfile(approvedFilename):
-        if approveHandle in open(approvedFilename).read():
+    account_dir = acct_dir(base_dir, nickname, domain)
+    approved_filename = account_dir + '/approved.txt'
+    if os.path.isfile(approved_filename):
+        if text_in_file(approve_handle, approved_filename):
             return True
     return False
 
 
-def _removeFromFollowBase(baseDir: str,
-                          nickname: str, domain: str,
-                          acceptOrDenyHandle: str, followFile: str,
-                          debug: bool) -> None:
+def _remove_from_follow_base(base_dir: str,
+                             nickname: str, domain: str,
+                             accept_or_deny_handle: str, follow_file: str,
+                             debug: bool) -> None:
     """Removes a handle/actor from follow requests or rejects file
     """
-    handle = nickname + '@' + domain
-    accountsDir = baseDir + '/accounts/' + handle
-    approveFollowsFilename = accountsDir + '/' + followFile + '.txt'
-    if not os.path.isfile(approveFollowsFilename):
+    accounts_dir = acct_dir(base_dir, nickname, domain)
+    approve_follows_filename = accounts_dir + '/' + follow_file + '.txt'
+    if not os.path.isfile(approve_follows_filename):
         if debug:
-            print('WARN: Approve follow requests file ' +
-                  approveFollowsFilename + ' not found')
+            print('There is no ' + follow_file +
+                  ' to remove ' + nickname + '@' + domain + ' from')
         return
-    acceptDenyActor = None
-    if acceptOrDenyHandle not in open(approveFollowsFilename).read():
+    accept_deny_actor = None
+    if not text_in_file(accept_or_deny_handle, approve_follows_filename):
         # is this stored in the file as an actor rather than a handle?
-        acceptDenyNickname = acceptOrDenyHandle.split('@')[0]
-        acceptDenyDomain = acceptOrDenyHandle.split('@')[1]
+        accept_deny_nickname = accept_or_deny_handle.split('@')[0]
+        accept_deny_domain = accept_or_deny_handle.split('@')[1]
         # for each possible users path construct an actor and
         # check if it exists in teh file
-        usersPaths = getUserPaths()
-        actorFound = False
-        for usersName in usersPaths:
-            acceptDenyActor = \
-                '://' + acceptDenyDomain + usersName + acceptDenyNickname
-            if acceptDenyActor in open(approveFollowsFilename).read():
-                actorFound = True
+        users_paths = get_user_paths()
+        actor_found = False
+        for users_name in users_paths:
+            accept_deny_actor = \
+                '://' + accept_deny_domain + users_name + accept_deny_nickname
+            if text_in_file(accept_deny_actor, approve_follows_filename):
+                actor_found = True
                 break
-        if not actorFound:
+        if not actor_found:
             return
-    with open(approveFollowsFilename + '.new', 'w+') as approvefilenew:
-        with open(approveFollowsFilename, 'r') as approvefile:
-            if not acceptDenyActor:
-                for approveHandle in approvefile:
-                    if not approveHandle.startswith(acceptOrDenyHandle):
-                        approvefilenew.write(approveHandle)
-            else:
-                for approveHandle in approvefile:
-                    if acceptDenyActor not in approveHandle:
-                        approvefilenew.write(approveHandle)
+    try:
+        with open(approve_follows_filename + '.new', 'w+',
+                  encoding='utf-8') as approvefilenew:
+            with open(approve_follows_filename, 'r',
+                      encoding='utf-8') as approvefile:
+                if not accept_deny_actor:
+                    for approve_handle in approvefile:
+                        accept_deny_handle = accept_or_deny_handle
+                        if not approve_handle.startswith(accept_deny_handle):
+                            approvefilenew.write(approve_handle)
+                else:
+                    for approve_handle in approvefile:
+                        if accept_deny_actor not in approve_handle:
+                            approvefilenew.write(approve_handle)
+    except OSError as ex:
+        print('EX: _remove_from_follow_base ' +
+              approve_follows_filename + ' ' + str(ex))
 
-    os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
+    os.rename(approve_follows_filename + '.new', approve_follows_filename)
 
 
-def removeFromFollowRequests(baseDir: str,
-                             nickname: str, domain: str,
-                             denyHandle: str, debug: bool) -> None:
+def remove_from_follow_requests(base_dir: str,
+                                nickname: str, domain: str,
+                                deny_handle: str, debug: bool) -> None:
     """Removes a handle from follow requests
     """
-    _removeFromFollowBase(baseDir, nickname, domain,
-                          denyHandle, 'followrequests', debug)
+    _remove_from_follow_base(base_dir, nickname, domain,
+                             deny_handle, 'followrequests', debug)
 
 
-def _removeFromFollowRejects(baseDir: str,
-                             nickname: str, domain: str,
-                             acceptHandle: str, debug: bool) -> None:
+def _remove_from_follow_rejects(base_dir: str,
+                                nickname: str, domain: str,
+                                accept_handle: str, debug: bool) -> None:
     """Removes a handle from follow rejects
     """
-    _removeFromFollowBase(baseDir, nickname, domain,
-                          acceptHandle, 'followrejects', debug)
+    _remove_from_follow_base(base_dir, nickname, domain,
+                             accept_handle, 'followrejects', debug)
 
 
-def isFollowingActor(baseDir: str,
-                     nickname: str, domain: str, actor: str) -> bool:
+def is_following_actor(base_dir: str,
+                       nickname: str, domain: str, actor: str) -> bool:
     """Is the given nickname following the given actor?
     The actor can also be a handle: nickname@domain
     """
-    domain = removeDomainPort(domain)
-    handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    domain = remove_domain_port(domain)
+    accounts_dir = acct_dir(base_dir, nickname, domain)
+    if not os.path.isdir(accounts_dir):
         return False
-    followingFile = baseDir + '/accounts/' + handle + '/following.txt'
-    if not os.path.isfile(followingFile):
+    following_file = accounts_dir + '/following.txt'
+    if not os.path.isfile(following_file):
         return False
-    if actor.lower() in open(followingFile).read().lower():
+    if actor.startswith('@'):
+        actor = actor[1:]
+    if text_in_file(actor, following_file, False):
         return True
-    followingNickname = getNicknameFromActor(actor)
-    if not followingNickname:
+    following_nickname = get_nickname_from_actor(actor)
+    if not following_nickname:
         print('WARN: unable to find nickname in ' + actor)
         return False
-    followingDomain, followingPort = getDomainFromActor(actor)
-    followingHandle = \
-        getFullDomain(followingNickname + '@' + followingDomain, followingPort)
-    if followingHandle.lower() in open(followingFile).read().lower():
+    following_domain, following_port = get_domain_from_actor(actor)
+    following_handle = \
+        get_full_domain(following_nickname + '@' + following_domain,
+                        following_port)
+    if text_in_file(following_handle, following_file, False):
         return True
     return False
 
 
-def getMutualsOfPerson(baseDir: str,
-                       nickname: str, domain: str) -> []:
+def get_mutuals_of_person(base_dir: str,
+                          nickname: str, domain: str) -> []:
     """Returns the mutuals of a person
     i.e. accounts which they follow and which also follow back
     """
     followers = \
-        getFollowersList(baseDir, nickname, domain, 'followers.txt')
+        get_followers_list(base_dir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersList(baseDir, nickname, domain, 'following.txt')
+        get_followers_list(base_dir, nickname, domain, 'following.txt')
     mutuals = []
     for handle in following:
         if handle in followers:
@@ -196,152 +214,204 @@ def getMutualsOfPerson(baseDir: str,
     return mutuals
 
 
-def followerOfPerson(baseDir: str, nickname: str, domain: str,
-                     followerNickname: str, followerDomain: str,
-                     federationList: [], debug: bool,
-                     groupAccount: bool) -> bool:
+def add_follower_of_person(base_dir: str, nickname: str, domain: str,
+                           follower_nickname: str, follower_domain: str,
+                           federation_list: [], debug: bool,
+                           group_account: bool) -> bool:
     """Adds a follower of the given person
     """
-    return followPerson(baseDir, nickname, domain,
-                        followerNickname, followerDomain,
-                        federationList, debug, groupAccount, 'followers.txt')
+    return follow_person(base_dir, nickname, domain,
+                         follower_nickname, follower_domain,
+                         federation_list, debug, group_account,
+                         'followers.txt')
 
 
-def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
-                       followerNickname: str, followerDomain: str) -> bool:
-    """is the given nickname a follower of followerNickname?
+def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
+    """Returns a list of domains for followers
     """
-    if not followerDomain:
-        print('No followerDomain')
-        return False
-    if not followerNickname:
-        print('No followerNickname for ' + followerDomain)
-        return False
-    domain = removeDomainPort(domain)
-    followersFile = acctDir(baseDir, nickname, domain) + '/followers.txt'
-    if not os.path.isfile(followersFile):
-        return False
-    handle = followerNickname + '@' + followerDomain
+    domain = remove_domain_port(domain)
+    followers_file = acct_dir(base_dir, nickname, domain) + '/followers.txt'
+    if not os.path.isfile(followers_file):
+        return []
 
-    alreadyFollowing = False
+    lines = []
+    try:
+        with open(followers_file, 'r', encoding='utf-8') as fp_foll:
+            lines = fp_foll.readlines()
+    except OSError:
+        print('EX: get_follower_domains ' + followers_file)
 
-    followersStr = ''
-    with open(followersFile, 'r') as fpFollowers:
-        followersStr = fpFollowers.read()
+    domains_list = []
+    for handle in lines:
+        handle = remove_eol(handle)
+        follower_domain, _ = get_domain_from_actor(handle)
+        if not follower_domain:
+            continue
+        if follower_domain not in domains_list:
+            domains_list.append(follower_domain)
+    return domains_list
 
-    if handle in followersStr:
-        alreadyFollowing = True
+
+def is_follower_of_person(base_dir: str, nickname: str, domain: str,
+                          follower_nickname: str,
+                          follower_domain: str) -> bool:
+    """is the given nickname a follower of follower_nickname?
+    """
+    if not follower_domain:
+        print('No follower_domain')
+        return False
+    if not follower_nickname:
+        print('No follower_nickname for ' + follower_domain)
+        return False
+    domain = remove_domain_port(domain)
+    followers_file = acct_dir(base_dir, nickname, domain) + '/followers.txt'
+    if not os.path.isfile(followers_file):
+        return False
+    handle = follower_nickname + '@' + follower_domain
+
+    already_following = False
+
+    followers_str = ''
+    try:
+        with open(followers_file, 'r', encoding='utf-8') as fp_foll:
+            followers_str = fp_foll.read()
+    except OSError:
+        print('EX: is_follower_of_person ' + followers_file)
+
+    if handle in followers_str:
+        already_following = True
     else:
-        paths = getUserPaths()
-        for userPath in paths:
-            url = '://' + followerDomain + userPath + followerNickname
-            if url in followersStr:
-                alreadyFollowing = True
+        paths = get_user_paths()
+        for user_path in paths:
+            url = '://' + follower_domain + user_path + follower_nickname
+            if url in followers_str:
+                already_following = True
                 break
 
-    return alreadyFollowing
+    return already_following
 
 
-def unfollowAccount(baseDir: str, nickname: str, domain: str,
-                    followNickname: str, followDomain: str,
-                    debug: bool, groupAccount: bool,
-                    followFile: str = 'following.txt') -> bool:
+def unfollow_account(base_dir: str, nickname: str, domain: str,
+                     follow_nickname: str, follow_domain: str,
+                     debug: bool, group_account: bool,
+                     follow_file: str = 'following.txt') -> bool:
     """Removes a person to the follow list
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
-    handleToUnfollow = followNickname + '@' + followDomain
-    if groupAccount:
-        handleToUnfollow = '!' + handleToUnfollow
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        os.mkdir(baseDir + '/accounts/' + handle)
+    handle_to_unfollow = follow_nickname + '@' + follow_domain
+    if group_account:
+        handle_to_unfollow = '!' + handle_to_unfollow
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
+        os.mkdir(base_dir + '/accounts/' + handle)
 
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    accounts_dir = acct_dir(base_dir, nickname, domain)
+    filename = accounts_dir + '/' + follow_file
     if not os.path.isfile(filename):
         if debug:
             print('DEBUG: follow file ' + filename + ' was not found')
         return False
-    handleToUnfollowLower = handleToUnfollow.lower()
-    if handleToUnfollowLower not in open(filename).read().lower():
+    handle_to_unfollow_lower = handle_to_unfollow.lower()
+    if not text_in_file(handle_to_unfollow_lower, filename, False):
         if debug:
-            print('DEBUG: handle to unfollow ' + handleToUnfollow +
+            print('DEBUG: handle to unfollow ' + handle_to_unfollow +
                   ' is not in ' + filename)
         return
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-        with open(filename, 'w+') as f:
-            for line in lines:
-                checkHandle = line.strip("\n").strip("\r").lower()
-                if checkHandle != handleToUnfollowLower and \
-                   checkHandle != '!' + handleToUnfollowLower:
-                    f.write(line)
+    lines = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_unfoll:
+            lines = fp_unfoll.readlines()
+    except OSError:
+        print('EX: unfollow_account ' + filename)
+    if lines:
+        try:
+            with open(filename, 'w+', encoding='utf-8') as fp_unfoll:
+                for line in lines:
+                    check_handle = line.strip("\n").strip("\r").lower()
+                    if check_handle not in (handle_to_unfollow_lower,
+                                            '!' + handle_to_unfollow_lower):
+                        fp_unfoll.write(line)
+        except OSError as ex:
+            print('EX: unable to write ' + filename + ' ' + str(ex))
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
-    unfollowedFilename = baseDir + '/accounts/' + handle + '/unfollowed.txt'
-    if os.path.isfile(unfollowedFilename):
-        if handleToUnfollowLower not in \
-           open(unfollowedFilename).read().lower():
-            with open(unfollowedFilename, 'a+') as f:
-                f.write(handleToUnfollow + '\n')
+    unfollowed_filename = accounts_dir + '/unfollowed.txt'
+    if os.path.isfile(unfollowed_filename):
+        if not text_in_file(handle_to_unfollow_lower,
+                            unfollowed_filename, False):
+            try:
+                with open(unfollowed_filename, 'a+',
+                          encoding='utf-8') as fp_unfoll:
+                    fp_unfoll.write(handle_to_unfollow + '\n')
+            except OSError:
+                print('EX: unable to append ' + unfollowed_filename)
     else:
-        with open(unfollowedFilename, 'w+') as f:
-            f.write(handleToUnfollow + '\n')
+        try:
+            with open(unfollowed_filename, 'w+',
+                      encoding='utf-8') as fp_unfoll:
+                fp_unfoll.write(handle_to_unfollow + '\n')
+        except OSError:
+            print('EX: unable to write ' + unfollowed_filename)
 
     return True
 
 
-def unfollowerOfAccount(baseDir: str, nickname: str, domain: str,
-                        followerNickname: str, followerDomain: str,
-                        debug: bool, groupAccount: bool) -> bool:
+def unfollower_of_account(base_dir: str, nickname: str, domain: str,
+                          follower_nickname: str, follower_domain: str,
+                          debug: bool, group_account: bool) -> bool:
     """Remove a follower of a person
     """
-    return unfollowAccount(baseDir, nickname, domain,
-                           followerNickname, followerDomain,
-                           debug, groupAccount, 'followers.txt')
+    return unfollow_account(base_dir, nickname, domain,
+                            follower_nickname, follower_domain,
+                            debug, group_account, 'followers.txt')
 
 
-def clearFollows(baseDir: str, nickname: str, domain: str,
-                 followFile: str = 'following.txt') -> None:
+def clear_follows(base_dir: str, nickname: str, domain: str,
+                  follow_file: str = 'following.txt') -> None:
     """Removes all follows
     """
-    handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        os.mkdir(baseDir + '/accounts/' + handle)
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
+    accounts_dir = acct_dir(base_dir, nickname, domain)
+    if not os.path.isdir(accounts_dir):
+        os.mkdir(accounts_dir)
+    filename = accounts_dir + '/' + follow_file
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except BaseException:
-            pass
+        except OSError:
+            print('EX: clear_follows unable to delete ' + filename)
 
 
-def clearFollowers(baseDir: str, nickname: str, domain: str) -> None:
+def clear_followers(base_dir: str, nickname: str, domain: str) -> None:
     """Removes all followers
     """
-    clearFollows(baseDir, nickname, domain, 'followers.txt')
+    clear_follows(base_dir, nickname, domain, 'followers.txt')
 
 
-def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
-                    authenticated: bool,
-                    followFile='following.txt') -> int:
+def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
+                       follow_file='following.txt') -> int:
     """Returns the number of follows or followers
     """
     # only show number of followers to authenticated
     # account holders
     # if not authenticated:
     #     return 9999
-    handle = nickname + '@' + domain
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    accounts_dir = acct_dir(base_dir, nickname, domain)
+    filename = accounts_dir + '/' + follow_file
     if not os.path.isfile(filename):
         return 0
     ctr = 0
-    with open(filename, 'r') as f:
-        lines = f.readlines()
+    lines = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_foll:
+            lines = fp_foll.readlines()
+    except OSError:
+        print('EX: _get_no_of_follows ' + filename)
+    if lines:
         for line in lines:
             if '#' in line:
                 continue
@@ -350,567 +420,391 @@ def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
                not line.startswith('http'):
                 ctr += 1
             elif ((line.startswith('http') or
+                   line.startswith('ipfs') or
+                   line.startswith('ipns') or
                    line.startswith('hyper')) and
-                  hasUsersPath(line)):
+                  has_users_path(line)):
                 ctr += 1
     return ctr
 
 
-def _getNoOfFollowers(baseDir: str,
-                      nickname: str, domain: str, authenticated: bool) -> int:
+def get_no_of_followers(base_dir: str, nickname: str, domain: str) -> int:
     """Returns the number of followers of the given person
     """
-    return _getNoOfFollows(baseDir, nickname, domain,
-                           authenticated, 'followers.txt')
+    return _get_no_of_follows(base_dir, nickname, domain, 'followers.txt')
 
 
-def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
-                     httpPrefix: str, authorized: bool,
-                     followsPerPage=12,
-                     followFile='following') -> {}:
+def get_following_feed(base_dir: str, domain: str, port: int, path: str,
+                       http_prefix: str, authorized: bool,
+                       follows_per_page=12,
+                       follow_file='following') -> {}:
     """Returns the following and followers feeds from GET requests.
     This accesses the following.txt or followers.txt and builds a collection.
     """
     # Show a small number of follows to non-authorized viewers
     if not authorized:
-        followsPerPage = 6
+        follows_per_page = 6
 
-    if '/' + followFile not in path:
+    if '/' + follow_file not in path:
         return None
     # handle page numbers
-    headerOnly = True
-    pageNumber = None
+    header_only = True
+    page_number = None
     if '?page=' in path:
-        pageNumber = path.split('?page=')[1]
-        if pageNumber == 'true' or not authorized:
-            pageNumber = 1
+        page_number = path.split('?page=')[1]
+        if len(page_number) > 5:
+            page_number = "1"
+        if page_number == 'true' or not authorized:
+            page_number = 1
         else:
             try:
-                pageNumber = int(pageNumber)
+                page_number = int(page_number)
             except BaseException:
-                pass
+                print('EX: get_following_feed unable to convert to int ' +
+                      str(page_number))
         path = path.split('?page=')[0]
-        headerOnly = False
+        header_only = False
 
-    if not path.endswith('/' + followFile):
+    if not path.endswith('/' + follow_file):
         return None
     nickname = None
     if path.startswith('/users/'):
-        nickname = path.replace('/users/', '', 1).replace('/' + followFile, '')
+        nickname = \
+            path.replace('/users/', '', 1).replace('/' + follow_file, '')
     if path.startswith('/@'):
-        nickname = path.replace('/@', '', 1).replace('/' + followFile, '')
+        nickname = path.replace('/@', '', 1).replace('/' + follow_file, '')
     if not nickname:
         return None
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         return None
 
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
-    if headerOnly:
-        firstStr = \
-            localActorUrl(httpPrefix, nickname, domain) + \
-            '/' + followFile + '?page=1'
-        idStr = \
-            localActorUrl(httpPrefix, nickname, domain) + '/' + followFile
-        totalStr = \
-            _getNoOfFollows(baseDir, nickname, domain, authorized)
+    if header_only:
+        first_str = \
+            local_actor_url(http_prefix, nickname, domain) + \
+            '/' + follow_file + '?page=1'
+        id_str = \
+            local_actor_url(http_prefix, nickname, domain) + '/' + follow_file
+        total_str = \
+            _get_no_of_follows(base_dir, nickname, domain)
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            'first': firstStr,
-            'id': idStr,
-            'totalItems': totalStr,
+            'first': first_str,
+            'id': id_str,
+            'totalItems': total_str,
             'type': 'OrderedCollection'
         }
         return following
 
-    if not pageNumber:
-        pageNumber = 1
+    if not page_number:
+        page_number = 1
 
-    nextPageNumber = int(pageNumber + 1)
-    idStr = \
-        localActorUrl(httpPrefix, nickname, domain) + \
-        '/' + followFile + '?page=' + str(pageNumber)
-    partOfStr = \
-        localActorUrl(httpPrefix, nickname, domain) + '/' + followFile
+    next_page_number = int(page_number + 1)
+    id_str = \
+        local_actor_url(http_prefix, nickname, domain) + \
+        '/' + follow_file + '?page=' + str(page_number)
+    part_of_str = \
+        local_actor_url(http_prefix, nickname, domain) + '/' + follow_file
     following = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': idStr,
+        'id': id_str,
         'orderedItems': [],
-        'partOf': partOfStr,
+        'partOf': part_of_str,
         'totalItems': 0,
         'type': 'OrderedCollectionPage'
     }
 
-    handleDomain = domain
-    handleDomain = removeDomainPort(handleDomain)
-    handle = nickname + '@' + handleDomain
-    filename = baseDir + '/accounts/' + handle + '/' + followFile + '.txt'
+    handle_domain = domain
+    handle_domain = remove_domain_port(handle_domain)
+    accounts_dir = acct_dir(base_dir, nickname, handle_domain)
+    filename = accounts_dir + '/' + follow_file + '.txt'
     if not os.path.isfile(filename):
         return following
-    currPage = 1
-    pageCtr = 0
-    totalCtr = 0
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            if '#' not in line:
-                if '@' in line and not line.startswith('http'):
-                    # nickname@domain
-                    pageCtr += 1
-                    totalCtr += 1
-                    if currPage == pageNumber:
-                        line2 = \
-                            line.lower().replace('\n', '').replace('\r', '')
-                        nick = line2.split('@')[0]
-                        dom = line2.split('@')[1]
-                        if not nick.startswith('!'):
-                            # person actor
-                            url = localActorUrl(httpPrefix, nick, dom)
-                        else:
-                            # group actor
-                            url = httpPrefix + '://' + dom + '/c/' + nick
-                        following['orderedItems'].append(url)
-                elif ((line.startswith('http') or
-                       line.startswith('hyper')) and
-                      hasUsersPath(line)):
-                    # https://domain/users/nickname
-                    pageCtr += 1
-                    totalCtr += 1
-                    if currPage == pageNumber:
-                        appendStr = \
-                            line.lower().replace('\n', '').replace('\r', '')
-                        following['orderedItems'].append(appendStr)
-            if pageCtr >= followsPerPage:
-                pageCtr = 0
-                currPage += 1
-    following['totalItems'] = totalCtr
-    lastPage = int(totalCtr / followsPerPage)
-    if lastPage < 1:
-        lastPage = 1
-    if nextPageNumber > lastPage:
+    curr_page = 1
+    page_ctr = 0
+    total_ctr = 0
+    lines = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_foll:
+            lines = fp_foll.readlines()
+    except OSError:
+        print('EX: get_following_feed ' + filename)
+    for line in lines:
+        if '#' not in line:
+            if '@' in line and not line.startswith('http'):
+                # nickname@domain
+                page_ctr += 1
+                total_ctr += 1
+                if curr_page == page_number:
+                    line2_lower = line.lower()
+                    line2 = remove_eol(line2_lower)
+                    nick = line2.split('@')[0]
+                    dom = line2.split('@')[1]
+                    if not nick.startswith('!'):
+                        # person actor
+                        url = local_actor_url(http_prefix, nick, dom)
+                    else:
+                        # group actor
+                        url = http_prefix + '://' + dom + '/c/' + nick
+                    following['orderedItems'].append(url)
+            elif ((line.startswith('http') or
+                   line.startswith('ipfs') or
+                   line.startswith('ipns') or
+                   line.startswith('hyper')) and
+                  has_users_path(line)):
+                # https://domain/users/nickname
+                page_ctr += 1
+                total_ctr += 1
+                if curr_page == page_number:
+                    append_str1 = line.lower()
+                    append_str = remove_eol(append_str1)
+                    following['orderedItems'].append(append_str)
+        if page_ctr >= follows_per_page:
+            page_ctr = 0
+            curr_page += 1
+    following['totalItems'] = total_ctr
+    last_page = int(total_ctr / follows_per_page)
+    last_page = max(last_page, 1)
+    if next_page_number > last_page:
         following['next'] = \
-            localActorUrl(httpPrefix, nickname, domain) + \
-            '/' + followFile + '?page=' + str(lastPage)
+            local_actor_url(http_prefix, nickname, domain) + \
+            '/' + follow_file + '?page=' + str(last_page)
     return following
 
 
-def _followApprovalRequired(baseDir: str, nicknameToFollow: str,
-                            domainToFollow: str, debug: bool,
-                            followRequestHandle: str) -> bool:
+def follow_approval_required(base_dir: str, nickname_to_follow: str,
+                             domain_to_follow: str, debug: bool,
+                             follow_request_handle: str) -> bool:
     """ Returns the policy for follower approvals
     """
     # has this handle already been manually approved?
-    if _preApprovedFollower(baseDir, nicknameToFollow, domainToFollow,
-                            followRequestHandle):
+    if _pre_approved_follower(base_dir, nickname_to_follow, domain_to_follow,
+                              follow_request_handle):
         return False
 
-    manuallyApproveFollows = False
-    domainToFollow = removeDomainPort(domainToFollow)
-    actorFilename = baseDir + '/accounts/' + \
-        nicknameToFollow + '@' + domainToFollow + '.json'
-    if os.path.isfile(actorFilename):
-        actor = loadJson(actorFilename)
+    manually_approve_follows = False
+    domain_to_follow = remove_domain_port(domain_to_follow)
+    actor_filename = base_dir + '/accounts/' + \
+        nickname_to_follow + '@' + domain_to_follow + '.json'
+    if os.path.isfile(actor_filename):
+        actor = load_json(actor_filename)
         if actor:
-            if actor.get('manuallyApprovesFollowers'):
-                manuallyApproveFollows = actor['manuallyApprovesFollowers']
+            if 'manuallyApprovesFollowers' in actor:
+                manually_approve_follows = actor['manuallyApprovesFollowers']
             else:
                 if debug:
-                    print(nicknameToFollow + '@' + domainToFollow +
+                    print(nickname_to_follow + '@' + domain_to_follow +
                           ' automatically approves followers')
     else:
         if debug:
-            print('DEBUG: Actor file not found: ' + actorFilename)
-    return manuallyApproveFollows
+            print('DEBUG: Actor file not found: ' + actor_filename)
+    return manually_approve_follows
 
 
-def _noOfFollowRequests(baseDir: str,
-                        nicknameToFollow: str, domainToFollow: str,
-                        nickname: str, domain: str, fromPort: int,
-                        followType: str) -> int:
+def no_of_follow_requests(base_dir: str,
+                          nickname_to_follow: str, domain_to_follow: str,
+                          follow_type: str) -> int:
     """Returns the current number of follow requests
     """
-    accountsDir = baseDir + '/accounts/' + \
-        nicknameToFollow + '@' + domainToFollow
-    approveFollowsFilename = accountsDir + '/followrequests.txt'
-    if not os.path.isfile(approveFollowsFilename):
+    accounts_dir = acct_dir(base_dir, nickname_to_follow, domain_to_follow)
+    approve_follows_filename = accounts_dir + '/followrequests.txt'
+    if not os.path.isfile(approve_follows_filename):
         return 0
     ctr = 0
-    with open(approveFollowsFilename, 'r') as f:
-        lines = f.readlines()
-        if followType == "onion":
-            for fileLine in lines:
-                if '.onion' in fileLine:
+    lines = []
+    try:
+        with open(approve_follows_filename, 'r',
+                  encoding='utf-8') as fp_approve:
+            lines = fp_approve.readlines()
+    except OSError:
+        print('EX: no_of_follow_requests ' + approve_follows_filename)
+    if lines:
+        if follow_type == "onion":
+            for file_line in lines:
+                if '.onion' in file_line:
                     ctr += 1
-        elif followType == "i2p":
-            for fileLine in lines:
-                if '.i2p' in fileLine:
+        elif follow_type == "i2p":
+            for file_line in lines:
+                if '.i2p' in file_line:
                     ctr += 1
         else:
             return len(lines)
     return ctr
 
 
-def _storeFollowRequest(baseDir: str,
-                        nicknameToFollow: str, domainToFollow: str, port: int,
-                        nickname: str, domain: str, fromPort: int,
-                        followJson: {},
-                        debug: bool, personUrl: str,
-                        groupAccount: bool) -> bool:
+def store_follow_request(base_dir: str,
+                         nickname_to_follow: str,
+                         domain_to_follow: str, port: int,
+                         nickname: str, domain: str, from_port: int,
+                         follow_json: {},
+                         debug: bool, person_url: str,
+                         group_account: bool) -> bool:
     """Stores the follow request for later use
     """
-    accountsDir = baseDir + '/accounts/' + \
-        nicknameToFollow + '@' + domainToFollow
-    if not os.path.isdir(accountsDir):
+    accounts_dir = acct_dir(base_dir, nickname_to_follow, domain_to_follow)
+    if not os.path.isdir(accounts_dir):
         return False
 
-    domainFull = getFullDomain(domain, fromPort)
-    approveHandle = getFullDomain(nickname + '@' + domain, fromPort)
+    domain_full = get_full_domain(domain, from_port)
+    approve_handle = get_full_domain(nickname + '@' + domain, from_port)
 
-    if groupAccount:
-        approveHandle = '!' + approveHandle
+    if group_account:
+        approve_handle = '!' + approve_handle
 
-    followersFilename = accountsDir + '/followers.txt'
-    if os.path.isfile(followersFilename):
-        alreadyFollowing = False
+    followers_filename = accounts_dir + '/followers.txt'
+    if os.path.isfile(followers_filename):
+        already_following = False
 
-        followersStr = ''
-        with open(followersFilename, 'r') as fpFollowers:
-            followersStr = fpFollowers.read()
+        followers_str = ''
+        try:
+            with open(followers_filename, 'r',
+                      encoding='utf-8') as fp_foll:
+                followers_str = fp_foll.read()
+        except OSError:
+            print('EX: store_follow_request ' + followers_filename)
 
-        if approveHandle in followersStr:
-            alreadyFollowing = True
+        if approve_handle in followers_str:
+            already_following = True
         else:
-            usersPaths = getUserPaths()
-            for possibleUsersPath in usersPaths:
-                url = '://' + domainFull + possibleUsersPath + nickname
-                if url in followersStr:
-                    alreadyFollowing = True
+            users_paths = get_user_paths()
+            for possible_users_path in users_paths:
+                url = '://' + domain_full + possible_users_path + nickname
+                if url in followers_str:
+                    already_following = True
                     break
 
-        if alreadyFollowing:
+        if already_following:
             if debug:
                 print('DEBUG: ' +
-                      nicknameToFollow + '@' + domainToFollow +
-                      ' already following ' + approveHandle)
+                      nickname_to_follow + '@' + domain_to_follow +
+                      ' already following ' + approve_handle)
             return True
 
     # should this follow be denied?
-    denyFollowsFilename = accountsDir + '/followrejects.txt'
-    if os.path.isfile(denyFollowsFilename):
-        if approveHandle in open(denyFollowsFilename).read():
-            removeFromFollowRequests(baseDir, nicknameToFollow,
-                                     domainToFollow, approveHandle, debug)
-            print(approveHandle + ' was already denied as a follower of ' +
-                  nicknameToFollow)
+    deny_follows_filename = accounts_dir + '/followrejects.txt'
+    if os.path.isfile(deny_follows_filename):
+        if text_in_file(approve_handle, deny_follows_filename):
+            remove_from_follow_requests(base_dir, nickname_to_follow,
+                                        domain_to_follow, approve_handle,
+                                        debug)
+            print(approve_handle + ' was already denied as a follower of ' +
+                  nickname_to_follow)
             return True
 
     # add to a file which contains a list of requests
-    approveFollowsFilename = accountsDir + '/followrequests.txt'
+    approve_follows_filename = accounts_dir + '/followrequests.txt'
 
     # store either nick@domain or the full person/actor url
-    approveHandleStored = approveHandle
-    if '/users/' not in personUrl:
-        approveHandleStored = personUrl
-        if groupAccount:
-            approveHandle = '!' + approveHandle
+    approve_handle_stored = approve_handle
+    if '/users/' not in person_url:
+        approve_handle_stored = person_url
+        if group_account:
+            approve_handle = '!' + approve_handle
 
-    if os.path.isfile(approveFollowsFilename):
-        if approveHandle not in open(approveFollowsFilename).read():
-            with open(approveFollowsFilename, 'a+') as fp:
-                fp.write(approveHandleStored + '\n')
+    if os.path.isfile(approve_follows_filename):
+        if not text_in_file(approve_handle, approve_follows_filename):
+            try:
+                with open(approve_follows_filename, 'a+',
+                          encoding='utf-8') as fp_approve:
+                    fp_approve.write(approve_handle_stored + '\n')
+            except OSError:
+                print('EX: store_follow_request 2 ' + approve_follows_filename)
         else:
             if debug:
-                print('DEBUG: ' + approveHandleStored +
+                print('DEBUG: ' + approve_handle_stored +
                       ' is already awaiting approval')
     else:
-        with open(approveFollowsFilename, 'w+') as fp:
-            fp.write(approveHandleStored + '\n')
+        try:
+            with open(approve_follows_filename, 'w+',
+                      encoding='utf-8') as fp_approve:
+                fp_approve.write(approve_handle_stored + '\n')
+        except OSError:
+            print('EX: store_follow_request 3 ' + approve_follows_filename)
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
-    requestsDir = accountsDir + '/requests'
-    if not os.path.isdir(requestsDir):
-        os.mkdir(requestsDir)
-    followActivityfilename = requestsDir + '/' + approveHandle + '.follow'
-    return saveJson(followJson, followActivityfilename)
+    requests_dir = accounts_dir + '/requests'
+    if not os.path.isdir(requests_dir):
+        os.mkdir(requests_dir)
+    follow_activity_filename = requests_dir + '/' + approve_handle + '.follow'
+    return save_json(follow_json, follow_activity_filename)
 
 
-def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
-                         port: int, sendThreads: [], postLog: [],
-                         cachedWebfingers: {}, personCache: {},
-                         messageJson: {}, federationList: [],
-                         debug: bool, projectVersion: str,
-                         maxFollowers: int, onionDomain: str,
-                         signingPrivateKeyPem: str) -> bool:
-    """Receives a follow request within the POST section of HTTPServer
-    """
-    if not messageJson['type'].startswith('Follow'):
-        if not messageJson['type'].startswith('Join'):
-            return False
-    print('Receiving follow request')
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: follow request has no actor')
-        return False
-    if not hasUsersPath(messageJson['actor']):
-        if debug:
-            print('DEBUG: users/profile/accounts/channel missing from actor')
-        return False
-    domain, tempPort = getDomainFromActor(messageJson['actor'])
-    fromPort = port
-    domainFull = getFullDomain(domain, tempPort)
-    if tempPort:
-        fromPort = tempPort
-    if not domainPermitted(domain, federationList):
-        if debug:
-            print('DEBUG: follower from domain not permitted - ' + domain)
-        return False
-    nickname = getNicknameFromActor(messageJson['actor'])
-    if not nickname:
-        # single user instance
-        nickname = 'dev'
-        if debug:
-            print('DEBUG: follow request does not contain a ' +
-                  'nickname. Assuming single user instance.')
-    if not messageJson.get('to'):
-        messageJson['to'] = messageJson['object']
-    if not hasUsersPath(messageJson['object']):
-        if debug:
-            print('DEBUG: users/profile/channel/accounts ' +
-                  'not found within object')
-        return False
-    domainToFollow, tempPort = getDomainFromActor(messageJson['object'])
-    if not domainPermitted(domainToFollow, federationList):
-        if debug:
-            print('DEBUG: follow domain not permitted ' + domainToFollow)
-        return True
-    domainToFollowFull = getFullDomain(domainToFollow, tempPort)
-    nicknameToFollow = getNicknameFromActor(messageJson['object'])
-    if not nicknameToFollow:
-        if debug:
-            print('DEBUG: follow request does not contain a ' +
-                  'nickname for the account followed')
-        return True
-    if isSystemAccount(nicknameToFollow):
-        if debug:
-            print('DEBUG: Cannot follow system account - ' +
-                  nicknameToFollow)
-        return True
-    if maxFollowers > 0:
-        if _getNoOfFollowers(baseDir,
-                             nicknameToFollow, domainToFollow,
-                             True) > maxFollowers:
-            print('WARN: ' + nicknameToFollow +
-                  ' has reached their maximum number of followers')
-            return True
-    handleToFollow = nicknameToFollow + '@' + domainToFollow
-    if domainToFollow == domain:
-        if not os.path.isdir(baseDir + '/accounts/' + handleToFollow):
-            if debug:
-                print('DEBUG: followed account not found - ' +
-                      baseDir + '/accounts/' + handleToFollow)
-            return True
-
-    if isFollowerOfPerson(baseDir,
-                          nicknameToFollow, domainToFollowFull,
-                          nickname, domainFull):
-        if debug:
-            print('DEBUG: ' + nickname + '@' + domain +
-                  ' is already a follower of ' +
-                  nicknameToFollow + '@' + domainToFollow)
-        return True
-
-    # what is the followers policy?
-    approveHandle = nickname + '@' + domainFull
-    if _followApprovalRequired(baseDir, nicknameToFollow,
-                               domainToFollow, debug, approveHandle):
-        print('Follow approval is required')
-        if domain.endswith('.onion'):
-            if _noOfFollowRequests(baseDir,
-                                   nicknameToFollow, domainToFollow,
-                                   nickname, domain, fromPort,
-                                   'onion') > 5:
-                print('Too many follow requests from onion addresses')
-                return False
-        elif domain.endswith('.i2p'):
-            if _noOfFollowRequests(baseDir,
-                                   nicknameToFollow, domainToFollow,
-                                   nickname, domain, fromPort,
-                                   'i2p') > 5:
-                print('Too many follow requests from i2p addresses')
-                return False
-        else:
-            if _noOfFollowRequests(baseDir,
-                                   nicknameToFollow, domainToFollow,
-                                   nickname, domain, fromPort,
-                                   '') > 10:
-                print('Too many follow requests')
-                return False
-
-        # Get the actor for the follower and add it to the cache.
-        # Getting their public key has the same result
-        if debug:
-            print('Obtaining the following actor: ' + messageJson['actor'])
-        if not getPersonPubKey(baseDir, session, messageJson['actor'],
-                               personCache, debug, projectVersion,
-                               httpPrefix, domainToFollow, onionDomain,
-                               signingPrivateKeyPem):
-            if debug:
-                print('Unable to obtain following actor: ' +
-                      messageJson['actor'])
-
-        groupAccount = \
-            hasGroupType(baseDir, messageJson['actor'], personCache)
-        if groupAccount and isGroupAccount(baseDir, nickname, domain):
-            print('Group cannot follow a group')
-            return False
-
-        print('Storing follow request for approval')
-        return _storeFollowRequest(baseDir,
-                                   nicknameToFollow, domainToFollow, port,
-                                   nickname, domain, fromPort,
-                                   messageJson, debug, messageJson['actor'],
-                                   groupAccount)
-    else:
-        print('Follow request does not require approval ' + approveHandle)
-        # update the followers
-        accountToBeFollowed = \
-            acctDir(baseDir, nicknameToFollow, domainToFollow)
-        if os.path.isdir(accountToBeFollowed):
-            followersFilename = accountToBeFollowed + '/followers.txt'
-
-            # for actors which don't follow the mastodon
-            # /users/ path convention store the full actor
-            if '/users/' not in messageJson['actor']:
-                approveHandle = messageJson['actor']
-
-            # Get the actor for the follower and add it to the cache.
-            # Getting their public key has the same result
-            if debug:
-                print('Obtaining the following actor: ' + messageJson['actor'])
-            if not getPersonPubKey(baseDir, session, messageJson['actor'],
-                                   personCache, debug, projectVersion,
-                                   httpPrefix, domainToFollow, onionDomain,
-                                   signingPrivateKeyPem):
-                if debug:
-                    print('Unable to obtain following actor: ' +
-                          messageJson['actor'])
-
-            print('Updating followers file: ' +
-                  followersFilename + ' adding ' + approveHandle)
-            if os.path.isfile(followersFilename):
-                if approveHandle not in open(followersFilename).read():
-                    groupAccount = \
-                        hasGroupType(baseDir,
-                                     messageJson['actor'], personCache)
-                    if debug:
-                        print(approveHandle + ' / ' + messageJson['actor'] +
-                              ' is Group: ' + str(groupAccount))
-                    if groupAccount and \
-                       isGroupAccount(baseDir, nickname, domain):
-                        print('Group cannot follow a group')
-                        return False
-                    try:
-                        with open(followersFilename, 'r+') as followersFile:
-                            content = followersFile.read()
-                            if approveHandle + '\n' not in content:
-                                followersFile.seek(0, 0)
-                                if not groupAccount:
-                                    followersFile.write(approveHandle +
-                                                        '\n' + content)
-                                else:
-                                    followersFile.write('!' + approveHandle +
-                                                        '\n' + content)
-                    except Exception as e:
-                        print('WARN: ' +
-                              'Failed to write entry to followers file ' +
-                              str(e))
-            else:
-                with open(followersFilename, 'w+') as followersFile:
-                    followersFile.write(approveHandle + '\n')
-
-    print('Beginning follow accept')
-    return followedAccountAccepts(session, baseDir, httpPrefix,
-                                  nicknameToFollow, domainToFollow, port,
-                                  nickname, domain, fromPort,
-                                  messageJson['actor'], federationList,
-                                  messageJson, sendThreads, postLog,
-                                  cachedWebfingers, personCache,
-                                  debug, projectVersion, True,
-                                  signingPrivateKeyPem)
-
-
-def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
-                           nicknameToFollow: str, domainToFollow: str,
-                           port: int,
-                           nickname: str, domain: str, fromPort: int,
-                           personUrl: str, federationList: [],
-                           followJson: {}, sendThreads: [], postLog: [],
-                           cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str,
-                           removeFollowActivity: bool,
-                           signingPrivateKeyPem: str):
+def followed_account_accepts(session, base_dir: str, http_prefix: str,
+                             nickname_to_follow: str, domain_to_follow: str,
+                             port: int,
+                             nickname: str, domain: str, from_port: int,
+                             person_url: str, federation_list: [],
+                             follow_json: {}, send_threads: [], post_log: [],
+                             cached_webfingers: {}, person_cache: {},
+                             debug: bool, project_version: str,
+                             remove_follow_activity: bool,
+                             signing_priv_key_pem: str,
+                             curr_domain: str,
+                             onion_domain: str, i2p_domain: str):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
-    acceptHandle = nickname + '@' + domain
+    accept_handle = nickname + '@' + domain
 
     # send accept back
-    if debug:
-        print('DEBUG: sending Accept activity for ' +
-              'follow request which arrived at ' +
-              nicknameToFollow + '@' + domainToFollow +
-              ' back to ' + acceptHandle)
-    acceptJson = createAccept(baseDir, federationList,
-                              nicknameToFollow, domainToFollow, port,
-                              personUrl, '', httpPrefix,
-                              followJson)
-    if debug:
-        pprint(acceptJson)
-        print('DEBUG: sending follow Accept from ' +
-              nicknameToFollow + '@' + domainToFollow +
-              ' port ' + str(port) + ' to ' +
-              acceptHandle + ' port ' + str(fromPort))
-    clientToServer = False
+    print('Sending follow Accept activity for ' +
+          'follow request which arrived at ' +
+          nickname_to_follow + '@' + domain_to_follow +
+          ' back to ' + accept_handle)
+    accept_json = create_accept(base_dir, federation_list,
+                                nickname_to_follow, domain_to_follow, port,
+                                person_url, '', http_prefix,
+                                follow_json)
+    pprint(accept_json)
+    print('DEBUG: sending follow Accept from ' +
+          nickname_to_follow + '@' + domain_to_follow +
+          ' port ' + str(port) + ' to ' +
+          accept_handle + ' port ' + str(from_port))
+    client_to_server = False
 
-    if removeFollowActivity:
+    if remove_follow_activity:
         # remove the follow request json
-        followActivityfilename = \
-            acctDir(baseDir, nicknameToFollow, domainToFollow) + \
-            '/requests/' + \
-            nickname + '@' + domain + '.follow'
-        if os.path.isfile(followActivityfilename):
+        follow_activity_filename = \
+            acct_dir(base_dir, nickname_to_follow, domain_to_follow) + \
+            '/requests/' + nickname + '@' + domain + '.follow'
+        if os.path.isfile(follow_activity_filename):
             try:
-                os.remove(followActivityfilename)
-            except BaseException:
-                pass
+                os.remove(follow_activity_filename)
+            except OSError:
+                print('EX: follow Accept ' +
+                      'followed_account_accepts unable to delete ' +
+                      follow_activity_filename)
 
-    groupAccount = False
-    if followJson:
-        if followJson.get('actor'):
-            if hasGroupType(baseDir, followJson['actor'], personCache):
-                groupAccount = True
+    group_account = False
+    if follow_json:
+        if follow_json.get('actor'):
+            if has_group_type(base_dir, follow_json['actor'], person_cache):
+                group_account = True
 
-    return sendSignedJson(acceptJson, session, baseDir,
-                          nicknameToFollow, domainToFollow, port,
-                          nickname, domain, fromPort, '',
-                          httpPrefix, True, clientToServer,
-                          federationList,
-                          sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion, None,
-                          groupAccount, signingPrivateKeyPem,
-                          7856837)
+    return send_signed_json(accept_json, session, base_dir,
+                            nickname_to_follow, domain_to_follow, port,
+                            nickname, domain, from_port,
+                            http_prefix, client_to_server,
+                            federation_list,
+                            send_threads, post_log, cached_webfingers,
+                            person_cache, debug, project_version, None,
+                            group_account, signing_priv_key_pem,
+                            7856837, curr_domain, onion_domain, i2p_domain)
 
 
-def followedAccountRejects(session, baseDir: str, httpPrefix: str,
-                           nicknameToFollow: str, domainToFollow: str,
-                           port: int,
-                           nickname: str, domain: str, fromPort: int,
-                           federationList: [],
-                           sendThreads: [], postLog: [],
-                           cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str,
-                           signingPrivateKeyPem: str):
+def followed_account_rejects(session, session_onion, session_i2p,
+                             onion_domain: str, i2p_domain: str,
+                             base_dir: str, http_prefix: str,
+                             nickname_to_follow: str, domain_to_follow: str,
+                             port: int,
+                             nickname: str, domain: str, from_port: int,
+                             federation_list: [],
+                             send_threads: [], post_log: [],
+                             cached_webfingers: {}, person_cache: {},
+                             debug: bool, project_version: str,
+                             signing_priv_key_pem: str):
     """The person receiving a follow request rejects the new follower
     and sends back a Reject activity
     """
@@ -918,348 +812,382 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
     if debug:
         print('DEBUG: sending Reject activity for ' +
               'follow request which arrived at ' +
-              nicknameToFollow + '@' + domainToFollow +
+              nickname_to_follow + '@' + domain_to_follow +
               ' back to ' + nickname + '@' + domain)
 
     # get the json for the original follow request
-    followActivityfilename = \
-        acctDir(baseDir, nicknameToFollow, domainToFollow) + '/requests/' + \
-        nickname + '@' + domain + '.follow'
-    followJson = loadJson(followActivityfilename)
-    if not followJson:
+    follow_activity_filename = \
+        acct_dir(base_dir, nickname_to_follow, domain_to_follow) + \
+        '/requests/' + nickname + '@' + domain + '.follow'
+    follow_json = load_json(follow_activity_filename)
+    if not follow_json:
         print('No follow request json was found for ' +
-              followActivityfilename)
+              follow_activity_filename)
         return None
     # actor who made the follow request
-    personUrl = followJson['actor']
+    person_url = follow_json['actor']
 
     # create the reject activity
-    rejectJson = \
-        createReject(baseDir, federationList,
-                     nicknameToFollow, domainToFollow, port,
-                     personUrl, '', httpPrefix, followJson)
+    reject_json = \
+        create_reject(base_dir, federation_list,
+                      nickname_to_follow, domain_to_follow, port,
+                      person_url, '', http_prefix, follow_json)
     if debug:
-        pprint(rejectJson)
+        pprint(reject_json)
         print('DEBUG: sending follow Reject from ' +
-              nicknameToFollow + '@' + domainToFollow +
+              nickname_to_follow + '@' + domain_to_follow +
               ' port ' + str(port) + ' to ' +
-              nickname + '@' + domain + ' port ' + str(fromPort))
-    clientToServer = False
-    denyHandle = getFullDomain(nickname + '@' + domain, fromPort)
-    groupAccount = False
-    if hasGroupType(baseDir, personUrl, personCache):
-        groupAccount = True
+              nickname + '@' + domain + ' port ' + str(from_port))
+    client_to_server = False
+    deny_handle = get_full_domain(nickname + '@' + domain, from_port)
+    group_account = False
+    if has_group_type(base_dir, person_url, person_cache):
+        group_account = True
     # remove from the follow requests file
-    removeFromFollowRequests(baseDir, nicknameToFollow, domainToFollow,
-                             denyHandle, debug)
+    remove_from_follow_requests(base_dir, nickname_to_follow, domain_to_follow,
+                                deny_handle, debug)
     # remove the follow request json
     try:
-        os.remove(followActivityfilename)
-    except BaseException:
-        pass
+        os.remove(follow_activity_filename)
+    except OSError:
+        print('EX: followed_account_rejects unable to delete ' +
+              follow_activity_filename)
+    curr_session = session
+    if domain.endswith('.onion') and session_onion:
+        curr_session = session_onion
+    elif domain.endswith('.i2p') and session_i2p:
+        curr_session = session_i2p
     # send the reject activity
-    return sendSignedJson(rejectJson, session, baseDir,
-                          nicknameToFollow, domainToFollow, port,
-                          nickname, domain, fromPort, '',
-                          httpPrefix, True, clientToServer,
-                          federationList,
-                          sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion, None,
-                          groupAccount, signingPrivateKeyPem,
-                          6393063)
+    return send_signed_json(reject_json, curr_session, base_dir,
+                            nickname_to_follow, domain_to_follow, port,
+                            nickname, domain, from_port,
+                            http_prefix, client_to_server,
+                            federation_list,
+                            send_threads, post_log, cached_webfingers,
+                            person_cache, debug, project_version, None,
+                            group_account, signing_priv_key_pem,
+                            6393063,
+                            domain, onion_domain, i2p_domain)
 
 
-def sendFollowRequest(session, baseDir: str,
-                      nickname: str, domain: str, port: int, httpPrefix: str,
-                      followNickname: str, followDomain: str,
-                      followedActor: str,
-                      followPort: int, followHttpPrefix: str,
-                      clientToServer: bool, federationList: [],
-                      sendThreads: [], postLog: [], cachedWebfingers: {},
-                      personCache: {}, debug: bool,
-                      projectVersion: str, signingPrivateKeyPem: str) -> {}:
+def send_follow_request(session, base_dir: str,
+                        nickname: str, domain: str,
+                        sender_domain: str, sender_port: int,
+                        http_prefix: str,
+                        follow_nickname: str, follow_domain: str,
+                        followed_actor: str,
+                        follow_port: int, follow_http_prefix: str,
+                        client_to_server: bool, federation_list: [],
+                        send_threads: [], post_log: [], cached_webfingers: {},
+                        person_cache: {}, debug: bool,
+                        project_version: str, signing_priv_key_pem: str,
+                        curr_domain: str,
+                        onion_domain: str, i2p_domain: str) -> {}:
     """Gets the json object for sending a follow request
     """
-    if not signingPrivateKeyPem:
+    if not signing_priv_key_pem:
         print('WARN: follow request without signing key')
 
-    if not domainPermitted(followDomain, federationList):
-        print('You are not permitted to follow the domain ' + followDomain)
+    if not domain_permitted(follow_domain, federation_list):
+        print('You are not permitted to follow the domain ' + follow_domain)
         return None
 
-    fullDomain = getFullDomain(domain, port)
-    followActor = localActorUrl(httpPrefix, nickname, fullDomain)
+    full_domain = get_full_domain(sender_domain, sender_port)
+    follow_actor = local_actor_url(http_prefix, nickname, full_domain)
 
-    requestDomain = getFullDomain(followDomain, followPort)
+    request_domain = get_full_domain(follow_domain, follow_port)
 
-    statusNumber, published = getStatusNumber()
+    status_number, _ = get_status_number()
 
-    groupAccount = False
-    if followNickname:
-        followedId = followedActor
-        followHandle = followNickname + '@' + requestDomain
-        groupAccount = hasGroupType(baseDir, followedActor, personCache)
-        if groupAccount:
-            followHandle = '!' + followHandle
+    group_account = False
+    if follow_nickname:
+        followed_id = followed_actor
+        follow_handle = follow_nickname + '@' + request_domain
+        group_account = has_group_type(base_dir, followed_actor, person_cache)
+        if group_account:
+            follow_handle = '!' + follow_handle
             print('Follow request being sent to group account')
     else:
         if debug:
-            print('DEBUG: sendFollowRequest - assuming single user instance')
-        followedId = followHttpPrefix + '://' + requestDomain
-        singleUserNickname = 'dev'
-        followHandle = singleUserNickname + '@' + requestDomain
+            print('DEBUG: send_follow_request - assuming single user instance')
+        followed_id = follow_http_prefix + '://' + request_domain
+        single_user_nickname = 'dev'
+        follow_handle = single_user_nickname + '@' + request_domain
 
-    newFollowJson = {
+    # remove follow handle from unfollowed.txt
+    unfollowed_filename = \
+        acct_dir(base_dir, nickname, domain) + '/unfollowed.txt'
+    if os.path.isfile(unfollowed_filename):
+        if text_in_file(follow_handle, unfollowed_filename):
+            unfollowed_file = None
+            try:
+                with open(unfollowed_filename, 'r',
+                          encoding='utf-8') as fp_unfoll:
+                    unfollowed_file = fp_unfoll.read()
+            except OSError:
+                print('EX: send_follow_request ' + unfollowed_filename)
+            if unfollowed_file:
+                unfollowed_file = \
+                    unfollowed_file.replace(follow_handle + '\n', '')
+                try:
+                    with open(unfollowed_filename, 'w+',
+                              encoding='utf-8') as fp_unfoll:
+                        fp_unfoll.write(unfollowed_file)
+                except OSError:
+                    print('EX: unable to write ' + unfollowed_filename)
+
+    new_follow_json = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': followActor + '/statuses/' + str(statusNumber),
+        'id': follow_actor + '/statuses/' + str(status_number),
         'type': 'Follow',
-        'actor': followActor,
-        'object': followedId
+        'actor': follow_actor,
+        'object': followed_id
     }
-    if groupAccount:
-        newFollowJson['to'] = followedId
-        print('Follow request: ' + str(newFollowJson))
+    if group_account:
+        new_follow_json['to'] = followed_id
+        print('Follow request: ' + str(new_follow_json))
 
-    if _followApprovalRequired(baseDir, nickname, domain, debug,
-                               followHandle):
+    if follow_approval_required(base_dir, nickname, domain, debug,
+                                follow_handle):
         # Remove any follow requests rejected for the account being followed.
         # It's assumed that if you are following someone then you are
         # ok with them following back. If this isn't the case then a rejected
         # follow request will block them again.
-        _removeFromFollowRejects(baseDir,
-                                 nickname, domain,
-                                 followHandle, debug)
+        _remove_from_follow_rejects(base_dir,
+                                    nickname, domain,
+                                    follow_handle, debug)
 
-    sendSignedJson(newFollowJson, session, baseDir, nickname, domain, port,
-                   followNickname, followDomain, followPort,
-                   'https://www.w3.org/ns/activitystreams#Public',
-                   httpPrefix, True, clientToServer,
-                   federationList,
-                   sendThreads, postLog, cachedWebfingers, personCache,
-                   debug, projectVersion, None, groupAccount,
-                   signingPrivateKeyPem, 8234389)
+    send_signed_json(new_follow_json, session, base_dir,
+                     nickname, sender_domain, sender_port,
+                     follow_nickname, follow_domain, follow_port,
+                     http_prefix, client_to_server,
+                     federation_list,
+                     send_threads, post_log, cached_webfingers, person_cache,
+                     debug, project_version, None, group_account,
+                     signing_priv_key_pem, 8234389,
+                     curr_domain, onion_domain, i2p_domain)
 
-    return newFollowJson
+    return new_follow_json
 
 
-def sendFollowRequestViaServer(baseDir: str, session,
-                               fromNickname: str, password: str,
-                               fromDomain: str, fromPort: int,
-                               followNickname: str, followDomain: str,
-                               followPort: int,
-                               httpPrefix: str,
-                               cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str,
-                               signingPrivateKeyPem: str) -> {}:
+def send_follow_request_via_server(base_dir: str, session,
+                                   from_nickname: str, password: str,
+                                   from_domain: str, from_port: int,
+                                   follow_nickname: str, follow_domain: str,
+                                   follow_port: int,
+                                   http_prefix: str,
+                                   cached_webfingers: {}, person_cache: {},
+                                   debug: bool, project_version: str,
+                                   signing_priv_key_pem: str) -> {}:
     """Creates a follow request via c2s
     """
     if not session:
-        print('WARN: No session for sendFollowRequestViaServer')
+        print('WARN: No session for send_follow_request_via_server')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
-    followDomainFull = getFullDomain(followDomain, followPort)
+    follow_domain_full = get_full_domain(follow_domain, follow_port)
 
-    followActor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
-    followedId = \
-        httpPrefix + '://' + followDomainFull + '/@' + followNickname
+    follow_actor = \
+        local_actor_url(http_prefix, from_nickname, from_domain_full)
+    followed_id = \
+        http_prefix + '://' + follow_domain_full + '/@' + follow_nickname
 
-    statusNumber, published = getStatusNumber()
-    newFollowJson = {
+    status_number, _ = get_status_number()
+    new_follow_json = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': followActor + '/statuses/' + str(statusNumber),
+        'id': follow_actor + '/statuses/' + str(status_number),
         'type': 'Follow',
-        'actor': followActor,
-        'object': followedId
+        'actor': follow_actor,
+        'object': followed_id
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
-                        signingPrivateKeyPem)
-    if not wfRequest:
+    wf_request = \
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         from_domain, project_version, debug, False,
+                         signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: follow request webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: follow request Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                    baseDir, session, wfRequest, personCache,
-                                    projectVersion, httpPrefix, fromNickname,
-                                    fromDomain, postToBox, 52025)
+    origin_domain = from_domain
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem, origin_domain,
+                            base_dir, session, wf_request,
+                            person_cache,
+                            project_version, http_prefix,
+                            from_nickname,
+                            from_domain, post_to_box, 52025)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: follow request no ' + postToBox +
+            print('DEBUG: follow request no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: follow request no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = \
-        postJson(httpPrefix, fromDomainFull,
-                 session, newFollowJson, [], inboxUrl, headers, 3, True)
-    if not postResult:
+    post_result = \
+        post_json(http_prefix, from_domain_full,
+                  session, new_follow_json, [], inbox_url, headers, 3, True)
+    if not post_result:
         if debug:
-            print('DEBUG: POST follow request failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST follow request failed for c2s to ' + inbox_url)
         return 5
 
     if debug:
         print('DEBUG: c2s POST follow request success')
 
-    return newFollowJson
+    return new_follow_json
 
 
-def sendUnfollowRequestViaServer(baseDir: str, session,
-                                 fromNickname: str, password: str,
-                                 fromDomain: str, fromPort: int,
-                                 followNickname: str, followDomain: str,
-                                 followPort: int,
-                                 httpPrefix: str,
-                                 cachedWebfingers: {}, personCache: {},
-                                 debug: bool, projectVersion: str,
-                                 signingPrivateKeyPem: str) -> {}:
+def send_unfollow_request_via_server(base_dir: str, session,
+                                     from_nickname: str, password: str,
+                                     from_domain: str, from_port: int,
+                                     follow_nickname: str, follow_domain: str,
+                                     follow_port: int,
+                                     http_prefix: str,
+                                     cached_webfingers: {}, person_cache: {},
+                                     debug: bool, project_version: str,
+                                     signing_priv_key_pem: str) -> {}:
     """Creates a unfollow request via c2s
     """
     if not session:
-        print('WARN: No session for sendUnfollowRequestViaServer')
+        print('WARN: No session for send_unfollow_request_via_server')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
-    followDomainFull = getFullDomain(followDomain, followPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
+    follow_domain_full = get_full_domain(follow_domain, follow_port)
 
-    followActor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
-    followedId = \
-        httpPrefix + '://' + followDomainFull + '/@' + followNickname
-    statusNumber, published = getStatusNumber()
+    follow_actor = \
+        local_actor_url(http_prefix, from_nickname, from_domain_full)
+    followed_id = \
+        http_prefix + '://' + follow_domain_full + '/@' + follow_nickname
+    status_number, _ = get_status_number()
 
-    unfollowJson = {
+    unfollow_json = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': followActor + '/statuses/' + str(statusNumber) + '/undo',
+        'id': follow_actor + '/statuses/' + str(status_number) + '/undo',
         'type': 'Undo',
-        'actor': followActor,
+        'actor': follow_actor,
         'object': {
-            'id': followActor + '/statuses/' + str(statusNumber),
+            'id': follow_actor + '/statuses/' + str(status_number),
             'type': 'Follow',
-            'actor': followActor,
-            'object': followedId
+            'actor': follow_actor,
+            'object': followed_id
         }
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
-                        signingPrivateKeyPem)
-    if not wfRequest:
+    wf_request = \
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         from_domain, project_version, debug, False,
+                         signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: unfollow webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: unfollow webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
-                                    originDomain,
-                                    baseDir, session,
-                                    wfRequest, personCache,
-                                    projectVersion, httpPrefix,
-                                    fromNickname,
-                                    fromDomain, postToBox,
-                                    76536)
+    origin_domain = from_domain
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem,
+                            origin_domain,
+                            base_dir, session,
+                            wf_request, person_cache,
+                            project_version, http_prefix,
+                            from_nickname,
+                            from_domain, post_to_box,
+                            76536)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: unfollow no ' + postToBox +
+            print('DEBUG: unfollow no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: unfollow no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = \
-        postJson(httpPrefix, fromDomainFull,
-                 session, unfollowJson, [], inboxUrl, headers, 3, True)
-    if not postResult:
+    post_result = \
+        post_json(http_prefix, from_domain_full,
+                  session, unfollow_json, [], inbox_url, headers, 3, True)
+    if not post_result:
         if debug:
-            print('DEBUG: POST unfollow failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST unfollow failed for c2s to ' + inbox_url)
         return 5
 
     if debug:
         print('DEBUG: c2s POST unfollow success')
 
-    return unfollowJson
+    return unfollow_json
 
 
-def getFollowingViaServer(baseDir: str, session,
-                          nickname: str, password: str,
-                          domain: str, port: int,
-                          httpPrefix: str, pageNumber: int,
-                          cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
-                          signingPrivateKeyPem: str) -> {}:
+def get_following_via_server(session, nickname: str, password: str,
+                             domain: str, port: int,
+                             http_prefix: str, page_number: int,
+                             debug: bool, project_version: str,
+                             signing_priv_key_pem: str) -> {}:
     """Gets a page from the following collection as json
     """
     if not session:
-        print('WARN: No session for getFollowingViaServer')
+        print('WARN: No session for get_following_via_server')
         return 6
 
-    domainFull = getFullDomain(domain, port)
-    followActor = localActorUrl(httpPrefix, nickname, domainFull)
+    domain_full = get_full_domain(domain, port)
+    follow_actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
 
-    if pageNumber < 1:
-        pageNumber = 1
-    url = followActor + '/following?page=' + str(pageNumber)
-    followingJson = \
-        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
-    if not followingJson:
+    page_number = max(page_number, 1)
+    url = follow_actor + '/following?page=' + str(page_number)
+    following_json = \
+        get_json(signing_priv_key_pem, session, url, headers, {}, debug,
+                 project_version, http_prefix, domain, 10, True)
+    if not following_json:
         if debug:
             print('DEBUG: GET following list failed for c2s to ' + url)
         return 5
@@ -1267,40 +1195,37 @@ def getFollowingViaServer(baseDir: str, session,
     if debug:
         print('DEBUG: c2s GET following list request success')
 
-    return followingJson
+    return following_json
 
 
-def getFollowersViaServer(baseDir: str, session,
-                          nickname: str, password: str,
-                          domain: str, port: int,
-                          httpPrefix: str, pageNumber: int,
-                          cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
-                          signingPrivateKeyPem: str) -> {}:
+def get_followers_via_server(session, nickname: str, password: str,
+                             domain: str, port: int,
+                             http_prefix: str, page_number: int,
+                             debug: bool, project_version: str,
+                             signing_priv_key_pem: str) -> {}:
     """Gets a page from the followers collection as json
     """
     if not session:
-        print('WARN: No session for getFollowersViaServer')
+        print('WARN: No session for get_followers_via_server')
         return 6
 
-    domainFull = getFullDomain(domain, port)
-    followActor = localActorUrl(httpPrefix, nickname, domainFull)
+    domain_full = get_full_domain(domain, port)
+    follow_actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
 
-    if pageNumber < 1:
-        pageNumber = 1
-    url = followActor + '/followers?page=' + str(pageNumber)
-    followersJson = \
-        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
-    if not followersJson:
+    page_number = max(page_number, 1)
+    url = follow_actor + '/followers?page=' + str(page_number)
+    followers_json = \
+        get_json(signing_priv_key_pem, session, url, headers, {}, debug,
+                 project_version, http_prefix, domain, 10, True)
+    if not followers_json:
         if debug:
             print('DEBUG: GET followers list failed for c2s to ' + url)
         return 5
@@ -1308,40 +1233,38 @@ def getFollowersViaServer(baseDir: str, session,
     if debug:
         print('DEBUG: c2s GET followers list request success')
 
-    return followersJson
+    return followers_json
 
 
-def getFollowRequestsViaServer(baseDir: str, session,
-                               nickname: str, password: str,
-                               domain: str, port: int,
-                               httpPrefix: str, pageNumber: int,
-                               cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str,
-                               signingPrivateKeyPem: str) -> {}:
+def get_follow_requests_via_server(session,
+                                   nickname: str, password: str,
+                                   domain: str, port: int,
+                                   http_prefix: str, page_number: int,
+                                   debug: bool, project_version: str,
+                                   signing_priv_key_pem: str) -> {}:
     """Gets a page from the follow requests collection as json
     """
     if not session:
-        print('WARN: No session for getFollowRequestsViaServer')
+        print('WARN: No session for get_follow_requests_via_server')
         return 6
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
-    followActor = localActorUrl(httpPrefix, nickname, domainFull)
-    authHeader = createBasicAuthHeader(nickname, password)
+    follow_actor = local_actor_url(http_prefix, nickname, domain_full)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
 
-    if pageNumber < 1:
-        pageNumber = 1
-    url = followActor + '/followrequests?page=' + str(pageNumber)
-    followersJson = \
-        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
-    if not followersJson:
+    page_number = max(page_number, 1)
+    url = follow_actor + '/followrequests?page=' + str(page_number)
+    followers_json = \
+        get_json(signing_priv_key_pem, session, url, headers, {}, debug,
+                 project_version, http_prefix, domain, 10, True)
+    if not followers_json:
         if debug:
             print('DEBUG: GET follow requests list failed for c2s to ' + url)
         return 5
@@ -1349,40 +1272,39 @@ def getFollowRequestsViaServer(baseDir: str, session,
     if debug:
         print('DEBUG: c2s GET follow requests list request success')
 
-    return followersJson
+    return followers_json
 
 
-def approveFollowRequestViaServer(baseDir: str, session,
-                                  nickname: str, password: str,
-                                  domain: str, port: int,
-                                  httpPrefix: str, approveHandle: int,
-                                  cachedWebfingers: {}, personCache: {},
-                                  debug: bool, projectVersion: str,
-                                  signingPrivateKeyPem: str) -> str:
+def approve_follow_request_via_server(session,
+                                      nickname: str, password: str,
+                                      domain: str, port: int,
+                                      http_prefix: str, approve_handle: int,
+                                      debug: bool, project_version: str,
+                                      signing_priv_key_pem: str) -> str:
     """Approves a follow request
     This is not exactly via c2s though. It simulates pressing the Approve
     button on the web interface
     """
     if not session:
-        print('WARN: No session for approveFollowRequestViaServer')
+        print('WARN: No session for approve_follow_request_via_server')
         return 6
 
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    domain_full = get_full_domain(domain, port)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'text/html; charset=utf-8',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
 
-    url = actor + '/followapprove=' + approveHandle
-    approveHtml = \
-        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
-    if not approveHtml:
+    url = actor + '/followapprove=' + approve_handle
+    approve_html = \
+        get_json(signing_priv_key_pem, session, url, headers, {}, debug,
+                 project_version, http_prefix, domain, 10, True)
+    if not approve_html:
         if debug:
             print('DEBUG: GET approve follow request failed for c2s to ' + url)
         return 5
@@ -1390,40 +1312,39 @@ def approveFollowRequestViaServer(baseDir: str, session,
     if debug:
         print('DEBUG: c2s GET approve follow request request success')
 
-    return approveHtml
+    return approve_html
 
 
-def denyFollowRequestViaServer(baseDir: str, session,
-                               nickname: str, password: str,
-                               domain: str, port: int,
-                               httpPrefix: str, denyHandle: int,
-                               cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str,
-                               signingPrivateKeyPem: str) -> str:
+def deny_follow_request_via_server(session,
+                                   nickname: str, password: str,
+                                   domain: str, port: int,
+                                   http_prefix: str, deny_handle: int,
+                                   debug: bool, project_version: str,
+                                   signing_priv_key_pem: str) -> str:
     """Denies a follow request
     This is not exactly via c2s though. It simulates pressing the Deny
     button on the web interface
     """
     if not session:
-        print('WARN: No session for denyFollowRequestViaServer')
+        print('WARN: No session for deny_follow_request_via_server')
         return 6
 
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    domain_full = get_full_domain(domain, port)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'text/html; charset=utf-8',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
 
-    url = actor + '/followdeny=' + denyHandle
-    denyHtml = \
-        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
-    if not denyHtml:
+    url = actor + '/followdeny=' + deny_handle
+    deny_html = \
+        get_json(signing_priv_key_pem, session, url, headers, {}, debug,
+                 project_version, http_prefix, domain, 10, True)
+    if not deny_html:
         if debug:
             print('DEBUG: GET deny follow request failed for c2s to ' + url)
         return 5
@@ -1431,120 +1352,125 @@ def denyFollowRequestViaServer(baseDir: str, session,
     if debug:
         print('DEBUG: c2s GET deny follow request request success')
 
-    return denyHtml
+    return deny_html
 
 
-def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
+def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.
     This returns a list of account handles which follow the given actor
     """
     if debug:
         print('DEBUG: getting followers of ' + actor)
-    recipientsDict = {}
+    recipients_dict = {}
     if ':' not in actor:
-        return recipientsDict
-    nickname = getNicknameFromActor(actor)
+        return recipients_dict
+    nickname = get_nickname_from_actor(actor)
     if not nickname:
         if debug:
             print('DEBUG: no nickname found in ' + actor)
-        return recipientsDict
-    domain, port = getDomainFromActor(actor)
+        return recipients_dict
+    domain, _ = get_domain_from_actor(actor)
     if not domain:
         if debug:
             print('DEBUG: no domain found in ' + actor)
-        return recipientsDict
-    actorHandle = nickname + '@' + domain
+        return recipients_dict
+    actor_handle = nickname + '@' + domain
     if debug:
-        print('DEBUG: searching for handle ' + actorHandle)
+        print('DEBUG: searching for handle ' + actor_handle)
     # for each of the accounts
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            if '@' in account and not account.startswith('inbox@'):
-                followingFilename = \
-                    os.path.join(subdir, account) + '/following.txt'
+            if '@' not in account:
+                continue
+            if account.startswith('inbox@'):
+                continue
+            if account.startswith('Actor@'):
+                continue
+            following_filename = \
+                os.path.join(subdir, account) + '/following.txt'
+            if debug:
+                print('DEBUG: examining follows of ' + account)
+                print(following_filename)
+            if os.path.isfile(following_filename):
+                # does this account follow the given actor?
                 if debug:
-                    print('DEBUG: examining follows of ' + account)
-                    print(followingFilename)
-                if os.path.isfile(followingFilename):
-                    # does this account follow the given actor?
+                    print('DEBUG: checking if ' + actor_handle +
+                          ' in ' + following_filename)
+                if text_in_file(actor_handle, following_filename):
                     if debug:
-                        print('DEBUG: checking if ' + actorHandle +
-                              ' in ' + followingFilename)
-                    if actorHandle in open(followingFilename).read():
-                        if debug:
-                            print('DEBUG: ' + account +
-                                  ' follows ' + actorHandle)
-                        recipientsDict[account] = None
+                        print('DEBUG: ' + account +
+                              ' follows ' + actor_handle)
+                    recipients_dict[account] = None
         break
-    return recipientsDict
+    return recipients_dict
 
 
-def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
+def outbox_undo_follow(base_dir: str, message_json: {}, debug: bool) -> None:
     """When an unfollow request is received by the outbox from c2s
     This removes the followed handle from the following.txt file
     of the relevant account
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         return
-    if not hasObjectDict(messageJson):
+    if not has_object_string_type(message_json, debug):
         return
-    if not messageJson['object'].get('type'):
-        return
-    if not messageJson['object']['type'] == 'Follow':
-        if not messageJson['object']['type'] == 'Join':
+    if not message_json['object']['type'] == 'Follow':
+        if not message_json['object']['type'] == 'Join':
             return
-    if not messageJson['object'].get('object'):
+    if not has_object_string_object(message_json, debug):
         return
-    if not messageJson['object'].get('actor'):
-        return
-    if not isinstance(messageJson['object']['object'], str):
+    if not message_json['object'].get('actor'):
         return
     if debug:
         print('DEBUG: undo follow arrived in outbox')
 
-    nicknameFollower = getNicknameFromActor(messageJson['object']['actor'])
-    if not nicknameFollower:
+    nickname_follower = \
+        get_nickname_from_actor(message_json['object']['actor'])
+    if not nickname_follower:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['actor'])
+              message_json['object']['actor'])
         return
-    domainFollower, portFollower = \
-        getDomainFromActor(messageJson['object']['actor'])
-    domainFollowerFull = getFullDomain(domainFollower, portFollower)
+    domain_follower, port_follower = \
+        get_domain_from_actor(message_json['object']['actor'])
+    domain_follower_full = get_full_domain(domain_follower, port_follower)
 
-    nicknameFollowing = getNicknameFromActor(messageJson['object']['object'])
-    if not nicknameFollowing:
+    nickname_following = \
+        get_nickname_from_actor(message_json['object']['object'])
+    if not nickname_following:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['object'])
+              message_json['object']['object'])
         return
-    domainFollowing, portFollowing = \
-        getDomainFromActor(messageJson['object']['object'])
-    domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
+    domain_following, port_following = \
+        get_domain_from_actor(message_json['object']['object'])
+    domain_following_full = get_full_domain(domain_following, port_following)
 
-    groupAccount = hasGroupType(baseDir, messageJson['object']['object'], None)
-    if unfollowAccount(baseDir, nicknameFollower, domainFollowerFull,
-                       nicknameFollowing, domainFollowingFull,
-                       debug, groupAccount):
+    group_account = \
+        has_group_type(base_dir, message_json['object']['object'], None)
+    if unfollow_account(base_dir, nickname_follower, domain_follower_full,
+                        nickname_following, domain_following_full,
+                        debug, group_account):
         if debug:
-            print('DEBUG: ' + nicknameFollower + ' unfollowed ' +
-                  nicknameFollowing + '@' + domainFollowingFull)
+            print('DEBUG: ' + nickname_follower + ' unfollowed ' +
+                  nickname_following + '@' + domain_following_full)
     else:
         if debug:
-            print('WARN: ' + nicknameFollower + ' could not unfollow ' +
-                  nicknameFollowing + '@' + domainFollowingFull)
+            print('WARN: ' + nickname_follower + ' could not unfollow ' +
+                  nickname_following + '@' + domain_following_full)
 
 
-def followerApprovalActive(baseDir: str, nickname: str, domain: str) -> bool:
+def follower_approval_active(base_dir: str,
+                             nickname: str, domain: str) -> bool:
     """Returns true if the given account requires follower approval
     """
-    manuallyApprovesFollowers = False
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
-    if os.path.isfile(actorFilename):
-        actorJson = loadJson(actorFilename)
-        if actorJson:
-            if actorJson.get('manuallyApprovesFollowers'):
-                manuallyApprovesFollowers = \
-                    actorJson['manuallyApprovesFollowers']
-    return manuallyApprovesFollowers
+    manually_approves_followers = False
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if os.path.isfile(actor_filename):
+        actor_json = load_json(actor_filename)
+        if actor_json:
+            if 'manuallyApprovesFollowers' in actor_json:
+                manually_approves_followers = \
+                    actor_json['manuallyApprovesFollowers']
+    return manually_approves_followers

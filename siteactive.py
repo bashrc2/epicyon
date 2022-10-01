@@ -2,7 +2,7 @@ __filename__ = "siteactive.py"
 __author__ = "Bob Mottram"
 __credits__ = ["webchk"]
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -43,7 +43,7 @@ class Result:
         self.headers = {h[0]: h[1] for h in headers}
 
 
-def _siteActiveParseUrl(url):
+def _site_active_parse_url(url):
     """Returns an object with properties representing
 
     scheme:   URL scheme specifier
@@ -66,7 +66,7 @@ def _siteActiveParseUrl(url):
     return loc
 
 
-def _siteACtiveHttpConnect(loc, timeout: int):
+def _site_active_http_connect(loc, timeout: int):
     """Connects to the host and returns an HTTP or HTTPS connections."""
     if loc.scheme == "https":
         ssl_context = ssl.SSLContext()
@@ -75,10 +75,10 @@ def _siteACtiveHttpConnect(loc, timeout: int):
     return http.client.HTTPConnection(loc.netloc, timeout=timeout)
 
 
-def _siteActiveHttpRequest(loc, timeout: int):
+def _site_active_http_request(loc, timeout: int):
     """Performs a HTTP request and return response in a Result object.
     """
-    conn = _siteACtiveHttpConnect(loc, timeout)
+    conn = _site_active_http_connect(loc, timeout)
     method = 'HEAD'
 
     conn.request(method, loc.path)
@@ -93,12 +93,14 @@ def _siteActiveHttpRequest(loc, timeout: int):
     return result
 
 
-def siteIsActive(url: str, timeout: int = 10) -> bool:
+def site_is_active(url: str, timeout: int) -> bool:
     """Returns true if the current url is resolvable.
     This can be used to check that an instance is online before
     trying to send posts to it.
     """
-    if not url.startswith('http'):
+    if not url.startswith('http') and \
+       not url.startswith('ipfs') and \
+       not url.startswith('ipns'):
         return False
     if '.onion/' in url or '.i2p/' in url or \
        url.endswith('.onion') or \
@@ -106,17 +108,32 @@ def siteIsActive(url: str, timeout: int = 10) -> bool:
         # skip this check for onion and i2p
         return True
 
-    loc = _siteActiveParseUrl(url)
+    loc = _site_active_parse_url(url)
     result = Result(url=url)
 
     try:
-        result = _siteActiveHttpRequest(loc, timeout)
+        result = _site_active_http_request(loc, timeout)
 
         if 400 <= result.status < 500:
             return result
 
         return True
 
-    except BaseException:
-        pass
+    except BaseException as ex:
+        print('EX: site_is_active ' + url + ' ' + str(ex))
     return False
+
+
+def referer_is_active(http_prefix: str,
+                      referer_domain: str, ua_str: str,
+                      calling_site_timeout: int) -> bool:
+    """Returns true if the given referer is an active website
+    """
+    referer_url = http_prefix + '://' + referer_domain
+    if referer_domain + '/' in ua_str:
+        referer_url = referer_url + ua_str.split(referer_domain)[1]
+        ending_chars = (' ', ';', ')')
+        for end_ch in ending_chars:
+            if end_ch in referer_url:
+                referer_url = referer_url.split(end_ch)[0]
+    return site_is_active(referer_url, calling_site_timeout)

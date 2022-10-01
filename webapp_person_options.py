@@ -1,7 +1,7 @@
 __filename__ = "webapp_person_options.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -9,420 +9,570 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
-from petnames import getPetName
-from person import isPersonSnoozed
-from posts import isModerator
-from utils import getFullDomain
-from utils import getConfigParam
-from utils import isDormant
-from utils import removeHtml
-from utils import getDomainFromActor
-from utils import getNicknameFromActor
-from utils import isFeaturedWriter
-from utils import acctDir
-from blocking import isBlocked
-from follow import isFollowerOfPerson
-from follow import isFollowingActor
-from followingCalendar import receivingCalendarEvents
-from notifyOnPost import notifyWhenPersonPosts
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getBrokenLinkSubstitute
-from webapp_utils import htmlKeyboardNavigation
+from petnames import get_pet_name
+from person import is_person_snoozed
+from posts import is_moderator
+from utils import get_full_domain
+from utils import get_config_param
+from utils import is_dormant
+from utils import remove_html
+from utils import get_domain_from_actor
+from utils import get_nickname_from_actor
+from utils import is_featured_writer
+from utils import acct_dir
+from utils import text_in_file
+from utils import remove_domain_port
+from blocking import is_blocked
+from follow import is_follower_of_person
+from follow import is_following_actor
+from followingCalendar import receiving_calendar_events
+from notifyOnPost import notify_when_person_posts
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_broken_link_substitute
+from webapp_utils import html_keyboard_navigation
+from webapp_utils import get_banner_file
+from webapp_utils import html_hide_from_screen_reader
+from webapp_utils import minimizing_attached_images
 
 
-def htmlPersonOptions(defaultTimeline: str,
-                      cssCache: {}, translate: {}, baseDir: str,
-                      domain: str, domainFull: str,
-                      originPathStr: str,
-                      optionsActor: str,
-                      optionsProfileUrl: str,
-                      optionsLink: str,
-                      pageNumber: int,
-                      donateUrl: str,
-                      webAddress: str,
-                      xmppAddress: str,
-                      matrixAddress: str,
-                      ssbAddress: str,
-                      blogAddress: str,
-                      toxAddress: str,
-                      briarAddress: str,
-                      jamiAddress: str,
-                      cwtchAddress: str,
-                      PGPpubKey: str,
-                      PGPfingerprint: str,
-                      emailAddress: str,
-                      dormantMonths: int,
-                      backToPath: str,
-                      lockedAccount: bool,
-                      movedTo: str,
-                      alsoKnownAs: [],
-                      textModeBanner: str,
-                      newsInstance: bool,
-                      authorized: bool,
-                      accessKeys: {},
-                      isGroup: bool) -> str:
+def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
+                              following_nickname: str,
+                              following_domain: str,
+                              add: bool) -> None:
+    """Adds or removes a handle from the following.txt list into a list
+    indicating whether to minimize images from that account
+    """
+    # check that a following file exists
+    domain = remove_domain_port(domain)
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
+    if not os.path.isfile(following_filename):
+        print("WARN: following.txt doesn't exist for " +
+              nickname + '@' + domain)
+        return
+    handle = following_nickname + '@' + following_domain
+
+    # check that you are following this handle
+    if not text_in_file(handle + '\n', following_filename):
+        print('WARN: ' + handle + ' is not in ' + following_filename)
+        return
+
+    minimize_filename = \
+        acct_dir(base_dir, nickname, domain) + '/followingMinimizeImages.txt'
+
+    # get the contents of the minimize file, which is
+    # a set of handles
+    minimize_handles = ''
+    if os.path.isfile(minimize_filename):
+        print('Minimize file exists')
+        try:
+            with open(minimize_filename, 'r',
+                      encoding='utf-8') as minimize_file:
+                minimize_handles = minimize_file.read()
+        except OSError:
+            print('EX: minimize_attached_images ' + minimize_filename)
+    else:
+        # create a new minimize file from the following file
+        print('Creating minimize file ' + minimize_filename)
+        if add:
+            try:
+                with open(minimize_filename, 'w+',
+                          encoding='utf-8') as fp_min:
+                    fp_min.write('')
+            except OSError:
+                print('EX: minimize_attached_images unable to write ' +
+                      minimize_filename)
+
+    # already in the minimize file?
+    if handle + '\n' in minimize_handles:
+        print(handle + ' exists in followingMinimizeImages.txt')
+        if add:
+            # already added
+            return
+        # remove from minimize file
+        minimize_handles = minimize_handles.replace(handle + '\n', '')
+        try:
+            with open(minimize_filename, 'w+',
+                      encoding='utf-8') as fp_min:
+                fp_min.write(minimize_handles)
+        except OSError:
+            print('EX: minimize_attached_images 3 ' + minimize_filename)
+    else:
+        print(handle + ' not in followingMinimizeImages.txt')
+        # not already in the minimize file
+        if add:
+            # append to the list of handles
+            minimize_handles += handle + '\n'
+            try:
+                with open(minimize_filename, 'w+',
+                          encoding='utf-8') as fp_min:
+                    fp_min.write(minimize_handles)
+            except OSError:
+                print('EX: minimize_attached_images 4 ' + minimize_filename)
+
+
+def person_minimize_images(base_dir: str, nickname: str, domain: str,
+                           following_nickname: str,
+                           following_domain: str) -> None:
+    """Images from this person are minimized by default
+    """
+    _minimize_attached_images(base_dir, nickname, domain,
+                              following_nickname, following_domain, True)
+
+
+def person_undo_minimize_images(base_dir: str, nickname: str, domain: str,
+                                following_nickname: str,
+                                following_domain: str) -> None:
+    """Images from this person are no longer minimized by default
+    """
+    _minimize_attached_images(base_dir, nickname, domain,
+                              following_nickname, following_domain, False)
+
+
+def html_person_options(default_timeline: str,
+                        translate: {}, base_dir: str,
+                        domain: str, domain_full: str,
+                        origin_path_str: str,
+                        options_actor: str,
+                        options_profile_url: str,
+                        options_link: str,
+                        page_number: int,
+                        donate_url: str,
+                        web_address: str,
+                        xmpp_address: str,
+                        matrix_address: str,
+                        ssb_address: str,
+                        blog_address: str,
+                        tox_address: str,
+                        briar_address: str,
+                        cwtch_address: str,
+                        enigma_pub_key: str,
+                        pgp_pub_key: str,
+                        pgp_fingerprint: str,
+                        email_address: str,
+                        dormant_months: int,
+                        back_to_path: str,
+                        locked_account: bool,
+                        moved_to: str,
+                        also_known_as: [],
+                        text_mode_banner: str,
+                        news_instance: bool,
+                        authorized: bool,
+                        access_keys: {},
+                        is_group: bool,
+                        theme: str) -> str:
     """Show options for a person: view/follow/block/report
     """
-    optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-    optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
+    options_domain, options_port = get_domain_from_actor(options_actor)
+    if not options_domain:
+        return None
+    options_domain_full = get_full_domain(options_domain, options_port)
 
-    if os.path.isfile(baseDir + '/accounts/options-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/options-background.jpg'):
-            copyfile(baseDir + '/accounts/options-background.jpg',
-                     baseDir + '/accounts/options-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/options-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/options-background.jpg'):
+            copyfile(base_dir + '/accounts/options-background.jpg',
+                     base_dir + '/accounts/options-background.jpg')
 
     dormant = False
-    followStr = 'Follow'
-    if isGroup:
-        followStr = 'Join'
-    blockStr = 'Block'
+    follow_str = 'Follow'
+    if is_group:
+        follow_str = 'Join'
+    block_str = 'Block'
     nickname = None
-    optionsNickname = None
-    followsYou = False
-    if originPathStr.startswith('/users/'):
-        nickname = originPathStr.split('/users/')[1]
+    options_nickname = None
+    follows_you = False
+    if origin_path_str.startswith('/users/'):
+        nickname = origin_path_str.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if '?' in nickname:
             nickname = nickname.split('?')[0]
-        followerDomain, followerPort = getDomainFromActor(optionsActor)
-        if isFollowingActor(baseDir, nickname, domain, optionsActor):
-            followStr = 'Unfollow'
-            if isGroup:
-                followStr = 'Leave'
+#        follower_domain, follower_port = get_domain_from_actor(options_actor)
+        if is_following_actor(base_dir, nickname, domain, options_actor):
+            follow_str = 'Unfollow'
+            if is_group:
+                follow_str = 'Leave'
             dormant = \
-                isDormant(baseDir, nickname, domain, optionsActor,
-                          dormantMonths)
+                is_dormant(base_dir, nickname, domain, options_actor,
+                           dormant_months)
 
-        optionsNickname = getNicknameFromActor(optionsActor)
-        optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
-        followsYou = \
-            isFollowerOfPerson(baseDir,
-                               nickname, domain,
-                               optionsNickname, optionsDomainFull)
-        if isBlocked(baseDir, nickname, domain,
-                     optionsNickname, optionsDomainFull):
-            blockStr = 'Block'
+        options_nickname = get_nickname_from_actor(options_actor)
+        if not options_nickname:
+            return None
+        options_domain_full = get_full_domain(options_domain, options_port)
+        follows_you = \
+            is_follower_of_person(base_dir,
+                                  nickname, domain,
+                                  options_nickname, options_domain_full)
+        if is_blocked(base_dir, nickname, domain,
+                      options_nickname, options_domain_full):
+            block_str = 'Block'
 
-    optionsLinkStr = ''
-    if optionsLink:
-        optionsLinkStr = \
+    options_link_str = ''
+    if options_link:
+        options_link_str = \
             '    <input type="hidden" name="postUrl" value="' + \
-            optionsLink + '">\n'
-    cssFilename = baseDir + '/epicyon-options.css'
-    if os.path.isfile(baseDir + '/options.css'):
-        cssFilename = baseDir + '/options.css'
+            options_link + '">\n'
+    css_filename = base_dir + '/epicyon-options.css'
+    if os.path.isfile(base_dir + '/options.css'):
+        css_filename = base_dir + '/options.css'
 
     # To snooze, or not to snooze? That is the question
-    snoozeButtonStr = 'Snooze'
+    snooze_button_str = 'Snooze'
     if nickname:
-        if isPersonSnoozed(baseDir, nickname, domain, optionsActor):
-            snoozeButtonStr = 'Unsnooze'
+        if is_person_snoozed(base_dir, nickname, domain, options_actor):
+            snooze_button_str = 'Unsnooze'
 
-    donateStr = ''
-    if donateUrl:
-        donateStr = \
-            '    <a href="' + donateUrl + \
+    donate_str = ''
+    if donate_url:
+        donate_str = \
+            '    <a href="' + donate_url + \
             ' tabindex="-1""><button class="button" name="submitDonate">' + \
             translate['Donate'] + '</button></a>\n'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    optionsStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
-    optionsStr += htmlKeyboardNavigation(textModeBanner, {}, {})
-    optionsStr += '<br><br>\n'
-    optionsStr += '<div class="options">\n'
-    optionsStr += '  <div class="optionsAvatar">\n'
-    optionsStr += '  <center>\n'
-    optionsStr += '  <a href="' + optionsActor + '">\n'
-    optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
-        '" alt="" ' + getBrokenLinkSubstitute() + '/></a>\n'
-    handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
-    handleShown = handle
-    if lockedAccount:
-        handleShown += '🔒'
-    if movedTo:
-        handleShown += ' ⌂'
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    options_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+
+    # show banner
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    back_path = '/'
+    if nickname:
+        back_path = '/users/' + nickname + '/' + default_timeline
+        if 'moderation' in back_to_path:
+            back_path = '/users/' + nickname + '/moderation'
+    if authorized and origin_path_str == '/users/' + nickname:
+        banner_link = back_path
+    else:
+        banner_link = origin_path_str
+    options_str += \
+        '<header>\n<a href="' + banner_link + \
+        '" title="' + translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'tabindex="1" accesskey="' + access_keys['menuTimeline'] + '">\n'
+    options_str += \
+        '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n<br><br>\n'
+
+    nav_links = {}
+    timeline_link_str = html_hide_from_screen_reader('🏠') + ' ' + \
+        translate['Switch to timeline view']
+    nav_links[timeline_link_str] = \
+        '/users/' + nickname + '/' + default_timeline
+    nav_access_keys = {
+    }
+    options_str += \
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys)
+
+    options_str += '<div class="options">\n'
+    options_str += '  <div class="optionsAvatar">\n'
+    options_str += '  <center>\n'
+    options_str += '  <a href="' + options_actor + '">\n'
+    options_str += '  <img loading="lazy" decoding="async" ' + \
+        'src="' + options_profile_url + \
+        '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
+    handle_nick = get_nickname_from_actor(options_actor)
+    if not handle_nick:
+        return None
+    handle = handle_nick + '@' + options_domain
+    handle_shown = handle
+    if locked_account:
+        handle_shown += '🔒'
+    if moved_to:
+        handle_shown += ' ⌂'
     if dormant:
-        handleShown += ' 💤'
-    optionsStr += \
+        handle_shown += ' 💤'
+    options_str += \
         '  <p class="optionsText">' + translate['Options for'] + \
-        ' @' + handleShown + '</p>\n'
-    if followsYou:
-        optionsStr += \
+        ' @' + handle_shown + '</p>\n'
+    if follows_you and authorized:
+        options_str += \
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
-    if movedTo:
-        newNickname = getNicknameFromActor(movedTo)
-        newDomain, newPort = getDomainFromActor(movedTo)
-        if newNickname and newDomain:
-            newHandle = newNickname + '@' + newDomain
-            optionsStr += \
+    if moved_to:
+        new_nickname = get_nickname_from_actor(moved_to)
+        new_domain, _ = get_domain_from_actor(moved_to)
+        if new_nickname and new_domain:
+            new_handle = new_nickname + '@' + new_domain
+            options_str += \
                 '  <p class="optionsText">' + \
                 translate['New account'] + \
-                ': <a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
-    elif alsoKnownAs:
-        otherAccountsHtml = \
+                ': <a href="' + moved_to + '">@' + new_handle + '</a></p>\n'
+    elif also_known_as:
+        other_accounts_html = \
             '  <p class="optionsText">' + \
             translate['Other accounts'] + ': '
 
         ctr = 0
-        if isinstance(alsoKnownAs, list):
-            for altActor in alsoKnownAs:
-                if altActor == optionsActor:
+        if isinstance(also_known_as, list):
+            for alt_actor in also_known_as:
+                if alt_actor == options_actor:
                     continue
                 if ctr > 0:
-                    otherAccountsHtml += ' '
+                    other_accounts_html += ' '
                 ctr += 1
-                altDomain, altPort = getDomainFromActor(altActor)
-                otherAccountsHtml += \
-                    '<a href="' + altActor + '">' + altDomain + '</a>'
-        elif isinstance(alsoKnownAs, str):
-            if alsoKnownAs != optionsActor:
+                alt_domain, _ = get_domain_from_actor(alt_actor)
+                other_accounts_html += \
+                    '<a href="' + alt_actor + '">' + alt_domain + '</a>'
+        elif isinstance(also_known_as, str):
+            if also_known_as != options_actor:
                 ctr += 1
-                altDomain, altPort = getDomainFromActor(alsoKnownAs)
-                otherAccountsHtml += \
-                    '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
-        otherAccountsHtml += '</p>\n'
+                alt_domain, _ = get_domain_from_actor(also_known_as)
+                other_accounts_html += \
+                    '<a href="' + also_known_as + '">' + alt_domain + '</a>'
+        other_accounts_html += '</p>\n'
         if ctr > 0:
-            optionsStr += otherAccountsHtml
-    if emailAddress:
-        optionsStr += \
+            options_str += other_accounts_html
+
+    if email_address:
+        options_str += \
             '<p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
-            emailAddress + '">' + removeHtml(emailAddress) + '</a></p>\n'
-    if xmppAddress:
-        optionsStr += \
+            email_address + '">' + remove_html(email_address) + '</a></p>\n'
+    if web_address:
+        web_str = remove_html(web_address)
+        if '://' not in web_str:
+            web_str = 'https://' + web_str
+        options_str += \
+            '<p class="imText">🌐 <a href="' + web_str + '">' + \
+            web_address + '</a></p>\n'
+    if xmpp_address:
+        options_str += \
             '<p class="imText">' + translate['XMPP'] + \
-            ': <a href="xmpp:' + removeHtml(xmppAddress) + '">' + \
-            xmppAddress + '</a></p>\n'
-    if matrixAddress:
-        optionsStr += \
+            ': <a href="xmpp:' + remove_html(xmpp_address) + '">' + \
+            xmpp_address + '</a></p>\n'
+    if matrix_address:
+        options_str += \
             '<p class="imText">' + translate['Matrix'] + ': ' + \
-            removeHtml(matrixAddress) + '</p>\n'
-    if ssbAddress:
-        optionsStr += \
-            '<p class="imText">SSB: ' + removeHtml(ssbAddress) + '</p>\n'
-    if blogAddress:
-        optionsStr += \
+            remove_html(matrix_address) + '</p>\n'
+    if ssb_address:
+        options_str += \
+            '<p class="imText">SSB: ' + remove_html(ssb_address) + '</p>\n'
+    if blog_address:
+        options_str += \
             '<p class="imText">Blog: <a href="' + \
-            removeHtml(blogAddress) + '">' + \
-            removeHtml(blogAddress) + '</a></p>\n'
-    if toxAddress:
-        optionsStr += \
-            '<p class="imText">Tox: ' + removeHtml(toxAddress) + '</p>\n'
-    if briarAddress:
-        if briarAddress.startswith('briar://'):
-            optionsStr += \
+            remove_html(blog_address) + '">' + \
+            remove_html(blog_address) + '</a></p>\n'
+    if tox_address:
+        options_str += \
+            '<p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
+    if briar_address:
+        if briar_address.startswith('briar://'):
+            options_str += \
                 '<p class="imText">' + \
-                removeHtml(briarAddress) + '</p>\n'
+                remove_html(briar_address) + '</p>\n'
         else:
-            optionsStr += \
+            options_str += \
                 '<p class="imText">briar://' + \
-                removeHtml(briarAddress) + '</p>\n'
-    if jamiAddress:
-        optionsStr += \
-            '<p class="imText">Jami: ' + removeHtml(jamiAddress) + '</p>\n'
-    if cwtchAddress:
-        optionsStr += \
-            '<p class="imText">Cwtch: ' + removeHtml(cwtchAddress) + '</p>\n'
-    if PGPfingerprint:
-        optionsStr += '<p class="pgp">PGP: ' + \
-            removeHtml(PGPfingerprint).replace('\n', '<br>') + '</p>\n'
-    if PGPpubKey:
-        optionsStr += '<p class="pgp">' + \
-            removeHtml(PGPpubKey).replace('\n', '<br>') + '</p>\n'
-    optionsStr += '  <form method="POST" action="' + \
-        originPathStr + '/personoptions">\n'
-    optionsStr += '    <input type="hidden" name="pageNumber" value="' + \
-        str(pageNumber) + '">\n'
-    optionsStr += '    <input type="hidden" name="actor" value="' + \
-        optionsActor + '">\n'
-    optionsStr += '    <input type="hidden" name="avatarUrl" value="' + \
-        optionsProfileUrl + '">\n'
+                remove_html(briar_address) + '</p>\n'
+    if cwtch_address:
+        options_str += \
+            '<p class="imText">Cwtch: ' + remove_html(cwtch_address) + '</p>\n'
+    if enigma_pub_key:
+        options_str += \
+            '<p class="imText">Enigma: ' + \
+            remove_html(enigma_pub_key) + '</p>\n'
+    if pgp_fingerprint:
+        options_str += '<p class="pgp">PGP: ' + \
+            remove_html(pgp_fingerprint).replace('\n', '<br>') + '</p>\n'
+    if pgp_pub_key:
+        options_str += '<p class="pgp">' + \
+            remove_html(pgp_pub_key).replace('\n', '<br>') + '</p>\n'
+    options_str += '  <form method="POST" action="' + \
+        origin_path_str + '/personoptions">\n'
+    options_str += '    <input type="hidden" name="pageNumber" value="' + \
+        str(page_number) + '">\n'
+    options_str += '    <input type="hidden" name="actor" value="' + \
+        options_actor + '">\n'
+    options_str += '    <input type="hidden" name="avatarUrl" value="' + \
+        options_profile_url + '">\n'
+
     if authorized:
-        if originPathStr == '/users/' + nickname:
-            if optionsNickname:
-                # handle = optionsNickname + '@' + optionsDomainFull
-                petname = getPetName(baseDir, nickname, domain, handle)
-                optionsStr += \
+        if origin_path_str == '/users/' + nickname:
+            if options_nickname:
+                # handle = options_nickname + '@' + options_domain_full
+                petname = get_pet_name(base_dir, nickname, domain, handle)
+                options_str += \
                     '    ' + translate['Petname'] + ': \n' + \
                     '    <input type="text" name="optionpetname" value="' + \
                     petname + '" ' + \
-                    'accesskey="' + accessKeys['enterPetname'] + '">\n' \
+                    'accesskey="' + access_keys['enterPetname'] + '">\n' \
                     '    <button type="submit" class="buttonsmall" ' + \
                     'name="submitPetname">' + \
-                    translate['Submit'] + '</button><br>\n'
+                    translate['Save'] + '</button><br>\n'
 
             # Notify when a post arrives from this person
-            if isFollowingActor(baseDir, nickname, domain, optionsActor):
-                checkboxStr = \
+            if is_following_actor(base_dir, nickname, domain, options_actor):
+                checkbox_str = \
                     '    <input type="checkbox" class="profilecheckbox" ' + \
                     'name="notifyOnPost" checked> 🔔' + \
                     translate['Notify me when this account posts'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitNotifyOnPost">' + \
-                    translate['Submit'] + '</button><br>\n'
-                if not notifyWhenPersonPosts(baseDir, nickname, domain,
-                                             optionsNickname,
-                                             optionsDomainFull):
-                    checkboxStr = checkboxStr.replace(' checked>', '>')
-                optionsStr += checkboxStr
+                    translate['Save'] + '</button><br>\n'
+                if not notify_when_person_posts(base_dir, nickname, domain,
+                                                options_nickname,
+                                                options_domain_full):
+                    checkbox_str = checkbox_str.replace(' checked>', '>')
+                options_str += checkbox_str
 
-                checkboxStr = \
+                checkbox_str = \
                     '    <input type="checkbox" ' + \
                     'class="profilecheckbox" name="onCalendar" checked> ' + \
                     translate['Receive calendar events from this account'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitOnCalendar">' + \
-                    translate['Submit'] + '</button><br>\n'
-                if not receivingCalendarEvents(baseDir, nickname, domain,
-                                               optionsNickname,
-                                               optionsDomainFull):
-                    checkboxStr = checkboxStr.replace(' checked>', '>')
-                optionsStr += checkboxStr
+                    translate['Save'] + '</button><br>\n'
+                if not receiving_calendar_events(base_dir, nickname, domain,
+                                                 options_nickname,
+                                                 options_domain_full):
+                    checkbox_str = checkbox_str.replace(' checked>', '>')
+                options_str += checkbox_str
+
+                checkbox_str = \
+                    '    <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="minimizeImages" checked> ' + \
+                    translate['Minimize attached images'] + \
+                    '\n    <button type="submit" class="buttonsmall" ' + \
+                    'name="submitMinimizeImages">' + \
+                    translate['Save'] + '</button><br>\n'
+                if not minimizing_attached_images(base_dir, nickname, domain,
+                                                  options_nickname,
+                                                  options_domain_full):
+                    checkbox_str = checkbox_str.replace(' checked>', '>')
+                options_str += checkbox_str
 
             # checkbox for permission to post to newswire
-            newswirePostsPermitted = False
-            if optionsDomainFull == domainFull:
-                adminNickname = getConfigParam(baseDir, 'admin')
-                if (nickname == adminNickname or
-                    (isModerator(baseDir, nickname) and
-                     not isModerator(baseDir, optionsNickname))):
-                    newswireBlockedFilename = \
-                        baseDir + '/accounts/' + \
-                        optionsNickname + '@' + optionsDomain + '/.nonewswire'
-                    checkboxStr = \
+            newswire_posts_permitted = False
+            if options_domain_full == domain_full:
+                admin_nickname = get_config_param(base_dir, 'admin')
+                if (nickname == admin_nickname or
+                    (is_moderator(base_dir, nickname) and
+                     not is_moderator(base_dir, options_nickname))):
+                    newswire_blocked_filename = \
+                        base_dir + '/accounts/' + \
+                        options_nickname + '@' + options_domain + \
+                        '/.nonewswire'
+                    checkbox_str = \
                         '    <input type="checkbox" ' + \
                         'class="profilecheckbox" ' + \
                         'name="postsToNews" checked> ' + \
                         translate['Allow news posts'] + \
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToNews">' + \
-                        translate['Submit'] + '</button><br>\n'
-                    if os.path.isfile(newswireBlockedFilename):
-                        checkboxStr = checkboxStr.replace(' checked>', '>')
+                        translate['Save'] + '</button><br>\n'
+                    if os.path.isfile(newswire_blocked_filename):
+                        checkbox_str = checkbox_str.replace(' checked>', '>')
                     else:
-                        newswirePostsPermitted = True
-                    optionsStr += checkboxStr
+                        newswire_posts_permitted = True
+                    options_str += checkbox_str
 
             # whether blogs created by this account are moderated on
             # the newswire
-            if newswirePostsPermitted:
-                moderatedFilename = \
-                    baseDir + '/accounts/' + \
-                    optionsNickname + '@' + \
-                    optionsDomain + '/.newswiremoderated'
-                checkboxStr = \
+            if newswire_posts_permitted:
+                moderated_filename = \
+                    base_dir + '/accounts/' + \
+                    options_nickname + '@' + \
+                    options_domain + '/.newswiremoderated'
+                checkbox_str = \
                     '    <input type="checkbox" ' + \
                     'class="profilecheckbox" name="modNewsPosts" checked> ' + \
                     translate['News posts are moderated'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitModNewsPosts">' + \
-                    translate['Submit'] + '</button><br>\n'
-                if not os.path.isfile(moderatedFilename):
-                    checkboxStr = checkboxStr.replace(' checked>', '>')
-                optionsStr += checkboxStr
+                    translate['Save'] + '</button><br>\n'
+                if not os.path.isfile(moderated_filename):
+                    checkbox_str = checkbox_str.replace(' checked>', '>')
+                options_str += checkbox_str
 
             # checkbox for permission to post to featured articles
-            if newsInstance and optionsDomainFull == domainFull:
-                adminNickname = getConfigParam(baseDir, 'admin')
-                if (nickname == adminNickname or
-                    (isModerator(baseDir, nickname) and
-                     not isModerator(baseDir, optionsNickname))):
-                    checkboxStr = \
+            if news_instance and options_domain_full == domain_full:
+                admin_nickname = get_config_param(base_dir, 'admin')
+                if (nickname == admin_nickname or
+                    (is_moderator(base_dir, nickname) and
+                     not is_moderator(base_dir, options_nickname))):
+                    checkbox_str = \
                         '    <input type="checkbox" ' + \
                         'class="profilecheckbox" ' + \
                         'name="postsToFeatures" checked> ' + \
                         translate['Featured writer'] + \
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToFeatures">' + \
-                        translate['Submit'] + '</button><br>\n'
-                    if not isFeaturedWriter(baseDir, optionsNickname,
-                                            optionsDomain):
-                        checkboxStr = checkboxStr.replace(' checked>', '>')
-                    optionsStr += checkboxStr
+                        translate['Save'] + '</button><br>\n'
+                    if not is_featured_writer(base_dir, options_nickname,
+                                              options_domain):
+                        checkbox_str = checkbox_str.replace(' checked>', '>')
+                    options_str += checkbox_str
 
-    optionsStr += optionsLinkStr
-    backPath = '/'
-    if nickname:
-        backPath = '/users/' + nickname + '/' + defaultTimeline
-        if 'moderation' in backToPath:
-            backPath = '/users/' + nickname + '/moderation'
-    if authorized and originPathStr == '/users/' + nickname:
-        optionsStr += \
-            '    <a href="' + backPath + '"><button type="button" ' + \
-            'class="buttonIcon" name="submitBack" ' + \
-            'accesskey="' + accessKeys['menuTimeline'] + '">' + \
-            translate['Go Back'] + '</button></a>\n'
-    else:
-        optionsStr += \
-            '    <a href="' + originPathStr + '"><button type="button" ' + \
-            'class="buttonIcon" name="submitBack" accesskey="' + \
-            accessKeys['menuTimeline'] + '">' + translate['Go Back'] + \
-            '</button></a>\n'
+    options_str += options_link_str
     if authorized:
-        optionsStr += \
+        options_str += \
             '    <button type="submit" class="button" ' + \
             'name="submitView" accesskey="' + \
-            accessKeys['viewButton'] + '">' + \
+            access_keys['viewButton'] + '">' + \
             translate['View'] + '</button>\n'
-    optionsStr += donateStr
+    options_str += donate_str
     if authorized:
-        optionsStr += \
+        options_str += \
             '    <button type="submit" class="button" name="submit' + \
-            followStr + '" accesskey="' + accessKeys['followButton'] + '">' + \
-            translate[followStr] + '</button>\n'
-        optionsStr += \
-            '    <button type="submit" class="button" name="submit' + \
-            blockStr + '" accesskey="' + accessKeys['blockButton'] + '">' + \
-            translate[blockStr] + '</button>\n'
-        optionsStr += \
+            follow_str + \
+            '" accesskey="' + access_keys['followButton'] + '">' + \
+            translate[follow_str] + '</button>\n'
+        options_str += \
             '    <button type="submit" class="button" name="submitDM" ' + \
-            'accesskey="' + accessKeys['menuDM'] + '">' + \
+            'accesskey="' + access_keys['menuDM'] + '">' + \
             translate['DM'] + '</button>\n'
-        optionsStr += \
+        options_str += \
             '    <button type="submit" class="button" name="submit' + \
-            snoozeButtonStr + '" accesskey="' + \
-            accessKeys['snoozeButton'] + '">' + translate[snoozeButtonStr] + \
-            '</button>\n'
-        optionsStr += \
+            snooze_button_str + '" accesskey="' + \
+            access_keys['snoozeButton'] + '">' + \
+            translate[snooze_button_str] + '</button>\n'
+        options_str += \
             '    <button type="submit" class="button" ' + \
             'name="submitReport" accesskey="' + \
-            accessKeys['reportButton'] + '">' + \
+            access_keys['reportButton'] + '">' + \
             translate['Report'] + '</button>\n'
 
-        if isModerator(baseDir, nickname):
-            optionsStr += \
+        if is_moderator(base_dir, nickname):
+            options_str += \
                 '    <button type="submit" class="button" ' + \
                 'name="submitPersonInfo" accesskey="' + \
-                accessKeys['infoButton'] + '">' + \
+                access_keys['infoButton'] + '">' + \
                 translate['Info'] + '</button>\n'
+        options_str += \
+            '    <button type="submit" class="button" name="submit' + \
+            block_str + '" accesskey="' + access_keys['blockButton'] + '">' + \
+            translate[block_str] + '</button>\n'
 
-        personNotes = ''
-        if originPathStr == '/users/' + nickname:
-            personNotesFilename = \
-                acctDir(baseDir, nickname, domain) + \
+        person_notes = ''
+        if origin_path_str == '/users/' + nickname:
+            person_notes_filename = \
+                acct_dir(base_dir, nickname, domain) + \
                 '/notes/' + handle + '.txt'
-            if os.path.isfile(personNotesFilename):
-                with open(personNotesFilename, 'r') as fp:
-                    personNotes = fp.read()
+            if os.path.isfile(person_notes_filename):
+                with open(person_notes_filename, 'r',
+                          encoding='utf-8') as fp_notes:
+                    person_notes = fp_notes.read()
 
-        optionsStr += \
+        options_str += \
             '    <br><br>' + translate['Notes'] + ': \n'
-        optionsStr += '    <button type="submit" class="buttonsmall" ' + \
+        options_str += '    <button type="submit" class="buttonsmall" ' + \
             'name="submitPersonNotes">' + \
-            translate['Submit'] + '</button><br>\n'
-        optionsStr += \
+            translate['Save'] + '</button><br>\n'
+        options_str += \
             '    <textarea id="message" ' + \
             'name="optionnotes" style="height:400px" spellcheck="true" ' + \
-            'accesskey="' + accessKeys['enterNotes'] + '">' + \
-            personNotes + '</textarea>\n'
+            'accesskey="' + access_keys['enterNotes'] + '">' + \
+            person_notes + '</textarea>\n'
 
-    optionsStr += \
+    options_str += \
         '  </form>\n' + \
         '</center>\n' + \
         '</div>\n' + \
         '</div>\n'
-    optionsStr += htmlFooter()
-    return optionsStr
+    options_str += html_footer()
+    return options_str

@@ -1,4 +1,13 @@
 {
+    "code-color": "blue",
+    "diff-add": "#111",
+    "diff-remove": "#333",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "#222",
+    "dropdown-bg-color": "white",
+    "dropdown-bg-color-hover": "lightgrey",
+    "dropdown-fg-color-hover": "#222",    
     "today-circle": "#03a494",
     "options-main-link-color-hover": "white",
     "main-link-color-hover": "blue",
@@ -30,7 +39,10 @@
     "banner-height-mobile": "10vh",
     "hashtag-background-color": "grey",
     "focus-color": "grey",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "26px",
+    "font-size-pageslist": "32px",
     "font-size": "26px",
     "font-size2": "20px",
     "font-size3": "34px",
@@ -54,6 +66,8 @@
     "main-bg-color-report": "#e3dbf0",
     "main-header-color-roles": "#ebebf0",
     "cw-color": "#2d2c37",
+    "pageslist-color": "#111",
+    "pageslist-selected-color": "blue",
     "main-fg-color": "#2d2c37",
     "login-fg-color": "white",
     "welcome-fg-color": "white",
@@ -91,5 +105,6 @@
     "header-font": "'NimbusSanL'",
     "*font-family": "'NimbusSanL'",
     "*src": "url('./fonts/NimbusSanL.otf') format('opentype')",
-    "**src": "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
+    "**src": "url('./fonts/NimbusSanL-italic.otf') format('opentype')",
+    "reply-icon-direction": "-1"
 }

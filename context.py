@@ -1,18 +1,19 @@
 __filename__ = "inbox.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Security"
 
 
-validContexts = (
+VALID_CONTEXTS = (
     "https://www.w3.org/ns/activitystreams",
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
     "*/apschema/v1.9",
+    "*/apschema/v1.10",
     "*/apschema/v1.21",
     "*/apschema/v1.20",
     "*/litepub-0.1.jsonld",
@@ -20,37 +21,55 @@ validContexts = (
 )
 
 
-def hasValidContext(postJsonObject: {}) -> bool:
+def get_individual_post_context() -> []:
+    """Returns the context for an individual post
+    """
+    return [
+        'https://www.w3.org/ns/activitystreams',
+        {
+            "ostatus": "http://ostatus.org#",
+            "atomUri": "ostatus:atomUri",
+            "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+            "conversation": "ostatus:conversation",
+            "sensitive": "as:sensitive",
+            "toot": "http://joinmastodon.org/ns#",
+            "votersCount": "toot:votersCount",
+            "blurhash": "toot:blurhash"
+        }
+    ]
+
+
+def has_valid_context(post_json_object: {}) -> bool:
     """Are the links within the @context of a post recognised?
     """
-    if not postJsonObject.get('@context'):
+    if not post_json_object.get('@context'):
         return False
-    if isinstance(postJsonObject['@context'], list):
-        for url in postJsonObject['@context']:
+    if isinstance(post_json_object['@context'], list):
+        for url in post_json_object['@context']:
             if not isinstance(url, str):
                 continue
-            if url not in validContexts:
-                wildcardFound = False
-                for c in validContexts:
-                    if c.startswith('*'):
-                        c = c.replace('*', '')
-                        if url.endswith(c):
-                            wildcardFound = True
+            if url not in VALID_CONTEXTS:
+                wildcard_found = False
+                for cont in VALID_CONTEXTS:
+                    if cont.startswith('*'):
+                        cont = cont.replace('*', '')
+                        if url.endswith(cont):
+                            wildcard_found = True
                             break
-                if not wildcardFound:
+                if not wildcard_found:
                     print('Unrecognized @context: ' + url)
                     return False
-    elif isinstance(postJsonObject['@context'], str):
-        url = postJsonObject['@context']
-        if url not in validContexts:
-            wildcardFound = False
-            for c in validContexts:
-                if c.startswith('*'):
-                    c = c.replace('*', '')
-                    if url.endswith(c):
-                        wildcardFound = True
+    elif isinstance(post_json_object['@context'], str):
+        url = post_json_object['@context']
+        if url not in VALID_CONTEXTS:
+            wildcard_found = False
+            for cont in VALID_CONTEXTS:
+                if cont.startswith('*'):
+                    cont = cont.replace('*', '')
+                    if url.endswith(cont):
+                        wildcard_found = True
                         break
-            if not wildcardFound:
+            if not wildcard_found:
                 print('Unrecognized @context: ' + url)
                 return False
     else:
@@ -138,6 +157,44 @@ def getApschemaV1_20() -> {}:
     }
 
 
+def getApschemaV1_10() -> {}:
+    # https://domain/apschema/v1.10
+    return {
+        '@context': {
+            'Hashtag': 'as:Hashtag',
+            'PropertyValue': 'schema:PropertyValue',
+            'commentPolicy': 'zot:commentPolicy',
+            'conversation': 'ostatus:conversation',
+            'diaspora': 'https://diasporafoundation.org/ns/',
+            'directMessage': 'zot:directMessage',
+            'emojiReaction': 'zot:emojiReaction',
+            'expires': 'zot:expires',
+            'guid': 'diaspora:guid',
+            'id': '@id',
+            'locationAddress': 'zot:locationAddress',
+            'locationDeleted': 'zot:locationDeleted',
+            'locationPrimary': 'zot:locationPrimary',
+            'magicEnv': {'@id': 'zot:magicEnv', '@type': '@id'},
+            'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
+            'meAlgorithm': 'zot:meAlgorithm',
+            'meCreator': 'zot:meCreator',
+            'meData': 'zot:meData',
+            'meDataType': 'zot:meDataType',
+            'meEncoding': 'zot:meEncoding',
+            'meSignatureValue': 'zot:meSignatureValue',
+            'nomadicHubs': 'zot:nomadicHubs',
+            'nomadicLocation': 'zot:nomadicLocation',
+            'nomadicLocations': {'@id': 'zot:nomadicLocations',
+                                 '@type': '@id'},
+            'ostatus': 'http://ostatus.org#',
+            'schema': 'http://schema.org#',
+            'type': '@type',
+            'value': 'schema:value',
+            'zot': 'https://hubzilla.vikshepa.com/apschema#'
+        }
+    }
+
+
 def getApschemaV1_21() -> {}:
     # https://domain/apschema/v1.21
     return {
@@ -169,7 +226,7 @@ def getApschemaV1_21() -> {}:
     }
 
 
-def getLitepubSocial() -> {}:
+def get_litepub_social() -> {}:
     # https://litepub.social/litepub/context.jsonld
     return {
         '@context': [
@@ -241,7 +298,7 @@ def getLitepubV0_1() -> {}:
     }
 
 
-def getV1SecuritySchema() -> {}:
+def get_v1security_schema() -> {}:
     # https://w3id.org/security/v1
     return {
         "@context": {
@@ -294,7 +351,7 @@ def getV1SecuritySchema() -> {}:
     }
 
 
-def getV1Schema() -> {}:
+def get_v1schema() -> {}:
     # https://w3id.org/identity/v1
     return {
         "@context": {
@@ -382,7 +439,7 @@ def getV1Schema() -> {}:
     }
 
 
-def getActivitystreamsSchema() -> {}:
+def get_activitystreams_schema() -> {}:
     # https://www.w3.org/ns/activitystreams
     return {
         "@context": {

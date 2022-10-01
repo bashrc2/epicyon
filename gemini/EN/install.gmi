@@ -47,6 +47,26 @@ Paste the following:
     Restart=always
     StandardError=syslog
     CPUQuota=80%
+    ProtectHome=true
+    ProtectKernelTunables=true
+    ProtectKernelModules=true
+    ProtectControlGroups=true
+    ProtectKernelLogs=true
+    ProtectHostname=true
+    ProtectClock=true
+    ProtectProc=invisible
+    ProcSubset=pid
+    PrivateTmp=true
+    PrivateUsers=true
+    PrivateDevices=true
+    PrivateIPC=true
+    MemoryDenyWriteExecute=true
+    NoNewPrivileges=true
+    LockPersonality=true
+    RestrictRealtime=true
+    RestrictSUIDSGID=true
+    RestrictNamespaces=true
+    SystemCallArchitectures=native
 
     [Install]
     WantedBy=multi-user.target
@@ -70,9 +90,6 @@ And paste the following:
         error_log /dev/null;
         client_max_body_size 31m;
         client_body_buffer_size 128k;
-
-        limit_conn conn_limit_per_ip 10;
-        limit_req zone=req_limit_per_ip burst=10 nodelay;
 
         index index.html;
         rewrite ^ https://$server_name$request_uri? permanent;
@@ -113,6 +130,9 @@ And paste the following:
           try_files $uri =404;
         }
 
+        keepalive_timeout 70;
+        sendfile on;
+
         location / {
             proxy_http_version 1.1;
             client_max_body_size 31M;
@@ -132,6 +152,7 @@ And paste the following:
             proxy_request_buffering off;
             proxy_buffering off;
             proxy_pass http://localhost:7156;
+            tcp_nodelay on;
         }
     }
 
@@ -141,7 +162,9 @@ Enable the site:
 
 Forward port 443 from your internet router to your server. If you have dynamic DNS make sure its configured. Add a TLS certificate:
 
+    systemctl stop nginx
     certbot certonly -n --server https://acme-v02.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
+    systemctl start nginx
 
 Restart your web server:
 

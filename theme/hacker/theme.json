@@ -1,5 +1,14 @@
 {
+    "code-color": "lightblue",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "#9ad791",
+    "dropdown-bg-color": "#222",
+    "dropdown-bg-color-hover": "#444",
+    "dropdown-fg-color-hover": "#9ad791",
     "column-left-header-background": "#035103",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-header": "12px",
     "font-size-header-mobile": "20px",
     "font-size-button-mobile": "20px",
@@ -9,6 +18,7 @@
     "font-size-newswire-mobile": "36px",
     "font-size-dropdown-header": "26px",
     "font-size-mobile": "40px",
+    "font-size-pageslist": "32px",
     "font-size": "26px",
     "font-size2": "16px",
     "font-size3": "36px",
@@ -48,6 +58,8 @@
     "main-bg-color-report": "#050202",
     "main-header-color-roles": "#1f192d",
     "cw-color": "#9ad791",
+    "pageslist-color": "#dddddd",
+    "pageslist-selected-color": "white",
     "main-fg-color": "#9ad791",
     "login-fg-color": "#9ad791",
     "welcome-fg-color": "#9ad791",
@@ -92,5 +104,6 @@
     "time-color": "#9ad791",
     "place-color": "#9ad791",
     "event-color": "#9ad791",
-    "image-corners": "0%"
+    "image-corners": "0%",
+    "reply-icon-direction": "-1"
 }

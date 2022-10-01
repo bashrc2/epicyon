@@ -1,174 +1,205 @@
 __filename__ = "donate.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def _getDonationTypes() -> []:
+from utils import get_attachment_property_value
+
+
+def _get_donation_types() -> []:
     return ('patreon', 'paypal', 'gofundme', 'liberapay',
             'kickstarter', 'indiegogo', 'crowdsupply',
             'subscribestar')
 
 
-def _getWebsiteStrings() -> []:
+def _get_website_strings() -> []:
     return ['www', 'website', 'web', 'homepage']
 
 
-def getDonationUrl(actorJson: {}) -> str:
+def get_donation_url(actor_json: {}) -> str:
     """Returns a link used for donations
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    donationType = _getDonationTypes()
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    donation_type = _get_donation_types()
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if propertyValue['name'].lower() not in donationType:
+        if name_value.lower() not in donation_type:
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        prop_value_name, prop_value = \
+            get_attachment_property_value(property_value)
+        if not prop_value:
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '<a href="' not in propertyValue['value']:
+        if '<a href="' not in property_value[prop_value_name]:
             continue
-        donateUrl = propertyValue['value'].split('<a href="')[1]
-        if '"' in donateUrl:
-            return donateUrl.split('"')[0]
+        donate_url = property_value[prop_value_name].split('<a href="')[1]
+        if '"' in donate_url:
+            return donate_url.split('"')[0]
     return ''
 
 
-def getWebsite(actorJson: {}, translate: {}) -> str:
+def get_website(actor_json: {}, translate: {}) -> str:
     """Returns a web address link
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    matchStrings = _getWebsiteStrings()
-    matchStrings.append(translate['Website'].lower())
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    match_strings = _get_website_strings()
+    match_strings.append(translate['Website'].lower())
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if propertyValue['name'].lower() not in matchStrings:
+        if name_value.lower() not in match_strings:
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        return propertyValue['value']
+        return property_value[prop_value_name]
     return ''
 
 
-def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
+def set_donation_url(actor_json: {}, donate_url: str) -> None:
     """Sets a link used for donations
     """
-    notUrl = False
-    if '.' not in donateUrl:
-        notUrl = True
-    if '://' not in donateUrl:
-        notUrl = True
-    if ' ' in donateUrl:
-        notUrl = True
-    if '<' in donateUrl:
-        notUrl = True
+    not_url = False
+    if '.' not in donate_url:
+        not_url = True
+    if '://' not in donate_url:
+        not_url = True
+    if ' ' in donate_url:
+        not_url = True
+    if '<' in donate_url:
+        not_url = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
-    donationType = _getDonationTypes()
-    donateName = None
-    for paymentService in donationType:
-        if paymentService in donateUrl:
-            donateName = paymentService
-    if not donateName:
+    donation_type = _get_donation_types()
+    donate_name = None
+    for payment_service in donation_type:
+        if payment_service in donate_url:
+            donate_name = payment_service
+    if not donate_name:
         return
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower() != donateName:
+        if not name_value.lower() != donate_name:
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
-    if notUrl:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_url:
         return
 
-    donateValue = \
-        '<a href="' + donateUrl + \
+    donate_value = \
+        '<a href="' + donate_url + \
         '" rel="me nofollow noopener noreferrer" target="_blank">' + \
-        donateUrl + '</a>'
+        donate_url + '</a>'
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if propertyValue['name'].lower() != donateName:
+        if name_value.lower() != donate_name:
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        propertyValue['value'] = donateValue
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = donate_value
         return
 
-    newDonate = {
-        "name": donateName,
+    new_donate = {
+        "name": donate_name,
         "type": "PropertyValue",
-        "value": donateValue
+        "value": donate_value
     }
-    actorJson['attachment'].append(newDonate)
+    actor_json['attachment'].append(new_donate)
 
 
-def setWebsite(actorJson: {}, websiteUrl: str, translate: {}) -> None:
+def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
     """Sets a web address
     """
-    websiteUrl = websiteUrl.strip()
-    notUrl = False
-    if '.' not in websiteUrl:
-        notUrl = True
-    if '://' not in websiteUrl:
-        notUrl = True
-    if ' ' in websiteUrl:
-        notUrl = True
-    if '<' in websiteUrl:
-        notUrl = True
+    website_url = website_url.strip()
+    not_url = False
+    if '.' not in website_url:
+        not_url = True
+    if '://' not in website_url:
+        not_url = True
+    if ' ' in website_url:
+        not_url = True
+    if '<' in website_url:
+        not_url = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
-    matchStrings = _getWebsiteStrings()
-    matchStrings.append(translate['Website'].lower())
+    match_strings = _get_website_strings()
+    match_strings.append(translate['Website'].lower())
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if propertyValue['name'].lower() not in matchStrings:
+        if property_value['name'].lower() not in match_strings:
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
-    if notUrl:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_url:
         return
 
-    newEntry = {
+    new_entry = {
         "name": 'Website',
         "type": "PropertyValue",
-        "value": websiteUrl
+        "value": website_url
     }
-    actorJson['attachment'].append(newEntry)
+    actor_json['attachment'].append(new_entry)

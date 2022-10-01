@@ -1,0 +1,22 @@
+{
+    "name": "Russian State Media",
+    "warning": "Russian State Media",
+    "description": "Funded by the Russian government, or promoting Russian government talking points",
+    "words": [],
+    "domains": [
+	".rt.com",
+	"redfish.media",
+	"ruptly.tv",
+	"sputniknews.com",
+	"theduran.com",
+	"peacedata.net",
+	"russia-insider.com",
+	"snanews.de",
+	"sputniknews.com",
+	"inforos.ru",
+	"usareally.com",
+	"strategic-culture.org",
+	"pravdareport.com",
+	"checkpointasia.net"
+    ]
+}

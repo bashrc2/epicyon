@@ -1,7 +1,7 @@
 __filename__ = "outbox.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -9,638 +9,717 @@ __module_group__ = "Timeline"
 
 import os
 from shutil import copyfile
-from session import createSession
-from auth import createPassword
-from posts import isImageMedia
-from posts import outboxMessageCreateWrap
-from posts import savePostToBox
-from posts import sendToFollowersThread
-from posts import sendToNamedAddresses
-from utils import getBaseContentFromPost
-from utils import hasObjectDict
-from utils import getLocalNetworkAddresses
-from utils import getFullDomain
-from utils import removeIdEnding
-from utils import getDomainFromActor
-from utils import dangerousMarkup
-from utils import isFeaturedWriter
-from utils import loadJson
-from utils import saveJson
-from utils import acctDir
-from utils import localActorUrl
-from blocking import isBlockedDomain
-from blocking import outboxBlock
-from blocking import outboxUndoBlock
-from blocking import outboxMute
-from blocking import outboxUndoMute
-from media import replaceYouTube
-from media import replaceTwitter
-from media import getMediaPath
-from media import createMediaDirs
-from inbox import inboxUpdateIndex
-from announce import outboxAnnounce
-from announce import outboxUndoAnnounce
-from follow import outboxUndoFollow
-from follow import followerApprovalActive
-from skills import outboxSkills
-from availability import outboxAvailability
-from like import outboxLike
-from like import outboxUndoLike
-from bookmarks import outboxBookmark
-from bookmarks import outboxUndoBookmark
-from delete import outboxDelete
-from shares import outboxShareUpload
-from shares import outboxUndoShareUpload
-from webapp_post import individualPostAsHtml
+from auth import create_password
+from posts import is_image_media
+from posts import outbox_message_create_wrap
+from posts import save_post_to_box
+from posts import send_to_followers_thread
+from posts import send_to_named_addresses_thread
+from utils import get_attachment_property_value
+from utils import get_account_timezone
+from utils import has_object_string_type
+from utils import get_base_content_from_post
+from utils import has_object_dict
+from utils import get_local_network_addresses
+from utils import get_full_domain
+from utils import remove_id_ending
+from utils import get_domain_from_actor
+from utils import dangerous_markup
+from utils import is_featured_writer
+from utils import load_json
+from utils import save_json
+from utils import acct_dir
+from utils import local_actor_url
+from utils import has_actor
+from blocking import is_blocked_domain
+from blocking import outbox_block
+from blocking import outbox_undo_block
+from blocking import outbox_mute
+from blocking import outbox_undo_mute
+from media import replace_you_tube
+from media import replace_twitter
+from media import get_media_path
+from media import create_media_dirs
+from inbox import store_hash_tags
+from inbox import inbox_update_index
+from announce import outbox_announce
+from announce import outbox_undo_announce
+from follow import outbox_undo_follow
+from follow import follower_approval_active
+from skills import outbox_skills
+from availability import outbox_availability
+from like import outbox_like
+from like import outbox_undo_like
+from reaction import outbox_reaction
+from reaction import outbox_undo_reaction
+from bookmarks import outbox_bookmark
+from bookmarks import outbox_undo_bookmark
+from delete import outbox_delete
+from shares import outbox_share_upload
+from shares import outbox_undo_share_upload
+from webapp_post import individual_post_as_html
+from speaker import update_speaker
 
 
-def _outboxPersonReceiveUpdate(recentPostsCache: {},
-                               baseDir: str, httpPrefix: str,
-                               nickname: str, domain: str, port: int,
-                               messageJson: {}, debug: bool) -> None:
+def _person_receive_update_outbox(base_dir: str, http_prefix: str,
+                                  nickname: str, domain: str, port: int,
+                                  message_json: {}, debug: bool) -> None:
     """ Receive an actor update from c2s
     For example, setting the PGP key from the desktop client
     """
     # these attachments are updatable via c2s
-    updatableAttachments = ('PGP', 'OpenPGP', 'Email')
+    updatable_attachments = ('PGP', 'OpenPGP', 'Email')
 
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not isinstance(messageJson['type'], str):
+    if not isinstance(message_json['type'], str):
         if debug:
             print('DEBUG: c2s actor update type is not a string')
         return
-    if messageJson['type'] != 'Update':
+    if message_json['type'] != 'Update':
         return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: c2s actor update object is not dict')
+    if not has_object_string_type(message_json, debug):
         return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: c2s actor update - no type')
-        return
-    if not isinstance(messageJson['object']['type'], str):
+    if not isinstance(message_json['object']['type'], str):
         if debug:
             print('DEBUG: c2s actor update object type is not a string')
         return
-    if messageJson['object']['type'] != 'Person':
+    if message_json['object']['type'] != 'Person':
         if debug:
             print('DEBUG: not a c2s actor update')
         return
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
             print('DEBUG: c2s actor update has no "to" field')
         return
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: c2s actor update has no actor field')
+    if not has_actor(message_json, debug):
         return
-    if not messageJson.get('id'):
+    if not message_json.get('id'):
         if debug:
             print('DEBUG: c2s actor update has no id field')
         return
-    if not isinstance(messageJson['id'], str):
+    if not isinstance(message_json['id'], str):
         if debug:
             print('DEBUG: c2s actor update id is not a string')
         return
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
-    if len(messageJson['to']) != 1:
+    domain_full = get_full_domain(domain, port)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
+    if len(message_json['to']) != 1:
         if debug:
             print('DEBUG: c2s actor update - to does not contain one actor ' +
-                  str(messageJson['to']))
+                  str(message_json['to']))
         return
-    if messageJson['to'][0] != actor:
+    if message_json['to'][0] != actor:
         if debug:
             print('DEBUG: c2s actor update - to does not contain actor ' +
-                  str(messageJson['to']) + ' ' + actor)
+                  str(message_json['to']) + ' ' + actor)
         return
-    if not messageJson['id'].startswith(actor + '#updates/'):
+    if not message_json['id'].startswith(actor + '#updates/'):
         if debug:
             print('DEBUG: c2s actor update - unexpected id ' +
-                  messageJson['id'])
+                  message_json['id'])
         return
-    updatedActorJson = messageJson['object']
+    updated_actor_json = message_json['object']
     # load actor from file
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
-    if not os.path.isfile(actorFilename):
-        print('actorFilename not found: ' + actorFilename)
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
+        print('actor_filename not found: ' + actor_filename)
         return
-    actorJson = loadJson(actorFilename)
-    if not actorJson:
+    actor_json = load_json(actor_filename)
+    if not actor_json:
         return
-    actorChanged = False
+    actor_changed = False
     # update fields within actor
-    if 'attachment' in updatedActorJson:
-        for newPropertyValue in updatedActorJson['attachment']:
-            if not newPropertyValue.get('name'):
+    if 'attachment' in updated_actor_json:
+        for new_property_value in updated_actor_json['attachment']:
+            name_value = None
+            if new_property_value.get('name'):
+                name_value = new_property_value['name']
+            elif new_property_value.get('schema:name'):
+                name_value = new_property_value['schema:name']
+            if not name_value:
                 continue
-            if newPropertyValue['name'] not in updatableAttachments:
+            if name_value not in updatable_attachments:
                 continue
-            if not newPropertyValue.get('type'):
+            if not new_property_value.get('type'):
                 continue
-            if not newPropertyValue.get('value'):
+            prop_value_name, _ = \
+                get_attachment_property_value(new_property_value)
+            if not prop_value_name:
                 continue
-            if newPropertyValue['type'] != 'PropertyValue':
+            if not new_property_value['type'].endswith('PropertyValue'):
                 continue
-            if 'attachment' not in actorJson:
+            if 'attachment' not in actor_json:
                 continue
             found = False
-            for attachIdx in range(len(actorJson['attachment'])):
-                if actorJson['attachment'][attachIdx]['type'] != \
-                   'PropertyValue':
+            for attach_idx, _ in enumerate(actor_json['attachment']):
+                attach_type = actor_json['attachment'][attach_idx]['type']
+                if not attach_type.endswith('PropertyValue'):
                     continue
-                if actorJson['attachment'][attachIdx]['name'] != \
-                   newPropertyValue['name']:
+                attach_name = ''
+                if actor_json['attachment'][attach_idx].get('name'):
+                    attach_name = \
+                        actor_json['attachment'][attach_idx]['name']
+                elif actor_json['attachment'][attach_idx].get('schema:name'):
+                    attach_name = \
+                        actor_json['attachment'][attach_idx]['schema:name']
+                if attach_name != name_value:
                     continue
-                else:
-                    if actorJson['attachment'][attachIdx]['value'] != \
-                       newPropertyValue['value']:
-                        actorJson['attachment'][attachIdx]['value'] = \
-                            newPropertyValue['value']
-                        actorChanged = True
-                    found = True
-                    break
+                if actor_json['attachment'][attach_idx][prop_value_name] != \
+                   new_property_value[prop_value_name]:
+                    actor_json['attachment'][attach_idx][prop_value_name] = \
+                        new_property_value[prop_value_name]
+                    actor_changed = True
+                found = True
+                break
             if not found:
-                actorJson['attachment'].append({
-                    "name": newPropertyValue['name'],
+                actor_json['attachment'].append({
+                    "name": name_value,
                     "type": "PropertyValue",
-                    "value": newPropertyValue['value']
+                    "value": new_property_value[prop_value_name]
                 })
-                actorChanged = True
+                actor_changed = True
     # save actor to file
-    if actorChanged:
-        saveJson(actorJson, actorFilename)
+    if actor_changed:
+        save_json(actor_json, actor_filename)
         if debug:
-            print('actor saved: ' + actorFilename)
+            print('actor saved: ' + actor_filename)
     if debug:
-        print('New attachment: ' + str(actorJson['attachment']))
-    messageJson['object'] = actorJson
+        print('New attachment: ' + str(actor_json['attachment']))
+    message_json['object'] = actor_json
     if debug:
         print('DEBUG: actor update via c2s - ' + nickname + '@' + domain)
 
 
-def postMessageToOutbox(session, translate: {},
-                        messageJson: {}, postToNickname: str,
-                        server, baseDir: str, httpPrefix: str,
-                        domain: str, domainFull: str,
-                        onionDomain: str, i2pDomain: str, port: int,
-                        recentPostsCache: {}, followersThreads: [],
-                        federationList: [], sendThreads: [],
-                        postLog: [], cachedWebfingers: {},
-                        personCache: {}, allowDeletion: bool,
-                        proxyType: str, version: str, debug: bool,
-                        YTReplacementDomain: str,
-                        twitterReplacementDomain: str,
-                        showPublishedDateOnly: bool,
-                        allowLocalNetworkAccess: bool,
-                        city: str, systemLanguage: str,
-                        sharedItemsFederatedDomains: [],
-                        sharedItemFederationTokens: {},
-                        lowBandwidth: bool,
-                        signingPrivateKeyPem: str,
-                        peertubeInstances: str, theme: str,
-                        maxLikeCount: int,
-                        maxRecentPosts: int) -> bool:
+def _capitalize_hashtag(content: str, message_json: {},
+                        system_language: str, translate: {},
+                        original_tag: str,
+                        capitalized_tag: str) -> None:
+    """If a nowplaying hashtag exists then ensure it is capitalized
+    """
+    if translate.get(original_tag) and \
+       translate.get(capitalized_tag):
+        original_tag = translate[original_tag].replace(' ', '_')
+        capitalized_tag = translate[capitalized_tag].replace(' ', '_')
+
+    if '#' + original_tag not in content:
+        return
+    content = content.replace('#' + original_tag, '#' + capitalized_tag)
+    if message_json['object'].get('contentMap'):
+        if message_json['object']['contentMap'].get(system_language):
+            message_json['object']['contentMap'][system_language] = content
+    message_json['object']['contentMap'][system_language] = content
+
+
+def post_message_to_outbox(session, translate: {},
+                           message_json: {}, post_to_nickname: str,
+                           server, base_dir: str, http_prefix: str,
+                           domain: str, domain_full: str,
+                           onion_domain: str, i2p_domain: str, port: int,
+                           recent_posts_cache: {}, followers_threads: [],
+                           federation_list: [], send_threads: [],
+                           post_log: [], cached_webfingers: {},
+                           person_cache: {}, allow_deletion: bool,
+                           proxy_type: str, version: str, debug: bool,
+                           yt_replace_domain: str,
+                           twitter_replacement_domain: str,
+                           show_published_date_only: bool,
+                           allow_local_network_access: bool,
+                           city: str, system_language: str,
+                           shared_items_federated_domains: [],
+                           shared_item_federation_tokens: {},
+                           low_bandwidth: bool,
+                           signing_priv_key_pem: str,
+                           peertube_instances: str, theme: str,
+                           max_like_count: int,
+                           max_recent_posts: int, cw_lists: {},
+                           lists_enabled: str,
+                           content_license_url: str,
+                           dogwhistles: {}) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: POST to outbox has no "type" parameter')
         return False
-    if not messageJson.get('object') and messageJson.get('content'):
-        if messageJson['type'] != 'Create':
+    if not message_json.get('object') and message_json.get('content'):
+        if message_json['type'] != 'Create':
             # https://www.w3.org/TR/activitypub/#object-without-create
             if debug:
                 print('DEBUG: POST to outbox - adding Create wrapper')
-            messageJson = \
-                outboxMessageCreateWrap(httpPrefix,
-                                        postToNickname,
-                                        domain, port,
-                                        messageJson)
+            message_json = \
+                outbox_message_create_wrap(http_prefix,
+                                           post_to_nickname,
+                                           domain, port,
+                                           message_json)
+
+    bold_reading = False
+    if server.bold_reading.get(post_to_nickname):
+        bold_reading = True
 
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
-    if hasObjectDict(messageJson):
-        contentStr = getBaseContentFromPost(messageJson, systemLanguage)
-        if contentStr:
-            if dangerousMarkup(contentStr, allowLocalNetworkAccess):
+    if has_object_dict(message_json):
+        content_str = get_base_content_from_post(message_json, system_language)
+        if content_str:
+            _capitalize_hashtag(content_str, message_json,
+                                system_language, translate,
+                                'nowplaying', 'NowPlaying')
+
+            if dangerous_markup(content_str, allow_local_network_access):
                 print('POST to outbox contains dangerous markup: ' +
-                      str(messageJson))
+                      str(message_json))
                 return False
 
-    if messageJson['type'] == 'Create':
-        if not (messageJson.get('id') and
-                messageJson.get('type') and
-                messageJson.get('actor') and
-                messageJson.get('object') and
-                messageJson.get('to')):
-            if not messageJson.get('id'):
+    if message_json['type'] == 'Create':
+        if not (message_json.get('id') and
+                message_json.get('type') and
+                message_json.get('actor') and
+                message_json.get('object') and
+                message_json.get('to')):
+            if not message_json.get('id'):
                 if debug:
                     print('DEBUG: POST to outbox - ' +
                           'Create does not have the id parameter ' +
-                          str(messageJson))
-            elif not messageJson.get('id'):
+                          str(message_json))
+            elif not message_json.get('id'):
                 if debug:
                     print('DEBUG: POST to outbox - ' +
                           'Create does not have the type parameter ' +
-                          str(messageJson))
-            elif not messageJson.get('id'):
+                          str(message_json))
+            elif not message_json.get('id'):
                 if debug:
                     print('DEBUG: POST to outbox - ' +
                           'Create does not have the actor parameter ' +
-                          str(messageJson))
-            elif not messageJson.get('id'):
+                          str(message_json))
+            elif not message_json.get('id'):
                 if debug:
                     print('DEBUG: POST to outbox - ' +
                           'Create does not have the object parameter ' +
-                          str(messageJson))
+                          str(message_json))
             else:
                 if debug:
                     print('DEBUG: POST to outbox - ' +
                           'Create does not have the "to" parameter ' +
-                          str(messageJson))
+                          str(message_json))
             return False
 
         # actor should be a string
-        if not isinstance(messageJson['actor'], str):
+        if not isinstance(message_json['actor'], str):
             return False
 
         # actor should look like a url
-        if '://' not in messageJson['actor'] or \
-           '.' not in messageJson['actor']:
+        if '://' not in message_json['actor'] or \
+           '.' not in message_json['actor']:
             return False
 
         # sent by an actor on a local network address?
-        if not allowLocalNetworkAccess:
-            localNetworkPatternList = getLocalNetworkAddresses()
-            for localNetworkPattern in localNetworkPatternList:
-                if localNetworkPattern in messageJson['actor']:
+        if not allow_local_network_access:
+            local_network_pattern_list = get_local_network_addresses()
+            for local_network_pattern in local_network_pattern_list:
+                if local_network_pattern in message_json['actor']:
                     return False
 
-        testDomain, testPort = getDomainFromActor(messageJson['actor'])
-        testDomain = getFullDomain(testDomain, testPort)
-        if isBlockedDomain(baseDir, testDomain):
+        test_domain, test_port = get_domain_from_actor(message_json['actor'])
+        test_domain = get_full_domain(test_domain, test_port)
+        if is_blocked_domain(base_dir, test_domain):
             if debug:
-                print('DEBUG: domain is blocked: ' + messageJson['actor'])
+                print('DEBUG: domain is blocked: ' + message_json['actor'])
             return False
         # replace youtube, so that google gets less tracking data
-        replaceYouTube(messageJson, YTReplacementDomain, systemLanguage)
+        replace_you_tube(message_json, yt_replace_domain, system_language)
         # replace twitter, so that twitter posts can be shown without
         # having a twitter account
-        replaceTwitter(messageJson, twitterReplacementDomain, systemLanguage)
+        replace_twitter(message_json, twitter_replacement_domain,
+                        system_language)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
-        messageJson['object']['attributedTo'] = messageJson['actor']
-        if messageJson['object'].get('attachment'):
-            attachmentIndex = 0
-            attach = messageJson['object']['attachment'][attachmentIndex]
+        message_json['object']['attributedTo'] = message_json['actor']
+        if message_json['object'].get('attachment'):
+            attachment_index = 0
+            attach = message_json['object']['attachment'][attachment_index]
             if attach.get('mediaType'):
-                fileExtension = 'png'
-                mediaTypeStr = \
+                file_extension = 'png'
+                media_type_str = \
                     attach['mediaType']
 
                 extensions = {
                     "jpeg": "jpg",
+                    "jxl": "jxl",
                     "gif": "gif",
                     "svg": "svg",
                     "webp": "webp",
                     "avif": "avif",
                     "audio/mpeg": "mp3",
                     "ogg": "ogg",
+                    "flac": "flac",
+                    "opus": "opus",
                     "mp4": "mp4",
                     "webm": "webm",
                     "ogv": "ogv"
                 }
-                for matchExt, ext in extensions.items():
-                    if mediaTypeStr.endswith(matchExt):
-                        fileExtension = ext
+                for match_ext, ext in extensions.items():
+                    if media_type_str.endswith(match_ext):
+                        file_extension = ext
                         break
 
-                mediaDir = \
-                    baseDir + '/accounts/' + \
-                    postToNickname + '@' + domain
-                uploadMediaFilename = mediaDir + '/upload.' + fileExtension
-                if not os.path.isfile(uploadMediaFilename):
-                    del messageJson['object']['attachment']
+                media_dir = \
+                    base_dir + '/accounts/' + \
+                    post_to_nickname + '@' + domain
+                upload_media_filename = media_dir + '/upload.' + file_extension
+                if not os.path.isfile(upload_media_filename):
+                    del message_json['object']['attachment']
                 else:
                     # generate a path for the uploaded image
-                    mPath = getMediaPath()
-                    mediaPath = mPath + '/' + \
-                        createPassword(16).lower() + '.' + fileExtension
-                    createMediaDirs(baseDir, mPath)
-                    mediaFilename = baseDir + '/' + mediaPath
+                    mpath = get_media_path()
+                    media_path = mpath + '/' + \
+                        create_password(16).lower() + '.' + file_extension
+                    create_media_dirs(base_dir, mpath)
+                    media_filename = base_dir + '/' + media_path
                     # move the uploaded image to its new path
-                    os.rename(uploadMediaFilename, mediaFilename)
+                    os.rename(upload_media_filename, media_filename)
                     # change the url of the attachment
                     attach['url'] = \
-                        httpPrefix + '://' + domainFull + '/' + mediaPath
+                        http_prefix + '://' + domain_full + '/' + media_path
+                    attach['url'] = \
+                        attach['url'].replace('/media/',
+                                              '/system/' +
+                                              'media_attachments/files/')
 
-    permittedOutboxTypes = ('Create', 'Announce', 'Like', 'Follow', 'Undo',
-                            'Update', 'Add', 'Remove', 'Block', 'Delete',
-                            'Skill', 'Ignore')
-    if messageJson['type'] not in permittedOutboxTypes:
+    permitted_outbox_types = (
+        'Create', 'Announce', 'Like', 'EmojiReact', 'Follow', 'Undo',
+        'Update', 'Add', 'Remove', 'Block', 'Delete', 'Skill', 'Ignore'
+    )
+    if message_json['type'] not in permitted_outbox_types:
         if debug:
-            print('DEBUG: POST to outbox - ' + messageJson['type'] +
+            print('DEBUG: POST to outbox - ' + message_json['type'] +
                   ' is not a permitted activity type')
         return False
-    if messageJson.get('id'):
-        postId = removeIdEnding(messageJson['id'])
+    if message_json.get('id'):
+        post_id = remove_id_ending(message_json['id'])
         if debug:
             print('DEBUG: id attribute exists within POST to outbox')
     else:
         if debug:
             print('DEBUG: No id attribute within POST to outbox')
-        postId = None
+        post_id = None
     if debug:
-        print('DEBUG: savePostToBox')
-    if messageJson['type'] != 'Upgrade':
-        outboxName = 'outbox'
+        print('DEBUG: save_post_to_box')
+    if message_json['type'] != 'Upgrade':
+        outbox_name = 'outbox'
+
+        store_hash_tags(base_dir, post_to_nickname, domain,
+                        http_prefix, domain_full,
+                        message_json, translate)
 
         # if this is a blog post or an event then save to its own box
-        if messageJson['type'] == 'Create':
-            if hasObjectDict(messageJson):
-                if messageJson['object'].get('type'):
-                    if messageJson['object']['type'] == 'Article':
-                        outboxName = 'tlblogs'
+        if message_json['type'] == 'Create':
+            if has_object_dict(message_json):
+                if message_json['object'].get('type'):
+                    if message_json['object']['type'] == 'Article':
+                        outbox_name = 'tlblogs'
 
-        savedFilename = \
-            savePostToBox(baseDir,
-                          httpPrefix,
-                          postId,
-                          postToNickname, domainFull,
-                          messageJson, outboxName)
-        if not savedFilename:
-            print('WARN: post not saved to outbox ' + outboxName)
+        saved_filename = \
+            save_post_to_box(base_dir,
+                             http_prefix,
+                             post_id,
+                             post_to_nickname, domain_full,
+                             message_json, outbox_name)
+        if not saved_filename:
+            print('WARN: post not saved to outbox ' + outbox_name)
             return False
 
+        update_speaker(base_dir, http_prefix,
+                       post_to_nickname, domain, domain_full,
+                       message_json, person_cache,
+                       translate, message_json['actor'],
+                       theme, system_language,
+                       outbox_name)
+
         # save all instance blogs to the news actor
-        if postToNickname != 'news' and outboxName == 'tlblogs':
-            if '/' in savedFilename:
-                if isFeaturedWriter(baseDir, postToNickname, domain):
-                    savedPostId = savedFilename.split('/')[-1]
-                    blogsDir = \
-                        baseDir + '/accounts/news@' + domain + '/tlblogs'
-                    if not os.path.isdir(blogsDir):
-                        os.mkdir(blogsDir)
-                    copyfile(savedFilename, blogsDir + '/' + savedPostId)
-                    inboxUpdateIndex('tlblogs', baseDir,
-                                     'news@' + domain,
-                                     savedFilename, debug)
+        if post_to_nickname != 'news' and outbox_name == 'tlblogs':
+            if '/' in saved_filename:
+                if is_featured_writer(base_dir, post_to_nickname, domain):
+                    saved_post_id = saved_filename.split('/')[-1]
+                    blogs_dir = \
+                        base_dir + '/accounts/news@' + domain + '/tlblogs'
+                    if not os.path.isdir(blogs_dir):
+                        os.mkdir(blogs_dir)
+                    copyfile(saved_filename, blogs_dir + '/' + saved_post_id)
+                    inbox_update_index('tlblogs', base_dir,
+                                       'news@' + domain,
+                                       saved_filename, debug)
 
                 # clear the citations file if it exists
-                citationsFilename = \
-                    baseDir + '/accounts/' + \
-                    postToNickname + '@' + domain + '/.citations.txt'
-                if os.path.isfile(citationsFilename):
+                citations_filename = \
+                    base_dir + '/accounts/' + \
+                    post_to_nickname + '@' + domain + '/.citations.txt'
+                if os.path.isfile(citations_filename):
                     try:
-                        os.remove(citationsFilename)
-                    except BaseException:
-                        pass
+                        os.remove(citations_filename)
+                    except OSError:
+                        print('EX: post_message_to_outbox unable to delete ' +
+                              citations_filename)
 
         # The following activity types get added to the index files
-        indexedActivities = (
+        indexed_activities = (
             'Create', 'Question', 'Note', 'EncryptedMessage', 'Article',
-            'Patch', 'Announce'
+            'Patch', 'Announce', 'ChatMessage'
         )
-        if messageJson['type'] in indexedActivities:
-            indexes = [outboxName, "inbox"]
-            selfActor = \
-                localActorUrl(httpPrefix, postToNickname, domainFull)
-            for boxNameIndex in indexes:
-                if not boxNameIndex:
+        if message_json['type'] in indexed_activities:
+            indexes = [outbox_name, "inbox"]
+            self_actor = \
+                local_actor_url(http_prefix, post_to_nickname, domain_full)
+            for box_name_index in indexes:
+                if not box_name_index:
                     continue
 
                 # should this also go to the media timeline?
-                if boxNameIndex == 'inbox':
-                    if isImageMedia(session, baseDir, httpPrefix,
-                                    postToNickname, domain,
-                                    messageJson,
-                                    translate,
-                                    YTReplacementDomain,
-                                    twitterReplacementDomain,
-                                    allowLocalNetworkAccess,
-                                    recentPostsCache, debug, systemLanguage,
-                                    domainFull, personCache,
-                                    signingPrivateKeyPem):
-                        inboxUpdateIndex('tlmedia', baseDir,
-                                         postToNickname + '@' + domain,
-                                         savedFilename, debug)
+                if box_name_index == 'inbox':
+                    if is_image_media(session, base_dir, http_prefix,
+                                      post_to_nickname, domain,
+                                      message_json,
+                                      yt_replace_domain,
+                                      twitter_replacement_domain,
+                                      allow_local_network_access,
+                                      recent_posts_cache, debug,
+                                      system_language,
+                                      domain_full, person_cache,
+                                      signing_priv_key_pem,
+                                      bold_reading):
+                        inbox_update_index('tlmedia', base_dir,
+                                           post_to_nickname + '@' + domain,
+                                           saved_filename, debug)
 
-                if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
+                if box_name_index == 'inbox' and outbox_name == 'tlblogs':
                     continue
 
                 # avoid duplicates of the message if already going
                 # back to the inbox of the same account
-                if selfActor not in messageJson['to']:
+                if self_actor not in message_json['to']:
                     # show sent post within the inbox,
                     # as is the typical convention
-                    inboxUpdateIndex(boxNameIndex, baseDir,
-                                     postToNickname + '@' + domain,
-                                     savedFilename, debug)
+                    inbox_update_index(box_name_index, base_dir,
+                                       post_to_nickname + '@' + domain,
+                                       saved_filename, debug)
 
                     # regenerate the html
-                    useCacheOnly = False
-                    pageNumber = 1
-                    showIndividualPostIcons = True
-                    manuallyApproveFollowers = \
-                        followerApprovalActive(baseDir, postToNickname, domain)
-                    individualPostAsHtml(signingPrivateKeyPem,
-                                         False, recentPostsCache,
-                                         maxRecentPosts,
-                                         translate, pageNumber,
-                                         baseDir, session,
-                                         cachedWebfingers,
-                                         personCache,
-                                         postToNickname, domain, port,
-                                         messageJson, None, True,
-                                         allowDeletion,
-                                         httpPrefix, __version__,
-                                         boxNameIndex,
-                                         YTReplacementDomain,
-                                         twitterReplacementDomain,
-                                         showPublishedDateOnly,
-                                         peertubeInstances,
-                                         allowLocalNetworkAccess,
-                                         theme, systemLanguage,
-                                         maxLikeCount,
-                                         boxNameIndex != 'dm',
-                                         showIndividualPostIcons,
-                                         manuallyApproveFollowers,
-                                         False, True, useCacheOnly)
+                    use_cache_only = False
+                    page_number = 1
+                    show_individual_post_icons = True
+                    manually_approve_followers = \
+                        follower_approval_active(base_dir,
+                                                 post_to_nickname, domain)
+                    timezone = \
+                        get_account_timezone(base_dir,
+                                             post_to_nickname, domain)
+                    mitm = False
+                    if os.path.isfile(saved_filename.replace('.json', '') +
+                                      '.mitm'):
+                        mitm = True
+                    individual_post_as_html(signing_priv_key_pem,
+                                            False, recent_posts_cache,
+                                            max_recent_posts,
+                                            translate, page_number,
+                                            base_dir, session,
+                                            cached_webfingers,
+                                            person_cache,
+                                            post_to_nickname, domain, port,
+                                            message_json, None, True,
+                                            allow_deletion,
+                                            http_prefix, __version__,
+                                            box_name_index,
+                                            yt_replace_domain,
+                                            twitter_replacement_domain,
+                                            show_published_date_only,
+                                            peertube_instances,
+                                            allow_local_network_access,
+                                            theme, system_language,
+                                            max_like_count,
+                                            box_name_index != 'dm',
+                                            show_individual_post_icons,
+                                            manually_approve_followers,
+                                            False, True, use_cache_only,
+                                            cw_lists, lists_enabled,
+                                            timezone, mitm,
+                                            bold_reading, dogwhistles)
 
-    if outboxAnnounce(recentPostsCache,
-                      baseDir, messageJson, debug):
+    if outbox_announce(recent_posts_cache,
+                       base_dir, message_json, debug):
         if debug:
             print('DEBUG: Updated announcements (shares) collection ' +
                   'for the post associated with the Announce activity')
-    if not server.session:
-        print('DEBUG: creating new session for c2s')
-        server.session = createSession(proxyType)
-        if not server.session:
-            print('ERROR: Failed to create session for postMessageToOutbox')
-            return False
     if debug:
         print('DEBUG: sending c2s post to followers')
     # remove inactive threads
-    inactiveFollowerThreads = []
-    for th in followersThreads:
-        if not th.is_alive():
-            inactiveFollowerThreads.append(th)
-    for th in inactiveFollowerThreads:
-        followersThreads.remove(th)
+    inactive_follower_threads = []
+    for thr in followers_threads:
+        if not thr.is_alive():
+            inactive_follower_threads.append(thr)
+    for thr in inactive_follower_threads:
+        followers_threads.remove(thr)
     if debug:
-        print('DEBUG: ' + str(len(followersThreads)) +
+        print('DEBUG: ' + str(len(followers_threads)) +
               ' followers threads active')
     # retain up to 200 threads
-    if len(followersThreads) > 200:
+    if len(followers_threads) > 200:
         # kill the thread if it is still alive
-        if followersThreads[0].is_alive():
-            followersThreads[0].kill()
+        if followers_threads[0].is_alive():
+            followers_threads[0].kill()
         # remove it from the list
-        followersThreads.pop(0)
+        followers_threads.pop(0)
     # create a thread to send the post to followers
-    followersThread = \
-        sendToFollowersThread(server.session,
-                              baseDir,
-                              postToNickname,
-                              domain, onionDomain, i2pDomain,
-                              port, httpPrefix,
-                              federationList,
-                              sendThreads,
-                              postLog,
-                              cachedWebfingers,
-                              personCache,
-                              messageJson, debug,
-                              version,
-                              sharedItemsFederatedDomains,
-                              sharedItemFederationTokens,
-                              signingPrivateKeyPem)
-    followersThreads.append(followersThread)
+    followers_thread = \
+        send_to_followers_thread(server, server.session,
+                                 server.session_onion,
+                                 server.session_i2p,
+                                 base_dir,
+                                 post_to_nickname,
+                                 domain, onion_domain, i2p_domain,
+                                 port, http_prefix,
+                                 federation_list,
+                                 send_threads,
+                                 post_log,
+                                 cached_webfingers,
+                                 person_cache,
+                                 message_json, debug,
+                                 version,
+                                 shared_items_federated_domains,
+                                 shared_item_federation_tokens,
+                                 signing_priv_key_pem)
+    followers_threads.append(followers_thread)
 
     if debug:
         print('DEBUG: handle any unfollow requests')
-    outboxUndoFollow(baseDir, messageJson, debug)
+    outbox_undo_follow(base_dir, message_json, debug)
 
     if debug:
         print('DEBUG: handle skills changes requests')
-    outboxSkills(baseDir, postToNickname, messageJson, debug)
+    outbox_skills(base_dir, post_to_nickname, message_json, debug)
 
     if debug:
         print('DEBUG: handle availability changes requests')
-    outboxAvailability(baseDir, postToNickname, messageJson, debug)
+    outbox_availability(base_dir, post_to_nickname, message_json, debug)
 
     if debug:
         print('DEBUG: handle any like requests')
-    outboxLike(recentPostsCache,
-               baseDir, httpPrefix,
-               postToNickname, domain, port,
-               messageJson, debug)
+    outbox_like(recent_posts_cache,
+                base_dir, post_to_nickname, domain,
+                message_json, debug)
     if debug:
         print('DEBUG: handle any undo like requests')
-    outboxUndoLike(recentPostsCache,
-                   baseDir, httpPrefix,
-                   postToNickname, domain, port,
-                   messageJson, debug)
+    outbox_undo_like(recent_posts_cache,
+                     base_dir, post_to_nickname, domain,
+                     message_json, debug)
+
+    if debug:
+        print('DEBUG: handle any emoji reaction requests')
+    outbox_reaction(recent_posts_cache,
+                    base_dir, post_to_nickname, domain,
+                    message_json, debug)
+    if debug:
+        print('DEBUG: handle any undo emoji reaction requests')
+    outbox_undo_reaction(recent_posts_cache,
+                         base_dir, post_to_nickname, domain,
+                         message_json, debug)
+
     if debug:
         print('DEBUG: handle any undo announce requests')
-    outboxUndoAnnounce(recentPostsCache,
-                       baseDir, httpPrefix,
-                       postToNickname, domain, port,
-                       messageJson, debug)
+    outbox_undo_announce(recent_posts_cache,
+                         base_dir, post_to_nickname, domain,
+                         message_json, debug)
 
     if debug:
         print('DEBUG: handle any bookmark requests')
-    outboxBookmark(recentPostsCache,
-                   baseDir, httpPrefix,
-                   postToNickname, domain, port,
-                   messageJson, debug)
+    outbox_bookmark(recent_posts_cache,
+                    base_dir, http_prefix,
+                    post_to_nickname, domain, port,
+                    message_json, debug)
     if debug:
         print('DEBUG: handle any undo bookmark requests')
-    outboxUndoBookmark(recentPostsCache,
-                       baseDir, httpPrefix,
-                       postToNickname, domain, port,
-                       messageJson, debug)
+    outbox_undo_bookmark(recent_posts_cache,
+                         base_dir, http_prefix,
+                         post_to_nickname, domain, port,
+                         message_json, debug)
 
     if debug:
         print('DEBUG: handle delete requests')
-    outboxDelete(baseDir, httpPrefix,
-                 postToNickname, domain,
-                 messageJson, debug,
-                 allowDeletion,
-                 recentPostsCache)
+    outbox_delete(base_dir, http_prefix,
+                  post_to_nickname, domain,
+                  message_json, debug,
+                  allow_deletion,
+                  recent_posts_cache)
 
     if debug:
         print('DEBUG: handle block requests')
-    outboxBlock(baseDir, httpPrefix,
-                postToNickname, domain,
-                port,
-                messageJson, debug)
+    outbox_block(base_dir, post_to_nickname, domain,
+                 message_json, debug)
 
     if debug:
         print('DEBUG: handle undo block requests')
-    outboxUndoBlock(baseDir, httpPrefix,
-                    postToNickname, domain,
-                    port, messageJson, debug)
+    outbox_undo_block(base_dir, post_to_nickname, domain, message_json, debug)
 
     if debug:
         print('DEBUG: handle mute requests')
-    outboxMute(baseDir, httpPrefix,
-               postToNickname, domain,
-               port,
-               messageJson, debug,
-               recentPostsCache)
+    outbox_mute(base_dir, http_prefix,
+                post_to_nickname, domain,
+                port,
+                message_json, debug,
+                recent_posts_cache)
 
     if debug:
         print('DEBUG: handle undo mute requests')
-    outboxUndoMute(baseDir, httpPrefix,
-                   postToNickname, domain,
-                   port,
-                   messageJson, debug,
-                   recentPostsCache)
+    outbox_undo_mute(base_dir, http_prefix,
+                     post_to_nickname, domain,
+                     port,
+                     message_json, debug,
+                     recent_posts_cache)
 
     if debug:
         print('DEBUG: handle share uploads')
-    outboxShareUpload(baseDir, httpPrefix, postToNickname, domain,
-                      port, messageJson, debug, city,
-                      systemLanguage, translate, lowBandwidth)
+    outbox_share_upload(base_dir, http_prefix, post_to_nickname, domain,
+                        port, message_json, debug, city,
+                        system_language, translate, low_bandwidth,
+                        content_license_url)
 
     if debug:
         print('DEBUG: handle undo share uploads')
-    outboxUndoShareUpload(baseDir, httpPrefix,
-                          postToNickname, domain,
-                          port, messageJson, debug)
+    outbox_undo_share_upload(base_dir, post_to_nickname, domain,
+                             message_json, debug)
 
     if debug:
         print('DEBUG: handle actor updates from c2s')
-    _outboxPersonReceiveUpdate(recentPostsCache,
-                               baseDir, httpPrefix,
-                               postToNickname, domain, port,
-                               messageJson, debug)
+    _person_receive_update_outbox(base_dir, http_prefix,
+                                  post_to_nickname, domain, port,
+                                  message_json, debug)
 
     if debug:
         print('DEBUG: sending c2s post to named addresses')
-        if messageJson.get('to'):
+        if message_json.get('to'):
             print('c2s sender: ' +
-                  postToNickname + '@' + domain + ':' + str(port) +
-                  ' recipient: ' + str(messageJson['to']))
+                  post_to_nickname + '@' + domain + ':' + str(port) +
+                  ' recipient: ' + str(message_json['to']))
         else:
             print('c2s sender: ' +
-                  postToNickname + '@' + domain + ':' + str(port))
-    sendToNamedAddresses(server.session, baseDir,
-                         postToNickname,
-                         domain, onionDomain, i2pDomain, port,
-                         httpPrefix,
-                         federationList,
-                         sendThreads,
-                         postLog,
-                         cachedWebfingers,
-                         personCache,
-                         messageJson, debug,
-                         version,
-                         sharedItemsFederatedDomains,
-                         sharedItemFederationTokens,
-                         signingPrivateKeyPem)
+                  post_to_nickname + '@' + domain + ':' + str(port))
+    named_addresses_thread = \
+        send_to_named_addresses_thread(server, server.session,
+                                       server.session_onion,
+                                       server.session_i2p,
+                                       base_dir, post_to_nickname,
+                                       domain, onion_domain, i2p_domain, port,
+                                       http_prefix,
+                                       federation_list,
+                                       send_threads,
+                                       post_log,
+                                       cached_webfingers,
+                                       person_cache,
+                                       message_json, debug,
+                                       version,
+                                       shared_items_federated_domains,
+                                       shared_item_federation_tokens,
+                                       signing_priv_key_pem,
+                                       proxy_type)
+    followers_threads.append(named_addresses_thread)
     return True

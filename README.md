@@ -4,13 +4,33 @@ Add issues on https://gitlab.com/bashrc2/epicyon/-/issues
 
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
-<img src="https://libreserver.org/epicyon/img/screenshot_starlight.jpg" width="80%"/>
+<img src="https://libreserver.org/epicyon/img/screenshot_rc3.jpg" width="80%"/>
 
 <img src="https://libreserver.org/epicyon/img/mobile.jpg" width="30%"/>
 
-Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and suitable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions, news feed and perimeter defense against adversaries. It contains *no JavaScript* and uses HTML+CSS with a Python backend.
+Epicyon is a [fediverse](https://en.wikipedia.org/wiki/Fediverse) server suitable for self-hosting a small number of accounts on low power systems.
 
-[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md)
+Key features:
+
+ * Open standards: HTML, CSS, ActivityPub, RSS, CalDAV.
+ * Supports common web browsers and [shell browsers](https://lynx.invisible-island.net).
+ * Will not drain your mobile or laptop battery.
+ * Customisable themes. It doesn't have to look bland.
+ * Emoji reactions.
+ * Geospatial hashtags.
+ * Does not require much RAM, either on server or client.
+ * Suitable for installation on single board computers.
+ * No timeline algorithms.
+ * No javascript.
+ * No database. Data stored as ordinary files.
+ * No fashionable web frameworks. *"Boring by design"*.
+ * No blockchain garbage.
+ * Written in Python, with few dependencies.
+ * AGPL license, which big tech hates.
+
+Epicyon is for people who are tired of *big anything* and just want to DIY their online social experience without much fuss or expense. Think *water cooler discussions* rather than *shouting into the void*, in which you're mainly just reading and responding to the posts of people that you're following.
+
+[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md) - [Principles of Unity](principlesofunity.md) - [C2S Desktop Client](README_desktop_client.md) - [Coding Style](README_coding_style.md)
 
 Matrix room: **#epicyon:matrix.libreserver.org**
 
@@ -29,8 +49,8 @@ On Arch/Parabola:
 ``` bash
 sudo pacman -S tor python-pip python-pysocks python-cryptography \
                imagemagick python-requests \
-	       perl-image-exiftool python-dateutil \
-	       certbot flake8 bandit
+               perl-image-exiftool python-dateutil \
+               certbot flake8 bandit
 sudo pip3 install pyqrcode pypng
 ```
 
@@ -54,6 +74,13 @@ sudo apt install -y \
 In the most common case you'll be using systemd to set up a daemon to run the server.
 
 The following instructions install Epicyon to the **/opt** directory. It's not essential that it be installed there, and it could be in any other preferred directory.
+
+Clone the repo, or if you downloaded the tarball then extract it into the **/opt** directory.
+
+``` bash
+cd /opt
+git clone https://gitlab.com/bashrc2/epicyon
+```
 
 Add a dedicated user so that we don't have to run as root.
 
@@ -82,11 +109,32 @@ Type=simple
 User=epicyon
 Group=epicyon
 WorkingDirectory=/opt/epicyon
-ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --logLoginFailures
+ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --log_login_failures
 Environment=USER=epicyon
 Environment=PYTHONUNBUFFERED=true
 Restart=always
 StandardError=syslog
+CPUQuota=80%
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectKernelLogs=true
+ProtectHostname=true
+ProtectClock=true
+ProtectProc=invisible
+ProcSubset=pid
+PrivateTmp=true
+PrivateUsers=true
+PrivateDevices=true
+PrivateIPC=true
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+SystemCallArchitectures=native
 
 [Install]
 WantedBy=multi-user.target
@@ -134,6 +182,16 @@ server {
     listen 443 ssl;
     server_name YOUR_DOMAIN;
 
+    gzip on;
+    gzip_disable "msie6";
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_min_length 1024;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/ld+json application/javascript text/xml application/xml application/rdf+xml application/xml+rss text/javascript;
+
     ssl_stapling off;
     ssl_stapling_verify off;
     ssl on;
@@ -141,19 +199,19 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;
     #ssl_dhparam /etc/ssl/certs/YOUR_DOMAIN.dhparam;
 
-    ssl_session_cache  builtin:1000  shared:SSL:10m;
-    ssl_session_timeout 60m;
-    ssl_prefer_server_ciphers on;
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
+    ssl_ciphers HIGH:!MEDIUM:!LOW:!aNULL:!NULL:!SHA;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off;
+
+    add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline'; style-src https: 'unsafe-inline'";
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Download-Options noopen;
     add_header X-Permitted-Cross-Domain-Policies none;
-
-    add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
-    add_header Strict-Transport-Security max-age=15768000;
+	add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload" always;
 
     access_log /dev/null;
     error_log /dev/null;
@@ -164,6 +222,9 @@ server {
         root /var/www/YOUR_DOMAIN;
         try_files $uri =404;
     }
+
+    keepalive_timeout 70;
+    sendfile on;
 
     location / {
         proxy_http_version 1.1;
@@ -184,6 +245,7 @@ server {
         proxy_request_buffering off;
         proxy_buffering off;
         proxy_pass http://localhost:7156;
+        tcp_nodelay on;
     }
 }
 ```
@@ -197,7 +259,9 @@ ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
 Generate a LetsEncrypt certificate.
 
 ``` bash
+systemctl stop nginx
 certbot certonly -n --server https://acme-v02.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
+systemctl start nginx
 ```
 
 And restart the web server:
@@ -277,4 +341,14 @@ To run the network tests. These simulate instances exchanging messages.
 
 ``` bash
 python3 epicyon.py --testsnetwork
+```
+
+## Software Bill of Materials
+
+To update the software bill of materials:
+
+``` bash
+sudo pip3 install scanoss
+make clean
+make sbom
 ```

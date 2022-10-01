@@ -1,4 +1,11 @@
 {
+    "code-color": "blue",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "#33390d",
+    "dropdown-bg-color": "#9fb42b",
+    "dropdown-bg-color-hover": "#33390d",
+    "dropdown-fg-color-hover": "#9fb42b",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "False",
@@ -24,6 +31,8 @@
     "main-bg-color-dm": "#5fb42b",
     "main-header-color-roles": "#9fb42b",
     "cw-color": "#33390d",
+    "pageslist-color": "#111",
+    "pageslist-selected-color": "#333",
     "main-fg-color": "#33390d",
     "login-fg-color": "#33390d",
     "welcome-fg-color": "#33390d",
@@ -60,8 +69,11 @@
     "event-foreground": "white",
     "title-text": "white",
     "gallery-text-color": "#33390d",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-header": "22px",
     "font-size-header-mobile": "32px",
+    "font-size-pageslist": "45px",
     "font-size": "45px",
     "font-size2": "45px",
     "font-size3": "45px",
@@ -83,5 +95,6 @@
     "event-color": "#33390d",
     "header-font": "'LcdSolid'",
     "*font-family": "'LcdSolid'",
-    "*src": "url('./fonts/LcdSolid.woff2') format('woff2')"
+    "*src": "url('./fonts/LcdSolid.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }

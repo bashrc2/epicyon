@@ -16,6 +16,10 @@ Although it can be single user, this is not strictly a single user system.
 
 The design of this system is opinionated, and to a large extent informed by years of past experience in the fediverse. There is no claim to neutrality of any sort. Automatic removal of hellthreads and other common griefing tactics is an example of this.
 
+### Privacy Sensitive Defaults
+
+Follow approval should be required by default. This gives the user a chance to see who wants to follow them and make a decision. Also by default direct messages should not be permitted except with accounts that you are following. This helps to reduce spam and harrassment from random accounts in the wider fediverse. The aim is for the user to have a good experience by default, even if they have not yet built up any sort of block list.
+
 ### Resisting Centralization
 
 Centralization is characterized by the typical fixation upon "scale" within the software industry. Systems which scale, in the way which is commonly understood, mean that a few individuals can control the social lives of many, and extract value from them in often cynical and manipulative ways.
@@ -24,7 +28,7 @@ In general, methods have been preferred which do not vertically scale. This incl
 
 Being hostile towards the common notion of scaling means that this system will be of no interest to "big tech" and can't easily be used within extractive economic models without needing a substantial rewrite. This avoids the typical cooption strategies in which large companies eventually take over what was originally software developed by grassroots activists to address real community needs.
 
-This system should however be able to scale rhizomatically with the deployment of many small instances federated together. Instead of scaling up, scale out. In a network of many small instances nobody has overall control and corporate capture is much more unlikely. Small instances also minimize the bureaucratic requirements for governance processes, which at medium to large scale eventually becomes tyrannical.
+This system should however be able to scale rhizomatically with the deployment of many small instances federated together. Instead of scaling up, scale out. In a network of many small instances nobody has overall control and corporate capture is far less feasible. Small instances also minimize the bureaucratic requirements for governance processes, which at medium to large scale eventually becomes tyrannical.
 
 ### Roles
 
@@ -32,11 +36,11 @@ The roles within an instance are comparable to the crew roles onboard a ship, wi
 
 ### No Javascript
 
-This is so that the system can be accessed and used normally with javascript in the web browser turned off. If you want to have good security then this is useful, since lack of javascript greatly reduces the attack surface and constrains adversaries to a limited number of vectors.
+This is so that the system can be accessed and used normally with javascript in the web browser turned off. If you want to have good security then this is useful, since lack of javascript greatly reduces the attack surface and constrains adversaries to a limited number of vectors. Not using javascript also makes this system usable in shell based browsers such as Lynx, or other less common browsers, which helps to avoid being locked in to a browser duopoly.
 
 ### Block Crawlers
 
-Ordinarily web crawlers would not be a problem, but in the context of a social network even having crawlers index public posts can create ethical dilemmas in some circumstances. News instances may allow crawlers, but other types of instances should block them.
+Ordinarily web crawlers would not be a problem, but in the context of a social network even having crawlers index public posts can create ethical dilemmas in some circumstances. News and blogging instances may allow crawlers, but other types of instances should block them.
 
 ### No Local or Federated Timelines
 
@@ -60,6 +64,9 @@ It is usually safe to assume that the federated network beyond your instance is 
 
 Where Json linked data signatures are supported there should not be arbitrary schema lookups via the web. Instead, recognized contexts should be added to *context.py*. This is in order to follow the principle of *no processing without full recognition*, in which the recognition step is not endlessly extendable by untrusted parties.
 
+### Avoid Web Frameworks
+
+In general avoid using web frameworks and instead use local modules which are prefixed with *webapp_*. Web frameworks are built for conventional software engineering by large companies who are designing for scale. They typically have database dependencies and contain a lot of hardcoded Google stuff or other things which will leak metadata or be incompatible with onion routing. Keeping up with web frameworks is a constant firefight. They also create a massive attack surface requiring constant vigilance.
 
 ## High Level Architecture
 

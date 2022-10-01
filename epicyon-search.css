@@ -43,18 +43,18 @@
 }
 
 @font-face {
-  font-family: 'Bedstead';
-  font-style: italic;
-  font-weight: normal;
-  font-display: block;
-  src: url('./fonts/bedstead.otf') format('opentype');
+    font-family: 'Bedstead';
+    font-style: italic;
+    font-weight: normal;
+    font-display: block;
+    src: url('./fonts/bedstead.otf') format('opentype');
 }
 @font-face {
-  font-family: 'Bedstead';
-  font-style: normal;
-  font-weight: normal;
-  font-display: block;
-  src: url('./fonts/bedstead.otf') format('opentype');
+    font-family: 'Bedstead';
+    font-style: normal;
+    font-weight: normal;
+    font-display: block;
+    src: url('./fonts/bedstead.otf') format('opentype');
 }
 
 body, html {
@@ -333,12 +333,89 @@ input[type=text] {
     }
     input[type=checkbox]
     {
-        -ms-transform: scale(4);
-        -moz-transform: scale(4);
-        -webkit-transform: scale(4);
-        -o-transform: scale(4);
-        transform: scale(4);
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body, html {
+        min-width: 400px;
+    }
+    details {
+        font-size: var(--hashtag-size3);
+    }
+    .domainHistogram {
+        border: 0;
+        font-size: var(--hashtag-size3);
+    }
+    .timeline-banner {
+        object-fit: cover;
+        width: 98vw;
+        max-height: var(--search-banner-height-mobile);
+    }
+    .hashtagswarm {
+        font-size: var(--font-size2);
+        font-family: 'NimbusSanL';
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing3);
+    }
+    .followText {
+        font-size: var(--follow-text-size3);
+        font-family: 'NimbusSanL';
+    }
+    input[type=text] {
+        width: var(--follow-text-entry-width);
+        clear: both;
+        font-size: 40px;
+        font-family: 'NimbusSanL';
+        text-align: center;
+        color: var(--text-entry-foreground);
+        background-color: var(--text-entry-background);
+    }
+    .button {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 40px;
+        font-family: 'NimbusSanL';
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
+    input[type=checkbox]
+    {
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
+        padding: 20px;
+        margin: 30px 40px;
+    }
+    .button {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px;
+        font-size: var(--font-size2);
+        font-family: 'NimbusSanL';
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
     }
 }

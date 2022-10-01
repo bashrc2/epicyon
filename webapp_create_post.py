@@ -1,790 +1,964 @@
 __filename__ = "webapp_create_post.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from utils import isPublicPostFromUrl
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
-from utils import getMediaFormats
-from utils import getConfigParam
-from utils import acctDir
-from utils import getCurrencies
-from utils import getCategoryTypes
-from webapp_utils import getBannerFile
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import editTextField
-from webapp_utils import editNumberField
-from webapp_utils import editCurrencyField
+from utils import get_new_post_endpoints
+from utils import is_public_post_from_url
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import get_media_formats
+from utils import get_config_param
+from utils import acct_dir
+from utils import get_currencies
+from utils import get_category_types
+from utils import get_account_timezone
+from utils import get_supported_languages
+from webapp_utils import html_common_emoji
+from webapp_utils import begin_edit_section
+from webapp_utils import end_edit_section
+from webapp_utils import get_banner_file
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import edit_text_field
+from webapp_utils import edit_number_field
+from webapp_utils import edit_currency_field
+from webapp_post import individual_post_as_html
+from maps import get_map_preferences_url
+from maps import get_map_preferences_coords
 
 
-def _htmlFollowingDataList(baseDir: str, nickname: str,
-                           domain: str, domainFull: str) -> str:
+def _html_following_data_list(base_dir: str, nickname: str,
+                              domain: str, domain_full: str) -> str:
     """Returns a datalist of handles being followed
     """
-    listStr = '<datalist id="followingHandles">\n'
-    followingFilename = \
-        acctDir(baseDir, nickname, domain) + '/following.txt'
+    list_str = '<datalist id="followingHandles">\n'
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
     msg = None
-    if os.path.isfile(followingFilename):
-        with open(followingFilename, 'r') as followingFile:
-            msg = followingFile.read()
+    if os.path.isfile(following_filename):
+        with open(following_filename, 'r',
+                  encoding='utf-8') as following_file:
+            msg = following_file.read()
             # add your own handle, so that you can send DMs
             # to yourself as reminders
-            msg += nickname + '@' + domainFull + '\n'
+            msg += nickname + '@' + domain_full + '\n'
     if msg:
         # include petnames
-        petnamesFilename = \
-            acctDir(baseDir, nickname, domain) + '/petnames.txt'
-        if os.path.isfile(petnamesFilename):
-            followingList = []
-            with open(petnamesFilename, 'r') as petnamesFile:
-                petStr = petnamesFile.read()
+        petnames_filename = \
+            acct_dir(base_dir, nickname, domain) + '/petnames.txt'
+        if os.path.isfile(petnames_filename):
+            following_list = []
+            with open(petnames_filename, 'r',
+                      encoding='utf-8') as petnames_file:
+                pet_str = petnames_file.read()
                 # extract each petname and append it
-                petnamesList = petStr.split('\n')
-                for pet in petnamesList:
-                    followingList.append(pet.split(' ')[0])
+                petnames_list = pet_str.split('\n')
+                for pet in petnames_list:
+                    following_list.append(pet.split(' ')[0])
             # add the following.txt entries
-            followingList += msg.split('\n')
+            following_list += msg.split('\n')
         else:
             # no petnames list exists - just use following.txt
-            followingList = msg.split('\n')
-        followingList.sort()
-        if followingList:
-            for followingAddress in followingList:
-                if followingAddress:
-                    listStr += '<option>@' + followingAddress + '</option>\n'
-    listStr += '</datalist>\n'
-    return listStr
+            following_list = msg.split('\n')
+        following_list.sort()
+        if following_list:
+            for following_address in following_list:
+                if following_address:
+                    list_str += '<option>@' + following_address + '</option>\n'
+    list_str += '</datalist>\n'
+    return list_str
 
 
-def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
-                         replyStr: str,
-                         translate: {},
-                         showPublicOnDropdown: bool,
-                         defaultTimeline: str,
-                         pathBase: str,
-                         dropdownNewPostSuffix: str,
-                         dropdownNewBlogSuffix: str,
-                         dropdownUnlistedSuffix: str,
-                         dropdownFollowersSuffix: str,
-                         dropdownDMSuffix: str,
-                         dropdownReminderSuffix: str,
-                         dropdownReportSuffix: str,
-                         noDropDown: bool,
-                         accessKeys: {}) -> str:
+def _html_new_post_drop_down(scope_icon: str, scope_description: str,
+                             reply_str: str,
+                             translate: {},
+                             show_public_on_dropdown: bool,
+                             default_timeline: str,
+                             path_base: str,
+                             dropdown_new_post_suffix: str,
+                             dropdown_new_blog_suffix: str,
+                             dropdown_unlisted_suffix: str,
+                             dropdown_followers_suffix: str,
+                             dropdown_dm_suffix: str,
+                             dropdown_reminder_suffix: str,
+                             dropdown_report_suffix: str,
+                             no_drop_down: bool,
+                             access_keys: {}) -> str:
     """Returns the html for a drop down list of new post types
     """
-    dropDownContent = '<nav><div class="newPostDropdown">\n'
-    if not noDropDown:
-        dropDownContent += '  <input type="checkbox" ' + \
+    drop_down_content = '<nav><div class="newPostDropdown">\n'
+    if not no_drop_down:
+        drop_down_content += '  <input type="checkbox" ' + \
             'id="my-newPostDropdown" value="" name="my-checkbox">\n'
-    dropDownContent += '  <label for="my-newPostDropdown"\n'
-    dropDownContent += '     data-toggle="newPostDropdown">\n'
-    dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
-        'icons/' + scopeIcon + '"/><b>' + scopeDescription + '</b></label>\n'
+    drop_down_content += '  <label for="my-newPostDropdown"\n'
+    drop_down_content += '     data-toggle="newPostDropdown">\n'
+    drop_down_content += '  <img loading="lazy" decoding="async" ' + \
+        'alt="" title="" src="/' + \
+        'icons/' + scope_icon + '"/><b>' + scope_description + '</b></label>\n'
 
-    if noDropDown:
-        dropDownContent += '</div></nav>\n'
-        return dropDownContent
+    if no_drop_down:
+        drop_down_content += '</div></nav>\n'
+        return drop_down_content
 
-    dropDownContent += '  <ul>\n'
-    if showPublicOnDropdown:
-        dropDownContent += \
-            '<li><a href="' + pathBase + dropdownNewPostSuffix + \
-            '" accesskey="' + accessKeys['Public'] + '">' + \
-            '<img loading="lazy" alt="" title="" src="/' + \
+    drop_down_content += '  <ul>\n'
+    if show_public_on_dropdown:
+        drop_down_content += \
+            '<li><a href="' + path_base + dropdown_new_post_suffix + \
+            '" accesskey="' + access_keys['Public'] + '">' + \
+            '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
             'icons/scope_public.png"/><b>' + \
             translate['Public'] + '</b><br>' + \
             translate['Visible to anyone'] + '</a></li>\n'
-        if defaultTimeline == 'tlfeatures':
-            dropDownContent += \
-                '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
-                '" accesskey="' + accessKeys['menuBlogs'] + '">' + \
-                '<img loading="lazy" alt="" title="" src="/' + \
+        if default_timeline == 'tlfeatures':
+            drop_down_content += \
+                '<li><a href="' + path_base + dropdown_new_blog_suffix + \
+                '" accesskey="' + access_keys['menuBlogs'] + '">' + \
+                '<img loading="lazy" decoding="async" ' + \
+                'alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Article'] + '</b><br>' + \
                 translate['Create an article'] + '</a></li>\n'
         else:
-            dropDownContent += \
-                '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
-                '" accesskey="' + accessKeys['menuBlogs'] + '">' + \
-                '<img loading="lazy" alt="" title="" src="/' + \
+            drop_down_content += \
+                '<li><a href="' + path_base + dropdown_new_blog_suffix + \
+                '" accesskey="' + access_keys['menuBlogs'] + '">' + \
+                '<img loading="lazy" decoding="async" ' + \
+                'alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Blog'] + '</b><br>' + \
                 translate['Publicly visible post'] + '</a></li>\n'
-        dropDownContent += \
-            '<li><a href="' + pathBase + dropdownUnlistedSuffix + \
-            '"><img loading="lazy" alt="" title="" src="/' + \
-            'icons/scope_unlisted.png"/><b>' + \
-            translate['Unlisted'] + '</b><br>' + \
-            translate['Not on public timeline'] + '</a></li>\n'
-    dropDownContent += \
-        '<li><a href="' + pathBase + dropdownFollowersSuffix + \
-        '" accesskey="' + accessKeys['menuFollowers'] + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
+    drop_down_content += \
+        '<li><a href="' + path_base + dropdown_unlisted_suffix + \
+        '"><img loading="lazy" decoding="async" alt="" title="" src="/' + \
+        'icons/scope_unlisted.png"/><b>' + \
+        translate['Unlisted'] + '</b><br>' + \
+        translate['Not on public timeline'] + '</a></li>\n'
+    drop_down_content += \
+        '<li><a href="' + path_base + dropdown_followers_suffix + \
+        '" accesskey="' + access_keys['menuFollowers'] + '">' + \
+        '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_followers.png"/><b>' + \
         translate['Followers'] + '</b><br>' + \
         translate['Only to followers'] + '</a></li>\n'
-    dropDownContent += \
-        '<li><a href="' + pathBase + dropdownDMSuffix + \
-        '" accesskey="' + accessKeys['menuDM'] + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
+    drop_down_content += \
+        '<li><a href="' + path_base + dropdown_dm_suffix + \
+        '" accesskey="' + access_keys['menuDM'] + '">' + \
+        '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_dm.png"/><b>' + \
         translate['DM'] + '</b><br>' + \
         translate['Only to mentioned people'] + '</a></li>\n'
 
-    dropDownContent += \
-        '<li><a href="' + pathBase + dropdownReminderSuffix + \
-        '" accesskey="' + accessKeys['Reminder'] + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
+    drop_down_content += \
+        '<li><a href="' + path_base + dropdown_reminder_suffix + \
+        '" accesskey="' + access_keys['Reminder'] + '">' + \
+        '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
-    dropDownContent += \
-        '<li><a href="' + pathBase + dropdownReportSuffix + \
-        '" accesskey="' + accessKeys['reportButton'] + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
+    drop_down_content += \
+        '<li><a href="' + path_base + dropdown_report_suffix + \
+        '" accesskey="' + access_keys['reportButton'] + '">' + \
+        '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_report.png"/><b>' + \
         translate['Report'] + '</b><br>' + \
         translate['Send to moderators'] + '</a></li>\n'
 
-    if not replyStr:
-        dropDownContent += \
-            '<li><a href="' + pathBase + \
-            '/newshare" accesskey="' + accessKeys['menuShares'] + '">' + \
-            '<img loading="lazy" alt="" title="" src="/' + \
+    if not reply_str:
+        drop_down_content += \
+            '<li><a href="' + path_base + \
+            '/newshare" accesskey="' + access_keys['menuShares'] + '">' + \
+            '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
             'icons/scope_share.png"/><b>' + \
             translate['Shares'] + '</b><br>' + \
             translate['Describe a shared item'] + '</a></li>\n'
-        dropDownContent += \
-            '<li><a href="' + pathBase + \
-            '/newwanted" accesskey="' + accessKeys['menuWanted'] + '">' + \
-            '<img loading="lazy" alt="" title="" src="/' + \
+        drop_down_content += \
+            '<li><a href="' + path_base + \
+            '/newwanted" accesskey="' + access_keys['menuWanted'] + '">' + \
+            '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
             'icons/scope_wanted.png"/><b>' + \
             translate['Wanted'] + '</b><br>' + \
             translate['Describe something wanted'] + '</a></li>\n'
-        dropDownContent += \
-            '<li><a href="' + pathBase + \
-            '/newquestion"><img loading="lazy" alt="" title="" src="/' + \
+        drop_down_content += \
+            '<li><a href="' + path_base + \
+            '/newquestion"><img loading="lazy" decoding="async" ' + \
+            'alt="" title="" src="/' + \
             'icons/scope_question.png"/><b>' + \
             translate['Question'] + '</b><br>' + \
             translate['Ask a question'] + '</a></li>\n'
-    dropDownContent += '  </ul>\n'
+    drop_down_content += '  </ul>\n'
 
-    dropDownContent += '</div></nav>\n'
-    return dropDownContent
+    drop_down_content += '</div></nav>\n'
+    return drop_down_content
 
 
-def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
-                baseDir: str, httpPrefix: str,
-                path: str, inReplyTo: str,
-                mentions: [],
-                shareDescription: str,
-                reportUrl: str, pageNumber: int,
-                category: str,
-                nickname: str, domain: str,
-                domainFull: str,
-                defaultTimeline: str, newswire: {},
-                theme: str, noDropDown: bool,
-                accessKeys: {}, customSubmitText: str,
-                conversationId: str) -> str:
+def html_new_post(media_instance: bool, translate: {},
+                  base_dir: str, http_prefix: str,
+                  path: str, in_reply_to: str,
+                  mentions: [],
+                  share_description: str,
+                  report_url: str, page_number: int,
+                  category: str,
+                  nickname: str, domain: str,
+                  domain_full: str,
+                  default_timeline: str, newswire: {},
+                  theme: str, no_drop_down: bool,
+                  access_keys: {}, custom_submit_text: str,
+                  conversation_id: str,
+                  recent_posts_cache: {}, max_recent_posts: int,
+                  session, cached_webfingers: {},
+                  person_cache: {}, port: int,
+                  post_json_object: {},
+                  project_version: str,
+                  yt_replace_domain: str,
+                  twitter_replacement_domain: str,
+                  show_published_date_only: bool,
+                  peertube_instances: [],
+                  allow_local_network_access: bool,
+                  system_language: str,
+                  max_like_count: int, signing_priv_key_pem: str,
+                  cw_lists: {}, lists_enabled: str,
+                  box_name: str,
+                  reply_is_chat: bool, bold_reading: bool,
+                  dogwhistles: {}) -> str:
     """New post screen
     """
-    replyStr = ''
+    reply_str = ''
 
-    showPublicOnDropdown = True
-    messageBoxHeight = 400
+    is_new_reminder = False
+    if path.endswith('/newreminder'):
+        is_new_reminder = True
+
+    # the date and time
+    date_and_time_str = '<p>\n'
+    if not is_new_reminder:
+        date_and_time_str += \
+            '<img loading="lazy" decoding="async" alt="" title="" ' + \
+            'class="emojicalendar" src="/icons/calendar.png"/>\n'
+    # select a date and time for this post
+    date_and_time_str += '<label class="labels">' + \
+        translate['Date'] + ': </label>\n'
+    date_and_time_str += '<input type="date" name="eventDate">\n'
+    date_and_time_str += '<label class="labelsright">' + \
+        translate['Start Time'] + ': '
+    date_and_time_str += \
+        '<input type="time" name="eventTime"></label>\n<br>\n'
+    date_and_time_str += '<label class="labelsright">' + \
+        translate['End Time'] + ': '
+    date_and_time_str += \
+        '<input type="time" name="eventEndTime"></label>\n</p>\n'
+
+    show_public_on_dropdown = True
+    message_box_height = 400
+    image_description_height = 150
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
 
     if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
-            if not inReplyTo or path.endswith('/newreminder'):
-                newPostText = '<h1>' + \
+            if not in_reply_to or is_new_reminder:
+                new_post_text = '<h1>' + \
                     translate['Write your post text below.'] + '</h1>\n'
             else:
-                newPostText = ''
+                new_post_text = ''
                 if category != 'accommodation':
-                    newPostText = \
+                    new_post_text = \
                         '<p class="new-post-text">' + \
                         translate['Write your reply to'] + \
-                        ' <a href="' + inReplyTo + \
+                        ' <a href="' + in_reply_to + \
                         '" rel="nofollow noopener noreferrer" ' + \
                         'target="_blank">' + \
                         translate['this post'] + '</a></p>\n'
-                replyStr = '<input type="hidden" ' + \
-                    'name="replyTo" value="' + inReplyTo + '">\n'
+                    if post_json_object:
+                        timezone = \
+                            get_account_timezone(base_dir, nickname, domain)
+                        new_post_text += \
+                            individual_post_as_html(signing_priv_key_pem,
+                                                    True, recent_posts_cache,
+                                                    max_recent_posts,
+                                                    translate, None,
+                                                    base_dir, session,
+                                                    cached_webfingers,
+                                                    person_cache,
+                                                    nickname, domain, port,
+                                                    post_json_object,
+                                                    None, True, False,
+                                                    http_prefix,
+                                                    project_version,
+                                                    box_name,
+                                                    yt_replace_domain,
+                                                    twitter_replacement_domain,
+                                                    show_published_date_only,
+                                                    peertube_instances,
+                                                    allow_local_network_access,
+                                                    theme, system_language,
+                                                    max_like_count,
+                                                    False, False, False,
+                                                    False, False, False,
+                                                    cw_lists, lists_enabled,
+                                                    timezone, False,
+                                                    bold_reading, dogwhistles)
+
+                reply_str = '<input type="hidden" ' + \
+                    'name="replyTo" value="' + in_reply_to + '">\n'
 
                 # if replying to a non-public post then also make
                 # this post non-public
-                if not isPublicPostFromUrl(baseDir, nickname, domain,
-                                           inReplyTo):
-                    newPostPath = path
-                    if '?' in newPostPath:
-                        newPostPath = newPostPath.split('?')[0]
-                    if newPostPath.endswith('/newpost'):
+                if not is_public_post_from_url(base_dir, nickname, domain,
+                                               in_reply_to):
+                    new_post_path = path
+                    if '?' in new_post_path:
+                        new_post_path = new_post_path.split('?')[0]
+                    if new_post_path.endswith('/newpost'):
                         path = path.replace('/newpost', '/newfollowers')
-                    elif newPostPath.endswith('/newunlisted'):
-                        path = path.replace('/newunlisted', '/newfollowers')
-                    showPublicOnDropdown = False
+                    show_public_on_dropdown = False
         else:
-            newPostText = \
+            new_post_text = \
                 '<h1>' + translate['Write your report below.'] + '</h1>\n'
 
             # custom report header with any additional instructions
-            if os.path.isfile(baseDir + '/accounts/report.txt'):
-                with open(baseDir + '/accounts/report.txt', 'r') as file:
-                    customReportText = file.read()
-                    if '</p>' not in customReportText:
-                        customReportText = \
+            if os.path.isfile(base_dir + '/accounts/report.txt'):
+                with open(base_dir + '/accounts/report.txt', 'r',
+                          encoding='utf-8') as file:
+                    custom_report_text = file.read()
+                    if '</p>' not in custom_report_text:
+                        custom_report_text = \
                             '<p class="login-subtext">' + \
-                            customReportText + '</p>\n'
-                        repStr = '<p class="login-subtext">'
-                        customReportText = \
-                            customReportText.replace('<p>', repStr)
-                        newPostText += customReportText
+                            custom_report_text + '</p>\n'
+                        rep_str = '<p class="login-subtext">'
+                        custom_report_text = \
+                            custom_report_text.replace('<p>', rep_str)
+                        new_post_text += custom_report_text
 
             idx = 'This message only goes to moderators, even if it ' + \
                 'mentions other fediverse addresses.'
-            newPostText += \
+            new_post_text += \
                 '<p class="new-post-subtext">' + translate[idx] + '</p>\n' + \
                 '<p class="new-post-subtext">' + translate['Also see'] + \
                 ' <a href="/terms">' + \
                 translate['Terms of Service'] + '</a></p>\n'
     else:
         if path.endswith('/newshare'):
-            newPostText = \
+            new_post_text = \
                 '<h1>' + \
                 translate['Enter the details for your shared item below.'] + \
                 '</h1>\n'
         else:
-            newPostText = \
+            new_post_text = \
                 '<h1>' + \
                 translate['Enter the details for your wanted item below.'] + \
                 '</h1>\n'
 
     if path.endswith('/newquestion'):
-        newPostText = \
+        new_post_text = \
             '<h1>' + \
             translate['Enter the choices for your question below.'] + \
             '</h1>\n'
 
-    if os.path.isfile(baseDir + '/accounts/newpost.txt'):
-        with open(baseDir + '/accounts/newpost.txt', 'r') as file:
-            newPostText = \
+    if os.path.isfile(base_dir + '/accounts/newpost.txt'):
+        with open(base_dir + '/accounts/newpost.txt', 'r',
+                  encoding='utf-8') as file:
+            new_post_text = \
                 '<p>' + file.read() + '</p>\n'
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
     if '?' in path:
         path = path.split('?')[0]
-    pathBase = path.replace('/newreport', '').replace('/newpost', '')
-    pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
-    pathBase = pathBase.replace('/newunlisted', '').replace('/newwanted', '')
-    pathBase = pathBase.replace('/newreminder', '')
-    pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
+    new_post_endpoints = get_new_post_endpoints()
+    path_base = path
+    for curr_post_type in new_post_endpoints:
+        path_base = path_base.replace('/' + curr_post_type, '')
 
-    newPostImageSection = '    <div class="container">'
-    newPostImageSection += \
-        editTextField(translate['Image description'], 'imageDescription', '')
-
-    newPostImageSection += \
+    attach_str = 'Attach an image, video or audio file'
+    new_post_image_section = begin_edit_section('📷 ' + translate[attach_str])
+    new_post_image_section += \
         '      <input type="file" id="attachpic" name="attachpic"'
-    formatsString = getMediaFormats()
-    # remove svg as a permitted format
-    formatsString = formatsString.replace(', .svg', '').replace('.svg, ', '')
-    newPostImageSection += \
-        '            accept="' + formatsString + '">\n'
-    newPostImageSection += '    </div>\n'
+    formats_string = get_media_formats()
+    new_post_image_section += \
+        '            accept="' + formats_string + '">\n'
+    new_post_image_section += \
+        '    <label class="labels">' + \
+        translate['Describe your attachment'] + '</label>\n'
+    new_post_image_section += \
+        '    <textarea id="imageDescription" name="imageDescription" ' + \
+        'style="height:' + str(image_description_height) + \
+        'px" spellcheck="true" autocomplete="on"></textarea>\n'
 
-    scopeIcon = 'scope_public.png'
-    scopeDescription = translate['Public']
-    if shareDescription:
+    new_post_image_section += end_edit_section()
+
+    new_post_emoji_section = ''
+    common_emoji_str = html_common_emoji(base_dir, 16)
+    if common_emoji_str:
+        new_post_emoji_section = \
+            begin_edit_section('😀 ' + translate['Common emoji'])
+        new_post_emoji_section += \
+            '<label class="labels">' + \
+            translate['Copy and paste into your text'] + '</label><br>\n'
+        new_post_emoji_section += common_emoji_str
+        new_post_emoji_section += end_edit_section()
+
+    scope_icon = 'scope_public.png'
+    scope_description = translate['Public']
+    if share_description:
         if category == 'accommodation':
-            placeholderSubject = translate['Request to stay']
+            placeholder_subject = translate['Request to stay']
         else:
-            placeholderSubject = translate['Ask about a shared item.'] + '..'
+            placeholder_subject = translate['Ask about a shared item.'] + '..'
     else:
-        placeholderSubject = \
+        placeholder_subject = \
             translate['Subject or Content Warning (optional)'] + '...'
-    placeholderMentions = ''
-    if inReplyTo:
-        placeholderMentions = \
+    placeholder_mentions = ''
+    if in_reply_to:
+        placeholder_mentions = \
             translate['Replying to'] + '...'
-    placeholderMessage = ''
+    placeholder_message = ''
     if category != 'accommodation':
-        placeholderMessage = translate['Write something'] + '...'
+        if default_timeline == 'tlfeatures':
+            placeholder_message = translate['Write your news report'] + '...'
+        else:
+            placeholder_message = translate['Write something'] + '...'
     else:
         idx = 'Introduce yourself and specify the date ' + \
             'and time when you wish to stay'
-        placeholderMessage = translate[idx]
-    extraFields = ''
+        placeholder_message = translate[idx]
+    extra_fields = ''
     endpoint = 'newpost'
     if path.endswith('/newblog'):
-        placeholderSubject = translate['Title']
-        scopeIcon = 'scope_blog.png'
-        if defaultTimeline != 'tlfeatures':
-            scopeDescription = translate['Blog']
+        placeholder_subject = translate['Title']
+        scope_icon = 'scope_blog.png'
+        if default_timeline != 'tlfeatures':
+            scope_description = translate['Blog']
         else:
-            scopeDescription = translate['Article']
+            scope_description = translate['Article']
         endpoint = 'newblog'
     elif path.endswith('/newunlisted'):
-        scopeIcon = 'scope_unlisted.png'
-        scopeDescription = translate['Unlisted']
+        scope_icon = 'scope_unlisted.png'
+        scope_description = translate['Unlisted']
         endpoint = 'newunlisted'
     elif path.endswith('/newfollowers'):
-        scopeIcon = 'scope_followers.png'
-        scopeDescription = translate['Followers']
+        scope_icon = 'scope_followers.png'
+        scope_description = translate['Followers']
         endpoint = 'newfollowers'
     elif path.endswith('/newdm'):
-        scopeIcon = 'scope_dm.png'
-        scopeDescription = translate['DM']
+        scope_icon = 'scope_dm.png'
+        scope_description = translate['DM']
         endpoint = 'newdm'
-    elif path.endswith('/newreminder'):
-        scopeIcon = 'scope_reminder.png'
-        scopeDescription = translate['Reminder']
+        placeholder_message = '⚠️ ' + translate['DM warning']
+    elif is_new_reminder:
+        scope_icon = 'scope_reminder.png'
+        scope_description = translate['Reminder']
         endpoint = 'newreminder'
     elif path.endswith('/newreport'):
-        scopeIcon = 'scope_report.png'
-        scopeDescription = translate['Report']
+        scope_icon = 'scope_report.png'
+        scope_description = translate['Report']
         endpoint = 'newreport'
     elif path.endswith('/newquestion'):
-        scopeIcon = 'scope_question.png'
-        scopeDescription = translate['Question']
-        placeholderMessage = translate['Enter your question'] + '...'
+        scope_icon = 'scope_question.png'
+        scope_description = translate['Question']
+        placeholder_message = translate['Enter your question'] + '...'
         endpoint = 'newquestion'
-        extraFields = '<div class="container">\n'
-        extraFields += '  <label class="labels">' + \
+        extra_fields = '<div class="container">\n'
+        extra_fields += '  <label class="labels">' + \
             translate['Possible answers'] + ':</label><br>\n'
-        for questionCtr in range(8):
-            extraFields += \
+        for question_ctr in range(8):
+            extra_fields += \
                 '  <input type="text" class="questionOption" placeholder="' + \
-                str(questionCtr + 1) + \
-                '" name="questionOption' + str(questionCtr) + '"><br>\n'
-        extraFields += \
+                str(question_ctr + 1) + \
+                '" name="questionOption' + str(question_ctr) + '"><br>\n'
+        extra_fields += \
             '  <label class="labels">' + \
             translate['Duration of listing in days'] + \
             ':</label> <input type="number" name="duration" ' + \
             'min="1" max="365" step="1" value="14"><br>\n'
-        extraFields += '</div>'
+        extra_fields += '</div>'
     elif path.endswith('/newshare'):
-        scopeIcon = 'scope_share.png'
-        scopeDescription = translate['Shared Item']
-        placeholderSubject = translate['Name of the shared item'] + '...'
-        placeholderMessage = \
+        scope_icon = 'scope_share.png'
+        scope_description = translate['Shared Item']
+        placeholder_subject = translate['Name of the shared item'] + '...'
+        placeholder_message = \
             translate['Description of the item being shared'] + '...'
         endpoint = 'newshare'
-        extraFields = '<div class="container">\n'
-        extraFields += \
-            editNumberField(translate['Quantity'],
-                            'itemQty', 1, 1, 999999, 1)
-        extraFields += '<br>' + \
-            editTextField(translate['Type of shared item. eg. hat'] + ':',
-                          'itemType', '', '', True)
-        categoryTypes = getCategoryTypes(baseDir)
-        catStr = translate['Category of shared item. eg. clothing']
-        extraFields += '<label class="labels">' + catStr + '</label><br>\n'
+        extra_fields = '<div class="container">\n'
+        extra_fields += \
+            edit_number_field(translate['Quantity'],
+                              'itemQty', 1, 1, 999999, 1)
+        extra_fields += '<br>' + \
+            edit_text_field(translate['Type of shared item. eg. hat'] + ':',
+                            'itemType', '', '', True)
+        category_types = get_category_types(base_dir)
+        cat_str = translate['Category of shared item. eg. clothing']
+        extra_fields += '<label class="labels">' + cat_str + '</label><br>\n'
 
-        extraFields += '  <select id="themeDropdown" ' + \
+        extra_fields += '  <select id="themeDropdown" ' + \
             'name="category" class="theme">\n'
-        for category in categoryTypes:
-            translatedCategory = "food"
-            if translate.get(category):
-                translatedCategory = translate[category]
-            extraFields += '    <option value="' + \
-                translatedCategory + '">' + \
-                translatedCategory + '</option>\n'
+        for cat in category_types:
+            translated_category = "food"
+            if translate.get(cat):
+                translated_category = translate[cat]
+            extra_fields += '    <option value="' + \
+                translated_category + '">' + \
+                translated_category + '</option>\n'
 
-        extraFields += '  </select><br>\n'
-        extraFields += \
-            editNumberField(translate['Duration of listing in days'],
-                            'duration', 14, 1, 365, 1)
-        extraFields += '</div>\n'
-        extraFields += '<div class="container">\n'
-        cityOrLocStr = translate['City or location of the shared item']
-        extraFields += editTextField(cityOrLocStr + ':', 'location', '')
-        extraFields += '</div>\n'
-        extraFields += '<div class="container">\n'
-        extraFields += \
-            editCurrencyField(translate['Price'] + ':', 'itemPrice', '0.00',
-                              '0.00', True)
-        extraFields += '<br>'
-        extraFields += \
+        extra_fields += '  </select><br>\n'
+        extra_fields += \
+            edit_number_field(translate['Duration of listing in days'],
+                              'duration', 14, 1, 365, 1)
+        extra_fields += '</div>\n'
+        extra_fields += '<div class="container">\n'
+        city_or_loc_str = translate['City or location of the shared item']
+        extra_fields += edit_text_field(city_or_loc_str + ':', 'location', '')
+        extra_fields += '</div>\n'
+        extra_fields += '<div class="container">\n'
+        extra_fields += \
+            edit_currency_field(translate['Price'] + ':', 'itemPrice', '0.00',
+                                '0.00', True)
+        extra_fields += '<br>'
+        extra_fields += \
             '<label class="labels">' + translate['Currency'] + '</label><br>\n'
-        currencies = getCurrencies()
-        extraFields += '  <select id="themeDropdown" ' + \
+        currencies = get_currencies()
+        extra_fields += '  <select id="themeDropdown" ' + \
             'name="itemCurrency" class="theme">\n'
-        currencyList = []
-        for symbol, currName in currencies.items():
-            currencyList.append(currName + ' ' + symbol)
-        currencyList.sort()
-        defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
-        if not defaultCurrency:
-            defaultCurrency = "EUR"
-        for currName in currencyList:
-            if defaultCurrency not in currName:
-                extraFields += '    <option value="' + \
-                    currName + '">' + currName + '</option>\n'
+        currency_list = []
+        for symbol, curr_name in currencies.items():
+            currency_list.append(curr_name + ' ' + symbol)
+        currency_list.sort()
+        default_currency = get_config_param(base_dir, 'defaultCurrency')
+        if not default_currency:
+            default_currency = "EUR"
+        for curr_name in currency_list:
+            if default_currency not in curr_name:
+                extra_fields += '    <option value="' + \
+                    curr_name + '">' + curr_name + '</option>\n'
             else:
-                extraFields += '    <option value="' + \
-                    currName + '" selected="selected">' + \
-                    currName + '</option>\n'
-        extraFields += '  </select>\n'
+                extra_fields += '    <option value="' + \
+                    curr_name + '" selected="selected">' + \
+                    curr_name + '</option>\n'
+        extra_fields += '  </select>\n'
 
-        extraFields += '</div>\n'
+        extra_fields += '</div>\n'
     elif path.endswith('/newwanted'):
-        scopeIcon = 'scope_wanted.png'
-        scopeDescription = translate['Wanted']
-        placeholderSubject = translate['Name of the wanted item'] + '...'
-        placeholderMessage = \
+        scope_icon = 'scope_wanted.png'
+        scope_description = translate['Wanted']
+        placeholder_subject = translate['Name of the wanted item'] + '...'
+        placeholder_message = \
             translate['Description of the item wanted'] + '...'
         endpoint = 'newwanted'
-        extraFields = '<div class="container">\n'
-        extraFields += \
-            editNumberField(translate['Quantity'],
-                            'itemQty', 1, 1, 999999, 1)
-        extraFields += '<br>' + \
-            editTextField(translate['Type of wanted item. eg. hat'] + ':',
-                          'itemType', '', '', True)
-        categoryTypes = getCategoryTypes(baseDir)
-        catStr = translate['Category of wanted item. eg. clothes']
-        extraFields += '<label class="labels">' + catStr + '</label><br>\n'
+        extra_fields = '<div class="container">\n'
+        extra_fields += \
+            edit_number_field(translate['Quantity'],
+                              'itemQty', 1, 1, 999999, 1)
+        extra_fields += '<br>' + \
+            edit_text_field(translate['Type of wanted item. eg. hat'] + ':',
+                            'itemType', '', '', True)
+        category_types = get_category_types(base_dir)
+        cat_str = translate['Category of wanted item. eg. clothes']
+        extra_fields += '<label class="labels">' + cat_str + '</label><br>\n'
 
-        extraFields += '  <select id="themeDropdown" ' + \
+        extra_fields += '  <select id="themeDropdown" ' + \
             'name="category" class="theme">\n'
-        for category in categoryTypes:
-            translatedCategory = "food"
-            if translate.get(category):
-                translatedCategory = translate[category]
-            extraFields += '    <option value="' + \
-                translatedCategory + '">' + \
-                translatedCategory + '</option>\n'
+        for cat in category_types:
+            translated_category = "food"
+            if translate.get(cat):
+                translated_category = translate[cat]
+            extra_fields += '    <option value="' + \
+                translated_category + '">' + \
+                translated_category + '</option>\n'
 
-        extraFields += '  </select><br>\n'
-        extraFields += \
-            editNumberField(translate['Duration of listing in days'],
-                            'duration', 14, 1, 365, 1)
-        extraFields += '</div>\n'
-        extraFields += '<div class="container">\n'
-        cityOrLocStr = translate['City or location of the wanted item']
-        extraFields += editTextField(cityOrLocStr + ':', 'location', '')
-        extraFields += '</div>\n'
-        extraFields += '<div class="container">\n'
-        extraFields += \
-            editCurrencyField(translate['Maximum Price'] + ':',
-                              'itemPrice', '0.00', '0.00', True)
-        extraFields += '<br>'
-        extraFields += \
+        extra_fields += '  </select><br>\n'
+        extra_fields += \
+            edit_number_field(translate['Duration of listing in days'],
+                              'duration', 14, 1, 365, 1)
+        extra_fields += '</div>\n'
+        extra_fields += '<div class="container">\n'
+        city_or_loc_str = translate['City or location of the wanted item']
+        extra_fields += edit_text_field(city_or_loc_str + ':', 'location', '')
+        extra_fields += '</div>\n'
+        extra_fields += '<div class="container">\n'
+        extra_fields += \
+            edit_currency_field(translate['Maximum Price'] + ':',
+                                'itemPrice', '0.00', '0.00', True)
+        extra_fields += '<br>'
+        extra_fields += \
             '<label class="labels">' + translate['Currency'] + '</label><br>\n'
-        currencies = getCurrencies()
-        extraFields += '  <select id="themeDropdown" ' + \
+        currencies = get_currencies()
+        extra_fields += '  <select id="themeDropdown" ' + \
             'name="itemCurrency" class="theme">\n'
-        currencyList = []
-        for symbol, currName in currencies.items():
-            currencyList.append(currName + ' ' + symbol)
-        currencyList.sort()
-        defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
-        if not defaultCurrency:
-            defaultCurrency = "EUR"
-        for currName in currencyList:
-            if defaultCurrency not in currName:
-                extraFields += '    <option value="' + \
-                    currName + '">' + currName + '</option>\n'
+        currency_list = []
+        for symbol, curr_name in currencies.items():
+            currency_list.append(curr_name + ' ' + symbol)
+        currency_list.sort()
+        default_currency = get_config_param(base_dir, 'defaultCurrency')
+        if not default_currency:
+            default_currency = "EUR"
+        for curr_name in currency_list:
+            if default_currency not in curr_name:
+                extra_fields += '    <option value="' + \
+                    curr_name + '">' + curr_name + '</option>\n'
             else:
-                extraFields += '    <option value="' + \
-                    currName + '" selected="selected">' + \
-                    currName + '</option>\n'
-        extraFields += '  </select>\n'
+                extra_fields += '    <option value="' + \
+                    curr_name + '" selected="selected">' + \
+                    curr_name + '</option>\n'
+        extra_fields += '  </select>\n'
 
-        extraFields += '</div>\n'
+        extra_fields += '</div>\n'
 
-    citationsStr = ''
+    citations_str = ''
     if endpoint == 'newblog':
-        citationsFilename = \
-            acctDir(baseDir, nickname, domain) + '/.citations.txt'
-        if os.path.isfile(citationsFilename):
-            citationsStr = '<div class="container">\n'
-            citationsStr += '<p><label class="labels">' + \
+        citations_filename = \
+            acct_dir(base_dir, nickname, domain) + '/.citations.txt'
+        if os.path.isfile(citations_filename):
+            citations_str = '<div class="container">\n'
+            citations_str += '<p><label class="labels">' + \
                 translate['Citations'] + ':</label></p>\n'
-            citationsStr += '  <ul>\n'
-            citationsSeparator = '#####'
-            with open(citationsFilename, 'r') as f:
-                citations = f.readlines()
+            citations_str += '  <ul>\n'
+            citations_separator = '#####'
+            with open(citations_filename, 'r', encoding='utf-8') as cit_file:
+                citations = cit_file.readlines()
                 for line in citations:
-                    if citationsSeparator not in line:
+                    if citations_separator not in line:
                         continue
-                    sections = line.strip().split(citationsSeparator)
+                    sections = line.strip().split(citations_separator)
                     if len(sections) != 3:
                         continue
                     title = sections[1]
                     link = sections[2]
-                    citationsStr += \
+                    citations_str += \
                         '    <li><a href="' + link + '"><cite>' + \
                         title + '</cite></a></li>'
-            citationsStr += '  </ul>\n'
-            citationsStr += '</div>\n'
+            citations_str += '  </ul>\n'
+            citations_str += '</div>\n'
 
-    dateAndLocation = ''
-    if endpoint != 'newshare' and \
-       endpoint != 'newwanted' and \
-       endpoint != 'newreport' and \
-       endpoint != 'newquestion':
-        dateAndLocation = \
-            '<div class="container">\n'
-        if category != 'accommodation':
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="commentsEnabled" checked><label class="labels"> ' + \
-                translate['Allow replies.'] + '</label></p>\n'
-        else:
-            dateAndLocation += \
-                '<input type="hidden" name="commentsEnabled" value="true">\n'
+    replies_section = ''
+    date_and_location = ''
+    if endpoint not in ('newshare', 'newwanted', 'newreport', 'newquestion'):
 
-        if endpoint == 'newpost':
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="pinToProfile"><label class="labels"> ' + \
-                translate['Pin this post to your profile.'] + '</label></p>\n'
+        if not is_new_reminder:
+            replies_section = \
+                '<div class="container">\n'
+            if category != 'accommodation':
+                replies_section += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="commentsEnabled" ' + \
+                    'checked><label class="labels"> ' + \
+                    translate['Allow replies.'] + '</label></p>\n'
+            else:
+                replies_section += \
+                    '<input type="hidden" name="commentsEnabled" ' + \
+                    'value="true">\n'
+            supported_languages = get_supported_languages(base_dir)
+            languages_dropdown = '<select id="themeDropdown" ' + \
+                'name="languagesDropdown" class="theme">'
+            for lang_name in supported_languages:
+                translated_lang_name = lang_name
+                if translate.get('lang_' + lang_name):
+                    translated_lang_name = translate['lang_' + lang_name]
+                languages_dropdown += '    <option value="' + \
+                    lang_name.lower() + '">' + \
+                    translated_lang_name + '</option>'
+            languages_dropdown += '  </select><br>'
+            languages_dropdown = \
+                languages_dropdown.replace('<option value="' +
+                                           system_language + '">',
+                                           '<option value="' +
+                                           system_language +
+                                           '" selected>')
+            replies_section += \
+                '      <label class="labels">' + \
+                translate['Language used'] + '</label>\n'
+            replies_section += languages_dropdown
+            replies_section += '</div>\n'
 
-        if not inReplyTo:
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="schedulePost"><label class="labels"> ' + \
-                translate['This is a scheduled post.'] + '</label></p>\n'
+            date_and_location = \
+                begin_edit_section('🗓️ ' + translate['Set a place and time'])
+            if endpoint == 'newpost':
+                date_and_location += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="pinToProfile"><label class="labels"> ' + \
+                    translate['Pin this post to your profile.'] + \
+                    '</label></p>\n'
 
-        dateAndLocation += \
-            '<p><img loading="lazy" alt="" title="" ' + \
-            'class="emojicalendar" src="/' + \
-            'icons/calendar.png"/>\n'
-        # select a date and time for this post
-        dateAndLocation += '<label class="labels">' + \
-            translate['Date'] + ': </label>\n'
-        dateAndLocation += '<input type="date" name="eventDate">\n'
-        dateAndLocation += '<label class="labelsright">' + \
-            translate['Time'] + ':'
-        dateAndLocation += \
-            '<input type="time" name="eventTime"></label></p>\n'
+            if not in_reply_to:
+                date_and_location += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="schedulePost"><label class="labels"> ' + \
+                    translate['This is a scheduled post.'] + '</label></p>\n'
 
-        dateAndLocation += '</div>\n'
-        dateAndLocation += '<div class="container">\n'
-        dateAndLocation += \
-            editTextField(translate['Location'], 'location', '')
-        dateAndLocation += '</div>\n'
+            date_and_location += date_and_time_str
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+        maps_url = get_map_preferences_url(base_dir, nickname, domain)
+        if not maps_url:
+            maps_url = 'https://www.openstreetmap.org'
+        if '://' not in maps_url:
+            maps_url = 'https://' + maps_url
+        maps_latitude, maps_longitude, maps_zoom = \
+            get_map_preferences_coords(base_dir, nickname, domain)
+        if maps_latitude and maps_longitude and maps_zoom:
+            if 'openstreetmap.org' in maps_url:
+                maps_url = \
+                    'https://www.openstreetmap.org/#map=' + \
+                    str(maps_zoom) + '/' + \
+                    str(maps_latitude) + '/' + \
+                    str(maps_longitude)
+            elif '.google.co' in maps_url:
+                maps_url = \
+                    'https://www.google.com/maps/@' + \
+                    str(maps_latitude) + ',' + \
+                    str(maps_longitude) + ',' + \
+                    str(maps_zoom) + 'z'
+            elif '.bing.co' in maps_url:
+                maps_url = \
+                    'https://www.bing.com/maps?cp=' + \
+                    str(maps_latitude) + '~' + \
+                    str(maps_longitude) + '&amp;lvl=' + \
+                    str(maps_zoom)
+            elif '.waze.co' in maps_url:
+                maps_url = \
+                    'https://ul.waze.com/ul?ll=' + \
+                    str(maps_latitude) + '%2C' + \
+                    str(maps_longitude) + '&zoom=' + \
+                    str(maps_zoom)
+            elif 'wego.here.co' in maps_url:
+                maps_url = \
+                    'https://wego.here.com/?x=ep&map=' + \
+                    str(maps_latitude) + ',' + \
+                    str(maps_longitude) + ',' + \
+                    str(maps_zoom) + ',normal'
+        location_label_with_link = \
+            '<a href="' + maps_url + '" ' + \
+            'rel="nofollow noopener noreferrer" target="_blank">🗺️ ' + \
+            translate['Location'] + '</a>'
+        date_and_location += '<br><p>\n' + \
+            edit_text_field(location_label_with_link, 'location', '',
+                            'https://www.openstreetmap.org/#map=') + '</p>\n'
+        date_and_location += end_edit_section()
 
-    newPostForm += \
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    new_post_form = html_header_with_external_style(css_filename,
+                                                    instance_title, None)
+
+    new_post_form += \
         '<header>\n' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + \
+        '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
-    newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">\n'
+    new_post_form += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + banner_file + '" alt="" /></a>\n' + \
         '</header>\n'
 
-    mentionsStr = ''
-    for m in mentions:
-        mentionNickname = getNicknameFromActor(m)
-        if not mentionNickname:
+    mentions_str = ''
+    for ment in mentions:
+        mention_nickname = get_nickname_from_actor(ment)
+        if not mention_nickname:
             continue
-        mentionDomain, mentionPort = getDomainFromActor(m)
-        if not mentionDomain:
+        mention_domain, mention_port = get_domain_from_actor(ment)
+        if not mention_domain:
             continue
-        if mentionPort:
-            mentionsHandle = \
-                '@' + mentionNickname + '@' + \
-                mentionDomain + ':' + str(mentionPort)
+        if mention_port:
+            mentions_handle = \
+                '@' + mention_nickname + '@' + \
+                mention_domain + ':' + str(mention_port)
         else:
-            mentionsHandle = '@' + mentionNickname + '@' + mentionDomain
-        if mentionsHandle not in mentionsStr:
-            mentionsStr += mentionsHandle + ' '
+            mentions_handle = '@' + mention_nickname + '@' + mention_domain
+        if mentions_handle not in mentions_str:
+            mentions_str += mentions_handle + ' '
 
     # build suffixes so that any replies or mentions are
     # preserved when switching between scopes
-    dropdownNewPostSuffix = '/newpost'
-    dropdownNewBlogSuffix = '/newblog'
-    dropdownUnlistedSuffix = '/newunlisted'
-    dropdownFollowersSuffix = '/newfollowers'
-    dropdownDMSuffix = '/newdm'
-    dropdownReminderSuffix = '/newreminder'
-    dropdownReportSuffix = '/newreport'
-    if inReplyTo or mentions:
-        dropdownNewPostSuffix = ''
-        dropdownNewBlogSuffix = ''
-        dropdownUnlistedSuffix = ''
-        dropdownFollowersSuffix = ''
-        dropdownDMSuffix = ''
-        dropdownReminderSuffix = ''
-        dropdownReportSuffix = ''
-    if inReplyTo:
-        dropdownNewPostSuffix += '?replyto=' + inReplyTo
-        dropdownNewBlogSuffix += '?replyto=' + inReplyTo
-        dropdownUnlistedSuffix += '?replyto=' + inReplyTo
-        dropdownFollowersSuffix += '?replyfollowers=' + inReplyTo
-        dropdownDMSuffix += '?replydm=' + inReplyTo
-    for mentionedActor in mentions:
-        dropdownNewPostSuffix += '?mention=' + mentionedActor
-        dropdownNewBlogSuffix += '?mention=' + mentionedActor
-        dropdownUnlistedSuffix += '?mention=' + mentionedActor
-        dropdownFollowersSuffix += '?mention=' + mentionedActor
-        dropdownDMSuffix += '?mention=' + mentionedActor
-        dropdownReportSuffix += '?mention=' + mentionedActor
-    if conversationId and inReplyTo:
-        dropdownNewPostSuffix += '?conversationId=' + conversationId
-        dropdownNewBlogSuffix += '?conversationId=' + conversationId
-        dropdownUnlistedSuffix += '?conversationId=' + conversationId
-        dropdownFollowersSuffix += '?conversationId=' + conversationId
-        dropdownDMSuffix += '?conversationId=' + conversationId
+    dropdown_new_post_suffix = '/newpost'
+    dropdown_new_blog_suffix = '/newblog'
+    dropdown_unlisted_suffix = '/newunlisted'
+    dropdown_followers_suffix = '/newfollowers'
+    dropdown_dm_suffix = '/newdm'
+    dropdown_reminder_suffix = '/newreminder'
+    dropdown_report_suffix = '/newreport'
+    if in_reply_to or mentions:
+        dropdown_new_post_suffix = ''
+        dropdown_new_blog_suffix = ''
+        dropdown_unlisted_suffix = ''
+        dropdown_followers_suffix = ''
+        dropdown_dm_suffix = ''
+        dropdown_reminder_suffix = ''
+        dropdown_report_suffix = ''
+    if in_reply_to:
+        dropdown_new_post_suffix += '?replyto=' + in_reply_to
+        dropdown_new_blog_suffix += '?replyto=' + in_reply_to
+        dropdown_unlisted_suffix += '?replyunlisted=' + in_reply_to
+        dropdown_followers_suffix += '?replyfollowers=' + in_reply_to
+        if reply_is_chat:
+            dropdown_dm_suffix += '?replychat=' + in_reply_to
+        else:
+            dropdown_dm_suffix += '?replydm=' + in_reply_to
+    for mentioned_actor in mentions:
+        dropdown_new_post_suffix += '?mention=' + mentioned_actor
+        dropdown_new_blog_suffix += '?mention=' + mentioned_actor
+        dropdown_unlisted_suffix += '?mention=' + mentioned_actor
+        dropdown_followers_suffix += '?mention=' + mentioned_actor
+        dropdown_dm_suffix += '?mention=' + mentioned_actor
+        dropdown_report_suffix += '?mention=' + mentioned_actor
+    if conversation_id and in_reply_to:
+        dropdown_new_post_suffix += '?conversationId=' + conversation_id
+        dropdown_new_blog_suffix += '?conversationId=' + conversation_id
+        dropdown_unlisted_suffix += '?conversationId=' + conversation_id
+        dropdown_followers_suffix += '?conversationId=' + conversation_id
+        dropdown_dm_suffix += '?conversationId=' + conversation_id
 
-    dropDownContent = ''
-    if not reportUrl and not shareDescription:
-        dropDownContent = \
-            _htmlNewPostDropDown(scopeIcon, scopeDescription,
-                                 replyStr,
-                                 translate,
-                                 showPublicOnDropdown,
-                                 defaultTimeline,
-                                 pathBase,
-                                 dropdownNewPostSuffix,
-                                 dropdownNewBlogSuffix,
-                                 dropdownUnlistedSuffix,
-                                 dropdownFollowersSuffix,
-                                 dropdownDMSuffix,
-                                 dropdownReminderSuffix,
-                                 dropdownReportSuffix,
-                                 noDropDown, accessKeys)
+    drop_down_content = ''
+    if not report_url and not share_description:
+        drop_down_content = \
+            _html_new_post_drop_down(scope_icon, scope_description,
+                                     reply_str,
+                                     translate,
+                                     show_public_on_dropdown,
+                                     default_timeline,
+                                     path_base,
+                                     dropdown_new_post_suffix,
+                                     dropdown_new_blog_suffix,
+                                     dropdown_unlisted_suffix,
+                                     dropdown_followers_suffix,
+                                     dropdown_dm_suffix,
+                                     dropdown_reminder_suffix,
+                                     dropdown_report_suffix,
+                                     no_drop_down, access_keys)
     else:
-        if not shareDescription:
+        if not share_description:
             # reporting a post to moderator
-            mentionsStr = 'Re: ' + reportUrl + '\n\n' + mentionsStr
+            mentions_str = 'Re: ' + report_url + '\n\n' + mentions_str
 
-    newPostForm += \
+    new_post_form += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + \
-        path + '?' + endpoint + '?page=' + str(pageNumber) + '">\n'
-    if conversationId:
-        newPostForm += \
+        path + '?' + endpoint + '?page=' + str(page_number) + '">\n'
+    if reply_is_chat:
+        new_post_form += \
+            '    <input type="hidden" name="replychatmsg" value="yes">\n'
+    if conversation_id:
+        new_post_form += \
             '    <input type="hidden" name="conversationId" value="' + \
-            conversationId + '">\n'
-    newPostForm += '  <div class="vertical-center">\n'
-    newPostForm += \
-        '    <label for="nickname"><b>' + newPostText + '</b></label>\n'
-    newPostForm += '    <div class="containerNewPost">\n'
-    newPostForm += '      <table style="width:100%" border="0">\n'
-    newPostForm += '        <colgroup>\n'
-    newPostForm += '          <col span="1" style="width:70%">\n'
-    newPostForm += '          <col span="1" style="width:10%">\n'
+            conversation_id + '">\n'
+    new_post_form += '  <div class="vertical-center">\n'
+    new_post_form += \
+        '    <label for="nickname"><b>' + new_post_text + '</b></label>\n'
+    new_post_form += '    <div class="containerNewPost">\n'
+    new_post_form += '      <table style="width:100%" border="0">\n'
+    new_post_form += '        <colgroup>\n'
+    new_post_form += '          <col span="1" style="width:70%">\n'
+    new_post_form += '          <col span="1" style="width:10%">\n'
     if newswire and path.endswith('/newblog'):
-        newPostForm += '          <col span="1" style="width:10%">\n'
-        newPostForm += '          <col span="1" style="width:10%">\n'
+        new_post_form += '          <col span="1" style="width:10%">\n'
+        new_post_form += '          <col span="1" style="width:10%">\n'
     else:
-        newPostForm += '          <col span="1" style="width:20%">\n'
-    newPostForm += '        </colgroup>\n'
-    newPostForm += '<tr>\n'
-    newPostForm += '<td>' + dropDownContent + '</td>\n'
+        new_post_form += '          <col span="1" style="width:20%">\n'
+    new_post_form += '        </colgroup>\n'
+    new_post_form += '<tr>\n'
+    new_post_form += '<td>' + drop_down_content + '</td>\n'
 
-    newPostForm += \
-        '      <td><a href="' + pathBase + \
-        '/searchemoji"><img loading="lazy" class="emojisearch" ' + \
-        'src="/emoji/1F601.png" title="' + \
+    new_post_form += \
+        '      <td><a href="' + path_base + \
+        '/searchemoji"><img loading="lazy" decoding="async" ' + \
+        'class="emojisearch" src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a></td>\n'
 
     # for a new blog if newswire items exist then add a citations button
     if newswire and path.endswith('/newblog'):
-        newPostForm += \
+        new_post_form += \
             '      <td><input type="submit" name="submitCitations" value="' + \
             translate['Citations'] + '"></td>\n'
 
-    submitText = translate['Submit']
-    if customSubmitText:
-        submitText = customSubmitText
-    newPostForm += \
+    submit_text = translate['Publish']
+    if custom_submit_text:
+        submit_text = custom_submit_text
+    new_post_form += \
         '      <td><input type="submit" name="submitPost" value="' + \
-        submitText + '" ' + \
-        'accesskey="' + accessKeys['submitButton'] + '"></td>\n'
+        submit_text + '" ' + \
+        'accesskey="' + access_keys['submitButton'] + '"></td>\n'
 
-    newPostForm += '      </tr>\n</table>\n'
-    newPostForm += '    </div>\n'
+    new_post_form += '      </tr>\n</table>\n'
+    new_post_form += '    </div>\n'
 
-    newPostForm += '    <div class="containerSubmitNewPost"><center>\n'
+    new_post_form += '    <div class="containerSubmitNewPost"><center>\n'
 
-    newPostForm += '    </center></div>\n'
+    new_post_form += '    </center></div>\n'
 
-    newPostForm += replyStr
-    if mediaInstance and not replyStr:
-        newPostForm += newPostImageSection
+    new_post_form += reply_str
+    if media_instance and not reply_str:
+        new_post_form += new_post_image_section
 
-    if not shareDescription:
-        shareDescription = ''
-    newPostForm += \
-        editTextField(placeholderSubject, 'subject', shareDescription)
-    newPostForm += ''
+    if not share_description:
+        share_description = ''
 
-    selectedStr = ' selected'
-    if inReplyTo or endpoint == 'newdm':
-        if inReplyTo:
-            newPostForm += \
-                '    <label class="labels">' + placeholderMentions + \
+    # for reminders show the date and time at the top
+    if is_new_reminder:
+        new_post_form += '<div class="containerNoOverflow">\n'
+        new_post_form += date_and_time_str
+        new_post_form += '</div>\n'
+
+    new_post_form += \
+        edit_text_field(placeholder_subject, 'subject', share_description)
+    new_post_form += ''
+
+    selected_str = ' selected'
+    if in_reply_to or endpoint == 'newdm':
+        if in_reply_to:
+            new_post_form += \
+                '    <br><label class="labels">' + placeholder_mentions + \
                 '</label><br>\n'
         else:
-            newPostForm += \
-                '    <a href="/users/' + nickname + \
+            new_post_form += \
+                '    <br><a href="/users/' + nickname + \
                 '/followingaccounts" title="' + \
                 translate['Show a list of addresses to send to'] + '">' \
                 '<label class="labels">' + \
                 translate['Send to'] + ':' + '</label> 📄</a><br>\n'
-        newPostForm += \
+        new_post_form += \
             '    <input type="text" name="mentions" ' + \
-            'list="followingHandles" value="' + mentionsStr + '" selected>\n'
-        newPostForm += \
-            _htmlFollowingDataList(baseDir, nickname, domain, domainFull)
-        newPostForm += ''
-        selectedStr = ''
+            'list="followingHandles" value="' + mentions_str + '" selected>\n'
+        new_post_form += \
+            _html_following_data_list(base_dir, nickname, domain, domain_full)
+        new_post_form += ''
+        selected_str = ''
 
-    newPostForm += \
-        '    <br><label class="labels">' + placeholderMessage + '</label>'
-    if mediaInstance:
-        messageBoxHeight = 200
+    new_post_form += \
+        '    <br><label class="labels">' + placeholder_message + '</label>'
+    if media_instance:
+        message_box_height = 200
 
     if endpoint == 'newquestion':
-        messageBoxHeight = 100
+        message_box_height = 100
     elif endpoint == 'newblog':
-        messageBoxHeight = 800
+        message_box_height = 800
 
-    newPostForm += \
+    new_post_form += \
         '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px"' + selectedStr + \
+        str(message_box_height) + 'px"' + selected_str + \
         ' spellcheck="true" autocomplete="on">' + \
         '</textarea>\n'
-    newPostForm += extraFields + citationsStr + dateAndLocation
-    if not mediaInstance or replyStr:
-        newPostForm += newPostImageSection
+    new_post_form += \
+        extra_fields + citations_str + replies_section + date_and_location
+    if not media_instance or reply_str:
+        new_post_form += new_post_image_section
+    new_post_form += new_post_emoji_section
 
-    newPostForm += \
+    new_post_form += \
         '    <div class="container">\n' + \
         '      <input type="submit" name="submitPost" value="' + \
-        submitText + '">\n' + \
+        submit_text + '">\n' + \
         '    </div>\n' + \
         '  </div>\n' + \
         '</form>\n'
 
-    if not reportUrl:
-        newPostForm = \
-            newPostForm.replace('<body>', '<body onload="focusOnMessage()">')
-
-    newPostForm += htmlFooter()
-    return newPostForm
+    new_post_form += html_footer()
+    return new_post_form

@@ -39,13 +39,14 @@ from collections import deque, namedtuple
 from numbers import Integral, Real
 
 from context import getApschemaV1_9
+from context import getApschemaV1_10
 from context import getApschemaV1_20
 from context import getApschemaV1_21
 from context import getLitepubV0_1
-from context import getLitepubSocial
-from context import getV1Schema
-from context import getV1SecuritySchema
-from context import getActivitystreamsSchema
+from context import get_litepub_social
+from context import get_v1schema
+from context import get_v1security_schema
+from context import get_activitystreams_schema
 
 try:
     from functools import cmp_to_key
@@ -109,7 +110,7 @@ RDF_FIRST = RDF + 'first'
 RDF_REST = RDF + 'rest'
 RDF_NIL = RDF + 'nil'
 RDF_TYPE = RDF + 'type'
-RDF_LANGSTRING = RDF + 'langString'
+RDF_LANGSTRING = RDF + 'lang_string'
 
 # JSON-LD keywords
 KEYWORDS = [
@@ -340,16 +341,17 @@ def parse_link_header(header):
         return rval
     r_link_header = r'\s*<([^>]*?)>\s*(?:;\s*(.*))?'
     for entry in entries:
-        match = re.search(r_link_header, entry)
-        if not match:
+        ldmatch = re.search(r_link_header, entry)
+        if not ldmatch:
             continue
-        match = match.groups()
-        result = {'target': match[0]}
-        params = match[1]
+        ldmatch = ldmatch.groups()
+        result = {'target': ldmatch[0]}
+        params = ldmatch[1]
         r_params = r'(.*?)=(?:(?:"([^"]*?)")|([^"]*?))\s*(?:(?:;\s*)|$)'
         matches = re.findall(r_params, params)
-        for match in matches:
-            result[match[0]] = match[2] if match[1] is None else match[1]
+        for ldmatch in matches:
+            result[ldmatch[0]] = \
+                ldmatch[2] if ldmatch[1] is None else ldmatch[1]
         rel = result.get('rel', '')
         if isinstance(rval.get(rel), list):
             rval[rel].append(result)
@@ -372,7 +374,7 @@ def load_document(url):
         # validate URL
         pieces = urllib_parse.urlparse(url)
         if (not all([pieces.scheme, pieces.netloc]) or
-            pieces.scheme not in ['http', 'https', 'hyper'] or
+            pieces.scheme not in ['http', 'https', 'hyper', 'ipfs', 'ipns'] or
             set(pieces.netloc) > set(
                 string.ascii_letters + string.digits + '-.:')):
             raise JsonLdError(
@@ -385,21 +387,21 @@ def load_document(url):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
-                'document': getV1Schema()
+                'document': get_v1schema()
             }
             return doc
         if url == 'https://w3id.org/security/v1':
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
-                'document': getV1SecuritySchema()
+                'document': get_v1security_schema()
             }
             return doc
         elif url == 'https://www.w3.org/ns/activitystreams':
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
-                'document': getActivitystreamsSchema()
+                'document': get_activitystreams_schema()
             }
             return doc
         elif url.endswith('/apschema/v1.9'):
@@ -407,6 +409,13 @@ def load_document(url):
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getApschemaV1_9()
+            }
+            return doc
+        elif url.endswith('/apschema/v1.10'):
+            doc = {
+                'contextUrl': None,
+                'documentUrl': url,
+                'document': getApschemaV1_10()
             }
             return doc
         elif url.endswith('/apschema/v1.20'):
@@ -434,12 +443,12 @@ def load_document(url):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
-                'document': getLitepubSocial()
+                'document': get_litepub_social()
             }
             return doc
         return None
-    except JsonLdError as e:
-        raise e
+    except JsonLdError as ex:
+        raise ex
     except Exception as cause:
         raise JsonLdError(
             'Could not retrieve a JSON-LD document from the URL.',
@@ -1474,30 +1483,30 @@ class JsonLdProcessor(object):
                 continue
 
             # parse quad
-            match = re.search(quad, line)
-            if match is None:
+            ldmatch = re.search(quad, line)
+            if ldmatch is None:
                 raise JsonLdError(
                     'Error while parsing N-Quads invalid quad.',
                     'jsonld.ParseError', {'line': line_number})
-            match = match.groups()
+            ldmatch = ldmatch.groups()
 
             # create RDF triple
             triple = {'subject': {}, 'predicate': {}, 'object': {}}
 
             # get subject
-            if match[0] is not None:
-                triple['subject'] = {'type': 'IRI', 'value': match[0]}
+            if ldmatch[0] is not None:
+                triple['subject'] = {'type': 'IRI', 'value': ldmatch[0]}
             else:
-                triple['subject'] = {'type': 'blank node', 'value': match[1]}
+                triple['subject'] = {'type': 'blank node', 'value': ldmatch[1]}
 
             # get predicate
-            triple['predicate'] = {'type': 'IRI', 'value': match[2]}
+            triple['predicate'] = {'type': 'IRI', 'value': ldmatch[2]}
 
             # get object
-            if match[3] is not None:
-                triple['object'] = {'type': 'IRI', 'value': match[3]}
-            elif match[4] is not None:
-                triple['object'] = {'type': 'blank node', 'value': match[4]}
+            if ldmatch[3] is not None:
+                triple['object'] = {'type': 'IRI', 'value': ldmatch[3]}
+            elif ldmatch[4] is not None:
+                triple['object'] = {'type': 'blank node', 'value': ldmatch[4]}
             else:
                 triple['object'] = {'type': 'literal'}
                 replacements = {
@@ -1507,24 +1516,24 @@ class JsonLdProcessor(object):
                     '\\r': '\r',
                     '\\\\': '\\'
                 }
-                unescaped = match[5]
-                for match, repl in replacements.items():
-                    unescaped = unescaped.replace(match, repl)
-                if match[6] is not None:
-                    triple['object']['datatype'] = match[6]
-                elif match[7] is not None:
+                unescaped = ldmatch[5]
+                for ldmatch, repl in replacements.items():
+                    unescaped = unescaped.replace(ldmatch, repl)
+                if ldmatch[6] is not None:
+                    triple['object']['datatype'] = ldmatch[6]
+                elif ldmatch[7] is not None:
                     triple['object']['datatype'] = RDF_LANGSTRING
-                    triple['object']['language'] = match[7]
+                    triple['object']['language'] = ldmatch[7]
                 else:
                     triple['object']['datatype'] = XSD_STRING
                 triple['object']['value'] = unescaped
 
             # get graph name ('@default' is used for the default graph)
             name = '@default'
-            if match[8] is not None:
-                name = match[8]
-            elif match[9] is not None:
-                name = match[9]
+            if ldmatch[8] is not None:
+                name = ldmatch[8]
+            elif ldmatch[9] is not None:
+                name = ldmatch[9]
 
             # initialize graph in dataset
             if name not in dataset:
@@ -1607,7 +1616,7 @@ class JsonLdProcessor(object):
         # object is IRI, bnode, or literal
         if o['type'] == 'IRI':
             quad += '<' + o['value'] + '>'
-        elif(o['type'] == 'blank node'):
+        elif (o['type'] == 'blank node'):
             # normalization mode
             if bnode is not None:
                 quad += '_:a' if o['value'] == bnode else '_:z'
@@ -1623,8 +1632,8 @@ class JsonLdProcessor(object):
                 '\"': '\\"'
             }
             escaped = o['value']
-            for match, repl in replacements.items():
-                escaped = escaped.replace(match, repl)
+            for ldmatch, repl in replacements.items():
+                escaped = escaped.replace(ldmatch, repl)
             quad += '"' + escaped + '"'
             if o['datatype'] == RDF_LANGSTRING:
                 if o['language']:
@@ -1667,8 +1676,8 @@ class JsonLdProcessor(object):
         :return: True if the triples are the same, False if not.
         """
         for attr in ['subject', 'predicate', 'object']:
-            if(t1[attr]['type'] != t2[attr]['type'] or
-                    t1[attr]['value'] != t2[attr]['value']):
+            if t1[attr]['type'] != t2[attr]['type'] or \
+               t1[attr]['value'] != t2[attr]['value']:
                 return False
 
         if t1['object'].get('language') != t2['object'].get('language'):
@@ -1709,8 +1718,8 @@ class JsonLdProcessor(object):
 
         # recursively compact object
         if _is_object(element):
-            if(options['link'] and '@id' in element and
-                    element['@id'] in options['link']):
+            if options['link'] and '@id' in element and \
+               element['@id'] in options['link']:
                 # check for a linked element to reuse
                 linked = options['link'][element['@id']]
                 for link in linked:
@@ -1806,9 +1815,9 @@ class JsonLdProcessor(object):
 
                 # skip array processing for keywords that aren't
                 # @graph or @list
-                if(expanded_property != '@graph' and
-                        expanded_property != '@list' and
-                        _is_keyword(expanded_property)):
+                if expanded_property != '@graph' and \
+                   expanded_property != '@list' and \
+                   _is_keyword(expanded_property):
                     # use keyword alias and add value as is
                     alias = self._compact_iri(active_ctx, expanded_property)
                     JsonLdProcessor.add_value(rval, alias, expanded_value)
@@ -2521,16 +2530,17 @@ class JsonLdProcessor(object):
                 # 4. Have no keys other than: @id, rdf:first, rdf:rest
                 #   and, optionally, @type where the value is rdf:List.
                 node_key_count = len(node.keys())
-                while(property == RDF_REST and
-                      _is_object(referenced_once.get(node['@id'])) and
-                      _is_array(node[RDF_FIRST]) and
-                      len(node[RDF_FIRST]) == 1 and
-                      _is_array(node[RDF_REST]) and
-                      len(node[RDF_REST]) == 1 and
-                      (node_key_count == 3 or (node_key_count == 4 and
-                                               _is_array(node.get('@type')) and
-                                               len(node['@type']) == 1 and
-                                               node['@type'][0] == RDF_LIST))):
+                while (property == RDF_REST and
+                       _is_object(referenced_once.get(node['@id'])) and
+                       _is_array(node[RDF_FIRST]) and
+                       len(node[RDF_FIRST]) == 1 and
+                       _is_array(node[RDF_REST]) and
+                       len(node[RDF_REST]) == 1 and
+                       (node_key_count == 3 or
+                        (node_key_count == 4 and
+                         _is_array(node.get('@type')) and
+                         len(node['@type']) == 1 and
+                         node['@type'][0] == RDF_LIST))):
                     list_.append(node[RDF_FIRST][0])
                     list_nodes.append(node['@id'])
 
@@ -3166,7 +3176,7 @@ class JsonLdProcessor(object):
             # reference; note that a circular reference won't occur when the
             # embed flag is `@link` as the above check will short-circuit
             # before reaching this point
-            if(flags['embed'] == '@never' or self._creates_circular_reference(
+            if (flags['embed'] == '@never' or self._creates_circular_reference(
                     subject, state['subjectStack'])):
                 self._add_frame_output(parent, property, output)
                 continue
@@ -4603,7 +4613,7 @@ def permutations(elements):
         for i in range(length):
             e = elements[i]
             is_left = left[e]
-            if((k is None or e > k) and
+            if ((k is None or e > k) and
                     ((is_left and i > 0 and e > elements[i - 1]) or
                      (not is_left and i < last and e > elements[i + 1]))):
                 k, pos = e, i

@@ -1,7 +1,7 @@
 __filename__ = "git.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -9,48 +9,48 @@ __module_group__ = "Profile Metadata"
 
 import os
 import html
-from utils import hasObjectDict
-from utils import acctDir
+from utils import acct_dir
+from utils import has_object_string_type
+from utils import text_in_file
 
 
-def _gitFormatContent(content: str) -> str:
+def _git_format_content(content: str) -> str:
     """ replace html formatting, so that it's more
     like the original patch file
     """
-    patchStr = content.replace('<br>', '\n').replace('<br />', '\n')
-    patchStr = patchStr.replace('<p>', '').replace('</p>', '\n')
-    patchStr = html.unescape(patchStr)
-    if 'From ' in patchStr:
-        patchStr = 'From ' + patchStr.split('From ', 1)[1]
-    return patchStr
+    patch_str = content.replace('<br>', '\n').replace('<br />', '\n')
+    patch_str = patch_str.replace('<p>', '').replace('</p>', '\n')
+    patch_str = html.unescape(patch_str)
+    if 'From ' in patch_str:
+        patch_str = 'From ' + patch_str.split('From ', 1)[1]
+    return patch_str
 
 
-def _getGitProjectName(baseDir: str, nickname: str, domain: str,
-                       subject: str) -> str:
+def _get_git_project_name(base_dir: str, nickname: str, domain: str,
+                          subject: str) -> str:
     """Returns the project name for a git patch
     The project name should be contained within the subject line
     and should match against a list of projects which the account
     holder wants to receive
     """
-    gitProjectsFilename = \
-        acctDir(baseDir, nickname, domain) + '/gitprojects.txt'
-    if not os.path.isfile(gitProjectsFilename):
+    git_projects_filename = \
+        acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
+    if not os.path.isfile(git_projects_filename):
         return None
-    subjectLineWords = subject.lower().split(' ')
-    for word in subjectLineWords:
-        if word in open(gitProjectsFilename).read():
+    subject_line_words = subject.lower().split(' ')
+    for word in subject_line_words:
+        if text_in_file(word, git_projects_filename):
             return word
     return None
 
 
-def isGitPatch(baseDir: str, nickname: str, domain: str,
-               messageType: str,
-               subject: str, content: str,
-               checkProjectName: bool = True) -> bool:
+def is_git_patch(base_dir: str, nickname: str, domain: str,
+                 message_type: str,
+                 subject: str, content: str,
+                 check_project_name: bool = True) -> bool:
     """Is the given post content a git patch?
     """
-    if messageType != 'Note' and \
-       messageType != 'Patch':
+    if message_type not in ('Note', 'Page', 'Patch'):
         return False
     # must have a subject line
     if not subject:
@@ -72,19 +72,19 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
     if '<br>' not in content:
         if '<br />' not in content:
             return False
-    if checkProjectName:
-        projectName = \
-            _getGitProjectName(baseDir, nickname, domain, subject)
-        if not projectName:
+    if check_project_name:
+        project_name = \
+            _get_git_project_name(base_dir, nickname, domain, subject)
+        if not project_name:
             return False
     return True
 
 
-def _getGitHash(patchStr: str) -> str:
+def _get_git_hash(patch_str: str) -> str:
     """Returns the commit hash from a given patch
     """
-    patchLines = patchStr.split('\n')
-    for line in patchLines:
+    patch_lines = patch_str.split('\n')
+    for line in patch_lines:
         if line.startswith('From '):
             words = line.split(' ')
             if len(words) > 1:
@@ -94,13 +94,13 @@ def _getGitHash(patchStr: str) -> str:
     return None
 
 
-def _getPatchDescription(patchStr: str) -> str:
+def _get_patch_description(patch_str: str) -> str:
     """Returns the description from a given patch
     """
-    patchLines = patchStr.split('\n')
+    patch_lines = patch_str.split('\n')
     description = ''
     started = False
-    for line in patchLines:
+    for line in patch_lines:
         if started:
             if line.strip() == '---':
                 break
@@ -110,110 +110,113 @@ def _getPatchDescription(patchStr: str) -> str:
     return description
 
 
-def convertPostToPatch(baseDir: str, nickname: str, domain: str,
-                       postJsonObject: {}) -> bool:
+def convert_post_to_patch(base_dir: str, nickname: str, domain: str,
+                          post_json_object: {}) -> bool:
     """Detects whether the given post contains a patch
     and if so then converts it to a Patch ActivityPub type
     """
-    if not hasObjectDict(postJsonObject):
+    if not has_object_string_type(post_json_object, False):
         return False
-    if not postJsonObject['object'].get('type'):
-        return False
-    if postJsonObject['object']['type'] == 'Patch':
+    if post_json_object['object']['type'] == 'Patch':
         return True
-    if not postJsonObject['object'].get('summary'):
+    if not post_json_object['object'].get('summary'):
         return False
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return False
-    if not postJsonObject['object'].get('attributedTo'):
+    if not post_json_object['object'].get('attributedTo'):
         return False
-    if not isinstance(postJsonObject['object']['attributedTo'], str):
+    if not isinstance(post_json_object['object']['attributedTo'], str):
         return False
-    if not isGitPatch(baseDir, nickname, domain,
-                      postJsonObject['object']['type'],
-                      postJsonObject['object']['summary'],
-                      postJsonObject['object']['content'],
-                      False):
+    if not is_git_patch(base_dir, nickname, domain,
+                        post_json_object['object']['type'],
+                        post_json_object['object']['summary'],
+                        post_json_object['object']['content'],
+                        False):
         return False
-    patchStr = _gitFormatContent(postJsonObject['object']['content'])
-    commitHash = _getGitHash(patchStr)
-    if not commitHash:
+    patch_str = _git_format_content(post_json_object['object']['content'])
+    commit_hash = _get_git_hash(patch_str)
+    if not commit_hash:
         return False
-    postJsonObject['object']['type'] = 'Patch'
+    post_json_object['object']['type'] = 'Patch'
     # add a commitedBy parameter
-    if not postJsonObject['object'].get('committedBy'):
-        postJsonObject['object']['committedBy'] = \
-            postJsonObject['object']['attributedTo']
-    postJsonObject['object']['hash'] = commitHash
-    postJsonObject['object']['description'] = {
+    if not post_json_object['object'].get('committedBy'):
+        post_json_object['object']['committedBy'] = \
+            post_json_object['object']['attributedTo']
+    post_json_object['object']['hash'] = commit_hash
+    post_json_object['object']['description'] = {
         "mediaType": "text/plain",
-        "content": _getPatchDescription(patchStr)
+        "content": _get_patch_description(patch_str)
     }
     # remove content map
-    if postJsonObject['object'].get('contentMap'):
-        del postJsonObject['object']['contentMap']
+    if post_json_object['object'].get('contentMap'):
+        del post_json_object['object']['contentMap']
     print('Converted post to Patch ActivityPub type')
     return True
 
 
-def _gitAddFromHandle(patchStr: str, handle: str) -> str:
+def _git_add_from_handle(patch_str: str, handle: str) -> str:
     """Adds the activitypub handle of the sender to the patch
     """
-    fromStr = 'AP-signed-off-by: '
-    if fromStr in patchStr:
-        return patchStr
+    from_str = 'AP-signed-off-by: '
+    if from_str in patch_str:
+        return patch_str
 
-    patchLines = patchStr.split('\n')
-    patchStr = ''
-    for line in patchLines:
-        patchStr += line + '\n'
+    patch_lines = patch_str.split('\n')
+    patch_str = ''
+    for line in patch_lines:
+        patch_str += line + '\n'
         if line.startswith('From:'):
-            if fromStr not in patchStr:
-                patchStr += fromStr + handle + '\n'
-    return patchStr
+            if from_str not in patch_str:
+                patch_str += from_str + handle + '\n'
+    return patch_str
 
 
-def receiveGitPatch(baseDir: str, nickname: str, domain: str,
-                    messageType: str, subject: str, content: str,
-                    fromNickname: str, fromDomain: str) -> bool:
+def receive_git_patch(base_dir: str, nickname: str, domain: str,
+                      message_type: str, subject: str, content: str,
+                      from_nickname: str, from_domain: str) -> bool:
     """Receive a git patch
     """
-    if not isGitPatch(baseDir, nickname, domain,
-                      messageType, subject, content):
+    if not is_git_patch(base_dir, nickname, domain,
+                        message_type, subject, content):
         return False
 
-    patchStr = _gitFormatContent(content)
+    patch_str = _git_format_content(content)
 
-    patchLines = patchStr.split('\n')
-    patchFilename = None
-    projectDir = None
-    patchesDir = acctDir(baseDir, nickname, domain) + '/patches'
+    patch_lines = patch_str.split('\n')
+    patch_filename = None
+    project_dir = None
+    patches_dir = acct_dir(base_dir, nickname, domain) + '/patches'
     # get the subject line and turn it into a filename
-    for line in patchLines:
+    for line in patch_lines:
         if line.startswith('Subject:'):
-            patchSubject = \
+            patch_subject = \
                 line.replace('Subject:', '').replace('/', '|')
-            patchSubject = patchSubject.replace('[PATCH]', '').strip()
-            patchSubject = patchSubject.replace(' ', '_')
-            projectName = \
-                _getGitProjectName(baseDir, nickname, domain, subject)
-            if not os.path.isdir(patchesDir):
-                os.mkdir(patchesDir)
-            projectDir = patchesDir + '/' + projectName
-            if not os.path.isdir(projectDir):
-                os.mkdir(projectDir)
-            patchFilename = \
-                projectDir + '/' + patchSubject + '.patch'
+            patch_subject = patch_subject.replace('[PATCH]', '').strip()
+            patch_subject = patch_subject.replace(' ', '_')
+            project_name = \
+                _get_git_project_name(base_dir, nickname, domain, subject)
+            if not os.path.isdir(patches_dir):
+                os.mkdir(patches_dir)
+            project_dir = patches_dir + '/' + project_name
+            if not os.path.isdir(project_dir):
+                os.mkdir(project_dir)
+            patch_filename = \
+                project_dir + '/' + patch_subject + '.patch'
             break
-    if not patchFilename:
+    if not patch_filename:
         return False
-    patchStr = \
-        _gitAddFromHandle(patchStr, '@' + fromNickname + '@' + fromDomain)
-    with open(patchFilename, 'w+') as patchFile:
-        patchFile.write(patchStr)
-        patchNotifyFilename = \
-            acctDir(baseDir, nickname, domain) + '/.newPatchContent'
-        with open(patchNotifyFilename, 'w+') as patchFile:
-            patchFile.write(patchStr)
-            return True
+    patch_str = \
+        _git_add_from_handle(patch_str,
+                             '@' + from_nickname + '@' + from_domain)
+    try:
+        with open(patch_filename, 'w+', encoding='utf-8') as patch_file:
+            patch_file.write(patch_str)
+            patch_notify_filename = \
+                acct_dir(base_dir, nickname, domain) + '/.newPatchContent'
+            with open(patch_notify_filename, 'w+',
+                      encoding='utf-8') as patch_file:
+                patch_file.write(patch_str)
+                return True
+    except OSError as ex:
+        print('EX: receive_git_patch ' + patch_filename + ' ' + str(ex))
     return False

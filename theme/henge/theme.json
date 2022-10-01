@@ -1,4 +1,11 @@
 {
+    "code-color": "blue",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "white",
+    "dropdown-bg-color": "#483335",
+    "dropdown-bg-color-hover": "#583335",
+    "dropdown-fg-color-hover": "white",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "time-color": "grey",
@@ -16,7 +23,10 @@
     "banner-height": "25vh",
     "column-left-image-width-mobile": "40vw",
     "column-right-image-width-mobile": "40vw",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "26px",
+    "font-size-pageslist": "32px",
     "font-size": "32px",
     "font-size2": "26px",
     "font-size3": "40px",
@@ -37,6 +47,8 @@
     "main-visited-color": "#e1c4bc",
     "options-main-visited-color": "#e1c4bc",
     "cw-color": "white",
+    "pageslist-color": "white",
+    "pageslist-selected-color": "yellow",
     "main-fg-color": "white",
     "options-fg-color": "white",
     "column-left-fg-color": "white",
@@ -70,5 +82,6 @@
     "quote-right-margin": "0.1em",
     "header-font": "'bgrove'",
     "*font-family": "'bgrove'",
-    "*src": "url('fonts/bgrove.woff2') format('woff2')"
+    "*src": "url('fonts/bgrove.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }

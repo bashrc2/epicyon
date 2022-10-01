@@ -1,4 +1,11 @@
 {
+    "code-color": "lightblue",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "white",
+    "dropdown-bg-color": "#222",
+    "dropdown-bg-color-hover": "#444",
+    "dropdown-fg-color-hover": "white",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "True",
     "icons-as-buttons": "False",
@@ -20,7 +27,10 @@
     "button-corner-radius": "5px",
     "timeline-border-radius": "5px",
     "focus-color": "blue",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "26px",
+    "font-size-pageslist": "32px",
     "font-size": "32px",
     "font-size2": "26px",
     "font-size3": "40px",
@@ -46,6 +56,8 @@
     "main-visited-color": "#ffb900",
     "options-main-visited-color": "#ffb900",
     "cw-color": "white",
+    "pageslist-color": "white",
+    "pageslist-selected-color": "yellow",
     "main-fg-color": "white",
     "login-fg-color": "white",
     "welcome-fg-color": "white",
@@ -85,5 +97,6 @@
     "login-button-color": "red",
     "welcome-button-color": "red",
     "login-button-fg-color": "white",
-    "welcome-button-fg-color": "white"
+    "welcome-button-fg-color": "white",
+    "reply-icon-direction": "-1"
 }

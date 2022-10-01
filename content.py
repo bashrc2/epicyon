@@ -1,50 +1,103 @@
 __filename__ = "content.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import difflib
+import math
+import html
 import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
-from utils import dangerousSVG
-from utils import removeDomainPort
-from utils import isValidLanguage
-from utils import getImageExtensions
-from utils import loadJson
-from utils import fileLastModified
-from utils import getLinkPrefixes
-from utils import dangerousMarkup
-from utils import isPGPEncrypted
-from utils import containsPGPPublicKey
-from utils import acctDir
-from utils import isfloat
-from utils import getCurrencies
-from petnames import getPetName
+from dateutil.parser import parse
+from utils import get_user_paths
+from utils import convert_published_to_local_timezone
+from utils import has_object_dict
+from utils import valid_hash_tag
+from utils import dangerous_svg
+from utils import remove_domain_port
+from utils import get_image_extensions
+from utils import load_json
+from utils import save_json
+from utils import file_last_modified
+from utils import get_link_prefixes
+from utils import dangerous_markup
+from utils import is_pgp_encrypted
+from utils import contains_pgp_public_key
+from utils import acct_dir
+from utils import is_float
+from utils import get_currencies
+from utils import remove_html
+from utils import remove_eol
+from petnames import get_pet_name
+from session import download_image
+
+MUSIC_SITES = ('soundcloud.com', 'bandcamp.com')
+
+MAX_LINK_LENGTH = 40
+
+REMOVE_MARKUP = (
+    'b', 'i', 'ul', 'ol', 'li', 'em', 'strong',
+    'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5'
+)
+
+INVALID_CONTENT_STRINGS = (
+    'mute', 'unmute', 'editeventpost', 'notifypost',
+    'delete', 'options', 'page', 'repeat',
+    'bm', 'tl', 'actor', 'unrepeat', 'eventid',
+    'unannounce', 'like', 'unlike', 'bookmark',
+    'unbookmark', 'likedBy', 'time',
+    'year', 'month', 'day', 'editnewpost',
+    'graph', 'showshare', 'category', 'showwanted',
+    'rmshare', 'rmwanted', 'repeatprivate',
+    'unrepeatprivate', 'replyto',
+    'replyfollowers', 'replydm', 'replychat', 'editblogpost',
+    'handle', 'blockdomain'
+)
 
 
-def removeHtmlTag(htmlStr: str, tag: str) -> str:
+def valid_url_lengths(content: str, max_url_length: int) -> bool:
+    """Returns true if the given content contains urls which are too long
+    """
+    if '://' not in content:
+        return True
+    sections = content.split('://')
+    ctr = 0
+    for text in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        if '"' in text:
+            url = text.split('"')[0]
+            if '<' not in url and '>' not in url:
+                if len(url) > max_url_length:
+                    return False
+    return True
+
+
+def remove_html_tag(html_str: str, tag: str) -> str:
     """Removes a given tag from a html string
     """
-    tagFound = True
-    while tagFound:
-        matchStr = ' ' + tag + '="'
-        if matchStr not in htmlStr:
-            tagFound = False
+    tag_found = True
+    while tag_found:
+        match_str = ' ' + tag + '="'
+        if match_str not in html_str:
+            tag_found = False
             break
-        sections = htmlStr.split(matchStr, 1)
+        sections = html_str.split(match_str, 1)
         if '"' not in sections[1]:
-            tagFound = False
+            tag_found = False
             break
-        htmlStr = sections[0] + sections[1].split('"', 1)[1]
-    return htmlStr
+        html_str = sections[0] + sections[1].split('"', 1)[1]
+    return html_str
 
 
-def _removeQuotesWithinQuotes(content: str) -> str:
+def _remove_quotes_within_quotes(content: str) -> str:
     """Removes any blockquote inside blockquote
     """
     if '<blockquote>' not in content:
@@ -55,25 +108,25 @@ def _removeQuotesWithinQuotes(content: str) -> str:
     found = True
     while found:
         prefix = content.split('<blockquote>', ctr)[0] + '<blockquote>'
-        quotedStr = content.split('<blockquote>', ctr)[1]
-        if '</blockquote>' not in quotedStr:
+        quoted_str = content.split('<blockquote>', ctr)[1]
+        if '</blockquote>' not in quoted_str:
             found = False
         else:
-            endStr = quotedStr.split('</blockquote>')[1]
-            quotedStr = quotedStr.split('</blockquote>')[0]
-            if '<blockquote>' not in endStr:
+            end_str = quoted_str.split('</blockquote>')[1]
+            quoted_str = quoted_str.split('</blockquote>')[0]
+            if '<blockquote>' not in end_str:
                 found = False
-            if '<blockquote>' in quotedStr:
-                quotedStr = quotedStr.replace('<blockquote>', '')
-                content = prefix + quotedStr + '</blockquote>' + endStr
+            if '<blockquote>' in quoted_str:
+                quoted_str = quoted_str.replace('<blockquote>', '')
+                content = prefix + quoted_str + '</blockquote>' + end_str
         ctr += 1
     return content
 
 
-def htmlReplaceEmailQuote(content: str) -> str:
+def html_replace_email_quote(content: str) -> str:
     """Replaces an email style quote "> Some quote" with html blockquote
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     # replace quote paragraph
     if '<p>&quot;' in content:
@@ -89,34 +142,34 @@ def htmlReplaceEmailQuote(content: str) -> str:
     # replace email style quote
     if '>&gt; ' not in content:
         return content
-    contentStr = content.replace('<p>', '')
-    contentLines = contentStr.split('</p>')
-    newContent = ''
-    for lineStr in contentLines:
-        if not lineStr:
+    content_str = content.replace('<p>', '')
+    content_lines = content_str.split('</p>')
+    new_content = ''
+    for line_str in content_lines:
+        if not line_str:
             continue
-        if '>&gt; ' not in lineStr:
-            if lineStr.startswith('&gt; '):
-                lineStr = lineStr.replace('&gt; ', '<blockquote>')
-                lineStr = lineStr.replace('&gt;', '<br>')
-                newContent += '<p>' + lineStr + '</blockquote></p>'
+        if '>&gt; ' not in line_str:
+            if line_str.startswith('&gt; '):
+                line_str = line_str.replace('&gt; ', '<blockquote>')
+                line_str = line_str.replace('&gt;', '<br>')
+                new_content += '<p>' + line_str + '</blockquote></p>'
             else:
-                newContent += '<p>' + lineStr + '</p>'
+                new_content += '<p>' + line_str + '</p>'
         else:
-            lineStr = lineStr.replace('>&gt; ', '><blockquote>')
-            if lineStr.startswith('&gt;'):
-                lineStr = lineStr.replace('&gt;', '<blockquote>', 1)
+            line_str = line_str.replace('>&gt; ', '><blockquote>')
+            if line_str.startswith('&gt;'):
+                line_str = line_str.replace('&gt;', '<blockquote>', 1)
             else:
-                lineStr = lineStr.replace('&gt;', '<br>')
-            newContent += '<p>' + lineStr + '</blockquote></p>'
-    return _removeQuotesWithinQuotes(newContent)
+                line_str = line_str.replace('&gt;', '<br>')
+            new_content += '<p>' + line_str + '</blockquote></p>'
+    return _remove_quotes_within_quotes(new_content)
 
 
-def htmlReplaceQuoteMarks(content: str) -> str:
+def html_replace_quote_marks(content: str) -> str:
     """Replaces quotes with html formatting
     "hello" becomes <q>hello</q>
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     if '"' not in content:
         if '&quot;' not in content:
@@ -128,178 +181,360 @@ def htmlReplaceQuoteMarks(content: str) -> str:
     if content.count('&quot;') > 4:
         return content
 
-    newContent = content
+    new_content = content
     if '"' in content:
         sections = content.split('"')
         if len(sections) > 1:
-            newContent = ''
-            openQuote = True
+            new_content = ''
+            open_quote = True
             markup = False
-            for ch in content:
-                currChar = ch
-                if ch == '<':
+            for char in content:
+                curr_char = char
+                if char == '<':
                     markup = True
-                elif ch == '>':
+                elif char == '>':
                     markup = False
-                elif ch == '"' and not markup:
-                    if openQuote:
-                        currChar = '“'
+                elif char == '"' and not markup:
+                    if open_quote:
+                        curr_char = '“'
                     else:
-                        currChar = '”'
-                    openQuote = not openQuote
-                newContent += currChar
+                        curr_char = '”'
+                    open_quote = not open_quote
+                new_content += curr_char
 
-    if '&quot;' in newContent:
-        openQuote = True
-        content = newContent
-        newContent = ''
+    if '&quot;' in new_content:
+        open_quote = True
+        content = new_content
+        new_content = ''
         ctr = 0
         sections = content.split('&quot;')
-        noOfSections = len(sections)
-        for s in sections:
-            newContent += s
-            if ctr < noOfSections - 1:
-                if openQuote:
-                    newContent += '“'
+        no_of_sections = len(sections)
+        for sec in sections:
+            new_content += sec
+            if ctr < no_of_sections - 1:
+                if open_quote:
+                    new_content += '“'
                 else:
-                    newContent += '”'
-                openQuote = not openQuote
+                    new_content += '”'
+                open_quote = not open_quote
             ctr += 1
-    return newContent
+    return new_content
 
 
-def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
+def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
     """Returns true is the css file contains code which
     can create security problems
     """
     if not os.path.isfile(filename):
         return False
 
-    with open(filename, 'r') as fp:
-        content = fp.read().lower()
+    content = None
+    try:
+        with open(filename, 'r', encoding='utf-8') as css_file:
+            content = css_file.read().lower()
+    except OSError:
+        print('EX: unable to read css file ' + filename)
 
-        cssMatches = ('behavior:', ':expression', '?php', '.php',
-                      'google', 'regexp', 'localhost',
-                      '127.0.', '192.168', '10.0.', '@import')
-        for match in cssMatches:
-            if match in content:
-                return True
+    if not content:
+        return False
 
-        # search for non-local web links
-        if 'url(' in content:
-            urlList = content.split('url(')
-            ctr = 0
-            for urlStr in urlList:
-                if ctr > 0:
-                    if ')' in urlStr:
-                        urlStr = urlStr.split(')')[0]
-                        if 'http' in urlStr:
-                            print('ERROR: non-local web link in CSS ' +
-                                  filename)
-                            return True
-                ctr += 1
-
-        # an attacker can include html inside of the css
-        # file as a comment and this may then be run from the html
-        if dangerousMarkup(content, allowLocalNetworkAccess):
+    css_matches = (
+        'behavior:', ':expression', '?php', '.php',
+        'google', 'regexp', 'localhost',
+        '127.0.', '192.168', '10.0.', '@import'
+    )
+    for cssmatch in css_matches:
+        if cssmatch in content:
             return True
+
+    # search for non-local web links
+    if 'url(' in content:
+        url_list = content.split('url(')
+        ctr = 0
+        for url_str in url_list:
+            if ctr > 0:
+                if ')' in url_str:
+                    url_str = url_str.split(')')[0]
+                    if 'http' in url_str or \
+                       'ipfs' in url_str or \
+                       'ipns' in url_str:
+                        print('ERROR: non-local web link in CSS ' +
+                              filename)
+                        return True
+            ctr += 1
+
+    # an attacker can include html inside of the css
+    # file as a comment and this may then be run from the html
+    if dangerous_markup(content, allow_local_network_access):
+        return True
     return False
 
 
-def switchWords(baseDir: str, nickname: str, domain: str, content: str,
-                rules: [] = []) -> str:
+def switch_words(base_dir: str, nickname: str, domain: str, content: str,
+                 rules: [] = []) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
 
     if not rules:
-        switchWordsFilename = \
-            acctDir(baseDir, nickname, domain) + '/replacewords.txt'
-        if not os.path.isfile(switchWordsFilename):
+        switch_words_filename = \
+            acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
+        if not os.path.isfile(switch_words_filename):
             return content
-        with open(switchWordsFilename, 'r') as fp:
-            rules = fp.readlines()
+        try:
+            with open(switch_words_filename, 'r',
+                      encoding='utf-8') as words_file:
+                rules = words_file.readlines()
+        except OSError:
+            print('EX: unable to read switches ' + switch_words_filename)
 
     for line in rules:
-        replaceStr = line.replace('\n', '').replace('\r', '')
+        replace_str = remove_eol(line)
         splitters = ('->', ':', ',', ';', '-')
-        wordTransform = None
-        for splitStr in splitters:
-            if splitStr in replaceStr:
-                wordTransform = replaceStr.split(splitStr)
+        word_transform = None
+        for split_str in splitters:
+            if split_str in replace_str:
+                word_transform = replace_str.split(split_str)
                 break
-        if not wordTransform:
+        if not word_transform:
             continue
-        if len(wordTransform) == 2:
-            replaceStr1 = wordTransform[0].strip().replace('"', '')
-            replaceStr2 = wordTransform[1].strip().replace('"', '')
-            content = content.replace(replaceStr1, replaceStr2)
+        if len(word_transform) == 2:
+            replace_str1 = word_transform[0].strip().replace('"', '')
+            replace_str2 = word_transform[1].strip().replace('"', '')
+            content = content.replace(replace_str1, replace_str2)
     return content
 
 
-def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
+def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
+                       debug: bool) -> None:
+    """Saves custom emoji to file
+    """
+    if not session:
+        if debug:
+            print('EX: _save_custom_emoji no session')
+        return
+    if '.' not in url:
+        return
+    ext = url.split('.')[-1]
+    if ext != 'png':
+        if debug:
+            print('EX: Custom emoji is wrong format ' + url)
+        return
+    emojiName = emojiName.replace(':', '').strip().lower()
+    custom_emoji_dir = base_dir + '/emojicustom'
+    if not os.path.isdir(custom_emoji_dir):
+        os.mkdir(custom_emoji_dir)
+    emoji_image_filename = custom_emoji_dir + '/' + emojiName + '.' + ext
+    if not download_image(session, url,
+                          emoji_image_filename, debug, False):
+        if debug:
+            print('EX: custom emoji not downloaded ' + url)
+        return
+    emoji_json_filename = custom_emoji_dir + '/emoji.json'
+    emoji_json = {}
+    if os.path.isfile(emoji_json_filename):
+        emoji_json = load_json(emoji_json_filename, 0, 1)
+        if not emoji_json:
+            emoji_json = {}
+    if not emoji_json.get(emojiName):
+        emoji_json[emojiName] = emojiName
+        save_json(emoji_json, emoji_json_filename)
+        if debug:
+            print('EX: Saved custom emoji ' + emoji_json_filename)
+    elif debug:
+        print('EX: cusom emoji already saved')
+
+
+def _get_emoji_name_from_code(base_dir: str, emoji_code: str) -> str:
+    """Returns the emoji name from its code
+    """
+    emojis_filename = base_dir + '/emoji/emoji.json'
+    if not os.path.isfile(emojis_filename):
+        emojis_filename = base_dir + '/emoji/default_emoji.json'
+        if not os.path.isfile(emojis_filename):
+            return None
+    emojis_json = load_json(emojis_filename)
+    if not emojis_json:
+        return None
+    for emoji_name, code in emojis_json.items():
+        if code == emoji_code:
+            return emoji_name
+    return None
+
+
+def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
+    """Updates the list of commonly used emoji
+    """
+    if '.' in emoji_content:
+        emoji_content = emoji_content.split('.')[0]
+    emoji_content = emoji_content.replace(':', '')
+    if emoji_content.startswith('0x'):
+        # lookup the name for an emoji code
+        emoji_code = emoji_content[2:]
+        emoji_content = _get_emoji_name_from_code(base_dir, emoji_code)
+        if not emoji_content:
+            return
+    common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
+    common_emoji = None
+    if os.path.isfile(common_emoji_filename):
+        try:
+            with open(common_emoji_filename, 'r',
+                      encoding='utf-8') as fp_emoji:
+                common_emoji = fp_emoji.readlines()
+        except OSError:
+            print('EX: unable to load common emoji file')
+    if common_emoji:
+        new_common_emoji = []
+        emoji_found = False
+        for line in common_emoji:
+            if ' ' + emoji_content in line:
+                if not emoji_found:
+                    emoji_found = True
+                    counter = 1
+                    count_str = line.split(' ')[0]
+                    if count_str.isdigit():
+                        counter = int(count_str) + 1
+                    count_str = str(counter).zfill(16)
+                    line = count_str + ' ' + emoji_content
+                    new_common_emoji.append(line)
+            else:
+                line1 = remove_eol(line)
+                new_common_emoji.append(line1)
+        if not emoji_found:
+            new_common_emoji.append(str(1).zfill(16) + ' ' + emoji_content)
+        new_common_emoji.sort(reverse=True)
+        try:
+            with open(common_emoji_filename, 'w+',
+                      encoding='utf-8') as fp_emoji:
+                for line in new_common_emoji:
+                    fp_emoji.write(line + '\n')
+        except OSError:
+            print('EX: error writing common emoji 1')
+            return
+    else:
+        line = str(1).zfill(16) + ' ' + emoji_content + '\n'
+        try:
+            with open(common_emoji_filename, 'w+',
+                      encoding='utf-8') as fp_emoji:
+                fp_emoji.write(line)
+        except OSError:
+            print('EX: error writing common emoji 2')
+            return
+
+
+def replace_emoji_from_tags(session, base_dir: str,
+                            content: str, tag: [], message_type: str,
+                            debug: bool, screen_readable: bool) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
-    for tagItem in tag:
-        if not tagItem.get('type'):
+    for tag_item in tag:
+        if not tag_item.get('type'):
             continue
-        if tagItem['type'] != 'Emoji':
+        if tag_item['type'] != 'Emoji':
             continue
-        if not tagItem.get('name'):
+        if not tag_item.get('name'):
             continue
-        if not tagItem.get('icon'):
+        if not tag_item.get('icon'):
             continue
-        if not tagItem['icon'].get('url'):
+        if not tag_item['icon'].get('url'):
             continue
-        if '/' not in tagItem['icon']['url']:
+        if '/' not in tag_item['icon']['url']:
             continue
-        if tagItem['name'] not in content:
+        if tag_item['name'] not in content:
             continue
-        iconName = tagItem['icon']['url'].split('/')[-1]
-        if iconName:
-            if len(iconName) > 1:
-                if iconName[0].isdigit():
-                    if '.' in iconName:
-                        iconName = iconName.split('.')[0]
+        icon_name = tag_item['icon']['url'].split('/')[-1]
+        if icon_name:
+            if len(icon_name) > 1:
+                if icon_name[0].isdigit():
+                    if '.' in icon_name:
+                        icon_name = icon_name.split('.')[0]
                         # see https://unicode.org/
                         # emoji/charts/full-emoji-list.html
-                        if '-' not in iconName:
+                        if '-' not in icon_name:
                             # a single code
+                            replaced = False
                             try:
-                                replaceChar = chr(int("0x" + iconName, 16))
-                                content = content.replace(tagItem['name'],
-                                                          replaceChar)
+                                replace_char = chr(int("0x" + icon_name, 16))
+                                if not screen_readable:
+                                    replace_char = \
+                                        '<span aria-hidden="true">' + \
+                                        replace_char + '</span>'
+                                content = \
+                                    content.replace(tag_item['name'],
+                                                    replace_char)
+                                replaced = True
                             except BaseException:
-                                pass
+                                if debug:
+                                    print('EX: replace_emoji_from_tags 1 ' +
+                                          'no conversion of ' +
+                                          str(icon_name) + ' to chr ' +
+                                          tag_item['name'] + ' ' +
+                                          tag_item['icon']['url'])
+                            if not replaced:
+                                _save_custom_emoji(session, base_dir,
+                                                   tag_item['name'],
+                                                   tag_item['icon']['url'],
+                                                   debug)
+                                _update_common_emoji(base_dir,
+                                                     icon_name)
+                            else:
+                                _update_common_emoji(base_dir,
+                                                     "0x" + icon_name)
                         else:
                             # sequence of codes
-                            iconCodes = iconName.split('-')
-                            iconCodeSequence = ''
-                            for icode in iconCodes:
+                            icon_codes = icon_name.split('-')
+                            icon_code_sequence = ''
+                            for icode in icon_codes:
+                                replaced = False
                                 try:
-                                    iconCodeSequence += chr(int("0x" +
-                                                                icode, 16))
+                                    icon_code_sequence += chr(int("0x" +
+                                                                  icode, 16))
+                                    replaced = True
                                 except BaseException:
-                                    iconCodeSequence = ''
-                                    break
-                            if iconCodeSequence:
-                                content = content.replace(tagItem['name'],
-                                                          iconCodeSequence)
+                                    icon_code_sequence = ''
+                                    if debug:
+                                        print('EX: ' +
+                                              'replace_emoji_from_tags 2 ' +
+                                              'no conversion of ' +
+                                              str(icode) + ' to chr ' +
+                                              tag_item['name'] + ' ' +
+                                              tag_item['icon']['url'])
+                                if not replaced:
+                                    _save_custom_emoji(session, base_dir,
+                                                       tag_item['name'],
+                                                       tag_item['icon']['url'],
+                                                       debug)
+                                    _update_common_emoji(base_dir,
+                                                         icon_name)
+                                else:
+                                    _update_common_emoji(base_dir,
+                                                         "0x" + icon_name)
+                            if icon_code_sequence:
+                                if not screen_readable:
+                                    icon_code_sequence = \
+                                        '<span aria-hidden="true">' + \
+                                        icon_code_sequence + '</span>'
+                                content = content.replace(tag_item['name'],
+                                                          icon_code_sequence)
 
-        htmlClass = 'emoji'
-        if messageType == 'post header':
-            htmlClass = 'emojiheader'
-        if messageType == 'profile':
-            htmlClass = 'emojiprofile'
-        emojiHtml = "<img src=\"" + tagItem['icon']['url'] + "\" alt=\"" + \
-            tagItem['name'].replace(':', '') + \
-            "\" align=\"middle\" class=\"" + htmlClass + "\"/>"
-        content = content.replace(tagItem['name'], emojiHtml)
+        html_class = 'emoji'
+        if message_type == 'post header':
+            html_class = 'emojiheader'
+        if message_type == 'profile':
+            html_class = 'emojiprofile'
+        if screen_readable:
+            emoji_tag_name = tag_item['name'].replace(':', '')
+        else:
+            emoji_tag_name = ''
+        emoji_html = "<img src=\"" + tag_item['icon']['url'] + "\" alt=\"" + \
+            emoji_tag_name + \
+            "\" align=\"middle\" class=\"" + html_class + "\"/>"
+        content = content.replace(tag_item['name'], emoji_html)
     return content
 
 
-def _addMusicTag(content: str, tag: str) -> str:
+def _add_music_tag(content: str, tag: str) -> str:
     """If a music link is found then ensure that the post is
     tagged appropriately
     """
@@ -309,75 +544,105 @@ def _addMusicTag(content: str, tag: str) -> str:
         tag = '#' + tag
     if tag in content:
         return content
-    musicSites = ('soundcloud.com', 'bandcamp.com')
-    musicSiteFound = False
-    for site in musicSites:
+    music_site_found = False
+    for site in MUSIC_SITES:
         if site + '/' in content:
-            musicSiteFound = True
+            music_site_found = True
             break
-    if not musicSiteFound:
+    if not music_site_found:
         return content
     return ':music: ' + content + ' ' + tag + ' '
 
 
-def addWebLinks(content: str) -> str:
+def _shorten_linked_urls(content: str) -> str:
+    """If content comes with a web link included then make sure
+    that it is short enough
+    """
+    if 'href=' not in content:
+        return content
+    if '>' not in content:
+        return content
+    if '<' not in content:
+        return content
+    sections = content.split('>')
+    ctr = 0
+    for section_text in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        if '<' not in section_text:
+            ctr += 1
+            continue
+        section_text = section_text.split('<')[0]
+        if ' ' in section_text:
+            continue
+        if len(section_text) > MAX_LINK_LENGTH:
+            content = content.replace('>' + section_text + '<',
+                                      '>' +
+                                      section_text[:MAX_LINK_LENGTH-1] + '<')
+        ctr += 1
+    return content
+
+
+def add_web_links(content: str) -> str:
     """Adds markup for web links
     """
+    content = _shorten_linked_urls(content)
+
     if ':' not in content:
         return content
 
-    prefixes = getLinkPrefixes()
+    prefixes = get_link_prefixes()
 
     # do any of these prefixes exist within the content?
-    prefixFound = False
+    prefix_found = False
     for prefix in prefixes:
         if prefix in content:
-            prefixFound = True
+            prefix_found = True
             break
 
     # if there are no prefixes then just keep the content we have
-    if not prefixFound:
+    if not prefix_found:
         return content
 
-    maxLinkLength = 40
     content = content.replace('\r', '')
     words = content.replace('\n', ' --linebreak-- ').split(' ')
-    replaceDict = {}
-    for w in words:
-        if ':' not in w:
+    replace_dict = {}
+    for wrd in words:
+        if ':' not in wrd:
             continue
         # does the word begin with a prefix?
-        prefixFound = False
+        prefix_found = False
         for prefix in prefixes:
-            if w.startswith(prefix):
-                prefixFound = True
+            if wrd.startswith(prefix):
+                prefix_found = True
                 break
-        if not prefixFound:
+        if not prefix_found:
             continue
         # the word contains a prefix
-        if w.endswith('.') or w.endswith(';'):
-            w = w[:-1]
-        markup = '<a href="' + w + \
-            '" rel="nofollow noopener noreferrer" target="_blank">'
+        if wrd.endswith('.') or wrd.endswith(';'):
+            wrd = wrd[:-1]
+        markup = '<a href="' + wrd + '" tabindex="10" ' + \
+            'rel="nofollow noopener noreferrer" target="_blank">'
         for prefix in prefixes:
-            if w.startswith(prefix):
+            if wrd.startswith(prefix):
                 markup += '<span class="invisible">' + prefix + '</span>'
                 break
-        linkText = w
+        link_text = wrd
         for prefix in prefixes:
-            linkText = linkText.replace(prefix, '')
+            link_text = link_text.replace(prefix, '')
         # prevent links from becoming too long
-        if len(linkText) > maxLinkLength:
+        if len(link_text) > MAX_LINK_LENGTH:
             markup += '<span class="ellipsis">' + \
-                linkText[:maxLinkLength] + '</span>'
+                link_text[:MAX_LINK_LENGTH] + '</span>'
             markup += '<span class="invisible">' + \
-                linkText[maxLinkLength:] + '</span></a>'
+                link_text[MAX_LINK_LENGTH:] + '</span></a>'
         else:
-            markup += '<span class="ellipsis">' + linkText + '</span></a>'
-        replaceDict[w] = markup
+            markup += '<span class="ellipsis">' + link_text + '</span></a>'
+        replace_dict[wrd] = markup
 
     # do the replacements
-    for url, markup in replaceDict.items():
+    for url, markup in replace_dict.items():
         content = content.replace(url, markup)
 
     # replace any line breaks
@@ -386,93 +651,90 @@ def addWebLinks(content: str) -> str:
     return content
 
 
-def validHashTag(hashtag: str) -> bool:
-    """Returns true if the give hashtag contains valid characters
+def safe_web_text(arbitrary_html: str) -> str:
+    """Turns arbitrary html into something safe.
+    So if the arbitrary html contains attack scripts those will be removed
     """
-    # long hashtags are not valid
-    if len(hashtag) >= 32:
-        return False
-    validChars = set('0123456789' +
-                     'abcdefghijklmnopqrstuvwxyz' +
-                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
-                     '¡¿ÄäÀàÁáÂâÃãÅåǍǎĄąĂăÆæĀā' +
-                     'ÇçĆćĈĉČčĎđĐďðÈèÉéÊêËëĚěĘęĖėĒē' +
-                     'ĜĝĢģĞğĤĥÌìÍíÎîÏïıĪīĮįĴĵĶķ' +
-                     'ĹĺĻļŁłĽľĿŀÑñŃńŇňŅņÖöÒòÓóÔôÕõŐőØøŒœ' +
-                     'ŔŕŘřẞßŚśŜŝŞşŠšȘșŤťŢţÞþȚțÜüÙùÚúÛûŰűŨũŲųŮůŪū' +
-                     'ŴŵÝýŸÿŶŷŹźŽžŻż')
-    if set(hashtag).issubset(validChars):
-        return True
-    if isValidLanguage(hashtag):
-        return True
-    return False
+    # first remove the markup, so that we have something safe
+    safe_text = remove_html(arbitrary_html)
+    if not safe_text:
+        return ''
+    # remove any spurious characters found in podcast descriptions
+    remove_chars = ('Œ', 'â€', 'ğŸ', '�', ']]', '__')
+    for remchar in remove_chars:
+        safe_text = safe_text.replace(remchar, '')
+    # recreate any url links safely
+    return add_web_links(safe_text)
 
 
-def _addHashTags(wordStr: str, httpPrefix: str, domain: str,
-                 replaceHashTags: {}, postHashtags: {}) -> bool:
+def _add_hash_tags(word_str: str, http_prefix: str, domain: str,
+                   replace_hashtags: {}, post_hashtags: {}) -> bool:
     """Detects hashtags and adds them to the replacements dict
     Also updates the hashtags list to be added to the post
     """
-    if replaceHashTags.get(wordStr):
+    if replace_hashtags.get(word_str):
         return True
-    hashtag = wordStr[1:]
-    if not validHashTag(hashtag):
+    hashtag = word_str[1:]
+    if not valid_hash_tag(hashtag):
         return False
-    hashtagUrl = httpPrefix + "://" + domain + "/tags/" + hashtag
-    postHashtags[hashtag] = {
-        'href': hashtagUrl,
+    hashtag_url = http_prefix + "://" + domain + "/tags/" + hashtag
+    post_hashtags[hashtag] = {
+        'href': hashtag_url,
         'name': '#' + hashtag,
         'type': 'Hashtag'
     }
-    replaceHashTags[wordStr] = "<a href=\"" + hashtagUrl + \
-        "\" class=\"mention hashtag\" rel=\"tag\">#<span>" + \
+    replace_hashtags[word_str] = "<a href=\"" + hashtag_url + \
+        "\" class=\"mention hashtag\" rel=\"tag\" tabindex=\"10\">#<span>" + \
         hashtag + "</span></a>"
     return True
 
 
-def _addEmoji(baseDir: str, wordStr: str,
-              httpPrefix: str, domain: str,
-              replaceEmoji: {}, postTags: {},
-              emojiDict: {}) -> bool:
+def _add_emoji(base_dir: str, word_str: str,
+               http_prefix: str, domain: str,
+               replace_emoji: {}, post_tags: {},
+               emoji_dict: {}) -> bool:
     """Detects Emoji and adds them to the replacements dict
     Also updates the tags list to be added to the post
     """
-    if not wordStr.startswith(':'):
+    if not word_str.startswith(':'):
         return False
-    if not wordStr.endswith(':'):
+    if not word_str.endswith(':'):
         return False
-    if len(wordStr) < 3:
+    if len(word_str) < 3:
         return False
-    if replaceEmoji.get(wordStr):
+    if replace_emoji.get(word_str):
         return True
     # remove leading and trailing : characters
-    emoji = wordStr[1:]
+    emoji = word_str[1:]
     emoji = emoji[:-1]
     # is the text of the emoji valid?
-    if not validHashTag(emoji):
+    if not valid_hash_tag(emoji):
         return False
-    if not emojiDict.get(emoji):
+    if not emoji_dict.get(emoji):
         return False
-    emojiFilename = baseDir + '/emoji/' + emojiDict[emoji] + '.png'
-    if not os.path.isfile(emojiFilename):
-        return False
-    emojiUrl = httpPrefix + "://" + domain + \
-        "/emoji/" + emojiDict[emoji] + '.png'
-    postTags[emoji] = {
+    emoji_filename = base_dir + '/emoji/' + emoji_dict[emoji] + '.png'
+    if not os.path.isfile(emoji_filename):
+        emoji_filename = \
+            base_dir + '/emojicustom/' + emoji_dict[emoji] + '.png'
+        if not os.path.isfile(emoji_filename):
+            return False
+    emoji_url = http_prefix + "://" + domain + \
+        "/emoji/" + emoji_dict[emoji] + '.png'
+    post_tags[emoji] = {
         'icon': {
             'mediaType': 'image/png',
             'type': 'Image',
-            'url': emojiUrl
+            'url': emoji_url
         },
         'name': ':' + emoji + ':',
-        "updated": fileLastModified(emojiFilename),
-        "id": emojiUrl.replace('.png', ''),
+        "updated": file_last_modified(emoji_filename),
+        "id": emoji_url.replace('.png', ''),
         'type': 'Emoji'
     }
     return True
 
 
-def tagExists(tagType: str, tagName: str, tags: {}) -> bool:
+def post_tag_exists(tagType: str, tagName: str, tags: {}) -> bool:
     """Returns true if a tag exists in the given dict
     """
     for tag in tags:
@@ -481,122 +743,144 @@ def tagExists(tagType: str, tagName: str, tags: {}) -> bool:
     return False
 
 
-def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
-                replaceMentions: {}, recipients: [], tags: {}) -> bool:
+def _mention_to_url(base_dir: str, http_prefix: str,
+                    domain: str, nickname: str) -> str:
+    """Convert https://somedomain/@somenick to
+    https://somedomain/users/somenick
+    This uses the hack of trying the cache directory to see if
+    there is a matching actor
+    """
+    possible_paths = get_user_paths()
+    cache_dir = base_dir + '/cache/actors'
+    cache_path_start = cache_dir + '/' + http_prefix + ':##' + domain
+    for users_path in possible_paths:
+        users_path = users_path.replace('/', '#')
+        possible_cache_entry = \
+            cache_path_start + users_path + nickname + '.json'
+        if os.path.isfile(possible_cache_entry):
+            return http_prefix + '://' + \
+                domain + users_path.replace('#', '/') + nickname
+    return http_prefix + '://' + domain + '/users/' + nickname
+
+
+def _add_mention(base_dir: str, word_str: str, http_prefix: str,
+                 following: [], petnames: [], replace_mentions: {},
+                 recipients: [], tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and
     recipients list
     """
-    possibleHandle = wordStr[1:]
+    possible_handle = word_str[1:]
     # @nick
-    if following and '@' not in possibleHandle:
+    if following and '@' not in possible_handle:
         # fall back to a best effort match against the following list
         # if no domain was specified. eg. @nick
-        possibleNickname = possibleHandle
+        possible_nickname = possible_handle
         for follow in following:
             if '@' not in follow:
                 continue
-            followNick = follow.split('@')[0]
-            if possibleNickname == followNick:
-                followStr = follow.replace('\n', '').replace('\r', '')
-                replaceDomain = followStr.split('@')[1]
-                recipientActor = httpPrefix + "://" + \
-                    replaceDomain + "/@" + possibleNickname
-                if recipientActor not in recipients:
-                    recipients.append(recipientActor)
-                tags[wordStr] = {
-                    'href': recipientActor,
-                    'name': wordStr,
+            follow_nick = follow.split('@')[0]
+            if possible_nickname == follow_nick:
+                follow_str = remove_eol(follow)
+                replace_domain = follow_str.split('@')[1]
+                recipient_actor = \
+                    _mention_to_url(base_dir, http_prefix,
+                                    replace_domain, possible_nickname)
+                if recipient_actor not in recipients:
+                    recipients.append(recipient_actor)
+                tags[word_str] = {
+                    'href': recipient_actor,
+                    'name': word_str,
                     'type': 'Mention'
                 }
-                replaceMentions[wordStr] = \
-                    "<span class=\"h-card\"><a href=\"" + httpPrefix + \
-                    "://" + replaceDomain + "/@" + possibleNickname + \
-                    "\" class=\"u-url mention\">@<span>" + possibleNickname + \
-                    "</span></a></span>"
+                replace_mentions[word_str] = \
+                    "<span class=\"h-card\"><a href=\"" + recipient_actor + \
+                    "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
+                    possible_nickname + "</span></a></span>"
                 return True
         # try replacing petnames with mentions
-        followCtr = 0
+        follow_ctr = 0
         for follow in following:
             if '@' not in follow:
-                followCtr += 1
+                follow_ctr += 1
                 continue
-            pet = petnames[followCtr].replace('\n', '')
+            pet = remove_eol(petnames[follow_ctr])
             if pet:
-                if possibleNickname == pet:
-                    followStr = follow.replace('\n', '').replace('\r', '')
-                    replaceNickname = followStr.split('@')[0]
-                    replaceDomain = followStr.split('@')[1]
-                    recipientActor = httpPrefix + "://" + \
-                        replaceDomain + "/@" + replaceNickname
-                    if recipientActor not in recipients:
-                        recipients.append(recipientActor)
-                    tags[wordStr] = {
-                        'href': recipientActor,
-                        'name': wordStr,
+                if possible_nickname == pet:
+                    follow_str = remove_eol(follow)
+                    replace_nickname = follow_str.split('@')[0]
+                    replace_domain = follow_str.split('@')[1]
+                    recipient_actor = \
+                        _mention_to_url(base_dir, http_prefix,
+                                        replace_domain, replace_nickname)
+                    if recipient_actor not in recipients:
+                        recipients.append(recipient_actor)
+                    tags[word_str] = {
+                        'href': recipient_actor,
+                        'name': word_str,
                         'type': 'Mention'
                     }
-                    replaceMentions[wordStr] = \
-                        "<span class=\"h-card\"><a href=\"" + httpPrefix + \
-                        "://" + replaceDomain + "/@" + replaceNickname + \
-                        "\" class=\"u-url mention\">@<span>" + \
-                        replaceNickname + "</span></a></span>"
+                    replace_mentions[word_str] = \
+                        "<span class=\"h-card\"><a href=\"" + \
+                        recipient_actor + "\" tabindex=\"10\" " + \
+                        "class=\"u-url mention\">@<span>" + \
+                        replace_nickname + "</span></a></span>"
                     return True
-            followCtr += 1
+            follow_ctr += 1
         return False
-    possibleNickname = None
-    possibleDomain = None
-    if '@' not in possibleHandle:
+    possible_nickname = None
+    possible_domain = None
+    if '@' not in possible_handle:
         return False
-    possibleNickname = possibleHandle.split('@')[0]
-    if not possibleNickname:
+    possible_nickname = possible_handle.split('@')[0]
+    if not possible_nickname:
         return False
-    possibleDomain = \
-        possibleHandle.split('@')[1].strip('\n').strip('\r')
-    if not possibleDomain:
+    possible_domain = \
+        possible_handle.split('@')[1].strip('\n').strip('\r')
+    if not possible_domain:
         return False
     if following:
         for follow in following:
-            if follow.replace('\n', '').replace('\r', '') != possibleHandle:
+            if remove_eol(follow) != possible_handle:
                 continue
-            recipientActor = httpPrefix + "://" + \
-                possibleDomain + "/@" + possibleNickname
-            if recipientActor not in recipients:
-                recipients.append(recipientActor)
-            tags[wordStr] = {
-                'href': recipientActor,
-                'name': wordStr,
+            recipient_actor = \
+                _mention_to_url(base_dir, http_prefix,
+                                possible_domain, possible_nickname)
+            if recipient_actor not in recipients:
+                recipients.append(recipient_actor)
+            tags[word_str] = {
+                'href': recipient_actor,
+                'name': word_str,
                 'type': 'Mention'
             }
-            replaceMentions[wordStr] = \
-                "<span class=\"h-card\"><a href=\"" + httpPrefix + \
-                "://" + possibleDomain + "/@" + possibleNickname + \
-                "\" class=\"u-url mention\">@<span>" + possibleNickname + \
-                "</span></a></span>"
+            replace_mentions[word_str] = \
+                "<span class=\"h-card\"><a href=\"" + recipient_actor + \
+                "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
+                possible_nickname + "</span></a></span>"
             return True
     # @nick@domain
-    if not (possibleDomain == 'localhost' or '.' in possibleDomain):
+    if not (possible_domain == 'localhost' or '.' in possible_domain):
         return False
-    recipientActor = httpPrefix + "://" + \
-        possibleDomain + "/@" + possibleNickname
-    if recipientActor not in recipients:
-        recipients.append(recipientActor)
-    tags[wordStr] = {
-        'href': recipientActor,
-        'name': wordStr,
+    recipient_actor = \
+        _mention_to_url(base_dir, http_prefix,
+                        possible_domain, possible_nickname)
+    if recipient_actor not in recipients:
+        recipients.append(recipient_actor)
+    tags[word_str] = {
+        'href': recipient_actor,
+        'name': word_str,
         'type': 'Mention'
     }
-    replaceMentions[wordStr] = \
-        "<span class=\"h-card\"><a href=\"" + httpPrefix + \
-        "://" + possibleDomain + "/@" + possibleNickname + \
-        "\" class=\"u-url mention\">@<span>" + possibleNickname + \
-        "</span></a></span>"
+    replace_mentions[word_str] = \
+        "<span class=\"h-card\"><a href=\"" + recipient_actor + \
+        "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
+        possible_nickname + "</span></a></span>"
     return True
 
 
-def replaceContentDuplicates(content: str) -> str:
+def replace_content_duplicates(content: str) -> str:
     """Replaces invalid duplicates within content
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     while '<<' in content:
         content = content.replace('<<', '<')
@@ -606,16 +890,17 @@ def replaceContentDuplicates(content: str) -> str:
     return content
 
 
-def removeTextFormatting(content: str) -> str:
+def remove_text_formatting(content: str, bold_reading: bool) -> str:
     """Removes markup for bold, italics, etc
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     if '<' not in content:
         return content
-    removeMarkup = ('b', 'i', 'ul', 'ol', 'li', 'em', 'strong',
-                    'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5')
-    for markup in removeMarkup:
+    for markup in REMOVE_MARKUP:
+        if bold_reading:
+            if markup == 'b':
+                continue
         content = content.replace('<' + markup + '>', '')
         content = content.replace('</' + markup + '>', '')
         content = content.replace('<' + markup.upper() + '>', '')
@@ -623,345 +908,531 @@ def removeTextFormatting(content: str) -> str:
     return content
 
 
-def removeLongWords(content: str, maxWordLength: int,
-                    longWordsList: []) -> str:
+def remove_long_words(content: str, max_word_length: int,
+                      long_words_list: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't
     disrupt the layout
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
-    content = replaceContentDuplicates(content)
+    content = replace_content_duplicates(content)
     if ' ' not in content:
         # handle a single very long string with no spaces
-        contentStr = content.replace('<p>', '').replace(r'<\p>', '')
-        if '://' not in contentStr:
-            if len(contentStr) > maxWordLength:
+        content_str = content.replace('<p>', '').replace(r'<\p>', '')
+        if '://' not in content_str:
+            if len(content_str) > max_word_length:
                 if '<p>' in content:
-                    content = '<p>' + contentStr[:maxWordLength] + r'<\p>'
+                    content = '<p>' + content_str[:max_word_length] + r'<\p>'
                 else:
-                    content = content[:maxWordLength]
+                    content = content[:max_word_length]
                 return content
+    content = content.replace('<p></p>', '<p> </p>')
     words = content.split(' ')
-    if not longWordsList:
-        longWordsList = []
-        for wordStr in words:
-            if len(wordStr) > maxWordLength:
-                if wordStr not in longWordsList:
-                    longWordsList.append(wordStr)
-    for wordStr in longWordsList:
-        if wordStr.startswith('<p>'):
-            wordStr = wordStr.replace('<p>', '')
-        if wordStr.startswith('<'):
+    if not long_words_list:
+        long_words_list = []
+        for word_str in words:
+            if len(word_str) > max_word_length:
+                if word_str not in long_words_list:
+                    long_words_list.append(word_str)
+    for word_str in long_words_list:
+        if word_str.startswith('<p>'):
+            word_str = word_str.replace('<p>', '')
+        if word_str.startswith('<'):
             continue
-        if len(wordStr) == 76:
-            if wordStr.upper() == wordStr:
+        if len(word_str) == 76:
+            if word_str.upper() == word_str:
                 # tox address
                 continue
-        if '=\"' in wordStr:
+        if '=\"' in word_str:
             continue
-        if '@' in wordStr:
-            if '@@' not in wordStr:
+        if '@' in word_str:
+            if '@@' not in word_str:
                 continue
-        if '=.ed25519' in wordStr:
+        if '=.ed25519' in word_str:
             continue
-        if '.onion' in wordStr:
+        if '.onion' in word_str:
             continue
-        if '.i2p' in wordStr:
+        if '.i2p' in word_str:
             continue
-        if 'https:' in wordStr:
+        if 'https:' in word_str:
             continue
-        elif 'http:' in wordStr:
+        if 'http:' in word_str:
             continue
-        elif 'i2p:' in wordStr:
+        if 'i2p:' in word_str:
             continue
-        elif 'gnunet:' in wordStr:
+        if 'gnunet:' in word_str:
             continue
-        elif 'dat:' in wordStr:
+        if 'dat:' in word_str:
             continue
-        elif 'rad:' in wordStr:
+        if 'rad:' in word_str:
             continue
-        elif 'hyper:' in wordStr:
+        if 'hyper:' in word_str:
             continue
-        elif 'briar:' in wordStr:
+        if 'briar:' in word_str:
             continue
-        if '<' in wordStr:
-            replaceWord = wordStr.split('<', 1)[0]
-            # if len(replaceWord) > maxWordLength:
-            #     replaceWord = replaceWord[:maxWordLength]
-            content = content.replace(wordStr, replaceWord)
-            wordStr = replaceWord
-        if '/' in wordStr:
+        if '<' in word_str:
+            replace_word = word_str.split('<', 1)[0]
+            # if len(replace_word) > max_word_length:
+            #     replace_word = replace_word[:max_word_length]
+            content = content.replace(word_str, replace_word)
+            word_str = replace_word
+        if '/' in word_str:
             continue
-        if len(wordStr[maxWordLength:]) < maxWordLength:
-            content = content.replace(wordStr,
-                                      wordStr[:maxWordLength] + '\n' +
-                                      wordStr[maxWordLength:])
+        if len(word_str[max_word_length:]) < max_word_length:
+            content = content.replace(word_str,
+                                      word_str[:max_word_length] + '\n' +
+                                      word_str[max_word_length:])
         else:
-            content = content.replace(wordStr,
-                                      wordStr[:maxWordLength])
+            content = content.replace(word_str,
+                                      word_str[:max_word_length])
     if content.startswith('<p>'):
         if not content.endswith('</p>'):
             content = content.strip() + '</p>'
+    content = content.replace('<p> </p>', '<p></p>')
     return content
 
 
-def _loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
+def _load_auto_tags(base_dir: str, nickname: str, domain: str) -> []:
     """Loads automatic tags file and returns a list containing
     the lines of the file
     """
-    filename = acctDir(baseDir, nickname, domain) + '/autotags.txt'
+    filename = acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if not os.path.isfile(filename):
         return []
-    with open(filename, 'r') as f:
-        return f.readlines()
+    try:
+        with open(filename, 'r', encoding='utf-8') as tags_file:
+            return tags_file.readlines()
+    except OSError:
+        print('EX: unable to read auto tags ' + filename)
     return []
 
 
-def _autoTag(baseDir: str, nickname: str, domain: str,
-             wordStr: str, autoTagList: [],
-             appendTags: []):
+def _auto_tag(base_dir: str, nickname: str, domain: str,
+              word_str: str, auto_tag_list: [],
+              append_tags: []):
     """Generates a list of tags to be automatically appended to the content
     """
-    for tagRule in autoTagList:
-        if wordStr not in tagRule:
+    for tag_rule in auto_tag_list:
+        if word_str not in tag_rule:
             continue
-        if '->' not in tagRule:
+        if '->' not in tag_rule:
             continue
-        match = tagRule.split('->')[0].strip()
-        if match != wordStr:
+        rulematch = tag_rule.split('->')[0].strip()
+        if rulematch != word_str:
             continue
-        tagName = tagRule.split('->')[1].strip()
-        if tagName.startswith('#'):
-            if tagName not in appendTags:
-                appendTags.append(tagName)
+        tag_name = tag_rule.split('->')[1].strip()
+        if tag_name.startswith('#'):
+            if tag_name not in append_tags:
+                append_tags.append(tag_name)
         else:
-            if '#' + tagName not in appendTags:
-                appendTags.append('#' + tagName)
+            if '#' + tag_name not in append_tags:
+                append_tags.append('#' + tag_name)
 
 
-def addHtmlTags(baseDir: str, httpPrefix: str,
-                nickname: str, domain: str, content: str,
-                recipients: [], hashtags: {},
-                isJsonContent: bool = False) -> str:
+def _get_simplified_content(content: str) -> str:
+    """Returns a simplified version of the content suitable for
+    splitting up into individual words
+    """
+    content_simplified = \
+        content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
+    content_simplified = content_simplified.replace('. ', ' ').strip()
+    if content_simplified.endswith('.'):
+        content_simplified = content_simplified[:len(content_simplified)-1]
+    return content_simplified
+
+
+def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
+    """Returns a dict containing any detected dogwhistle words
+    """
+    content = remove_html(content).lower()
+    result = {}
+    words = _get_simplified_content(content).split(' ')
+    for whistle, category in dogwhistles.items():
+        if not category:
+            continue
+        ending = False
+        starting = False
+        whistle = whistle.lower()
+
+        if whistle.startswith('x-'):
+            whistle = whistle[2:]
+            ending = True
+        elif (whistle.startswith('*') or
+              whistle.startswith('~') or
+              whistle.startswith('-')):
+            whistle = whistle[1:]
+            ending = True
+
+        if ending:
+            prev_wrd = ''
+            for wrd in words:
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if wrd.endswith(whistle) or wrd2.endswith(whistle):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+                prev_wrd = wrd
+            continue
+
+        if whistle.lower().endswith('-x'):
+            whistle = whistle[:len(whistle)-2]
+            starting = True
+        elif (whistle.endswith('*') or
+              whistle.endswith('~') or
+              whistle.endswith('-')):
+            whistle = whistle[:len(whistle)-1]
+            starting = True
+
+        if starting:
+            prev_wrd = ''
+            for wrd in words:
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if wrd.startswith(whistle) or wrd2.startswith(whistle):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+                prev_wrd = wrd
+            continue
+
+        if '*' in whistle:
+            whistle_start = whistle.split('*', 1)[0]
+            whistle_end = whistle.split('*', 1)[1]
+            prev_wrd = ''
+            for wrd in words:
+                wrd2 = (prev_wrd + ' ' + wrd).strip()
+                if ((wrd.startswith(whistle_start) and
+                     wrd.endswith(whistle_end)) or
+                    (wrd2.startswith(whistle_start) and
+                     wrd2.endswith(whistle_end))):
+                    if not result.get(whistle):
+                        result[whistle] = {
+                            "count": 1,
+                            "category": category
+                        }
+                    else:
+                        result[whistle]['count'] += 1
+                prev_wrd = wrd
+            continue
+
+        prev_wrd = ''
+        for wrd in words:
+            wrd2 = (prev_wrd + ' ' + wrd).strip()
+            if whistle in (wrd, wrd2):
+                if not result.get(whistle):
+                    result[whistle] = {
+                        "count": 1,
+                        "category": category
+                    }
+                else:
+                    result[whistle]['count'] += 1
+            prev_wrd = wrd
+    return result
+
+
+def load_dogwhistles(filename: str) -> {}:
+    """Loads a list of dogwhistles from file
+    """
+    if not os.path.isfile(filename):
+        return {}
+    dogwhistle_lines = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_dogwhistles:
+            dogwhistle_lines = fp_dogwhistles.readlines()
+    except OSError:
+        print('EX: unable to load dogwhistles from ' + filename)
+        return {}
+    separators = ('->', '=>', ',', ';', '|', '=')
+    dogwhistles = {}
+    for line in dogwhistle_lines:
+        line = remove_eol(line).strip()
+        if not line:
+            continue
+        if line.startswith('#'):
+            continue
+        whistle = None
+        category = None
+        for sep in separators:
+            if sep in line:
+                whistle = line.split(sep, 1)[0].strip()
+                category = line.split(sep, 1)[1].strip()
+                break
+        if not whistle:
+            whistle = line
+        dogwhistles[whistle] = category
+    return dogwhistles
+
+
+def add_html_tags(base_dir: str, http_prefix: str,
+                  nickname: str, domain: str, content: str,
+                  recipients: [], hashtags: {}, translate: {},
+                  is_json_content: bool = False) -> str:
     """ Replaces plaintext mentions such as @nick@domain into html
     by matching against known following accounts
     """
     if content.startswith('<p>'):
-        content = htmlReplaceEmailQuote(content)
-        return htmlReplaceQuoteMarks(content)
-    maxWordLength = 40
+        content = html_replace_email_quote(content)
+        return html_replace_quote_marks(content)
+    max_word_length = 40
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
-    content = _addMusicTag(content, 'nowplaying')
-    contentSimplified = \
-        content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
-    contentSimplified = contentSimplified.replace('. ', ' ').strip()
-    if contentSimplified.endswith('.'):
-        contentSimplified = contentSimplified[:len(contentSimplified)-1]
-    words = contentSimplified.split(' ')
+    now_playing_str = 'NowPlaying'
+    if translate.get(now_playing_str):
+        now_playing_str = translate[now_playing_str]
+    now_playing_lower_str = 'nowplaying'
+    if translate.get(now_playing_lower_str):
+        now_playing_lower_str = translate[now_playing_lower_str]
+    if '#' + now_playing_lower_str in content:
+        content = content.replace('#' + now_playing_lower_str,
+                                  '#' + now_playing_str)
+    content = _add_music_tag(content, now_playing_str)
+    words = _get_simplified_content(content).split(' ')
 
     # remove . for words which are not mentions
-    newWords = []
-    for wordIndex in range(0, len(words)):
-        wordStr = words[wordIndex]
-        if wordStr.endswith('.'):
-            if not wordStr.startswith('@'):
-                wordStr = wordStr[:-1]
-        if wordStr.startswith('.'):
-            wordStr = wordStr[1:]
-        newWords.append(wordStr)
-    words = newWords
+    new_words = []
+    for word_index in range(0, len(words)):
+        word_str = words[word_index]
+        if word_str.endswith('.'):
+            if not word_str.startswith('@'):
+                word_str = word_str[:-1]
+        if word_str.startswith('.'):
+            word_str = word_str[1:]
+        new_words.append(word_str)
+    words = new_words
 
-    replaceMentions = {}
-    replaceHashTags = {}
-    replaceEmoji = {}
-    emojiDict = {}
-    originalDomain = domain
-    domain = removeDomainPort(domain)
-    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
+    replace_mentions = {}
+    replace_hashtags = {}
+    replace_emoji = {}
+    emoji_dict = {}
+    original_domain = domain
+    domain = remove_domain_port(domain)
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
 
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain
     following = None
     petnames = None
     if '@' in words:
-        if os.path.isfile(followingFilename):
-            with open(followingFilename, 'r') as f:
-                following = f.readlines()
-                for handle in following:
-                    pet = getPetName(baseDir, nickname, domain, handle)
-                    if pet:
-                        petnames.append(pet + '\n')
+        if os.path.isfile(following_filename):
+            following = []
+            try:
+                with open(following_filename, 'r',
+                          encoding='utf-8') as foll_file:
+                    following = foll_file.readlines()
+            except OSError:
+                print('EX: unable to read ' + following_filename)
+            for handle in following:
+                pet = get_pet_name(base_dir, nickname, domain, handle)
+                if pet:
+                    petnames.append(pet + '\n')
 
     # extract mentions and tags from words
-    longWordsList = []
-    prevWordStr = ''
-    autoTagsList = _loadAutoTags(baseDir, nickname, domain)
-    appendTags = []
-    for wordStr in words:
-        wordLen = len(wordStr)
-        if wordLen > 2:
-            if wordLen > maxWordLength:
-                longWordsList.append(wordStr)
-            firstChar = wordStr[0]
-            if firstChar == '@':
-                if _addMention(wordStr, httpPrefix, following, petnames,
-                               replaceMentions, recipients, hashtags):
-                    prevWordStr = ''
+    long_words_list = []
+    prev_word_str = ''
+    auto_tags_list = _load_auto_tags(base_dir, nickname, domain)
+    append_tags = []
+    for word_str in words:
+        word_len = len(word_str)
+        if word_len > 2:
+            if word_len > max_word_length:
+                long_words_list.append(word_str)
+            first_char = word_str[0]
+            if first_char == '@':
+                if _add_mention(base_dir, word_str, http_prefix, following,
+                                petnames, replace_mentions, recipients,
+                                hashtags):
+                    prev_word_str = ''
                     continue
-            elif firstChar == '#':
+            elif first_char == '#':
                 # remove any endings from the hashtag
-                hashTagEndings = ('.', ':', ';', '-', '\n')
-                for ending in hashTagEndings:
-                    if wordStr.endswith(ending):
-                        wordStr = wordStr[:len(wordStr) - 1]
+                hash_tag_endings = ('.', ':', ';', '-', '\n')
+                for ending in hash_tag_endings:
+                    if word_str.endswith(ending):
+                        word_str = word_str[:len(word_str) - 1]
                         break
 
-                if _addHashTags(wordStr, httpPrefix, originalDomain,
-                                replaceHashTags, hashtags):
-                    prevWordStr = ''
+                if _add_hash_tags(word_str, http_prefix, original_domain,
+                                  replace_hashtags, hashtags):
+                    prev_word_str = ''
                     continue
-            elif ':' in wordStr:
-                wordStr2 = wordStr.split(':')[1]
-#                print('TAG: emoji located - ' + wordStr)
-                if not emojiDict:
+            elif ':' in word_str:
+                word_str2 = word_str.split(':')[1]
+#                print('TAG: emoji located - ' + word_str)
+                if not emoji_dict:
                     # emoji.json is generated so that it can be customized and
                     # the changes will be retained even if default_emoji.json
                     # is subsequently updated
-                    if not os.path.isfile(baseDir + '/emoji/emoji.json'):
-                        copyfile(baseDir + '/emoji/default_emoji.json',
-                                 baseDir + '/emoji/emoji.json')
-                emojiDict = loadJson(baseDir + '/emoji/emoji.json')
+                    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+                        copyfile(base_dir + '/emoji/default_emoji.json',
+                                 base_dir + '/emoji/emoji.json')
+                emoji_dict = load_json(base_dir + '/emoji/emoji.json')
 
-#                print('TAG: looking up emoji for :' + wordStr2 + ':')
-                _addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,
-                          originalDomain, replaceEmoji, hashtags,
-                          emojiDict)
+                # append custom emoji to the dict
+                custom_emoji_filename = base_dir + '/emojicustom/emoji.json'
+                if os.path.isfile(custom_emoji_filename):
+                    custom_emoji_dict = load_json(custom_emoji_filename)
+                    if custom_emoji_dict:
+                        # combine emoji dicts one by one
+                        for ename, eitem in custom_emoji_dict.items():
+                            if ename and eitem:
+                                if not emoji_dict.get(ename):
+                                    emoji_dict[ename] = eitem
+
+#                print('TAG: looking up emoji for :' + word_str2 + ':')
+                _add_emoji(base_dir, ':' + word_str2 + ':', http_prefix,
+                           original_domain, replace_emoji, hashtags,
+                           emoji_dict)
             else:
-                if _autoTag(baseDir, nickname, domain, wordStr,
-                            autoTagsList, appendTags):
-                    prevWordStr = ''
+                if _auto_tag(base_dir, nickname, domain, word_str,
+                             auto_tags_list, append_tags):
+                    prev_word_str = ''
                     continue
-                if prevWordStr:
-                    if _autoTag(baseDir, nickname, domain,
-                                prevWordStr + ' ' + wordStr,
-                                autoTagsList, appendTags):
-                        prevWordStr = ''
+                if prev_word_str:
+                    if _auto_tag(base_dir, nickname, domain,
+                                 prev_word_str + ' ' + word_str,
+                                 auto_tags_list, append_tags):
+                        prev_word_str = ''
                         continue
-            prevWordStr = wordStr
+            prev_word_str = word_str
 
     # add any auto generated tags
-    for appended in appendTags:
+    for appended in append_tags:
         content = content + ' ' + appended
-        _addHashTags(appended, httpPrefix, originalDomain,
-                     replaceHashTags, hashtags)
+        _add_hash_tags(appended, http_prefix, original_domain,
+                       replace_hashtags, hashtags)
 
     # replace words with their html versions
-    for wordStr, replaceStr in replaceMentions.items():
-        content = content.replace(wordStr, replaceStr)
-    for wordStr, replaceStr in replaceHashTags.items():
-        content = content.replace(wordStr, replaceStr)
-    if not isJsonContent:
-        for wordStr, replaceStr in replaceEmoji.items():
-            content = content.replace(wordStr, replaceStr)
+    for word_str, replace_str in replace_mentions.items():
+        content = content.replace(word_str, replace_str)
+    for word_str, replace_str in replace_hashtags.items():
+        content = content.replace(word_str, replace_str)
+    if not is_json_content:
+        for word_str, replace_str in replace_emoji.items():
+            content = content.replace(word_str, replace_str)
 
-    content = addWebLinks(content)
-    if longWordsList:
-        content = removeLongWords(content, maxWordLength, longWordsList)
-    content = limitRepeatedWords(content, 6)
+    content = add_web_links(content)
+    if long_words_list:
+        content = remove_long_words(content, max_word_length, long_words_list)
+    content = limit_repeated_words(content, 6)
     content = content.replace(' --linebreak-- ', '</p><p>')
-    content = htmlReplaceEmailQuote(content)
-    return '<p>' + htmlReplaceQuoteMarks(content) + '</p>'
+    content = html_replace_email_quote(content)
+    return '<p>' + html_replace_quote_marks(content) + '</p>'
 
 
-def getMentionsFromHtml(htmlText: str,
-                        matchStr="<span class=\"h-card\"><a href=\"") -> []:
+def get_mentions_from_html(html_text: str, match_str: str) -> []:
     """Extracts mentioned actors from the given html content string
     """
     mentions = []
-    if matchStr not in htmlText:
+    if match_str not in html_text:
         return mentions
-    mentionsList = htmlText.split(matchStr)
-    for mentionStr in mentionsList:
-        if '"' not in mentionStr:
+    mentions_list = html_text.split(match_str)
+    for mention_str in mentions_list:
+        if '"' not in mention_str:
             continue
-        actorStr = mentionStr.split('"')[0]
-        if actorStr.startswith('http') or \
-           actorStr.startswith('gnunet') or \
-           actorStr.startswith('i2p') or \
-           actorStr.startswith('hyper') or \
-           actorStr.startswith('dat:'):
-            if actorStr not in mentions:
-                mentions.append(actorStr)
+        actor_str = mention_str.split('"')[0]
+        if actor_str.startswith('http') or \
+           actor_str.startswith('gnunet') or \
+           actor_str.startswith('i2p') or \
+           actor_str.startswith('ipfs') or \
+           actor_str.startswith('ipns') or \
+           actor_str.startswith('hyper') or \
+           actor_str.startswith('dat:'):
+            if actor_str not in mentions:
+                mentions.append(actor_str)
     return mentions
 
 
-def extractMediaInFormPOST(postBytes, boundary, name: str):
+def extract_media_in_form_post(post_bytes, boundary, name: str):
     """Extracts the binary encoding for image/video/audio within a http
     form POST
     Returns the media bytes and the remaining bytes
     """
-    imageStartBoundary = b'Content-Disposition: form-data; name="' + \
+    image_start_boundary = b'Content-Disposition: form-data; name="' + \
         name.encode('utf8', 'ignore') + b'";'
-    imageStartLocation = postBytes.find(imageStartBoundary)
-    if imageStartLocation == -1:
-        return None, postBytes
+    image_start_location = post_bytes.find(image_start_boundary)
+    if image_start_location == -1:
+        return None, post_bytes
 
     # bytes after the start boundary appears
-    mediaBytes = postBytes[imageStartLocation:]
+    media_bytes = post_bytes[image_start_location:]
 
     # look for the next boundary
-    imageEndBoundary = boundary.encode('utf8', 'ignore')
-    imageEndLocation = mediaBytes.find(imageEndBoundary)
-    if imageEndLocation == -1:
+    image_end_boundary = boundary.encode('utf8', 'ignore')
+    image_end_location = media_bytes.find(image_end_boundary)
+    if image_end_location == -1:
         # no ending boundary
-        return mediaBytes, postBytes[:imageStartLocation]
+        return media_bytes, post_bytes[:image_start_location]
 
     # remaining bytes after the end of the image
-    remainder = mediaBytes[imageEndLocation:]
+    remainder = media_bytes[image_end_location:]
 
     # remove bytes after the end boundary
-    mediaBytes = mediaBytes[:imageEndLocation]
+    media_bytes = media_bytes[:image_end_location]
 
     # return the media and the before+after bytes
-    return mediaBytes, postBytes[:imageStartLocation] + remainder
+    return media_bytes, post_bytes[:image_start_location] + remainder
 
 
-def saveMediaInFormPOST(mediaBytes, debug: bool,
-                        filenameBase: str = None) -> (str, str):
+def _valid_follows_csv(content: str) -> bool:
+    """is the given content a valid csv file containing imported follows?
+    """
+    if ',' not in content:
+        return False
+    if 'Account address,' not in content:
+        return False
+    return True
+
+
+def save_media_in_form_post(media_bytes, debug: bool,
+                            filename_base: str = None) -> (str, str):
     """Saves the given media bytes extracted from http form POST
     Returns the filename and attachment type
     """
-    if not mediaBytes:
-        if filenameBase:
+    if not media_bytes:
+        if filename_base:
             # remove any existing files
-            extensionTypes = getImageExtensions()
-            for ex in extensionTypes:
-                possibleOtherFormat = filenameBase + '.' + ex
-                if os.path.isfile(possibleOtherFormat):
+            extension_types = get_image_extensions()
+            for ex in extension_types:
+                possible_other_format = filename_base + '.' + ex
+                if os.path.isfile(possible_other_format):
                     try:
-                        os.remove(possibleOtherFormat)
-                    except BaseException:
-                        pass
-            if os.path.isfile(filenameBase):
+                        os.remove(possible_other_format)
+                    except OSError:
+                        if debug:
+                            print('EX: save_media_in_form_post ' +
+                                  'unable to delete other ' +
+                                  str(possible_other_format))
+            if os.path.isfile(filename_base):
                 try:
-                    os.remove(filenameBase)
-                except BaseException:
-                    pass
+                    os.remove(filename_base)
+                except OSError:
+                    if debug:
+                        print('EX: save_media_in_form_post ' +
+                              'unable to delete ' +
+                              str(filename_base))
 
         if debug:
             print('DEBUG: No media found within POST')
         return None, None
 
-    mediaLocation = -1
-    searchStr = ''
+    media_location = -1
+    search_str = ''
     filename = None
 
     # directly search the binary array for the beginning
-    # of an image
-    extensionList = {
+    # of an image, zip or csv
+    extension_list = {
         'png': 'image/png',
         'jpeg': 'image/jpeg',
+        'jxl': 'image/jxl',
         'gif': 'image/gif',
         'svg': 'image/svg+xml',
         'webp': 'image/webp',
@@ -970,24 +1441,30 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
+        'opus': 'audio/opus',
         'flac': 'audio/flac',
-        'zip': 'application/zip'
+        'zip': 'application/zip',
+        'csv': 'text/csv',
+        'csv2': 'text/plain'
     }
-    detectedExtension = None
-    for extension, contentType in extensionList.items():
-        searchStr = b'Content-Type: ' + contentType.encode('utf8', 'ignore')
-        mediaLocation = mediaBytes.find(searchStr)
-        if mediaLocation > -1:
+    detected_extension = None
+    for extension, content_type in extension_list.items():
+        search_str = b'Content-Type: ' + content_type.encode('utf8', 'ignore')
+        media_location = media_bytes.find(search_str)
+        if media_location > -1:
             # image/video/audio binaries
             if extension == 'jpeg':
                 extension = 'jpg'
             elif extension == 'mpeg':
                 extension = 'mp3'
-            if filenameBase:
-                filename = filenameBase + '.' + extension
-            attachmentMediaType = \
-                searchStr.decode().split('/')[0].replace('Content-Type: ', '')
-            detectedExtension = extension
+            elif extension == 'csv2':
+                extension = 'csv'
+            if filename_base:
+                filename = filename_base + '.' + extension
+            search_lst = search_str.decode().split('/', maxsplit=1)
+            attachment_media_type = \
+                search_lst[0].replace('Content-Type: ', '')
+            detected_extension = extension
             break
 
     if not filename:
@@ -995,141 +1472,512 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
 
     # locate the beginning of the image, after any
     # carriage returns
-    startPos = mediaLocation + len(searchStr)
+    start_pos = media_location + len(search_str)
     for offset in range(1, 8):
-        if mediaBytes[startPos+offset] != 10:
-            if mediaBytes[startPos+offset] != 13:
-                startPos += offset
+        if media_bytes[start_pos+offset] != 10:
+            if media_bytes[start_pos+offset] != 13:
+                start_pos += offset
                 break
 
     # remove any existing image files with a different format
-    if detectedExtension != 'zip':
-        extensionTypes = getImageExtensions()
-        for ex in extensionTypes:
-            if ex == detectedExtension:
+    if detected_extension != 'zip':
+        extension_types = get_image_extensions()
+        for ex in extension_types:
+            if ex == detected_extension:
                 continue
-            possibleOtherFormat = \
+            possible_other_format = \
                 filename.replace('.temp', '').replace('.' +
-                                                      detectedExtension, '.' +
+                                                      detected_extension, '.' +
                                                       ex)
-            if os.path.isfile(possibleOtherFormat):
+            if os.path.isfile(possible_other_format):
                 try:
-                    os.remove(possibleOtherFormat)
-                except BaseException:
-                    pass
+                    os.remove(possible_other_format)
+                except OSError:
+                    if debug:
+                        print('EX: save_media_in_form_post ' +
+                              'unable to delete other 2 ' +
+                              str(possible_other_format))
 
     # don't allow scripts within svg files
-    if detectedExtension == 'svg':
-        svgStr = mediaBytes[startPos:]
-        svgStr = svgStr.decode()
-        if dangerousSVG(svgStr, False):
+    if detected_extension == 'svg':
+        svg_str = media_bytes[start_pos:]
+        svg_str = svg_str.decode()
+        if dangerous_svg(svg_str, False):
+            return None, None
+    elif detected_extension == 'csv':
+        csv_str = media_bytes[start_pos:]
+        csv_str = csv_str.decode()
+        if not _valid_follows_csv(csv_str):
             return None, None
 
-    with open(filename, 'wb') as fp:
-        fp.write(mediaBytes[startPos:])
+    try:
+        with open(filename, 'wb') as fp_media:
+            fp_media.write(media_bytes[start_pos:])
+    except OSError:
+        print('EX: unable to write media')
 
     if not os.path.isfile(filename):
         print('WARN: Media file could not be written to file: ' + filename)
         return None, None
     print('Uploaded media file written: ' + filename)
 
-    return filename, attachmentMediaType
+    return filename, attachment_media_type
 
 
-def extractTextFieldsInPOST(postBytes, boundary: str, debug: bool,
-                            unitTestData: str = None) -> {}:
+def combine_textarea_lines(text: str) -> str:
+    """Combines separate lines
+    """
+    result = ''
+    ctr = 0
+    paragraphs = text.split('\n\n')
+    for para in paragraphs:
+        para = para.replace('\n* ', '***BULLET POINT*** ')
+        para = para.replace('\n * ', '***BULLET POINT*** ')
+        para = para.replace('\n- ', '***DASH POINT*** ')
+        para = para.replace('\n - ', '***DASH POINT*** ')
+        para = para.replace('\n', ' ')
+        para = para.replace('  ', ' ')
+        para = para.replace('***BULLET POINT*** ', '\n* ')
+        para = para.replace('***DASH POINT*** ', '\n- ')
+        if ctr > 0:
+            result += '</p><p>'
+        result += para
+        ctr += 1
+    return result
+
+
+def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
+                                unit_test_data: str = None) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """
-    if not unitTestData:
-        msgBytes = email.parser.BytesParser().parsebytes(postBytes)
-        messageFields = msgBytes.get_payload(decode=True).decode('utf-8')
+    if boundary == 'LYNX':
+        if debug:
+            print('POST from lynx browser')
+        boundary = '--LYNX'
+
+    if not unit_test_data:
+        msg_bytes = email.parser.BytesParser().parsebytes(post_bytes)
+        message_fields = msg_bytes.get_payload(decode=True).decode('utf-8')
     else:
-        messageFields = unitTestData
+        message_fields = unit_test_data
 
     if debug:
-        print('DEBUG: POST arriving ' + messageFields)
+        if 'password' not in message_fields:
+            print('DEBUG: POST arriving ' + message_fields)
 
-    messageFields = messageFields.split(boundary)
+    message_fields = message_fields.split(boundary)
     fields = {}
-    fieldsWithSemicolonAllowed = (
+    fields_with_semicolon_allowed = (
         'message', 'bio', 'autoCW', 'password', 'passwordconfirm',
         'instanceDescription', 'instanceDescriptionShort',
         'subject', 'location', 'imageDescription'
     )
+    if debug:
+        if 'password' not in message_fields:
+            print('DEBUG: POST message_fields: ' + str(message_fields))
+    lynx_content_type = 'Content-Type: text/plain; charset=utf-8\r\n'
     # examine each section of the POST, separated by the boundary
-    for f in messageFields:
-        if f == '--':
+    for fld in message_fields:
+        if fld == '--':
             continue
-        if ' name="' not in f:
+        if ' name="' not in fld:
             continue
-        postStr = f.split(' name="', 1)[1]
-        if '"' not in postStr:
+        post_str = fld.split(' name="', 1)[1]
+        if '"' not in post_str:
             continue
-        postKey = postStr.split('"', 1)[0]
-        postValueStr = postStr.split('"', 1)[1]
-        if ';' in postValueStr:
-            if postKey not in fieldsWithSemicolonAllowed and \
-               not postKey.startswith('edited'):
+        post_key = post_str.split('"', 1)[0]
+        if debug:
+            print('post_key: ' + post_key)
+        post_value_str = post_str.split('"', 1)[1]
+        if boundary == '--LYNX':
+            post_value_str = \
+                post_value_str.replace(lynx_content_type, '')
+        if debug and 'password' not in post_key:
+            print('boundary: ' + boundary)
+            print('post_value_str1: ' + post_value_str)
+        if ';' in post_value_str:
+            if post_key not in fields_with_semicolon_allowed and \
+               not post_key.startswith('edited'):
+                if debug:
+                    print('extract_text_fields_in_post exit 1')
                 continue
-        if '\r\n' not in postValueStr:
+        if debug and 'password' not in post_key:
+            print('post_value_str2: ' + post_value_str)
+        if '\r\n' not in post_value_str:
+            if debug:
+                print('extract_text_fields_in_post exit 2')
             continue
-        postLines = postValueStr.split('\r\n')
-        postValue = ''
-        if len(postLines) > 2:
-            for line in range(2, len(postLines)-1):
+        post_lines = post_value_str.split('\r\n')
+        if debug and 'password' not in post_key:
+            print('post_lines: ' + str(post_lines))
+        post_value = ''
+        if len(post_lines) > 2:
+            for line in range(2, len(post_lines)-1):
                 if line > 2:
-                    postValue += '\n'
-                postValue += postLines[line]
-        fields[postKey] = urllib.parse.unquote(postValue)
+                    post_value += '\n'
+                post_value += post_lines[line]
+        fields[post_key] = urllib.parse.unquote(post_value)
+        if boundary == '--LYNX' and post_key in ('message', 'bio'):
+            fields[post_key] = combine_textarea_lines(fields[post_key])
     return fields
 
 
-def limitRepeatedWords(text: str, maxRepeats: int) -> str:
+def limit_repeated_words(text: str, max_repeats: int) -> str:
     """Removes words which are repeated many times
     """
     words = text.replace('\n', ' ').split(' ')
-    repeatCtr = 0
-    repeatedText = ''
+    repeat_ctr = 0
+    repeated_text = ''
     replacements = {}
-    prevWord = ''
+    prev_word = ''
     for word in words:
-        if word == prevWord:
-            repeatCtr += 1
-            if repeatedText:
-                repeatedText += ' ' + word
+        if word == prev_word:
+            repeat_ctr += 1
+            if repeated_text:
+                repeated_text += ' ' + word
             else:
-                repeatedText = word + ' ' + word
+                repeated_text = word + ' ' + word
         else:
-            if repeatCtr > maxRepeats:
-                newText = ((prevWord + ' ') * maxRepeats).strip()
-                replacements[prevWord] = [repeatedText, newText]
-            repeatCtr = 0
-            repeatedText = ''
-        prevWord = word
+            if repeat_ctr > max_repeats:
+                new_text = ((prev_word + ' ') * max_repeats).strip()
+                replacements[prev_word] = [repeated_text, new_text]
+            repeat_ctr = 0
+            repeated_text = ''
+        prev_word = word
 
-    if repeatCtr > maxRepeats:
-        newText = ((prevWord + ' ') * maxRepeats).strip()
-        replacements[prevWord] = [repeatedText, newText]
+    if repeat_ctr > max_repeats:
+        new_text = ((prev_word + ' ') * max_repeats).strip()
+        replacements[prev_word] = [repeated_text, new_text]
 
     for word, item in replacements.items():
         text = text.replace(item[0], item[1])
     return text
 
 
-def getPriceFromString(priceStr: str) -> (str, str):
+def get_price_from_string(priceStr: str) -> (str, str):
     """Returns the item price and currency
     """
-    currencies = getCurrencies()
+    currencies = get_currencies()
     for symbol, name in currencies.items():
         if symbol in priceStr:
             price = priceStr.replace(symbol, '')
-            if isfloat(price):
+            if is_float(price):
                 return price, name
         elif name in priceStr:
             price = priceStr.replace(name, '')
-            if isfloat(price):
+            if is_float(price):
                 return price, name
-    if isfloat(priceStr):
+    if is_float(priceStr):
         return priceStr, "EUR"
     return "0.00", "EUR"
+
+
+def _words_similarity_histogram(words: []) -> {}:
+    """Returns a histogram for word combinations
+    """
+    histogram = {}
+    for index in range(1, len(words)):
+        combined_words = words[index - 1] + words[index]
+        if histogram.get(combined_words):
+            histogram[combined_words] += 1
+        else:
+            histogram[combined_words] = 1
+    return histogram
+
+
+def _words_similarity_words_list(content: str) -> []:
+    """Returns a list of words for the given content
+    """
+    remove_punctuation = ('.', ',', ';', '-', ':', '"')
+    content = remove_html(content).lower()
+    for punc in remove_punctuation:
+        content = content.replace(punc, ' ')
+        content = content.replace('  ', ' ')
+    return content.split(' ')
+
+
+def words_similarity(content1: str, content2: str, min_words: int) -> int:
+    """Returns percentage similarity
+    """
+    if content1 == content2:
+        return 100
+
+    words1 = _words_similarity_words_list(content1)
+    if len(words1) < min_words:
+        return 0
+
+    words2 = _words_similarity_words_list(content2)
+    if len(words2) < min_words:
+        return 0
+
+    histogram1 = _words_similarity_histogram(words1)
+    histogram2 = _words_similarity_histogram(words2)
+
+    diff = 0
+    for combined_words, _ in histogram1.items():
+        if not histogram2.get(combined_words):
+            diff += 1
+        else:
+            diff += \
+                abs(histogram2[combined_words] - histogram1[combined_words])
+    return 100 - int(diff * 100 / len(histogram1.items()))
+
+
+def contains_invalid_local_links(content: str) -> bool:
+    """Returns true if the given content has invalid links
+    """
+    for inv_str in INVALID_CONTENT_STRINGS:
+        if '?' + inv_str + '=' in content:
+            return True
+    return False
+
+
+def bold_reading_string(text: str) -> str:
+    """Returns bold reading formatted text
+    """
+    text = html.unescape(text)
+    add_paragraph_markup = False
+    if '<p>' in text:
+        text = text.replace('</p>', '\n').replace('<p>', '')
+        add_paragraph_markup = True
+    paragraphs = text.split('\n')
+    parag_ctr = 0
+    new_text = ''
+    for parag in paragraphs:
+        words = parag.split(' ')
+        new_parag = ''
+        reading_markup = False
+        for wrd in words:
+            if '<' in wrd:
+                reading_markup = True
+            if reading_markup and '>' in wrd:
+                reading_markup = False
+            wrd_len = len(wrd)
+            if not reading_markup and wrd_len > 1 and \
+               '<' not in wrd and '>' not in wrd and \
+               '&' not in wrd and '=' not in wrd and \
+               not wrd.startswith(':'):
+
+                prefix = ''
+                postfix = ''
+                if wrd.startswith('"'):
+                    prefix = '"'
+                    wrd = wrd[1:]
+                if wrd.endswith('"'):
+                    postfix = '"'
+                    wrd = wrd[:wrd_len - 1]
+
+                initial_chars = int(math.ceil(wrd_len / 2.0))
+                new_parag += \
+                    prefix + '<b>' + wrd[:initial_chars] + '</b>' + \
+                    wrd[initial_chars:] + postfix + ' '
+            else:
+                new_parag += wrd + ' '
+        parag_ctr += 1
+        new_parag = new_parag.strip()
+        if not new_parag:
+            continue
+        if parag_ctr < len(paragraphs):
+            if not add_paragraph_markup:
+                new_text += new_parag + '\n'
+            else:
+                new_text += '<p>' + new_parag + '</p>'
+        else:
+            if not add_paragraph_markup:
+                new_text += new_parag
+            else:
+                new_text += '<p>' + new_parag + '</p>'
+
+    return new_text
+
+
+def import_emoji(base_dir: str, import_filename: str, session) -> None:
+    """Imports emoji from the given filename
+    Each line should be [emoji url], :emojiname:
+    """
+    if not os.path.isfile(import_filename):
+        return
+    emoji_dict = load_json(base_dir + '/emoji/default_emoji.json', 0, 1)
+    added = 0
+    with open(import_filename, "r", encoding='utf-8') as fp_emoji:
+        lines = fp_emoji.readlines()
+        for line in lines:
+            url = line.split(', ')[0]
+            tag = line.split(', ')[1].strip()
+            tag = tag.split(':')[1]
+            if emoji_dict.get(tag):
+                continue
+            emoji_image_filename = base_dir + '/emoji/' + tag + '.png'
+            if os.path.isfile(emoji_image_filename):
+                continue
+            if download_image(session, url,
+                              emoji_image_filename, True, False):
+                emoji_dict[tag] = tag
+                added += 1
+    save_json(emoji_dict, base_dir + '/emoji/default_emoji.json')
+    print(str(added) + ' custom emoji added')
+
+
+def content_diff(content: str, prev_content: str) -> str:
+    """Returns a diff for the given content
+    """
+    cdiff = difflib.Differ()
+    text1_lines = content.splitlines()
+    text1_sentences = []
+    for line in text1_lines:
+        sentences = line.split('.')
+        for sentence in sentences:
+            text1_sentences.append(sentence.strip())
+
+    text2_lines = prev_content.splitlines()
+    text2_sentences = []
+    for line in text2_lines:
+        sentences = line.split('.')
+        for sentence in sentences:
+            text2_sentences.append(sentence.strip())
+
+    diff = cdiff.compare(text1_sentences, text2_sentences)
+
+    diff_text = ''
+    for line in diff:
+        if line.startswith('- '):
+            if not diff_text:
+                diff_text = '<p>'
+            else:
+                diff_text += '<br>'
+            diff_text += '<label class="diff_add">+ ' + line[2:] + '</label>'
+        elif line.startswith('+ '):
+            if not diff_text:
+                diff_text = '<p>'
+            else:
+                diff_text += '<br>'
+            diff_text += \
+                '<label class="diff_remove">- ' + line[2:] + '</label>'
+    if diff_text:
+        diff_text += '</p>'
+    return diff_text
+
+
+def create_edits_html(edits_json: {}, post_json_object: {},
+                      translate: {}, timezone: str,
+                      system_language: str) -> str:
+    """ Creates html showing historical edits made to a post
+    """
+    if not edits_json:
+        return ''
+    if not has_object_dict(post_json_object):
+        return ''
+    if not post_json_object['object'].get('content'):
+        if not post_json_object['object'].get('contentMap'):
+            return ''
+    edit_dates_list = []
+    for modified, _ in edits_json.items():
+        edit_dates_list.append(modified)
+    edit_dates_list.sort(reverse=True)
+    edits_str = ''
+    content = None
+    if post_json_object['object'].get('contentMap'):
+        if post_json_object['object']['contentMap'].get(system_language):
+            content = \
+                post_json_object['object']['contentMap'][system_language]
+    if not content:
+        if post_json_object['object'].get('content'):
+            content = post_json_object['object']['content']
+    if not content:
+        return ''
+    content = remove_html(content)
+    for modified in edit_dates_list:
+        prev_json = edits_json[modified]
+        if not has_object_dict(prev_json):
+            continue
+        prev_content = None
+        if not prev_json['object'].get('content'):
+            if not prev_json['object'].get('contentMap'):
+                continue
+        if prev_json['object'].get('contentMap'):
+            if prev_json['object']['contentMap'].get(system_language):
+                prev_content = \
+                    prev_json['object']['contentMap'][system_language]
+        if not prev_content:
+            if prev_json['object'].get('content'):
+                prev_content = prev_json['object']['content']
+        if not prev_content:
+            continue
+        prev_content = remove_html(prev_content)
+        if content == prev_content:
+            continue
+        diff = content_diff(content, prev_content)
+        if not diff:
+            continue
+        diff = diff.replace('\n', '</p><p>')
+        # convert to local time
+        datetime_object = parse(modified)
+        datetime_object = \
+            convert_published_to_local_timezone(datetime_object, timezone)
+        modified_str = datetime_object.strftime("%a %b %d, %H:%M")
+        diff = '<p><b>' + modified_str + '</b></p>' + diff
+        edits_str += diff
+        content = prev_content
+    if not edits_str:
+        return ''
+    return '<details><summary class="cw" tabindex="10">' + \
+        translate['SHOW EDITS'] + '</summary>' + \
+        edits_str + '</details>'
+
+
+def remove_script(content: str, log_filename: str,
+                  actor: str, url: str) -> str:
+    """Removes <script> from some content
+    """
+    separators = [['<', '>'], ['&lt;', '&gt;']]
+    for sep in separators:
+        prefix = sep[0] + 'script'
+        ending = '/script' + sep[1]
+        if prefix not in content:
+            continue
+        sections = content.split(prefix)
+        ctr = 0
+        for text in sections:
+            if ctr == 0:
+                ctr += 1
+                continue
+            if ending not in text:
+                if '/' + sep[1] not in text:
+                    continue
+            if ending in text:
+                text = prefix + text.split(ending)[0] + ending
+            else:
+                text = prefix + text.split('/' + sep[1])[0] + '/' + sep[1]
+                if log_filename and actor:
+                    # write the detected script to a log file
+                    log_str = actor + ' ' + url + ' ' + text + '\n'
+                    write_type = 'a+'
+                    if os.path.isfile(log_filename):
+                        write_type = 'w+'
+                    try:
+                        with open(log_filename, write_type,
+                                  encoding='utf-8') as fp_log:
+                            fp_log.write(log_str)
+                    except OSError:
+                        print('EX: cannot append to svg script log')
+            content = content.replace(text, '')
+    return content
+
+
+def reject_twitter_summary(base_dir: str, nickname: str, domain: str,
+                           summary: str) -> bool:
+    """Returns true if the post should be rejected due to twitter
+    existing within the summary
+    """
+    if not summary:
+        return False
+    remove_twitter = \
+        acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
+    if not os.path.isfile(remove_twitter):
+        return False
+    summary_lower = summary.lower()
+    if 'twitter' in summary_lower or \
+       'birdsite' in summary_lower:
+        return True
+    return False

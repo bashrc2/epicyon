@@ -1,4 +1,11 @@
 {
+    "code-color": "blue",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "#2d2c37",
+    "dropdown-bg-color": "#ddd",
+    "dropdown-bg-color-hover": "#ccc",
+    "dropdown-fg-color-hover": "#2d2c37",
     "button-fg-highlighted": "#eeeeee",
     "button-selected-text": "#eeeeee",
     "button-text": "#eeeeee",
@@ -26,7 +33,10 @@
     "button-selected-highlighted": "darkred",
     "newswire-date-color": "grey",
     "focus-color": "grey",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "26px",
+    "font-size-pageslist": "32px",
     "font-size": "32px",
     "font-size2": "26px",
     "font-size3": "40px",
@@ -47,6 +57,8 @@
     "main-bg-color-report": "#eeeeee",
     "main-header-color-roles": "#ebebf0",
     "cw-color": "#2d2c37",
+    "pageslist-color": "#111",
+    "pageslist-selected-color": "#444",
     "main-fg-color": "#2d2c37",
     "login-fg-color": "#2d2c37",
     "welcome-fg-color": "#2d2c37",
@@ -87,5 +99,6 @@
     "header-font": "'solidaric'",
     "*font-family": "'solidaric'",
     "*src": "url('./fonts/solidaric.woff2') format('woff2')",
-    "**src": "url('./fonts/solidaric-italic.woff2') format('woff2')"
+    "**src": "url('./fonts/solidaric-italic.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }

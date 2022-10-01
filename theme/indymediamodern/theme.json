@@ -1,4 +1,13 @@
 {
+    "code-color": "blue",
+    "diff-add": "#111",
+    "diff-remove": "#333",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "black",
+    "dropdown-bg-color": "#dedede",
+    "dropdown-bg-color-hover": "#ccc",
+    "dropdown-fg-color-hover": "black",
     "timeline-icon-width": "30px",
     "timeline-icon-width-mobile": "60px",
     "button-bottom-margin": "0",
@@ -15,6 +24,8 @@
     "follow-text-size2": "30px",
     "hashtag-size1": "20px",
     "hashtag-size2": "30px",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-calendar-header": "2rem",
     "font-size-calendar-cell": "2rem",
     "time-vertical-align": "1.1%",
@@ -24,6 +35,7 @@
     "header-button-padding": "0 0",
     "containericons-horizontal-spacing": "0%",
     "font-size-header": "14px",
+    "font-size-pageslist": "32px",
     "font-size": "22px",
     "font-size2": "16px",
     "font-size3": "30px",
@@ -103,6 +115,8 @@
     "main-bg-color-report": "white",
     "main-header-color-roles": "#ebebf0",
     "cw-color": "black",
+    "pageslist-color": "black",
+    "pageslist-selected-color": "blue",
     "main-fg-color": "black",
     "login-fg-color": "black",
     "welcome-fg-color": "black",
@@ -141,5 +155,6 @@
     "header-font": "'NimbusSanL'",
     "*font-family": "'NimbusSanL'",
     "*src": "url('./fonts/NimbusSanL.otf') format('opentype')",
-    "**src": "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
+    "**src": "url('./fonts/NimbusSanL-italic.otf') format('opentype')",
+    "reply-icon-direction": "-1"
 }

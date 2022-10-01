@@ -1,7 +1,7 @@
 __filename__ = "schedule.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -10,208 +10,231 @@ __module_group__ = "Calendar"
 import os
 import time
 import datetime
-from utils import hasObjectDict
-from utils import getStatusNumber
-from utils import loadJson
-from utils import isAccountDir
-from utils import acctDir
-from outbox import postMessageToOutbox
+from utils import has_object_dict
+from utils import get_status_number
+from utils import load_json
+from utils import is_account_dir
+from utils import acct_dir
+from utils import remove_eol
+from outbox import post_message_to_outbox
+from session import create_session
+from threads import begin_thread
 
 
-def _updatePostSchedule(baseDir: str, handle: str, httpd,
-                        maxScheduledPosts: int) -> None:
-    """Checks if posts are due to be delivered and if so moves them to the outbox
+def _update_post_schedule(base_dir: str, handle: str, httpd,
+                          max_scheduled_posts: int) -> None:
+    """Checks if posts are due to be delivered and if so moves them to
+    the outbox
     """
-    scheduleIndexFilename = baseDir + '/accounts/' + handle + '/schedule.index'
-    if not os.path.isfile(scheduleIndexFilename):
+    schedule_index_filename = \
+        base_dir + '/accounts/' + handle + '/schedule.index'
+    if not os.path.isfile(schedule_index_filename):
         return
 
     # get the current time as an int
-    currTime = datetime.datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    curr_time = datetime.datetime.utcnow()
+    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
 
-    scheduleDir = baseDir + '/accounts/' + handle + '/scheduled/'
-    indexLines = []
-    deleteSchedulePost = False
+    schedule_dir = base_dir + '/accounts/' + handle + '/scheduled/'
+    index_lines = []
+    delete_schedule_post = False
     nickname = handle.split('@')[0]
-    with open(scheduleIndexFilename, 'r') as fp:
-        for line in fp:
+    with open(schedule_index_filename, 'r', encoding='utf-8') as sched_file:
+        for line in sched_file:
             if ' ' not in line:
                 continue
-            dateStr = line.split(' ')[0]
-            if 'T' not in dateStr:
+            date_str = line.split(' ')[0]
+            if 'T' not in date_str:
                 continue
-            postId = line.split(' ', 1)[1].replace('\n', '').replace('\r', '')
-            postFilename = scheduleDir + postId + '.json'
-            if deleteSchedulePost:
+            post_id1 = line.split(' ', 1)[1]
+            post_id = remove_eol(post_id1)
+            post_filename = schedule_dir + post_id + '.json'
+            if delete_schedule_post:
                 # delete extraneous scheduled posts
-                if os.path.isfile(postFilename):
+                if os.path.isfile(post_filename):
                     try:
-                        os.remove(postFilename)
-                    except BaseException:
-                        pass
+                        os.remove(post_filename)
+                    except OSError:
+                        print('EX: _update_post_schedule unable to delete ' +
+                              str(post_filename))
                 continue
             # create the new index file
-            indexLines.append(line)
+            index_lines.append(line)
             # convert string date to int
-            postTime = \
-                datetime.datetime.strptime(dateStr, "%Y-%m-%dT%H:%M:%S%z")
-            postTime = postTime.replace(tzinfo=None)
-            postDaysSinceEpoch = \
-                (postTime - datetime.datetime(1970, 1, 1)).days
-            if daysSinceEpoch < postDaysSinceEpoch:
+            post_time = \
+                datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S%z")
+            post_time = post_time.replace(tzinfo=None)
+            post_days_since_epoch = \
+                (post_time - datetime.datetime(1970, 1, 1)).days
+            if days_since_epoch < post_days_since_epoch:
                 continue
-            if daysSinceEpoch == postDaysSinceEpoch:
-                if currTime.time().hour < postTime.time().hour:
+            if days_since_epoch == post_days_since_epoch:
+                if curr_time.time().hour < post_time.time().hour:
                     continue
-                if currTime.time().minute < postTime.time().minute:
+                if curr_time.time().minute < post_time.time().minute:
                     continue
-            if not os.path.isfile(postFilename):
-                print('WARN: schedule missing postFilename=' + postFilename)
-                indexLines.remove(line)
+            if not os.path.isfile(post_filename):
+                print('WARN: schedule missing post_filename=' + post_filename)
+                index_lines.remove(line)
                 continue
             # load post
-            postJsonObject = loadJson(postFilename)
-            if not postJsonObject:
+            post_json_object = load_json(post_filename)
+            if not post_json_object:
                 print('WARN: schedule json not loaded')
-                indexLines.remove(line)
+                index_lines.remove(line)
                 continue
 
             # set the published time
             # If this is not recent then http checks on the receiving side
             # will reject it
-            statusNumber, published = getStatusNumber()
-            if postJsonObject.get('published'):
-                postJsonObject['published'] = published
-            if hasObjectDict(postJsonObject):
-                if postJsonObject['object'].get('published'):
-                    postJsonObject['published'] = published
+            _, published = get_status_number()
+            if post_json_object.get('published'):
+                post_json_object['published'] = published
+            if has_object_dict(post_json_object):
+                if post_json_object['object'].get('published'):
+                    post_json_object['published'] = published
 
-            print('Sending scheduled post ' + postId)
+            print('Sending scheduled post ' + post_id)
 
             if nickname:
-                httpd.postToNickname = nickname
-            if not postMessageToOutbox(httpd.session,
-                                       httpd.translate,
-                                       postJsonObject, nickname,
-                                       httpd, baseDir,
-                                       httpd.httpPrefix,
-                                       httpd.domain,
-                                       httpd.domainFull,
-                                       httpd.onionDomain,
-                                       httpd.i2pDomain,
-                                       httpd.port,
-                                       httpd.recentPostsCache,
-                                       httpd.followersThreads,
-                                       httpd.federationList,
-                                       httpd.sendThreads,
-                                       httpd.postLog,
-                                       httpd.cachedWebfingers,
-                                       httpd.personCache,
-                                       httpd.allowDeletion,
-                                       httpd.proxyType,
-                                       httpd.projectVersion,
-                                       httpd.debug,
-                                       httpd.YTReplacementDomain,
-                                       httpd.twitterReplacementDomain,
-                                       httpd.showPublishedDateOnly,
-                                       httpd.allowLocalNetworkAccess,
-                                       httpd.city, httpd.systemLanguage,
-                                       httpd.sharedItemsFederatedDomains,
-                                       httpd.sharedItemFederationTokens,
-                                       httpd.lowBandwidth,
-                                       httpd.signingPrivateKeyPem,
-                                       httpd.peertubeInstances,
-                                       httpd.themeName,
-                                       httpd.maxLikeCount,
-                                       httpd.maxRecentPosts):
-                indexLines.remove(line)
+                httpd.post_to_nickname = nickname
+
+            # create session if needed
+            curr_session = httpd.session
+            curr_proxy_type = httpd.proxy_type
+            if not curr_session:
+                curr_session = create_session(httpd.proxy_type)
+                httpd.session = curr_session
+            if not curr_session:
+                continue
+
+            if not post_message_to_outbox(curr_session,
+                                          httpd.translate,
+                                          post_json_object, nickname,
+                                          httpd, base_dir,
+                                          httpd.http_prefix,
+                                          httpd.domain,
+                                          httpd.domain_full,
+                                          httpd.onion_domain,
+                                          httpd.i2p_domain,
+                                          httpd.port,
+                                          httpd.recent_posts_cache,
+                                          httpd.followers_threads,
+                                          httpd.federation_list,
+                                          httpd.send_threads,
+                                          httpd.postLog,
+                                          httpd.cached_webfingers,
+                                          httpd.person_cache,
+                                          httpd.allow_deletion,
+                                          curr_proxy_type,
+                                          httpd.project_version,
+                                          httpd.debug,
+                                          httpd.yt_replace_domain,
+                                          httpd.twitter_replacement_domain,
+                                          httpd.show_published_date_only,
+                                          httpd.allow_local_network_access,
+                                          httpd.city, httpd.system_language,
+                                          httpd.shared_items_federated_domains,
+                                          httpd.shared_item_federation_tokens,
+                                          httpd.low_bandwidth,
+                                          httpd.signing_priv_key_pem,
+                                          httpd.peertube_instances,
+                                          httpd.theme_name,
+                                          httpd.max_like_count,
+                                          httpd.max_recent_posts,
+                                          httpd.cw_lists,
+                                          httpd.lists_enabled,
+                                          httpd.content_license_url,
+                                          httpd.dogwhistles):
+                index_lines.remove(line)
                 try:
-                    os.remove(postFilename)
-                except BaseException:
-                    pass
+                    os.remove(post_filename)
+                except OSError:
+                    print('EX: _update_post_schedule unable to delete ' +
+                          str(post_filename))
                 continue
 
             # move to the outbox
-            outboxPostFilename = postFilename.replace('/scheduled/',
-                                                      '/outbox/')
-            os.rename(postFilename, outboxPostFilename)
+            outbox_post_filename = \
+                post_filename.replace('/scheduled/', '/outbox/')
+            os.rename(post_filename, outbox_post_filename)
 
-            print('Scheduled post sent ' + postId)
+            print('Scheduled post sent ' + post_id)
 
-            indexLines.remove(line)
-            if len(indexLines) > maxScheduledPosts:
-                deleteSchedulePost = True
+            index_lines.remove(line)
+            if len(index_lines) > max_scheduled_posts:
+                delete_schedule_post = True
 
     # write the new schedule index file
-    scheduleIndexFile = \
-        baseDir + '/accounts/' + handle + '/schedule.index'
-    with open(scheduleIndexFile, 'w+') as scheduleFile:
-        for line in indexLines:
-            scheduleFile.write(line)
+    schedule_index_file = \
+        base_dir + '/accounts/' + handle + '/schedule.index'
+    with open(schedule_index_file, 'w+', encoding='utf-8') as schedule_file:
+        for line in index_lines:
+            schedule_file.write(line)
 
 
-def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
+def run_post_schedule(base_dir: str, httpd, max_scheduled_posts: int):
     """Dispatches scheduled posts
     """
     while True:
         time.sleep(60)
         # for each account
-        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for _, dirs, _ in os.walk(base_dir + '/accounts'):
             for account in dirs:
                 if '@' not in account:
                     continue
-                if not isAccountDir(account):
+                if not is_account_dir(account):
                     continue
                 # scheduled posts index for this account
-                scheduleIndexFilename = \
-                    baseDir + '/accounts/' + account + '/schedule.index'
-                if not os.path.isfile(scheduleIndexFilename):
+                schedule_index_filename = \
+                    base_dir + '/accounts/' + account + '/schedule.index'
+                if not os.path.isfile(schedule_index_filename):
                     continue
-                _updatePostSchedule(baseDir, account, httpd, maxScheduledPosts)
+                _update_post_schedule(base_dir, account,
+                                      httpd, max_scheduled_posts)
             break
 
 
-def runPostScheduleWatchdog(projectVersion: str, httpd) -> None:
+def run_post_schedule_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the scheduled post thread running even if it dies
     """
-    print('Starting scheduled post watchdog')
-    postScheduleOriginal = \
-        httpd.thrPostSchedule.clone(runPostSchedule)
-    httpd.thrPostSchedule.start()
+    print('THREAD: Starting scheduled post watchdog ' + project_version)
+    post_schedule_original = \
+        httpd.thrPostSchedule.clone(run_post_schedule)
+    begin_thread(httpd.thrPostSchedule, 'run_post_schedule_watchdog')
     while True:
         time.sleep(20)
         if httpd.thrPostSchedule.is_alive():
             continue
         httpd.thrPostSchedule.kill()
+        print('THREAD: restarting scheduled post watchdog')
         httpd.thrPostSchedule = \
-            postScheduleOriginal.clone(runPostSchedule)
-        httpd.thrPostSchedule.start()
+            post_schedule_original.clone(run_post_schedule)
+        begin_thread(httpd.thrPostSchedule, 'run_post_schedule_watchdog')
         print('Restarting scheduled posts...')
 
 
-def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
+def remove_scheduled_posts(base_dir: str, nickname: str, domain: str) -> None:
     """Removes any scheduled posts
     """
     # remove the index
-    scheduleIndexFilename = \
-        acctDir(baseDir, nickname, domain) + '/schedule.index'
-    if os.path.isfile(scheduleIndexFilename):
+    schedule_index_filename = \
+        acct_dir(base_dir, nickname, domain) + '/schedule.index'
+    if os.path.isfile(schedule_index_filename):
         try:
-            os.remove(scheduleIndexFilename)
-        except BaseException:
-            pass
+            os.remove(schedule_index_filename)
+        except OSError:
+            print('EX: remove_scheduled_posts unable to delete ' +
+                  schedule_index_filename)
     # remove the scheduled posts
-    scheduledDir = acctDir(baseDir, nickname, domain) + '/scheduled'
-    if not os.path.isdir(scheduledDir):
+    scheduled_dir = acct_dir(base_dir, nickname, domain) + '/scheduled'
+    if not os.path.isdir(scheduled_dir):
         return
-    for scheduledPostFilename in os.listdir(scheduledDir):
-        filePath = os.path.join(scheduledDir, scheduledPostFilename)
-        try:
-            if os.path.isfile(filePath):
-                try:
-                    os.remove(filePath)
-                except BaseException:
-                    pass
-        except BaseException:
-            pass
+    for scheduled_post_filename in os.listdir(scheduled_dir):
+        file_path = os.path.join(scheduled_dir, scheduled_post_filename)
+        if os.path.isfile(file_path):
+            try:
+                os.remove(file_path)
+            except OSError:
+                print('EX: remove_scheduled_posts unable to delete ' +
+                      file_path)

@@ -1,4 +1,11 @@
 {
+    "code-color": "lightblue",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "white",
+    "dropdown-bg-color": "#002a3a",
+    "dropdown-bg-color-hover": "#025d84",
+    "dropdown-fg-color-hover": "white",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "calendar-header-font-style": "normal",
@@ -32,11 +39,14 @@
     "banner-height": "15vh",
     "banner-height-mobile": "10vh",
     "focus-color": "blue",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-header": "14px",
     "font-size-header-mobile": "24px",
     "font-size-button-mobile": "24px",
     "font-size-links": "12px",
     "font-size-newswire": "12px",
+    "font-size-pageslist": "32px",
     "font-size": "22px",
     "font-size2": "16px",
     "font-size3": "30px",
@@ -58,6 +68,8 @@
     "options-main-link-color": "#05b9ec",
     "options-main-link-color-hover": "#46eed5",
     "cw-color": "white",
+    "pageslist-color": "white",
+    "pageslist-selected-color": "#dddddd",
     "main-fg-color": "white",
     "login-fg-color": "white",
     "welcome-fg-color": "white",
@@ -93,5 +105,6 @@
     "*font-family": "'Montserrat-Regular'",
     "*src": "url('./fonts/Montserrat-Regular.ttf') format('truetype')",
     "**font-family": "'Orbitron'",
-    "**src": "url('./fonts/Orbitron.ttf') format('truetype')"
+    "**src": "url('./fonts/Orbitron.ttf') format('truetype')",
+    "reply-icon-direction": "-1"
 }

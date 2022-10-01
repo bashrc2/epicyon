@@ -1,89 +1,112 @@
 __filename__ = "xmpp.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getXmppAddress(actorJson: {}) -> str:
+from utils import get_attachment_property_value
+
+
+def get_xmpp_address(actor_json: {}) -> str:
     """Returns xmpp address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name'].lower()
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name'].lower()
+        if not name_value:
             continue
-        nameLower = propertyValue['name'].lower()
-        if not (nameLower.startswith('xmpp') or
-                nameLower.startswith('jabber')):
+        if not (name_value.startswith('xmpp') or
+                name_value.startswith('jabber')):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '@' not in propertyValue['value']:
+        if '@' not in property_value[prop_value_name]:
             continue
-        if '"' in propertyValue['value']:
+        if '"' in property_value[prop_value_name]:
             continue
-        return propertyValue['value']
+        return property_value[prop_value_name]
     return ''
 
 
-def setXmppAddress(actorJson: {}, xmppAddress: str) -> None:
+def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
     """Sets an xmpp address for the given actor
     """
-    notXmppAddress = False
-    if '@' not in xmppAddress:
-        notXmppAddress = True
-    if '.' not in xmppAddress:
-        notXmppAddress = True
-    if '"' in xmppAddress:
-        notXmppAddress = True
-    if '<' in xmppAddress:
-        notXmppAddress = True
+    not_xmpp_address = False
+    if '@' not in xmpp_address:
+        not_xmpp_address = True
+    if '.' not in xmpp_address:
+        not_xmpp_address = True
+    if '"' in xmpp_address:
+        not_xmpp_address = True
+    if '<' in xmpp_address:
+        not_xmpp_address = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    property_found = None
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not (propertyValue['name'].lower().startswith('xmpp') or
-                propertyValue['name'].lower().startswith('jabber')):
+        if not (name_value.lower().startswith('xmpp') or
+                name_value.lower().startswith('jabber')):
             continue
-        propertyFound = propertyValue
+        property_found = property_value
         break
-    if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
-    if notXmppAddress:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_xmpp_address:
         return
 
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        nameLower = propertyValue['name'].lower()
-        if not (nameLower.startswith('xmpp') or
-                nameLower.startswith('jabber')):
+        name_value = name_value.lower()
+        if not (name_value.startswith('xmpp') or
+                name_value.startswith('jabber')):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if not property_value['type'].endswith('PropertyValue'):
             continue
-        propertyValue['value'] = xmppAddress
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        property_value[prop_value_name] = xmpp_address
         return
 
-    newXmppAddress = {
+    new_xmpp_address = {
         "name": "XMPP",
         "type": "PropertyValue",
-        "value": xmppAddress
+        "value": xmpp_address
     }
-    actorJson['attachment'].append(newXmppAddress)
+    actor_json['attachment'].append(new_xmpp_address)

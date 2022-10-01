@@ -1,164 +1,154 @@
 __filename__ = "roles.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import os
-from utils import loadJson
-from utils import saveJson
-from utils import getStatusNumber
-from utils import removeDomainPort
-from utils import acctDir
+from utils import load_json
+from utils import save_json
+from utils import get_status_number
+from utils import remove_domain_port
+from utils import acct_dir
+from utils import text_in_file
+from utils import get_config_param
 
 
-def _clearRoleStatus(baseDir: str, role: str) -> None:
+def _clear_role_status(base_dir: str, role: str) -> None:
     """Removes role status from all accounts
     This could be slow if there are many users, but only happens
     rarely when roles are appointed or removed
     """
-    directory = os.fsencode(baseDir + '/accounts/')
-    for f in os.scandir(directory):
-        f = f.name
-        filename = os.fsdecode(f)
+    directory = os.fsencode(base_dir + '/accounts/')
+    for fname in os.scandir(directory):
+        filename = os.fsdecode(fname.name)
         if '@' not in filename:
             continue
         if not filename.endswith(".json"):
             continue
-        filename = os.path.join(baseDir + '/accounts/', filename)
-        if '"' + role + '"' not in open(filename).read():
+        filename = os.path.join(base_dir + '/accounts/', filename)
+        if not text_in_file('"' + role + '"', filename):
             continue
-        actorJson = loadJson(filename)
-        if not actorJson:
+        actor_json = load_json(filename)
+        if not actor_json:
             continue
-        rolesList = getActorRolesList(actorJson)
-        if role in rolesList:
-            rolesList.remove(role)
-            setRolesFromList(actorJson, rolesList)
-            saveJson(actorJson, filename)
+        roles_list = get_actor_roles_list(actor_json)
+        if role in roles_list:
+            roles_list.remove(role)
+            actor_roles_from_list(actor_json, roles_list)
+            save_json(actor_json, filename)
 
 
-def clearEditorStatus(baseDir: str) -> None:
-    """Removes editor status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when editors are appointed or removed
-    """
-    _clearRoleStatus(baseDir, 'editor')
-
-
-def clearCounselorStatus(baseDir: str) -> None:
-    """Removes counselor status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when counselors are appointed or removed
-    """
-    _clearRoleStatus(baseDir, 'editor')
-
-
-def clearArtistStatus(baseDir: str) -> None:
-    """Removes artist status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when artists are appointed or removed
-    """
-    _clearRoleStatus(baseDir, 'artist')
-
-
-def clearModeratorStatus(baseDir: str) -> None:
-    """Removes moderator status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when moderators are appointed or removed
-    """
-    _clearRoleStatus(baseDir, 'moderator')
-
-
-def _addRole(baseDir: str, nickname: str, domain: str,
-             roleFilename: str) -> None:
+def _add_role(base_dir: str, nickname: str, domain: str,
+              role_filename: str) -> None:
     """Adds a role nickname to the file.
     This is a file containing the nicknames of accounts having this role
     """
-    domain = removeDomainPort(domain)
-    roleFile = baseDir + '/accounts/' + roleFilename
-    if os.path.isfile(roleFile):
+    domain = remove_domain_port(domain)
+    role_file = base_dir + '/accounts/' + role_filename
+    if os.path.isfile(role_file):
         # is this nickname already in the file?
-        with open(roleFile, 'r') as f:
-            lines = f.readlines()
-        for roleNickname in lines:
-            roleNickname = roleNickname.strip('\n').strip('\r')
-            if roleNickname == nickname:
+
+        lines = []
+        try:
+            with open(role_file, 'r', encoding='utf-8') as fp_role:
+                lines = fp_role.readlines()
+        except OSError:
+            print('EX: _add_role, failed to read roles file ' + role_file)
+
+        for role_nickname in lines:
+            role_nickname = role_nickname.strip('\n').strip('\r')
+            if role_nickname == nickname:
                 return
         lines.append(nickname)
-        with open(roleFile, 'w+') as f:
-            for roleNickname in lines:
-                roleNickname = roleNickname.strip('\n').strip('\r')
-                if len(roleNickname) < 2:
-                    continue
-                if os.path.isdir(baseDir + '/accounts/' +
-                                 roleNickname + '@' + domain):
-                    f.write(roleNickname + '\n')
+
+        try:
+            with open(role_file, 'w+', encoding='utf-8') as fp_role:
+                for role_nickname in lines:
+                    role_nickname = role_nickname.strip('\n').strip('\r')
+                    if len(role_nickname) < 2:
+                        continue
+                    if os.path.isdir(base_dir + '/accounts/' +
+                                     role_nickname + '@' + domain):
+                        fp_role.write(role_nickname + '\n')
+        except OSError:
+            print('EX: _add_role, failed to write roles file1 ' + role_file)
     else:
-        with open(roleFile, 'w+') as f:
-            accountDir = acctDir(baseDir, nickname, domain)
-            if os.path.isdir(accountDir):
-                f.write(nickname + '\n')
+        try:
+            with open(role_file, 'w+', encoding='utf-8') as fp_role:
+                account_dir = acct_dir(base_dir, nickname, domain)
+                if os.path.isdir(account_dir):
+                    fp_role.write(nickname + '\n')
+        except OSError:
+            print('EX: _add_role, failed to write roles file2 ' + role_file)
 
 
-def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
+def _remove_role(base_dir: str, nickname: str, role_filename: str) -> None:
     """Removes a role nickname from the file.
     This is a file containing the nicknames of accounts having this role
     """
-    roleFile = baseDir + '/accounts/' + roleFilename
-    if not os.path.isfile(roleFile):
+    role_file = base_dir + '/accounts/' + role_filename
+    if not os.path.isfile(role_file):
         return
-    with open(roleFile, 'r') as f:
-        lines = f.readlines()
-    with open(roleFile, 'w+') as f:
-        for roleNickname in lines:
-            roleNickname = roleNickname.strip('\n').strip('\r')
-            if len(roleNickname) > 1 and roleNickname != nickname:
-                f.write(roleNickname + '\n')
+
+    try:
+        with open(role_file, 'r', encoding='utf-8') as fp_role:
+            lines = fp_role.readlines()
+    except OSError:
+        print('EX: _remove_role, failed to read roles file ' + role_file)
+
+    try:
+        with open(role_file, 'w+', encoding='utf-8') as fp_role:
+            for role_nickname in lines:
+                role_nickname = role_nickname.strip('\n').strip('\r')
+                if len(role_nickname) > 1 and role_nickname != nickname:
+                    fp_role.write(role_nickname + '\n')
+    except OSError:
+        print('EX: _remove_role, failed to regenerate roles file ' + role_file)
 
 
-def _setActorRole(actorJson: {}, roleName: str) -> bool:
+def _set_actor_role(actor_json: {}, role_name: str) -> bool:
     """Sets a role for an actor
     """
-    if not actorJson.get('hasOccupation'):
+    if not actor_json.get('hasOccupation'):
         return False
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return False
 
     # occupation category from www.onetonline.org
     category = None
-    if 'admin' in roleName:
+    if 'admin' in role_name:
         category = '15-1299.01'
-    elif 'moderator' in roleName:
+    elif 'moderator' in role_name:
         category = '11-9199.02'
-    elif 'editor' in roleName:
+    elif 'editor' in role_name:
         category = '27-3041.00'
-    elif 'counselor' in roleName:
+    elif 'counselor' in role_name:
         category = '23-1022.00'
-    elif 'artist' in roleName:
+    elif 'artist' in role_name:
         category = '27-1024.00'
     if not category:
         return False
 
-    for index in range(len(actorJson['hasOccupation'])):
-        occupationItem = actorJson['hasOccupation'][index]
-        if not isinstance(occupationItem, dict):
+    for index, _ in enumerate(actor_json['hasOccupation']):
+        occupation_item = actor_json['hasOccupation'][index]
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] != 'Role':
+        if occupation_item['@type'] != 'Role':
             continue
-        if occupationItem['hasOccupation']['name'] == roleName:
+        if occupation_item['hasOccupation']['name'] == role_name:
             return True
-    statusNumber, published = getStatusNumber()
-    newRole = {
+    _, published = get_status_number()
+    new_role = {
         "@type": "Role",
         "hasOccupation": {
             "@type": "Occupation",
-            "name": roleName,
+            "name": role_name,
             "description": "Fediverse instance role",
             "occupationLocation": {
                 "@type": "City",
@@ -178,100 +168,190 @@ def _setActorRole(actorJson: {}, roleName: str) -> bool:
         },
         "startDate": published
     }
-    actorJson['hasOccupation'].append(newRole)
+    actor_json['hasOccupation'].append(new_role)
     return True
 
 
-def setRolesFromList(actorJson: {}, rolesList: []) -> None:
+def actor_roles_from_list(actor_json: {}, roles_list: []) -> None:
     """Sets roles from a list
     """
     # clear Roles from the occupation list
-    emptyRolesList = []
-    for occupationItem in actorJson['hasOccupation']:
-        if not isinstance(occupationItem, dict):
+    empty_roles_list = []
+    for occupation_item in actor_json['hasOccupation']:
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] == 'Role':
+        if occupation_item['@type'] == 'Role':
             continue
-        emptyRolesList.append(occupationItem)
-    actorJson['hasOccupation'] = emptyRolesList
+        empty_roles_list.append(occupation_item)
+    actor_json['hasOccupation'] = empty_roles_list
 
     # create the new list
-    for roleName in rolesList:
-        _setActorRole(actorJson, roleName)
+    for role_name in roles_list:
+        _set_actor_role(actor_json, role_name)
 
 
-def getActorRolesList(actorJson: {}) -> []:
+def get_actor_roles_list(actor_json: {}) -> []:
     """Gets a list of role names from an actor
     """
-    if not actorJson.get('hasOccupation'):
+    if not actor_json.get('hasOccupation'):
         return []
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return []
-    rolesList = []
-    for occupationItem in actorJson['hasOccupation']:
-        if not isinstance(occupationItem, dict):
+    roles_list = []
+    for occupation_item in actor_json['hasOccupation']:
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] != 'Role':
+        if occupation_item['@type'] != 'Role':
             continue
-        roleName = occupationItem['hasOccupation']['name']
-        if roleName not in rolesList:
-            rolesList.append(roleName)
-    return rolesList
+        role_name = occupation_item['hasOccupation']['name']
+        if role_name not in roles_list:
+            roles_list.append(role_name)
+    return roles_list
 
 
-def setRole(baseDir: str, nickname: str, domain: str,
-            role: str) -> bool:
+def set_role(base_dir: str, nickname: str, domain: str,
+             role: str) -> bool:
     """Set a person's role
     Setting the role to an empty string or None will remove it
     """
     # avoid giant strings
     if len(role) > 128:
         return False
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
-    if not os.path.isfile(actorFilename):
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
         return False
 
-    roleFiles = {
+    role_files = {
         "moderator": "moderators.txt",
         "editor": "editors.txt",
         "counselor": "counselors.txt",
         "artist": "artists.txt"
     }
 
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        if not actorJson.get('hasOccupation'):
+    actor_json = load_json(actor_filename)
+    if actor_json:
+        if not actor_json.get('hasOccupation'):
             return False
-        rolesList = getActorRolesList(actorJson)
-        actorChanged = False
+        roles_list = get_actor_roles_list(actor_json)
+        actor_changed = False
         if role:
             # add the role
-            if roleFiles.get(role):
-                _addRole(baseDir, nickname, domain, roleFiles[role])
-            if role not in rolesList:
-                rolesList.append(role)
-                rolesList.sort()
-                setRolesFromList(actorJson, rolesList)
-                actorChanged = True
+            if role_files.get(role):
+                _add_role(base_dir, nickname, domain, role_files[role])
+            if role not in roles_list:
+                roles_list.append(role)
+                roles_list.sort()
+                actor_roles_from_list(actor_json, roles_list)
+                actor_changed = True
         else:
             # remove the role
-            if roleFiles.get(role):
-                _removeRole(baseDir, nickname, roleFiles[role])
-            if role in rolesList:
-                rolesList.remove(role)
-                setRolesFromList(actorJson, rolesList)
-                actorChanged = True
-        if actorChanged:
-            saveJson(actorJson, actorFilename)
+            if role_files.get(role):
+                _remove_role(base_dir, nickname, role_files[role])
+            if role in roles_list:
+                roles_list.remove(role)
+                actor_roles_from_list(actor_json, roles_list)
+                actor_changed = True
+        if actor_changed:
+            save_json(actor_json, actor_filename)
     return True
 
 
-def actorHasRole(actorJson: {}, roleName: str) -> bool:
+def actor_has_role(actor_json: {}, role_name: str) -> bool:
     """Returns true if the given actor has the given role
     """
-    rolesList = getActorRolesList(actorJson)
-    return roleName in rolesList
+    roles_list = get_actor_roles_list(actor_json)
+    return role_name in roles_list
+
+
+def is_devops(base_dir: str, nickname: str) -> bool:
+    """Returns true if the given nickname has the devops role
+    """
+    devops_file = base_dir + '/accounts/devops.txt'
+
+    if not os.path.isfile(devops_file):
+        admin_name = get_config_param(base_dir, 'admin')
+        if not admin_name:
+            return False
+        if admin_name == nickname:
+            return True
+        return False
+
+    with open(devops_file, 'r', encoding='utf-8') as fp_mod:
+        lines = fp_mod.readlines()
+        if len(lines) == 0:
+            # if there is nothing in the file
+            admin_name = get_config_param(base_dir, 'admin')
+            if not admin_name:
+                return False
+            if admin_name == nickname:
+                return True
+        for devops in lines:
+            devops = devops.strip('\n').strip('\r')
+            if devops == nickname:
+                return True
+    return False
+
+
+def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
+                        list_name: str, role_name: str, fields: [], path: str,
+                        list_filename: str) -> None:
+    """Sets the roles from a list returned from the edit profile screen under
+    role assignments
+    """
+    # check for admin user
+    if not path.startswith('/users/' + admin_nickname + '/'):
+        return
+    roles_filename = base_dir + '/accounts/' + list_filename
+    if not fields.get(list_name):
+        if os.path.isfile(roles_filename):
+            _clear_role_status(base_dir, role_name)
+            try:
+                os.remove(roles_filename)
+            except OSError:
+                print('EX: failed to remove roles file ' + roles_filename)
+        return
+    _clear_role_status(base_dir, role_name)
+    if ',' in fields[list_name]:
+        # if the list was given as comma separated
+        roles_list = fields[list_name].split(',')
+        try:
+            with open(roles_filename, 'w+',
+                      encoding='utf-8') as rolesfile:
+                for roles_nick in roles_list:
+                    roles_nick = roles_nick.strip()
+                    roles_dir = acct_dir(base_dir, roles_nick, domain)
+                    if os.path.isdir(roles_dir):
+                        rolesfile.write(roles_nick + '\n')
+        except OSError as ex:
+            print('EX: unable to write ' + list_name + ' ' +
+                  roles_filename + ' ' + str(ex))
+
+        for roles_nick in roles_list:
+            roles_nick = roles_nick.strip()
+            roles_dir = acct_dir(base_dir, roles_nick, domain)
+            if os.path.isdir(roles_dir):
+                set_role(base_dir, roles_nick, domain, role_name)
+    else:
+        # nicknames on separate lines
+        roles_list = fields[list_name].split('\n')
+        try:
+            with open(roles_filename, 'w+',
+                      encoding='utf-8') as rolesfile:
+                for roles_nick in roles_list:
+                    roles_nick = roles_nick.strip()
+                    roles_dir = acct_dir(base_dir, roles_nick, domain)
+                    if os.path.isdir(roles_dir):
+                        rolesfile.write(roles_nick + '\n')
+        except OSError as ex:
+            print('EX: unable to write  ' + list_name + ' ' +
+                  roles_filename + ' ' + str(ex))
+
+        for roles_nick in roles_list:
+            roles_nick = roles_nick.strip()
+            roles_dir = acct_dir(base_dir, roles_nick, domain)
+            if os.path.isdir(roles_dir):
+                set_role(base_dir, roles_nick, domain, role_name)

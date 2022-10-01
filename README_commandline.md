@@ -222,24 +222,32 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
                    --undolike [url] --password [c2s password]
 ```
 
-## Archiving posts
+## Archiving and Expiring posts
 
-You can archive old posts with:
+As a general rule, all posts will be retained unless otherwise specified. However, on systems with finite and small disk storage running out of space is a show-stopping catastrophe and so clearing down old posts is highly advisable. You can achieve this using the archive commandline option, and optionally also with a cron job.
+
+You can archive old posts and expire posts as specified within account profile settings with:
 
 ``` bash
 python3 epicyon.py --archive [directory]
 ```
 
-Which will move old posts to the given directory. You can also specify the number of weeks after which images will be archived, and the maximum number of posts within in/outboxes.
+Which will move old posts to the given directory and delete any expired posts. You can also specify the number of weeks after which images will be archived, and the maximum number of posts within in/outboxes.
 
 ``` bash
-python3 epicyon.py --archive [directory] --archiveweeks 4 --maxposts 256
+python3 epicyon.py --archive [directory] --archiveweeks 4 --maxposts 32000
 ```
 
 If you want old posts to be deleted for data minimization purposes then the archive location can be set to */dev/null*.
 
 ``` bash
-python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 256
+python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 32000
+```
+
+You can put this command into a cron job to ensure that old posts are cleared down regularly. In */etc/crontab* add an entry such as:
+
+``` bash
+*/60 * * * * root cd /opt/epicyon && /usr/bin/python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 32000
 ```
 
 ## Blocking and unblocking
@@ -372,3 +380,31 @@ To remove a shared item:
 ``` bash
 python3 epicyon.py --undoItemName "spanner" --nickname [yournick] --domain [yourdomain] --password [c2s password]
 ```
+
+## Calendar
+
+The calendar for each account can be accessed via CalDav (RFC4791). This makes it easy to integrate the social calendar into other applications. For example, to obtain events for a month:
+
+```bash
+python3 epicyon.py --dav --nickname [yournick] --domain [yourdomain] --year [year] --month [month number]
+```
+
+You will be prompted for your login password, or you can use the **--password** option. You can also use the **--day** option to obtain events for a particular day.
+
+The CalDav endpoint for an account is:
+
+```bash
+yourdomain/calendars/yournick
+```
+
+## Web Crawlers
+
+Having search engines index social media posts is not usually considered appropriate, since even if "public" they may contain personally identifiable information. If you are running a news instance then web crawlers will be permitted by the system, but otherwise by default they will be blocked.
+
+If you want to allow specific web crawlers then when running the daemon (typically with systemd) you can use the **crawlersAllowed** option. It can take a list of bot names, separated by commas. For example:
+
+```bash
+--crawlersAllowed "googlebot, apple"
+```
+
+Typically web crawlers have names ending in "bot", but partial names can also be used.

@@ -115,6 +115,50 @@ function sendNotification {
 
     hasSent=
 
+    # see https://ntfy.sh
+    # You will need to create these two files containing the ntfy
+    # service url and topic
+    ntfy_url_file=/home/${USERNAME}/.ntfy_url
+    ntfy_topic_file=/home/${USERNAME}/.ntfy_topic
+
+    # get ntfy settings from the account directory
+    epicyon_config_file=${epicyonInstallDir}/config.json
+    if [ -f "${epicyon_config_file}" ]; then
+        epicyon_domain=$(cat "$epicyon_config_file" | awk -F '"domain": "' '{print $2}' | awk -F '"' '{print $1}')
+        if [ "${epicyon_domain}" ]; then
+            epicyon_account_dir="${epicyonInstallDir}/accounts/${USERNAME}@${epicyon_domain}"
+            if [ -d "${epicyon_account_dir}" ]; then
+                ntfy_url_file=${epicyon_account_dir}/.ntfy_url
+                ntfy_topic_file=${epicyon_account_dir}/.ntfy_topic
+            fi
+        fi
+    fi
+
+    if [ "$MESSAGE" ]; then
+        if [ -f "$ntfy_topic_file" ]; then
+            ntfy_topic=$(cat "$ntfy_topic_file")
+            if [ "$ntfy_topic" ]; then
+                if [ -f "$ntfy_url_file" ]; then
+                    ntfy_url=$(cat "$ntfy_url_file")
+                else
+                    # use the default service url
+                    ntfy_url="ntfy.sh"
+                fi
+
+                curl_command='curl'
+                if [ -f /var/lib/tor/hidden_service_matrix/hostname ]; then
+                    curl_command='torsocks curl'
+                fi
+
+                if [ ! "$SUBJECT" ]; then
+                    SUBJECT="$PROJECT_NAME"
+                fi
+                ${curl_command} -H "Title: ${SUBJECT}" -H "Priority: default" -H "Tags: loudspeaker" -d "${MESSAGE}" "${ntfy_url}/${ntfy_topic}"
+                hasSent=1
+            fi
+        fi
+    fi
+
     if [ -d /etc/prosody ]; then
         if [ -f /usr/bin/sendxmpp ]; then
             # generate a random password for a temporary user account
@@ -209,9 +253,24 @@ function notifications {
                 if [[ "$epicyonLikeFileContent" == *':'* ]]; then
                     epicyonLikeMessage="Epicyon: $epicyonLikeFileContent"
                 fi
-		sendNotification "$USERNAME" "Epicyon" "$epicyonLikeMessage"
+                sendNotification "$USERNAME" "Epicyon" "$epicyonLikeMessage"
                 echo "##sent##" > "$epicyonLikeFile"
                 chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonLikeFile"
+            fi
+        fi
+
+        # send notifications for emoji reactions to XMPP/email users
+        epicyonReactionFile="$epicyonDir/.newReaction"
+        if [ -f "$epicyonReactionFile" ]; then
+            if ! grep -q "##sent##" "$epicyonReactionFile"; then
+                epicyonReactionMessage=$(notification_translate_text 'Reaction by')
+                epicyonReactionFileContent=$(cat "$epicyonReactionFile" | awk -F ' ' '{print $1}')" "$(echo "$epicyonReactionMessage")" "$(cat "$epicyonReactionFile" | awk -F ' ' '{print $2}')
+                if [[ "$epicyonReactionFileContent" == *':'* ]]; then
+                    epicyonReactionMessage="Epicyon: $epicyonReactionFileContent"
+                fi
+                sendNotification "$USERNAME" "Epicyon" "$epicyonReactionMessage"
+                echo "##sent##" > "$epicyonReactionFile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonReactionFile"
             fi
         fi
 

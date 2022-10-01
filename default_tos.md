@@ -11,7 +11,7 @@ Posts can be removed on request if there is sufficient justification, but the na
 ### Content Policy
 This instance will not host content containing sexism, racism, casteism, homophobia, transphobia, misogyny, antisemitism or other forms of bigotry or discrimination on the basis of nationality or immigration status. Claims that transgressions of this type were intended to be "ironic" will be treated as a terms of service violation.
 
-Even if not conspicuously discriminatory, expressions of support for organizations with discrminatory agendas are not permitted on this instance. These include, but are not limited to, racial supremacist groups, the redpill/incel movement and anti-LGBT or anti-immigrant campaigns.
+Even if not conspicuously discriminatory, expressions of support for organizations with discrminatory agendas are not permitted on this instance. These include, but are not limited to, racial supremacist groups, the redpill/incel movement, anti-vaccination, anti-LGBT and anti-immigrant campaigns.
 
 Depictions of injury, death or medical procedures are not permitted.
 
@@ -24,12 +24,14 @@ Moderators rely upon your reports. Don't assume that something of concern has al
 Content found to be non-compliant with this policy will be removed and any accounts on this instance producing, repeating or linking to such content will be deleted typically without prior notification.
 
 ### Federation Policy
-In a proactive effort to avoid the classic fate of *"embrace, extend, extinguish"* this system will block any instance launched, acquired or funded by Alphabet, Facebook, Twitter, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
+In a proactive effort to avoid the classic fate of *"embrace, extend, extinguish"* this system will block any instance launched, acquired or funded by Alphabet/Google, Facebook/Meta, Twitter, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
 
 This system will not federate with instances whose moderation policy is incompatible with the content policy described above. If an instance lacks a moderation policy, or refuses to enforce one, it will be assumed to be incompatible.
 
-### Use of User Generated Content for Research
+### Use by Research Organizations and Universities
 Data may not be "scraped" or otherwise obtained from this instance and used for academic research or cited within research publications without the prior written permission of the administrator. Financial remedy will be sought through the courts from any researcher publishing data obtained from this instance without consent.
+
+The administrator of this instance does not agree to participate in human subjects research, or research to study website policies and practices, carried out by academic institutions or their executors without prior written consent.
 
 ### Commercial Use
 Commercial use of original content on this instance is strictly forbidden without the prior written permission of individual account holders. The instance administrator does not hold copyright on any original content posted by account holders. Publication or federation of content does not imply permission for commercial use.

@@ -114,6 +114,10 @@ a:focus {
     background-color: var(--main-bg-color);
 }
 
+.follow container {
+    width: 100%;
+}
+
 .followAvatar {
     margin: 0% 0;
 }
@@ -201,12 +205,24 @@ input[type=text] {
     width: 15%;
 }
 
+.container {
+    width: 100%;
+}
+
 @media screen and (min-width: 400px) {
     .hashtagswarm {
         font-size: var(--hashtag-size1);
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing1);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
+	white-space: nowrap;
+    }
+    .hashtagswarm img {
+        width: 5%;
+        min-width: 5%;
     }
     .followText {
         font-size: var(--follow-text-size1);
@@ -238,13 +254,13 @@ input[type=text] {
     }
     input[type=checkbox]
     {
-	-ms-transform: scale(2);
-	-moz-transform: scale(2);
-	-webkit-transform: scale(2);
-	-o-transform: scale(2);
-	transform: scale(2);
-	padding: 10px;
-	margin: 20px 30px;
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
+        padding: 10px;
+        margin: 20px 30px;
     }
 }
 
@@ -254,6 +270,14 @@ input[type=text] {
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing3);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
+	white-space: nowrap;
+    }
+    .hashtagswarm img {
+        width: 10%;
+        min-width: 10%;
     }
     .followText {
         font-size: var(--follow-text-size2);
@@ -285,11 +309,69 @@ input[type=text] {
     }
     input[type=checkbox]
     {
-        -ms-transform: scale(4);
-        -moz-transform: scale(4);
-        -webkit-transform: scale(4);
-        -o-transform: scale(4);
-        transform: scale(4);
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
+        padding: 20px;
+        margin: 30px 40px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body, html {
+        min-width: 400px;
+    }
+    .hashtagswarm {
+        font-size: var(--font-size2);
+        font-family: Arial, Helvetica, sans-serif;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing3);
+        -webkit-user-select: all;
+        -ms-user-select: all;
+        user-select: all;
+	white-space: nowrap;
+    }
+    .hashtagswarm img {
+        width: 10%;
+        min-width: 10%;
+    }
+    .followText {
+        font-size: var(--font-size2);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    input[type=text] {
+        width: var(--follow-text-entry-width);
+        clear: both;
+        font-size: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        color: var(--text-entry-foreground);
+        background-color: var(--text-entry-background);
+    }
+    .button {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
+    input[type=checkbox]
+    {
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
     }

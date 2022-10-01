@@ -1,106 +1,107 @@
 __filename__ = "webapp_question.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from question import isQuestion
-from utils import removeIdEnding
-from utils import acctDir
+from question import is_question
+from utils import remove_id_ending
+from utils import acct_dir
+from utils import text_in_file
 
 
-def insertQuestion(baseDir: str, translate: {},
-                   nickname: str, domain: str, port: int,
-                   content: str,
-                   postJsonObject: {}, pageNumber: int) -> str:
+def insert_question(base_dir: str, translate: {},
+                    nickname: str, domain: str, content: str,
+                    post_json_object: {}, page_number: int) -> str:
     """ Inserts question selection into a post
     """
-    if not isQuestion(postJsonObject):
+    if not is_question(post_json_object):
         return content
-    if len(postJsonObject['object']['oneOf']) == 0:
+    if len(post_json_object['object']['oneOf']) == 0:
         return content
-    messageId = removeIdEnding(postJsonObject['id'])
-    if '#' in messageId:
-        messageId = messageId.split('#', 1)[0]
-    pageNumberStr = ''
-    if pageNumber:
-        pageNumberStr = '?page=' + str(pageNumber)
+    message_id = remove_id_ending(post_json_object['id'])
+    if '#' in message_id:
+        message_id = message_id.split('#', 1)[0]
+    page_number_str = ''
+    if page_number:
+        page_number_str = '?page=' + str(page_number)
 
-    votesFilename = \
-        acctDir(baseDir, nickname, domain) + '/questions.txt'
+    votes_filename = \
+        acct_dir(base_dir, nickname, domain) + '/questions.txt'
 
-    showQuestionResults = False
-    if os.path.isfile(votesFilename):
-        if messageId in open(votesFilename).read():
-            showQuestionResults = True
+    show_question_results = False
+    if os.path.isfile(votes_filename):
+        if text_in_file(message_id, votes_filename):
+            show_question_results = True
 
-    if not showQuestionResults:
+    if not show_question_results:
         # show the question options
         content += '<div class="question">'
         content += \
             '<form method="POST" action="/users/' + \
-            nickname + '/question' + pageNumberStr + '">\n'
+            nickname + '/question' + page_number_str + '">\n'
         content += \
             '<input type="hidden" name="messageId" value="' + \
-            messageId + '">\n<br>\n'
-        for choice in postJsonObject['object']['oneOf']:
+            message_id + '">\n<br>\n'
+        for choice in post_json_object['object']['oneOf']:
             if not choice.get('type'):
                 continue
             if not choice.get('name'):
                 continue
             content += \
                 '<input type="radio" name="answer" value="' + \
-                choice['name'] + '"> ' + choice['name'] + '<br><br>\n'
+                choice['name'] + '" tabindex="10"> ' + \
+                choice['name'] + '<br><br>\n'
         content += \
             '<input type="submit" value="' + \
-            translate['Vote'] + '" class="vote"><br><br>\n'
+            translate['Vote'] + '" class="vote" tabindex="10"><br><br>\n'
         content += '</form>\n</div>\n'
     else:
         # show the responses to a question
         content += '<div class="questionresult">\n'
 
         # get the maximum number of votes
-        maxVotes = 1
-        for questionOption in postJsonObject['object']['oneOf']:
-            if not questionOption.get('name'):
+        max_votes = 1
+        for question_option in post_json_object['object']['oneOf']:
+            if not question_option.get('name'):
                 continue
-            if not questionOption.get('replies'):
+            if not question_option.get('replies'):
                 continue
             votes = 0
             try:
-                votes = int(questionOption['replies']['totalItems'])
+                votes = int(question_option['replies']['totalItems'])
             except BaseException:
-                pass
-            if votes > maxVotes:
-                maxVotes = int(votes+1)
+                print('EX: insert_question unable to convert to int')
+            if votes > max_votes:
+                max_votes = int(votes+1)
 
         # show the votes as sliders
-        questionCtr = 1
-        for questionOption in postJsonObject['object']['oneOf']:
-            if not questionOption.get('name'):
+        for question_option in post_json_object['object']['oneOf']:
+            if not question_option.get('name'):
                 continue
-            if not questionOption.get('replies'):
+            if not question_option.get('replies'):
                 continue
             votes = 0
             try:
-                votes = int(questionOption['replies']['totalItems'])
+                votes = int(question_option['replies']['totalItems'])
             except BaseException:
-                pass
-            votesPercent = str(int(votes * 100 / maxVotes))
+                print('EX: insert_question unable to convert to int 2')
+            votes_percent = str(int(votes * 100 / max_votes))
+
             content += \
-                '<p><input type="text" title="' + str(votes) + \
-                '" name="skillName' + str(questionCtr) + \
-                '" value="' + questionOption['name'] + \
-                ' (' + str(votes) + ')" style="width:40%">\n'
-            content += \
-                '<input type="range" min="1" max="100" ' + \
-                'class="slider" title="' + \
-                str(votes) + '" name="skillValue' + str(questionCtr) + \
-                '" value="' + votesPercent + '"></p>\n'
-            questionCtr += 1
+                '<p>\n' + \
+                '  <label class="labels">' + \
+                question_option['name'] + '</label><br>\n' + \
+                '  <svg class="voteresult">\n' + \
+                '    <rect width="' + votes_percent + \
+                '%" class="voteresultbar" />\n' + \
+                '  </svg>' + \
+                '  <label class="labels">' + votes_percent + '%</label>\n' + \
+                '</p>\n'
+
         content += '</div>\n'
     return content

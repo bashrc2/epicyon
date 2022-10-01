@@ -1,145 +1,157 @@
 __filename__ = "webapp_frontscreen.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
-from utils import isSystemAccount
-from utils import getDomainFromActor
-from utils import getConfigParam
-from person import personBoxJson
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getBannerFile
-from webapp_utils import htmlPostSeparator
-from webapp_utils import headerButtonsFrontScreen
-from webapp_column_left import getLeftColumnContent
-from webapp_column_right import getRightColumnContent
-from webapp_post import individualPostAsHtml
+from utils import is_system_account
+from utils import get_domain_from_actor
+from utils import get_config_param
+from utils import get_account_timezone
+from person import person_box_json
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_banner_file
+from webapp_utils import html_post_separator
+from webapp_utils import header_buttons_front_screen
+from webapp_column_left import get_left_column_content
+from webapp_column_right import get_right_column_content
+from webapp_post import individual_post_as_html
 
 
-def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
-                          translate: {},
-                          baseDir: str, httpPrefix: str,
-                          nickname: str, domain: str, port: int,
-                          session, cachedWebfingers: {}, personCache: {},
-                          projectVersion: str,
-                          YTReplacementDomain: str,
-                          twitterReplacementDomain: str,
-                          showPublishedDateOnly: bool,
-                          peertubeInstances: [],
-                          allowLocalNetworkAccess: bool,
-                          themeName: str, systemLanguage: str,
-                          maxLikeCount: int,
-                          signingPrivateKeyPem: str) -> str:
+def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
+                             translate: {},
+                             base_dir: str, http_prefix: str,
+                             nickname: str, domain: str, port: int,
+                             session, cached_webfingers: {}, person_cache: {},
+                             project_version: str,
+                             yt_replace_domain: str,
+                             twitter_replacement_domain: str,
+                             show_published_date_only: bool,
+                             peertube_instances: [],
+                             allow_local_network_access: bool,
+                             theme_name: str, system_language: str,
+                             max_like_count: int,
+                             signing_priv_key_pem: str, cw_lists: {},
+                             lists_enabled: str,
+                             bold_reading: bool,
+                             dogwhistles: {}) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
     """
-    separatorStr = htmlPostSeparator(baseDir, None)
-    profileStr = ''
-    maxItems = 4
+    separator_str = html_post_separator(base_dir, None)
+    profile_str = ''
+    max_items = 4
     ctr = 0
-    currPage = 1
-    boxName = 'tlfeatures'
+    curr_page = 1
+    box_name = 'tlfeatures'
     authorized = True
-    while ctr < maxItems and currPage < 4:
-        outboxFeedPathStr = \
-            '/users/' + nickname + '/' + boxName + \
-            '?page=' + str(currPage)
-        outboxFeed = \
-            personBoxJson({}, session, baseDir, domain, port,
-                          outboxFeedPathStr,
-                          httpPrefix, 10, boxName,
-                          authorized, 0, False, 0)
-        if not outboxFeed:
+    while ctr < max_items and curr_page < 4:
+        outbox_feed_path_str = \
+            '/users/' + nickname + '/' + box_name + \
+            '?page=' + str(curr_page)
+        outbox_feed = \
+            person_box_json({}, base_dir, domain, port,
+                            outbox_feed_path_str,
+                            http_prefix, 10, box_name,
+                            authorized, 0, False, 0)
+        if not outbox_feed:
             break
-        if len(outboxFeed['orderedItems']) == 0:
+        if len(outbox_feed['orderedItems']) == 0:
             break
-        for item in outboxFeed['orderedItems']:
+        for item in outbox_feed['orderedItems']:
             if item['type'] == 'Create':
-                postStr = \
-                    individualPostAsHtml(signingPrivateKeyPem,
-                                         True, recentPostsCache,
-                                         maxRecentPosts,
-                                         translate, None,
-                                         baseDir, session,
-                                         cachedWebfingers,
-                                         personCache,
-                                         nickname, domain, port, item,
-                                         None, True, False,
-                                         httpPrefix, projectVersion, 'inbox',
-                                         YTReplacementDomain,
-                                         twitterReplacementDomain,
-                                         showPublishedDateOnly,
-                                         peertubeInstances,
-                                         allowLocalNetworkAccess,
-                                         themeName, systemLanguage,
-                                         maxLikeCount,
-                                         False, False, False,
-                                         True, False, False)
-                if postStr:
-                    profileStr += postStr + separatorStr
+                timezone = get_account_timezone(base_dir, nickname, domain)
+                post_str = \
+                    individual_post_as_html(signing_priv_key_pem,
+                                            True, recent_posts_cache,
+                                            max_recent_posts,
+                                            translate, None,
+                                            base_dir, session,
+                                            cached_webfingers,
+                                            person_cache,
+                                            nickname, domain, port, item,
+                                            None, True, False,
+                                            http_prefix,
+                                            project_version, 'inbox',
+                                            yt_replace_domain,
+                                            twitter_replacement_domain,
+                                            show_published_date_only,
+                                            peertube_instances,
+                                            allow_local_network_access,
+                                            theme_name, system_language,
+                                            max_like_count,
+                                            False, False, False,
+                                            True, False, False,
+                                            cw_lists, lists_enabled,
+                                            timezone, False,
+                                            bold_reading, dogwhistles)
+                if post_str:
+                    profile_str += post_str + separator_str
                     ctr += 1
-                    if ctr >= maxItems:
+                    if ctr >= max_items:
                         break
-        currPage += 1
-    return profileStr
+        curr_page += 1
+    return profile_str
 
 
-def htmlFrontScreen(signingPrivateKeyPem: str,
-                    rssIconAtTop: bool,
-                    cssCache: {}, iconsAsButtons: bool,
-                    defaultTimeline: str,
-                    recentPostsCache: {}, maxRecentPosts: int,
-                    translate: {}, projectVersion: str,
-                    baseDir: str, httpPrefix: str, authorized: bool,
-                    profileJson: {}, selected: str,
-                    session, cachedWebfingers: {}, personCache: {},
-                    YTReplacementDomain: str,
-                    twitterReplacementDomain: str,
-                    showPublishedDateOnly: bool,
-                    newswire: {}, theme: str,
-                    peertubeInstances: [],
-                    allowLocalNetworkAccess: bool,
-                    accessKeys: {},
-                    systemLanguage: str, maxLikeCount: int,
-                    sharedItemsFederatedDomains: [],
-                    extraJson: {} = None,
-                    pageNumber: int = None,
-                    maxItemsPerPage: int = None) -> str:
+def html_front_screen(signing_priv_key_pem: str,
+                      rss_icon_at_top: bool,
+                      icons_as_buttons: bool,
+                      default_timeline: str,
+                      recent_posts_cache: {}, max_recent_posts: int,
+                      translate: {}, project_version: str,
+                      base_dir: str, http_prefix: str, authorized: bool,
+                      profile_json: {}, selected: str,
+                      session, cached_webfingers: {}, person_cache: {},
+                      yt_replace_domain: str,
+                      twitter_replacement_domain: str,
+                      show_published_date_only: bool,
+                      newswire: {}, theme: str,
+                      peertube_instances: [],
+                      allow_local_network_access: bool,
+                      access_keys: {},
+                      system_language: str, max_like_count: int,
+                      shared_items_federated_domains: [],
+                      extra_json: {},
+                      page_number: int,
+                      max_items_per_page: int,
+                      cw_lists: {}, lists_enabled: str,
+                      dogwhistles: {}) -> str:
     """Show the news instance front screen
     """
-    nickname = profileJson['preferredUsername']
+    bold_reading = False
+    nickname = profile_json['preferredUsername']
     if not nickname:
         return ""
-    if not isSystemAccount(nickname):
+    if not is_system_account(nickname):
         return ""
-    domain, port = getDomainFromActor(profileJson['id'])
+    domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
-    domainFull = domain
+    domain_full = domain
     if port:
-        domainFull = domain + ':' + str(port)
+        domain_full = domain + ':' + str(port)
 
-    loginButton = headerButtonsFrontScreen(translate, nickname,
-                                           'features', authorized,
-                                           iconsAsButtons)
+    login_button = header_buttons_front_screen(translate, nickname,
+                                               'features', authorized,
+                                               icons_as_buttons)
 
     # If this is the news account then show a different banner
-    bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
-    profileHeaderStr = \
-        '<img loading="lazy" class="timeline-banner" ' + \
-        'src="/users/' + nickname + '/' + bannerFile + '" />\n'
-    if loginButton:
-        profileHeaderStr += '<center>' + loginButton + '</center>\n'
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    profile_header_str = \
+        '<img loading="lazy" decoding="async" class="timeline-banner" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" />\n'
+    if login_button:
+        profile_header_str += '<center>' + login_button + '</center>\n'
 
-    profileHeaderStr += \
+    profile_header_str += \
         '<table class="timeline">\n' + \
         '  <colgroup>\n' + \
         '    <col span="1" class="column-left">\n' + \
@@ -148,61 +160,65 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
         '  </colgroup>\n' + \
         '  <tbody>\n' + \
         '    <tr>\n' + \
-        '      <td valign="top" class="col-left">\n'
-    profileHeaderStr += \
-        getLeftColumnContent(baseDir, 'news', domainFull,
-                             httpPrefix, translate,
-                             False, False, None, rssIconAtTop, True,
-                             True, theme, accessKeys,
-                             sharedItemsFederatedDomains)
-    profileHeaderStr += \
+        '      <td valign="top" class="col-left" tabindex="-1">\n'
+    profile_header_str += \
+        get_left_column_content(base_dir, 'news', domain_full,
+                                http_prefix, translate,
+                                False, False,
+                                False, None, rss_icon_at_top, True,
+                                True, theme, access_keys,
+                                shared_items_federated_domains)
+    profile_header_str += \
         '      </td>\n' + \
-        '      <td valign="top" class="col-center">\n'
+        '      <td valign="top" class="col-center" tabindex="-1">\n'
 
-    profileStr = profileHeaderStr
+    profile_str = profile_header_str
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
 
-    licenseStr = ''
-    bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
-    profileStr += \
-        _htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
-                              translate,
-                              baseDir, httpPrefix,
-                              nickname, domain, port,
-                              session, cachedWebfingers, personCache,
-                              projectVersion,
-                              YTReplacementDomain,
-                              twitterReplacementDomain,
-                              showPublishedDateOnly,
-                              peertubeInstances,
-                              allowLocalNetworkAccess,
-                              theme, systemLanguage,
-                              maxLikeCount,
-                              signingPrivateKeyPem) + licenseStr
+    license_str = ''
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    profile_str += \
+        _html_front_screen_posts(recent_posts_cache, max_recent_posts,
+                                 translate,
+                                 base_dir, http_prefix,
+                                 nickname, domain, port,
+                                 session, cached_webfingers, person_cache,
+                                 project_version,
+                                 yt_replace_domain,
+                                 twitter_replacement_domain,
+                                 show_published_date_only,
+                                 peertube_instances,
+                                 allow_local_network_access,
+                                 theme, system_language,
+                                 max_like_count,
+                                 signing_priv_key_pem,
+                                 cw_lists, lists_enabled,
+                                 bold_reading, dogwhistles) + license_str
 
     # Footer which is only used for system accounts
-    profileFooterStr = '      </td>\n'
-    profileFooterStr += '      <td valign="top" class="col-right">\n'
-    profileFooterStr += \
-        getRightColumnContent(baseDir, 'news', domainFull,
-                              httpPrefix, translate,
-                              False, False, newswire, False,
-                              False, None, False, False,
-                              False, True, authorized, True, theme,
-                              defaultTimeline, accessKeys)
-    profileFooterStr += \
+    profile_footer_str = '      </td>\n'
+    profile_footer_str += \
+        '      <td valign="top" class="col-right" tabindex="-1">\n'
+    profile_footer_str += \
+        get_right_column_content(base_dir, 'news', domain_full,
+                                 http_prefix, translate,
+                                 False, False, newswire, False,
+                                 False, None, False, False,
+                                 False, True, authorized, True, theme,
+                                 default_timeline, access_keys)
+    profile_footer_str += \
         '      </td>\n' + \
         '  </tr>\n' + \
         '  </tbody>\n' + \
         '</table>\n'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    profileStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
-        profileStr + profileFooterStr + htmlFooter()
-    return profileStr
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    profile_str = \
+        html_header_with_external_style(css_filename, instance_title, None) + \
+        profile_str + profile_footer_str + html_footer()
+    return profile_str

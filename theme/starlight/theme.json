@@ -1,4 +1,11 @@
 {
+    "code-color": "lightblue",
+    "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
+    "pwa-theme-background-color": "black-translucent",
+    "dropdown-fg-color": "#ffc4bc",
+    "dropdown-bg-color": "#1f0d10",
+    "dropdown-bg-color-hover": "#222",
+    "dropdown-fg-color-hover": "#ffc4bc",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "newswire-publish-icon": "True",
@@ -11,7 +18,10 @@
     "column-left-image-width-mobile": "40vw",
     "line-spacing-newswire": "120%",
     "focus-color": "darkred",
+    "font-page-dash-tiny": "16px",
+    "font-page-dash-mobile": "32px",
     "font-size-button-mobile": "26px",
+    "font-size-pageslist": "32px",
     "font-size": "32px",
     "font-size2": "26px",
     "font-size3": "40px",
@@ -35,6 +45,8 @@
     "main-visited-color": "#e1c4bc",
     "options-main-visited-color": "#e1c4bc",
     "cw-color": "#ffc4bc",
+    "pageslist-color": "#dddddd",
+    "pageslist-selected-color": "red",
     "main-fg-color": "#ffc4bc",
     "login-fg-color": "#ffc4bc",
     "welcome-fg-color": "#ffc4bc",
@@ -74,5 +86,6 @@
     "quote-right-margin": "0.1em",
     "header-font": "'bgrove'",
     "*font-family": "'bgrove'",
-    "*src": "url('fonts/bgrove.woff2') format('woff2')"
+    "*src": "url('fonts/bgrove.woff2') format('woff2')",
+    "reply-icon-direction": "-1"
 }
