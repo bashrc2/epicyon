@@ -456,6 +456,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Detect if a request contains a MiTM
         """
         mitm_domains = ['cloudflare']
+        # look for domains within these headers
         check_headers = (
             'Server', 'Report-To', 'Report-to', 'report-to',
             'Expect-CT', 'Expect-Ct', 'expect-ct'
@@ -465,7 +466,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.headers.get(header_name):
                     if interloper in self.headers[header_name]:
                         return True
-        # The presence if these headers on their own indicates a MiTM
+        # The presence of these headers on their own indicates a MiTM
         mitm_headers = (
             'CF-Connecting-IP', 'CF-RAY', 'CF-IPCountry', 'CF-Visitor',
             'CDN-Loop', 'CF-Worker', 'CF-Cache-Status'
