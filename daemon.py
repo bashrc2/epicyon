@@ -465,7 +465,8 @@ class PubServer(BaseHTTPRequestHandler):
             for header_name in check_headers:
                 if self.headers.get(header_name):
                     if interloper in self.headers[header_name]:
-                        print('MITM: ' + self.headers[header_name])
+                        print('MITM: ' + header_name + ' = ' +
+                              self.headers[header_name])
                         return True
         # The presence of these headers on their own indicates a MiTM
         mitm_headers = (
@@ -474,10 +475,12 @@ class PubServer(BaseHTTPRequestHandler):
         )
         for header_name in mitm_headers:
             if self.headers.get(header_name):
-                print('MITM: ' + self.headers[header_name])
+                print('MITM: ' + header_name + ' = ' +
+                      self.headers[header_name])
                 return True
             if self.headers.get(header_name.lower()):
-                print('MITM: ' + self.headers[header_name])
+                print('MITM: ' + header_name + ' = ' +
+                      self.headers[header_name.lower()])
                 return True
         return False
 
