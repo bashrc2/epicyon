@@ -36,6 +36,20 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                                    width: int, height: int) -> str:
     """Adds embedded videos
     """
+    if 'www.twitch.tv/' in content:
+        url = content.split('www.twitch.tv/')[1]
+        if '<' in url:
+            channel = url.split('<')[0]
+            if channel and '/' not in channel and ' ' not in channel:
+                content += \
+                    '<center>\n<span itemprop="video">\n' + \
+                    '<iframe src="https://player.twitch.tv/?channel=' + \
+                    channel + '&parent=www.example.com" ' + \
+                    'frameborder="0" allowfullscreen="true" ' + \
+                    'scrolling="no" height="378" width="620"></iframe>' + \
+                    '</span>\n</center>\n'
+                return content
+
     if '>vimeo.com/' in content:
         url = content.split('>vimeo.com/')[1]
         if '<' in url:
