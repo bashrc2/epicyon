@@ -36,6 +36,9 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                                    width: int, height: int) -> str:
     """Adds embedded videos
     """
+    if '<iframe' in content:
+        return content
+
     if 'www.twitch.tv/' in content:
         url = content.split('www.twitch.tv/')[1]
         if '<' in url:
