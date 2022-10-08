@@ -361,6 +361,11 @@ blockquote {
     font-size: var(--quote-font-size);
     quotes: "\201C""\201D""\2018""\2019";
 }
+
+blockquote tiktok-embed {
+    quotes: "";
+}
+
 blockquote:before {
     content: open-quote;
     font-size: 2em;
