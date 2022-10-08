@@ -37,6 +37,33 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                                    domain: str) -> str:
     """Adds embedded videos
     """
+    if 'www.tiktok.com/@' in content and \
+       'www.tiktok.com/embed.js' not in content:
+        url = content.split('www.tiktok.com/@')[1]
+        if '<' in url:
+            url = url.split('<')[0]
+            if '/video/' in url:
+                channel = url.split('/')[0]
+                video_id = url.split('/')[1]
+                if '?' in video_id:
+                    video_id = video_id.split('?')[0]
+                content += \
+                    '<center>\n<span itemprop="video">\n' + \
+                    '<blockquote class="tiktok-embed" ' + \
+                    'cite="https://www.tiktok.com/@' + \
+                    channel + '/video/' + video_id + '" data-video-id="' + \
+                    video_id + '" ' + \
+                    'style="max-width: 605px;min-width: 325px;" >\n' + \
+                    '<section>\n' + \
+                    '<a target="_blank" title="@' + channel + \
+                    '" href="https://www.tiktok.com/@' + channel + \
+                    '?refer=embed">@' + channel + '</a>\n' + \
+                    '</section>\n</blockquote>\n' + \
+                    '<script async ' + \
+                    'src="https://www.tiktok.com/embed.js">\n' + \
+                    '</script></span>\n</center>\n'
+                return content
+
     if '<iframe' in content:
         return content
 
