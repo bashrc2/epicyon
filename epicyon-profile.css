@@ -362,7 +362,7 @@ blockquote {
     quotes: "\201C""\201D""\2018""\2019";
 }
 
-blockquote tiktok-embed {
+.tiktok-embed {
     quotes: "";
 }
 
