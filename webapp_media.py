@@ -54,7 +54,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     '<iframe src="https://player.twitch.tv/?channel=' + \
                     channel + '&parent=' + domain + '" ' + \
                     'frameborder="0" allowfullscreen="true" ' + \
-                    'scrolling="no" height="378" width="620"></iframe>' + \
+                    'scrolling="no" height="' + str(height) + \
+                    '" width="' + str(width) + '"></iframe>' + \
                     '</span>\n</center>\n'
                 return content
 
