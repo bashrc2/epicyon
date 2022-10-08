@@ -52,8 +52,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     '<blockquote class="tiktok-embed" ' + \
                     'cite="https://www.tiktok.com/@' + \
                     channel + '/video/' + video_id + '" data-video-id="' + \
-                    video_id + '" ' + \
-                    'style="max-width: 605px;min-width: 325px;" >\n' + \
+                    video_id + '" >\n' + \
                     '<section>\n' + \
                     '<a target="_blank" title="@' + channel + \
                     '" href="https://www.tiktok.com/@' + channel + \
