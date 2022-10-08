@@ -43,8 +43,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         if '<' in url:
             url = url.split('<')[0]
             if '/video/' in url:
-                channel = url.split('/')[0]
-                video_id = url.split('/')[1]
+                channel = url.split('/video/')[0]
+                video_id = url.split('/video/')[1]
                 if '?' in video_id:
                     video_id = video_id.split('?')[0]
                 content += \
