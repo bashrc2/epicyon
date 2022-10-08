@@ -43,7 +43,11 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('www.twitch.tv/')[1]
         if '<' in url:
             channel = url.split('<')[0]
-            if channel and '/' not in channel and ' ' not in channel:
+            if channel and \
+               '/' not in channel and \
+               '?' not in channel and \
+               '=' not in channel and \
+               ' ' not in channel:
                 content += \
                     '<center>\n<span itemprop="video">\n' + \
                     '<iframe src="https://player.twitch.tv/?channel=' + \
