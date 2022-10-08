@@ -33,7 +33,8 @@ def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
 
 def _add_embedded_video_from_sites(translate: {}, content: str,
                                    peertube_instances: [],
-                                   width: int, height: int) -> str:
+                                   width: int, height: int,
+                                   domain: str) -> str:
     """Adds embedded videos
     """
     if '<iframe' in content:
@@ -51,7 +52,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 content += \
                     '<center>\n<span itemprop="video">\n' + \
                     '<iframe src="https://player.twitch.tv/?channel=' + \
-                    channel + '&parent=www.example.com" ' + \
+                    channel + '&parent=' + domain + '" ' + \
                     'frameborder="0" allowfullscreen="true" ' + \
                     'scrolling="no" height="378" width="620"></iframe>' + \
                     '</span>\n</center>\n'
@@ -366,10 +367,11 @@ def _add_embedded_video(translate: {}, content: str) -> str:
 
 
 def add_embedded_elements(translate: {}, content: str,
-                          peertube_instances: []) -> str:
+                          peertube_instances: [], domain: str) -> str:
     """Adds embedded elements for various media types
     """
     content = _add_embedded_video_from_sites(translate, content,
-                                             peertube_instances, 400, 300)
+                                             peertube_instances,
+                                             400, 300, domain)
     content = _add_embedded_audio(translate, content)
     return _add_embedded_video(translate, content)
