@@ -299,12 +299,7 @@ At the bottom of the timeline there will usually be an arrow icon to go to the n
 The links within the side columns are global to the instance, and only users having the *editor* role can change them. Since the number of accounts on the instance is expected to be small these links provide a common point of reference.
 
 ## Links
-Web links within the left column are intended to be generally
-useful or of interest to the users of the instance. They are
-similar to a blogroll. If you have the *editor* role there is an
-edit button at the top of the left column which can be used to
-add or remove links. Headers can also be added to group links
-into logical sections.
+Web links within the left column are intended to be generally useful or of interest to the users of the instance. They are similar to a blogroll. If you have the *editor* role there is an edit button at the top of the left column which can be used to add or remove links. Headers can also be added to group links into logical sections.
 
 ## Newswire
 The right column is the newswire column. It contains a list of links generated from RSS/Atom feeds. If you have the *editor* role then an edit icon will appear at the top of the right column, and the edit screen then allows you to add or remove feeds.
