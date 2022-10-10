@@ -36,13 +36,14 @@ adduser --system --home=/opt/epicyon --group epicyon
 chown -R epicyon:epicyon /opt/epicyon
 ```
 ## News mirrors
-Link the news mirrors.
+The content for RSS feed links can be downloaded and mirrored, so that even if the original sources go offline the content remains readable. Link the RSS/newswire mirrors with.
 ```bash
 mkdir /var/www/YOUR_DOMAIN
 mkdir -p /opt/epicyon/accounts/newsmirror
 ln -s /opt/epicyon/accounts/newsmirror /var/www/YOUR_DOMAIN/newsmirror
 ```
 ## Create daemon
+Typically the server will run from a *systemd* daemon. It can be set up as follows:
 ```bash
 nano /etc/systemd/system/epicyon.service
 ```
@@ -218,9 +219,10 @@ If you are using the [Caddy web server](https://caddyserver.com) then see [caddy
 Now you can navigate to your domain and register an account. The first account becomes the administrator.
 
 ## Installing on Onion or i2p domains
-If you don't have access to the clearnet, or prefer not to use it, then it's possible to run an Epicyon instance easily from your laptop. There are scripts within the *deploy* directory which can be used to install an instance on a Debian or Arch/Parabola operating system. With some modification of package names they could be also used with other distros.
+If you don't have access to the clearnet, or prefer to avoid it, then it's possible to run an Epicyon instance easily from your laptop. There are scripts within the *deploy* directory which can be used to install an instance on a Debian or Arch/Parabola operating system. With some modification of package names they could be also used with other distros.
 
 Please be aware that such installations will not federate with ordinary fediverse instances on the clearnet, unless those instances have been specially modified to do so. But onion instances will federate with other onion instances and i2p instances with other i2p instances.
+
 # Upgrading
 Unlike some other instance types, Epicyon is really easy to upgrade. It only requires a git pull to obtain the changes from the upstream repo, then set permissions and restart the daemon.
 ```bash
@@ -230,6 +232,50 @@ chown -R epicyon:epicyon *
 systemctl restart epicyon
 ```
 # Registering accounts
+You will notice that within the systemd daemon the *registration* option is set to *open*. In a browser if you navigate to the URL of your instance then you should see a *Register* button. The first account to register becomes the administrator.
+
+To avoid spam signups, or overloading the system, there is a maximum number of accounts for the instance which by default is set to 10.
+# Logging in
+In a browser if you navigate to the URL of your instance and enter the username and password that you previously registered. The first time that you log in it will show a series of introduction screens which prompt you to add a profile picture, name and bio description.
+
+# Account Profiles
+## Initial setup
+When you first register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to kove to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
+
+## Basic details
+### Describe yourself
+Add an appropriate description of youself, which doesn't resemble the type of thing which would appear on a spam account. When other fediverse users are judging a follow request from you they will want to know that you are a real person and not a spammer or troll.
+
+### Other fediverse accounts
+If you have any other fediverse accounts on different instances then you might want to add URLs for those. You can set the languages which you can read, as [two letter abbreviations](https://en.wikipedia.org/wiki/ISO_639-1). This helps to avoid having posts from other people within your timeline which you can't read.
+
+### Expiring posts
+You can set your posts to expire after a number of days. If this value is zero then the instance will keep your posts indefinitely.
+
+### Quitting Twitter
+If you are coming to the fediverse as an exile from Twitter then you may want to select the option to remove any Twitter posts from your timeline. Sometimes people want to make a clean break from Twitter and have no further involvement with it.
+
+### Alternative contact details
+You can set additional contact details, such as email, XMPP and Matrix addresses. So if people want to contact you for private end-to-end secure chat then they can do so. The fediverse was never designed for end-to-end security - it is primarily for public communications - and so it's better to leave secure private chat to the apps which are specialized for that purpose.
+
+### Filtering and blocking
+If you want to block particular fediverse accounts or instances then you can enter those in the *blocked account* section. There should be one account per line.
+
+### Geolocation spoofing
+Within the *filtering and blocking* section you can also set a city which will be used for geolocation spoofing. When you post a photo, instead of removing all metadata spoofed metadata will be added in order to consistently fool the machine learning systems behind web crawlers or scrapers, and create a *confirmation bias* effect where the surveillance systems become increasingly confident in an erroneous conclusion. Setting a city somewhere near to your [time zone](https://en.wikipedia.org/wiki/Time_zone) is preferable, so that it matches your typical pattern of daily posting activity without giving away your real location.
+## Roles
+If you are the administrator then within your profile settings you can also specify roles for yourself and other accounts on the instance. The current roles are:
+
+### Moderator
+Is allowed to remove posts and deal with moderation reports.
+### Editor
+Editors can change the links in the left column and the RSS feeds within the right newswire column.
+### Artist
+Artists can change the colors and style of the web interface, using the *theme designer*.
+### Counselor
+A *counselor* is someone tasked with resolving disputes between users of the instance. They are permitted to send DMs to any user account on the instance. Obviously, this type of power can be abused and so the administrator should choose counselors with care.
+### Devop
+Devops are permitted to perform some routine administration functions, such as monitoring instance performance graphs.
 # Following
 # Creating posts
 ## Post scopes
@@ -238,9 +284,6 @@ systemctl restart epicyon
 ## Maps
 # The Timeline
 # Side columns
-# Account Profiles
-## Basic details
-## Roles
 # Calendar
 # Moderation
 ## Instance level moderation
