@@ -283,7 +283,31 @@ Devops are permitted to perform some routine administration functions, such as m
 ## Events
 ## Maps
 # The Timeline
+## Layout
+On a desktop system the main timeline screen has a multi-column layout. The main content containing posts is in the centre. To the left is a column containing useful web links. To the right is the newswire containing links from RSS feeds.
+
+At the top right of the centre column there are a few icons, for show/hide, calendar, search and creating a new post.
+
+Different timelines are listed at the top - inbox, DM, replies, outbox, etc - and more can be shown by selecting the *show/hide* icon.
+
+## Navigation
+As a general principle of navigation selecting the top banner always takes you back to the previous screen, or if you are on the main timeline screen then it will alternate with your profile.
+
+At the bottom of the timeline there will usually be an arrow icon to go to the next page, and a list of page numbers. You can also move between pages using key shortcuts **ALT+SHIFT+>** and **ALT+SHIFT+<**. Key shortcuts exist for most navigation events, and you can customise them by selecting the *key shortcuts* link at the bottom of the left column.
+
 # Side columns
+The links within the side columns are global to the instance, and only users having the *editor* role can change them. Since the number of accounts on the instance is expected to be small these links provide a common point of reference.
+
+## Links
+Web links within the left column are intended to be generally
+useful or of interest to the users of the instance. They are
+similar to a blogroll. If you have the *editor* role there is an
+edit button at the top of the left column which can be used to
+add or remove links. Headers can also be added to group links
+into logical sections.
+
+## Newswire
+The right column is the newswire column. It contains a list of links generated from RSS/Atom feeds. If you have the *editor* role then an edit icon will appear at the top of the right column, and the edit screen then allows you to add or remove feeds.
 # Calendar
 # Moderation
 ## Instance level moderation
