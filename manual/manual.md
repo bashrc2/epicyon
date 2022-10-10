@@ -239,7 +239,7 @@ git pull
 chown -R epicyon:epicyon *
 systemctl restart epicyon
 ```
-# Configuration
+# Registering accounts
 # Following
 # Creating posts
 ## Post scopes
