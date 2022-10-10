@@ -17,7 +17,6 @@ Epicyon also includes some lightweight organizing features, such as calendar, ev
 You will need python version 3.7 or later.
 
 On a Debian based system:
-
 ``` bash
 sudo apt install -y tor python3-socks imagemagick python3-setuptools python3-cryptography python3-dateutil python3-idna python3-requests python3-flake8 python3-django-timezone-field python3-pyqrcode python3-png python3-bandit libimage-exiftool-perl certbot nginx wget
 ```
@@ -25,14 +24,12 @@ sudo apt install -y tor python3-socks imagemagick python3-setuptools python3-cry
 The following instructions install Epicyon to the **/opt** directory. It's not essential that it be installed there, and it could be in any other preferred directory.
 
 Clone the repo, or if you downloaded the tarball then extract it into the **/opt** directory.
-
 ```bash
 cd /opt
 git clone https://gitlab.com/bashrc2/epicyon
 ```
 ## Set permissions
 Create a user for the server to run as:
-
 ```bash
 sudo su
 adduser --system --home=/opt/epicyon --group epicyon
@@ -40,7 +37,6 @@ chown -R epicyon:epicyon /opt/epicyon
 ```
 ## News mirrors
 Link the news mirrors.
-
 ```bash
 mkdir /var/www/YOUR_DOMAIN
 mkdir -p /opt/epicyon/accounts/newsmirror
@@ -52,7 +48,6 @@ nano /etc/systemd/system/epicyon.service
 ```
 
 Paste the following:
-
 ```bash
 [Unit]
 Description=epicyon
@@ -96,20 +91,17 @@ WantedBy=multi-user.target
 ```
 
 Activate the daemon:
-
 ```bash
 systemctl enable epicyon
 systemctl start epicyon
 ```
 ## Web server setup
 Create a web server configuration.
-
 ```bash
 nano /etc/nginx/sites-available/YOUR_DOMAIN
 ```
 
 And paste the following:
-
 ```nginx
 server {
   listen 80;
@@ -200,7 +192,6 @@ server {
 ```
 
 Enable the site:
-
 ```bash
 ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
 ```
@@ -232,7 +223,6 @@ If you don't have access to the clearnet, or prefer not to use it, then it's pos
 Please be aware that such installations will not federate with ordinary fediverse instances on the clearnet, unless those instances have been specially modified to do so. But onion instances will federate with other onion instances and i2p instances with other i2p instances.
 # Upgrading
 Unlike some other instance types, Epicyon is really easy to upgrade. It only requires a git pull to obtain the changes from the upstream repo, then set permissions and restart the daemon.
-
 ```bash
 cd /opt/epicyon
 git pull
