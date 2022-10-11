@@ -289,6 +289,8 @@ Once you are following someone then selecting their profile picture and then the
 ## Maps
 # The Timeline
 ## Layout
+![Layout](manual-layout.png)
+
 On a desktop system the main timeline screen has a multi-column layout. The main content containing posts is in the centre. To the left is a column containing useful web links. To the right is the newswire containing links from RSS feeds.
 
 At the top right of the centre column there are a few icons, for show/hide, calendar, search and creating a new post.

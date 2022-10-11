@@ -8313,6 +8313,56 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self._404()
 
+    def _show_manual_image(self, path: str,
+                           base_dir: str, getreq_start_time) -> None:
+        """Shows an image within the manual
+        """
+        image_filename = path.split('/', 1)[1]
+        if '/' in image_filename:
+            self._404()
+            return
+        media_filename = \
+            base_dir + '/manual/' + image_filename
+        if self._etag_exists(media_filename):
+            # The file has not changed
+            self._304()
+            return
+        if self.server.iconsCache.get(media_filename):
+            media_binary = self.server.iconsCache[media_filename]
+            mime_type_str = media_file_mime_type(media_filename)
+            self._set_headers_etag(media_filename,
+                                   mime_type_str,
+                                   media_binary, None,
+                                   self.server.domain_full,
+                                   False, None)
+            self._write(media_binary)
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', '_show_manual_image',
+                                self.server.debug)
+            return
+        if os.path.isfile(media_filename):
+            media_binary = None
+            try:
+                with open(media_filename, 'rb') as av_file:
+                    media_binary = av_file.read()
+            except OSError:
+                print('EX: unable to read manual image ' +
+                      media_filename)
+            if media_binary:
+                mime_type = media_file_mime_type(media_filename)
+                self._set_headers_etag(media_filename,
+                                       mime_type,
+                                       media_binary, None,
+                                       self.server.domain_full,
+                                       False, None)
+                self._write(media_binary)
+                self.server.iconsCache[media_filename] = media_binary
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', '_show_manual_image',
+                                self.server.debug)
+            return
+        self._404()
+
     def _show_help_screen_image(self, path: str,
                                 base_dir: str, getreq_start_time) -> None:
         """Shows a help screen image
@@ -16903,6 +16953,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self._show_specification_image(self.path,
                                                self.server.base_dir,
                                                getreq_start_time)
+                return
+
+        # show images within https://instancedomain/manual
+        if self.path.startswith('/manual-'):
+            if self.path.endswith('.png'):
+                self._show_manual_image(self.path,
+                                        self.server.base_dir,
+                                        getreq_start_time)
                 return
 
         # help screen images
