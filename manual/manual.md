@@ -235,6 +235,7 @@ systemctl restart epicyon
 You will notice that within the systemd daemon the *registration* option is set to *open*. In a browser if you navigate to the URL of your instance then you should see a *Register* button. The first account to register becomes the administrator.
 
 To avoid spam signups, or overloading the system, there is a maximum number of accounts for the instance which by default is set to 10.
+
 # Logging in
 In a browser if you navigate to the URL of your instance and enter the username and password that you previously registered. The first time that you log in it will show a series of introduction screens which prompt you to add a profile picture, name and bio description.
 
@@ -263,6 +264,7 @@ If you want to block particular fediverse accounts or instances then you can ent
 
 ### Geolocation spoofing
 Within the *filtering and blocking* section you can also set a city which will be used for geolocation spoofing. When you post a photo, instead of removing all metadata spoofed metadata will be added in order to consistently fool the machine learning systems behind web crawlers or scrapers, and create a [confirmation bias](https://en.wikipedia.org/wiki/Confirmation_bias) effect where the surveillance systems become increasingly confident in an erroneous conclusion. Setting a city somewhere near to your [time zone](https://en.wikipedia.org/wiki/Time_zone) is preferable, so that it matches your typical pattern of daily posting activity without giving away your real location.
+
 ## Roles
 If you are the administrator then within your profile settings you can also specify roles for other accounts on the instance. A small instance is like a ship with the roles being crew positions, and all members of the crew need to work together to keep the ship afloat. The current roles are:
 
@@ -277,6 +279,9 @@ A *counselor* is someone tasked with resolving disputes between users of the ins
 ### Devop
 Devops are permitted to perform some routine administration functions, such as monitoring instance performance graphs.
 # Following
+On the main timeline screen at the top right of the centre column there is a search icon which looks like a magnifying glass. By convention within the fediverse the search function is also the way to look up and follow other people. Enter the handle (@name@domain) or URL of the profile page for the person that you want to follow and select *search*. If the account is found then its details will appear and you can choose to follow or not.
+
+Once you are following someone then selecting their profile picture and then the *unfollow* button will remove the follow.
 # Creating posts
 ## Post scopes
 ## Attachments
