@@ -742,23 +742,23 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
         print('DIGEST|' + time_diff_str + '|' + filename)
 
     new_queue_item = {
-        'originalId': original_post_id,
-        'id': post_id,
-        'actor': actor,
-        'nickname': nickname,
-        'domain': domain,
-        'postNickname': post_nickname,
-        'postDomain': post_domain,
-        'sharedInbox': shared_inbox_item,
-        'published': published,
-        'httpHeaders': http_headers,
-        'path': post_path,
-        'post': post_json_object,
-        'original': original_post_json_object,
-        'digest': digest,
-        'filename': filename,
-        'destination': destination,
-        'mitm': mitm
+        "originalId": original_post_id,
+        "id": post_id,
+        "actor": actor,
+        "nickname": nickname,
+        "domain": domain,
+        "postNickname": post_nickname,
+        "postDomain": post_domain,
+        "sharedInbox": shared_inbox_item,
+        "published": published,
+        "httpHeaders": http_headers,
+        "path": post_path,
+        "post": post_json_object,
+        "original": original_post_json_object,
+        "digest": digest,
+        "filename": filename,
+        "destination": destination,
+        "mitm": mitm
     }
 
     if debug:
@@ -2410,7 +2410,7 @@ def _receive_announce(recent_posts_cache: {},
                       peertube_instances: [],
                       max_like_count: int, cw_lists: {},
                       lists_enabled: str, bold_reading: bool,
-                      dogwhistles: {}) -> bool:
+                      dogwhistles: {}, mitm: bool) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -2510,9 +2510,17 @@ def _receive_announce(recent_posts_cache: {},
     if debug:
         print('Generating html for announce ' + message_json['id'])
     timezone = get_account_timezone(base_dir, nickname, domain)
-    mitm = False
-    if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
-        mitm = True
+
+    if mitm:
+        post_filename_mitm = \
+            post_filename.replace('.json', '') + '.mitm'
+        try:
+            with open(post_filename_mitm, 'w+',
+                      encoding='utf-8') as mitm_file:
+                mitm_file.write('\n')
+        except OSError:
+            print('EX: unable to write mitm ' + post_filename_mitm)
+
     announce_html = \
         individual_post_as_html(signing_priv_key_pem, True,
                                 recent_posts_cache, max_recent_posts,
@@ -4152,7 +4160,7 @@ def _inbox_after_initial(server, inbox_start_time,
                          allow_deletion,
                          peertube_instances,
                          max_like_count, cw_lists, lists_enabled,
-                         bold_reading, dogwhistles):
+                         bold_reading, dogwhistles, mitm):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,

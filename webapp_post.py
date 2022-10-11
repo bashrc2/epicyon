@@ -2236,7 +2236,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not post_is_sensitive:
         content_str = object_content + attachment_str
         content_str = add_embedded_elements(translate, content_str,
-                                            peertube_instances)
+                                            peertube_instances, domain)
         content_str = insert_question(base_dir, translate,
                                       nickname, domain,
                                       content_str, post_json_object,
@@ -2258,7 +2258,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
         cw_content_str = object_content + attachment_str
         if not is_patch:
             cw_content_str = add_embedded_elements(translate, cw_content_str,
-                                                   peertube_instances)
+                                                   peertube_instances,
+                                                   domain_full)
             cw_content_str = \
                 insert_question(base_dir, translate, nickname, domain,
                                 cw_content_str, post_json_object, page_number)

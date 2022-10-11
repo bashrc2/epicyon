@@ -13,6 +13,7 @@ from utils import text_in_file
 from utils import remove_eol
 from utils import standardize_text
 from utils import remove_inverted_text
+from utils import remove_square_capitals
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -125,6 +126,7 @@ def _is_filtered_base(filename: str, content: str,
         return False
 
     content = remove_inverted_text(content, system_language)
+    content = remove_square_capitals(content, system_language)
 
     # convert any fancy characters to ordinary ones
     content = standardize_text(content)

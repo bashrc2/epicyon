@@ -55,6 +55,7 @@ from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
 from utils import remove_inverted_text
+from utils import remove_square_capitals
 from utils import standardize_text
 from utils import remove_eol
 from utils import text_in_file
@@ -7560,6 +7561,15 @@ def _test_uninvert():
         print('text: ' + text)
         print('expected: ' + expected)
         print('result: ' + result)
+    assert result == expected
+
+    text = '🅻🅴🆅🅸🅰🆃🅰🆁 abc'
+    expected = "LEVIATAR abc"
+    result = remove_square_capitals(text, 'en')
+    if result != expected:
+        print('expected: ' + expected)
+        print('result: ' + result)
+        print('text: ' + text)
     assert result == expected
 
     text = '<p>Some ordinary text</p><p>ʇsǝʇ ɐ sı sıɥʇ</p>'

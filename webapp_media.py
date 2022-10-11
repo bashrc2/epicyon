@@ -33,9 +33,32 @@ def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
 
 def _add_embedded_video_from_sites(translate: {}, content: str,
                                    peertube_instances: [],
-                                   width: int, height: int) -> str:
+                                   width: int, height: int,
+                                   domain: str) -> str:
     """Adds embedded videos
     """
+    if '<iframe' in content:
+        return content
+
+    if 'www.twitch.tv/' in content:
+        url = content.split('www.twitch.tv/')[1]
+        if '<' in url:
+            channel = url.split('<')[0]
+            if channel and \
+               '/' not in channel and \
+               '?' not in channel and \
+               '=' not in channel and \
+               ' ' not in channel:
+                content += \
+                    '<center>\n<span itemprop="video">\n' + \
+                    '<iframe src="https://player.twitch.tv/?channel=' + \
+                    channel + '&parent=' + domain + '" ' + \
+                    'frameborder="0" allowfullscreen="true" ' + \
+                    'scrolling="no" height="' + str(height) + \
+                    '" width="' + str(width) + '"></iframe>' + \
+                    '</span>\n</center>\n'
+                return content
+
     if '>vimeo.com/' in content:
         url = content.split('>vimeo.com/')[1]
         if '<' in url:
@@ -345,10 +368,11 @@ def _add_embedded_video(translate: {}, content: str) -> str:
 
 
 def add_embedded_elements(translate: {}, content: str,
-                          peertube_instances: []) -> str:
+                          peertube_instances: [], domain: str) -> str:
     """Adds embedded elements for various media types
     """
     content = _add_embedded_video_from_sites(translate, content,
-                                             peertube_instances, 400, 300)
+                                             peertube_instances,
+                                             400, 300, domain)
     content = _add_embedded_audio(translate, content)
     return _add_embedded_video(translate, content)

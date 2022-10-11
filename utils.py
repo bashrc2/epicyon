@@ -3915,3 +3915,21 @@ def remove_inverted_text(text: str, system_language: str) -> str:
                 new_text += separator
 
     return new_text
+
+
+def remove_square_capitals(text: str, system_language: str) -> str:
+    """Removes any square capital text from the given string
+    """
+    if system_language != 'en':
+        return text
+    offset = ord('A')
+    start_value = ord('🅰')
+    end_value = start_value + 26
+    result = ''
+    for text_ch in text:
+        text_value = ord(text_ch)
+        if text_value < start_value or text_value > end_value:
+            result += text_ch
+        else:
+            result += chr(offset + text_value - start_value)
+    return result

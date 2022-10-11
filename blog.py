@@ -282,7 +282,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         blog_str += '<br><center>' + attachment_str + '</center>'
     if json_content:
         content_str = add_embedded_elements(translate, json_content,
-                                            peertube_instances)
+                                            peertube_instances, domain_full)
         if post_json_object['object'].get('tag'):
             post_json_object_tags = post_json_object['object']['tag']
             content_str = replace_emoji_from_tags(session, base_dir,

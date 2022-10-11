@@ -178,6 +178,7 @@ from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
 from webapp_about import html_about
 from webapp_specification import html_specification
+from webapp_manual import html_manual
 from webapp_accesskeys import html_access_keys
 from webapp_accesskeys import load_access_keys_for_accounts
 from webapp_confirm import html_confirm_delete
@@ -456,6 +457,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Detect if a request contains a MiTM
         """
         mitm_domains = ['cloudflare']
+        # look for domains within these headers
         check_headers = (
             'Server', 'Report-To', 'Report-to', 'report-to',
             'Expect-CT', 'Expect-Ct', 'expect-ct'
@@ -464,16 +466,22 @@ class PubServer(BaseHTTPRequestHandler):
             for header_name in check_headers:
                 if self.headers.get(header_name):
                     if interloper in self.headers[header_name]:
+                        print('MITM: ' + header_name + ' = ' +
+                              self.headers[header_name])
                         return True
-        # The presence if these headers on their own indicates a MiTM
+        # The presence of these headers on their own indicates a MiTM
         mitm_headers = (
             'CF-Connecting-IP', 'CF-RAY', 'CF-IPCountry', 'CF-Visitor',
             'CDN-Loop', 'CF-Worker', 'CF-Cache-Status'
         )
         for header_name in mitm_headers:
             if self.headers.get(header_name):
+                print('MITM: ' + header_name + ' = ' +
+                      self.headers[header_name])
                 return True
             if self.headers.get(header_name.lower()):
+                print('MITM: ' + header_name + ' = ' +
+                      self.headers[header_name.lower()])
                 return True
         return False
 
@@ -16463,6 +16471,36 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'show specification screen',
+                                self.server.debug)
+            return
+
+        if self.path in ('/manual', '/usermanual', '/userguide'):
+            if calling_domain.endswith('.onion'):
+                msg = \
+                    html_manual(self.server.base_dir, 'http',
+                                self.server.onion_domain,
+                                None, self.server.translate,
+                                self.server.system_language)
+            elif calling_domain.endswith('.i2p'):
+                msg = \
+                    html_manual(self.server.base_dir, 'http',
+                                self.server.i2p_domain,
+                                None, self.server.translate,
+                                self.server.system_language)
+            else:
+                msg = \
+                    html_manual(self.server.base_dir,
+                                self.server.http_prefix,
+                                self.server.domain_full,
+                                self.server.onion_domain,
+                                self.server.translate,
+                                self.server.system_language)
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._login_headers('text/html', msglen, calling_domain)
+            self._write(msg)
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', 'show user manual screen',
                                 self.server.debug)
             return
 
