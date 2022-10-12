@@ -283,7 +283,29 @@ On the main timeline screen at the top right of the centre column there is a sea
 
 Once you are following someone then selecting their profile picture and then the *unfollow* button will remove the follow.
 # Creating posts
+To make a new post from the main timeline screen select the *new post* icon at the top right of the centre column.
 ## Post scopes
+Posts can have different scopes which provide some amount of privacy, or particular functions. To change the scope select the current one and a dropdown list will appear.
+### Public
+Is visible to anyone in the fediverse. May also be visible outside of the fediverse to anyone with an appropriate link.
+### Blog
+Used to create a blog post. Blog posts are typically longer than other types of post, and are also publicly visible to anyone on the web.
+### Unlisted
+Similar to a public post, but will not appear as a recent post within your profile. Unlisted posts can add a little more privacy to a conversation in that it will not be immediately obvious to casual observers. Often in practice this is all that's needed to avoid trolls or unwanted attention.
+### Followers
+A *followers only* post will only be visible to people who are following you. They will not be visible to people who are not your followers, or to other observers on the web.
+
+A subtlety of this type of post is that people have different followers, so if you send to your followers and they send a reply to their followers then your post or references to it may end up with people who are not your followers.
+### DM
+Direct messages are only send to specific people, designated by their fediverse handles (@name@domain).
+### Reminder
+A reminder is a direct message to yourself at some time in the future. It will appear on your calendar.
+### Report
+A report is a type of post which is sent to moderators on your instance, to alert them about some problem. It is not sent to any other instance.
+### Shares
+A *shared item* post describes a physical object or service which may be shared by people on your instance. Shared items may also be visible to people on specific named instances if that has been set up by the administrator.
+### Wanted
+A *wanted item* is a physical object or service which you want. These posts will be visible to other people on your instance and also to people on specific named instances if that has been set up by the administrator.
 ## Attachments
 ## Events
 ## Maps
