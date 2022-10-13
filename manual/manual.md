@@ -307,6 +307,13 @@ A *shared item* post describes a physical object or service which may be shared 
 ### Wanted
 A *wanted item* is a physical object or service which you want. These posts will be visible to other people on your instance and also to people on specific named instances if that has been set up by the administrator.
 ## Attachments
+Attachments can use a variety of formats.
+
+ * Images: *jpg, jpeg, gif, webp, avif, svg, ico, jxl, png*
+ * Audio: *mp3, ogg, flac, opus*
+ * Video: *mp4, webm, ogv*
+
+Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
 ## Events
 ## Maps
 # The Timeline
