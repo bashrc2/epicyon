@@ -315,7 +315,11 @@ Attachments can use a variety of formats.
 
 Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
 ## Events
+You can specify a date, time and location for the post. If a date is set then the post will appear as an event on the calendar of recipients. This makes it easy for people to organize events without needing to explicitly manage calendars.
 ## Maps
+The location field on a post can be a description, but it can also be a map geolocation. To add a geolocation go to [openstreetmap.org](https://www.openstreetmap.org), find your location and copy and paste the URL into the location field of your new post.
+
+Selecting the *location* header will open the last known geolocation, so if your current location is near this makes it quicker to find. 
 # The Timeline
 ## Layout
 ![Layout](manual-layout.png)
