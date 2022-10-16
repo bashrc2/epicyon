@@ -270,42 +270,59 @@ If you are the administrator then within your profile settings you can also spec
 
 ### Moderator
 Is allowed to remove posts and deal with moderation reports.
+
 ### Editor
 Editors can change the links in the left column and the RSS feeds within the right newswire column.
+
 ### Artist
 Artists can change the colors and style of the web interface, using the *theme designer*.
+
 ### Counselor
 A *counselor* is someone tasked with resolving disputes between users of the instance. They are permitted to send DMs to any user account on the instance. Obviously, this type of power can be abused and so the administrator should choose counselors with care.
+
 ### Devop
 Devops are permitted to perform some routine administration functions, such as monitoring instance performance graphs.
+
 # Following
 On the main timeline screen at the top right of the centre column there is a search icon which looks like a magnifying glass. By convention within the fediverse the search function is also the way to look up and follow other people. Enter the handle (@name@domain) or URL of the profile page for the person that you want to follow and select *search*. If the account is found then its details will appear and you can choose to follow or not.
 
 Once you are following someone then selecting their profile picture and then the *unfollow* button will remove the follow.
+
 # Creating posts
 To make a new post from the main timeline screen select the *new post* icon at the top right of the centre column.
+
 ## Post scopes
 Posts can have different scopes which provide some amount of privacy, or particular functions. To change the scope select the current one and a dropdown list will appear.
+
 ### Public
 Is visible to anyone in the fediverse. May also be visible outside of the fediverse to anyone with an appropriate link.
+
 ### Blog
 Used to create a blog post. Blog posts are typically longer than other types of post, and are also publicly visible to anyone on the web.
+
 ### Unlisted
 Similar to a public post, but will not appear as a recent post within your profile. Unlisted posts can add a little more privacy to a conversation in that it will not be immediately obvious to casual observers. Often in practice this is all that's needed to avoid trolls or unwanted attention.
+
 ### Followers
 A *followers only* post will only be visible to people who are following you. They will not be visible to people who are not your followers, or to other observers on the web.
 
 A subtlety of this type of post is that people have different followers, so if you send to your followers and they send a reply to their followers then your post or references to it may end up with people who are not your followers.
+
 ### DM
 Direct messages are only send to specific people, designated by their fediverse handles (@name@domain).
+
 ### Reminder
 A reminder is a direct message to yourself at some time in the future. It will appear on your calendar.
+
 ### Report
 A report is a type of post which is sent to moderators on your instance, to alert them about some problem. It is not sent to any other instance.
+
 ### Shares
 A *shared item* post describes a physical object or service which may be shared by people on your instance. Shared items may also be visible to people on specific named instances if that has been set up by the administrator.
+
 ### Wanted
 A *wanted item* is a physical object or service which you want. These posts will be visible to other people on your instance and also to people on specific named instances if that has been set up by the administrator.
+
 ## Attachments
 Attachments can use a variety of formats.
 
@@ -424,6 +441,8 @@ Calendar events are really just ordinary posts with a date, time and perhaps als
 *Reminder* is a special type of calendar post, which is really just a direct message to yourself in the future.
 
 To create a calendar post from the main timeline, select the **New post** icon, then use the dropdown menu to select the scope of your post. Give your event a description and add a date and time. If you add a location this can either be a description or a geolocation link, such as a link to [openstreetmap](https://openstreetmap.org).
+
+Selecting the calendar icon from the main timeline will display your calendar events. It is possible to export them using the **iCalendar** icon at the bottom right to the screen. Calendar events are also available via [CalDav](https://en.wikipedia.org/wiki/CalDAV) using the URL https://yourdomain/calendars/yournickname
 # Moderation
 ## Instance level moderation
 ## Moderator screen
