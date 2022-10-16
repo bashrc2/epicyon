@@ -459,7 +459,7 @@ The importance of moderation within social networks can't be over-stated. In the
  * Within somewhere between a couple of days and a few weeks, trolls set longstanding forum members against each other
  * Community fails and the forum closes abruptly, leaving only a 404
 
-Online communities can take years to carefully build up and days to destroy. Having good moderation in place, with clear terms of service and enforced boundaries, can help to avoid failures or burnout. Being "nice" and accepting all content tends not to work out well.
+The pattern has been repeated many times. Online communities can take years to carefully build up and days to destroy. Having good moderation in place, with clear terms of service and enforced boundaries, can help to avoid failures or burnout. Being "nice" and accepting all content tends not to work out well. Such an arrangement is easily hijacked by people with bad intent.
 
 ## Moderator screen
 If you have the *moderator* role then selecting the *show/hide* icon from the main timeline will reveal an extra timeline usually called **Mod**. Selecting this timeline will take you to the instance moderator screen, which contains any moderation reports.
