@@ -339,10 +339,79 @@ At the bottom of the timeline there will usually be an arrow icon to go to the n
 The links within the side columns are global to the instance, and only users having the *editor* role can change them. Since the number of accounts on the instance is expected to be small these links provide a common point of reference.
 
 ## Links
-Web links within the left column are intended to be generally useful or of interest to the users of the instance. They are similar to a blogroll. If you have the *editor* role there is an edit button at the top of the left column which can be used to add or remove links. Headers can also be added to group links into logical sections.
+Web links within the left column are intended to be generally useful or of interest to the users of the instance. They are similar to a blogroll. If you have the *editor* role there is an edit button at the top of the left column which can be used to add or remove links. Headers can also be added to group links into logical sections. For example:
+
+```text
+* Search
+
+Code search https://beta.sayhello.so
+Wiby https://wiby.me/
+
+* Links
+
+16colors https://16colo.rs
+Dotshareit http://dotshare.it
+```
 
 ## Newswire
-The right column is the newswire column. It contains a list of links generated from RSS/Atom feeds. If you have the *editor* role then an edit icon will appear at the top of the right column, and the edit screen then allows you to add or remove feeds.
+The right column is the newswire column. It contains a list of links generated from RSS/Atom feeds.
+
+If you have the *editor* role then an edit icon will appear at the top of the right column, and the edit screen then allows you to add or remove feeds. Feeds can be either *moderated* or not. Moderated feed items must be approved by a moderator before then can appear in the newswire column and be visible to other users on the instance. To indicate that a feed should be moderated prefix its URL with a star * character.
+
+Newswire items can also be mirrored. This means that instead of newswire items being links back to the original source article a copy will be made of the article locally on your server. Mirroring can be useful if the site of the RSS/Atom feed is unreliable or likely to go offline (such as solar powered systems only online during daylight hours). When deciding whether to mirror a feed you will also want to consider the copyright status of the content being mirrored, and whether legal problems could arise. To indicate that a feed should be mirrored prefix its URL with an exclamation mark ! character.
+
+### Filters and warnings
+On this screen you can also set filtered words and dogwhistle content warnings for the instance. Filtered words should be on separate lines, and dogwhistle words can be added in the format:
+
+```text
+dogwhistleword -> content warning to be added
+dogwhistle phrase -> content warning to be added
+DogwhistleWordPrefix* -> content warning to be added
+*DogwhistleWordEnding -> content warning to be added
+```
+
+### Newswire tagging rules
+As news arrives via RSS or Atom feeds it can be processed to add or remove hashtags, in accordance to some rules which you can define.
+
+On the newswire edit screen, available to accounts having the *moderator* role, you can define the news processing rules. There is one rule per line.
+
+**Syntax:** *if [conditions] then [action]*
+
+**Logical Operators:** *not, and, or, xor, from, contains*
+
+A simple example is:
+
+```test
+if moderated and not #oxfordimc then block
+```
+
+For moderated feeds this will only allow items through if they have the **#oxfordimc** hashtag.
+
+If you want to add hashtags an example is:
+
+```test
+if contains "garden" or contains "lawn" then add #gardening
+```
+
+So if incoming news contains the word "garden" either in its title or description then it will automatically be assigned the hashtag **#gardening**. You can also add hashtags based upon other hashtags.
+
+```test
+if #garden or #lawn then add #gardening
+```
+
+You can also remove hashtags.
+
+```test
+if #garden or #lawn then remove #gardening
+```
+
+Which will remove **#gardening** if it exists as a hashtag within the news post.
+
+You can add tags based upon the RSS link, such as:
+
+```test
+if from "mycatsite.com" then add #cats
+```
 # Calendar
 # Moderation
 ## Instance level moderation
