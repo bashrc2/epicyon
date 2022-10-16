@@ -468,6 +468,27 @@ To block a fediverse handle (nickname@domain), hashtag or domain enter the thing
 If you want to see what is being blocked at the instance level then select the **Info** button.
 
 ## Account level moderation
+### Filtering
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify filtered words or phrases. Be sure to select **Publish** to finalize your settings.
+
+You can also filter words within the bio of users making follow requests. This allows unwanted followers to be automatically rejected if their bio contains particular words.
+
+### Blocking accounts or domains
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify blocked accounts or domains (one per line). Be sure to select **Publish** to finalize your settings.
+
+### Replacing words
+Sometimes you may want to replace words within received posts. This can be for added clarity, to dissipate annoyance or just for fun.
+
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify replacements as follows:
+
+```text
+OldWord -> NewWord
+original phrase -> new phrase
+```
+
+These replacements are subjective, such that if you boost/repeat/announce a post then the original wording will be retained for recipients.
+
+### Content warning lists
 
 ## Emergencies
 The fediverse is typically calmer than the centralized social networks, but there can be times when disputes break out and tempers become heated. In the worst cases this can lead to administrator burnout and instances shutting down.
