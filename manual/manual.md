@@ -450,6 +450,17 @@ To create a calendar post from the main timeline, select the **New post** icon, 
 Selecting the calendar icon from the main timeline will display your calendar events. It is possible to export them using the **iCalendar** icon at the bottom right to the screen. Calendar events are also available via [CalDav](https://en.wikipedia.org/wiki/CalDAV) using the URL https://yourdomain/calendars/yournickname
 
 # Moderation
+The importance of moderation within social networks can't be over-stated. In the early history of the web in which communities tended to be organized around forum software and mailing lists the typical pattern went as follows:
+
+ * Founders initiate the forum
+ * The forum gains popularity and a community grows around it
+ * Trolls show up
+ * The administrator is too nice, believes that all opinions are equally valid, and refuses to remove trolls or promptly redact their content
+ * Within somewhere between a couple of days and a few weeks, trolls set longstanding forum members against each other
+ * Community fails and the forum closes abruptly, leaving only a 404
+
+Online communities can take years to carefully build up and days to destroy. Having good moderation in place, with clear terms of service and enforced boundaries, can help to avoid failures or burnout. Being "nice" and accepting all content tends not to work out well.
+
 ## Moderator screen
 If you have the *moderator* role then selecting the *show/hide* icon from the main timeline will reveal an extra timeline usually called **Mod**. Selecting this timeline will take you to the instance moderator screen, which contains any moderation reports.
 
