@@ -500,6 +500,9 @@ original phrase -> new phrase
 These replacements are subjective, such that if you boost/repeat/announce a post then the original wording will be retained for recipients.
 
 ### Content warning lists
+Content warning lists are lists of domains and/or keywords which can be used to append a warning if they appear in the content of an incoming post. For example, you can have a content warning added if a post contains links to satire sites, so that you don't confuse them with real news and you don't need to be familiar with every possible saitire site. These types of warnings are opt-in, so if they don't apply to you then you don't have to have any.
+
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and look for **"Add content warnings for the following sites"**. You can then select the types of warnings to be added to your timeline.
 
 ## Emergencies
 The fediverse is typically calmer than the centralized social networks, but there can be times when disputes break out and tempers become heated. In the worst cases this can lead to administrator burnout and instances shutting down.
