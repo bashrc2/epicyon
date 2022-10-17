@@ -478,6 +478,11 @@ To block a fediverse handle (nickname@domain), hashtag or domain enter the thing
 
 If you want to see what is being blocked at the instance level then select the **Info** button.
 
+### Web crawlers and search bots
+Most fediverse posts have *Public* scope, and various web crawlers routinely try to index them. These are mostly the usual suspects, such as BigTech companies, but also include lesser known crawlers such as the British Library. By default all web search bots are blocked, but the administrator account can enable particular ones.
+
+If you are the administrator of the instance then to see the currently active web search crawlers edit your profile and select **Filtering and blocking**, then **Known Web Search Bots**. The most common ones will appear at the top. To enable particular ones add their name to **Web Search Bots Allowed** (one per line).
+
 ## Account level moderation
 ### Filtering
 From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify filtered words or phrases. Be sure to select **Publish** to finalize your settings.
