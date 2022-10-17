@@ -236,12 +236,17 @@ You will notice that within the systemd daemon the *registration* option is set 
 
 To avoid spam signups, or overloading the system, there is a maximum number of accounts for the instance which by default is set to 10.
 
+# The importance of good defaults
+Many social network systems have bad defaults, and that is for the purpose of maximizing the number of users and their level of engagement. Bad defaults usually create a combination of *addiction patterns* and *involuntary oversharing* and hence a viral network effect of escalating outrage and dependency. On small fediverse servers we can avoid having bad defaults, because there is no profit motive or drive for massive notoriety.
+
+Good defaults tend to be a little more private and avoid the addiction to making numbers go up or achieving *notoriety at any social cost*. This puts fediverse instances like Epicyon at a slight disadvantage compared to ruthlessly commercial systems, but it's an explicit trade-off in order to minimize the harms which can arise within social networks. So you won't find any high scores tables or trending items.
+
 # Logging in
 In a browser if you navigate to the URL of your instance and enter the username and password that you previously registered. The first time that you log in it will show a series of introduction screens which prompt you to add a profile picture, name and bio description.
 
 # Account Profiles
 ## Initial setup
-When you first register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to kove to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
+When you first register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to move to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
 
 ## Basic details
 ### Describe yourself
@@ -270,25 +275,77 @@ If you are the administrator then within your profile settings you can also spec
 
 ### Moderator
 Is allowed to remove posts and deal with moderation reports.
+
 ### Editor
 Editors can change the links in the left column and the RSS feeds within the right newswire column.
+
 ### Artist
 Artists can change the colors and style of the web interface, using the *theme designer*.
+
 ### Counselor
 A *counselor* is someone tasked with resolving disputes between users of the instance. They are permitted to send DMs to any user account on the instance. Obviously, this type of power can be abused and so the administrator should choose counselors with care.
+
 ### Devop
 Devops are permitted to perform some routine administration functions, such as monitoring instance performance graphs.
+
 # Following
 On the main timeline screen at the top right of the centre column there is a search icon which looks like a magnifying glass. By convention within the fediverse the search function is also the way to look up and follow other people. Enter the handle (@name@domain) or URL of the profile page for the person that you want to follow and select *search*. If the account is found then its details will appear and you can choose to follow or not.
 
 Once you are following someone then selecting their profile picture and then the *unfollow* button will remove the follow.
+
 # Creating posts
+To make a new post from the main timeline screen select the *new post* icon at the top right of the centre column.
+
 ## Post scopes
+Posts can have different scopes which provide some amount of privacy, or particular functions. To change the scope select the current one and a dropdown list will appear.
+
+### Public
+Is visible to anyone in the fediverse. May also be visible outside of the fediverse to anyone with an appropriate link.
+
+### Blog
+Used to create a blog post. Blog posts are typically longer than other types of post, and are also publicly visible to anyone on the web.
+
+### Unlisted
+Similar to a public post, but will not appear as a recent post within your profile. Unlisted posts can add a little more privacy to a conversation in that it will not be immediately obvious to casual observers. Often in practice this is all that's needed to avoid trolls or unwanted attention.
+
+### Followers
+A *followers only* post will only be visible to people who are following you. They will not be visible to people who are not your followers, or to other observers on the web.
+
+A subtlety of this type of post is that people have different followers, so if you send to your followers and they send a reply to their followers then your post or references to it may end up with people who are not your followers.
+
+### DM
+Direct messages are only send to specific people, designated by their fediverse handles (@name@domain).
+
+### Reminder
+A reminder is a direct message to yourself at some time in the future. It will appear on your calendar.
+
+### Report
+A report is a type of post which is sent to moderators on your instance, to alert them about some problem. It is not sent to any other instance.
+
+### Shares
+A *shared item* post describes a physical object or service which may be shared by people on your instance. Shared items may also be visible to people on specific named instances if that has been set up by the administrator.
+
+### Wanted
+A *wanted item* is a physical object or service which you want. These posts will be visible to other people on your instance and also to people on specific named instances if that has been set up by the administrator.
+
 ## Attachments
+Attachments can use a variety of formats.
+
+ * Images: *jpg, jpeg, gif, webp, avif, svg, ico, jxl, png*
+ * Audio: *mp3, ogg, flac, opus*
+ * Video: *mp4, webm, ogv*
+
+Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
 ## Events
+You can specify a date, time and location for the post. If a date is set then the post will appear as an event on the calendar of recipients. This makes it easy for people to organize events without needing to explicitly manage calendars.
 ## Maps
+The location field on a post can be a description, but it can also be a map geolocation. To add a geolocation go to [openstreetmap.org](https://www.openstreetmap.org), find your location and copy and paste the URL into the location field of your new post.
+
+Selecting the *location* header will open the last known geolocation, so if your current location is near this makes it quicker to find. 
 # The Timeline
 ## Layout
+![Layout](manual-layout.png)
+
 On a desktop system the main timeline screen has a multi-column layout. The main content containing posts is in the centre. To the left is a column containing useful web links. To the right is the newswire containing links from RSS feeds.
 
 At the top right of the centre column there are a few icons, for show/hide, calendar, search and creating a new post.
@@ -304,15 +361,154 @@ At the bottom of the timeline there will usually be an arrow icon to go to the n
 The links within the side columns are global to the instance, and only users having the *editor* role can change them. Since the number of accounts on the instance is expected to be small these links provide a common point of reference.
 
 ## Links
-Web links within the left column are intended to be generally useful or of interest to the users of the instance. They are similar to a blogroll. If you have the *editor* role there is an edit button at the top of the left column which can be used to add or remove links. Headers can also be added to group links into logical sections.
+Web links within the left column are intended to be generally useful or of interest to the users of the instance. They are similar to a blogroll. If you have the *editor* role there is an edit button at the top of the left column which can be used to add or remove links. Headers can also be added to group links into logical sections. For example:
+
+```text
+* Search
+
+Code search https://beta.sayhello.so
+Wiby https://wiby.me/
+
+* Links
+
+16colors https://16colo.rs
+Dotshareit http://dotshare.it
+```
 
 ## Newswire
-The right column is the newswire column. It contains a list of links generated from RSS/Atom feeds. If you have the *editor* role then an edit icon will appear at the top of the right column, and the edit screen then allows you to add or remove feeds.
+The right column is the newswire column. It contains a list of links generated from RSS/Atom feeds.
+
+If you have the *editor* role then an edit icon will appear at the top of the right column, and the edit screen then allows you to add or remove feeds.
+
+### Moderated feeds
+Feeds can be either *moderated* or not. Moderated feed items must be approved by a moderator before then can appear in the newswire column and be visible to other users on the instance. To indicate that a feed should be moderated prefix its URL with a star character.
+
+### Mirrored feeds
+Newswire items can also be mirrored. This means that instead of newswire items being links back to the original source article a copy will be made of the article locally on your server. Mirroring can be useful if the site of the RSS/Atom feed is unreliable or likely to go offline (such as solar powered systems only online during daylight hours). When deciding whether to mirror a feed you will also want to consider the copyright status of the content being mirrored, and whether legal problems could arise. To indicate that a feed should be mirrored prefix its URL with an exclamation mark ! character.
+
+### Filters and warnings
+On this screen you can also set filtered words and dogwhistle content warnings for the instance. Filtered words should be on separate lines, and dogwhistle words can be added in the format:
+
+```text
+dogwhistleword -> content warning to be added
+dogwhistle phrase -> content warning to be added
+DogwhistleWordPrefix* -> content warning to be added
+*DogwhistleWordEnding -> content warning to be added
+```
+
+### Newswire tagging rules
+As news arrives via RSS or Atom feeds it can be processed to add or remove hashtags, in accordance to some rules which you can define.
+
+On the newswire edit screen, available to accounts having the *moderator* role, you can define the news processing rules. There is one rule per line.
+
+**Syntax:** *if [conditions] then [action]*
+
+**Logical Operators:** *not, and, or, xor, from, contains*
+
+A simple example is:
+
+```test
+if moderated and not #oxfordimc then block
+```
+
+For moderated feeds this will only allow items through if they have the **#oxfordimc** hashtag.
+
+If you want to add hashtags an example is:
+
+```test
+if contains "garden" or contains "lawn" then add #gardening
+```
+
+So if incoming news contains the word "garden" either in its title or description then it will automatically be assigned the hashtag **#gardening**. You can also add hashtags based upon other hashtags.
+
+```test
+if #garden or #lawn then add #gardening
+```
+
+You can also remove hashtags.
+
+```test
+if #garden or #lawn then remove #gardening
+```
+
+Which will remove **#gardening** if it exists as a hashtag within the news post.
+
+You can add tags based upon the RSS link, such as:
+
+```test
+if from "mycatsite.com" then add #cats
+```
 # Calendar
+The calendar is not yet a standardized feature of the fediverse as a whole, but has existed in Friendica and Zot instances for a long time. Being able to attach a date and time to a post and then have it appear on your calendar and perhaps also the calendars of your followers is quite useful for organizing things with minimum effort. Until such time as federated calendar functionality becomes more standardized this may only work between Epicyon instances.
+
+Calendar events are really just ordinary posts with a date, time and perhaps also a location attached to them. Posts with *Public* scope which have a date and time will appear on the calendars of your followers, unless they have opted out of receiving calendar events from you.
+
+*Reminder* is a special type of calendar post, which is really just a direct message to yourself in the future.
+
+To create a calendar post from the main timeline, select the **New post** icon, then use the dropdown menu to select the scope of your post. Give your event a description and add a date and time. If you add a location this can either be a description or a geolocation link, such as a link to [openstreetmap](https://openstreetmap.org).
+
+Selecting the calendar icon from the main timeline will display your calendar events. It is possible to export them using the **iCalendar** icon at the bottom right to the screen. Calendar events are also available via [CalDav](https://en.wikipedia.org/wiki/CalDAV) using the URL https://yourdomain/calendars/yournickname
+
 # Moderation
-## Instance level moderation
+The importance of moderation within social networks can't be over-stated. In the early history of the web in which communities tended to be organized around forum software and mailing lists the typical pattern went as follows:
+
+ * Founders initiate the forum
+ * The forum gains popularity and a community grows around it
+ * Trolls show up
+ * The administrator is too nice, believes that all opinions are equally valid, and refuses to remove trolls or promptly redact their content
+ * Within somewhere between a couple of days and a few weeks, trolls set longstanding forum members against each other
+ * Community fails and the forum closes abruptly, leaving only a 404
+
+The pattern has been repeated many times. Online communities can take years to carefully build up and days to destroy. Having good moderation in place, with clear terms of service and enforced boundaries, can help to avoid failures or burnout. Being "nice" and accepting all content tends not to work out well. Such an arrangement is easily hijacked by people with bad intent.
+
 ## Moderator screen
+If you have the *moderator* role then selecting the *show/hide* icon from the main timeline will reveal an extra timeline usually called **Mod**. Selecting this timeline will take you to the instance moderator screen, which contains any moderation reports.
+
+### Filtering
+You can filter out posts containing particular words or phrases by entering the offending text and then selecting the **Filter** button. You can use the **Unfilter** button to reverse the decision.
+
+### Removing an offending post
+If a post made on your instance has been reported as violating the terms of service you can remove it by entering its URL and then selecting the **Remove** button.
+
+### Suspending an account
+You can suspend an account on the instance by entering the nickname and then selecting the **Suspend** button. Accounts are usually suspended pending investigation into some terms of service violation. You can use the **Unsuspend** button to re-enable an account.
+
+### Instance level blocking
+To block a fediverse handle (nickname@domain), hashtag or domain enter the thing that you wish to block and then select the **Block** button. You can do the same with the **Unblock** button to reverse your decision.
+
+If you want to see what is being blocked at the instance level then select the **Info** button.
+
+### Web crawlers and search bots
+Most fediverse posts have *Public* scope, and various web crawlers routinely try to index them. These are mostly the usual suspects, such as BigTech companies, but also include lesser known crawlers such as the British Library. By default all web search bots are blocked, but the administrator account can enable particular ones.
+
+If you are the administrator of the instance then to see the currently active web search crawlers edit your profile and select **Filtering and blocking**, then **Known Web Search Bots**. The most common ones will appear at the top. To enable particular ones add their name to **Web Search Bots Allowed** (one per line).
+
 ## Account level moderation
+### Filtering
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify filtered words or phrases. Be sure to select **Publish** to finalize your settings.
+
+You can also filter words within the bio of users making follow requests. This allows unwanted followers to be automatically rejected if their bio contains particular words.
+
+### Blocking accounts or domains
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify blocked accounts or domains (one per line). Be sure to select **Publish** to finalize your settings.
+
+### Replacing words
+Sometimes you may want to replace words within received posts. This can be for added clarity, to dissipate annoyance or just for fun.
+
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify replacements as follows:
+
+```text
+OldWord -> NewWord
+original phrase -> new phrase
+```
+
+These replacements are subjective, such that if you boost/repeat/announce a post then the original wording will be retained for recipients.
+
+### Content warning lists
+Content warning lists are lists of domains and/or keywords which can be used to append a warning if they appear in the content of an incoming post. For example, you can have a content warning added if a post contains links to satire sites, so that you don't confuse them with real news and you don't need to be familiar with every possible satire site. These types of warnings are opt-in, so if they don't apply to you then you don't have to have any.
+
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and look for **"Add content warnings for the following sites"**. You can then select the types of warnings to be added to your timeline.
+
 ## Emergencies
 The fediverse is typically calmer than the centralized social networks, but there can be times when disputes break out and tempers become heated. In the worst cases this can lead to administrator burnout and instances shutting down.
 
@@ -321,14 +517,22 @@ If you are the administrator and you are in a situation where you or the users o
 A general observation is that it is difficult to maintain collective outrage at a high level for more than a week, so trolling campaigns tend to not last much longer than that. Broch mode allows you to ride out the storm, while retaining normal communications with friendly instances.
 
 To enable broch mode the administrator should edit their profile, go to the instance settings and select the option. Once enabled it will turn itself off automatically after 7-14 days. The somewhat uncertain deactivation time prevents an adversary from knowing when to begin a new flooding attempt, and after a couple of weeks they will be losing the motivation to continue.
+
 # Themes
 ## Standard themes
+
 ## Theme customization
+
 # Sharing economy
 ## Item ontology
+
 ## Federated shares
+
 # Search
 ## Searching your posts
+
 ## Searching hashtags
+
 ## Searching shared items
+
 # Building web communities
