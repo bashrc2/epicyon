@@ -535,6 +535,8 @@ If you have the *artist* role then from the top of the left column of the main t
 ## Federated shares
 
 # Search
+To search, select the magnifying glass icon from the top right of the centre column of the main timeline. This will take you to a separate screen where you can enter your search query.
+
 ## Searching your posts
 
 ## Searching hashtags

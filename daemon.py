@@ -21104,7 +21104,7 @@ def run_daemon(map_format: str,
     httpd.dogwhistles = load_dogwhistles(dogwhistles_filename)
 
     # list of preferred podcast formats
-    # eg ['audio/opus', 'audio/mp3']
+    # eg ['audio/opus', 'audio/mp3', 'audio/speex']
     httpd.preferred_podcast_formats = preferred_podcast_formats
 
     # for each account, whether bold reading is enabled

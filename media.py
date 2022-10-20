@@ -579,6 +579,9 @@ def attach_media(base_dir: str, http_prefix: str,
         file_extension = 'jpg'
     if media_type == 'audio/mpeg':
         file_extension = 'mp3'
+    if media_type == 'audio/speex' or \
+       media_type == 'audio/x-speex':
+        file_extension = 'spx'
 
     domain = get_full_domain(domain, port)
 
@@ -665,6 +668,7 @@ def path_is_audio(path: str) -> bool:
     """
     if path.endswith('.ogg') or \
        path.endswith('.opus') or \
+       path.endswith('.spx') or \
        path.endswith('.flac') or \
        path.endswith('.mp3'):
         return True
