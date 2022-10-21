@@ -554,10 +554,25 @@ The technical implementation of federated shared items currently does not use Ac
 # Search
 To search, select the magnifying glass icon from the top right of the centre column of the main timeline. This will take you to a separate screen where you can enter your search query.
 
+## Searching for a fediverse handle or profile URL
+If you enter a fediverse handle or a URL corresponding to a profile then the system will try to find it. If successful then a summary of the found profile will be shown, and you will have the option to follow/unfollow or view the original upstream profile page. If you are already following then a different screen will be shown with more options available.
+
 ## Searching your posts
+To search your own posts prefix the search text with a single quote character.
 
 ## Searching hashtags
+To search for a hashtag just enter it, complete with the hash prefix.
 
 ## Searching shared items
+To search for any shared items just enter the text that you want to search for.
+
+## Searcing wanted items
+To search for a wanted item then enter the text that you want to search for prefixed by a full stop (period) character.
+
+## Searching for skills
+To search for accounts having a particular skill, prefix your search text with a star character.
+
+## Searching for emojis
+To search for an emoji use its name prefixed by a colon character.
 
 # Building web communities
