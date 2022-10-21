@@ -566,7 +566,7 @@ To search for a hashtag just enter it, complete with the hash prefix.
 ## Searching shared items
 To search for any shared items just enter the text that you want to search for.
 
-## Searcing wanted items
+## Searching wanted items
 To search for a wanted item then enter the text that you want to search for prefixed by a full stop (period) character.
 
 ## Searching for skills
