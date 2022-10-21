@@ -530,9 +530,24 @@ Epicyon has multiple standard themes and if you are the administrator then if yo
 If you have the *artist* role then from the top of the left column of the main timeline you can select the *Theme Designer* icon, which usually resembles a paint roller or paint brush. This allows you to change colors and values for user interface components. 
 
 # Sharing economy
-## Item ontology
+This is intended to add [Freecycle](https://en.wikipedia.org/wiki/The_Freecycle_Network) type functionality within a social network context, leveraging your social connections on the instance, or between participating instances, to facilitate sharing and reduce wasteful consumerism.
+
+## Adding a shared item
+When creating a new post one of the scope options is called *shares*. You can describe an item or service that you are willing to share.
+
+Sharing is primarily intended to not require any monetary transactions, although prices can optionally be added. There are no payment mechanisms implemented and if that is required then it is recommended to include details of payment method within the description.
+
+## Adding a wanted item
+This is the opposite to adding a share in that you are making a post which indicates that you are wanting some particular thing or service.
+
+## New shares
+When new shared items are added then in the left column of the main timeline screen there will be a section showing recent shares.
+
+## Shared and wanted items timelines
+Any items shared or wanted will appear within timelines, which can be viewed by selecting the *show/hide* icon.
 
 ## Federated shares
+If you are the administrator of the instance then you can specify other instances with which your local shared items may be federated. Edit your profile and select the *Shares* section, then add the domain names of the instances to share with (one per line). If other instance administrators also configure their system to share with yours then this is the ideal mutualistic situation, increasing the set of things being shared.
 
 # Search
 To search, select the magnifying glass icon from the top right of the centre column of the main timeline. This will take you to a separate screen where you can enter your search query.
