@@ -233,6 +233,24 @@ git pull
 chown -R epicyon:epicyon *
 systemctl restart epicyon
 ```
+
+# Housekeeping
+To avoid running out of disk space you will want to clear down old inbox posts. Posts from your instance outboxes will be unaffected.
+
+Create an archive script **/usr/bin/epicyon-archive**:
+
+```bash
+#!/bin/bash
+cd /opt/epicyon || exit 0
+/usr/bin/python3 epicyon.py --archive none --archiveweeks 4 --maxposts 32000
+```
+
+You can adjust the maximum number of weeks and the maximum number of inbox posts as needed. Then add it as a cron entry.
+
+```bash
+echo "*/60 * * * * root /usr/bin/epicyon-archive" >> /etc/crontab
+```
+
 # Registering accounts
 You will notice that within the systemd daemon the *registration* option is set to *open*. In a browser if you navigate to the URL of your instance then you should see a *Register* button. The first account to register becomes the administrator.
 
