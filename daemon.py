@@ -16957,7 +16957,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show images within https://instancedomain/manual
         if self.path.startswith('/manual-'):
-            if self.path.endswith('.png'):
+            if is_image_file(self.path):
                 self._show_manual_image(self.path,
                                         self.server.base_dir,
                                         getreq_start_time)
