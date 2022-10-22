@@ -267,7 +267,7 @@ In a browser if you navigate to the URL of your instance and enter the username 
 ## Initial setup
 When you first register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to move to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
 
-![Profile screen](manual-profile.png)
+![Profile screen](manual-profile.jpg)
 
 ## Basic details
 ### Describe yourself
@@ -583,7 +583,7 @@ The technical implementation of federated shared items currently does not use Ac
 # Search
 To search, select the magnifying glass icon from the top right of the centre column of the main timeline. This will take you to a separate screen where you can enter your search query.
 
-![Search screen](manual-search.png)
+![Search screen](manual-search.jpg)
 
 ## Searching for a fediverse handle or profile URL
 If you enter a fediverse handle or a URL corresponding to a profile then the system will try to find it. If successful then a summary of the found profile will be shown, and you will have the option to follow/unfollow or view the original upstream profile page. If you are already following then a different screen will be shown with more options available.
