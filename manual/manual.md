@@ -354,7 +354,7 @@ A *wanted item* is a physical object or service which you want. These posts will
 Attachments can use a variety of formats.
 
  * Images: *jpg, jpeg, gif, webp, avif, svg, ico, jxl, png*
- * Audio: *mp3, ogg, flac, opus*
+ * Audio: *mp3, ogg, flac, opus, speex*
  * Video: *mp4, webm, ogv*
 
 Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
