@@ -609,6 +609,8 @@ To search for an emoji use its name prefixed by a colon character.
 # Building fediverse communities
 The great thing about running a small instance is that you can do things in whatever manner you prefer. What follows is a few guidelines which may help.
 
+![Fediverse logo](manual-fediverse.png)
+
 ## Have a working backup system
 Keeping backups is very important, and fortunately with Epicyon this is a simple process. The Epicyon installation consists only of files in a directory. There is no database. So just backing up the directory where it resides - typically */opt/epicyon* - is all that you need to do. Once you have a backup system in place, test that it works.
 
