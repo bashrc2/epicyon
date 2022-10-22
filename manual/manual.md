@@ -572,7 +572,6 @@ If you are the administrator of the instance then you can specify other instance
 The technical implementation of federated shared items currently does not use ActivityPub, but instead a pull-based system more comparable to RSS/Atom. This is so that the people doing the sharing always remain in control of what they are sharing, and can withdraw a share at any time. A pull-based implementation also makes things considerably harder for spammers.
 
 # Search
-![Search icon](manual-search-icon.png)
 To search, select the magnifying glass icon from the top right of the centre column of the main timeline. This will take you to a separate screen where you can enter your search query.
 
 ![Search screen](manual-search.png)
