@@ -469,10 +469,11 @@ You can add tags based upon the RSS link, such as:
 if from "mycatsite.com" then add #cats
 ```
 # Calendar
-![Celendar screen](manual-calendar.png)
 The calendar is not yet a standardized feature of the fediverse as a whole, but has existed in Friendica and Zot instances for a long time. Being able to attach a date and time to a post and then have it appear on your calendar and perhaps also the calendars of your followers is quite useful for organizing things with minimum effort. Until such time as federated calendar functionality becomes more standardized this may only work between Epicyon instances.
 
 Calendar events are really just ordinary posts with a date, time and perhaps also a location attached to them. Posts with *Public* scope which have a date and time will appear on the calendars of your followers, unless they have opted out of receiving calendar events from you.
+
+![Celendar screen](manual-calendar.png)
 
 *Reminder* is a special type of calendar post, which is really just a direct message to yourself in the future.
 
