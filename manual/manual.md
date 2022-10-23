@@ -327,6 +327,8 @@ To make a new post from the main timeline screen select the *new post* icon at t
 
 ![New post screen](manual-new-post.png)
 
+The format of the post should be plain text, without any html markup. Any URLs will be automatically linked, and you can use hashtags and emoji. Emojis can be added via their name with colon characters before and after.
+
 ## Post scopes
 Posts can have different scopes which provide some amount of privacy, or particular functions. To change the scope select the current one and a dropdown list will appear.
 
