@@ -437,6 +437,8 @@ Dotshareit http://dotshare.it
 ## Newswire
 The right column is the newswire column. It contains a list of links generated from RSS/Atom feeds.
 
+[RSS](https://en.wikipedia.org/wiki/RSS) is a much maligned protocol. It's simple, and an excellent way to read news in a manner that's convenient for you. The main reason for its downfall is that it's difficult to implement [targeted advertising](https://en.wikipedia.org/wiki/Surveillance_capitalism) - the dominant business model of the web - within RSS. It's hard to spy on anyone using an RSS feed. So if we want the web to improve then supporting RSS ought to be a priority.
+
 If you have the *editor* role then an edit icon will appear at the top of the right column, and the edit screen then allows you to add or remove feeds.
 
 ### Moderated feeds
