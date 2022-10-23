@@ -315,6 +315,9 @@ Devops are permitted to perform some routine administration functions, such as m
 # Following
 On the main timeline screen at the top right of the centre column there is a search icon which looks like a magnifying glass. By convention within the fediverse the search function is also the way to look up and follow other people. Enter the handle (@name@domain) or URL of the profile page for the person that you want to follow and select *search*. If the account is found then its details will appear and you can choose to follow or not.
 
+![Following people via search](manual-search-following.jpg)
+![Following search result](manual-following.jpg)
+
 Once you are following someone then selecting their profile picture and then the *unfollow* button will remove the follow.
 
 # Creating posts
