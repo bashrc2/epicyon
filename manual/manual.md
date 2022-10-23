@@ -338,6 +338,8 @@ Is visible to anyone in the fediverse. May also be visible outside of the fedive
 ### Blog
 Used to create a blog post. Blog posts are typically longer than other types of post, and are also publicly visible to anyone on the web.
 
+At the top of the *links* column on the main timeline screen there is an icon to show an RSS feed for your blog entries.
+
 ### Unlisted
 Similar to a public post, but will not appear as a recent post within your profile. Unlisted posts can add a little more privacy to a conversation in that it will not be immediately obvious to casual observers. Often in practice this is all that's needed to avoid trolls or unwanted attention.
 
@@ -499,6 +501,14 @@ You can add tags based upon the RSS link, such as:
 ```test
 if from "mycatsite.com" then add #cats
 ```
+
+# Media timeline
+Selecting the *show/hide* icon from the main timeline will reveal an extra timeline called **Media**. The media timeline shows posts which contain a picture, audio or video content. So if you are primarily interested in photos then this timeline can be useful.
+
+![Media timeline](manual-media.jpg)
+
+If there is an description for the media then this also appears within this timeline. Selecting a photo will enlarge it.
+
 # Moderation
 The importance of moderation within social networks can't be over-stated. In the early history of the web in which communities tended to be organized around forum software and mailing lists the typical pattern went as follows:
 
