@@ -1,0 +1,21 @@
+#!/bin/bash
+if [ ! -f /usr/bin/pandoc ]; then
+    echo 'pandoc command not found'
+    exit 1
+fi
+pandoc -f html -t markdown -o manual.md manual.html
+git add manual.md
+if [ -f /usr/bin/ebook-convert ]; then
+    ebook-convert manual.html manual.epub --cover manual-cover.png --authors "Bob Mottram" --language "English" --tags "fediverse, activitypub, server, linux, python, smallweb" --comments "ActivityPub server, designed for simplicity and accessibility. Includes calendar, news and sharing economy features to empower your federated community." --title "Epicyon User Manual"
+else
+    echo 'ebook-convert command not found'
+    if [ -f /usr/bin/flatpak ]; then
+        if ! flatpak --command="sh" run com.calibre_ebook.calibre \
+             -c "ebook-convert manual.html manual.epub --cover manual-cover.png --authors \"Bob Mottram\" --language \"English\" --tags \"fediverse, activitypub, server, linux, python, smallweb\" --comments \"ActivityPub server, designed for simplicity and accessibility. Includes calendar, news and sharing economy features to empower your federated community.\" --title \"Epicyon User Manual\""; then
+            exit 2
+        fi
+    fi
+fi
+if [ -f manual.epub ]; then
+    git add manual.epub
+fi
