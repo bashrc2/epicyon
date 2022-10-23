@@ -268,10 +268,11 @@ In a browser if you navigate to the URL of your instance and enter the username 
 When you first register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to move to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
 
 ![Profile screen](manual-profile.jpg)
-![Profile edit button](manual-edit-button.jpg)
+![Profile edit button](manual-edit-button.png)
 
 ## Basic details
-![Profile basic details](manual-basic-details.jpg)
+![Profile basic details](manual-basic-details.png)
+
 ### Describe yourself
 Add an appropriate description of youself, which doesn't resemble the type of thing which would appear on a spam account. When other fediverse users are judging a follow request from you they will want to know that you are a real person and not a spammer or troll.
 
@@ -402,7 +403,10 @@ To create a calendar post from the main timeline, select the **New post** icon, 
 Selecting the calendar icon from the main timeline will display your calendar events. It is possible to export them using the **iCalendar** icon at the bottom right to the screen. Calendar events are also available via [CalDav](https://en.wikipedia.org/wiki/CalDAV) using the URL https://yourdomain/calendars/yournickname
 
 # Side columns
+![Timeline side columns](manual-side-columns.png)
 The links within the side columns are global to the instance, and only users having the *editor* role can change them. Since the number of accounts on the instance is expected to be small these links provide a common point of reference.
+
+This multi-column layout is inspired by the appearance of early blogs or the original *Indymedia*, which in turn was inspired by the appearance of monastic texts in which you would see comments in the margins in line with the main text. So you can be reading posts from friends but also keeping an eye on the news from RSS/Atom feeds at the same time.
 
 ## Links
 Web links within the left column are intended to be generally useful or of interest to the users of the instance. They are similar to a blogroll. If you have the *editor* role there is an edit button at the top of the left column which can be used to add or remove links. Headers can also be added to group links into logical sections. For example:
