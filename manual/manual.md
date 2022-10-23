@@ -1,3 +1,25 @@
+# Table of Contents
+1. [Introduction](#introduction)
+2. [Installation](#installation)
+3. [Upgrading](#upgrading)
+4. [Housekeeping](#housekeeping)
+5. [Registering accounts](#registering-accounts)
+6. [The importance of good defaults](#the-importance-of-good-defaults)
+7. [Logging in](#logging-in)
+8. [Account Profiles](#account-profiles)
+9. [Following](#following)
+10. [Creating posts](#creating-posts)
+11. [The Timeline](#the-timeline)
+12. [Calendar](#calendar)
+13. [Side columns](#side-columns)
+14. [Media timeline](#media-timeline)
+15. [Moderation](#moderation)
+16. [Themes](#themes)
+17. [Sharing economy](#sharing-economy)
+18. [Search](#search)
+19. [Browsing in a command shell](#browsing-in-a-command-shell)
+20. [Building fediverse communities](#building-fediverse-communities)
+
 # Introduction
 *The fediverse* is a set of federated servers, typically using a communication protocol called [ActivityPub](https://www.w3.org/TR/activitypub) which was devised by the [social working group](https://www.w3.org/wiki/Socialwg) within the World Wide Web Consortium (W3C). At present it is mostly used for [microblogging](https://en.wikipedia.org/wiki/Microblogging), although ActivityPub is sufficiently general that it can also be used for a variety of other purposes.
 
