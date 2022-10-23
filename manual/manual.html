@@ -874,6 +874,38 @@ text with a star character.</p>
 <h2 id="searching-for-emojis">Searching for emojis</h2>
 <p>To search for an emoji use its name prefixed by a colon
 character.</p>
+<h1 id="browsing-in-a-command-shell">Browsing in a command shell</h1>
+<p>Since the web interface of Epicyon only needs HTML5 and CSS, it can
+work with browsers which don’t implement javascript at all.</p>
+<p>Screenshots within the preceding sections all assume that you are
+using a common graphical web browser. However, it is also possible to
+use Epicyon from a shell browser, such as <a
+href="https://lynx.invisible-island.net">Lynx</a>. This may be better
+suited for use with screen readers, or if you want to check your social
+media while logged into a server via <em>ssh</em>.</p>
+<p>If you are using <em>Lynx</em> then you will need to ensure that it
+is configured for the <strong>utf-8</strong> character set, and that you
+have emoji fonts installed (eg. <strong>noto-fonts-emoji</strong>). Edit
+your <em>lynx.cfg</em> file (usually in <em>/etc/lynx.cfg</em>) and
+set:</p>
+<pre class="text"><code>CHARACTER_SET:utf-8</code></pre>
+<p>To avoid annoying questions you may also want to set:</p>
+<pre class="text"><code>ACCEPT_ALL_COOKIES:TRUE</code></pre>
+<p>After logging in you will see a menu, which are shortcuts to
+different screens.</p>
+<figure>
+<img src="manual-lynx-menu.png"
+alt="Menu viewed within a shell browser" />
+<figcaption aria-hidden="true">Menu viewed within a shell
+browser</figcaption>
+</figure>
+<p>Timelines will look something like the following.</p>
+<figure>
+<img src="manual-lynx-inbox.png"
+alt="Inbox viewed within a shell browser" />
+<figcaption aria-hidden="true">Inbox viewed within a shell
+browser</figcaption>
+</figure>
 <h1 id="building-fediverse-communities">Building fediverse
 communities</h1>
 <p>The great thing about running a small instance is that you can do

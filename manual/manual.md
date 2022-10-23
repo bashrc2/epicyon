@@ -629,6 +629,31 @@ To search for accounts having a particular skill, prefix your search text with a
 ## Searching for emojis
 To search for an emoji use its name prefixed by a colon character.
 
+# Browsing in a command shell
+Since the web interface of Epicyon only needs HTML5 and CSS, it can work with browsers which don't implement javascript at all.
+
+Screenshots within the preceding sections all assume that you are using a common graphical web browser. However, it is also possible to use Epicyon from a shell browser, such as [Lynx](https://lynx.invisible-island.net). This may be better suited for use with screen readers, or if you want to check your social media while logged into a server via *ssh*.
+
+If you are using *Lynx* then you will need to ensure that it is configured for the **utf-8** character set, and that you have emoji fonts installed (eg. **noto-fonts-emoji**). Edit your *lynx.cfg* file (usually in */etc/lynx.cfg*) and set:
+
+```text
+CHARACTER_SET:utf-8
+```
+
+To avoid annoying questions you may also want to set:
+
+```text
+ACCEPT_ALL_COOKIES:TRUE
+```
+
+After logging in you will see a menu, which are shortcuts to different screens.
+
+![Menu viewed within a shell browser](manual-lynx-menu.png)
+
+Timelines will look something like the following.
+
+![Inbox viewed within a shell browser](manual-lynx-inbox.png)
+
 # Building fediverse communities
 The great thing about running a small instance is that you can do things in whatever manner you prefer. What follows is a few guidelines which may help.
 
