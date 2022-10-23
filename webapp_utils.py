@@ -1374,6 +1374,8 @@ def get_post_attachments_as_html(base_dir: str,
                 extension = '.ogg'
             elif attach['url'].endswith('.opus'):
                 extension = '.opus'
+            elif attach['url'].endswith('.spx'):
+                extension = '.spx'
             elif attach['url'].endswith('.flac'):
                 extension = '.flac'
             if attach['url'].endswith(extension):

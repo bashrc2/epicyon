@@ -280,6 +280,7 @@ def _add_embedded_audio(translate: {}, content: str) -> str:
     if not ('.mp3' in content or
             '.ogg' in content or
             '.opus' in content or
+            '.spx' in content or
             '.flac' in content):
         return content
 
@@ -291,6 +292,8 @@ def _add_embedded_audio(translate: {}, content: str) -> str:
         extension = '.ogg'
     elif '.opus' in content:
         extension = '.opus'
+    elif '.spx' in content:
+        extension = '.spx'
     elif '.flac' in content:
         extension = '.flac'
 

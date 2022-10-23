@@ -16957,7 +16957,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show images within https://instancedomain/manual
         if self.path.startswith('/manual-'):
-            if self.path.endswith('.png'):
+            if is_image_file(self.path):
                 self._show_manual_image(self.path,
                                         self.server.base_dir,
                                         getreq_start_time)
@@ -21104,7 +21104,7 @@ def run_daemon(map_format: str,
     httpd.dogwhistles = load_dogwhistles(dogwhistles_filename)
 
     # list of preferred podcast formats
-    # eg ['audio/opus', 'audio/mp3']
+    # eg ['audio/opus', 'audio/mp3', 'audio/speex']
     httpd.preferred_podcast_formats = preferred_podcast_formats
 
     # for each account, whether bold reading is enabled

@@ -1,4 +1,3 @@
-# Contents
 # Introduction
 *The fediverse* is a set of federated servers, typically using a communication protocol called [ActivityPub](https://www.w3.org/TR/activitypub) which was devised by the [social working group](https://www.w3.org/wiki/Socialwg) within the World Wide Web Consortium (W3C). At present it is mostly used for [microblogging](https://en.wikipedia.org/wiki/Microblogging), although ActivityPub is sufficiently general that it can also be used for a variety of other purposes.
 
@@ -10,7 +9,7 @@ Epicyon is part of the "small web" category of internet software, in that it is 
 
 It is hardly possible to visit many sites on the web without your browser loading and running a large amount of javascript. Epicyon takes a minimalist approach where its web interface only uses HTML and CSS. You can disable javascript, or use a browser which doesn't have javascript capability, and the user experience is unchanged. Lack of javascript also rules out a large area of potential attack surface.
 
-Another common concern is being able to keep instances running. Instance abandonment creates a lot of disruption, and it's often related to the amount of effort that it takes to keep things going. To avoid the maintenance burden becoming prohibitive, Epicyon is implemented in a simple manner with very few dependencies and no database. All data is just files in a directory, and upgrades are also straightforward. This desgree of simplicity runs counter to the current trend within the software industry towards complex frameworks and large scale databases with elaborate and rapidly evolving dependencies.
+Another common concern is being able to keep instances running. Instance abandonment creates a lot of disruption, and it's often related to the amount of effort that it takes to keep things going. To avoid the maintenance burden becoming prohibitive, Epicyon is implemented in a simple manner with very few dependencies and no database. All data is just files in a directory, and upgrades are also straightforward. This degree of simplicity runs counter to the current trend within the software industry towards complex frameworks and large scale databases with elaborate and rapidly evolving dependencies.
 
 Epicyon also includes some lightweight organizing features, such as calendar, events and sharing economy features.
 
@@ -233,6 +232,24 @@ git pull
 chown -R epicyon:epicyon *
 systemctl restart epicyon
 ```
+
+# Housekeeping
+To avoid running out of disk space you will want to clear down old inbox posts. Posts from your instance outboxes will be unaffected.
+
+Create an archive script **/usr/bin/epicyon-archive**:
+
+```bash
+#!/bin/bash
+cd /opt/epicyon || exit 0
+/usr/bin/python3 epicyon.py --archive none --archiveweeks 4 --maxposts 32000
+```
+
+You can adjust the maximum number of weeks and the maximum number of inbox posts as needed. Then add it as a cron entry.
+
+```bash
+echo "*/60 * * * * root /usr/bin/epicyon-archive" >> /etc/crontab
+```
+
 # Registering accounts
 You will notice that within the systemd daemon the *registration* option is set to *open*. In a browser if you navigate to the URL of your instance then you should see a *Register* button. The first account to register becomes the administrator.
 
@@ -246,11 +263,18 @@ Good defaults tend to be a little more private and avoid the addiction to making
 # Logging in
 In a browser if you navigate to the URL of your instance and enter the username and password that you previously registered. The first time that you log in it will show a series of introduction screens which prompt you to add a profile picture, name and bio description.
 
+![Login screen](manual-login.png)
+
 # Account Profiles
 ## Initial setup
 When you first register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to move to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
 
+![Profile screen](manual-profile.jpg)
+![Profile edit button](manual-edit-button.png)
+
 ## Basic details
+![Profile basic details](manual-basic-details.png)
+
 ### Describe yourself
 Add an appropriate description of youself, which doesn't resemble the type of thing which would appear on a spam account. When other fediverse users are judging a follow request from you they will want to know that you are a real person and not a spammer or troll.
 
@@ -293,10 +317,17 @@ Devops are permitted to perform some routine administration functions, such as m
 # Following
 On the main timeline screen at the top right of the centre column there is a search icon which looks like a magnifying glass. By convention within the fediverse the search function is also the way to look up and follow other people. Enter the handle (@name@domain) or URL of the profile page for the person that you want to follow and select *search*. If the account is found then its details will appear and you can choose to follow or not.
 
+![Following people via search](manual-search-following.jpg)
+![Following search result](manual-following.jpg)
+
 Once you are following someone then selecting their profile picture and then the *unfollow* button will remove the follow.
 
 # Creating posts
 To make a new post from the main timeline screen select the *new post* icon at the top right of the centre column.
+
+![New post screen](manual-new-post.png)
+
+The format of the post should be plain text, without any html markup. Any URLs will be automatically linked, and you can use hashtags and emoji. Emojis can be added via their name with colon characters before and after.
 
 ## Post scopes
 Posts can have different scopes which provide some amount of privacy, or particular functions. To change the scope select the current one and a dropdown list will appear.
@@ -334,23 +365,31 @@ A *wanted item* is a physical object or service which you want. These posts will
 Attachments can use a variety of formats.
 
  * Images: *jpg, jpeg, gif, webp, avif, svg, ico, jxl, png*
- * Audio: *mp3, ogg, flac, opus*
+ * Audio: *mp3, ogg, flac, opus, speex*
  * Video: *mp4, webm, ogv*
 
+![New post attachments](manual-attachments.png)
+
 Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
+
 ## Events
 You can specify a date, time and location for the post. If a date is set then the post will appear as an event on the calendar of recipients. This makes it easy for people to organize events without needing to explicitly manage calendars.
+![New post event](manual-date-time.png)
+
 ## Maps
 The location field on a post can be a description, but it can also be a map geolocation. To add a geolocation go to [openstreetmap.org](https://www.openstreetmap.org), find your location and copy and paste the URL into the location field of your new post.
 
 Selecting the *location* header will open the last known geolocation, so if your current location is near this makes it quicker to find. 
+
 # The Timeline
 ## Layout
 ![Layout](manual-layout.png)
 
 On a desktop system the main timeline screen has a multi-column layout. The main content containing posts is in the centre. To the left is a column containing useful web links. To the right is the newswire containing links from RSS feeds.
 
-At the top right of the centre column there are a few icons, for show/hide, calendar, search and creating a new post.
+At the top right of the centre column there are a few icons known as *action buttons*, for show/hide, calendar, search and creating a new post.
+
+On mobile screens there is a single column layout, and the *links* and *newswire* column content is available via action buttons.
 
 Different timelines are listed at the top - inbox, DM, replies, outbox, etc - and more can be shown by selecting the *show/hide* icon.
 
@@ -359,8 +398,26 @@ As a general principle of navigation selecting the top banner always takes you b
 
 At the bottom of the timeline there will usually be an arrow icon to go to the next page, and a list of page numbers. You can also move between pages using key shortcuts **ALT+SHIFT+>** and **ALT+SHIFT+<**. Key shortcuts exist for most navigation events, and you can customise them by selecting the *key shortcuts* link at the bottom of the left column.
 
+![Keyboard shortcuts screen](manual-shortcuts.png)
+
+# Calendar
+The calendar is not yet a standardized feature of the fediverse as a whole, but has existed in Friendica and Zot instances for a long time. Being able to attach a date and time to a post and then have it appear on your calendar and perhaps also the calendars of your followers is quite useful for organizing things with minimum effort. Until such time as federated calendar functionality becomes more standardized this may only work between Epicyon instances.
+
+Calendar events are really just ordinary posts with a date, time and perhaps also a location attached to them. Posts with *Public* scope which have a date and time will appear on the calendars of your followers, unless they have opted out of receiving calendar events from you.
+
+![Calendar screen](manual-calendar.png)
+
+*Reminder* is a special type of calendar post, which is really just a direct message to yourself in the future.
+
+To create a calendar post from the main timeline, select the **New post** icon, then use the dropdown menu to select the scope of your post. Give your event a description and add a date and time. If you add a location this can either be a description or a geolocation link, such as a link to [openstreetmap](https://openstreetmap.org).
+
+Selecting the calendar icon from the main timeline will display your calendar events. It is possible to export them using the **iCalendar** icon at the bottom right to the screen. Calendar events are also available via [CalDav](https://en.wikipedia.org/wiki/CalDAV) using the URL https://yourdomain/calendars/yournickname
+
 # Side columns
+![Timeline side columns](manual-side-columns.png)
 The links within the side columns are global to the instance, and only users having the *editor* role can change them. Since the number of accounts on the instance is expected to be small these links provide a common point of reference.
+
+This multi-column layout is inspired by the appearance of early blogs or the original *Indymedia*, which in turn was inspired by the appearance of monastic texts in which you would see comments in the margins in line with the main text. So you can be reading posts from friends but also keeping an eye on the news from RSS/Atom feeds at the same time.
 
 ## Links
 Web links within the left column are intended to be generally useful or of interest to the users of the instance. They are similar to a blogroll. If you have the *editor* role there is an edit button at the top of the left column which can be used to add or remove links. Headers can also be added to group links into logical sections. For example:
@@ -440,17 +497,6 @@ You can add tags based upon the RSS link, such as:
 ```test
 if from "mycatsite.com" then add #cats
 ```
-# Calendar
-The calendar is not yet a standardized feature of the fediverse as a whole, but has existed in Friendica and Zot instances for a long time. Being able to attach a date and time to a post and then have it appear on your calendar and perhaps also the calendars of your followers is quite useful for organizing things with minimum effort. Until such time as federated calendar functionality becomes more standardized this may only work between Epicyon instances.
-
-Calendar events are really just ordinary posts with a date, time and perhaps also a location attached to them. Posts with *Public* scope which have a date and time will appear on the calendars of your followers, unless they have opted out of receiving calendar events from you.
-
-*Reminder* is a special type of calendar post, which is really just a direct message to yourself in the future.
-
-To create a calendar post from the main timeline, select the **New post** icon, then use the dropdown menu to select the scope of your post. Give your event a description and add a date and time. If you add a location this can either be a description or a geolocation link, such as a link to [openstreetmap](https://openstreetmap.org).
-
-Selecting the calendar icon from the main timeline will display your calendar events. It is possible to export them using the **iCalendar** icon at the bottom right to the screen. Calendar events are also available via [CalDav](https://en.wikipedia.org/wiki/CalDAV) using the URL https://yourdomain/calendars/yournickname
-
 # Moderation
 The importance of moderation within social networks can't be over-stated. In the early history of the web in which communities tended to be organized around forum software and mailing lists the typical pattern went as follows:
 
@@ -463,8 +509,10 @@ The importance of moderation within social networks can't be over-stated. In the
 
 The pattern has been repeated many times. Online communities can take years to carefully build up and days to destroy. Having good moderation in place, with clear terms of service and enforced boundaries, can help to avoid failures or burnout. Being "nice" and accepting all content tends not to work out well. Such an arrangement is easily hijacked by people with bad intent.
 
-## Moderator screen
-If you have the *moderator* role then selecting the *show/hide* icon from the main timeline will reveal an extra timeline usually called **Mod**. Selecting this timeline will take you to the instance moderator screen, which contains any moderation reports.
+## Moderator timeline
+If you have the *moderator* role then selecting the *show/hide* icon from the main timeline will reveal an extra timeline usually called **Mod**. Selecting this timeline will take you to the instance moderator timeline, which contains any moderation reports.
+
+![Moderator timeline](manual-moderator.png)
 
 ### Filtering
 You can filter out posts containing particular words or phrases by entering the offending text and then selecting the **Filter** button. You can use the **Unfilter** button to reverse the decision.
@@ -529,16 +577,73 @@ Epicyon has multiple standard themes and if you are the administrator then if yo
 ## Theme customization
 If you have the *artist* role then from the top of the left column of the main timeline you can select the *Theme Designer* icon, which usually resembles a paint roller or paint brush. This allows you to change colors and values for user interface components. 
 
+![Theme designer screen](manual-theme-designer.png)
+
 # Sharing economy
-## Item ontology
+This is intended to add [Freecycle](https://en.wikipedia.org/wiki/The_Freecycle_Network) type functionality within a social network context, leveraging your social connections on the instance, or between participating instances, to facilitate sharing and reduce wasteful consumerism.
+
+## Adding a shared item
+When creating a new post one of the scope options is called *shares*. You can describe an item or service that you are willing to share.
+
+Sharing is primarily intended to not require any monetary transactions, although prices can optionally be added. There are no payment mechanisms implemented and if that is required then it is recommended to include details of payment method within the description.
+
+![Adding a new shared item](manual-new-share.png)
+
+## Adding a wanted item
+This is the opposite to adding a share in that you are making a post which indicates that you are wanting some particular thing or service.
+
+## New shares
+When new shared items are added then in the left column of the main timeline screen there will be a section showing recent shares.
+
+## Shared and wanted items timelines
+Any items shared or wanted will appear within timelines, which can be viewed by selecting the *show/hide* icon.
 
 ## Federated shares
+If you are the administrator of the instance then you can specify other instances with which your local shared items may be federated. Edit your profile and select the *Shares* section, then add the domain names of the instances to share with (one per line). If other instance administrators also configure their system to share with yours then this is the ideal mutualistic situation, increasing the set of things being shared.
+
+The technical implementation of federated shared items currently does not use ActivityPub, but instead a pull-based system more comparable to RSS/Atom. This is so that the people doing the sharing always remain in control of what they are sharing, and can withdraw a share at any time. A pull-based implementation also makes things considerably harder for spammers.
 
 # Search
+To search, select the magnifying glass icon from the top right of the centre column of the main timeline. This will take you to a separate screen where you can enter your search query.
+
+![Search screen](manual-search.jpg)
+
+## Searching for a fediverse handle or profile URL
+If you enter a fediverse handle or a URL corresponding to a profile then the system will try to find it. If successful then a summary of the found profile will be shown, and you will have the option to follow/unfollow or view the original upstream profile page. If you are already following then a different screen will be shown with more options available.
+
 ## Searching your posts
+To search your own posts prefix the search text with a single quote character.
 
 ## Searching hashtags
+To search for a hashtag just enter it, complete with the hash prefix.
 
 ## Searching shared items
+To search for any shared items just enter the text that you want to search for.
 
-# Building web communities
+## Searching wanted items
+To search for a wanted item then enter the text that you want to search for prefixed by a full stop (period) character.
+
+## Searching for skills
+To search for accounts having a particular skill, prefix your search text with a star character.
+
+## Searching for emojis
+To search for an emoji use its name prefixed by a colon character.
+
+# Building fediverse communities
+The great thing about running a small instance is that you can do things in whatever manner you prefer. What follows is a few guidelines which may help.
+
+![Fediverse logo](manual-fediverse.png)
+
+## Have a working backup system
+Keeping backups is very important, and fortunately with Epicyon this is a simple process. The Epicyon installation consists only of files in a directory. There is no database. So just backing up the directory where it resides - typically */opt/epicyon* - is all that you need to do. Once you have a backup system in place, test that it works.
+
+## The fediverse is not an open source Twitter
+This sounds like a trite comment, but if you have members on your instance coming from Twitter and expecting it to be the same sort of thing then they will be disappointed. A major difference is that the fediverse is more about conversation rather than one-way broadcast. Sites like Twitter encourage you to become an "influencer" and adopt a style of communication where you are shouting to a large audience without much expectation of dialogue.
+
+On Twitter there is an algorithm which will make follow suggestions and dump all manner of aggravating trash into your timeline. On the fediverse if you want to connect with people then you will need to be more proactive in going out to *find the others*. There is no algorithm trying to guess what you want without your participation.
+
+## Robustly remove bad actors
+If people are creating a problem or bringing trouble and are not amenable to changing their ways, whether they are members of your instance or not, then be prepared to block or suspend their accounts. Remember that *trolls will destroy your community if you let them*. Define your *terms of service* and apply it consistently to anyone interacting with your instance.
+
+## Curate your experience
+Add links to the left column and blog or podcast feeds to the right. Choose links which are relevant to your community so that useful information is one click away. If you have multiple people on your instance then assign roles to them so that they have a stake in maintaining a good experience.

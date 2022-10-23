@@ -194,6 +194,8 @@ def meta_data_instance(show_accounts: bool,
                     'video/ogv',
                     'audio/ogg',
                     'audio/opus',
+                    'audio/speex',
+                    'audio/x-speex',
                     'audio/flac',
                     'audio/mpeg'
                 ],

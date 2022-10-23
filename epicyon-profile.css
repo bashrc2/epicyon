@@ -562,6 +562,7 @@ a:focus {
 
 .container img.markdownImage {
     width: 100%;
+    max-width: 100%;
 }
 
 .container img.timelineicon:hover {

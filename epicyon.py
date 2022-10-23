@@ -297,7 +297,7 @@ def _command_options() -> None:
     parser.add_argument('--podcast-formats', dest='podcast_formats',
                         type=str, default=None,
                         help='Preferred podcast formats separated ' +
-                        'by commas. eg. "opus, mp3"')
+                        'by commas. eg. "opus, mp3, spx"')
     parser.add_argument('--ytdomain', dest='yt_replace_domain',
                         type=str, default=None,
                         help='Domain used to replace youtube.com')
@@ -1220,9 +1220,9 @@ def _command_options() -> None:
         domain = argb.domain
         set_config_param(base_dir, 'domain', domain)
 
-    # comma separated list of preferred audio formats. eg. "opus", "mp3"
+    # comma separated list of preferred audio formats. eg. "opus", "mp3", "spx"
     # in order of preference
-    preferred_podcast_formats = ['ogg', 'mpeg', 'opus']
+    preferred_podcast_formats = ['ogg', 'mpeg', 'opus', 'spx']
     if argb.podcast_formats:
         podcast_formats_str = argb.podcast_formats
     else:
