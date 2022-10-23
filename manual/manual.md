@@ -263,6 +263,8 @@ Good defaults tend to be a little more private and avoid the addiction to making
 # Logging in
 In a browser if you navigate to the URL of your instance and enter the username and password that you previously registered. The first time that you log in it will show a series of introduction screens which prompt you to add a profile picture, name and bio description.
 
+![Login screen](manual-login.png)
+
 # Account Profiles
 ## Initial setup
 When you first register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to move to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
@@ -393,6 +395,8 @@ Different timelines are listed at the top - inbox, DM, replies, outbox, etc - an
 As a general principle of navigation selecting the top banner always takes you back to the previous screen, or if you are on the main timeline screen then it will alternate with your profile.
 
 At the bottom of the timeline there will usually be an arrow icon to go to the next page, and a list of page numbers. You can also move between pages using key shortcuts **ALT+SHIFT+>** and **ALT+SHIFT+<**. Key shortcuts exist for most navigation events, and you can customise them by selecting the *key shortcuts* link at the bottom of the left column.
+
+![Keyboard shortcuts screen](manual-shortcuts.png)
 
 # Calendar
 The calendar is not yet a standardized feature of the fediverse as a whole, but has existed in Friendica and Zot instances for a long time. Being able to attach a date and time to a post and then have it appear on your calendar and perhaps also the calendars of your followers is quite useful for organizing things with minimum effort. Until such time as federated calendar functionality becomes more standardized this may only work between Epicyon instances.
@@ -571,6 +575,8 @@ Epicyon has multiple standard themes and if you are the administrator then if yo
 ## Theme customization
 If you have the *artist* role then from the top of the left column of the main timeline you can select the *Theme Designer* icon, which usually resembles a paint roller or paint brush. This allows you to change colors and values for user interface components. 
 
+![Theme designer screen](manual-theme-designer.png)
+
 # Sharing economy
 This is intended to add [Freecycle](https://en.wikipedia.org/wiki/The_Freecycle_Network) type functionality within a social network context, leveraging your social connections on the instance, or between participating instances, to facilitate sharing and reduce wasteful consumerism.
 
@@ -578,6 +584,8 @@ This is intended to add [Freecycle](https://en.wikipedia.org/wiki/The_Freecycle_
 When creating a new post one of the scope options is called *shares*. You can describe an item or service that you are willing to share.
 
 Sharing is primarily intended to not require any monetary transactions, although prices can optionally be added. There are no payment mechanisms implemented and if that is required then it is recommended to include details of payment method within the description.
+
+![Adding a new shared item](manual-new-share.png)
 
 ## Adding a wanted item
 This is the opposite to adding a share in that you are making a post which indicates that you are wanting some particular thing or service.

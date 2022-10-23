@@ -150,6 +150,10 @@ img {
 	margin-top: 25px;
 	padding: 20px;
 }
+.header img.logoImage {
+	  width: 90%;
+	  object-fit: scale-down;
+}
 
 .logo {
 	width: 25px;
