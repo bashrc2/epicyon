@@ -380,7 +380,9 @@ Selecting the *location* header will open the last known geolocation, so if your
 
 On a desktop system the main timeline screen has a multi-column layout. The main content containing posts is in the centre. To the left is a column containing useful web links. To the right is the newswire containing links from RSS feeds.
 
-At the top right of the centre column there are a few icons, for show/hide, calendar, search and creating a new post.
+At the top right of the centre column there are a few icons known as *action buttons*, for show/hide, calendar, search and creating a new post.
+
+On mobile screens there is a single column layout, and the *links* and *newswire* column content is available via action buttons.
 
 Different timelines are listed at the top - inbox, DM, replies, outbox, etc - and more can be shown by selecting the *show/hide* icon.
 
