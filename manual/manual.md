@@ -437,6 +437,8 @@ Dotshareit http://dotshare.it
 ## Newswire
 The right column is the newswire column. It contains a list of links generated from RSS/Atom feeds.
 
+[RSS](https://en.wikipedia.org/wiki/RSS) is a much maligned protocol. It's simple, and an excellent way to read news in a manner that's convenient for you. The main reason for its downfall is that it's difficult to implement [targeted advertising](https://en.wikipedia.org/wiki/Surveillance_capitalism) - the dominant business model of the web - within RSS. It's hard to spy on anyone using an RSS feed. So if we want the web to improve then supporting RSS ought to be a priority.
+
 If you have the *editor* role then an edit icon will appear at the top of the right column, and the edit screen then allows you to add or remove feeds.
 
 ### Moderated feeds
@@ -608,25 +610,36 @@ To search, select the magnifying glass icon from the top right of the centre col
 
 ![Search screen](manual-search.jpg)
 
-## Searching for a fediverse handle or profile URL
+**Hashtag categories**
+
+If you select *SHOW MORE* at the bottom of the search screen then this will show all recent hashtags, in alphabetical order. If you have the *editor* role then selecting a tag will then allow to to assign a category to it. In this way you can build up *hashtag categories* as a way to group tags together under subject headings. For example, *cake* might be under a *food* category.
+
+**Searching for a fediverse handle or profile URL**
+
 If you enter a fediverse handle or a URL corresponding to a profile then the system will try to find it. If successful then a summary of the found profile will be shown, and you will have the option to follow/unfollow or view the original upstream profile page. If you are already following then a different screen will be shown with more options available.
 
-## Searching your posts
+**Searching your posts**
+
 To search your own posts prefix the search text with a single quote character.
 
-## Searching hashtags
+**Searching hashtags**
+
 To search for a hashtag just enter it, complete with the hash prefix.
 
-## Searching shared items
+**Searching shared items**
+
 To search for any shared items just enter the text that you want to search for.
 
-## Searching wanted items
+**Searching wanted items**
+
 To search for a wanted item then enter the text that you want to search for prefixed by a full stop (period) character.
 
-## Searching for skills
+**Searching for skills**
+
 To search for accounts having a particular skill, prefix your search text with a star character.
 
-## Searching for emojis
+**Searching for emojis**
+
 To search for an emoji use its name prefixed by a colon character.
 
 # Browsing in a command shell
@@ -659,16 +672,20 @@ The great thing about running a small instance is that you can do things in what
 
 ![Fediverse logo](manual-fediverse.png)
 
-## Have a working backup system
+**Have a working backup system**
+
 Keeping backups is very important, and fortunately with Epicyon this is a simple process. The Epicyon installation consists only of files in a directory. There is no database. So just backing up the directory where it resides - typically */opt/epicyon* - is all that you need to do. Once you have a backup system in place, test that it works.
 
-## The fediverse is not an open source Twitter
+**The fediverse is not an open source Twitter**
+
 This sounds like a trite comment, but if you have members on your instance coming from Twitter and expecting it to be the same sort of thing then they will be disappointed. A major difference is that the fediverse is more about conversation rather than one-way broadcast. Sites like Twitter encourage you to become an "influencer" and adopt a style of communication where you are shouting to a large audience without much expectation of dialogue.
 
 On Twitter there is an algorithm which will make follow suggestions and dump all manner of aggravating trash into your timeline. On the fediverse if you want to connect with people then you will need to be more proactive in going out to *find the others*. There is no algorithm trying to guess what you want without your participation.
 
-## Robustly remove bad actors
+**Robustly remove bad actors**
+
 If people are creating a problem or bringing trouble and are not amenable to changing their ways, whether they are members of your instance or not, then be prepared to block or suspend their accounts. Remember that *trolls will destroy your community if you let them*. Define your *terms of service* and apply it consistently to anyone interacting with your instance.
 
-## Curate your experience
+**Curate your experience**
+
 Add links to the left column and blog or podcast feeds to the right. Choose links which are relevant to your community so that useful information is one click away. If you have multiple people on your instance then assign roles to them so that they have a stake in maintaining a good experience.
