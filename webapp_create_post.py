@@ -516,7 +516,8 @@ def html_new_post(media_instance: bool, translate: {},
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
         city_or_loc_str = translate['City or location of the shared item']
-        extra_fields += edit_text_field(city_or_loc_str + ':', 'location', '')
+        extra_fields += edit_text_field(city_or_loc_str + ':', 'location', '',
+                                        'https://www.openstreetmap.org/#map=')
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
         extra_fields += \
@@ -581,7 +582,8 @@ def html_new_post(media_instance: bool, translate: {},
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
         city_or_loc_str = translate['City or location of the wanted item']
-        extra_fields += edit_text_field(city_or_loc_str + ':', 'location', '')
+        extra_fields += edit_text_field(city_or_loc_str + ':', 'location', '',
+                                        'https://www.openstreetmap.org/#map=')
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
         extra_fields += \
