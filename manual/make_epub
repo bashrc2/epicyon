@@ -10,8 +10,8 @@ if [ ! -f /usr/bin/pandoc ]; then
     echo 'pandoc command not found'
     exit 1
 fi
-pandoc -f html -t markdown -o manual.md manual.html
-git add manual.md
+pandoc -t html -f markdown -o manual.html manual.md
+git add manual.html
 if [ -f /usr/bin/ebook-convert ]; then
     ebook-convert manual.html manual.epub --cover manual-cover.png --authors "${EPUB_AUTHORS}" --language "${EPUB_LANGUAGE}" --tags "${EPUB_TAGS}" --comments "${EPUB_COMMENTS}" --title "${EPUB_TITLE}"
 else
