@@ -5,6 +5,7 @@ EPUB_AUTHORS='Bob Mottram'
 EPUB_LANGUAGE='English'
 EPUB_TAGS='fediverse, activitypub, server, linux, python, smallweb'
 EPUB_COMMENTS='ActivityPub server, designed for simplicity and accessibility. Includes calendar, news and sharing economy features to empower your federated community.'
+EPUB_PRODUCER='Fuzzy Books'
 
 if [ ! -f /usr/bin/pandoc ]; then
     echo 'pandoc command not found'
@@ -13,12 +14,12 @@ fi
 pandoc -t html -f markdown -o manual.html manual.md
 git add manual.html
 if [ -f /usr/bin/ebook-convert ]; then
-    ebook-convert manual.html manual.epub --cover manual-cover.png --authors "${EPUB_AUTHORS}" --language "${EPUB_LANGUAGE}" --tags "${EPUB_TAGS}" --comments "${EPUB_COMMENTS}" --title "${EPUB_TITLE}"
+    ebook-convert manual.html manual.epub --cover manual-cover.png --authors "${EPUB_AUTHORS}" --language "${EPUB_LANGUAGE}" --tags "${EPUB_TAGS}" --comments "${EPUB_COMMENTS}" --title "${EPUB_TITLE}" --pretty-print  --book-producer "${EPUB_PRODUCER}"
 else
     echo 'ebook-convert command not found'
     if [ -f /usr/bin/flatpak ]; then
         if ! flatpak --command="sh" run com.calibre_ebook.calibre \
-             -c "ebook-convert manual.html manual.epub --cover manual-cover.png --authors \"${EPUB_AUTHORS}\" --language \"${EPUB_LANGUAGE}\" --tags \"${EPUB_TAGS}\" --comments \"${EPUB_COMMENTS}\" --title \"${EPUB_TITLE}\""; then
+             -c "ebook-convert manual.html manual.epub --cover manual-cover.png --authors \"${EPUB_AUTHORS}\" --language \"${EPUB_LANGUAGE}\" --tags \"${EPUB_TAGS}\" --comments \"${EPUB_COMMENTS}\" --title \"${EPUB_TITLE}\" --pretty-print --book-producer \"${EPUB_PRODUCER}\""; then
             exit 2
         fi
     fi
