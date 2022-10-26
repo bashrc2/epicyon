@@ -4107,6 +4107,10 @@ def _test_danger_markup():
         '.innerHTML = "def";</script></p>'
     assert dangerous_markup(content, allow_local_network_access)
 
+    content = '<p>This html contains more than you expected... ' + \
+        '<?php $server_output = curl_exec($ch); ?></p>'
+    assert dangerous_markup(content, allow_local_network_access)
+
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script src="https://evilsite/payload.js" /></p>'
     assert dangerous_markup(content, allow_local_network_access)
