@@ -1101,7 +1101,7 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
     invalid_strings = [
-        'analytics', 'ampproject', 'googleapis'
+        'analytics', 'ampproject', 'googleapis', '_exec('
     ]
     if _is_dangerous_string_simple(content, allow_local_network_access,
                                    separators, invalid_strings):
@@ -1113,7 +1113,7 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
         'canvas', 'style', 'abbr', 'input',
         'frame', 'iframe', 'html', 'body',
         'hr', 'allow-popups', 'allow-scripts',
-        'amp-'
+        'amp-', '?php'
     ]
     return _is_dangerous_string_tag(content, allow_local_network_access,
                                     separators, invalid_strings)

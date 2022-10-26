@@ -263,7 +263,6 @@ systemctl restart epicyon
 To avoid running out of disk space you will want to clear down old inbox posts. Posts from your instance outboxes will be unaffected.
 
 Create an archive script **/usr/bin/epicyon-archive**:
-
 ```bash
 #!/bin/bash
 cd /opt/epicyon || exit 0
@@ -271,7 +270,6 @@ cd /opt/epicyon || exit 0
 ```
 
 You can adjust the maximum number of weeks and the maximum number of inbox posts as needed. Then add it as a cron entry.
-
 ```bash
 echo "*/60 * * * * root /usr/bin/epicyon-archive" >> /etc/crontab
 ```
@@ -449,7 +447,6 @@ This multi-column layout is inspired by the appearance of early blogs or the ori
 
 ## Links
 Web links within the left column are intended to be generally useful or of interest to the users of the instance. They are similar to a blogroll. If you have the *editor* role there is an edit button at the top of the left column which can be used to add or remove links. Headers can also be added to group links into logical sections. For example:
-
 ```text
 * Search
 
@@ -477,7 +474,6 @@ Newswire items can also be mirrored. This means that instead of newswire items b
 
 ### Filters and warnings
 On this screen you can also set filtered words and dogwhistle content warnings for the instance. Filtered words should be on separate lines, and dogwhistle words can be added in the format:
-
 ```text
 dogwhistleword -> content warning to be added
 dogwhistle phrase -> content warning to be added
@@ -495,7 +491,6 @@ On the newswire edit screen, available to accounts having the *moderator* role, 
 **Logical Operators:** *not, and, or, xor, from, contains*
 
 A simple example is:
-
 ```test
 if moderated and not #oxfordimc then block
 ```
@@ -503,19 +498,16 @@ if moderated and not #oxfordimc then block
 For moderated feeds this will only allow items through if they have the **#oxfordimc** hashtag.
 
 If you want to add hashtags an example is:
-
 ```test
 if contains "garden" or contains "lawn" then add #gardening
 ```
 
 So if incoming news contains the word "garden" either in its title or description then it will automatically be assigned the hashtag **#gardening**. You can also add hashtags based upon other hashtags.
-
 ```test
 if #garden or #lawn then add #gardening
 ```
 
 You can also remove hashtags.
-
 ```test
 if #garden or #lawn then remove #gardening
 ```
@@ -523,7 +515,6 @@ if #garden or #lawn then remove #gardening
 Which will remove **#gardening** if it exists as a hashtag within the news post.
 
 You can add tags based upon the RSS link, such as:
-
 ```test
 if from "mycatsite.com" then add #cats
 ```
@@ -584,7 +575,6 @@ From the main timeline select the top banner to go to your profile, then select 
 Sometimes you may want to replace words within received posts. This can be for added clarity, to dissipate annoyance or just for fun.
 
 From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify replacements as follows:
-
 ```text
 OldWord -> NewWord
 original phrase -> new phrase
@@ -684,13 +674,11 @@ Since the web interface of Epicyon only needs HTML5 and CSS, it can work with br
 Screenshots within the preceding sections all assume that you are using a common graphical web browser. However, it is also possible to use Epicyon from a shell browser, such as [Lynx](https://lynx.invisible-island.net). This may be better suited for use with screen readers, or if you want to check your social media while logged into a server via *ssh*.
 
 If you are using *Lynx* then you will need to ensure that it is configured for the **utf-8** character set, and that you have emoji fonts installed (eg. **noto-fonts-emoji**). Edit your *lynx.cfg* file (usually in */etc/lynx.cfg*) and set:
-
 ```text
 CHARACTER_SET:utf-8
 ```
 
 To avoid annoying questions you may also want to set:
-
 ```text
 ACCEPT_ALL_COOKIES:TRUE
 ```
