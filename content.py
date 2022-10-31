@@ -1441,6 +1441,10 @@ def save_media_in_form_post(media_bytes, debug: bool,
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
+        'wav': 'audio/vnd.wave',
+        'wav2': 'audio/wav',
+        'wav3': 'audio/x-wav',
+        'wav4': 'audio/x-pn-wave',
         'opus': 'audio/opus',
         'spx': 'audio/speex',
         'flac': 'audio/flac',
@@ -1460,6 +1464,12 @@ def save_media_in_form_post(media_bytes, debug: bool,
                 extension = 'mp3'
             elif extension == 'csv2':
                 extension = 'csv'
+            elif extension == 'wav2':
+                extension = 'wav'
+            elif extension == 'wav3':
+                extension = 'wav'
+            elif extension == 'wav4':
+                extension = 'wav'
             if filename_base:
                 filename = filename_base + '.' + extension
             search_lst = search_str.decode().split('/', maxsplit=1)

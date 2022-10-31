@@ -1372,6 +1372,8 @@ def get_post_attachments_as_html(base_dir: str,
             extension = '.mp3'
             if attach['url'].endswith('.ogg'):
                 extension = '.ogg'
+            elif attach['url'].endswith('.wav'):
+                extension = '.wav'
             elif attach['url'].endswith('.opus'):
                 extension = '.opus'
             elif attach['url'].endswith('.spx'):

@@ -490,7 +490,7 @@ def get_video_extensions() -> []:
 def get_audio_extensions() -> []:
     """Returns a list of the possible audio file extensions
     """
-    return ('mp3', 'ogg', 'flac', 'opus', 'spx')
+    return ('mp3', 'ogg', 'flac', 'opus', 'spx', 'wav')
 
 
 def get_image_extensions() -> []:
@@ -2897,6 +2897,10 @@ def media_file_mime_type(filename: str) -> str:
         'ico': 'image/x-icon',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
+        'audio/wav': 'wav',
+        'audio/x-wav': 'wav',
+        'audio/x-pn-wave': 'wav',
+        'wav': 'audio/vnd.wave',
         'opus': 'audio/opus',
         'spx': 'audio/speex',
         'flac': 'audio/flac',
