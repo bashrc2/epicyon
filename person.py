@@ -146,6 +146,9 @@ def set_profile_image(base_dir: str, http_prefix: str,
     elif image_filename.endswith('.avif'):
         media_type = 'image/avif'
         icon_filename = icon_filename_base + '.avif'
+    elif image_filename.endswith('.heic'):
+        media_type = 'image/heic'
+        icon_filename = icon_filename_base + '.heic'
     elif image_filename.endswith('.jxl'):
         media_type = 'image/jxl'
         icon_filename = icon_filename_base + '.jxl'

@@ -88,6 +88,9 @@ def html_login(translate: {},
     elif os.path.isfile(base_dir + '/accounts/login.avif'):
         login_image = 'login.avif'
         login_image_filename = base_dir + '/accounts/' + login_image
+    elif os.path.isfile(base_dir + '/accounts/login.heic'):
+        login_image = 'login.heic'
+        login_image_filename = base_dir + '/accounts/' + login_image
     elif os.path.isfile(base_dir + '/accounts/login.jxl'):
         login_image = 'login.jxl'
         login_image_filename = base_dir + '/accounts/' + login_image

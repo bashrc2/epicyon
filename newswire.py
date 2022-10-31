@@ -170,6 +170,7 @@ def _download_newswire_feed_favicon(session, base_dir: str,
         'jxl': 'jxl',
         'gif': 'gif',
         'avif': 'avif',
+        'heic': 'heic',
         'svg': 'svg+xml',
         'webp': 'webp'
     }
