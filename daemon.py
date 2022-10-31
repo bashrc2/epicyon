@@ -7529,6 +7529,9 @@ class PubServer(BaseHTTPRequestHandler):
             if 'image/avif' in self.headers['Accept']:
                 fav_type = 'image/avif'
                 fav_filename = fav_filename.split('.')[0] + '.avif'
+            if 'image/heic' in self.headers['Accept']:
+                fav_type = 'image/heic'
+                fav_filename = fav_filename.split('.')[0] + '.heic'
             if 'image/jxl' in self.headers['Accept']:
                 fav_type = 'image/jxl'
                 fav_filename = fav_filename.split('.')[0] + '.jxl'
@@ -7546,6 +7549,8 @@ class PubServer(BaseHTTPRequestHandler):
                     fav_filename = fav_filename.replace('.webp', '.ico')
                 elif fav_filename.endswith('.avif'):
                     fav_filename = fav_filename.replace('.avif', '.ico')
+                elif fav_filename.endswith('.heic'):
+                    fav_filename = fav_filename.replace('.heic', '.ico')
                 elif fav_filename.endswith('.jxl'):
                     fav_filename = fav_filename.replace('.jxl', '.ico')
         if not os.path.isfile(favicon_filename):

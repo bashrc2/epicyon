@@ -255,7 +255,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                     cached_favicon_filename.replace(base_dir, '')
             else:
                 extensions = \
-                    ('png', 'jpg', 'gif', 'avif', 'svg', 'webp', 'jxl')
+                    ('png', 'jpg', 'gif', 'avif', 'heic', 'svg', 'webp', 'jxl')
                 for ext in extensions:
                     cached_favicon_filename = \
                         get_fav_filename_from_url(base_dir, favicon_url)

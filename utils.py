@@ -496,7 +496,8 @@ def get_audio_extensions() -> []:
 def get_image_extensions() -> []:
     """Returns a list of the possible image file extensions
     """
-    return ('jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico', 'jxl', 'png')
+    return ('jpg', 'jpeg', 'gif', 'webp', 'avif', 'heic',
+            'svg', 'ico', 'jxl', 'png')
 
 
 def get_image_mime_type(image_filename: str) -> str:
@@ -508,6 +509,7 @@ def get_image_mime_type(image_filename: str) -> str:
         'jxl': 'jxl',
         'gif': 'gif',
         'avif': 'avif',
+        'heic': 'heic',
         'svg': 'svg+xml',
         'webp': 'webp',
         'ico': 'x-icon'
@@ -529,6 +531,7 @@ def get_image_extension_from_mime_type(content_type: str) -> str:
         'svg+xml': 'svg',
         'webp': 'webp',
         'avif': 'avif',
+        'heic': 'heic',
         'x-icon': 'ico'
     }
     for mime_ext, ext in image_media.items():
@@ -2894,6 +2897,7 @@ def media_file_mime_type(filename: str) -> str:
         'svg': 'image/svg+xml',
         'webp': 'image/webp',
         'avif': 'image/avif',
+        'heic': 'image/heic',
         'ico': 'image/x-icon',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
