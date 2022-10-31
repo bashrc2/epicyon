@@ -391,7 +391,7 @@ A *wanted item* is a physical object or service which you want. These posts will
 Attachments can use a variety of formats.
 
  * Images: *jpg, jpeg, gif, webp, avif, svg, ico, jxl, png*
- * Audio: *mp3, ogg, flac, opus, speex*
+ * Audio: *mp3, ogg, flac, opus, speex, wav*
  * Video: *mp4, webm, ogv*
 
 ![New post attachments](manual-attachments.png)
