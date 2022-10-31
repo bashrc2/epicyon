@@ -640,6 +640,8 @@ To search, select the magnifying glass icon from the top right of the centre col
 
 If you select *SHOW MORE* at the bottom of the search screen then this will show all recent hashtags, in alphabetical order. If you have the *editor* role then selecting a tag will then allow to to assign a category to it. In this way you can build up *hashtag categories* as a way to group tags together under subject headings. For example, *cake* might be under a *food* category.
 
+The hashtag categories are published as an RSS feed at https://yourdomain/categories.xml, and editors on other instances can add those feeds to their newswire. This enables the categorization of hashtags to be crowdsourced between instances.
+
 **Searching for a fediverse handle or profile URL**
 
 If you enter a fediverse handle or a URL corresponding to a profile then the system will try to find it. If successful then a summary of the found profile will be shown, and you will have the option to follow/unfollow or view the original upstream profile page. If you are already following then a different screen will be shown with more options available.
