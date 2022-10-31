@@ -1222,7 +1222,7 @@ def _command_options() -> None:
 
     # comma separated list of preferred audio formats. eg. "opus", "mp3", "spx"
     # in order of preference
-    preferred_podcast_formats = ['ogg', 'mpeg', 'opus', 'spx']
+    preferred_podcast_formats = ['ogg', 'mpeg', 'opus', 'spx', 'wav']
     if argb.podcast_formats:
         podcast_formats_str = argb.podcast_formats
     else:

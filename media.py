@@ -670,6 +670,7 @@ def path_is_audio(path: str) -> bool:
        path.endswith('.opus') or \
        path.endswith('.spx') or \
        path.endswith('.flac') or \
+       path.endswith('.wav') or \
        path.endswith('.mp3'):
         return True
     return False
