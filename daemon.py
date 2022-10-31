@@ -1499,6 +1499,76 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.nodeinfo_is_active = False
         return True
 
+    def _security_txt(self, ua_str: str, calling_domain: str,
+                      referer_domain: str,
+                      http_prefix: str, calling_site_timeout: int,
+                      debug: bool) -> bool:
+        """See https://www.rfc-editor.org/rfc/rfc9116
+        """
+        if not self.path.startswith('/security.txt'):
+            return False
+        if referer_domain == self.server.domain_full:
+            print('security.txt request from self')
+            self._400()
+            return True
+        if self.server.security_txt_is_active:
+            if not referer_domain:
+                print('security.txt is busy ' +
+                      'during request without referer domain')
+            else:
+                print('security.txt is busy during request from ' +
+                      referer_domain)
+            self._503()
+            return True
+        self.server.security_txt_is_active = True
+        # is this a real website making the call ?
+        if not debug and not self.server.unit_test and referer_domain:
+            # Does calling_domain look like a domain?
+            if ' ' in referer_domain or \
+               ';' in referer_domain or \
+               '.' not in referer_domain:
+                print('security.txt ' +
+                      'referer domain does not look like a domain ' +
+                      referer_domain)
+                self._400()
+                self.server.security_txt_is_active = False
+                return True
+            if not self.server.allow_local_network_access:
+                if local_network_host(referer_domain):
+                    print('security.txt referer domain is from the ' +
+                          'local network ' + referer_domain)
+                    self._400()
+                    self.server.security_txt_is_active = False
+                    return True
+
+            if not referer_is_active(http_prefix,
+                                     referer_domain, ua_str,
+                                     calling_site_timeout):
+                print('security.txt referer url is not active ' +
+                      referer_domain)
+                self._400()
+                self.server.security_txt_is_active = False
+                return True
+        if self.server.debug:
+            print('DEBUG: security.txt ' + self.path)
+
+        # If we are in broch mode then don't reply
+        if not broch_mode_is_active(self.server.base_dir):
+            security_txt = \
+                'Contact: https://gitlab.com/bashrc2/epicyon/-/issues'
+
+            msg = security_txt.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/plain; charset=utf-8',
+                              msglen, None, calling_domain, True)
+            self._write(msg)
+            if referer_domain:
+                print('security.txt sent to ' + referer_domain)
+            else:
+                print('security.txt sent to unknown referer')
+        self.server.security_txt_is_active = False
+        return True
+
     def _webfinger(self, calling_domain: str, referer_domain: str) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
@@ -15286,6 +15356,14 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', '_nodeinfo[calling_domain]',
                             self.server.debug)
 
+        if self._security_txt(ua_str, calling_domain, referer_domain,
+                              self.server.http_prefix, 5, self.server.debug):
+            return
+
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', '_security_txt[calling_domain]',
+                            self.server.debug)
+
         if self.path == '/logout':
             if not self.server.news_instance:
                 msg = \
@@ -21120,6 +21198,7 @@ def run_daemon(map_format: str,
     httpd.post_to_nickname = None
 
     httpd.nodeinfo_is_active = False
+    httpd.security_txt_is_active = False
     httpd.vcard_is_active = False
     httpd.masto_api_is_active = False
 
