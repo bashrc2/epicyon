@@ -446,8 +446,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             '        <b>' + occupation_name + '</b><br>\n'
 
     html_str += \
-        '        <div class="headerwithimg">\n' + \
-        '        ' + display_name + '\n</div>\n' + occupation_str
+        '        <h1>' + remove_html(display_name) + '\n</h1>\n' + \
+        occupation_str
 
     html_str += \
         '    <p><b>@' + nickname + '@' + domain_full + '</b><br>\n'
@@ -551,9 +551,9 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
     if not display_name:
         display_name = search_nickname
     html_str += \
-        '        <div class="headerwithimg">\n' + \
-        '          ' + display_name + '\n' + \
-        '        </div>\n' + \
+        '        <h1>\n' + \
+        '          ' + remove_html(display_name) + '\n' + \
+        '        </h1>\n' + \
         '    <p><b>@' + search_nickname + '@' + search_domain_full + \
         '</b><br>\n'
     if joined_date:
