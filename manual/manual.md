@@ -248,10 +248,19 @@ Now you can navigate to your domain and register an account. The first account b
 ## Configuring notifications
 Since Epicyon does not use javascript there are no notifications in the browser. However, you can receive notifications via email, XMPP, [Matrix](https://matrix.org) or [ntfy](https://ntfy.sh).
 
-Add the following to */etc/crontab*.
+Copy the notifications script:
 
 ``` bash
-# */1 * * * * root /opt/epicyon/scripts/epicyon-notification
+cp /opt/epicyon/scripts/epicyon-notification /usr/local/bin/epicyon-notification
+chmod +x /usr/local/bin/epicyon-notification
+```
+
+If you are using email for notifications and it is a single user instance then you might want to edit *MY_EMAIL_ADDRESS* within */usr/local/bin/epicyon-notification*.
+
+Then add the following to */etc/crontab*.
+
+``` bash
+# */1 * * * * root /usr/local/bin/epicyon-notification
 ```
 
 ## Installing on Onion or i2p domains
