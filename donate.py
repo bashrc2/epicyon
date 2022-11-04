@@ -21,6 +21,10 @@ def _get_website_strings() -> []:
     return ['www', 'website', 'web', 'homepage']
 
 
+def _get_gemini_strings() -> []:
+    return ('gemini', 'capsule', 'gemlog')
+
+
 def get_donation_url(actor_json: {}) -> str:
     """Returns a link used for donations
     """
@@ -60,6 +64,34 @@ def get_website(actor_json: {}, translate: {}) -> str:
         return ''
     match_strings = _get_website_strings()
     match_strings.append(translate['Website'].lower())
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
+            continue
+        if name_value.lower() not in match_strings:
+            continue
+        if not property_value.get('type'):
+            continue
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        if not property_value['type'].endswith('PropertyValue'):
+            continue
+        return property_value[prop_value_name]
+    return ''
+
+
+def get_gemini_link(actor_json: {}, translate: {}) -> str:
+    """Returns a gemini link
+    """
+    if not actor_json.get('attachment'):
+        return ''
+    match_strings = _get_gemini_strings()
     for property_value in actor_json['attachment']:
         name_value = None
         if property_value.get('name'):
@@ -201,5 +233,49 @@ def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
         "name": 'Website',
         "type": "PropertyValue",
         "value": website_url
+    }
+    actor_json['attachment'].append(new_entry)
+
+
+def set_gemini_link(actor_json: {}, gemini_link: str, translate: {}) -> None:
+    """Sets a gemini link
+    """
+    gemini_link = gemini_link.strip()
+    not_link = False
+    if '.' not in gemini_link:
+        not_link = True
+    if '://' not in gemini_link:
+        not_link = True
+    if ' ' in gemini_link:
+        not_link = True
+    if '<' in gemini_link:
+        not_link = True
+
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
+
+    match_strings = _get_gemini_strings()
+    match_strings.append('gemini')
+
+    # remove any existing value
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
+            continue
+        if not property_value.get('type'):
+            continue
+        if property_value['name'].lower() not in match_strings:
+            continue
+        property_found = property_value
+        break
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_link:
+        return
+
+    new_entry = {
+        "name": 'Gemini',
+        "type": "PropertyValue",
+        "value": gemini_link
     }
     actor_json['attachment'].append(new_entry)

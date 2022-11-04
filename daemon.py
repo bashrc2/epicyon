@@ -58,6 +58,8 @@ from donate import get_donation_url
 from donate import set_donation_url
 from donate import get_website
 from donate import set_website
+from donate import get_gemini_link
+from donate import set_gemini_link
 from person import clear_person_qrcodes
 from person import add_alternate_domains
 from person import add_actor_update_timestamp
@@ -6450,6 +6452,21 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if current_website:
                             set_website(actor_json, '', self.server.translate)
+                            actor_changed = True
+
+                    # change gemini link
+                    current_gemini_link = \
+                        get_gemini_link(actor_json, self.server.translate)
+                    if fields.get('geminiLink'):
+                        if fields['geminiLink'] != current_gemini_link:
+                            set_gemini_link(actor_json,
+                                            fields['geminiLink'],
+                                            self.server.translate)
+                            actor_changed = True
+                    else:
+                        if current_gemini_link:
+                            set_gemini_link(actor_json, '',
+                                            self.server.translate)
                             actor_changed = True
 
                     # account moved to new address
