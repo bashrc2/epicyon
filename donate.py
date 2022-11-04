@@ -22,7 +22,7 @@ def _get_website_strings() -> []:
 
 
 def _get_gemini_strings() -> []:
-    return ('gemini', 'capsule', 'gemlog')
+    return ['gemini', 'capsule', 'gemlog']
 
 
 def get_donation_url(actor_json: {}) -> str:
@@ -255,7 +255,6 @@ def set_gemini_link(actor_json: {}, gemini_link: str, translate: {}) -> None:
         actor_json['attachment'] = []
 
     match_strings = _get_gemini_strings()
-    match_strings.append('gemini')
 
     # remove any existing value
     property_found = None
