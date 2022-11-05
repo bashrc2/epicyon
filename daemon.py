@@ -8052,6 +8052,7 @@ class PubServer(BaseHTTPRequestHandler):
             is_group = False
             donate_url = None
             website_url = None
+            gemini_link = None
             enigma_pub_key = None
             pgp_pub_key = None
             pgp_fingerprint = None
@@ -8081,6 +8082,8 @@ class PubServer(BaseHTTPRequestHandler):
                 locked_account = get_locked_account(actor_json)
                 donate_url = get_donation_url(actor_json)
                 website_url = get_website(actor_json, self.server.translate)
+                gemini_link = get_gemini_link(actor_json,
+                                              self.server.translate)
                 xmpp_address = get_xmpp_address(actor_json)
                 matrix_address = get_matrix_address(actor_json)
                 ssb_address = get_ssb_address(actor_json)
@@ -8133,6 +8136,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     options_profile_url,
                                     options_link,
                                     page_number, donate_url, website_url,
+                                    gemini_link,
                                     xmpp_address, matrix_address,
                                     ssb_address, blog_address,
                                     tox_address, briar_address,
