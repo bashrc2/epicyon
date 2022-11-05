@@ -346,7 +346,7 @@ def html_person_options(default_timeline: str,
         if '://' not in gemini_str:
             gemini_str = 'gemini://' + gemini_str
         options_str += \
-            '<p class="imText">🌐 <a href="' + gemini_str + '">' + \
+            '<p class="imText">♊ <a href="' + gemini_str + '">' + \
             gemini_link + '</a></p>\n'
     if xmpp_address:
         options_str += \
