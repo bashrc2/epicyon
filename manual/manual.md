@@ -245,6 +245,24 @@ If you are using the [Caddy web server](https://caddyserver.com) then see [caddy
 
 Now you can navigate to your domain and register an account. The first account becomes the administrator.
 
+## Configuring notifications
+Since Epicyon does not use javascript there are no notifications in the browser. However, you can receive notifications via email, XMPP, [Matrix](https://matrix.org) or [ntfy](https://ntfy.sh).
+
+Copy the notifications script:
+
+``` bash
+cp /opt/epicyon/scripts/epicyon-notification /usr/local/bin/epicyon-notification
+chmod +x /usr/local/bin/epicyon-notification
+```
+
+If you are using email for notifications and it is a single user instance then you might want to edit *MY_EMAIL_ADDRESS* within */usr/local/bin/epicyon-notification*.
+
+Then add the following to */etc/crontab*.
+
+``` bash
+# */1 * * * * root /usr/local/bin/epicyon-notification
+```
+
 ## Installing on Onion or i2p domains
 If you don't have access to the clearnet, or prefer to avoid it, then it's possible to run an Epicyon instance easily from your laptop. There are scripts within the *deploy* directory which can be used to install an instance on a Debian or Arch/Parabola operating system. With some modification of package names they could be also used with other distros.
 

@@ -277,6 +277,21 @@ server</a> then see <a
 href="https://code.libreserver.org/bashrc/epicyon/raw/main/caddy.example.conf">caddy.example.conf</a>.</p>
 <p>Now you can navigate to your domain and register an account. The
 first account becomes the administrator.</p>
+<h2 id="configuring-notifications">Configuring notifications</h2>
+<p>Since Epicyon does not use javascript there are no notifications in
+the browser. However, you can receive notifications via email, XMPP, <a
+href="https://matrix.org">Matrix</a> or <a
+href="https://ntfy.sh">ntfy</a>.</p>
+<p>Copy the notifications script:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> /opt/epicyon/scripts/epicyon-notification /usr/local/bin/epicyon-notification</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x /usr/local/bin/epicyon-notification</span></code></pre></div>
+<p>If you are using email for notifications and it is a single user
+instance then you might want to edit <em>MY_EMAIL_ADDRESS</em> within
+<em>/usr/local/bin/epicyon-notification</em>.</p>
+<p>Then add the following to <em>/etc/crontab</em>.</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># */1 * * * * root /usr/local/bin/epicyon-notification</span></span></code></pre></div>
 <h2 id="installing-on-onion-or-i2p-domains">Installing on Onion or i2p
 domains</h2>
 <p>If you don’t have access to the clearnet, or prefer to avoid it, then
@@ -294,24 +309,24 @@ instances.</p>
 <p>Unlike some other instance types, Epicyon is really easy to upgrade.
 It only requires a git pull to obtain the changes from the upstream
 repo, then set permissions and restart the daemon.</p>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /opt/epicyon</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chown</span> <span class="at">-R</span> epicyon:epicyon <span class="pp">*</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> restart epicyon</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /opt/epicyon</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chown</span> <span class="at">-R</span> epicyon:epicyon <span class="pp">*</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> restart epicyon</span></code></pre></div>
 <h1 id="housekeeping">Housekeeping</h1>
 <p>To avoid running out of disk space you will want to clear down old
 inbox posts. Posts from your instance outboxes will be unaffected.</p>
 <p>Create an archive script
 <strong>/usr/bin/epicyon-archive</strong>:</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /opt/epicyon <span class="kw">||</span> <span class="bu">exit</span> 0</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ex">/usr/bin/python3</span> epicyon.py <span class="at">--archive</span> none <span class="at">--archiveweeks</span> 4 <span class="at">--maxposts</span> 32000</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /opt/epicyon <span class="kw">||</span> <span class="bu">exit</span> 0</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="ex">/usr/bin/python3</span> epicyon.py <span class="at">--archive</span> none <span class="at">--archiveweeks</span> 4 <span class="at">--maxposts</span> 32000</span></code></pre></div>
 <p>You can adjust the maximum number of weeks and the maximum number of
 inbox posts as needed. Then add it as a cron entry.</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;*/60 * * * * root /usr/bin/epicyon-archive&quot;</span> <span class="op">&gt;&gt;</span> /etc/crontab</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;*/60 * * * * root /usr/bin/epicyon-archive&quot;</span> <span class="op">&gt;&gt;</span> /etc/crontab</span></code></pre></div>
 <h1 id="registering-accounts">Registering accounts</h1>
 <p>You will notice that within the systemd daemon the
 <em>registration</em> option is set to <em>open</em>. In a browser if

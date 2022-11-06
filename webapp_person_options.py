@@ -140,6 +140,7 @@ def html_person_options(default_timeline: str,
                         page_number: int,
                         donate_url: str,
                         web_address: str,
+                        gemini_link: str,
                         xmpp_address: str,
                         matrix_address: str,
                         ssb_address: str,
@@ -340,6 +341,13 @@ def html_person_options(default_timeline: str,
         options_str += \
             '<p class="imText">🌐 <a href="' + web_str + '">' + \
             web_address + '</a></p>\n'
+    if gemini_link:
+        gemini_str = remove_html(gemini_link)
+        if '://' not in gemini_str:
+            gemini_str = 'gemini://' + gemini_str
+        options_str += \
+            '<p class="imText">♊ <a href="' + gemini_str + '">' + \
+            gemini_link + '</a></p>\n'
     if xmpp_address:
         options_str += \
             '<p class="imText">' + translate['XMPP'] + \

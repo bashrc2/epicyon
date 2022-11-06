@@ -46,6 +46,7 @@ from posts import parse_user_feed
 from posts import is_create_inside_announce
 from donate import get_donation_url
 from donate import get_website
+from donate import get_gemini_link
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from ssb import get_ssb_address
@@ -699,6 +700,7 @@ def html_profile(signing_priv_key_pem: str,
     donate_section = ''
     donate_url = get_donation_url(profile_json)
     website_url = get_website(profile_json, translate)
+    gemini_link = get_gemini_link(profile_json, translate)
     blog_address = get_blog_address(profile_json)
     enigma_pub_key = get_enigma_pub_key(profile_json)
     pgp_pub_key = get_pgp_pub_key(profile_json)
@@ -725,6 +727,10 @@ def html_profile(signing_priv_key_pem: str,
             donate_section += \
                 '<p>' + translate['Website'] + ': <a href="' + \
                 website_url + '" tabindex="1">' + website_url + '</a></p>\n'
+        if gemini_link:
+            donate_section += \
+                '<p>' + 'Gemini' + ': <a href="' + \
+                gemini_link + '" tabindex="1">' + gemini_link + '</a></p>\n'
         if email_address:
             donate_section += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
@@ -2168,8 +2174,8 @@ def _get_supported_languagesSorted(base_dir: str) -> str:
 
 def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
                             moved_to: str, donate_url: str, website_url: str,
-                            blog_address: str, actor_json: {},
-                            translate: {},
+                            gemini_link: str, blog_address: str,
+                            actor_json: {}, translate: {},
                             nickname: str, domain: str) -> str:
     """main info on edit profile screen
     """
@@ -2224,6 +2230,10 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
     edit_profile_form += \
         edit_text_field(translate['Website'], 'websiteUrl',
                         website_url, 'https://...')
+
+    edit_profile_form += \
+        edit_text_field('Gemini', 'geminiLink',
+                        gemini_link, 'gemini://...')
 
     edit_profile_form += \
         edit_text_field('Blog', 'blogAddress', blog_address, 'https://...')
@@ -2330,7 +2340,7 @@ def html_edit_profile(server, translate: {},
     notify_likes = notify_reactions = ''
     hide_like_button = hide_reaction_button = media_instance_str = ''
     blogs_instance_str = news_instance_str = moved_to = twitter_str = ''
-    bio_str = donate_url = website_url = email_address = ''
+    bio_str = donate_url = website_url = gemini_link = email_address = ''
     pgp_pub_key = enigma_pub_key = ''
     pgp_fingerprint = xmpp_address = matrix_address = ''
     ssb_address = blog_address = tox_address = ''
@@ -2343,6 +2353,7 @@ def html_edit_profile(server, translate: {},
             moved_to = actor_json['movedTo']
         donate_url = get_donation_url(actor_json)
         website_url = get_website(actor_json, translate)
+        gemini_link = get_gemini_link(actor_json, translate)
         xmpp_address = get_xmpp_address(actor_json)
         matrix_address = get_matrix_address(actor_json)
         ssb_address = get_ssb_address(actor_json)
@@ -2484,6 +2495,7 @@ def html_edit_profile(server, translate: {},
     edit_profile_form += \
         _html_edit_profile_main(base_dir, display_nickname, bio_str,
                                 moved_to, donate_url, website_url,
+                                gemini_link,
                                 blog_address, actor_json, translate,
                                 nickname, domain)
 
