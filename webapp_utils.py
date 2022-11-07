@@ -122,6 +122,8 @@ def csv_following_list(following_filename: str,
                     with open(person_notes_filename, 'r',
                               encoding='utf-8') as fp_notes:
                         person_notes = fp_notes.read()
+                        person_notes = person_notes.replace(',', ' ')
+                        person_notes = person_notes.replace('  ', ' ')
                         following_list_csv += person_notes
             msg = 'Account address,Show boosts,Notes\n' + following_list_csv
         return msg
