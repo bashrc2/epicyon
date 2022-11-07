@@ -63,17 +63,18 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('>vimeo.com/')[1]
         if '<' in url:
             url = url.split('<')[0]
-            content += \
-                "<center>\n<span itemprop=\"video\">\n" + \
-                "<iframe loading=\"lazy\" decoding=\"async\" " + \
-                "src=\"https://player.vimeo.com/video/" + \
-                url + "\" width=\"" + str(width) + \
-                "\" height=\"" + str(height) + \
-                "\" frameborder=\"0\" allow=\"" + \
-                "fullscreen\" allowfullscreen " + \
-                "tabindex=\"10\"></iframe>\n" + \
-                "</span>\n</center>\n"
-            return content
+            if url:
+                content += \
+                    "<center>\n<span itemprop=\"video\">\n" + \
+                    "<iframe loading=\"lazy\" decoding=\"async\" " + \
+                    "src=\"https://player.vimeo.com/video/" + \
+                    url + "\" width=\"" + str(width) + \
+                    "\" height=\"" + str(height) + \
+                    "\" frameborder=\"0\" allow=\"" + \
+                    "fullscreen\" allowfullscreen " + \
+                    "tabindex=\"10\"></iframe>\n" + \
+                    "</span>\n</center>\n"
+                return content
 
     video_site = 'https://www.youtube.com'
     if 'https://m.youtube.com' in content:
@@ -82,7 +83,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('"' + video_site)[1]
         if '"' in url:
             url = url.split('"')[0]
-            if '/channel/' not in url and '/playlist' not in url:
+            if url and '/channel/' not in url and '/playlist' not in url:
                 url = url.replace('/watch?v=', '/embed/')
                 if '&' in url:
                     url = url.split('&')[0]
@@ -104,7 +105,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('"' + video_site)[1]
         if '"' in url:
             url = url.split('"')[0]
-            if '/channel/' not in url and '/playlist' not in url:
+            if url and '/channel/' not in url and '/playlist' not in url:
                 url = 'embed/' + url
                 if '&' in url:
                     url = url.split('&')[0]
@@ -140,7 +141,10 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         if '"' + video_site in content:
             url = content.split('"' + video_site)[1]
             if '"' in url:
-                url = url.split('"')[0].replace('/watch?v=', '/embed/')
+                url = url.split('"')[0]
+                if not url:
+                    continue
+                url = url.replace('/watch?v=', '/embed/')
                 if '&' in url:
                     url = url.split('&')[0]
                 if '?utm_' in url:
@@ -174,23 +178,24 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
         url = content.split('"' + video_site)[1]
         if '"' in url:
             url = url.split('"')[0]
-            video_site_settings = ''
-            if '#' in url:
-                video_site_settings = '#' + url.split('#', 1)[1]
-                url = url.split('#')[0]
-            if not url.endswith('/oembed'):
-                url = url + '/oembed'
-            url += video_site_settings
-            content += \
-                "<center>\n<span itemprop=\"video\">\n" + \
-                "<iframe loading=\"lazy\" " + \
-                "decoding=\"async\" src=\"" + \
-                video_site + url + "\" width=\"" + \
-                str(width) + "\" height=\"" + str(height) + \
-                "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                "allowfullscreen tabindex=\"10\"></iframe>\n" + \
-                "</span>\n</center>\n"
-            return content
+            if url:
+                video_site_settings = ''
+                if '#' in url:
+                    video_site_settings = '#' + url.split('#', 1)[1]
+                    url = url.split('#')[0]
+                if not url.endswith('/oembed'):
+                    url = url + '/oembed'
+                url += video_site_settings
+                content += \
+                    "<center>\n<span itemprop=\"video\">\n" + \
+                    "<iframe loading=\"lazy\" " + \
+                    "decoding=\"async\" src=\"" + \
+                    video_site + url + "\" width=\"" + \
+                    str(width) + "\" height=\"" + str(height) + \
+                    "\" frameborder=\"0\" allow=\"fullscreen\" " + \
+                    "allowfullscreen tabindex=\"10\"></iframe>\n" + \
+                    "</span>\n</center>\n"
+                return content
 
     if '"https://' in content:
         if peertube_instances:

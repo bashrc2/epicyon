@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import time
 import random
+from utils import acct_dir
 from utils import is_account_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -58,9 +59,13 @@ def _update_import_following(base_dir: str,
         domain = handle.split('@')[1]
         for line in lines:
             orig_line = line
+            notes = None
             line = line.strip()
             if ',' in line:
-                line = line.split(',')[0].strip()
+                fields = line.split(',')
+                line = fields[0].strip()
+                if len(fields) >= 3:
+                    notes = fields[2]
             if line.startswith('#'):
                 continue
             following_nickname = get_nickname_from_actor(line)
@@ -74,6 +79,18 @@ def _update_import_following(base_dir: str,
                 # don't follow yourself
                 continue
             following_handle = following_nickname + '@' + following_domain
+            if notes:
+                notes = notes.replace('<br>', '\n')
+                person_notes_filename = \
+                    acct_dir(base_dir, nickname, domain) + \
+                    '/notes/' + following_handle + '.txt'
+                try:
+                    with open(person_notes_filename, 'w+',
+                              encoding='utf-8') as fp_notes:
+                        fp_notes.write(notes)
+                except OSError:
+                    print('EX: Unable to import notes for ' +
+                          following_handle)
             if is_following_actor(base_dir,
                                   nickname, domain, following_handle):
                 # remove the followed handle from the import list

@@ -16518,7 +16518,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._login_headers('text/html', msglen, calling_domain)
                 self._write(msg.encode('utf-8'))
             elif csv_getreq:
-                msg = csv_following_list(following_filename)
+                msg = csv_following_list(following_filename,
+                                         self.server.base_dir,
+                                         nickname,
+                                         self.server.domain)
                 msglen = len(msg)
                 self._login_headers('text/csv', msglen, calling_domain)
                 self._write(msg.encode('utf-8'))
@@ -16553,7 +16556,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._login_headers('text/html', msglen, calling_domain)
                 self._write(msg.encode('utf-8'))
             elif csv_getreq:
-                msg = csv_following_list(followers_filename)
+                msg = csv_following_list(followers_filename,
+                                         self.server.base_dir,
+                                         nickname,
+                                         self.server.domain)
                 msglen = len(msg)
                 self._login_headers('text/csv', msglen, calling_domain)
                 self._write(msg.encode('utf-8'))

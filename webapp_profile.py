@@ -726,11 +726,13 @@ def html_profile(signing_priv_key_pem: str,
         if website_url:
             donate_section += \
                 '<p>' + translate['Website'] + ': <a href="' + \
-                website_url + '" tabindex="1">' + website_url + '</a></p>\n'
+                website_url + '" rel="me" tabindex="1">' + \
+                website_url + '</a></p>\n'
         if gemini_link:
             donate_section += \
                 '<p>' + 'Gemini' + ': <a href="' + \
-                gemini_link + '" tabindex="1">' + gemini_link + '</a></p>\n'
+                gemini_link + '" tabindex="1">' + \
+                gemini_link + '</a></p>\n'
         if email_address:
             donate_section += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
@@ -739,7 +741,8 @@ def html_profile(signing_priv_key_pem: str,
         if blog_address:
             donate_section += \
                 '<p>Blog: <a href="' + \
-                blog_address + '" tabindex="1">' + blog_address + '</a></p>\n'
+                blog_address + '" rel="me" tabindex="1">' + \
+                blog_address + '</a></p>\n'
         if xmpp_address:
             donate_section += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
