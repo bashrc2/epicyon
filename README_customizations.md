@@ -37,7 +37,7 @@ https://somesite/emoji3.png, :emojiname3:
 Then this can be imported with:
 
 ```bash
-python3 epicyon.py --import-emoji [textfile]
+python3 epicyon.py --import_emoji [textfile]
 ```
 
 ## Themes
