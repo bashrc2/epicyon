@@ -99,7 +99,8 @@ def html_following_list(base_dir: str, following_filename: str) -> str:
     return ''
 
 
-def csv_following_list(following_filename: str) -> str:
+def csv_following_list(following_filename: str,
+                       base_dir: str, nickname: str, domain: str) -> str:
     """Returns a csv of handles being followed
     """
     with open(following_filename, 'r', encoding='utf-8') as following_file:
@@ -113,8 +114,16 @@ def csv_following_list(following_filename: str) -> str:
                     continue
                 if following_list_csv:
                     following_list_csv += '\n'
-                following_list_csv += following_address + ',true'
-            msg = 'Account address,Show boosts\n' + following_list_csv
+                following_list_csv += following_address + ',true,'
+                person_notes_filename = \
+                    acct_dir(base_dir, nickname, domain) + \
+                    '/notes/' + following_address + '.txt'
+                if os.path.isfile(person_notes_filename):
+                    with open(person_notes_filename, 'r',
+                              encoding='utf-8') as fp_notes:
+                        person_notes = fp_notes.read()
+                        following_list_csv += person_notes
+            msg = 'Account address,Show boosts,Notes\n' + following_list_csv
         return msg
     return ''
 
