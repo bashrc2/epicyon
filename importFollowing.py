@@ -80,6 +80,7 @@ def _update_import_following(base_dir: str,
                 continue
             following_handle = following_nickname + '@' + following_domain
             if notes:
+                notes = notes.replace('<br>', '\n')
                 person_notes_filename = \
                     acct_dir(base_dir, nickname, domain) + \
                     '/notes/' + following_handle + '.txt'
