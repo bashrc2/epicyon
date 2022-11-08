@@ -35,6 +35,7 @@ from content import replace_emoji_from_tags
 from person import get_person_avatar_url
 from posts import is_moderator
 from blocking import is_blocked
+from blocking import allowed_announce
 
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
@@ -114,7 +115,20 @@ def csv_following_list(following_filename: str,
                     continue
                 if following_list_csv:
                     following_list_csv += '\n'
-                following_list_csv += following_address + ',true,'
+
+                following_nickname = \
+                    get_nickname_from_actor(following_address)
+                following_domain, _ = \
+                    get_domain_from_actor(following_address)
+
+                announce_is_allowed = \
+                    allowed_announce(base_dir, nickname, domain,
+                                     following_nickname,
+                                     following_domain)
+
+                following_list_csv += \
+                    following_address + ',' + \
+                    str(announce_is_allowed).lower() + ','
                 person_notes_filename = \
                     acct_dir(base_dir, nickname, domain) + \
                     '/notes/' + following_address + '.txt'
