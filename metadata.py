@@ -76,6 +76,7 @@ def meta_data_node_info(base_dir: str,
                 'total': active_accounts
             }
         },
+        'metadata': {},
         'version': '2.0'
     }
     return nodeinfo
