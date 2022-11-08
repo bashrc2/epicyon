@@ -475,6 +475,60 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
     return True
 
 
+def allowed_announce_add(base_dir: str, nickname: str, domain: str,
+                         following_nickname: str,
+                         following_domain: str) -> None:
+    """Allow announces for a handle
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    blocking_filename = account_dir + '/noannounce.txt'
+    handle = following_nickname + '@' + following_domain
+    if text_in_file(handle + '\n', blocking_filename):
+        file_text = ''
+        try:
+            with open(blocking_filename, 'r',
+                      encoding='utf-8') as fp_noannounce:
+                file_text = fp_noannounce.read()
+                file_text = file_text.replace(handle + '\n', '')
+        except OSError:
+            print('EX: unable to read noannounce: ' +
+                  blocking_filename + ' ' + handle)
+        try:
+            with open(blocking_filename, 'w+',
+                      encoding='utf-8') as fp_noannounce:
+                fp_noannounce.write(file_text)
+        except OSError:
+            print('EX: unable to write noannounce: ' +
+                  blocking_filename + ' ' + handle)
+
+
+def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
+                            following_nickname: str,
+                            following_domain: str) -> None:
+    """Don't allow announces from a handle
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    blocking_filename = account_dir + '/noannounce.txt'
+    handle = following_nickname + '@' + following_domain
+    file_text = ''
+    if not text_in_file(handle + '\n', blocking_filename):
+        try:
+            with open(blocking_filename, 'r',
+                      encoding='utf-8') as fp_noannounce:
+                file_text = fp_noannounce.read()
+        except OSError:
+            print('EX: unable to read noannounce: ' +
+                  blocking_filename + ' ' + handle)
+        file_text += handle + '\n'
+        try:
+            with open(blocking_filename, 'w+',
+                      encoding='utf-8') as fp_noannounce:
+                fp_noannounce.write(file_text)
+        except OSError:
+            print('EX: unable to write noannounce: ' +
+                  blocking_filename + ' ' + handle)
+
+
 def outbox_block(base_dir: str, nickname: str, domain: str,
                  message_json: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s

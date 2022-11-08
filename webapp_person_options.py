@@ -421,7 +421,7 @@ def html_person_options(default_timeline: str,
                     'name="allowAnnounce" checked> 🔁' + \
                     translate['Allow announces'] + \
                     '\n    <button type="submit" class="buttonsmall" ' + \
-                    'name="submitAllowAnnounces">' + \
+                    'name="submitAllowAnnounce">' + \
                     translate['Save'] + '</button><br>\n'
                 if not allowed_announce(base_dir, nickname, domain,
                                         options_nickname, options_domain_full):
