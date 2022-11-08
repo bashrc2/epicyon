@@ -432,6 +432,49 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
     return False
 
 
+def allowed_announce(base_dir: str, nickname: str, domain: str,
+                     block_nickname: str, block_domain: str,
+                     announce_blocked_cache: [] = None) -> bool:
+    """Is the given nickname allowed to send announces?
+    """
+    block_handle = None
+    if block_nickname and block_domain:
+        block_handle = block_nickname + '@' + block_domain
+
+    # cached announce blocks
+    if announce_blocked_cache:
+        for blocked_str in announce_blocked_cache:
+            if '*@' + domain in blocked_str:
+                return False
+            if block_handle:
+                if blocked_str == block_handle:
+                    return False
+
+    # non-cached instance level announce blocks
+    global_announce_blocks_filename = \
+        base_dir + '/accounts/noannounce.txt'
+    if os.path.isfile(global_announce_blocks_filename):
+        if text_in_file('*@' + block_domain,
+                        global_announce_blocks_filename):
+            return False
+        if block_handle:
+            block_str = block_handle + '\n'
+            if text_in_file(block_str,
+                            global_announce_blocks_filename):
+                return False
+
+    # non-cached account level announce blocks
+    account_dir = acct_dir(base_dir, nickname, domain)
+    blocking_filename = account_dir + '/noannounce.txt'
+    if os.path.isfile(blocking_filename):
+        if text_in_file('*@' + block_domain + '\n', blocking_filename):
+            return False
+        if block_handle:
+            if text_in_file(block_handle + '\n', blocking_filename):
+                return False
+    return True
+
+
 def outbox_block(base_dir: str, nickname: str, domain: str,
                  message_json: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
