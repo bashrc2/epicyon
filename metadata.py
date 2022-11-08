@@ -60,6 +60,9 @@ def meta_data_node_info(base_dir: str,
     nodeinfo = {
         'openRegistrations': registration,
         'protocols': ['activitypub'],
+        'services': {
+            'outbound': ['rss2.0']
+        },
         'software': {
             'name': 'epicyon',
             'version': version
