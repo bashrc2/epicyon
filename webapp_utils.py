@@ -137,6 +137,7 @@ def csv_following_list(following_filename: str,
                               encoding='utf-8') as fp_notes:
                         person_notes = fp_notes.read()
                         person_notes = person_notes.replace(',', ' ')
+                        person_notes = person_notes.replace('"', "'")
                         person_notes = person_notes.replace('\n', '<br>')
                         person_notes = person_notes.replace('  ', ' ')
                         following_list_csv += person_notes
