@@ -880,7 +880,7 @@ def html_new_post(media_instance: bool, translate: {},
             '      <td><input type="submit" name="submitCitations" value="' + \
             translate['Citations'] + '"></td>\n'
 
-    if box_name != 'dm':
+    if not path.endswith('/newdm'):
         submit_text = translate['Publish']
     else:
         submit_text = translate['Send']
