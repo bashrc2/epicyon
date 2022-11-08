@@ -154,6 +154,8 @@ from blocking import remove_global_block
 from blocking import is_blocked_hashtag
 from blocking import is_blocked_domain
 from blocking import get_domain_blocklist
+from blocking import allowed_announce_add
+from blocking import allowed_announce_remove
 from roles import set_roles_from_list
 from roles import get_actor_roles_list
 from blog import path_contains_blog_link
@@ -3038,6 +3040,35 @@ class PubServer(BaseHTTPRequestHandler):
                                             domain,
                                             options_nickname,
                                             options_domain_full)
+            users_path_str = \
+                users_path + '/' + self.server.default_timeline + \
+                '?page=' + str(page_number)
+            self._redirect_headers(users_path_str, cookie,
+                                   calling_domain)
+            self.server.postreq_busy = False
+            return
+
+        # person options screen, allow announces checkbox
+        # See html_person_options
+        if '&submitAllowAnnounce=' in options_confirm_params:
+            allow_announce = None
+            if 'allowAnnounce=' in options_confirm_params:
+                allow_announce = \
+                    options_confirm_params.split('allowAnnounce=')[1]
+                if '&' in allow_announce:
+                    allow_announce = allow_announce.split('&')[0]
+            if allow_announce == 'on':
+                allowed_announce_add(base_dir,
+                                     chooser_nickname,
+                                     domain,
+                                     options_nickname,
+                                     options_domain_full)
+            else:
+                allowed_announce_remove(base_dir,
+                                        chooser_nickname,
+                                        domain,
+                                        options_nickname,
+                                        options_domain_full)
             users_path_str = \
                 users_path + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)

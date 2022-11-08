@@ -595,5 +595,6 @@
     "A list of devops nicknames. One per line.": "देवोप्स उपनामों की एक सूची। प्रति पंक्ति एक।",
     "devops": "devops",
     "Reject spam accounts": "स्पैम खातों को अस्वीकार करें",
-    "User Manual": "उपयोगकर्ता पुस्तिका"
+    "User Manual": "उपयोगकर्ता पुस्तिका",
+    "Allow announces": "घोषणा की अनुमति दें"
 }

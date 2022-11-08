@@ -1815,8 +1815,12 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
     with open(import_filename, "r", encoding='utf-8') as fp_emoji:
         lines = fp_emoji.readlines()
         for line in lines:
+            if ', ' not in line:
+                continue
             url = line.split(', ')[0]
             tag = line.split(', ')[1].strip()
+            if ':' not in tag:
+                continue
             tag = tag.split(':')[1]
             if emoji_dict.get(tag):
                 continue

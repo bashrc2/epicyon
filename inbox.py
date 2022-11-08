@@ -92,6 +92,7 @@ from acceptreject import receive_accept_reject
 from bookmarks import update_bookmarks_collection
 from bookmarks import undo_bookmarks_collection_entry
 from blocking import is_blocked
+from blocking import allowed_announce
 from blocking import is_blocked_domain
 from blocking import broch_modeLapses
 from filters import is_filtered
@@ -2470,6 +2471,13 @@ def _receive_announce(recent_posts_cache: {},
     actor_domain, _ = get_domain_from_actor(message_json['actor'])
     if is_blocked(base_dir, nickname, domain, actor_nickname, actor_domain):
         print('Receive announce blocked for actor: ' +
+              actor_nickname + '@' + actor_domain)
+        return False
+
+    # Are announces permitted from the given actor?
+    if not allowed_announce(base_dir, nickname, domain,
+                            actor_nickname, actor_domain):
+        print('Announce not allowed for: ' +
               actor_nickname + '@' + actor_domain)
         return False
 

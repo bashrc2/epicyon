@@ -432,6 +432,103 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
     return False
 
 
+def allowed_announce(base_dir: str, nickname: str, domain: str,
+                     block_nickname: str, block_domain: str,
+                     announce_blocked_cache: [] = None) -> bool:
+    """Is the given nickname allowed to send announces?
+    """
+    block_handle = None
+    if block_nickname and block_domain:
+        block_handle = block_nickname + '@' + block_domain
+
+    # cached announce blocks
+    if announce_blocked_cache:
+        for blocked_str in announce_blocked_cache:
+            if '*@' + domain in blocked_str:
+                return False
+            if block_handle:
+                if blocked_str == block_handle:
+                    return False
+
+    # non-cached instance level announce blocks
+    global_announce_blocks_filename = \
+        base_dir + '/accounts/noannounce.txt'
+    if os.path.isfile(global_announce_blocks_filename):
+        if text_in_file('*@' + block_domain,
+                        global_announce_blocks_filename):
+            return False
+        if block_handle:
+            block_str = block_handle + '\n'
+            if text_in_file(block_str,
+                            global_announce_blocks_filename):
+                return False
+
+    # non-cached account level announce blocks
+    account_dir = acct_dir(base_dir, nickname, domain)
+    blocking_filename = account_dir + '/noannounce.txt'
+    if os.path.isfile(blocking_filename):
+        if text_in_file('*@' + block_domain + '\n', blocking_filename):
+            return False
+        if block_handle:
+            if text_in_file(block_handle + '\n', blocking_filename):
+                return False
+    return True
+
+
+def allowed_announce_add(base_dir: str, nickname: str, domain: str,
+                         following_nickname: str,
+                         following_domain: str) -> None:
+    """Allow announces for a handle
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    blocking_filename = account_dir + '/noannounce.txt'
+    handle = following_nickname + '@' + following_domain
+    if text_in_file(handle + '\n', blocking_filename):
+        file_text = ''
+        try:
+            with open(blocking_filename, 'r',
+                      encoding='utf-8') as fp_noannounce:
+                file_text = fp_noannounce.read()
+                file_text = file_text.replace(handle + '\n', '')
+        except OSError:
+            print('EX: unable to read noannounce: ' +
+                  blocking_filename + ' ' + handle)
+        try:
+            with open(blocking_filename, 'w+',
+                      encoding='utf-8') as fp_noannounce:
+                fp_noannounce.write(file_text)
+        except OSError:
+            print('EX: unable to write noannounce: ' +
+                  blocking_filename + ' ' + handle)
+
+
+def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
+                            following_nickname: str,
+                            following_domain: str) -> None:
+    """Don't allow announces from a handle
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    blocking_filename = account_dir + '/noannounce.txt'
+    handle = following_nickname + '@' + following_domain
+    file_text = ''
+    if not text_in_file(handle + '\n', blocking_filename):
+        try:
+            with open(blocking_filename, 'r',
+                      encoding='utf-8') as fp_noannounce:
+                file_text = fp_noannounce.read()
+        except OSError:
+            print('EX: unable to read noannounce: ' +
+                  blocking_filename + ' ' + handle)
+        file_text += handle + '\n'
+        try:
+            with open(blocking_filename, 'w+',
+                      encoding='utf-8') as fp_noannounce:
+                fp_noannounce.write(file_text)
+        except OSError:
+            print('EX: unable to write noannounce: ' +
+                  blocking_filename + ' ' + handle)
+
+
 def outbox_block(base_dir: str, nickname: str, domain: str,
                  message_json: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s

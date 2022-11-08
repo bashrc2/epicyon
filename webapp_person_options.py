@@ -34,6 +34,7 @@ from webapp_utils import html_keyboard_navigation
 from webapp_utils import get_banner_file
 from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import minimizing_attached_images
+from blocking import allowed_announce
 
 
 def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
@@ -415,6 +416,18 @@ def html_person_options(default_timeline: str,
 
             # Notify when a post arrives from this person
             if is_following_actor(base_dir, nickname, domain, options_actor):
+                checkbox_str = \
+                    '    <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="allowAnnounce" checked> 🔁' + \
+                    translate['Allow announces'] + \
+                    '\n    <button type="submit" class="buttonsmall" ' + \
+                    'name="submitAllowAnnounce">' + \
+                    translate['Save'] + '</button><br>\n'
+                if not allowed_announce(base_dir, nickname, domain,
+                                        options_nickname, options_domain_full):
+                    checkbox_str = checkbox_str.replace(' checked>', '>')
+                options_str += checkbox_str
+
                 checkbox_str = \
                     '    <input type="checkbox" class="profilecheckbox" ' + \
                     'name="notifyOnPost" checked> 🔔' + \
