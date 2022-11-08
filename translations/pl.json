@@ -595,5 +595,6 @@
     "A list of devops nicknames. One per line.": "Lista pseudonimów Devopa. Jeden na linię.",
     "devops": "devops",
     "Reject spam accounts": "Odrzuć konta spamowe",
-    "User Manual": "Instrukcja obsługi"
+    "User Manual": "Instrukcja obsługi",
+    "Allow announces": "Zezwól na ogłoszenia"
 }

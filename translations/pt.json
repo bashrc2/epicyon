@@ -595,5 +595,6 @@
     "A list of devops nicknames. One per line.": "Uma lista de apelidos de devops. Um por linha.",
     "devops": "devops",
     "Reject spam accounts": "Rejeitar contas de spam",
-    "User Manual": "Manual do usuário"
+    "User Manual": "Manual do usuário",
+    "Allow announces": "Permitir anúncios"
 }

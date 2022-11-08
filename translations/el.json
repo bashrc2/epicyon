@@ -595,5 +595,6 @@
     "A list of devops nicknames. One per line.": "Μια λίστα με ψευδώνυμα devops. Ένα ανά γραμμή.",
     "devops": "devops",
     "Reject spam accounts": "Gwrthod cyfrifon sbam",
-    "User Manual": "Εγχειρίδιο χρήστη"
+    "User Manual": "Εγχειρίδιο χρήστη",
+    "Allow announces": "Allow ανακοινώνει"
 }

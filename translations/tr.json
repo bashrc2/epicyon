@@ -595,5 +595,6 @@
     "A list of devops nicknames. One per line.": "Devops takma adlarının listesi. Her satıra bir tane.",
     "devops": "devops",
     "Reject spam accounts": "Spam hesapları reddet",
-    "User Manual": "Kullanım kılavuzu"
+    "User Manual": "Kullanım kılavuzu",
+    "Allow announces": "Duyurulara izin ver"
 }

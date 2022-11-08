@@ -595,5 +595,6 @@
     "A list of devops nicknames. One per line.": "قائمة بأسماء المطورين. واحد في كل سطر.",
     "devops": "devops",
     "Reject spam accounts": "رفض حسابات البريد العشوائي",
-    "User Manual": "دليل الاستخدام"
+    "User Manual": "دليل الاستخدام",
+    "Allow announces": "تعلن السماح"
 }

@@ -595,5 +595,6 @@
     "A list of devops nicknames. One per line.": "데브옵스 닉네임 목록입니다. 한 줄에 하나씩.",
     "devops": "devops",
     "Reject spam accounts": "스팸 계정 거부",
-    "User Manual": "사용자 매뉴얼"
+    "User Manual": "사용자 매뉴얼",
+    "Allow announces": "공지 허용"
 }
