@@ -1,6 +1,7 @@
-{    
+{
+    "verified-site-color": "lightgreen",
     "newswire-publish-icon": "True",
-    "full-width-timeline-buttons": "False",    
+    "full-width-timeline-buttons": "False",
     "icons-as-buttons": "False",
     "rss-icon-at-top": "True",
     "publish-button-at-top": "False",

@@ -1,4 +1,5 @@
 {
+    "verified-site-color": "lightgreen",
     "code-color": "blue",
     "diff-add": "#111",
     "diff-remove": "#333",
@@ -7,7 +8,7 @@
     "dropdown-fg-color": "#222",
     "dropdown-bg-color": "white",
     "dropdown-bg-color-hover": "lightgrey",
-    "dropdown-fg-color-hover": "#222",    
+    "dropdown-fg-color-hover": "#222",
     "today-circle": "#03a494",
     "options-main-link-color-hover": "white",
     "main-link-color-hover": "blue",

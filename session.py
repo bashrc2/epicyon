@@ -9,6 +9,8 @@ __module_group__ = "Session"
 
 import os
 import requests
+from utils import text_in_file
+from utils import acct_dir
 from utils import url_permitted
 from utils import is_image_file
 from httpsig import create_signed_header
@@ -370,6 +372,78 @@ def download_html(signing_priv_key_pem: str,
     return _get_json_request(session, url, domain, session_headers,
                              session_params, timeout_sec,
                              None, quiet, debug, False)
+
+
+def verify_html(session, url: str, debug: bool,
+                version: str, http_prefix: str, nickname: str, domain: str,
+                timeout_sec: int = 20, quiet: bool = False) -> bool:
+    """Verify that the handle for nickname@domain exists within the
+    given url
+    """
+    if not url_exists(session, url, 3, http_prefix, domain):
+        return False
+
+    as_header = {
+        'Accept': 'text/html'
+    }
+    verification_site_html = \
+        download_html(None, session, url,
+                      as_header, None, debug, __version__,
+                      http_prefix, domain, timeout_sec, quiet)
+    if not verification_site_html:
+        if debug:
+            print('Verification site could not be contacted ' +
+                  url)
+        return False
+    verification_site_html = verification_site_html.decode()
+    actor_links = [
+        domain + '/@' + nickname,
+        domain + '/users/' + nickname
+    ]
+    for actor in actor_links:
+        if domain.endswith('.onion') or domain.endswith('.i2p'):
+            actor = 'http://' + actor
+        else:
+            actor = http_prefix + '://' + actor
+        link_str = ' rel="me" href="' + actor + '"'
+        if link_str in verification_site_html:
+            return True
+        link_str = ' href="' + actor + '" rel="me"'
+        if link_str in verification_site_html:
+            return True
+    return False
+
+
+def site_is_verified(session, base_dir: str, http_prefix: str,
+                     nickname: str, domain: str,
+                     url: str, update: bool, debug: bool) -> bool:
+    """Is the given website verified?
+    """
+    verified_sites_filename = \
+        acct_dir(base_dir, nickname, domain) + '/verified_sites.txt'
+    verified_file_exists = False
+    if os.path.isfile(verified_sites_filename):
+        verified_file_exists = True
+        if text_in_file(url + '\n', verified_sites_filename, True):
+            return True
+    if not update:
+        return False
+
+    verified = \
+        verify_html(session, url, debug,
+                    __version__, http_prefix, nickname, domain)
+    if verified:
+        write_type = 'a+'
+        if not verified_file_exists:
+            write_type = 'w+'
+        try:
+            with open(verified_sites_filename, write_type,
+                      encoding='utf-8') as fp_verified:
+                fp_verified.write(url + '\n')
+        except OSError:
+            print('EX: Verified sites could not be updated ' +
+                  verified_sites_filename)
+    return verified
 
 
 def download_ssml(signing_priv_key_pem: str,

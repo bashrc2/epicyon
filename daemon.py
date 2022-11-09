@@ -21,6 +21,7 @@ from functools import partial
 from hashlib import sha256
 from hashlib import md5
 from shutil import copyfile
+from session import site_is_verified
 from session import create_session
 from session import get_session_for_domain
 from session import get_session_for_domains
@@ -6310,6 +6311,13 @@ class PubServer(BaseHTTPRequestHandler):
                             set_blog_address(actor_json,
                                              fields['blogAddress'])
                             actor_changed = True
+                        site_is_verified(curr_session,
+                                         self.server.base_dir,
+                                         self.server.http_prefix,
+                                         nickname, domain,
+                                         fields['blogAddress'],
+                                         True,
+                                         self.server.debug)
                     else:
                         if current_blog_address:
                             set_blog_address(actor_json, '')
@@ -6480,6 +6488,13 @@ class PubServer(BaseHTTPRequestHandler):
                                         fields['websiteUrl'],
                                         self.server.translate)
                             actor_changed = True
+                        site_is_verified(curr_session,
+                                         self.server.base_dir,
+                                         self.server.http_prefix,
+                                         nickname, domain,
+                                         fields['websiteUrl'],
+                                         True,
+                                         self.server.debug)
                     else:
                         if current_website:
                             set_website(actor_json, '', self.server.translate)
