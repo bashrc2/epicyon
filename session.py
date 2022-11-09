@@ -372,6 +372,43 @@ def download_html(signing_priv_key_pem: str,
                              None, quiet, debug, False)
 
 
+def verify_html(session, url: str, debug: bool,
+                version: str, http_prefix: str, nickname: str, domain: str,
+                timeout_sec: int = 20, quiet: bool = False) -> bool:
+    """Verify that the handle for nickname@domain exists within the
+    given url
+    """
+    as_header = {
+        'Accept': 'text/html'
+    }
+    verification_site_html = \
+        download_html(None, session, url,
+                      as_header, None, debug, __version__,
+                      http_prefix, domain, timeout_sec, quiet)
+    if not verification_site_html:
+        if debug:
+            print('Verification site could not be contacted ' +
+                  url)
+        return False
+    verification_site_html = verification_site_html.decode()
+    actor_links = [
+        domain + '/@' + nickname,
+        domain + '/users/' + nickname
+    ]
+    for actor in actor_links:
+        if domain.endswith('.onion') or domain.endswith('.i2p'):
+            actor = 'http://' + actor
+        else:
+            actor = http_prefix + '://' + actor
+        link_str = ' rel="me" href="' + actor + '"'
+        if link_str in verification_site_html:
+            return True
+        link_str = ' href="' + actor + '" rel="me"'
+        if link_str in verification_site_html:
+            return True
+    return False
+
+
 def download_ssml(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
                   version: str, http_prefix: str, domain: str,

@@ -48,6 +48,7 @@ from session import create_session
 from session import get_json
 from session import get_vcard
 from session import download_html
+from session import verify_html
 from session import download_ssml
 from newswire import get_rss
 from filters import add_filter
@@ -373,6 +374,9 @@ def _command_options() -> None:
                         help='Show the SSML for a given activitypub url')
     parser.add_argument('--htmlpost', dest='htmlpost', type=str, default=None,
                         help='Show the html for a given activitypub url')
+    parser.add_argument('--verifyurl', dest='verifyurl', type=str,
+                        default=None,
+                        help='Verify an identity using the given url')
     parser.add_argument('--rss', dest='rss', type=str, default=None,
                         help='Show an rss feed for a given url')
     parser.add_argument('-f', '--federate', nargs='+', dest='federation_list',
@@ -1157,6 +1161,36 @@ def _command_options() -> None:
                                   http_prefix, domain)
         if test_html:
             print(test_html)
+        sys.exit()
+
+    if argb.verifyurl:
+        if not argb.nickname:
+            print('You must specify a nickname for the handle ' +
+                  'to be verified nickname@domain using the ' +
+                  '--nickname option')
+            sys.exit()
+        profile_str = 'https://www.w3.org/ns/activitystreams'
+        as_header = {
+            'Accept': 'text/html; profile="' + profile_str + '"'
+        }
+        if not argb.domain:
+            argb.domain = get_config_param(base_dir, 'domain')
+        domain = ''
+        if argb.domain:
+            domain = argb.domain
+        if not domain:
+            print('You must specify a domain for the handle ' +
+                  'to be verified nickname@domain using the ' +
+                  '--domain option')
+            sys.exit()
+        session = create_session(None)
+        verified = \
+            verify_html(session, argb.verifyurl, debug, __version__,
+                        http_prefix, argb.nickname, domain)
+        if verified:
+            print('Verified')
+            sys.exit()
+        print('Verification failed')
         sys.exit()
 
     # create cache for actors
