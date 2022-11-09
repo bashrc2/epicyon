@@ -340,11 +340,9 @@ Within the *filtering and blocking* section you can also set a city which will b
 
 ### Verifying your website or blog
 It is possible to indicate that a website of blog belongs to you by linking it to your profile screen. Within the *head* html section of your website or blog index page include a line similar to:
-
 ``` html
 <link rel="me" href="https://YourEpicyonDomain/@YourNickname" />
 ```
-
 If you edit and then publish your profile, with the *website* and/or *blog* fields completed then if the above link is found your sites will be indicated to be verified on your profile screen. When verified they will appear in green with a tick.
 
 ![Profile screen showing verified website](manual-verified-website.jpg)
