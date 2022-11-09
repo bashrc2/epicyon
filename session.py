@@ -9,6 +9,8 @@ __module_group__ = "Session"
 
 import os
 import requests
+from utils import text_in_file
+from utils import acct_dir
 from utils import url_permitted
 from utils import is_image_file
 from httpsig import create_signed_header
@@ -378,6 +380,9 @@ def verify_html(session, url: str, debug: bool,
     """Verify that the handle for nickname@domain exists within the
     given url
     """
+    if not url_exists(session, url, 3, http_prefix, domain):
+        return False
+
     as_header = {
         'Accept': 'text/html'
     }
@@ -407,6 +412,38 @@ def verify_html(session, url: str, debug: bool,
         if link_str in verification_site_html:
             return True
     return False
+
+
+def site_is_verified(session, base_dir: str, http_prefix: str,
+                     nickname: str, domain: str,
+                     url: str, update: bool, debug: bool) -> bool:
+    """Is the given website verified?
+    """
+    verified_sites_filename = \
+        acct_dir(base_dir, nickname, domain) + '/verified_sites.txt'
+    verified_file_exists = False
+    if os.path.isfile(verified_sites_filename):
+        verified_file_exists = True
+        if text_in_file(url, verified_sites_filename + '\n', True):
+            return True
+    if not update:
+        return False
+
+    verified = \
+        verify_html(session, url, debug,
+                    __version__, http_prefix, nickname, domain)
+    if verified:
+        write_type = 'a+'
+        if not verified_file_exists:
+            write_type = 'w+'
+        try:
+            with open(verified_sites_filename, write_type,
+                      encoding='utf-8') as fp_verified:
+                fp_verified.write(url + '\n')
+        except OSError:
+            print('EX: Verified sites could not be updated ' +
+                  verified_sites_filename)
+    return verified
 
 
 def download_ssml(signing_priv_key_pem: str,

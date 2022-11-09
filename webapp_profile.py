@@ -84,6 +84,7 @@ from blocking import get_cw_list_variable
 from blocking import is_blocked
 from content import bold_reading_string
 from roles import is_devops
+from session import site_is_verified
 
 THEME_FORMATS = '.zip, .gz'
 
@@ -712,6 +713,7 @@ def html_profile(signing_priv_key_pem: str,
     tox_address = get_tox_address(profile_json)
     briar_address = get_briar_address(profile_json)
     cwtch_address = get_cwtch_address(profile_json)
+    verified_site_checkmark = '✔️'
     if donate_url or website_url or xmpp_address or matrix_address or \
        ssb_address or tox_address or briar_address or \
        cwtch_address or pgp_pub_key or enigma_pub_key or \
@@ -724,8 +726,13 @@ def html_profile(signing_priv_key_pem: str,
                 '<button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
         if website_url:
+            donate_section += '<p>' + translate['Website'] + ': '
+            if site_is_verified(session, base_dir, http_prefix,
+                                nickname, domain,
+                                website_url, False, debug):
+                donate_section += verified_site_checkmark
             donate_section += \
-                '<p>' + translate['Website'] + ': <a href="' + \
+                '<a href="' + \
                 website_url + '" rel="me" tabindex="1">' + \
                 website_url + '</a></p>\n'
         if gemini_link:
@@ -739,8 +746,13 @@ def html_profile(signing_priv_key_pem: str,
                 email_address + '" tabindex="1">' + \
                 email_address + '</a></p>\n'
         if blog_address:
+            donate_section += '<p>Blog: '
+            if site_is_verified(session, base_dir, http_prefix,
+                                nickname, domain,
+                                blog_address, False, debug):
+                donate_section += verified_site_checkmark
             donate_section += \
-                '<p>Blog: <a href="' + \
+                '<a href="' + \
                 blog_address + '" rel="me" tabindex="1">' + \
                 blog_address + '</a></p>\n'
         if xmpp_address:
