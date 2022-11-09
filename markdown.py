@@ -7,8 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import urllib.parse
-
 
 def _markdown_get_sections(markdown: str) -> []:
     """Returns a list of sections for markdown
@@ -295,9 +293,7 @@ def _markdown_replace_code(markdown: str) -> str:
                 if urlencode:
                     lines[start_line] = '<pre>'
                     lines[line_ctr] = '</pre>'
-                    for line_num in range(start_line + 1, line_ctr):
-                        lines[line_num] = \
-                            urllib.parse.quote_plus(lines[line_num])
+
                 section_active = False
                 changed = True
                 urlencode = False
