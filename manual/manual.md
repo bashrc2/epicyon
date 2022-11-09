@@ -51,32 +51,32 @@ sudo apt install -y tor python3-socks imagemagick python3-setuptools python3-cry
 The following instructions install Epicyon to the **/opt** directory. It's not essential that it be installed there, and it could be in any other preferred directory.
 
 Clone the repo, or if you downloaded the tarball then extract it into the **/opt** directory.
-```bash
+``` bash
 cd /opt
 git clone https://gitlab.com/bashrc2/epicyon
 ```
 ## Set permissions
 Create a user for the server to run as:
-```bash
+``` bash
 sudo su
 adduser --system --home=/opt/epicyon --group epicyon
 chown -R epicyon:epicyon /opt/epicyon
 ```
 ## News mirrors
 The content for RSS feed links can be downloaded and mirrored, so that even if the original sources go offline the content remains readable. Link the RSS/newswire mirrors with.
-```bash
+``` bash
 mkdir /var/www/YOUR_DOMAIN
 mkdir -p /opt/epicyon/accounts/newsmirror
 ln -s /opt/epicyon/accounts/newsmirror /var/www/YOUR_DOMAIN/newsmirror
 ```
 ## Create daemon
 Typically the server will run from a *systemd* daemon. It can be set up as follows:
-```bash
+``` bash
 nano /etc/systemd/system/epicyon.service
 ```
 
 Paste the following:
-```bash
+``` bash
 [Unit]
 Description=epicyon
 After=syslog.target
@@ -119,13 +119,13 @@ WantedBy=multi-user.target
 ```
 
 Activate the daemon:
-```bash
+``` bash
 systemctl enable epicyon
 systemctl start epicyon
 ```
 ## Web server setup
 Create a web server configuration.
-```bash
+``` bash
 nano /etc/nginx/sites-available/YOUR_DOMAIN
 ```
 
@@ -220,7 +220,7 @@ server {
 ```
 
 Enable the site:
-```bash
+``` bash
 ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
 ```
 
@@ -228,14 +228,14 @@ ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
 Forward port 443 from your internet router to your server. If you have dynamic DNS make sure its configured.
 
 ## Obtain a TLS certificate
-```bash
+``` bash
 systemctl stop nginx
 certbot certonly -n --server https://acme-v02.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
 systemctl start nginx
 ```
 
 ## Restart the web server
-```bash
+``` bash
 systemctl restart nginx
 ```
 
@@ -270,7 +270,7 @@ Please be aware that such installations will not federate with ordinary fedivers
 
 # Upgrading
 Unlike some other instance types, Epicyon is really easy to upgrade. It only requires a git pull to obtain the changes from the upstream repo, then set permissions and restart the daemon.
-```bash
+``` bash
 cd /opt/epicyon
 git pull
 chown -R epicyon:epicyon *
@@ -281,14 +281,14 @@ systemctl restart epicyon
 To avoid running out of disk space you will want to clear down old inbox posts. Posts from your instance outboxes will be unaffected.
 
 Create an archive script **/usr/bin/epicyon-archive**:
-```bash
+``` bash
 #!/bin/bash
 cd /opt/epicyon || exit 0
 /usr/bin/python3 epicyon.py --archive none --archiveweeks 4 --maxposts 32000
 ```
 
 You can adjust the maximum number of weeks and the maximum number of inbox posts as needed. Then add it as a cron entry.
-```bash
+``` bash
 echo "*/60 * * * * root /usr/bin/epicyon-archive" >> /etc/crontab
 ```
 
@@ -337,6 +337,15 @@ If you want to block particular fediverse accounts or instances then you can ent
 
 ### Geolocation spoofing
 Within the *filtering and blocking* section you can also set a city which will be used for geolocation spoofing. When you post a photo, instead of removing all metadata spoofed metadata will be added in order to consistently fool the machine learning systems behind web crawlers or scrapers, and create a [confirmation bias](https://en.wikipedia.org/wiki/Confirmation_bias) effect where the surveillance systems become increasingly confident in an erroneous conclusion. Setting a city somewhere near to your [time zone](https://en.wikipedia.org/wiki/Time_zone) is preferable, so that it matches your typical pattern of daily posting activity without giving away your real location.
+
+### Verifying your website or blog
+It is possible to indicate that a website of blog belongs to you by linking it to your profile screen. Within the *head* html section of your website or blog index page include a line similar to:
+``` html
+<link rel="me" href="https://YourEpicyonDomain/@YourNickname" />
+```
+If you edit and then publish your profile, with the *website* and/or *blog* fields completed then if the above link is found your sites will be indicated to be verified on your profile screen. When verified they will appear in green with a tick.
+
+![Profile screen showing verified website](manual-verified-website.jpg)
 
 ## Roles
 If you are the administrator then within your profile settings you can also specify roles for other accounts on the instance. A small instance is like a ship with the roles being crew positions, and all members of the crew need to work together to keep the ship afloat. The current roles are:

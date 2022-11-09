@@ -405,10 +405,20 @@ def verify_html(session, url: str, debug: bool,
             actor = 'http://' + actor
         else:
             actor = http_prefix + '://' + actor
+
+        # double quotes
         link_str = ' rel="me" href="' + actor + '"'
         if link_str in verification_site_html:
             return True
         link_str = ' href="' + actor + '" rel="me"'
+        if link_str in verification_site_html:
+            return True
+
+        # single quotes
+        link_str = " rel=\"me\" href='" + actor + "'"
+        if link_str in verification_site_html:
+            return True
+        link_str = " href='" + actor + "' rel=\"me\""
         if link_str in verification_site_html:
             return True
     return False
