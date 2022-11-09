@@ -713,7 +713,7 @@ def html_profile(signing_priv_key_pem: str,
     tox_address = get_tox_address(profile_json)
     briar_address = get_briar_address(profile_json)
     cwtch_address = get_cwtch_address(profile_json)
-    verified_site_checkmark = '✔️'
+    verified_site_checkmark = '✔'
     if donate_url or website_url or xmpp_address or matrix_address or \
        ssb_address or tox_address or briar_address or \
        cwtch_address or pgp_pub_key or enigma_pub_key or \
@@ -732,14 +732,16 @@ def html_profile(signing_priv_key_pem: str,
                                 nickname, domain,
                                 website_url, False, debug):
                 donate_section += \
+                    '<div class="verified_site">' + \
                     verified_site_checkmark + \
-                    '<a class="verified_site" '
+                    '<a href="' + \
+                    website_url + '" rel="me" tabindex="1">' + \
+                    website_url + '</a></div></p>\n'
             else:
-                donate_section += '<a '
-            donate_section += \
-                'href="' + \
-                website_url + '" rel="me" tabindex="1">' + \
-                website_url + '</a></p>\n'
+                donate_section += \
+                    '<a href="' + \
+                    website_url + '" rel="me" tabindex="1">' + \
+                    website_url + '</a></p>\n'
         if gemini_link:
             donate_section += \
                 '<p>' + 'Gemini' + ': <a href="' + \
