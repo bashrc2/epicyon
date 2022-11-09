@@ -35,6 +35,7 @@
     --pageslist-color: #dddddd;
     --pageslist-selected-color: white;
     --main-fg-color: #dddddd;
+    --verified-site-color: green;
     --cw-color: #dddddd;
     --cw-style: normal;
     --cw-weight: bold;
@@ -1124,6 +1125,10 @@ h3 {
     -webkit-user-select: all;
     -ms-user-select: all;
     user-select: all;
+}
+
+.verified_site {
+    color: var(--verified-site-color)
 }
 
 @media screen and (min-width: 400px) {

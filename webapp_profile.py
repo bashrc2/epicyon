@@ -726,13 +726,18 @@ def html_profile(signing_priv_key_pem: str,
                 '<button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
         if website_url:
-            donate_section += '<p>' + translate['Website'] + ': '
+            donate_section += \
+                '<p>' + translate['Website'] + ': '
             if site_is_verified(session, base_dir, http_prefix,
                                 nickname, domain,
                                 website_url, False, debug):
-                donate_section += verified_site_checkmark
+                donate_section += \
+                    verified_site_checkmark + \
+                    '<a class="verified_site" '
+            else:
+                donate_section += '<a '
             donate_section += \
-                '<a href="' + \
+                'href="' + \
                 website_url + '" rel="me" tabindex="1">' + \
                 website_url + '</a></p>\n'
         if gemini_link:
@@ -750,9 +755,13 @@ def html_profile(signing_priv_key_pem: str,
             if site_is_verified(session, base_dir, http_prefix,
                                 nickname, domain,
                                 blog_address, False, debug):
-                donate_section += verified_site_checkmark
+                donate_section += \
+                    verified_site_checkmark + \
+                    '<a class="verified_site" '
+            else:
+                donate_section += '<a '
             donate_section += \
-                '<a href="' + \
+                'href="' + \
                 blog_address + '" rel="me" tabindex="1">' + \
                 blog_address + '</a></p>\n'
         if xmpp_address:
