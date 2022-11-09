@@ -276,6 +276,13 @@ def _markdown_replace_code(markdown: str) -> str:
     changed = False
     section_active = False
     urlencode = False
+    html_escape_table = {
+        "&": "&amp;",
+        '"': "&quot;",
+        "'": "&apos;",
+        ">": "&gt;",
+        "<": "&lt;"
+    }
     for line in lines:
         if not line.strip():
             # skip blank lines
@@ -293,7 +300,10 @@ def _markdown_replace_code(markdown: str) -> str:
                 if urlencode:
                     lines[start_line] = '<pre>\n<code>'
                     lines[line_ctr] = '</code>\n</pre>'
-
+                for line_num in range(start_line + 1, line_ctr):
+                    lines[line_num] = \
+                        "".join(html_escape_table.get(char, char)
+                                for char in lines[line_num])
                 section_active = False
                 changed = True
                 urlencode = False
