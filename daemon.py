@@ -6310,14 +6310,14 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['blogAddress'] != current_blog_address:
                             set_blog_address(actor_json,
                                              fields['blogAddress'])
-                            site_is_verified(curr_session,
-                                             self.server.base_dir,
-                                             self.server.http_prefix,
-                                             nickname, domain,
-                                             fields['blogAddress'],
-                                             True,
-                                             self.server.debug)
                             actor_changed = True
+                        site_is_verified(curr_session,
+                                         self.server.base_dir,
+                                         self.server.http_prefix,
+                                         nickname, domain,
+                                         fields['blogAddress'],
+                                         True,
+                                         self.server.debug)
                     else:
                         if current_blog_address:
                             set_blog_address(actor_json, '')
@@ -6487,14 +6487,14 @@ class PubServer(BaseHTTPRequestHandler):
                             set_website(actor_json,
                                         fields['websiteUrl'],
                                         self.server.translate)
-                            site_is_verified(curr_session,
-                                             self.server.base_dir,
-                                             self.server.http_prefix,
-                                             nickname, domain,
-                                             fields['websiteUrl'],
-                                             True,
-                                             self.server.debug)
                             actor_changed = True
+                        site_is_verified(curr_session,
+                                         self.server.base_dir,
+                                         self.server.http_prefix,
+                                         nickname, domain,
+                                         fields['websiteUrl'],
+                                         True,
+                                         self.server.debug)
                     else:
                         if current_website:
                             set_website(actor_json, '', self.server.translate)
