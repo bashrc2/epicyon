@@ -338,6 +338,17 @@ If you want to block particular fediverse accounts or instances then you can ent
 ### Geolocation spoofing
 Within the *filtering and blocking* section you can also set a city which will be used for geolocation spoofing. When you post a photo, instead of removing all metadata spoofed metadata will be added in order to consistently fool the machine learning systems behind web crawlers or scrapers, and create a [confirmation bias](https://en.wikipedia.org/wiki/Confirmation_bias) effect where the surveillance systems become increasingly confident in an erroneous conclusion. Setting a city somewhere near to your [time zone](https://en.wikipedia.org/wiki/Time_zone) is preferable, so that it matches your typical pattern of daily posting activity without giving away your real location.
 
+### Verifying your website or blog
+It is possible to indicate that a website of blog belongs to you by linking it to your profile screen. Within the *head* html section of your website or blog index page include a line similar to:
+
+```bash
+<link rel="me" href="https://YourEpicyonDomain/@YourNickname" />
+```
+
+If you edit and then publish your profile, with the *website* and/or *blog* fields completed then if the above link is found your sites will be indicated to be verified on your profile screen. When verified they will appear in green with a tick.
+
+![Profile screen showing verified website](manual-verified-website.jpg)
+
 ## Roles
 If you are the administrator then within your profile settings you can also specify roles for other accounts on the instance. A small instance is like a ship with the roles being crew positions, and all members of the crew need to work together to keep the ship afloat. The current roles are:
 
