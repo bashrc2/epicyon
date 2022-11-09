@@ -7,6 +7,8 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
+import urllib.parse
+
 
 def _markdown_get_sections(markdown: str) -> []:
     """Returns a list of sections for markdown
@@ -275,6 +277,7 @@ def _markdown_replace_code(markdown: str) -> str:
     line_ctr = 0
     changed = False
     section_active = False
+    urlencode = False
     for line in lines:
         if not line.strip():
             # skip blank lines
@@ -282,13 +285,22 @@ def _markdown_replace_code(markdown: str) -> str:
             continue
         if line.startswith('```'):
             if not section_active:
+                if 'html' in line or 'xml' in line or 'rdf' in line:
+                    urlencode = True
                 start_line = line_ctr
                 section_active = True
             else:
                 lines[start_line] = '<code>'
                 lines[line_ctr] = '</code>'
+                if urlencode:
+                    lines[start_line] = '<pre>'
+                    lines[line_ctr] = '</pre>'
+                    for line_num in range(start_line + 1, line_ctr):
+                        lines[line_num] = \
+                            urllib.parse.quote_plus(lines[line_num])
                 section_active = False
                 changed = True
+                urlencode = False
         line_ctr += 1
 
     if not changed:
