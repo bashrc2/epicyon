@@ -726,19 +726,19 @@ def html_profile(signing_priv_key_pem: str,
                 '<button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
         if website_url:
-            donate_section += \
-                '<p>' + translate['Website'] + ': '
             if site_is_verified(session, base_dir, http_prefix,
                                 nickname, domain,
                                 website_url, False, debug):
                 donate_section += \
-                    '<div class="verified_site">' + \
+                    '<p><div class="verified_site">' + \
+                    translate['Website'] + ': ' + \
                     verified_site_checkmark + \
                     '<a href="' + \
                     website_url + '" rel="me" tabindex="1">' + \
                     website_url + '</a></div></p>\n'
             else:
                 donate_section += \
+                    '<p>' + translate['Website'] + ': ' + \
                     '<a href="' + \
                     website_url + '" rel="me" tabindex="1">' + \
                     website_url + '</a></p>\n'
