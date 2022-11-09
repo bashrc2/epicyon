@@ -424,7 +424,7 @@ def site_is_verified(session, base_dir: str, http_prefix: str,
     verified_file_exists = False
     if os.path.isfile(verified_sites_filename):
         verified_file_exists = True
-        if text_in_file(url, verified_sites_filename + '\n', True):
+        if text_in_file(url + '\n', verified_sites_filename, True):
             return True
     if not update:
         return False
