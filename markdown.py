@@ -291,8 +291,8 @@ def _markdown_replace_code(markdown: str) -> str:
                 lines[start_line] = '<code>'
                 lines[line_ctr] = '</code>'
                 if urlencode:
-                    lines[start_line] = '<pre>'
-                    lines[line_ctr] = '</pre>'
+                    lines[start_line] = '<pre>\n<code>'
+                    lines[line_ctr] = '</code>\n</pre>'
 
                 section_active = False
                 changed = True
