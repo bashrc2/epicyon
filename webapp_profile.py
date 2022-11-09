@@ -732,8 +732,7 @@ def html_profile(signing_priv_key_pem: str,
                 donate_section += \
                     '<p><div class="verified_site">' + \
                     translate['Website'] + ': ' + \
-                    verified_site_checkmark + \
-                    '<a href="' + \
+                    verified_site_checkmark + '<a href="' + \
                     website_url + '" rel="me" tabindex="1">' + \
                     website_url + '</a></div></p>\n'
             else:
@@ -753,19 +752,20 @@ def html_profile(signing_priv_key_pem: str,
                 email_address + '" tabindex="1">' + \
                 email_address + '</a></p>\n'
         if blog_address:
-            donate_section += '<p>Blog: '
             if site_is_verified(session, base_dir, http_prefix,
                                 nickname, domain,
                                 blog_address, False, debug):
                 donate_section += \
-                    verified_site_checkmark + \
-                    '<a class="verified_site" '
+                    '<p><div class="verified_site">' + \
+                    'Blog: ' + verified_site_checkmark + \
+                    '<a href="' + \
+                    blog_address + '" rel="me" tabindex="1">' + \
+                    blog_address + '</a></div></p>\n'
             else:
-                donate_section += '<a '
-            donate_section += \
-                'href="' + \
-                blog_address + '" rel="me" tabindex="1">' + \
-                blog_address + '</a></p>\n'
+                donate_section += \
+                    '<p>Blog: <a href="' + \
+                    blog_address + '" rel="me" tabindex="1">' + \
+                    blog_address + '</a></p>\n'
         if xmpp_address:
             donate_section += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
