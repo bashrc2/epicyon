@@ -396,6 +396,17 @@ def verify_html(session, url: str, debug: bool,
                   url)
         return False
     verification_site_html = verification_site_html.decode()
+
+    # does the site contain rel="me" links?
+    if ' rel="me" ' not in verification_site_html:
+        return False
+
+    # ensure that there are not too many rel="me" links
+    sections = verification_site_html.split(' rel="me" ')
+    me_links_count = len(sections) - 1
+    if me_links_count > 5:
+        return False
+
     actor_links = [
         domain + '/@' + nickname,
         domain + '/users/' + nickname
