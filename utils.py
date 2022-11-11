@@ -3942,3 +3942,12 @@ def remove_square_capitals(text: str, system_language: str) -> str:
         else:
             result += chr(offset + text_value - start_value)
     return result
+
+
+def dont_speak_hashtags(content: str) -> str:
+    """Ensure that hashtags aren't announced by screen readers
+    """
+    if not content:
+        return content
+    return content.replace('>#<span',
+                           '><span aria-label="">#</span><span')
