@@ -25,6 +25,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import dont_speak_hashtags
 from utils import remove_eol
 from utils import disallow_announce
 from utils import disallow_reply
@@ -2061,6 +2062,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         languages_understood = get_actor_languages_list(actor_json)
     content_str = get_content_from_post(post_json_object, system_language,
                                         languages_understood)
+    content_str = dont_speak_hashtags(content_str)
 
     attachment_str, gallery_str = \
         get_post_attachments_as_html(base_dir, nickname, domain,
@@ -2144,6 +2146,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not content_str:
         content_str = get_content_from_post(post_json_object, system_language,
                                             languages_understood)
+        content_str = dont_speak_hashtags(content_str)
     if not content_str:
         content_str = \
             auto_translate_post(base_dir, post_json_object,

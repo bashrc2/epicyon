@@ -19133,13 +19133,17 @@ class PubServer(BaseHTTPRequestHandler):
                    not fields.get('pinToProfile'):
                     print('WARN: no message, image description or pin')
                     return -1
-                submit_text = self.server.translate['Publish']
+                submit_text1 = self.server.translate['Publish']
+                submit_text2 = self.server.translate['Send']
+                submit_text3 = submit_text2
                 custom_submit_text = \
                     get_config_param(self.server.base_dir, 'customSubmitText')
                 if custom_submit_text:
-                    submit_text = custom_submit_text
+                    submit_text3 = custom_submit_text
                 if fields.get('submitPost'):
-                    if fields['submitPost'] != submit_text:
+                    if fields['submitPost'] != submit_text1 and \
+                       fields['submitPost'] != submit_text2 and \
+                       fields['submitPost'] != submit_text3:
                         print('WARN: no submit field ' + fields['submitPost'])
                         return -1
                 else:

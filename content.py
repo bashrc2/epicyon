@@ -684,7 +684,8 @@ def _add_hash_tags(word_str: str, http_prefix: str, domain: str,
         'type': 'Hashtag'
     }
     replace_hashtags[word_str] = "<a href=\"" + hashtag_url + \
-        "\" class=\"mention hashtag\" rel=\"tag\" tabindex=\"10\">#<span>" + \
+        "\" class=\"mention hashtag\" rel=\"tag\" tabindex=\"10\">" + \
+        "<span aria-hidden=\"true\">#</span><span>" + \
         hashtag + "</span></a>"
     return True
 
