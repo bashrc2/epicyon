@@ -7278,7 +7278,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # if the .followDMs flag file exists
                     dm_allowed_instances_filename = \
                         acct_dir(base_dir, nickname, domain) + \
-                        '/dmAllowedinstances.txt'
+                        '/dmAllowedInstances.txt'
                     if fields.get('dmAllowedInstances'):
                         try:
                             with open(dm_allowed_instances_filename, 'w+',
