@@ -3950,4 +3950,4 @@ def dont_speak_hashtags(content: str) -> str:
     if not content:
         return content
     return content.replace('>#<span',
-                           '><span aria-label="">#</span><span')
+                           '><span aria-hidden="true">#</span><span')
