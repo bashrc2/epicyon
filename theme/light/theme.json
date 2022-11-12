@@ -95,7 +95,7 @@
     "gallery-text-color": "black",
     "header-font": "'Atkinson'",
     "*font-family": "'Atkinson'",
-    "*src": "url('./fonts//Atkinson-Hyperlegible-Regular.woff2') format('woff2')",
+    "*src": "url('./fonts/Atkinson-Hyperlegible-Regular.woff2') format('woff2')",
     "**src": "url('./fonts/Atkinson-Hyperlegible-Italic.woff2') format('woff2')",
     "reply-icon-direction": "-1"
 }
