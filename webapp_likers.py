@@ -42,6 +42,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
                         cw_lists: {}, lists_enabled: str,
                         box_name: str, default_timeline: str,
                         bold_reading: bool, dogwhistles: {},
+                        min_images_for_accounts: [],
                         dict_name: str = 'likes') -> str:
     """Returns html for a screen showing who liked a post
     """
@@ -83,6 +84,9 @@ def html_likers_of_post(base_dir: str, nickname: str,
     mitm = False
     if os.path.isfile(filename.replace('.json', '') + '.mitm'):
         mitm = True
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
     html_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache,
@@ -108,7 +112,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                 False, False, False,
                                 cw_lists, lists_enabled,
                                 timezone, mitm, bold_reading,
-                                dogwhistles)
+                                dogwhistles,
+                                minimize_all_images)
 
     # show likers beneath the post
     obj = post_json_object

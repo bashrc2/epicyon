@@ -1204,7 +1204,8 @@ def get_post_attachments_as_html(base_dir: str,
                                  like_str: str,
                                  bookmark_str: str, delete_str: str,
                                  mute_str: str,
-                                 content: str) -> (str, str):
+                                 content: str,
+                                 minimize_all_images: bool) -> (str, str):
     """Returns a string representing any attachments
     """
     attachment_str = ''
@@ -1302,10 +1303,14 @@ def get_post_attachments_as_html(base_dir: str,
                         get_nickname_from_actor(attributed_actor)
                     following_domain, _ = \
                         get_domain_from_actor(attributed_actor)
-                    minimize_images = \
-                        minimizing_attached_images(base_dir, nickname, domain,
-                                                   following_nickname,
-                                                   following_domain)
+                    if minimize_all_images:
+                        minimize_images = True
+                    else:
+                        minimize_images = \
+                            minimizing_attached_images(base_dir,
+                                                       nickname, domain,
+                                                       following_nickname,
+                                                       following_domain)
 
                 # minimize any NSFW images
                 if not minimize_images and content:

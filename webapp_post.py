@@ -1597,7 +1597,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             lists_enabled: str,
                             timezone: str,
                             mitm: bool, bold_reading: bool,
-                            dogwhistles: {}) -> str:
+                            dogwhistles: {},
+                            minimize_all_images: bool) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2072,7 +2073,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      is_muted, avatar_link,
                                      reply_str, announce_str, like_str,
                                      bookmark_str, delete_str, mute_str,
-                                     content_str)
+                                     content_str,
+                                     minimize_all_images)
 
     published_str = \
         _get_published_date_str(post_json_object, show_published_date_only,
@@ -2399,7 +2401,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          max_like_count: int, signing_priv_key_pem: str,
                          cw_lists: {}, lists_enabled: str,
                          timezone: str, mitm: bool,
-                         bold_reading: bool, dogwhistles: {}) -> str:
+                         bold_reading: bool, dogwhistles: {},
+                         min_images_for_accounts: []) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2451,6 +2454,9 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         follow_str += '  </form>\n'
         post_str += follow_str + '</p>\n'
 
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
     post_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache, max_recent_posts,
@@ -2468,7 +2474,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 system_language, max_like_count,
                                 False, authorized, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, mitm,
-                                bold_reading, dogwhistles)
+                                bold_reading, dogwhistles,
+                                minimize_all_images)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2510,7 +2517,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             cw_lists, lists_enabled,
                                             timezone, mitm,
                                             bold_reading,
-                                            dogwhistles) + post_str
+                                            dogwhistles,
+                                            minimize_all_images) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2549,7 +2557,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False, False,
                                             cw_lists, lists_enabled,
                                             timezone, False,
-                                            bold_reading, dogwhistles)
+                                            bold_reading, dogwhistles,
+                                            minimize_all_images)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2578,11 +2587,15 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       signing_priv_key_pem: str, cw_lists: {},
                       lists_enabled: str,
                       timezone: str, bold_reading: bool,
-                      dogwhistles: {}) -> str:
+                      dogwhistles: {},
+                      min_images_for_accounts: []) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
     if replies_json.get('orderedItems'):
+        minimize_all_images = False
+        if nickname in min_images_for_accounts:
+            minimize_all_images = True
         for item in replies_json['orderedItems']:
             replies_str += \
                 individual_post_as_html(signing_priv_key_pem,
@@ -2605,7 +2618,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         False, False,
                                         cw_lists, lists_enabled,
                                         timezone, False,
-                                        bold_reading, dogwhistles)
+                                        bold_reading, dogwhistles,
+                                        minimize_all_images)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2635,9 +2649,13 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                cw_lists: {}, lists_enabled: str,
                                box_name: str, page_number: int,
                                timezone: str, bold_reading: bool,
-                               dogwhistles: {}) -> str:
+                               dogwhistles: {},
+                               min_images_for_accounts: []) -> str:
     """Returns the emoji picker screen
     """
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
     reacted_to_post_str = \
         '<br><center><label class="followText">' + \
         translate['Select reaction'].title() + '</label></center>\n' + \
@@ -2659,7 +2677,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 max_like_count,
                                 False, False, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, False,
-                                bold_reading, dogwhistles)
+                                bold_reading, dogwhistles,
+                                minimize_all_images)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

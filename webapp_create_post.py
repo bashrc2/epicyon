@@ -225,7 +225,8 @@ def html_new_post(media_instance: bool, translate: {},
                   cw_lists: {}, lists_enabled: str,
                   box_name: str,
                   reply_is_chat: bool, bold_reading: bool,
-                  dogwhistles: {}) -> str:
+                  dogwhistles: {},
+                  min_images_for_accounts: []) -> str:
     """New post screen
     """
     reply_str = ''
@@ -279,6 +280,9 @@ def html_new_post(media_instance: bool, translate: {},
                     if post_json_object:
                         timezone = \
                             get_account_timezone(base_dir, nickname, domain)
+                        minimize_all_images = False
+                        if nickname in min_images_for_accounts:
+                            minimize_all_images = True
                         new_post_text += \
                             individual_post_as_html(signing_priv_key_pem,
                                                     True, recent_posts_cache,
@@ -304,7 +308,8 @@ def html_new_post(media_instance: bool, translate: {},
                                                     False, False, False,
                                                     cw_lists, lists_enabled,
                                                     timezone, False,
-                                                    bold_reading, dogwhistles)
+                                                    bold_reading, dogwhistles,
+                                                    minimize_all_images)
 
                 reply_str = '<input type="hidden" ' + \
                     'name="replyTo" value="' + in_reply_to + '">\n'

@@ -695,7 +695,8 @@ def html_history_search(translate: {}, base_dir: str,
                         cw_lists: {},
                         lists_enabled: str,
                         timezone: str, bold_reading: bool,
-                        dogwhistles: {}, access_keys: {}) -> str:
+                        dogwhistles: {}, access_keys: {},
+                        min_images_for_accounts: []) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -765,6 +766,9 @@ def html_history_search(translate: {}, base_dir: str,
         end_index = no_of_box_filenames - 1
 
     index = start_index
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
     while index <= end_index:
         post_filename = box_filenames[index]
         if not post_filename:
@@ -800,7 +804,8 @@ def html_history_search(translate: {}, base_dir: str,
                                     False, False, False, False,
                                     cw_lists, lists_enabled,
                                     timezone, False, bold_reading,
-                                    dogwhistles)
+                                    dogwhistles,
+                                    minimize_all_images)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -827,7 +832,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                         cw_lists: {}, lists_enabled: str,
                         timezone: str, bold_reading: bool,
                         dogwhistles: {}, map_format: str,
-                        access_keys: {}, box_name: str) -> str:
+                        access_keys: {}, box_name: str,
+                        min_images_for_accounts: []) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -989,6 +995,9 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         allow_downloads = True
         avatar_url = None
         show_avatar_options = True
+        minimize_all_images = False
+        if nickname in min_images_for_accounts:
+            minimize_all_images = True
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads, recent_posts_cache,
@@ -1014,7 +1023,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     show_public_only,
                                     store_to_sache, False, cw_lists,
                                     lists_enabled, timezone, False,
-                                    bold_reading, dogwhistles)
+                                    bold_reading, dogwhistles,
+                                    minimize_all_images)
         if post_str:
             hashtag_search_form += separator_str + post_str
         index += 1
