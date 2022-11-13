@@ -2154,7 +2154,9 @@ def _html_edit_profile_options(is_admin: bool,
                                notify_likes: str, notify_reactions: str,
                                hide_like_button: str,
                                hide_reaction_button: str,
-                               translate: {}, bold_reading: bool) -> str:
+                               translate: {}, bold_reading: bool,
+                               nickname: str,
+                               min_images_for_accounts: []) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2192,6 +2194,14 @@ def _html_edit_profile_options(is_admin: bool,
     bold_str = bold_reading_string(translate['Bold reading'])
     edit_profile_form += \
         edit_check_box(bold_str, 'boldReading', bold_reading)
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
+    minimize_all_images_str = \
+        bold_reading_string(translate['Minimize all images'])
+    edit_profile_form += \
+        edit_check_box(minimize_all_images_str, 'minimizeAllImages',
+                       minimize_all_images)
     edit_profile_form += '    </div>\n'
     return edit_profile_form
 
@@ -2353,7 +2363,8 @@ def html_edit_profile(server, translate: {},
                       access_keys: {},
                       default_reply_interval_hrs: int,
                       cw_lists: {}, lists_enabled: str,
-                      system_language: str) -> str:
+                      system_language: str,
+                      min_images_for_accounts: []) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2547,7 +2558,8 @@ def html_edit_profile(server, translate: {},
                                    remove_twitter,
                                    notify_likes, notify_reactions,
                                    hide_like_button, hide_reaction_button,
-                                   translate, bold_reading)
+                                   translate, bold_reading,
+                                   nickname, min_images_for_accounts)
 
     # Contact information
     edit_profile_form += \

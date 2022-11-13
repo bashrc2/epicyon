@@ -264,6 +264,8 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import load_min_images_for_accounts
+from utils import set_minimize_all_images
 from utils import get_json_content_from_accept
 from utils import remove_eol
 from utils import text_in_file
@@ -6960,6 +6962,25 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: _profile_edit ' +
                                       'unable to delete ' +
                                       hide_like_button_file)
+
+                    # Minimize all images from edit profile screen
+                    minimize_all_images = False
+                    if fields.get('minimizeAllImages'):
+                        if fields['minimizeAllImages'] == 'on':
+                            minimize_all_images = True
+                            min_img_acct = self.server.min_images_for_accounts
+                            set_minimize_all_images(base_dir,
+                                                    nickname, domain,
+                                                    True, min_img_acct)
+                            print('min_images_for_accounts: ' +
+                                  str(min_img_acct))
+                    if not minimize_all_images:
+                        min_img_acct = self.server.min_images_for_accounts
+                        set_minimize_all_images(base_dir,
+                                                nickname, domain,
+                                                False, min_img_acct)
+                        print('min_images_for_accounts: ' +
+                              str(min_img_acct))
 
                     # hide Reaction button
                     hide_reaction_button_file = \
@@ -15197,7 +15218,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     default_reply_interval_hrs,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
-                                    self.server.system_language)
+                                    self.server.system_language,
+                                    self.server.min_images_for_accounts)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -21334,7 +21356,7 @@ def run_daemon(map_format: str,
     assert not scan_themes_for_scripts(base_dir)
 
     # which accounts should minimize all attached images by default
-    httpd.min_images_for_accounts = []
+    httpd.min_images_for_accounts = load_min_images_for_accounts(base_dir)
 
     # caches css files
     httpd.css_cache = {}

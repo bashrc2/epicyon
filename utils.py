@@ -3951,3 +3951,47 @@ def dont_speak_hashtags(content: str) -> str:
         return content
     return content.replace('>#<span',
                            '><span aria-hidden="true">#</span><span')
+
+
+def load_min_images_for_accounts(base_dir: str) -> []:
+    """Loads a list of nicknames for accounts where all images should
+    be minimized by default
+    """
+    min_images_for_accounts = []
+    for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
+        for account in dirs:
+            if not is_account_dir(account):
+                continue
+            filename = os.path.join(subdir, account) + '/.minimize_all_images'
+            if os.path.isfile(filename):
+                min_images_for_accounts.append(account.split('@')[0])
+        break
+    return min_images_for_accounts
+
+
+def set_minimize_all_images(base_dir: str,
+                            nickname: str, domain: str,
+                            minimize: bool,
+                            min_images_for_accounts: []) -> None:
+    """Add of remove a file indicating that all images for an account
+    should be minimized by default
+    """
+    filename = acct_dir(base_dir, nickname, domain) + '/.minimize_all_images'
+    if minimize:
+        if nickname not in min_images_for_accounts:
+            min_images_for_accounts.append(nickname)
+        if not os.path.isfile(filename):
+            try:
+                with open(filename, 'w+', encoding='utf-8') as fp_min:
+                    fp_min.write('\n')
+            except OSError:
+                print('EX: unable to write ' + filename)
+        return
+
+    if nickname in min_images_for_accounts:
+        min_images_for_accounts.remove(nickname)
+    if os.path.isfile(filename):
+        try:
+            os.remove(filename)
+        except OSError:
+            print('EX: unable to delete ' + filename)
