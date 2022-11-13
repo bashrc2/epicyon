@@ -235,7 +235,8 @@ def post_message_to_outbox(session, translate: {},
                            max_recent_posts: int, cw_lists: {},
                            lists_enabled: str,
                            content_license_url: str,
-                           dogwhistles: {}) -> bool:
+                           dogwhistles: {},
+                           min_images_for_accounts: []) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -525,6 +526,9 @@ def post_message_to_outbox(session, translate: {},
                     if os.path.isfile(saved_filename.replace('.json', '') +
                                       '.mitm'):
                         mitm = True
+                    minimize_all_images = False
+                    if post_to_nickname in min_images_for_accounts:
+                        minimize_all_images = True
                     individual_post_as_html(signing_priv_key_pem,
                                             False, recent_posts_cache,
                                             max_recent_posts,
@@ -550,7 +554,8 @@ def post_message_to_outbox(session, translate: {},
                                             False, True, use_cache_only,
                                             cw_lists, lists_enabled,
                                             timezone, mitm,
-                                            bold_reading, dogwhistles)
+                                            bold_reading, dogwhistles,
+                                            minimize_all_images)
 
     if outbox_announce(recent_posts_cache,
                        base_dir, message_json, debug):

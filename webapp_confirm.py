@@ -39,7 +39,8 @@ def html_confirm_delete(server,
                         theme_name: str, system_language: str,
                         max_like_count: int, signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
-                        dogwhistles: {}) -> str:
+                        dogwhistles: {},
+                        min_images_for_accounts: []) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in message_id:
@@ -75,6 +76,9 @@ def html_confirm_delete(server,
     bold_reading = False
     if server.bold_reading.get(nickname):
         bold_reading = True
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
     delete_post_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache, max_recent_posts,
@@ -91,7 +95,8 @@ def html_confirm_delete(server,
                                 theme_name, system_language, max_like_count,
                                 False, False, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, mitm,
-                                bold_reading, dogwhistles)
+                                bold_reading, dogwhistles,
+                                minimize_all_images)
     delete_post_str += '<center>'
     delete_post_str += \
         '  <p class="followText">' + \

@@ -264,6 +264,8 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import load_min_images_for_accounts
+from utils import set_minimize_all_images
 from utils import get_json_content_from_accept
 from utils import remove_eol
 from utils import text_in_file
@@ -1730,7 +1732,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cw_lists,
                                       self.server.lists_enabled,
                                       self.server.content_license_url,
-                                      self.server.dogwhistles)
+                                      self.server.dogwhistles,
+                                      self.server.min_images_for_accounts)
 
     def _get_outbox_thread_index(self, nickname: str,
                                  max_outbox_threads_per_account: int) -> int:
@@ -3337,47 +3340,51 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
-            msg = html_new_post(False, self.server.translate,
-                                base_dir,
-                                http_prefix,
-                                report_path, None,
-                                [options_actor], None, None,
-                                page_number, '',
-                                chooser_nickname,
-                                domain,
-                                domain_full,
-                                self.server.default_timeline,
-                                self.server.newswire,
-                                self.server.theme_name,
-                                True, access_keys,
-                                custom_submit_text,
-                                conversation_id,
-                                self.server.recent_posts_cache,
-                                self.server.max_recent_posts,
-                                curr_session,
-                                self.server.cached_webfingers,
-                                self.server.person_cache,
-                                self.server.port,
-                                None,
-                                self.server.project_version,
-                                self.server.yt_replace_domain,
-                                self.server.twitter_replacement_domain,
-                                self.server.show_published_date_only,
-                                self.server.peertube_instances,
-                                self.server.allow_local_network_access,
-                                self.server.system_language,
-                                self.server.max_like_count,
-                                self.server.signing_priv_key_pem,
-                                self.server.cw_lists,
-                                self.server.lists_enabled,
-                                self.server.default_timeline,
-                                reply_is_chat,
-                                bold_reading,
-                                self.server.dogwhistles).encode('utf-8')
-            msglen = len(msg)
-            self._set_headers('text/html', msglen,
-                              cookie, calling_domain, False)
-            self._write(msg)
+            msg = \
+                html_new_post(False, self.server.translate,
+                              base_dir,
+                              http_prefix,
+                              report_path, None,
+                              [options_actor], None, None,
+                              page_number, '',
+                              chooser_nickname,
+                              domain,
+                              domain_full,
+                              self.server.default_timeline,
+                              self.server.newswire,
+                              self.server.theme_name,
+                              True, access_keys,
+                              custom_submit_text,
+                              conversation_id,
+                              self.server.recent_posts_cache,
+                              self.server.max_recent_posts,
+                              curr_session,
+                              self.server.cached_webfingers,
+                              self.server.person_cache,
+                              self.server.port,
+                              None,
+                              self.server.project_version,
+                              self.server.yt_replace_domain,
+                              self.server.twitter_replacement_domain,
+                              self.server.show_published_date_only,
+                              self.server.peertube_instances,
+                              self.server.allow_local_network_access,
+                              self.server.system_language,
+                              self.server.max_like_count,
+                              self.server.signing_priv_key_pem,
+                              self.server.cw_lists,
+                              self.server.lists_enabled,
+                              self.server.default_timeline,
+                              reply_is_chat,
+                              bold_reading,
+                              self.server.dogwhistles,
+                              self.server.min_images_for_accounts)
+            if msg:
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('text/html', msglen,
+                                  cookie, calling_domain, False)
+                self._write(msg)
             self.server.postreq_busy = False
             return
 
@@ -3480,46 +3487,50 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
-            msg = html_new_post(False, self.server.translate,
-                                base_dir,
-                                http_prefix,
-                                report_path, None, [],
-                                None, post_url, page_number, '',
-                                chooser_nickname,
-                                domain,
-                                domain_full,
-                                self.server.default_timeline,
-                                self.server.newswire,
-                                self.server.theme_name,
-                                True, access_keys,
-                                custom_submit_text,
-                                conversation_id,
-                                self.server.recent_posts_cache,
-                                self.server.max_recent_posts,
-                                curr_session,
-                                self.server.cached_webfingers,
-                                self.server.person_cache,
-                                self.server.port,
-                                None,
-                                self.server.project_version,
-                                self.server.yt_replace_domain,
-                                self.server.twitter_replacement_domain,
-                                self.server.show_published_date_only,
-                                self.server.peertube_instances,
-                                self.server.allow_local_network_access,
-                                self.server.system_language,
-                                self.server.max_like_count,
-                                self.server.signing_priv_key_pem,
-                                self.server.cw_lists,
-                                self.server.lists_enabled,
-                                self.server.default_timeline,
-                                reply_is_chat,
-                                bold_reading,
-                                self.server.dogwhistles).encode('utf-8')
-            msglen = len(msg)
-            self._set_headers('text/html', msglen,
-                              cookie, calling_domain, False)
-            self._write(msg)
+            msg = \
+                html_new_post(False, self.server.translate,
+                              base_dir,
+                              http_prefix,
+                              report_path, None, [],
+                              None, post_url, page_number, '',
+                              chooser_nickname,
+                              domain,
+                              domain_full,
+                              self.server.default_timeline,
+                              self.server.newswire,
+                              self.server.theme_name,
+                              True, access_keys,
+                              custom_submit_text,
+                              conversation_id,
+                              self.server.recent_posts_cache,
+                              self.server.max_recent_posts,
+                              curr_session,
+                              self.server.cached_webfingers,
+                              self.server.person_cache,
+                              self.server.port,
+                              None,
+                              self.server.project_version,
+                              self.server.yt_replace_domain,
+                              self.server.twitter_replacement_domain,
+                              self.server.show_published_date_only,
+                              self.server.peertube_instances,
+                              self.server.allow_local_network_access,
+                              self.server.system_language,
+                              self.server.max_like_count,
+                              self.server.signing_priv_key_pem,
+                              self.server.cw_lists,
+                              self.server.lists_enabled,
+                              self.server.default_timeline,
+                              reply_is_chat,
+                              bold_reading,
+                              self.server.dogwhistles,
+                              self.server.min_images_for_accounts)
+            if msg:
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('text/html', msglen,
+                                  cookie, calling_domain, False)
+                self._write(msg)
             self.server.postreq_busy = False
             return
 
@@ -4086,7 +4097,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.dogwhistles,
                                         self.server.map_format,
                                         self.server.access_keys,
-                                        'search')
+                                        'search',
+                                        self.server.min_images_for_accounts)
                 if hashtag_str:
                     msg = hashtag_str.encode('utf-8')
                     msglen = len(msg)
@@ -4196,7 +4208,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
                                         self.server.dogwhistles,
-                                        self.server.access_keys)
+                                        self.server.access_keys,
+                                        self.server.min_images_for_accounts)
                 if history_str:
                     msg = history_str.encode('utf-8')
                     msglen = len(msg)
@@ -4278,7 +4291,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
                                         self.server.dogwhistles,
-                                        self.server.access_keys)
+                                        self.server.access_keys,
+                                        self.server.min_images_for_accounts)
                 if bookmarks_str:
                     msg = bookmarks_str.encode('utf-8')
                     msglen = len(msg)
@@ -4416,6 +4430,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
 
+                    min_images_for_accounts = \
+                        self.server.min_images_for_accounts
                     profile_str = \
                         html_profile_after_search(recent_posts_cache,
                                                   self.server.max_recent_posts,
@@ -4449,7 +4465,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.onion_domain,
                                                   self.server.i2p_domain,
                                                   bold_reading,
-                                                  self.server.dogwhistles)
+                                                  self.server.dogwhistles,
+                                                  min_images_for_accounts)
                 if profile_str:
                     msg = profile_str.encode('utf-8')
                     msglen = len(msg)
@@ -6946,6 +6963,25 @@ class PubServer(BaseHTTPRequestHandler):
                                       'unable to delete ' +
                                       hide_like_button_file)
 
+                    # Minimize all images from edit profile screen
+                    minimize_all_images = False
+                    if fields.get('minimizeAllImages'):
+                        if fields['minimizeAllImages'] == 'on':
+                            minimize_all_images = True
+                            min_img_acct = self.server.min_images_for_accounts
+                            set_minimize_all_images(base_dir,
+                                                    nickname, domain,
+                                                    True, min_img_acct)
+                            print('min_images_for_accounts: ' +
+                                  str(min_img_acct))
+                    if not minimize_all_images:
+                        min_img_acct = self.server.min_images_for_accounts
+                        set_minimize_all_images(base_dir,
+                                                nickname, domain,
+                                                False, min_img_acct)
+                        print('min_images_for_accounts: ' +
+                              str(min_img_acct))
+
                     # hide Reaction button
                     hide_reaction_button_file = \
                         acct_dir(base_dir, nickname, domain) + \
@@ -8701,7 +8737,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.dogwhistles,
                                 self.server.map_format,
                                 self.server.access_keys,
-                                'search')
+                                'search',
+                                self.server.min_images_for_accounts)
         if hashtag_str:
             msg = hashtag_str.encode('utf-8')
             msglen = len(msg)
@@ -8923,6 +8960,9 @@ class PubServer(BaseHTTPRequestHandler):
             bold_reading = False
             if self.server.bold_reading.get(self.post_to_nickname):
                 bold_reading = True
+            minimize_all_images = False
+            if self.post_to_nickname in self.server.min_images_for_accounts:
+                minimize_all_images = True
             individual_post_as_html(self.server.signing_priv_key_pem, False,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
@@ -8952,7 +8992,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
                                     timezone, mitm, bold_reading,
-                                    self.server.dogwhistles)
+                                    self.server.dogwhistles,
+                                    minimize_all_images)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
         actor_path_str = \
@@ -9461,6 +9502,10 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(self.post_to_nickname):
                     bold_reading = True
+                minimize_all_images = False
+                if self.post_to_nickname in \
+                   self.server.min_images_for_accounts:
+                    minimize_all_images = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9492,7 +9537,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        minimize_all_images)
             else:
                 print('WARN: Liked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -9649,6 +9695,10 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(self.post_to_nickname):
                     bold_reading = True
+                minimize_all_images = False
+                if self.post_to_nickname in \
+                   self.server.min_images_for_accounts:
+                    minimize_all_images = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9680,7 +9730,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        minimize_all_images)
             else:
                 print('WARN: Unliked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -9866,6 +9917,10 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(self.post_to_nickname):
                     bold_reading = True
+                minimize_all_images = False
+                if self.post_to_nickname in \
+                   self.server.min_images_for_accounts:
+                    minimize_all_images = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -9897,7 +9952,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        minimize_all_images)
             else:
                 print('WARN: Emoji reaction post not found: ' +
                       reaction_post_filename)
@@ -10073,6 +10129,10 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(self.post_to_nickname):
                     bold_reading = True
+                minimize_all_images = False
+                if self.post_to_nickname in \
+                   self.server.min_images_for_accounts:
+                    minimize_all_images = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -10104,7 +10164,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        minimize_all_images)
             else:
                 print('WARN: Unreaction post not found: ' +
                       reaction_post_filename)
@@ -10210,7 +10271,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.lists_enabled,
                                        timeline_str, page_number,
                                        timezone, bold_reading,
-                                       self.server.dogwhistles)
+                                       self.server.dogwhistles,
+                                       self.server.min_images_for_accounts)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
@@ -10324,6 +10386,10 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(self.post_to_nickname):
                     bold_reading = True
+                minimize_all_images = False
+                if self.post_to_nickname in \
+                   self.server.min_images_for_accounts:
+                    minimize_all_images = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -10355,7 +10421,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        minimize_all_images)
             else:
                 print('WARN: Bookmarked post not found: ' + bookmark_filename)
         # self._post_to_outbox(bookmark_json,
@@ -10476,6 +10543,10 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(self.post_to_nickname):
                     bold_reading = True
+                minimize_all_images = False
+                if self.post_to_nickname in \
+                   self.server.min_images_for_accounts:
+                    minimize_all_images = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
@@ -10507,7 +10578,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        minimize_all_images)
             else:
                 print('WARN: Unbookmarked post not found: ' +
                       bookmark_filename)
@@ -10618,7 +10690,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.signing_priv_key_pem,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
-                                    self.server.dogwhistles)
+                                    self.server.dogwhistles,
+                                    self.server.min_images_for_accounts)
             if delete_str:
                 delete_str_len = len(delete_str)
                 self._set_headers('text/html', delete_str_len,
@@ -10714,6 +10787,9 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
+                minimize_all_images = False
+                if nickname in self.server.min_images_for_accounts:
+                    minimize_all_images = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         allow_downloads,
                                         self.server.recent_posts_cache,
@@ -10746,7 +10822,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        minimize_all_images)
             else:
                 print('WARN: Muted post not found: ' + mute_filename)
 
@@ -10842,6 +10919,9 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
+                minimize_all_images = False
+                if nickname in self.server.min_images_for_accounts:
+                    minimize_all_images = True
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         allow_downloads,
                                         self.server.recent_posts_cache,
@@ -10874,7 +10954,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
-                                        self.server.dogwhistles)
+                                        self.server.dogwhistles,
+                                        minimize_all_images)
             else:
                 print('WARN: Unmuted post not found: ' + mute_filename)
         if calling_domain.endswith('.onion') and onion_domain:
@@ -11001,7 +11082,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cw_lists,
                                       self.server.lists_enabled,
                                       timezone, bold_reading,
-                                      self.server.dogwhistles)
+                                      self.server.dogwhistles,
+                                      self.server.min_images_for_accounts)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -11107,7 +11189,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cw_lists,
                                       self.server.lists_enabled,
                                       timezone, bold_reading,
-                                      self.server.dogwhistles)
+                                      self.server.dogwhistles,
+                                      self.server.min_images_for_accounts)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -11547,7 +11630,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 'inbox', self.server.default_timeline,
-                                bold_reading, self.server.dogwhistles)
+                                bold_reading,
+                                self.server.dogwhistles,
+                                self.server.min_images_for_accounts)
         if not msg:
             self._404()
             return True
@@ -11612,6 +11697,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.lists_enabled,
                                 'inbox', self.server.default_timeline,
                                 bold_reading, self.server.dogwhistles,
+                                self.server.min_images_for_accounts,
                                 'shares')
         if not msg:
             self._404()
@@ -11700,7 +11786,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
                                      timezone, mitm, bold_reading,
-                                     self.server.dogwhistles)
+                                     self.server.dogwhistles,
+                                     self.server.min_images_for_accounts)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -11972,48 +12059,50 @@ class PubServer(BaseHTTPRequestHandler):
                         bold_reading = False
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
-                        msg = html_inbox(default_timeline,
-                                         recent_posts_cache,
-                                         max_recent_posts,
-                                         translate,
-                                         page_number, MAX_POSTS_IN_FEED,
-                                         curr_session,
-                                         base_dir,
-                                         cached_webfingers,
-                                         person_cache,
-                                         nickname,
-                                         domain,
-                                         port,
-                                         inbox_feed,
-                                         allow_deletion,
-                                         http_prefix,
-                                         project_version,
-                                         minimal_nick,
-                                         yt_replace_domain,
-                                         twitter_replacement_domain,
-                                         self.server.show_published_date_only,
-                                         self.server.newswire,
-                                         self.server.positive_voting,
-                                         self.server.show_publish_as_icon,
-                                         full_width_tl_button_header,
-                                         self.server.icons_as_buttons,
-                                         self.server.rss_icon_at_top,
-                                         self.server.publish_button_at_top,
-                                         authorized,
-                                         self.server.theme_name,
-                                         self.server.peertube_instances,
-                                         allow_local_network_access,
-                                         self.server.text_mode_banner,
-                                         access_keys,
-                                         self.server.system_language,
-                                         self.server.max_like_count,
-                                         shared_items_federated_domains,
-                                         self.server.signing_priv_key_pem,
-                                         self.server.cw_lists,
-                                         self.server.lists_enabled,
-                                         timezone, bold_reading,
-                                         self.server.dogwhistles,
-                                         ua_str)
+                        msg = \
+                            html_inbox(default_timeline,
+                                       recent_posts_cache,
+                                       max_recent_posts,
+                                       translate,
+                                       page_number, MAX_POSTS_IN_FEED,
+                                       curr_session,
+                                       base_dir,
+                                       cached_webfingers,
+                                       person_cache,
+                                       nickname,
+                                       domain,
+                                       port,
+                                       inbox_feed,
+                                       allow_deletion,
+                                       http_prefix,
+                                       project_version,
+                                       minimal_nick,
+                                       yt_replace_domain,
+                                       twitter_replacement_domain,
+                                       self.server.show_published_date_only,
+                                       self.server.newswire,
+                                       self.server.positive_voting,
+                                       self.server.show_publish_as_icon,
+                                       full_width_tl_button_header,
+                                       self.server.icons_as_buttons,
+                                       self.server.rss_icon_at_top,
+                                       self.server.publish_button_at_top,
+                                       authorized,
+                                       self.server.theme_name,
+                                       self.server.peertube_instances,
+                                       allow_local_network_access,
+                                       self.server.text_mode_banner,
+                                       access_keys,
+                                       self.server.system_language,
+                                       self.server.max_like_count,
+                                       shared_items_federated_domains,
+                                       self.server.signing_priv_key_pem,
+                                       self.server.cw_lists,
+                                       self.server.lists_enabled,
+                                       timezone, bold_reading,
+                                       self.server.dogwhistles,
+                                       ua_str,
+                                       self.server.min_images_for_accounts)
                         if getreq_start_time:
                             fitness_performance(getreq_start_time,
                                                 self.server.fitness,
@@ -12184,7 +12273,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
-                                           self.server.dogwhistles, ua_str)
+                                           self.server.dogwhistles, ua_str,
+                                           self.server.min_images_for_accounts)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -12346,7 +12436,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
                                            self.server.dogwhistles,
-                                           ua_str)
+                                           ua_str,
+                                           self.server.min_images_for_accounts)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12504,7 +12595,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.cw_lists,
                                          self.server.lists_enabled,
                                          timezone, bold_reading,
-                                         self.server.dogwhistles, ua_str)
+                                         self.server.dogwhistles, ua_str,
+                                         self.server.min_images_for_accounts)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12662,7 +12754,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.cw_lists,
                                          self.server.lists_enabled,
                                          timezone, bold_reading,
-                                         self.server.dogwhistles, ua_str)
+                                         self.server.dogwhistles, ua_str,
+                                         self.server.min_images_for_accounts)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12828,7 +12921,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
-                                        self.server.dogwhistles, ua_str)
+                                        self.server.dogwhistles, ua_str,
+                                        self.server.min_images_for_accounts)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12954,6 +13048,8 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    min_images_for_accounts = \
+                        self.server.min_images_for_accounts
                     msg = \
                         html_inbox_features(self.server.default_timeline,
                                             self.server.recent_posts_cache,
@@ -12996,7 +13092,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.cw_lists,
                                             self.server.lists_enabled,
                                             timezone, bold_reading,
-                                            self.server.dogwhistles, ua_str)
+                                            self.server.dogwhistles, ua_str,
+                                            min_images_for_accounts)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13117,7 +13214,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cw_lists,
                                     self.server.lists_enabled, timezone,
                                     bold_reading, self.server.dogwhistles,
-                                    ua_str)
+                                    ua_str,
+                                    self.server.min_images_for_accounts)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13211,7 +13309,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
                                     timezone, bold_reading,
-                                    self.server.dogwhistles, ua_str)
+                                    self.server.dogwhistles, ua_str,
+                                    self.server.min_images_for_accounts)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13346,7 +13445,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
-                                           self.server.dogwhistles, ua_str)
+                                           self.server.dogwhistles, ua_str,
+                                           self.server.min_images_for_accounts)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -13499,7 +13599,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
                                 timezone, bold_reading,
-                                self.server.dogwhistles, ua_str)
+                                self.server.dogwhistles, ua_str,
+                                self.server.min_images_for_accounts)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -13606,6 +13707,8 @@ class PubServer(BaseHTTPRequestHandler):
                         bold_reading = False
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
+                        min_images_for_accounts = \
+                            self.server.min_images_for_accounts
                         msg = \
                             html_moderation(self.server.default_timeline,
                                             self.server.recent_posts_cache,
@@ -13647,7 +13750,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.lists_enabled,
                                             timezone, bold_reading,
                                             self.server.dogwhistles,
-                                            ua_str)
+                                            ua_str,
+                                            min_images_for_accounts)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -14998,49 +15102,52 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(nickname):
                 bold_reading = True
 
-            msg = html_new_post(media_instance,
-                                translate,
-                                base_dir,
-                                http_prefix,
-                                path, in_reply_to_url,
-                                reply_to_list,
-                                share_description, None,
-                                reply_page_number,
-                                reply_category,
-                                nickname, domain,
-                                domain_full,
-                                self.server.default_timeline,
-                                self.server.newswire,
-                                self.server.theme_name,
-                                no_drop_down, access_keys,
-                                custom_submit_text,
-                                conversation_id,
-                                self.server.recent_posts_cache,
-                                self.server.max_recent_posts,
-                                curr_session,
-                                self.server.cached_webfingers,
-                                self.server.person_cache,
-                                self.server.port,
-                                post_json_object,
-                                self.server.project_version,
-                                self.server.yt_replace_domain,
-                                self.server.twitter_replacement_domain,
-                                self.server.show_published_date_only,
-                                self.server.peertube_instances,
-                                self.server.allow_local_network_access,
-                                self.server.system_language,
-                                self.server.max_like_count,
-                                self.server.signing_priv_key_pem,
-                                self.server.cw_lists,
-                                self.server.lists_enabled,
-                                self.server.default_timeline,
-                                reply_is_chat,
-                                bold_reading,
-                                self.server.dogwhistles).encode('utf-8')
+            msg = \
+                html_new_post(media_instance,
+                              translate,
+                              base_dir,
+                              http_prefix,
+                              path, in_reply_to_url,
+                              reply_to_list,
+                              share_description, None,
+                              reply_page_number,
+                              reply_category,
+                              nickname, domain,
+                              domain_full,
+                              self.server.default_timeline,
+                              self.server.newswire,
+                              self.server.theme_name,
+                              no_drop_down, access_keys,
+                              custom_submit_text,
+                              conversation_id,
+                              self.server.recent_posts_cache,
+                              self.server.max_recent_posts,
+                              curr_session,
+                              self.server.cached_webfingers,
+                              self.server.person_cache,
+                              self.server.port,
+                              post_json_object,
+                              self.server.project_version,
+                              self.server.yt_replace_domain,
+                              self.server.twitter_replacement_domain,
+                              self.server.show_published_date_only,
+                              self.server.peertube_instances,
+                              self.server.allow_local_network_access,
+                              self.server.system_language,
+                              self.server.max_like_count,
+                              self.server.signing_priv_key_pem,
+                              self.server.cw_lists,
+                              self.server.lists_enabled,
+                              self.server.default_timeline,
+                              reply_is_chat,
+                              bold_reading,
+                              self.server.dogwhistles,
+                              self.server.min_images_for_accounts)
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
                 self._404()
                 return True
+            msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -15111,7 +15218,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     default_reply_interval_hrs,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
-                                    self.server.system_language)
+                                    self.server.system_language,
+                                    self.server.min_images_for_accounts)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -21246,6 +21354,9 @@ def run_daemon(map_format: str,
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)
+
+    # which accounts should minimize all attached images by default
+    httpd.min_images_for_accounts = load_min_images_for_accounts(base_dir)
 
     # caches css files
     httpd.css_cache = {}

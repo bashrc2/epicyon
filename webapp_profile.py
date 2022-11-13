@@ -156,7 +156,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                               cw_lists: {}, lists_enabled: str,
                               timezone: str,
                               onion_domain: str, i2p_domain: str,
-                              bold_reading: bool, dogwhistles: {}) -> str:
+                              bold_reading: bool, dogwhistles: {},
+                              min_images_for_accounts: []) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -369,6 +370,9 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                         session, outbox_url, as_header, project_version,
                         http_prefix, from_domain, debug)
     if user_feed:
+        minimize_all_images = False
+        if nickname in min_images_for_accounts:
+            minimize_all_images = True
         i = 0
         for item in user_feed:
             show_item, post_json_object = \
@@ -398,7 +402,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                         False, False, False,
                                         cw_lists, lists_enabled,
                                         timezone, False,
-                                        bold_reading, dogwhistles)
+                                        bold_reading, dogwhistles,
+                                        minimize_all_images)
             i += 1
             if i >= 8:
                 break
@@ -635,6 +640,7 @@ def html_profile(signing_priv_key_pem: str,
     if not nickname:
         return ""
     if is_system_account(nickname):
+        min_images_for_accounts = []
         return html_front_screen(signing_priv_key_pem,
                                  rss_icon_at_top,
                                  icons_as_buttons,
@@ -652,7 +658,8 @@ def html_profile(signing_priv_key_pem: str,
                                  system_language, max_like_count,
                                  shared_items_federated_domains, None,
                                  page_number, max_items_per_page, cw_lists,
-                                 lists_enabled, {})
+                                 lists_enabled, {},
+                                 min_images_for_accounts)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
@@ -1063,6 +1070,7 @@ def html_profile(signing_priv_key_pem: str,
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
     if selected == 'posts':
+        min_images_for_accounts = []
         profile_str += \
             _html_profile_posts(recent_posts_cache, max_recent_posts,
                                 translate,
@@ -1079,7 +1087,8 @@ def html_profile(signing_priv_key_pem: str,
                                 max_like_count,
                                 signing_priv_key_pem,
                                 cw_lists, lists_enabled,
-                                timezone, bold_reading, {}) + license_str
+                                timezone, bold_reading, {},
+                                min_images_for_accounts) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1153,7 +1162,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str,
                         timezone: str, bold_reading: bool,
-                        dogwhistles: {}) -> str:
+                        dogwhistles: {},
+                        min_images_for_accounts: []) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1163,6 +1173,9 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
     ctr = 0
     curr_page = 1
     box_name = 'outbox'
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
     while ctr < max_items and curr_page < 4:
         outbox_feed_path_str = \
             '/users/' + nickname + '/' + box_name + '?page=' + \
@@ -1203,7 +1216,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             True, False, False,
                                             cw_lists, lists_enabled,
                                             timezone, False,
-                                            bold_reading, dogwhistles)
+                                            bold_reading, dogwhistles,
+                                            minimize_all_images)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1
@@ -2140,7 +2154,9 @@ def _html_edit_profile_options(is_admin: bool,
                                notify_likes: str, notify_reactions: str,
                                hide_like_button: str,
                                hide_reaction_button: str,
-                               translate: {}, bold_reading: bool) -> str:
+                               translate: {}, bold_reading: bool,
+                               nickname: str,
+                               min_images_for_accounts: []) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2178,6 +2194,14 @@ def _html_edit_profile_options(is_admin: bool,
     bold_str = bold_reading_string(translate['Bold reading'])
     edit_profile_form += \
         edit_check_box(bold_str, 'boldReading', bold_reading)
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
+    minimize_all_images_str = \
+        bold_reading_string(translate['Minimize all images'])
+    edit_profile_form += \
+        edit_check_box(minimize_all_images_str, 'minimizeAllImages',
+                       minimize_all_images)
     edit_profile_form += '    </div>\n'
     return edit_profile_form
 
@@ -2339,7 +2363,8 @@ def html_edit_profile(server, translate: {},
                       access_keys: {},
                       default_reply_interval_hrs: int,
                       cw_lists: {}, lists_enabled: str,
-                      system_language: str) -> str:
+                      system_language: str,
+                      min_images_for_accounts: []) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2533,7 +2558,8 @@ def html_edit_profile(server, translate: {},
                                    remove_twitter,
                                    notify_likes, notify_reactions,
                                    hide_like_button, hide_reaction_button,
-                                   translate, bold_reading)
+                                   translate, bold_reading,
+                                   nickname, min_images_for_accounts)
 
     # Contact information
     edit_profile_form += \

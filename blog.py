@@ -269,6 +269,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         languages_understood = get_actor_languages_list(actor_json)
     json_content = get_content_from_post(post_json_object, system_language,
                                          languages_understood)
+    minimize_all_images = False
     attachment_str, _ = \
         get_post_attachments_as_html(base_dir, nickname, domain,
                                      domain_full, post_json_object,
@@ -277,7 +278,8 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                                      reply_str, announce_str,
                                      like_str, bookmark_str,
                                      delete_str, mute_str,
-                                     json_content)
+                                     json_content,
+                                     minimize_all_images)
     if attachment_str:
         blog_str += '<br><center>' + attachment_str + '</center>'
     if json_content:
