@@ -756,8 +756,12 @@ def remove_id_ending(id_str: str) -> str:
         id_str = id_str[:-len('/event')]
     elif id_str.endswith('/replies'):
         id_str = id_str[:-len('/replies')]
+    elif id_str.endswith('/delete'):
+        id_str = id_str[:-len('/delete')]
     if id_str.endswith('#Create'):
         id_str = id_str.split('#Create')[0]
+    elif id_str.endswith('#delete'):
+        id_str = id_str.split('#delete')[0]
     return id_str
 
 
