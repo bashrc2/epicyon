@@ -1293,6 +1293,8 @@ def get_post_attachments_as_html(base_dir: str,
                 # optionally hide the image
                 attributed_actor = None
                 minimize_images = False
+                if minimize_all_images:
+                    minimize_images = True
                 if post_json_object['object'].get('attributedTo'):
                     if isinstance(post_json_object['object']['attributedTo'],
                                   str):
