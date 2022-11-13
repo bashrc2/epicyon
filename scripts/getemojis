@@ -27,7 +27,7 @@ fi
 cat "${filename}"
 
 imported_filename='.emoji_import.txt'
-result=$(cat "$filename" | grep '"' | awk -F '"' '{print $2 " " $4}')
+result=$(cat "$filename" | grep '"' | awk -F '"' '{print $2 ", " $4}')
 if [ ! "${result}" ]; then
     echo "No emojis found"
     exit 3
