@@ -18249,7 +18249,6 @@ class PubServer(BaseHTTPRequestHandler):
                 message_id = self.path.split(';postid=')[1]
                 if ';' in message_id:
                     message_id = message_id.split(';')[0]
-                edit_post_params['postid'] = message_id
                 actor = self.path.split(';actor=')[1]
                 if ';' in actor:
                     actor = actor.split(';')[0]
