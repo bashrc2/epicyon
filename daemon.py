@@ -18249,6 +18249,11 @@ class PubServer(BaseHTTPRequestHandler):
                 message_id = self.path.split(';postid=')[1]
                 if ';' in message_id:
                     message_id = message_id.split(';')[0]
+                if ';replyTo=' in self.path:
+                    reply_to = self.path.split(';replyTo=')[1]
+                    if ';' in reply_to:
+                        reply_to = message_id.split(';')[0]
+                    edit_post_params['replyTo'] = reply_to
                 actor = self.path.split(';actor=')[1]
                 if ';' in actor:
                     actor = actor.split(';')[0]

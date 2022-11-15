@@ -534,6 +534,10 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
         if '/statuses/' not in post_id:
             return edit_str
 
+        reply_to = ''
+        if post_json_object['object'].get('inReplyTo'):
+            reply_to = ';replyTo=' + post_json_object['object']['inReplyTo']
+
         if is_blog_post(post_json_object):
             edit_blog_post_str = 'Edit blog post'
             if translate.get(edit_blog_post_str):
@@ -584,7 +588,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '/postedit?scope=public;postid=' + \
                 post_id.split('/statuses/')[1] + \
-                ';actor=' + actor_nickname + \
+                ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
@@ -599,7 +603,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '/postedit?scope=dm;postid=' + \
                 post_id.split('/statuses/')[1] + \
-                ';actor=' + actor_nickname + \
+                ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
@@ -614,7 +618,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '/postedit?scope=unlisted;postid=' + \
                 post_id.split('/statuses/')[1] + \
-                ';actor=' + actor_nickname + \
+                ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
@@ -629,7 +633,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '/postedit?scope=followers;postid=' + \
                 post_id.split('/statuses/')[1] + \
-                ';actor=' + actor_nickname + \
+                ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
