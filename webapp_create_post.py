@@ -325,6 +325,7 @@ def html_new_post(edit_post_params: {},
     if default_start_time:
         date_default = ' value="' + default_start_time.split('T')[0] + '"'
         time_default = ' value="' + default_start_time.split('T')[1] + '"'
+    end_time_default = ''
     if default_end_time:
         end_time_default = ' value="' + default_end_time.split('T')[1] + '"'
     date_and_time_str += \
