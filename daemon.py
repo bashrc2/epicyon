@@ -3340,6 +3340,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
+            languages_understood = \
+                get_understood_languages(base_dir,
+                                         http_prefix,
+                                         chooser_nickname,
+                                         self.server.domain_full,
+                                         self.server.person_cache)
+
             msg = \
                 html_new_post({}, False, self.server.translate,
                               base_dir,
@@ -3370,7 +3377,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
-                              self.server.languages_understood,
+                              languages_understood,
                               self.server.max_like_count,
                               self.server.signing_priv_key_pem,
                               self.server.cw_lists,
@@ -3488,6 +3495,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
+            languages_understood = \
+                get_understood_languages(base_dir,
+                                         http_prefix,
+                                         chooser_nickname,
+                                         self.server.domain_full,
+                                         self.server.person_cache)
+
             msg = \
                 html_new_post({}, False, self.server.translate,
                               base_dir,
@@ -3517,7 +3531,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
-                              self.server.languages_understood,
+                              languages_understood,
                               self.server.max_like_count,
                               self.server.signing_priv_key_pem,
                               self.server.cw_lists,
@@ -15105,6 +15119,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(nickname):
                 bold_reading = True
 
+            languages_understood = \
+                get_understood_languages(base_dir,
+                                         self.server.http_prefix,
+                                         nickname,
+                                         self.server.domain_full,
+                                         self.server.person_cache)
+
             msg = \
                 html_new_post(edit_post_params, media_instance,
                               translate,
@@ -15137,7 +15158,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
-                              self.server.languages_understood,
+                              languages_understood,
                               self.server.max_like_count,
                               self.server.signing_priv_key_pem,
                               self.server.cw_lists,
