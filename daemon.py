@@ -18239,7 +18239,7 @@ class PubServer(BaseHTTPRequestHandler):
             edit_post_params = {}
             if authorized and \
                '/users/' in self.path and \
-               '/editpost?scope=' in self.path and \
+               '/postedit?scope=' in self.path and \
                ';postid=' in self.path and \
                ';actor=' in self.path:
                 post_scope = self.path.split('?scope=')[1]

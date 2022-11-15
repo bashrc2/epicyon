@@ -542,8 +542,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 edit_str += \
                     '        ' + \
                     '<a class="imageAnchor" href="/users/' + \
-                    nickname + \
-                    '/tlblogs?editblogpost=' + \
+                    nickname + '/tlblogs?editblogpost=' + \
                     post_id.split('/statuses/')[1] + \
                     ';actor=' + actor_nickname + \
                     '" title="' + edit_blog_post_str + '" tabindex="10">' + \
@@ -583,8 +582,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             edit_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + \
-                nickname + \
-                '/editpost?scope=public;postid=' + \
+                nickname + '/postedit?scope=public;postid=' + \
                 post_id.split('/statuses/')[1] + \
                 ';actor=' + actor_nickname + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
@@ -599,8 +597,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             edit_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + \
-                nickname + \
-                '/editpost?scope=dm;postid=' + \
+                nickname + '/postedit?scope=dm;postid=' + \
                 post_id.split('/statuses/')[1] + \
                 ';actor=' + actor_nickname + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
@@ -615,8 +612,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             edit_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + \
-                nickname + \
-                '/editpost?scope=unlisted;postid=' + \
+                nickname + '/postedit?scope=unlisted;postid=' + \
                 post_id.split('/statuses/')[1] + \
                 ';actor=' + actor_nickname + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
@@ -631,8 +627,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             edit_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + \
-                nickname + \
-                '/editpost?scope=followers;postid=' + \
+                nickname + '/postedit?scope=followers;postid=' + \
                 post_id.split('/statuses/')[1] + \
                 ';actor=' + actor_nickname + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
