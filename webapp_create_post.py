@@ -280,7 +280,7 @@ def html_new_post(edit_post_params: {},
             conversation_id = edited_post_json['object']['conversation']
         if edit_post_params.get('replyTo'):
             in_reply_to = edit_post_params['replyTo']
-        if box_name == 'dm':
+        if edit_post_params['scope'] == 'dm':
             mentions = edited_post_json['object']['to']
 
     # default subject line or content warning
