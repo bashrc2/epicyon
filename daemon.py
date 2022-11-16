@@ -19235,6 +19235,16 @@ class PubServer(BaseHTTPRequestHandler):
                     edited_postid = edited_postid.split('?')[0]
                 print('DEBUG: edited_postid ' + edited_postid)
 
+            # get the published date of an edited post
+            edited_published = None
+            if '?editpub=' in path:
+                edited_published = path.split('?editpub=')[1]
+                if '?' in edited_published:
+                    edited_published = \
+                        edited_published.split('?')[0]
+                print('DEBUG: edited_published ' +
+                      edited_published)
+
             length = int(headers['Content-Length'])
             if length > self.server.max_post_length:
                 print('POST size too large')
@@ -19862,12 +19872,23 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: posting DM edited_postid ' +
                           str(edited_postid))
                     if edited_postid:
+                        edited_updated = \
+                            message_json['object']['published']
+                        if edited_published:
+                            message_json['published'] = \
+                                edited_published
+                            message_json['object']['published'] = \
+                                edited_published
                         message_json['id'] = \
                             edited_postid + '/activity'
                         message_json['object']['id'] = \
                             edited_postid
                         message_json['object']['url'] = \
                             edited_postid
+                        message_json['updated'] = \
+                            edited_updated
+                        message_json['object']['updated'] = \
+                            edited_updated
                         message_json['type'] = 'Update'
                         print('DEBUG: sending edited dm post ' +
                               str(message_json))

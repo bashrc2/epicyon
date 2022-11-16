@@ -283,6 +283,7 @@ def html_new_post(edit_post_params: {},
     """
     # get the json if this is an edited post
     edited_post_json = None
+    edited_published = ''
     if edit_post_params:
         if edit_post_params.get('post_url'):
             edited_post_filename = \
@@ -300,6 +301,8 @@ def html_new_post(edit_post_params: {},
             in_reply_to = edit_post_params['replyTo']
         if edit_post_params['scope'] == 'dm':
             mentions = edited_post_json['object']['to']
+        edited_published = \
+            edited_post_json['object']['published']
 
     # default subject line or content warning
     default_subject = ''
@@ -961,7 +964,8 @@ def html_new_post(edit_post_params: {},
             '<form enctype="multipart/form-data" method="POST" ' + \
             'accept-charset="UTF-8" action="' + \
             path + '?' + endpoint + '?page=' + str(page_number) + \
-            '?editid=' + edit_post_params['post_url'] + '">\n'
+            '?editid=' + edit_post_params['post_url'] + \
+            '?editpub=' + edited_published + '">\n'
     else:
         new_post_form += \
             '<form enctype="multipart/form-data" method="POST" ' + \
