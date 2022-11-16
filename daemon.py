@@ -19225,6 +19225,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: no nickname found when receiving ' + post_type +
                       ' path ' + path)
                 return -1
+
             # get the message id of an edited post
             edited_postid = None
             if '?editid=' in path:
