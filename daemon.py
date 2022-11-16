@@ -19448,12 +19448,23 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.translate)
                 if message_json:
                     if edited_postid:
+                        edited_updated = \
+                            message_json['object']['published']
+                        if edited_published:
+                            message_json['published'] = \
+                                edited_published
+                            message_json['object']['published'] = \
+                                edited_published
                         message_json['id'] = \
                             edited_postid + '/activity'
                         message_json['object']['id'] = \
                             edited_postid
                         message_json['object']['url'] = \
                             edited_postid
+                        message_json['updated'] = \
+                            edited_updated
+                        message_json['object']['updated'] = \
+                            edited_updated
                         message_json['type'] = 'Update'
                         print('DEBUG: sending edited public post ' +
                               str(message_json))
@@ -19714,12 +19725,23 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.translate)
                 if message_json:
                     if edited_postid:
+                        edited_updated = \
+                            message_json['object']['published']
+                        if edited_published:
+                            message_json['published'] = \
+                                edited_published
+                            message_json['object']['published'] = \
+                                edited_published
                         message_json['id'] = \
                             edited_postid + '/activity'
                         message_json['object']['id'] = \
                             edited_postid
                         message_json['object']['url'] = \
                             edited_postid
+                        message_json['updated'] = \
+                            edited_updated
+                        message_json['object']['updated'] = \
+                            edited_updated
                         message_json['type'] = 'Update'
                         print('DEBUG: sending edited unlisted post ' +
                               str(message_json))
@@ -19786,12 +19808,23 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.translate)
                 if message_json:
                     if edited_postid:
+                        edited_updated = \
+                            message_json['object']['published']
+                        if edited_published:
+                            message_json['published'] = \
+                                edited_published
+                            message_json['object']['published'] = \
+                                edited_published
                         message_json['id'] = \
                             edited_postid + '/activity'
                         message_json['object']['id'] = \
                             edited_postid
                         message_json['object']['url'] = \
                             edited_postid
+                        message_json['updated'] = \
+                            edited_updated
+                        message_json['object']['updated'] = \
+                            edited_updated
                         message_json['type'] = 'Update'
                         print('DEBUG: sending edited followers post ' +
                               str(message_json))
