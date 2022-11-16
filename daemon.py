@@ -18239,14 +18239,14 @@ class PubServer(BaseHTTPRequestHandler):
             edit_post_params = {}
             if authorized and \
                '/users/' in self.path and \
-               '/postedit?scope=' in self.path and \
-               ';postid=' in self.path and \
+               '?postedit=' in self.path and \
+               ';scope=' in self.path and \
                ';actor=' in self.path:
-                post_scope = self.path.split('?scope=')[1]
+                post_scope = self.path.split(';scope=')[1]
                 if ';' in post_scope:
                     post_scope = post_scope.split(';')[0]
                 edit_post_params['scope'] = post_scope
-                message_id = self.path.split(';postid=')[1]
+                message_id = self.path.split('?postedit=')[1]
                 if ';' in message_id:
                     message_id = message_id.split(';')[0]
                 if ';replyTo=' in self.path:

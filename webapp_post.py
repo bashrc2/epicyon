@@ -586,8 +586,8 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             edit_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + \
-                nickname + '/postedit?scope=public;postid=' + \
-                post_id.split('/statuses/')[1] + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=public' + \
                 ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
@@ -601,8 +601,8 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             edit_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + \
-                nickname + '/postedit?scope=dm;postid=' + \
-                post_id.split('/statuses/')[1] + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=dm' + \
                 ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
@@ -616,8 +616,8 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             edit_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + \
-                nickname + '/postedit?scope=unlisted;postid=' + \
-                post_id.split('/statuses/')[1] + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=unlisted' + \
                 ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
@@ -631,8 +631,8 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             edit_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + \
-                nickname + '/postedit?scope=followers;postid=' + \
-                post_id.split('/statuses/')[1] + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=followers' + \
                 ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
