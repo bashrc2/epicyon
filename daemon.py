@@ -3340,8 +3340,15 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
+            languages_understood = \
+                get_understood_languages(base_dir,
+                                         http_prefix,
+                                         chooser_nickname,
+                                         self.server.domain_full,
+                                         self.server.person_cache)
+
             msg = \
-                html_new_post(False, self.server.translate,
+                html_new_post({}, False, self.server.translate,
                               base_dir,
                               http_prefix,
                               report_path, None,
@@ -3370,6 +3377,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
+                              languages_understood,
                               self.server.max_like_count,
                               self.server.signing_priv_key_pem,
                               self.server.cw_lists,
@@ -3487,8 +3495,15 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(chooser_nickname):
                 bold_reading = True
 
+            languages_understood = \
+                get_understood_languages(base_dir,
+                                         http_prefix,
+                                         chooser_nickname,
+                                         self.server.domain_full,
+                                         self.server.person_cache)
+
             msg = \
-                html_new_post(False, self.server.translate,
+                html_new_post({}, False, self.server.translate,
                               base_dir,
                               http_prefix,
                               report_path, None, [],
@@ -3516,6 +3531,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
+                              languages_understood,
                               self.server.max_like_count,
                               self.server.signing_priv_key_pem,
                               self.server.cw_lists,
@@ -15047,7 +15063,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         return True
 
-    def _show_new_post(self, calling_domain: str, path: str,
+    def _show_new_post(self, edit_post_params: {},
+                       calling_domain: str, path: str,
                        media_instance: bool, translate: {},
                        base_dir: str, http_prefix: str,
                        in_reply_to_url: str, reply_to_list: [],
@@ -15102,8 +15119,15 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.bold_reading.get(nickname):
                 bold_reading = True
 
+            languages_understood = \
+                get_understood_languages(base_dir,
+                                         self.server.http_prefix,
+                                         nickname,
+                                         self.server.domain_full,
+                                         self.server.person_cache)
+
             msg = \
-                html_new_post(media_instance,
+                html_new_post(edit_post_params, media_instance,
                               translate,
                               base_dir,
                               http_prefix,
@@ -15134,6 +15158,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
+                              languages_understood,
                               self.server.max_like_count,
                               self.server.signing_priv_key_pem,
                               self.server.cw_lists,
@@ -18210,6 +18235,50 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.getreq_busy = False
                         return
 
+            # Edit a post
+            edit_post_params = {}
+            if authorized and \
+               '/users/' in self.path and \
+               '?postedit=' in self.path and \
+               ';scope=' in self.path and \
+               ';actor=' in self.path:
+                post_scope = self.path.split(';scope=')[1]
+                if ';' in post_scope:
+                    post_scope = post_scope.split(';')[0]
+                edit_post_params['scope'] = post_scope
+                message_id = self.path.split('?postedit=')[1]
+                if ';' in message_id:
+                    message_id = message_id.split(';')[0]
+                if ';replyTo=' in self.path:
+                    reply_to = self.path.split(';replyTo=')[1]
+                    if ';' in reply_to:
+                        reply_to = message_id.split(';')[0]
+                    edit_post_params['replyTo'] = reply_to
+                actor = self.path.split(';actor=')[1]
+                if ';' in actor:
+                    actor = actor.split(';')[0]
+                edit_post_params['actor'] = actor
+                nickname = get_nickname_from_actor(self.path.split('?')[0])
+                edit_post_params['nickname'] = nickname
+                if not nickname:
+                    self._404()
+                    self.server.getreq_busy = False
+                    return
+                if nickname != actor:
+                    self._404()
+                    self.server.getreq_busy = False
+                    return
+                post_url = \
+                    local_actor_url(self.server.http_prefix, nickname,
+                                    self.server.domain_full) + \
+                    '/statuses/' + message_id
+                edit_post_params['post_url'] = post_url
+                # use the new post functions, but using edit_post_params
+                new_post_scope = post_scope
+                if post_scope == 'public':
+                    new_post_scope = 'post'
+                self.path = '/users/' + nickname + '/new' + new_post_scope
+
             # list of known crawlers accessing nodeinfo or masto API
             if self._show_known_crawlers(calling_domain, self.path,
                                          self.server.base_dir,
@@ -18263,7 +18332,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.getreq_busy = False
                 return
 
-            if self._show_new_post(calling_domain, self.path,
+            if self._show_new_post(edit_post_params,
+                                   calling_domain, self.path,
                                    self.server.media_instance,
                                    self.server.translate,
                                    self.server.base_dir,
@@ -19155,6 +19225,26 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: no nickname found when receiving ' + post_type +
                       ' path ' + path)
                 return -1
+
+            # get the message id of an edited post
+            edited_postid = None
+            print('DEBUG: edited_postid path ' + path)
+            if '?editid=' in path:
+                edited_postid = path.split('?editid=')[1]
+                if '?' in edited_postid:
+                    edited_postid = edited_postid.split('?')[0]
+                print('DEBUG: edited_postid ' + edited_postid)
+
+            # get the published date of an edited post
+            edited_published = None
+            if '?editpub=' in path:
+                edited_published = path.split('?editpub=')[1]
+                if '?' in edited_published:
+                    edited_published = \
+                        edited_published.split('?')[0]
+                print('DEBUG: edited_published ' +
+                      edited_published)
+
             length = int(headers['Content-Length'])
             if length > self.server.max_post_length:
                 print('POST size too large')
@@ -19357,6 +19447,27 @@ class PubServer(BaseHTTPRequestHandler):
                                        languages_understood,
                                        self.server.translate)
                 if message_json:
+                    if edited_postid:
+                        edited_updated = \
+                            message_json['object']['published']
+                        if edited_published:
+                            message_json['published'] = \
+                                edited_published
+                            message_json['object']['published'] = \
+                                edited_published
+                        message_json['id'] = \
+                            edited_postid + '/activity'
+                        message_json['object']['id'] = \
+                            edited_postid
+                        message_json['object']['url'] = \
+                            edited_postid
+                        message_json['updated'] = \
+                            edited_updated
+                        message_json['object']['updated'] = \
+                            edited_updated
+                        message_json['type'] = 'Update'
+                        print('DEBUG: sending edited public post ' +
+                              str(message_json))
                     if fields['schedulePost']:
                         return 1
                     if pin_to_profile:
@@ -19613,6 +19724,28 @@ class PubServer(BaseHTTPRequestHandler):
                                          languages_understood,
                                          self.server.translate)
                 if message_json:
+                    if edited_postid:
+                        edited_updated = \
+                            message_json['object']['published']
+                        if edited_published:
+                            message_json['published'] = \
+                                edited_published
+                            message_json['object']['published'] = \
+                                edited_published
+                        message_json['id'] = \
+                            edited_postid + '/activity'
+                        message_json['object']['id'] = \
+                            edited_postid
+                        message_json['object']['url'] = \
+                            edited_postid
+                        message_json['updated'] = \
+                            edited_updated
+                        message_json['object']['updated'] = \
+                            edited_updated
+                        message_json['type'] = 'Update'
+                        print('DEBUG: sending edited unlisted post ' +
+                              str(message_json))
+
                     if fields['schedulePost']:
                         return 1
                     if self._post_to_outbox(message_json,
@@ -19674,6 +19807,28 @@ class PubServer(BaseHTTPRequestHandler):
                                                languages_understood,
                                                self.server.translate)
                 if message_json:
+                    if edited_postid:
+                        edited_updated = \
+                            message_json['object']['published']
+                        if edited_published:
+                            message_json['published'] = \
+                                edited_published
+                            message_json['object']['published'] = \
+                                edited_published
+                        message_json['id'] = \
+                            edited_postid + '/activity'
+                        message_json['object']['id'] = \
+                            edited_postid
+                        message_json['object']['url'] = \
+                            edited_postid
+                        message_json['updated'] = \
+                            edited_updated
+                        message_json['object']['updated'] = \
+                            edited_updated
+                        message_json['type'] = 'Update'
+                        print('DEBUG: sending edited followers post ' +
+                              str(message_json))
+
                     if fields['schedulePost']:
                         return 1
                     if self._post_to_outbox(message_json,
@@ -19747,6 +19902,30 @@ class PubServer(BaseHTTPRequestHandler):
                                                    reply_is_chat,
                                                    self.server.translate)
                 if message_json:
+                    print('DEBUG: posting DM edited_postid ' +
+                          str(edited_postid))
+                    if edited_postid:
+                        edited_updated = \
+                            message_json['object']['published']
+                        if edited_published:
+                            message_json['published'] = \
+                                edited_published
+                            message_json['object']['published'] = \
+                                edited_published
+                        message_json['id'] = \
+                            edited_postid + '/activity'
+                        message_json['object']['id'] = \
+                            edited_postid
+                        message_json['object']['url'] = \
+                            edited_postid
+                        message_json['updated'] = \
+                            edited_updated
+                        message_json['object']['updated'] = \
+                            edited_updated
+                        message_json['type'] = 'Update'
+                        print('DEBUG: sending edited dm post ' +
+                              str(message_json))
+
                     if fields['schedulePost']:
                         return 1
                     print('Sending new DM to ' +
@@ -20001,6 +20180,7 @@ class PubServer(BaseHTTPRequestHandler):
         This creates a thread to send the new post
         """
         page_number = 1
+        original_path = path
 
         if '/users/' not in path:
             print('Not receiving new post for ' + path +
@@ -20098,7 +20278,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # other events happen during their decoding
                 print('Creating new post from: ' + new_post_thread_name)
                 self._receive_new_post_process(post_type,
-                                               path, headers, length,
+                                               original_path,
+                                               headers, length,
                                                post_bytes, boundary,
                                                calling_domain, cookie,
                                                content_license_url,

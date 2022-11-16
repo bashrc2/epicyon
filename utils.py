@@ -2240,7 +2240,7 @@ def _get_reserved_words() -> str:
             'minimal', 'search', 'eventdelete',
             'searchemoji', 'catalog', 'conversationId',
             'mention', 'http', 'https', 'ipfs', 'ipns',
-            'ontologies', 'data')
+            'ontologies', 'data', 'postedit')
 
 
 def get_nickname_validation_pattern() -> str:
@@ -2349,6 +2349,23 @@ def is_public_post(post_json_object: {}) -> bool:
         return False
     for recipient in post_json_object['object']['to']:
         if recipient.endswith('#Public'):
+            return True
+    return False
+
+
+def is_followers_post(post_json_object: {}) -> bool:
+    """Returns true if the given post is to followers
+    """
+    if not post_json_object.get('type'):
+        return False
+    if post_json_object['type'] != 'Create':
+        return False
+    if not has_object_dict(post_json_object):
+        return False
+    if not post_json_object['object'].get('to'):
+        return False
+    for recipient in post_json_object['object']['to']:
+        if recipient.endswith('/followers'):
             return True
     return False
 

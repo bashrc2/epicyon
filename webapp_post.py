@@ -56,6 +56,7 @@ from utils import is_blog_post
 from utils import get_display_name
 from utils import display_name_is_emoji
 from utils import is_public_post
+from utils import is_followers_post
 from utils import update_recent_posts_cache
 from utils import remove_id_ending
 from utils import get_nickname_from_actor
@@ -533,6 +534,10 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
         if '/statuses/' not in post_id:
             return edit_str
 
+        reply_to = ''
+        if post_json_object['object'].get('inReplyTo'):
+            reply_to = ';replyTo=' + post_json_object['object']['inReplyTo']
+
         if is_blog_post(post_json_object):
             edit_blog_post_str = 'Edit blog post'
             if translate.get(edit_blog_post_str):
@@ -541,8 +546,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 edit_str += \
                     '        ' + \
                     '<a class="imageAnchor" href="/users/' + \
-                    nickname + \
-                    '/tlblogs?editblogpost=' + \
+                    nickname + '/tlblogs?editblogpost=' + \
                     post_id.split('/statuses/')[1] + \
                     ';actor=' + actor_nickname + \
                     '" title="' + edit_blog_post_str + '" tabindex="10">' + \
@@ -574,6 +578,67 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_event_str + '" alt="' + edit_event_str + \
                 ' |" src="/icons/edit.png"/></a>\n'
+        elif is_public_post(post_json_object):
+            # Edit a public post
+            edit_post_str = 'Edit post'
+            if translate.get(edit_post_str):
+                edit_post_str = translate[edit_post_str]
+            edit_str += \
+                '        ' + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=public' + \
+                ';actor=' + actor_nickname + reply_to + \
+                '" title="' + edit_post_str + '" tabindex="10">' + \
+                '<img loading="lazy" decoding="async" title="' + \
+                edit_post_str + '" alt="' + edit_post_str + \
+                ' |" src="/icons/edit.png"/></a>\n'
+        elif is_dm(post_json_object):
+            # Edit a DM
+            edit_post_str = 'Edit post'
+            if translate.get(edit_post_str):
+                edit_post_str = translate[edit_post_str]
+            edit_str += \
+                '        ' + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=dm' + \
+                ';actor=' + actor_nickname + reply_to + \
+                '" title="' + edit_post_str + '" tabindex="10">' + \
+                '<img loading="lazy" decoding="async" title="' + \
+                edit_post_str + '" alt="' + edit_post_str + \
+                ' |" src="/icons/edit.png"/></a>\n'
+        elif is_unlisted_post(post_json_object):
+            # Edit an unlisted post
+            edit_post_str = 'Edit post'
+            if translate.get(edit_post_str):
+                edit_post_str = translate[edit_post_str]
+            edit_str += \
+                '        ' + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=unlisted' + \
+                ';actor=' + actor_nickname + reply_to + \
+                '" title="' + edit_post_str + '" tabindex="10">' + \
+                '<img loading="lazy" decoding="async" title="' + \
+                edit_post_str + '" alt="' + edit_post_str + \
+                ' |" src="/icons/edit.png"/></a>\n'
+        elif is_followers_post(post_json_object):
+            # Edit a followers only post
+            edit_post_str = 'Edit post'
+            if translate.get(edit_post_str):
+                edit_post_str = translate[edit_post_str]
+            edit_str += \
+                '        ' + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=followers' + \
+                ';actor=' + actor_nickname + reply_to + \
+                '" title="' + edit_post_str + '" tabindex="10">' + \
+                '<img loading="lazy" decoding="async" title="' + \
+                edit_post_str + '" alt="' + edit_post_str + \
+                ' |" src="/icons/edit.png"/></a>\n'
+
     return edit_str
 
 

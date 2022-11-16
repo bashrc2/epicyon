@@ -8,6 +8,11 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import remove_html
+from utils import get_content_from_post
+from utils import has_object_dict
+from utils import load_json
+from utils import locate_post
 from utils import get_new_post_endpoints
 from utils import is_public_post_from_url
 from utils import get_nickname_from_actor
@@ -31,6 +36,7 @@ from webapp_utils import edit_currency_field
 from webapp_post import individual_post_as_html
 from maps import get_map_preferences_url
 from maps import get_map_preferences_coords
+from maps import get_location_from_tags
 
 
 def _html_following_data_list(base_dir: str, nickname: str,
@@ -197,7 +203,52 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
     return drop_down_content
 
 
-def html_new_post(media_instance: bool, translate: {},
+def _get_date_from_tags(tags: []) -> (str, str):
+    """Returns the date from the tags list
+    """
+    for tag_item in tags:
+        if not tag_item.get('type'):
+            continue
+        if tag_item['type'] != 'Event':
+            continue
+        if not tag_item.get('startTime'):
+            continue
+        if not isinstance(tag_item['startTime'], str):
+            continue
+        if 'T' not in tag_item['startTime']:
+            continue
+        start_time = tag_item['startTime']
+        if not tag_item.get('endTime'):
+            return start_time, ''
+        if not isinstance(tag_item['endTime'], str):
+            return start_time, ''
+        if 'T' not in tag_item['endTime']:
+            return start_time, ''
+        end_time = tag_item['endTime']
+        return start_time, end_time
+    return '', ''
+
+
+def _remove_initial_mentions_from_content(content: str) -> str:
+    """ Removes initial @mentions from content
+    This happens when a the html content is converted back to plain text
+    """
+    if not content.startswith('@'):
+        return content
+    words = content.split(' ')
+    new_content = ''
+    for wrd in words:
+        if wrd.startswith('@'):
+            continue
+        if new_content:
+            new_content += ' ' + wrd
+        else:
+            new_content += wrd
+    return new_content
+
+
+def html_new_post(edit_post_params: {},
+                  media_instance: bool, translate: {},
                   base_dir: str, http_prefix: str,
                   path: str, in_reply_to: str,
                   mentions: [],
@@ -221,6 +272,7 @@ def html_new_post(media_instance: bool, translate: {},
                   peertube_instances: [],
                   allow_local_network_access: bool,
                   system_language: str,
+                  languages_understood: [],
                   max_like_count: int, signing_priv_key_pem: str,
                   cw_lists: {}, lists_enabled: str,
                   box_name: str,
@@ -229,6 +281,55 @@ def html_new_post(media_instance: bool, translate: {},
                   min_images_for_accounts: []) -> str:
     """New post screen
     """
+    # get the json if this is an edited post
+    edited_post_json = None
+    edited_published = ''
+    if edit_post_params:
+        if edit_post_params.get('post_url'):
+            edited_post_filename = \
+                locate_post(base_dir, nickname,
+                            domain, edit_post_params['post_url'])
+            if edited_post_filename:
+                edited_post_json = load_json(edited_post_filename)
+                if not has_object_dict(edited_post_json):
+                    return ''
+        if not edited_post_json:
+            return ''
+        if edited_post_json['object'].get('conversation'):
+            conversation_id = edited_post_json['object']['conversation']
+        if edit_post_params.get('replyTo'):
+            in_reply_to = edit_post_params['replyTo']
+        if edit_post_params['scope'] == 'dm':
+            mentions = edited_post_json['object']['to']
+        edited_published = \
+            edited_post_json['object']['published']
+
+    # default subject line or content warning
+    default_subject = ''
+    if share_description:
+        default_subject = share_description
+
+    default_location = ''
+    default_start_time = ''
+    default_end_time = ''
+    if edited_post_json:
+        # if this is an edited post then get the subject line or
+        # content warning
+        summary_str = get_content_from_post(edited_post_json, system_language,
+                                            languages_understood, "summary")
+        if summary_str:
+            default_subject = remove_html(summary_str)
+
+        if edited_post_json['object'].get('tag'):
+            # if this is an edited post then get the location
+            location_str = \
+                get_location_from_tags(edited_post_json['object']['tag'])
+            if location_str:
+                default_location = location_str
+            # if this is an edited post then get the start and end time
+            default_start_time, default_end_time = \
+                _get_date_from_tags(edited_post_json['object']['tag'])
+
     reply_str = ''
 
     is_new_reminder = False
@@ -244,15 +345,26 @@ def html_new_post(media_instance: bool, translate: {},
     # select a date and time for this post
     date_and_time_str += '<label class="labels">' + \
         translate['Date'] + ': </label>\n'
-    date_and_time_str += '<input type="date" name="eventDate">\n'
+    date_default = ''
+    time_default = ''
+    if default_start_time:
+        date_default = ' value="' + default_start_time.split('T')[0] + '"'
+        time_default = ' value="' + default_start_time.split('T')[1] + '"'
+    end_time_default = ''
+    if default_end_time:
+        end_time_default = ' value="' + default_end_time.split('T')[1] + '"'
+    date_and_time_str += \
+        '<input type="date" name="eventDate"' + date_default + '>\n'
     date_and_time_str += '<label class="labelsright">' + \
         translate['Start Time'] + ': '
     date_and_time_str += \
-        '<input type="time" name="eventTime"></label>\n<br>\n'
+        '<input type="time" name="eventTime"' + \
+        time_default + '></label>\n<br>\n'
     date_and_time_str += '<label class="labelsright">' + \
         translate['End Time'] + ': '
     date_and_time_str += \
-        '<input type="time" name="eventEndTime"></label>\n</p>\n'
+        '<input type="time" name="eventEndTime"' + \
+        end_time_default + '></label>\n</p>\n'
 
     show_public_on_dropdown = True
     message_box_height = 400
@@ -521,7 +633,8 @@ def html_new_post(media_instance: bool, translate: {},
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
         city_or_loc_str = translate['City or location of the shared item']
-        extra_fields += edit_text_field(city_or_loc_str + ':', 'location', '',
+        extra_fields += edit_text_field(city_or_loc_str + ':', 'location',
+                                        default_location,
                                         'https://www.openstreetmap.org/#map=')
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
@@ -587,7 +700,8 @@ def html_new_post(media_instance: bool, translate: {},
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
         city_or_loc_str = translate['City or location of the wanted item']
-        extra_fields += edit_text_field(city_or_loc_str + ':', 'location', '',
+        extra_fields += edit_text_field(city_or_loc_str + ':', 'location',
+                                        default_location,
                                         'https://www.openstreetmap.org/#map=')
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
@@ -745,7 +859,8 @@ def html_new_post(media_instance: bool, translate: {},
             'rel="nofollow noopener noreferrer" target="_blank">🗺️ ' + \
             translate['Location'] + '</a>'
         date_and_location += '<br><p>\n' + \
-            edit_text_field(location_label_with_link, 'location', '',
+            edit_text_field(location_label_with_link, 'location',
+                            default_location,
                             'https://www.openstreetmap.org/#map=') + '</p>\n'
         date_and_location += end_edit_section()
 
@@ -844,10 +959,18 @@ def html_new_post(media_instance: bool, translate: {},
             # reporting a post to moderator
             mentions_str = 'Re: ' + report_url + '\n\n' + mentions_str
 
-    new_post_form += \
-        '<form enctype="multipart/form-data" method="POST" ' + \
-        'accept-charset="UTF-8" action="' + \
-        path + '?' + endpoint + '?page=' + str(page_number) + '">\n'
+    if edited_post_json:
+        new_post_form += \
+            '<form enctype="multipart/form-data" method="POST" ' + \
+            'accept-charset="UTF-8" action="' + \
+            path + '?' + endpoint + '?page=' + str(page_number) + \
+            '?editid=' + edit_post_params['post_url'] + \
+            '?editpub=' + edited_published + '">\n'
+    else:
+        new_post_form += \
+            '<form enctype="multipart/form-data" method="POST" ' + \
+            'accept-charset="UTF-8" action="' + \
+            path + '?' + endpoint + '?page=' + str(page_number) + '">\n'
     if reply_is_chat:
         new_post_form += \
             '    <input type="hidden" name="replychatmsg" value="yes">\n'
@@ -908,9 +1031,6 @@ def html_new_post(media_instance: bool, translate: {},
     if media_instance and not reply_str:
         new_post_form += new_post_image_section
 
-    if not share_description:
-        share_description = ''
-
     # for reminders show the date and time at the top
     if is_new_reminder:
         new_post_form += '<div class="containerNoOverflow">\n'
@@ -918,7 +1038,7 @@ def html_new_post(media_instance: bool, translate: {},
         new_post_form += '</div>\n'
 
     new_post_form += \
-        edit_text_field(placeholder_subject, 'subject', share_description)
+        edit_text_field(placeholder_subject, 'subject', default_subject)
     new_post_form += ''
 
     selected_str = ' selected'
@@ -952,11 +1072,22 @@ def html_new_post(media_instance: bool, translate: {},
     elif endpoint == 'newblog':
         message_box_height = 800
 
+    # get the default message text
+    default_message = ''
+    if edited_post_json:
+        content_str = \
+            get_content_from_post(edited_post_json, system_language,
+                                  languages_understood, "content")
+        if content_str:
+            default_message = remove_html(content_str)
+            default_message = \
+                _remove_initial_mentions_from_content(default_message)
+
     new_post_form += \
         '    <textarea id="message" name="message" style="height:' + \
         str(message_box_height) + 'px"' + selected_str + \
         ' spellcheck="true" autocomplete="on">' + \
-        '</textarea>\n'
+        default_message + '</textarea>\n'
     new_post_form += \
         extra_fields + citations_str + replies_section + date_and_location
     if not media_instance or reply_str:
