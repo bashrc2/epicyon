@@ -19228,10 +19228,12 @@ class PubServer(BaseHTTPRequestHandler):
 
             # get the message id of an edited post
             edited_postid = None
+            print('DEBUG: edited_postid path ' + path)
             if '?editid=' in path:
                 edited_postid = path.split('?editid=')[1]
                 if '?' in edited_postid:
                     edited_postid = edited_postid.split('?')[0]
+                print('DEBUG: edited_postid ' + edited_postid)
 
             length = int(headers['Content-Length'])
             if length > self.server.max_post_length:
@@ -19857,6 +19859,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                    reply_is_chat,
                                                    self.server.translate)
                 if message_json:
+                    print('DEBUG: posting DM edited_postid ' +
+                          str(edited_postid))
                     if edited_postid:
                         message_json['id'] = \
                             edited_postid + '/activity'
