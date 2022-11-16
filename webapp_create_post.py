@@ -229,6 +229,24 @@ def _get_date_from_tags(tags: []) -> (str, str):
     return '', ''
 
 
+def _remove_initial_mentions_from_content(content: str) -> str:
+    """ Removes initial @mentions from content
+    This happens when a the html content is converted back to plain text
+    """
+    if not content.startswith('@'):
+        return content
+    words = content.split(' ')
+    new_content = ''
+    for wrd in words:
+        if wrd.startswith('@'):
+            continue
+        if new_content:
+            new_content += ' ' + wrd
+        else:
+            new_content += wrd
+    return new_content
+
+
 def html_new_post(edit_post_params: {},
                   media_instance: bool, translate: {},
                   base_dir: str, http_prefix: str,
@@ -1058,6 +1076,8 @@ def html_new_post(edit_post_params: {},
                                   languages_understood, "content")
         if content_str:
             default_message = remove_html(content_str)
+            default_message = \
+                _remove_initial_mentions_from_content(default_message)
 
     new_post_form += \
         '    <textarea id="message" name="message" style="height:' + \
