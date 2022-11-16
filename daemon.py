@@ -20126,6 +20126,7 @@ class PubServer(BaseHTTPRequestHandler):
         This creates a thread to send the new post
         """
         page_number = 1
+        original_path = path
 
         if '/users/' not in path:
             print('Not receiving new post for ' + path +
@@ -20223,7 +20224,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # other events happen during their decoding
                 print('Creating new post from: ' + new_post_thread_name)
                 self._receive_new_post_process(post_type,
-                                               path, headers, length,
+                                               original_path,
+                                               headers, length,
                                                post_bytes, boundary,
                                                calling_domain, cookie,
                                                content_license_url,
