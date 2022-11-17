@@ -439,13 +439,32 @@ SHARES_PER_PAGE = 12
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
-    def _update_edited_post(self, message_json: {},
+    def _update_edited_post(self, base_dir: str,
+                            nickname: str, domain: str,
+                            message_json: {},
                             edited_published: str,
-                            edited_postid: str) -> None:
+                            edited_postid: str,
+                            recent_posts_cache: {}) -> None:
         """When an edited post is created this assigns
         a published and updated date to it, and uses
         the previous id
         """
+        # ensure that the cached post is removed if it exists,
+        # so that it then will be recreated
+        cached_post_filename = \
+            get_cached_post_filename(base_dir, nickname, domain,
+                                     message_json)
+        if cached_post_filename:
+            if os.path.isfile(cached_post_filename):
+                try:
+                    os.remove(cached_post_filename)
+                except OSError:
+                    print('EX: _update_edited_post ' +
+                          'unable to delete ' +
+                          cached_post_filename)
+        # remove from memory cache
+        remove_post_from_cache(message_json, recent_posts_cache)
+
         edited_updated = \
             message_json['object']['published']
         if edited_published:
@@ -19474,9 +19493,13 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.translate)
                 if message_json:
                     if edited_postid:
-                        self._update_edited_post(message_json,
+                        recent_posts_cache = self.server.recent_posts_cache
+                        self._update_edited_post(self.server.base_dir,
+                                                 nickname, self.server.domain,
+                                                 message_json,
                                                  edited_published,
-                                                 edited_postid)
+                                                 edited_postid,
+                                                 recent_posts_cache)
                         print('DEBUG: sending edited public post ' +
                               str(message_json))
                     if fields['schedulePost']:
@@ -19736,9 +19759,13 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.translate)
                 if message_json:
                     if edited_postid:
-                        self._update_edited_post(message_json,
+                        recent_posts_cache = self.server.recent_posts_cache
+                        self._update_edited_post(self.server.base_dir,
+                                                 nickname, self.server.domain,
+                                                 message_json,
                                                  edited_published,
-                                                 edited_postid)
+                                                 edited_postid,
+                                                 recent_posts_cache)
                         print('DEBUG: sending edited unlisted post ' +
                               str(message_json))
 
@@ -19804,9 +19831,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.translate)
                 if message_json:
                     if edited_postid:
-                        self._update_edited_post(message_json,
+                        recent_posts_cache = self.server.recent_posts_cache
+                        self._update_edited_post(self.server.base_dir,
+                                                 nickname, self.server.domain,
+                                                 message_json,
                                                  edited_published,
-                                                 edited_postid)
+                                                 edited_postid,
+                                                 recent_posts_cache)
                         print('DEBUG: sending edited followers post ' +
                               str(message_json))
 
@@ -19886,9 +19917,13 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: posting DM edited_postid ' +
                           str(edited_postid))
                     if edited_postid:
-                        self._update_edited_post(message_json,
+                        recent_posts_cache = self.server.recent_posts_cache
+                        self._update_edited_post(self.server.base_dir,
+                                                 nickname, self.server.domain,
+                                                 message_json,
                                                  edited_published,
-                                                 edited_postid)
+                                                 edited_postid,
+                                                 recent_posts_cache)
                         print('DEBUG: sending edited dm post ' +
                               str(message_json))
 
