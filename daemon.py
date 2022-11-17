@@ -449,22 +449,6 @@ class PubServer(BaseHTTPRequestHandler):
         a published and updated date to it, and uses
         the previous id
         """
-        # ensure that the cached post is removed if it exists,
-        # so that it then will be recreated
-        cached_post_filename = \
-            get_cached_post_filename(base_dir, nickname, domain,
-                                     message_json)
-        if cached_post_filename:
-            if os.path.isfile(cached_post_filename):
-                try:
-                    os.remove(cached_post_filename)
-                except OSError:
-                    print('EX: _update_edited_post ' +
-                          'unable to delete ' +
-                          cached_post_filename)
-        # remove from memory cache
-        remove_post_from_cache(message_json, recent_posts_cache)
-
         edited_updated = \
             message_json['object']['published']
         if edited_published:
@@ -483,6 +467,22 @@ class PubServer(BaseHTTPRequestHandler):
         message_json['object']['updated'] = \
             edited_updated
         message_json['type'] = 'Update'
+
+        # ensure that the cached post is removed if it exists,
+        # so that it then will be recreated
+        cached_post_filename = \
+            get_cached_post_filename(base_dir, nickname, domain,
+                                     message_json)
+        if cached_post_filename:
+            if os.path.isfile(cached_post_filename):
+                try:
+                    os.remove(cached_post_filename)
+                except OSError:
+                    print('EX: _update_edited_post ' +
+                          'unable to delete ' +
+                          cached_post_filename)
+        # remove from memory cache
+        remove_post_from_cache(message_json, recent_posts_cache)
 
     def _convert_domains(self, calling_domain, referer_domain,
                          msg_str: str) -> str:
