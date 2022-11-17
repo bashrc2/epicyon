@@ -414,148 +414,157 @@ def post_message_to_outbox(session, translate: {},
         post_id = None
     if debug:
         print('DEBUG: save_post_to_box')
-    if message_json['type'] != 'Upgrade':
-        outbox_name = 'outbox'
 
-        store_hash_tags(base_dir, post_to_nickname, domain,
-                        http_prefix, domain_full,
-                        message_json, translate)
+    is_edited_post = False
+    if message_json['type'] == 'Update' and \
+       message_json['object']['type'] == 'Note':
+        is_edited_post = True
+        message_json['type'] = 'Create'
 
-        # if this is a blog post or an event then save to its own box
-        if message_json['type'] == 'Create':
-            if has_object_dict(message_json):
-                if message_json['object'].get('type'):
-                    if message_json['object']['type'] == 'Article':
-                        outbox_name = 'tlblogs'
+    outbox_name = 'outbox'
 
-        saved_filename = \
-            save_post_to_box(base_dir,
-                             http_prefix,
-                             post_id,
-                             post_to_nickname, domain_full,
-                             message_json, outbox_name)
-        if not saved_filename:
-            print('WARN: post not saved to outbox ' + outbox_name)
-            return False
+    store_hash_tags(base_dir, post_to_nickname, domain,
+                    http_prefix, domain_full,
+                    message_json, translate)
 
-        update_speaker(base_dir, http_prefix,
-                       post_to_nickname, domain, domain_full,
-                       message_json, person_cache,
-                       translate, message_json['actor'],
-                       theme, system_language,
-                       outbox_name)
+    # if this is a blog post or an event then save to its own box
+    if message_json['type'] == 'Create':
+        if has_object_dict(message_json):
+            if message_json['object'].get('type'):
+                if message_json['object']['type'] == 'Article':
+                    outbox_name = 'tlblogs'
 
-        # save all instance blogs to the news actor
-        if post_to_nickname != 'news' and outbox_name == 'tlblogs':
-            if '/' in saved_filename:
-                if is_featured_writer(base_dir, post_to_nickname, domain):
-                    saved_post_id = saved_filename.split('/')[-1]
-                    blogs_dir = \
-                        base_dir + '/accounts/news@' + domain + '/tlblogs'
-                    if not os.path.isdir(blogs_dir):
-                        os.mkdir(blogs_dir)
-                    copyfile(saved_filename, blogs_dir + '/' + saved_post_id)
-                    inbox_update_index('tlblogs', base_dir,
-                                       'news@' + domain,
-                                       saved_filename, debug)
+    saved_filename = \
+        save_post_to_box(base_dir,
+                         http_prefix,
+                         post_id,
+                         post_to_nickname, domain_full,
+                         message_json, outbox_name)
+    if not saved_filename:
+        print('WARN: post not saved to outbox ' + outbox_name)
+        return False
 
-                # clear the citations file if it exists
-                citations_filename = \
-                    base_dir + '/accounts/' + \
-                    post_to_nickname + '@' + domain + '/.citations.txt'
-                if os.path.isfile(citations_filename):
-                    try:
-                        os.remove(citations_filename)
-                    except OSError:
-                        print('EX: post_message_to_outbox unable to delete ' +
-                              citations_filename)
+    update_speaker(base_dir, http_prefix,
+                   post_to_nickname, domain, domain_full,
+                   message_json, person_cache,
+                   translate, message_json['actor'],
+                   theme, system_language,
+                   outbox_name)
 
-        # The following activity types get added to the index files
-        indexed_activities = (
-            'Create', 'Question', 'Note', 'EncryptedMessage', 'Article',
-            'Patch', 'Announce', 'ChatMessage'
-        )
-        if message_json['type'] in indexed_activities:
-            indexes = [outbox_name, "inbox"]
-            self_actor = \
-                local_actor_url(http_prefix, post_to_nickname, domain_full)
-            for box_name_index in indexes:
-                if not box_name_index:
-                    continue
+    # save all instance blogs to the news actor
+    if post_to_nickname != 'news' and outbox_name == 'tlblogs':
+        if '/' in saved_filename:
+            if is_featured_writer(base_dir, post_to_nickname, domain):
+                saved_post_id = saved_filename.split('/')[-1]
+                blogs_dir = \
+                    base_dir + '/accounts/news@' + domain + '/tlblogs'
+                if not os.path.isdir(blogs_dir):
+                    os.mkdir(blogs_dir)
+                copyfile(saved_filename, blogs_dir + '/' + saved_post_id)
+                inbox_update_index('tlblogs', base_dir,
+                                   'news@' + domain,
+                                   saved_filename, debug)
 
-                # should this also go to the media timeline?
-                if box_name_index == 'inbox':
-                    if is_image_media(session, base_dir, http_prefix,
-                                      post_to_nickname, domain,
-                                      message_json,
-                                      yt_replace_domain,
-                                      twitter_replacement_domain,
-                                      allow_local_network_access,
-                                      recent_posts_cache, debug,
-                                      system_language,
-                                      domain_full, person_cache,
-                                      signing_priv_key_pem,
-                                      bold_reading):
-                        inbox_update_index('tlmedia', base_dir,
-                                           post_to_nickname + '@' + domain,
-                                           saved_filename, debug)
+            # clear the citations file if it exists
+            citations_filename = \
+                base_dir + '/accounts/' + \
+                post_to_nickname + '@' + domain + '/.citations.txt'
+            if os.path.isfile(citations_filename):
+                try:
+                    os.remove(citations_filename)
+                except OSError:
+                    print('EX: post_message_to_outbox unable to delete ' +
+                          citations_filename)
 
-                if box_name_index == 'inbox' and outbox_name == 'tlblogs':
-                    continue
+    # The following activity types get added to the index files
+    indexed_activities = (
+        'Create', 'Question', 'Note', 'EncryptedMessage', 'Article',
+        'Patch', 'Announce', 'ChatMessage'
+    )
+    if message_json['type'] in indexed_activities:
+        indexes = [outbox_name, "inbox"]
+        self_actor = \
+            local_actor_url(http_prefix, post_to_nickname, domain_full)
+        for box_name_index in indexes:
+            if not box_name_index:
+                continue
 
-                # avoid duplicates of the message if already going
-                # back to the inbox of the same account
-                if self_actor not in message_json['to']:
-                    # show sent post within the inbox,
-                    # as is the typical convention
-                    inbox_update_index(box_name_index, base_dir,
+            # should this also go to the media timeline?
+            if box_name_index == 'inbox':
+                if is_image_media(session, base_dir, http_prefix,
+                                  post_to_nickname, domain,
+                                  message_json,
+                                  yt_replace_domain,
+                                  twitter_replacement_domain,
+                                  allow_local_network_access,
+                                  recent_posts_cache, debug,
+                                  system_language,
+                                  domain_full, person_cache,
+                                  signing_priv_key_pem,
+                                  bold_reading):
+                    inbox_update_index('tlmedia', base_dir,
                                        post_to_nickname + '@' + domain,
                                        saved_filename, debug)
 
-                    # regenerate the html
-                    use_cache_only = False
-                    page_number = 1
-                    show_individual_post_icons = True
-                    manually_approve_followers = \
-                        follower_approval_active(base_dir,
-                                                 post_to_nickname, domain)
-                    timezone = \
-                        get_account_timezone(base_dir,
+            if box_name_index == 'inbox' and outbox_name == 'tlblogs':
+                continue
+
+            # avoid duplicates of the message if already going
+            # back to the inbox of the same account
+            if self_actor not in message_json['to']:
+                # show sent post within the inbox,
+                # as is the typical convention
+                inbox_update_index(box_name_index, base_dir,
+                                   post_to_nickname + '@' + domain,
+                                   saved_filename, debug)
+
+                # regenerate the html
+                use_cache_only = False
+                page_number = 1
+                show_individual_post_icons = True
+                manually_approve_followers = \
+                    follower_approval_active(base_dir,
                                              post_to_nickname, domain)
-                    mitm = False
-                    if os.path.isfile(saved_filename.replace('.json', '') +
-                                      '.mitm'):
-                        mitm = True
-                    minimize_all_images = False
-                    if post_to_nickname in min_images_for_accounts:
-                        minimize_all_images = True
-                    individual_post_as_html(signing_priv_key_pem,
-                                            False, recent_posts_cache,
-                                            max_recent_posts,
-                                            translate, page_number,
-                                            base_dir, session,
-                                            cached_webfingers,
-                                            person_cache,
-                                            post_to_nickname, domain, port,
-                                            message_json, None, True,
-                                            allow_deletion,
-                                            http_prefix, __version__,
-                                            box_name_index,
-                                            yt_replace_domain,
-                                            twitter_replacement_domain,
-                                            show_published_date_only,
-                                            peertube_instances,
-                                            allow_local_network_access,
-                                            theme, system_language,
-                                            max_like_count,
-                                            box_name_index != 'dm',
-                                            show_individual_post_icons,
-                                            manually_approve_followers,
-                                            False, True, use_cache_only,
-                                            cw_lists, lists_enabled,
-                                            timezone, mitm,
-                                            bold_reading, dogwhistles,
-                                            minimize_all_images)
+                timezone = \
+                    get_account_timezone(base_dir,
+                                         post_to_nickname, domain)
+                mitm = False
+                if os.path.isfile(saved_filename.replace('.json', '') +
+                                  '.mitm'):
+                    mitm = True
+                minimize_all_images = False
+                if post_to_nickname in min_images_for_accounts:
+                    minimize_all_images = True
+                individual_post_as_html(signing_priv_key_pem,
+                                        False, recent_posts_cache,
+                                        max_recent_posts,
+                                        translate, page_number,
+                                        base_dir, session,
+                                        cached_webfingers,
+                                        person_cache,
+                                        post_to_nickname, domain, port,
+                                        message_json, None, True,
+                                        allow_deletion,
+                                        http_prefix, __version__,
+                                        box_name_index,
+                                        yt_replace_domain,
+                                        twitter_replacement_domain,
+                                        show_published_date_only,
+                                        peertube_instances,
+                                        allow_local_network_access,
+                                        theme, system_language,
+                                        max_like_count,
+                                        box_name_index != 'dm',
+                                        show_individual_post_icons,
+                                        manually_approve_followers,
+                                        False, True, use_cache_only,
+                                        cw_lists, lists_enabled,
+                                        timezone, mitm,
+                                        bold_reading, dogwhistles,
+                                        minimize_all_images)
+
+    if is_edited_post:
+        message_json['type'] = 'Update'
 
     if outbox_announce(recent_posts_cache,
                        base_dir, message_json, debug):

@@ -1137,25 +1137,25 @@ def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
     remove_post_from_cache(message_json, recent_posts_cache)
 
 
-def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
-                          base_dir: str,
-                          nickname: str, domain: str,
-                          max_mentions: int, max_emoji: int,
-                          allow_local_network_access: bool,
-                          debug: bool,
-                          system_language: str, http_prefix: str,
-                          domain_full: str, person_cache: {},
-                          signing_priv_key_pem: str,
-                          max_recent_posts: int, translate: {},
-                          session, cached_webfingers: {}, port: int,
-                          allow_deletion: bool,
-                          yt_replace_domain: str,
-                          twitter_replacement_domain: str,
-                          show_published_date_only: bool,
-                          peertube_instances: [],
-                          theme_name: str, max_like_count: int,
-                          cw_lists: {}, dogwhistles: {},
-                          min_images_for_accounts: []) -> bool:
+def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
+                         base_dir: str,
+                         nickname: str, domain: str,
+                         max_mentions: int, max_emoji: int,
+                         allow_local_network_access: bool,
+                         debug: bool,
+                         system_language: str, http_prefix: str,
+                         domain_full: str, person_cache: {},
+                         signing_priv_key_pem: str,
+                         max_recent_posts: int, translate: {},
+                         session, cached_webfingers: {}, port: int,
+                         allow_deletion: bool,
+                         yt_replace_domain: str,
+                         twitter_replacement_domain: str,
+                         show_published_date_only: bool,
+                         peertube_instances: [],
+                         theme_name: str, max_like_count: int,
+                         cw_lists: {}, dogwhistles: {},
+                         min_images_for_accounts: []) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -1205,7 +1205,7 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     # has the content changed?
     if post_json_object['object']['content'] == \
        message_json['object']['content']:
-        # same content
+        # same content. Has the summary changed?
         if 'summary' in post_json_object['object'] and \
            'summary' in message_json['object']:
             if post_json_object['object']['summary'] == \
@@ -1329,23 +1329,23 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
     elif message_json['object']['type'] == 'Note':
         if message_json['object'].get('id'):
             domain_full = get_full_domain(domain, port)
-            if _receive_edit_to_post(recent_posts_cache, message_json,
-                                     base_dir, nickname, domain,
-                                     max_mentions, max_emoji,
-                                     allow_local_network_access,
-                                     debug, system_language, http_prefix,
-                                     domain_full, person_cache,
-                                     signing_priv_key_pem,
-                                     max_recent_posts, translate,
-                                     session, cached_webfingers, port,
-                                     allow_deletion,
-                                     yt_replace_domain,
-                                     twitter_replacement_domain,
-                                     show_published_date_only,
-                                     peertube_instances,
-                                     theme_name, max_like_count,
-                                     cw_lists, dogwhistles,
-                                     min_images_for_accounts):
+            if receive_edit_to_post(recent_posts_cache, message_json,
+                                    base_dir, nickname, domain,
+                                    max_mentions, max_emoji,
+                                    allow_local_network_access,
+                                    debug, system_language, http_prefix,
+                                    domain_full, person_cache,
+                                    signing_priv_key_pem,
+                                    max_recent_posts, translate,
+                                    session, cached_webfingers, port,
+                                    allow_deletion,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    theme_name, max_like_count,
+                                    cw_lists, dogwhistles,
+                                    min_images_for_accounts):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:
