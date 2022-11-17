@@ -22204,6 +22204,8 @@ def run_daemon(map_format: str,
 
     create_initial_last_seen(base_dir, http_prefix)
 
+    httpd.max_mentions = max_mentions
+
     print('THREAD: Creating inbox queue')
     httpd.thrInboxQueue = \
         thread_with_trace(target=run_inbox_queue,
