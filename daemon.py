@@ -444,7 +444,8 @@ class PubServer(BaseHTTPRequestHandler):
                             message_json: {},
                             edited_published: str,
                             edited_postid: str,
-                            recent_posts_cache: {}) -> None:
+                            recent_posts_cache: {},
+                            box_name: str) -> None:
         """When an edited post is created this assigns
         a published and updated date to it, and uses
         the previous id
@@ -483,6 +484,21 @@ class PubServer(BaseHTTPRequestHandler):
                           cached_post_filename)
         # remove from memory cache
         remove_post_from_cache(message_json, recent_posts_cache)
+        # update the index
+        id_str = edited_postid.split('/')[-1]
+        index_filename = \
+            acct_dir(base_dir, nickname, domain) + '/' + box_name + '.index'
+        if not text_in_file(id_str, index_filename):
+            try:
+                with open(index_filename, 'r+',
+                          encoding='utf-8') as fp_index:
+                    content = fp_index.read()
+                    if id_str + '\n' not in content:
+                        fp_index.seek(0, 0)
+                        fp_index.write(id_str + '\n' + content)
+            except OSError as ex:
+                print('WARN: Failed to write index after edit ' +
+                      index_filename + ' ' + str(ex))
 
     def _convert_domains(self, calling_domain, referer_domain,
                          msg_str: str) -> str:
@@ -19499,7 +19515,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  message_json,
                                                  edited_published,
                                                  edited_postid,
-                                                 recent_posts_cache)
+                                                 recent_posts_cache,
+                                                 'outbox')
                         print('DEBUG: sending edited public post ' +
                               str(message_json))
                     if fields['schedulePost']:
@@ -19765,7 +19782,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  message_json,
                                                  edited_published,
                                                  edited_postid,
-                                                 recent_posts_cache)
+                                                 recent_posts_cache,
+                                                 'outbox')
                         print('DEBUG: sending edited unlisted post ' +
                               str(message_json))
 
@@ -19837,7 +19855,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  message_json,
                                                  edited_published,
                                                  edited_postid,
-                                                 recent_posts_cache)
+                                                 recent_posts_cache,
+                                                 'outbox')
                         print('DEBUG: sending edited followers post ' +
                               str(message_json))
 
@@ -19923,7 +19942,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  message_json,
                                                  edited_published,
                                                  edited_postid,
-                                                 recent_posts_cache)
+                                                 recent_posts_cache,
+                                                 'outbox')
                         print('DEBUG: sending edited dm post ' +
                               str(message_json))
 
