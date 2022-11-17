@@ -469,36 +469,9 @@ class PubServer(BaseHTTPRequestHandler):
             edited_updated
         message_json['type'] = 'Update'
 
-        # ensure that the cached post is removed if it exists,
-        # so that it then will be recreated
-        cached_post_filename = \
-            get_cached_post_filename(base_dir, nickname, domain,
-                                     message_json)
-        if cached_post_filename:
-            if os.path.isfile(cached_post_filename):
-                try:
-                    os.remove(cached_post_filename)
-                except OSError:
-                    print('EX: _update_edited_post ' +
-                          'unable to delete ' +
-                          cached_post_filename)
-        # remove from memory cache
-        remove_post_from_cache(message_json, recent_posts_cache)
-        # update the index
-        id_str = edited_postid.split('/')[-1]
-        index_filename = \
-            acct_dir(base_dir, nickname, domain) + '/' + box_name + '.index'
-        if not text_in_file(id_str, index_filename):
-            try:
-                with open(index_filename, 'r+',
-                          encoding='utf-8') as fp_index:
-                    content = fp_index.read()
-                    if id_str + '\n' not in content:
-                        fp_index.seek(0, 0)
-                        fp_index.write(id_str + '\n' + content)
-            except OSError as ex:
-                print('WARN: Failed to write index after edit ' +
-                      index_filename + ' ' + str(ex))
+        # update memory cache
+        if recent_posts_cache['html'].get(edited_postid):
+            del recent_posts_cache['html'][edited_postid]
 
     def _convert_domains(self, calling_domain, referer_domain,
                          msg_str: str) -> str:
