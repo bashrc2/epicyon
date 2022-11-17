@@ -473,6 +473,22 @@ class PubServer(BaseHTTPRequestHandler):
         if recent_posts_cache['html'].get(edited_postid):
             del recent_posts_cache['html'][edited_postid]
 
+        # update the index
+        id_str = edited_postid.split('/')[-1]
+        index_filename = \
+            acct_dir(base_dir, nickname, domain) + '/' + box_name + '.index'
+        if not text_in_file(id_str, index_filename):
+            try:
+                with open(index_filename, 'r+',
+                          encoding='utf-8') as fp_index:
+                    content = fp_index.read()
+                    if id_str + '\n' not in content:
+                        fp_index.seek(0, 0)
+                        fp_index.write(id_str + '\n' + content)
+            except OSError as ex:
+                print('WARN: Failed to write index after edit ' +
+                      index_filename + ' ' + str(ex))
+
     def _convert_domains(self, calling_domain, referer_domain,
                          msg_str: str) -> str:
         """Convert domains to onion or i2p, depending upon who is asking
