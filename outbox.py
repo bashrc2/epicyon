@@ -414,7 +414,8 @@ def post_message_to_outbox(session, translate: {},
         post_id = None
     if debug:
         print('DEBUG: save_post_to_box')
-    if message_json['type'] != 'Upgrade':
+
+    if message_json['type'] != 'Update':
         outbox_name = 'outbox'
 
         store_hash_tags(base_dir, post_to_nickname, domain,
