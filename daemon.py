@@ -1135,8 +1135,8 @@ class PubServer(BaseHTTPRequestHandler):
             '<div style="font-size: 128px; ' \
             'text-align: center; font-variant: ' \
             'small-caps;"><p role="alert">' + http_description + '</p></div>' \
-            '<div style="text-align: center;">' + long_description + '</div>' \
-            '</body></html>'
+            '<div style="text-align: center;" aria-live="polite">' + \
+            long_description + '</div></body></html>'
         msg = msg.encode('utf-8')
         self.send_response(http_code)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
