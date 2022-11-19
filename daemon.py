@@ -21639,7 +21639,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(map_format: str,
+def run_daemon(max_hashtags: int,
+               map_format: str,
                clacks: str,
                preferred_podcast_formats: [],
                check_actor_timeout: int,
@@ -22212,7 +22213,7 @@ def run_daemon(map_format: str,
 
     httpd.max_mentions = max_mentions
     httpd.max_emoji = max_emoji
-    httpd.max_hashtags = 20
+    httpd.max_hashtags = max_hashtags
 
     print('THREAD: Creating inbox queue')
     httpd.thrInboxQueue = \
