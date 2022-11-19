@@ -1155,7 +1155,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                          peertube_instances: [],
                          theme_name: str, max_like_count: int,
                          cw_lists: {}, dogwhistles: {},
-                         min_images_for_accounts: []) -> bool:
+                         min_images_for_accounts: [],
+                         max_hashtags: int) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -1181,7 +1182,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                                message_json, max_mentions, max_emoji,
                                allow_local_network_access, debug,
                                system_language, http_prefix,
-                               domain_full, person_cache):
+                               domain_full, person_cache,
+                               max_hashtags):
         print('EDITPOST: contains invalid content' + str(message_json))
         return False
 
@@ -1304,7 +1306,8 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                              peertube_instances: [],
                              theme_name: str, max_like_count: int,
                              cw_lists: {}, dogwhistles: {},
-                             min_images_for_accounts: []) -> bool:
+                             min_images_for_accounts: [],
+                             max_hashtags: int) -> bool:
 
     """Receives an Update activity within the POST section of HTTPServer
     """
@@ -1345,7 +1348,8 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                     peertube_instances,
                                     theme_name, max_like_count,
                                     cw_lists, dogwhistles,
-                                    min_images_for_accounts):
+                                    min_images_for_accounts,
+                                    max_hashtags):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:
@@ -2869,12 +2873,19 @@ def _estimate_number_of_emoji(content: str) -> int:
     return content.count(' :')
 
 
+def _estimate_number_of_hashtags(content: str) -> int:
+    """Returns a rough estimate of the number of hashtags
+    """
+    return content.count('>#<')
+
+
 def _valid_post_content(base_dir: str, nickname: str, domain: str,
                         message_json: {}, max_mentions: int, max_emoji: int,
                         allow_local_network_access: bool, debug: bool,
                         system_language: str,
                         http_prefix: str, domain_full: str,
-                        person_cache: {}) -> bool:
+                        person_cache: {},
+                        max_hashtags: int) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -2960,6 +2971,12 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         if message_json['object'].get('id'):
             print('REJECT EMOJI OVERLOAD: ' + message_json['object']['id'])
         print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
+              content_str)
+        return False
+    if _estimate_number_of_hashtags(content_str) > max_hashtags:
+        if message_json['object'].get('id'):
+            print('REJECT HASHTAG OVERLOAD: ' + message_json['object']['id'])
+        print('REJECT HASHTAG OVERLOAD: Too many hashtags in post - ' +
               content_str)
         return False
     # check number of tags
@@ -3981,7 +3998,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          content_license_url: str,
                          languages_understood: [],
                          mitm: bool, bold_reading: bool,
-                         dogwhistles: {}) -> bool:
+                         dogwhistles: {},
+                         max_hashtags: int) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -4294,7 +4312,8 @@ def _inbox_after_initial(server, inbox_start_time,
                            post_json_object, max_mentions, max_emoji,
                            allow_local_network_access, debug,
                            system_language, http_prefix,
-                           domain_full, person_cache):
+                           domain_full, person_cache,
+                           max_hashtags):
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_valid_post_content',
                             debug)
@@ -5222,7 +5241,7 @@ def run_inbox_queue(server,
                     theme_name: str, system_language: str,
                     max_like_count: int, signing_priv_key_pem: str,
                     default_reply_interval_hrs: int,
-                    cw_lists: {}) -> None:
+                    cw_lists: {}, max_hashtags: int) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -5681,7 +5700,8 @@ def run_inbox_queue(server,
                                     peertube_instances,
                                     theme_name, max_like_count,
                                     cw_lists, dogwhistles,
-                                    server.min_images_for_accounts):
+                                    server.min_images_for_accounts,
+                                    max_hashtags):
             if debug:
                 print('Queue: Update accepted from ' + key_id)
             if os.path.isfile(queue_filename):
@@ -5809,7 +5829,8 @@ def run_inbox_queue(server,
                                  cw_lists, lists_enabled,
                                  content_license_url,
                                  languages_understood, mitm,
-                                 bold_reading, dogwhistles)
+                                 bold_reading, dogwhistles,
+                                 max_hashtags)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'handle_after_initial',
                                 debug)

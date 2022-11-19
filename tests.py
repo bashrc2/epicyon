@@ -844,8 +844,9 @@ def create_server_alice(path: str, domain: str, port: int,
     preferred_podcast_formats = None
     clacks = None
     map_format = 'gpx'
+    max_hashtags = 20
     print('Server running: Alice')
-    run_daemon(map_format,
+    run_daemon(max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1007,8 +1008,9 @@ def create_server_bob(path: str, domain: str, port: int,
     preferred_podcast_formats = None
     clacks = None
     map_format = 'gpx'
+    max_hashtags = 20
     print('Server running: Bob')
-    run_daemon(map_format,
+    run_daemon(max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1092,8 +1094,9 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     preferred_podcast_formats = None
     clacks = None
     map_format = 'gpx'
+    max_hashtags = 20
     print('Server running: Eve')
-    run_daemon(map_format,
+    run_daemon(max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1179,8 +1182,9 @@ def create_server_group(path: str, domain: str, port: int,
     preferred_podcast_formats = None
     clacks = None
     map_format = 'gpx'
+    max_hashtags = 20
     print('Server running: Group')
-    run_daemon(map_format,
+    run_daemon(max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,

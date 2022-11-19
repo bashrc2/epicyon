@@ -462,7 +462,8 @@ class PubServer(BaseHTTPRequestHandler):
                             peertube_instances: [],
                             theme_name: str, max_like_count: int,
                             cw_lists: {}, dogwhistles: {},
-                            min_images_for_accounts: []) -> None:
+                            min_images_for_accounts: [],
+                            max_hashtags: int) -> None:
         """When an edited post is created this assigns
         a published and updated date to it, and uses
         the previous id
@@ -509,7 +510,8 @@ class PubServer(BaseHTTPRequestHandler):
                              peertube_instances,
                              theme_name, max_like_count,
                              cw_lists, dogwhistles,
-                             min_images_for_accounts)
+                             min_images_for_accounts,
+                             max_hashtags)
 
         # update the index
         id_str = edited_postid.split('/')[-1]
@@ -1135,8 +1137,8 @@ class PubServer(BaseHTTPRequestHandler):
             '<div style="font-size: 128px; ' \
             'text-align: center; font-variant: ' \
             'small-caps;"><p role="alert">' + http_description + '</p></div>' \
-            '<div style="text-align: center;">' + long_description + '</div>' \
-            '</body></html>'
+            '<div style="text-align: center;" aria-live="polite">' + \
+            long_description + '</div></body></html>'
         msg = msg.encode('utf-8')
         self.send_response(http_code)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
@@ -19579,7 +19581,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.max_like_count,
                                                  self.server.cw_lists,
                                                  self.server.dogwhistles,
-                                                 min_images_for_accounts)
+                                                 min_images_for_accounts,
+                                                 self.server.max_hashtags)
                         print('DEBUG: sending edited public post ' +
                               str(message_json))
                     if fields['schedulePost']:
@@ -19882,7 +19885,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.max_like_count,
                                                  self.server.cw_lists,
                                                  self.server.dogwhistles,
-                                                 min_images_for_accounts)
+                                                 min_images_for_accounts,
+                                                 self.server.max_hashtags)
                         print('DEBUG: sending edited unlisted post ' +
                               str(message_json))
 
@@ -19991,7 +19995,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.max_like_count,
                                                  self.server.cw_lists,
                                                  self.server.dogwhistles,
-                                                 min_images_for_accounts)
+                                                 min_images_for_accounts,
+                                                 self.server.max_hashtags)
                         print('DEBUG: sending edited followers post ' +
                               str(message_json))
 
@@ -20114,7 +20119,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.max_like_count,
                                                  self.server.cw_lists,
                                                  self.server.dogwhistles,
-                                                 min_images_for_accounts)
+                                                 min_images_for_accounts,
+                                                 self.server.max_hashtags)
                         print('DEBUG: sending edited dm post ' +
                               str(message_json))
 
@@ -21633,7 +21639,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(map_format: str,
+def run_daemon(max_hashtags: int,
+               map_format: str,
                clacks: str,
                preferred_podcast_formats: [],
                check_actor_timeout: int,
@@ -22206,6 +22213,7 @@ def run_daemon(map_format: str,
 
     httpd.max_mentions = max_mentions
     httpd.max_emoji = max_emoji
+    httpd.max_hashtags = max_hashtags
 
     print('THREAD: Creating inbox queue')
     httpd.thrInboxQueue = \
@@ -22237,7 +22245,8 @@ def run_daemon(map_format: str,
                                 httpd.max_like_count,
                                 httpd.signing_priv_key_pem,
                                 httpd.default_reply_interval_hrs,
-                                httpd.cw_lists), daemon=True)
+                                httpd.cw_lists,
+                                httpd.max_hashtags), daemon=True)
 
     print('THREAD: Creating scheduled post thread')
     httpd.thrPostSchedule = \

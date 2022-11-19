@@ -592,6 +592,9 @@ def _command_options() -> None:
     parser.add_argument('--max_like_count', dest='max_like_count', type=int,
                         default=10,
                         help='Maximum number of likes displayed on a post')
+    parser.add_argument('--max_hashtags', dest='max_hashtags', type=int,
+                        default=20,
+                        help='Maximum number of hashtags on a post')
     parser.add_argument('--votingtime', dest='votingtime', type=int,
                         default=1440,
                         help='Time to vote on newswire items in minutes')
@@ -3672,7 +3675,8 @@ def _command_options() -> None:
 if __name__ == "__main__":
     argb2, opt2 = _command_options()
     print('allowdeletion: ' + str(argb2.allowdeletion))
-    run_daemon(argb2.mapFormat,
+    run_daemon(argb2.max_hashtags,
+               argb2.mapFormat,
                argb2.clacks,
                opt2['preferred_podcast_formats'],
                argb2.check_actor_timeout,
