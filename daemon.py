@@ -8947,6 +8947,8 @@ class PubServer(BaseHTTPRequestHandler):
             timeline_bookmark = '#' + timeline_bookmark
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -9102,9 +9104,13 @@ class PubServer(BaseHTTPRequestHandler):
                                     minimize_all_images)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
+
+        first_post_id = repeat_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
-            str(page_number) + timeline_bookmark
+            str(page_number) + first_post_id + timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_announce_button',
                             self.server.debug)
@@ -9133,6 +9139,8 @@ class PubServer(BaseHTTPRequestHandler):
             timeline_bookmark = '#' + timeline_bookmark
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -9217,9 +9225,13 @@ class PubServer(BaseHTTPRequestHandler):
                              curr_session, proxy_type)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
+
+        first_post_id = repeat_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
-            str(page_number) + timeline_bookmark
+            str(page_number) + first_post_id + timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_announce_button',
                             self.server.debug)
@@ -9485,6 +9497,8 @@ class PubServer(BaseHTTPRequestHandler):
         actor = path.split('?like=')[0]
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -9655,9 +9669,14 @@ class PubServer(BaseHTTPRequestHandler):
                   like_url)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
+
+        first_post_id = like_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
-            '?page=' + str(page_number) + timeline_bookmark
+            '?page=' + str(page_number) + first_post_id + \
+            timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_like_button',
                             self.server.debug)
@@ -9686,6 +9705,8 @@ class PubServer(BaseHTTPRequestHandler):
             timeline_bookmark = '#' + timeline_bookmark
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -9844,9 +9865,14 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
         actor_absolute = self._get_instance_url(calling_domain) + actor
+
+        first_post_id = like_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
-            '?page=' + str(page_number) + timeline_bookmark
+            '?page=' + str(page_number) + first_post_id + \
+            timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_like_button',
                             self.server.debug)
@@ -9878,6 +9904,8 @@ class PubServer(BaseHTTPRequestHandler):
         actor = path.split('?react=')[0]
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -10068,9 +10096,14 @@ class PubServer(BaseHTTPRequestHandler):
                   reaction_url)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
+
+        first_post_id = reaction_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
-            '?page=' + str(page_number) + timeline_bookmark
+            '?page=' + str(page_number) + first_post_id + \
+            timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_reaction_button',
                             self.server.debug)
@@ -10099,6 +10132,8 @@ class PubServer(BaseHTTPRequestHandler):
             timeline_bookmark = '#' + timeline_bookmark
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -10277,9 +10312,14 @@ class PubServer(BaseHTTPRequestHandler):
                       reaction_post_filename)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
+
+        first_post_id = reaction_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
-            '?page=' + str(page_number) + timeline_bookmark
+            '?page=' + str(page_number) + first_post_id + \
+            timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_reaction_button',
                             self.server.debug)
@@ -10412,6 +10452,8 @@ class PubServer(BaseHTTPRequestHandler):
         actor = path.split('?bookmark=')[0]
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -10535,9 +10577,14 @@ class PubServer(BaseHTTPRequestHandler):
         # self.server.project_version, None,
         # curr_session, proxy_type)
         actor_absolute = self._get_instance_url(calling_domain) + actor
+
+        first_post_id = bookmark_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
-            '?page=' + str(page_number) + timeline_bookmark
+            '?page=' + str(page_number) + first_post_id + \
+            timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_bookmark_button',
                             debug)
@@ -10566,6 +10613,8 @@ class PubServer(BaseHTTPRequestHandler):
             timeline_bookmark = '#' + timeline_bookmark
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -10690,9 +10739,14 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: Unbookmarked post not found: ' +
                       bookmark_filename)
         actor_absolute = self._get_instance_url(calling_domain) + actor
+
+        first_post_id = bookmark_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
-            '?page=' + str(page_number) + timeline_bookmark
+            '?page=' + str(page_number) + first_post_id + \
+            timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_bookmark_button',
                             self.server.debug)
