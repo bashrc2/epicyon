@@ -124,6 +124,9 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
     if obj_json.get('id'):
         metadata += "    <meta name=\"DC.identifier\" " + \
             "scheme=\"DCTERMS.URI\" content=\"" + obj_json['id'] + "\" />\n"
+    if obj_json.get('summary'):
+        metadata += "    <meta name=\"DC.title\" " + \
+            "content=\"" + obj_json['summary'] + "\" />\n"
     if obj_json.get('attributedTo'):
         if isinstance(obj_json['attributedTo'], str):
             attrib = obj_json['attributedTo']
