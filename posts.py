@@ -4051,9 +4051,11 @@ def _create_box_indexed(recent_posts_cache: {},
                     continue
 
                 # Skip through any posts previous to the current page
-                if total_posts_count < int((page_number - 1) * items_per_page):
-                    total_posts_count += 1
-                    continue
+                if not first_post_id:
+                    if total_posts_count < \
+                       int((page_number - 1) * items_per_page):
+                        total_posts_count += 1
+                        continue
 
                 # if this is a full path then remove the directories
                 if '/' in post_filename:
