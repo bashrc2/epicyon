@@ -89,7 +89,7 @@ Type=simple
 User=epicyon
 Group=epicyon
 WorkingDirectory=/opt/epicyon
-ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug --log_login_failures
+ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --log_login_failures
 Environment=USER=epicyon
 Environment=PYTHONUNBUFFERED=true
 Restart=always
