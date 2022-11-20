@@ -4028,7 +4028,6 @@ def _create_box_indexed(recent_posts_cache: {},
         if first_post_id:
             first_post_id = first_post_id.replace('--', '#')
             first_post_id = first_post_id.replace('/', '#')
-        print('DEBUG: first_post_id: ' + first_post_id)
         with open(index_filename, 'r', encoding='utf-8') as index_file:
             posts_added_to_timeline = 0
             while posts_added_to_timeline < items_per_page:
@@ -4043,6 +4042,8 @@ def _create_box_indexed(recent_posts_cache: {},
                               post_filename)
                         total_posts_count = \
                             int((page_number - 1) * items_per_page)
+                        continue
+                    if total_posts_count == 0:
                         continue
 
                 # Has this post passed through the newswire voting stage?
