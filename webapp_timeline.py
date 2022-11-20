@@ -1048,7 +1048,7 @@ def html_timeline(default_timeline: str,
         tl_str += text_mode_separator
         first_post = ''
         if last_post_id:
-            first_post = ';firstpost=' + last_post_id
+            first_post = ';firstpost=' + last_post_id.replace('#', '--')
         tl_str += \
             '      <br>\n' + \
             '      <center>\n' + \
