@@ -4037,14 +4037,12 @@ def _create_box_indexed(recent_posts_cache: {},
                     break
 
                 if first_post_id:
-                    if first_post_id in post_filename:
-                        print('DEBUG: first_post_id: filename ' +
-                              post_filename)
-                        total_posts_count = \
-                            int((page_number - 1) * items_per_page)
+                    if first_post_id not in post_filename and \
+                       total_posts_count == 0:
                         continue
                     if total_posts_count == 0:
-                        continue
+                        total_posts_count = \
+                            int((page_number - 1) * items_per_page)
 
                 # Has this post passed through the newswire voting stage?
                 if not _passed_newswire_voting(newswire_votes_threshold,
