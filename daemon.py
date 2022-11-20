@@ -9670,7 +9670,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
 
-        first_post_id = like_url.replace('/', '--')
+        first_post_id = like_url2.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
@@ -9866,7 +9866,7 @@ class PubServer(BaseHTTPRequestHandler):
                 del self.server.iconsCache['like_inactive.png']
         actor_absolute = self._get_instance_url(calling_domain) + actor
 
-        first_post_id = like_url.replace('/', '--')
+        first_post_id = like_url2.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
@@ -10097,7 +10097,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
 
-        first_post_id = reaction_url.replace('/', '--')
+        first_post_id = reaction_url2.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
@@ -10313,7 +10313,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
 
-        first_post_id = reaction_url.replace('/', '--')
+        first_post_id = reaction_url2.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
