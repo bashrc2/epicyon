@@ -10894,6 +10894,8 @@ class PubServer(BaseHTTPRequestHandler):
         page_number = 1
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -10997,8 +10999,15 @@ class PubServer(BaseHTTPRequestHandler):
                 path.split('?mute=')[0]
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_mute_button', self.server.debug)
+
+        first_post_id = mute_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         self._redirect_headers(actor + '/' +
-                               timeline_str + timeline_bookmark,
+                               timeline_str +
+                               '?page=' + str(page_number) +
+                               first_post_id +
+                               timeline_bookmark,
                                cookie, calling_domain)
 
     def _undo_mute_button(self, calling_domain: str, path: str,
@@ -11026,6 +11035,8 @@ class PubServer(BaseHTTPRequestHandler):
         page_number = 1
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
@@ -11126,7 +11137,13 @@ class PubServer(BaseHTTPRequestHandler):
                 'http://' + i2p_domain + path.split('?unmute=')[0]
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_mute_button', self.server.debug)
+
+        first_post_id = mute_url.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
         self._redirect_headers(actor + '/' + timeline_str +
+                               '?page=' + str(page_number) +
+                               first_post_id +
                                timeline_bookmark,
                                cookie, calling_domain)
 
