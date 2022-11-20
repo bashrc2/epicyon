@@ -1036,7 +1036,8 @@ def person_box_json(recent_posts_cache: {},
         return create_dm_timeline(recent_posts_cache,
                                   base_dir, nickname, domain, port,
                                   http_prefix,
-                                  no_of_items, header_only, page_number)
+                                  no_of_items, header_only, page_number,
+                                  first_post_id)
     if boxname in ('tlbookmarks', 'bookmarks'):
         return create_bookmarks_timeline(base_dir, nickname, domain,
                                          port, http_prefix,
@@ -1047,7 +1048,8 @@ def person_box_json(recent_posts_cache: {},
                                        base_dir, nickname, domain,
                                        port, http_prefix,
                                        no_of_items, header_only,
-                                       page_number)
+                                       page_number,
+                                       first_post_id)
     if boxname == 'tlmedia':
         return create_media_timeline(base_dir, nickname, domain, port,
                                      http_prefix, no_of_items, header_only,
@@ -1064,7 +1066,7 @@ def person_box_json(recent_posts_cache: {},
     if boxname == 'tlblogs':
         return create_blogs_timeline(base_dir, nickname, domain, port,
                                      http_prefix, no_of_items, header_only,
-                                     page_number)
+                                     page_number, first_post_id)
     if boxname == 'outbox':
         return create_outbox(base_dir, nickname, domain, port,
                              http_prefix,

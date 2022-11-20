@@ -3612,31 +3612,35 @@ def create_bookmarks_timeline(base_dir: str,
 def create_dm_timeline(recent_posts_cache: {},
                        base_dir: str, nickname: str, domain: str,
                        port: int, http_prefix: str, items_per_page: int,
-                       header_only: bool, page_number: int) -> {}:
+                       header_only: bool, page_number: int,
+                       first_post_id: str) -> {}:
     return _create_box_indexed(recent_posts_cache,
                                base_dir, 'dm', nickname,
                                domain, port, http_prefix, items_per_page,
-                               header_only, True, 0, False, 0, page_number)
+                               header_only, True, 0, False, 0, page_number,
+                               first_post_id)
 
 
 def create_replies_timeline(recent_posts_cache: {},
                             base_dir: str, nickname: str, domain: str,
                             port: int, http_prefix: str, items_per_page: int,
-                            header_only: bool, page_number: int) -> {}:
+                            header_only: bool, page_number: int,
+                            first_post_id: str) -> {}:
     return _create_box_indexed(recent_posts_cache,
                                base_dir, 'tlreplies',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, True,
-                               0, False, 0, page_number)
+                               0, False, 0, page_number, first_post_id)
 
 
 def create_blogs_timeline(base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, items_per_page: int,
-                          header_only: bool, page_number: int) -> {}:
+                          header_only: bool, page_number: int,
+                          first_post_id: str) -> {}:
     return _create_box_indexed({}, base_dir, 'tlblogs', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
-                               0, False, 0, page_number)
+                               0, False, 0, page_number, first_post_id)
 
 
 def create_features_timeline(base_dir: str,
