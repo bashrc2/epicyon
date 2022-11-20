@@ -4039,6 +4039,8 @@ def _create_box_indexed(recent_posts_cache: {},
 
                 if first_post_id:
                     if first_post_id in post_filename:
+                        print('DEBUG: first_post_id: filename ' +
+                              post_filename)
                         total_posts_count = \
                             int((page_number - 1) * items_per_page)
                         continue
