@@ -3591,12 +3591,12 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
 def create_inbox(recent_posts_cache: {},
                  base_dir: str, nickname: str, domain: str, port: int,
                  http_prefix: str, items_per_page: int, header_only: bool,
-                 page_number: int) -> {}:
+                 page_number: int, first_post_id: str) -> {}:
     return _create_box_indexed(recent_posts_cache,
                                base_dir, 'inbox',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, True,
-                               0, False, 0, page_number)
+                               0, False, 0, page_number, first_post_id)
 
 
 def create_bookmarks_timeline(base_dir: str,
@@ -3960,7 +3960,8 @@ def _create_box_indexed(recent_posts_cache: {},
                         items_per_page: int, header_only: bool,
                         authorized: bool,
                         newswire_votes_threshold: int, positive_voting: bool,
-                        voting_time_mins: int, page_number: int) -> {}:
+                        voting_time_mins: int, page_number: int,
+                        first_post_id: str = '') -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not page_number:
@@ -4024,6 +4025,9 @@ def _create_box_indexed(recent_posts_cache: {},
     total_posts_count = 0
     posts_added_to_timeline = 0
     if os.path.isfile(index_filename):
+        if first_post_id:
+            first_post_id = first_post_id.replace('--', '#')
+            first_post_id = first_post_id.replace('/', '#')
         with open(index_filename, 'r', encoding='utf-8') as index_file:
             posts_added_to_timeline = 0
             while posts_added_to_timeline < items_per_page:
@@ -4031,6 +4035,12 @@ def _create_box_indexed(recent_posts_cache: {},
 
                 if not post_filename:
                     break
+
+                if first_post_id:
+                    if first_post_id in post_filename:
+                        total_posts_count = \
+                            int((page_number - 1) * items_per_page)
+                        continue
 
                 # Has this post passed through the newswire voting stage?
                 if not _passed_newswire_voting(newswire_votes_threshold,

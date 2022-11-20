@@ -988,10 +988,20 @@ def person_box_json(recent_posts_cache: {},
     # Only show the header by default
     header_only = True
 
+    # first post in the timeline
+    first_post_id = ''
+    if ';firstpost=' in path:
+        first_post_id = \
+            path.split(';firstpost=')[1]
+        first_post_id = \
+            first_post_id.replace('--', '/')
+
     # handle page numbers
     page_number = None
     if '?page=' in path:
         page_number = path.split('?page=')[1]
+        if ';' in page_number:
+            page_number = page_number.split(';')[0]
         if len(page_number) > 5:
             page_number = 1
         if page_number == 'true':
@@ -1020,7 +1030,8 @@ def person_box_json(recent_posts_cache: {},
         return create_inbox(recent_posts_cache,
                             base_dir, nickname, domain, port,
                             http_prefix,
-                            no_of_items, header_only, page_number)
+                            no_of_items, header_only, page_number,
+                            first_post_id)
     if boxname == 'dm':
         return create_dm_timeline(recent_posts_cache,
                                   base_dir, nickname, domain, port,
