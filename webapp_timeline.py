@@ -948,6 +948,8 @@ def html_timeline(default_timeline: str,
     if box_name == 'inbox':
         use_cache_only = True
 
+    last_post_id = ''
+
     if timeline_json:
         # if this is the media timeline then add an extra gallery container
         if box_name == 'tlmedia':
@@ -981,6 +983,7 @@ def html_timeline(default_timeline: str,
                                                          curr_tl_str,
                                                          box_name,
                                                          page_number)
+                        last_post_id = post_id
                         _log_timeline_timing(enable_timing_log,
                                              timeline_start_time,
                                              box_name, '10')
@@ -1027,6 +1030,8 @@ def html_timeline(default_timeline: str,
 
                 if curr_tl_str:
                     if curr_tl_str not in tl_str:
+                        last_post_id = \
+                            remove_id_ending(item['id']).replace('/', '#')
                         item_ctr += 1
                         tl_str += text_mode_separator + curr_tl_str
                         if separator_str:
@@ -1041,11 +1046,14 @@ def html_timeline(default_timeline: str,
     # page down arrow
     if item_ctr > 0:
         tl_str += text_mode_separator
+        first_post = ''
+        if last_post_id:
+            first_post = ';firstpost=' + last_post_id
         tl_str += \
             '      <br>\n' + \
             '      <center>\n' + \
             '        <a href="' + users_path + '/' + box_name + '?page=' + \
-            str(page_number + 1) + \
+            str(page_number + 1) + first_post + \
             '#timelineposts" accesskey="' + access_keys['Page down'] + '" ' + \
             'class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" class="pageicon" src="/' + \

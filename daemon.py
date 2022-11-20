@@ -12120,6 +12120,8 @@ class PubServer(BaseHTTPRequestHandler):
                         page_number = 1
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
+                            if ';' in page_number:
+                                page_number = page_number.split(';')[0]
                             nickname = nickname.split('?page=')[0]
                             if len(page_number) > 5:
                                 page_number = "1"
@@ -12294,6 +12296,8 @@ class PubServer(BaseHTTPRequestHandler):
                         page_number = 1
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
+                            if ';' in page_number:
+                                page_number = page_number.split(';')[0]
                             nickname = nickname.split('?page=')[0]
                             if len(page_number) > 5:
                                 page_number = "1"
@@ -12457,6 +12461,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
+                        if ';' in page_number:
+                            page_number = page_number.split(';')[0]
                         nickname = nickname.split('?page=')[0]
                         if len(page_number) > 5:
                             page_number = "1"
@@ -12619,6 +12625,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
+                        if ';' in page_number:
+                            page_number = page_number.split(';')[0]
                         nickname = nickname.split('?page=')[0]
                         if len(page_number) > 5:
                             page_number = "1"
@@ -12778,6 +12786,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
+                        if ';' in page_number:
+                            page_number = page_number.split(';')[0]
                         nickname = nickname.split('?page=')[0]
                         if len(page_number) > 5:
                             page_number = "1"
@@ -12938,6 +12948,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
+                        if ';' in page_number:
+                            page_number = page_number.split(';')[0]
                         nickname = nickname.split('?page=')[0]
                         if len(page_number) > 5:
                             page_number = "1"
@@ -13103,6 +13115,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
+                        if ';' in page_number:
+                            page_number = page_number.split(';')[0]
                         nickname = nickname.split('?page=')[0]
                         if len(page_number) > 5:
                             page_number = "1"
@@ -13260,6 +13274,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
+                        if ';' in page_number:
+                            page_number = page_number.split(';')[0]
                         nickname = nickname.split('?page=')[0]
                         if len(page_number) > 5:
                             page_number = "1"
@@ -13356,6 +13372,8 @@ class PubServer(BaseHTTPRequestHandler):
                     page_number = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
+                        if ';' in page_number:
+                            page_number = page_number.split(';')[0]
                         nickname = nickname.split('?page=')[0]
                         if len(page_number) > 5:
                             page_number = "1"
@@ -13465,6 +13483,8 @@ class PubServer(BaseHTTPRequestHandler):
                         page_number = 1
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
+                            if ';' in page_number:
+                                page_number = page_number.split(';')[0]
                             nickname = nickname.split('?page=')[0]
                             if len(page_number) > 5:
                                 page_number = "1"
@@ -13623,6 +13643,8 @@ class PubServer(BaseHTTPRequestHandler):
             page_number = 0
             if '?page=' in nickname:
                 page_number = nickname.split('?page=')[1]
+                if ';' in page_number:
+                    page_number = page_number.split(';')[0]
                 nickname = nickname.split('?page=')[0]
                 if len(page_number) > 5:
                     page_number = "1"
@@ -13768,6 +13790,8 @@ class PubServer(BaseHTTPRequestHandler):
                         page_number = 1
                         if '?page=' in nickname:
                             page_number = nickname.split('?page=')[1]
+                            if ';' in page_number:
+                                page_number = page_number.split(';')[0]
                             nickname = nickname.split('?page=')[0]
                             if len(page_number) > 5:
                                 page_number = "1"
@@ -13927,6 +13951,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                    SHARES_PER_PAGE)
                 else:
                     page_number_str = path.split('?page=')[1]
+                    if ';' in page_number_str:
+                        page_number_str = page_number_str.split(';')[0]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
                     if len(page_number_str) > 5:
@@ -14062,6 +14088,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            authorized, FOLLOWS_PER_PAGE)
                 else:
                     page_number_str = path.split('?page=')[1]
+                    if ';' in page_number_str:
+                        page_number_str = page_number_str.split(';')[0]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
                     if len(page_number_str) > 5:
@@ -14200,6 +14228,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            'followers')
                 else:
                     page_number_str = path.split('?page=')[1]
+                    if ';' in page_number_str:
+                        page_number_str = page_number_str.split(';')[0]
                     if '#' in page_number_str:
                         page_number_str = page_number_str.split('#')[0]
                     if len(page_number_str) > 5:
@@ -14578,6 +14608,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = nickname.split('?')[0]
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
+            if ';' in page_number_str:
+                page_number_str = page_number_str.split(';')[0]
             if '?' in page_number_str:
                 page_number_str = page_number_str.split('?')[0]
             if '#' in page_number_str:
