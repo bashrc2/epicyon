@@ -109,12 +109,21 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
     """Returns html OpenGraph metadata for a post
     """
     metadata = \
+        "    <link rel=\"schema.DC\" " + \
+        "href=\"http://purl.org/dc/elements/1.1/\" />\n"
+    metadata += \
+        "    <link rel=\"schema.DCTERMS\" " + \
+        "href=\"http://purl.org/dc/terms/\" />\n"
+    metadata += \
         "    <meta content=\"" + domain + "\" property=\"og:site_name\" />\n"
     metadata += \
         "    <meta content=\"article\" property=\"og:type\" />\n"
     obj_json = post_json_object
     if has_object_dict(post_json_object):
         obj_json = post_json_object['object']
+    if obj_json.get('id'):
+        metadata += "    <meta name=\"DC.identifier\" " + \
+            "scheme=\"DCTERMS.URI\" content=\"" + obj_json['id'] + "\" />"
     if obj_json.get('attributedTo'):
         if isinstance(obj_json['attributedTo'], str):
             attrib = obj_json['attributedTo']
@@ -123,6 +132,10 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
                 actor_domain, _ = get_domain_from_actor(attrib)
                 actor_handle = actor_nick + '@' + actor_domain
                 metadata += \
+                    "    <meta name=\"DC.creator\" " + \
+                    "scheme=\"DCTERMS.URI\" content=\"" + \
+                    attrib + "\">\n"
+                metadata += \
                     "    <meta content=\"@" + actor_handle + \
                     "\" property=\"og:title\" />\n"
     if obj_json.get('url'):
@@ -130,6 +143,9 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
             "    <meta content=\"" + obj_json['url'] + \
             "\" property=\"og:url\" />\n"
     if obj_json.get('published'):
+        metadata += "    <meta name=\"DC.date\" " + \
+            "scheme=\"DCTERMS.W3CDTF\" content=\"" + \
+            obj_json['published'] + "\">\n"
         metadata += \
             "    <meta content=\"" + obj_json['published'] + \
             "\" property=\"og:published_time\" />\n"
@@ -2634,6 +2650,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                                   system_language)
     header_str = html_header_with_external_style(css_filename,
                                                  instance_title, metadata_str)
+
     return header_str + post_str + html_footer()
 
 
