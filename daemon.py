@@ -8996,6 +8996,7 @@ class PubServer(BaseHTTPRequestHandler):
             '/followers'
         if not repeat_private:
             announce_to_str = 'https://www.w3.org/ns/activitystreams#Public'
+        announce_id = None
         announce_json = \
             create_announce(curr_session,
                             base_dir,
@@ -9105,7 +9106,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
 
-        first_post_id = repeat_url.replace('/', '--')
+        if announce_id:
+            first_post_id = announce_id.replace('/', '--')
+        else:
+            first_post_id = repeat_url.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
@@ -9226,12 +9230,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
 
-        first_post_id = repeat_url.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
-
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
-            str(page_number) + first_post_id + timeline_bookmark
+            str(page_number) + timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_announce_button',
                             self.server.debug)
@@ -11003,12 +11004,11 @@ class PubServer(BaseHTTPRequestHandler):
         first_post_id = mute_url.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
-        self._redirect_headers(actor + '/' +
-                               timeline_str +
-                               '?page=' + str(page_number) +
-                               first_post_id +
-                               timeline_bookmark,
-                               cookie, calling_domain)
+        page_number_str = str(page_number)
+        redirect_str = \
+            actor + '/' + timeline_str + '?page=' + page_number_str + \
+            first_post_id + timeline_bookmark
+        self._redirect_headers(redirect_str, cookie, calling_domain)
 
     def _undo_mute_button(self, calling_domain: str, path: str,
                           base_dir: str, http_prefix: str,
@@ -11141,11 +11141,11 @@ class PubServer(BaseHTTPRequestHandler):
         first_post_id = mute_url.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
-        self._redirect_headers(actor + '/' + timeline_str +
-                               '?page=' + str(page_number) +
-                               first_post_id +
-                               timeline_bookmark,
-                               cookie, calling_domain)
+        page_number_str = str(page_number)
+        redirect_str = \
+            actor + '/' + timeline_str + '?page=' + page_number_str + \
+            first_post_id + timeline_bookmark
+        self._redirect_headers(redirect_str, cookie, calling_domain)
 
     def _show_replies_to_post(self, authorized: bool,
                               calling_domain: str, referer_domain: str,

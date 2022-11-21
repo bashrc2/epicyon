@@ -3957,6 +3957,141 @@ def _passed_newswire_voting(newswire_votes_threshold: int,
     return True
 
 
+def _create_box_items(base_dir: str,
+                      timeline_nickname: str,
+                      original_domain: str,
+                      nickname: str, domain: str,
+                      index_box_name: str,
+                      first_post_id: str,
+                      page_number: int,
+                      items_per_page: int,
+                      newswire_votes_threshold: int,
+                      positive_voting: bool,
+                      voting_time_mins: int,
+                      post_urls_in_box: [],
+                      recent_posts_cache: {},
+                      boxname: str,
+                      posts_in_box: [],
+                      box_actor: str) -> (int, int):
+    """Creates the list of posts within a timeline
+    """
+    index_filename = \
+        acct_dir(base_dir, timeline_nickname, original_domain) + \
+        '/' + index_box_name + '.index'
+    total_posts_count = 0
+    posts_added_to_timeline = 0
+    if not os.path.isfile(index_filename):
+        return total_posts_count, posts_added_to_timeline
+
+    if first_post_id:
+        first_post_id = first_post_id.replace('--', '#')
+        first_post_id = first_post_id.replace('/', '#')
+
+    with open(index_filename, 'r', encoding='utf-8') as index_file:
+        posts_added_to_timeline = 0
+        while posts_added_to_timeline < items_per_page:
+            post_filename = index_file.readline()
+
+            if not post_filename:
+                break
+
+            if first_post_id and total_posts_count == 0:
+                if first_post_id not in post_filename:
+                    continue
+                total_posts_count = \
+                    int((page_number - 1) * items_per_page)
+
+            # Has this post passed through the newswire voting stage?
+            if not _passed_newswire_voting(newswire_votes_threshold,
+                                           base_dir, domain,
+                                           post_filename,
+                                           positive_voting,
+                                           voting_time_mins):
+                continue
+
+            # Skip through any posts previous to the current page
+            if not first_post_id:
+                if total_posts_count < \
+                   int((page_number - 1) * items_per_page):
+                    total_posts_count += 1
+                    continue
+
+            # if this is a full path then remove the directories
+            if '/' in post_filename:
+                post_filename = post_filename.split('/')[-1]
+
+            # filename of the post without any extension or path
+            # This should also correspond to any index entry in
+            # the posts cache
+            post_url = remove_eol(post_filename)
+            post_url = post_url.replace('.json', '').strip()
+
+            if post_url in post_urls_in_box:
+                continue
+
+            # is the post cached in memory?
+            if recent_posts_cache.get('index'):
+                if post_url in recent_posts_cache['index']:
+                    if recent_posts_cache['json'].get(post_url):
+                        url = recent_posts_cache['json'][post_url]
+                        if _add_post_string_to_timeline(url,
+                                                        boxname,
+                                                        posts_in_box,
+                                                        box_actor):
+                            total_posts_count += 1
+                            posts_added_to_timeline += 1
+                            post_urls_in_box.append(post_url)
+                            continue
+                        print('Post not added to timeline')
+
+            # read the post from file
+            full_post_filename = \
+                locate_post(base_dir, nickname,
+                            original_domain, post_url, False)
+            if full_post_filename:
+                # has the post been rejected?
+                if os.path.isfile(full_post_filename + '.reject'):
+                    continue
+
+                if _add_post_to_timeline(full_post_filename, boxname,
+                                         posts_in_box, box_actor):
+                    posts_added_to_timeline += 1
+                    total_posts_count += 1
+                    post_urls_in_box.append(post_url)
+                else:
+                    print('WARN: Unable to add post ' + post_url +
+                          ' nickname ' + nickname +
+                          ' timeline ' + boxname)
+            else:
+                if timeline_nickname != nickname:
+                    # if this is the features timeline
+                    full_post_filename = \
+                        locate_post(base_dir, timeline_nickname,
+                                    original_domain, post_url, False)
+                    if full_post_filename:
+                        if _add_post_to_timeline(full_post_filename,
+                                                 boxname,
+                                                 posts_in_box, box_actor):
+                            posts_added_to_timeline += 1
+                            total_posts_count += 1
+                            post_urls_in_box.append(post_url)
+                        else:
+                            print('WARN: Unable to add features post ' +
+                                  post_url + ' nickname ' + nickname +
+                                  ' timeline ' + boxname)
+                    else:
+                        print('WARN: features timeline. ' +
+                              'Unable to locate post ' + post_url)
+                else:
+                    if timeline_nickname == 'news':
+                        print('WARN: Unable to locate news post ' +
+                              post_url + ' nickname ' + nickname)
+                    else:
+                        print('WARN: Unable to locate post ' + post_url +
+                              ' nickname ' + nickname)
+    return total_posts_count, posts_added_to_timeline
+
+
 def _create_box_indexed(recent_posts_cache: {},
                         base_dir: str, boxname: str,
                         nickname: str, domain: str, port: int,
@@ -4023,117 +4158,43 @@ def _create_box_indexed(recent_posts_cache: {},
     posts_in_box = []
     post_urls_in_box = []
 
-    index_filename = \
-        acct_dir(base_dir, timeline_nickname, original_domain) + \
-        '/' + index_box_name + '.index'
-    total_posts_count = 0
-    posts_added_to_timeline = 0
-    if os.path.isfile(index_filename):
-        if first_post_id:
-            first_post_id = first_post_id.replace('--', '#')
-            first_post_id = first_post_id.replace('/', '#')
-        with open(index_filename, 'r', encoding='utf-8') as index_file:
-            posts_added_to_timeline = 0
-            while posts_added_to_timeline < items_per_page:
-                post_filename = index_file.readline()
-
-                if not post_filename:
-                    break
-
-                if first_post_id and total_posts_count == 0:
-                    if first_post_id not in post_filename:
-                        continue
-                    total_posts_count = \
-                        int((page_number - 1) * items_per_page)
-
-                # Has this post passed through the newswire voting stage?
-                if not _passed_newswire_voting(newswire_votes_threshold,
-                                               base_dir, domain,
-                                               post_filename,
-                                               positive_voting,
-                                               voting_time_mins):
-                    continue
-
-                # Skip through any posts previous to the current page
-                if not first_post_id:
-                    if total_posts_count < \
-                       int((page_number - 1) * items_per_page):
-                        total_posts_count += 1
-                        continue
-
-                # if this is a full path then remove the directories
-                if '/' in post_filename:
-                    post_filename = post_filename.split('/')[-1]
-
-                # filename of the post without any extension or path
-                # This should also correspond to any index entry in
-                # the posts cache
-                post_url = remove_eol(post_filename)
-                post_url = post_url.replace('.json', '').strip()
-
-                if post_url in post_urls_in_box:
-                    continue
-
-                # is the post cached in memory?
-                if recent_posts_cache.get('index'):
-                    if post_url in recent_posts_cache['index']:
-                        if recent_posts_cache['json'].get(post_url):
-                            url = recent_posts_cache['json'][post_url]
-                            if _add_post_string_to_timeline(url,
-                                                            boxname,
-                                                            posts_in_box,
-                                                            box_actor):
-                                total_posts_count += 1
-                                posts_added_to_timeline += 1
-                                post_urls_in_box.append(post_url)
-                                continue
-                            print('Post not added to timeline')
-
-                # read the post from file
-                full_post_filename = \
-                    locate_post(base_dir, nickname,
-                                original_domain, post_url, False)
-                if full_post_filename:
-                    # has the post been rejected?
-                    if os.path.isfile(full_post_filename + '.reject'):
-                        continue
-
-                    if _add_post_to_timeline(full_post_filename, boxname,
-                                             posts_in_box, box_actor):
-                        posts_added_to_timeline += 1
-                        total_posts_count += 1
-                        post_urls_in_box.append(post_url)
-                    else:
-                        print('WARN: Unable to add post ' + post_url +
-                              ' nickname ' + nickname +
-                              ' timeline ' + boxname)
-                else:
-                    if timeline_nickname != nickname:
-                        # if this is the features timeline
-                        full_post_filename = \
-                            locate_post(base_dir, timeline_nickname,
-                                        original_domain, post_url, False)
-                        if full_post_filename:
-                            if _add_post_to_timeline(full_post_filename,
-                                                     boxname,
-                                                     posts_in_box, box_actor):
-                                posts_added_to_timeline += 1
-                                total_posts_count += 1
-                                post_urls_in_box.append(post_url)
-                            else:
-                                print('WARN: Unable to add features post ' +
-                                      post_url + ' nickname ' + nickname +
-                                      ' timeline ' + boxname)
-                        else:
-                            print('WARN: features timeline. ' +
-                                  'Unable to locate post ' + post_url)
-                    else:
-                        if timeline_nickname == 'news':
-                            print('WARN: Unable to locate news post ' +
-                                  post_url + ' nickname ' + nickname)
-                        else:
-                            print('WARN: Unable to locate post ' + post_url +
-                                  ' nickname ' + nickname)
+    total_posts_count, posts_added_to_timeline = \
+        _create_box_items(base_dir,
+                          timeline_nickname,
+                          original_domain,
+                          nickname, domain,
+                          index_box_name,
+                          first_post_id,
+                          page_number,
+                          items_per_page,
+                          newswire_votes_threshold,
+                          positive_voting,
+                          voting_time_mins,
+                          post_urls_in_box,
+                          recent_posts_cache,
+                          boxname,
+                          posts_in_box,
+                          box_actor)
+    if first_post_id and posts_added_to_timeline == 0:
+        # no first post was found within the index, so just use the page number
+        first_post_id = ''
+        total_posts_count, posts_added_to_timeline = \
+            _create_box_items(base_dir,
+                              timeline_nickname,
+                              original_domain,
+                              nickname, domain,
+                              index_box_name,
+                              first_post_id,
+                              page_number,
+                              items_per_page,
+                              newswire_votes_threshold,
+                              positive_voting,
+                              voting_time_mins,
+                              post_urls_in_box,
+                              recent_posts_cache,
+                              boxname,
+                              posts_in_box,
+                              box_actor)
 
     if total_posts_count < 3:
         print('Posts added to json timeline ' + boxname + ': ' +
