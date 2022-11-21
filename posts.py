@@ -3957,72 +3957,24 @@ def _passed_newswire_voting(newswire_votes_threshold: int,
     return True
 
 
-def _create_box_indexed(recent_posts_cache: {},
-                        base_dir: str, boxname: str,
-                        nickname: str, domain: str, port: int,
-                        http_prefix: str,
-                        items_per_page: int, header_only: bool,
-                        authorized: bool,
-                        newswire_votes_threshold: int, positive_voting: bool,
-                        voting_time_mins: int, page_number: int,
-                        first_post_id: str = '') -> {}:
-    """Constructs the box feed for a person with the given nickname
+def _create_box_items(base_dir: str,
+                      timeline_nickname: str,
+                      original_domain: str,
+                      nickname: str, domain: str,
+                      index_box_name: str,
+                      first_post_id: str,
+                      page_number: int,
+                      items_per_page: int,
+                      newswire_votes_threshold: int,
+                      positive_voting: bool,
+                      voting_time_mins: int,
+                      post_urls_in_box: [],
+                      recent_posts_cache: {},
+                      boxname: str,
+                      posts_in_box: [],
+                      box_actor: str) -> (int, int):
+    """Creates the list of posts within a timeline
     """
-    if not authorized or not page_number:
-        page_number = 1
-
-    if boxname not in ('inbox', 'dm', 'tlreplies', 'tlmedia',
-                       'tlblogs', 'tlnews', 'tlfeatures', 'outbox',
-                       'tlbookmarks', 'bookmarks'):
-        print('ERROR: invalid boxname ' + boxname)
-        return None
-
-    # bookmarks and events timelines are like the inbox
-    # but have their own separate index
-    index_box_name = boxname
-    timeline_nickname = nickname
-    if boxname == "tlbookmarks":
-        boxname = "bookmarks"
-        index_box_name = boxname
-    elif boxname == "tlfeatures":
-        boxname = "tlblogs"
-        index_box_name = boxname
-        timeline_nickname = 'news'
-
-    original_domain = domain
-    domain = get_full_domain(domain, port)
-
-    box_actor = local_actor_url(http_prefix, nickname, domain)
-
-    page_str = '?page=true'
-    if page_number:
-        page_number = max(page_number, 1)
-        try:
-            page_str = '?page=' + str(page_number)
-        except BaseException:
-            print('EX: _create_box_indexed ' +
-                  'unable to convert page number to string')
-    box_url = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
-    box_header = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        'first': box_url + '?page=true',
-        'id': box_url,
-        'last': box_url + '?page=true',
-        'totalItems': 0,
-        'type': 'OrderedCollection'
-    }
-    box_items = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': box_url + page_str,
-        'orderedItems': [
-        ],
-        'partOf': box_url,
-        'type': 'OrderedCollectionPage'
-    }
-
-    posts_in_box = []
-    post_urls_in_box = []
-
     index_filename = \
         acct_dir(base_dir, timeline_nickname, original_domain) + \
         '/' + index_box_name + '.index'
@@ -4134,6 +4086,112 @@ def _create_box_indexed(recent_posts_cache: {},
                         else:
                             print('WARN: Unable to locate post ' + post_url +
                                   ' nickname ' + nickname)
+    return total_posts_count, posts_added_to_timeline
+
+
+def _create_box_indexed(recent_posts_cache: {},
+                        base_dir: str, boxname: str,
+                        nickname: str, domain: str, port: int,
+                        http_prefix: str,
+                        items_per_page: int, header_only: bool,
+                        authorized: bool,
+                        newswire_votes_threshold: int, positive_voting: bool,
+                        voting_time_mins: int, page_number: int,
+                        first_post_id: str = '') -> {}:
+    """Constructs the box feed for a person with the given nickname
+    """
+    if not authorized or not page_number:
+        page_number = 1
+
+    if boxname not in ('inbox', 'dm', 'tlreplies', 'tlmedia',
+                       'tlblogs', 'tlnews', 'tlfeatures', 'outbox',
+                       'tlbookmarks', 'bookmarks'):
+        print('ERROR: invalid boxname ' + boxname)
+        return None
+
+    # bookmarks and events timelines are like the inbox
+    # but have their own separate index
+    index_box_name = boxname
+    timeline_nickname = nickname
+    if boxname == "tlbookmarks":
+        boxname = "bookmarks"
+        index_box_name = boxname
+    elif boxname == "tlfeatures":
+        boxname = "tlblogs"
+        index_box_name = boxname
+        timeline_nickname = 'news'
+
+    original_domain = domain
+    domain = get_full_domain(domain, port)
+
+    box_actor = local_actor_url(http_prefix, nickname, domain)
+
+    page_str = '?page=true'
+    if page_number:
+        page_number = max(page_number, 1)
+        try:
+            page_str = '?page=' + str(page_number)
+        except BaseException:
+            print('EX: _create_box_indexed ' +
+                  'unable to convert page number to string')
+    box_url = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
+    box_header = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'first': box_url + '?page=true',
+        'id': box_url,
+        'last': box_url + '?page=true',
+        'totalItems': 0,
+        'type': 'OrderedCollection'
+    }
+    box_items = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': box_url + page_str,
+        'orderedItems': [
+        ],
+        'partOf': box_url,
+        'type': 'OrderedCollectionPage'
+    }
+
+    posts_in_box = []
+    post_urls_in_box = []
+
+    total_posts_count, posts_added_to_timeline = \
+        _create_box_items(base_dir,
+                          timeline_nickname,
+                          original_domain,
+                          nickname, domain,
+                          index_box_name,
+                          first_post_id,
+                          page_number,
+                          items_per_page,
+                          newswire_votes_threshold,
+                          positive_voting,
+                          voting_time_mins,
+                          post_urls_in_box,
+                          recent_posts_cache,
+                          boxname,
+                          posts_in_box,
+                          box_actor)
+    if first_post_id and posts_added_to_timeline == 0:
+        # no first post was found within the index, so just use the page number
+        first_post_id = ''
+        total_posts_count, posts_added_to_timeline = \
+            _create_box_items(base_dir,
+                              timeline_nickname,
+                              original_domain,
+                              nickname, domain,
+                              index_box_name,
+                              first_post_id,
+                              page_number,
+                              items_per_page,
+                              newswire_votes_threshold,
+                              positive_voting,
+                              voting_time_mins,
+                              post_urls_in_box,
+                              recent_posts_cache,
+                              boxname,
+                              posts_in_box,
+                              box_actor)
 
     if total_posts_count < 3:
         print('Posts added to json timeline ' + boxname + ': ' +
