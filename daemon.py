@@ -8996,6 +8996,7 @@ class PubServer(BaseHTTPRequestHandler):
             '/followers'
         if not repeat_private:
             announce_to_str = 'https://www.w3.org/ns/activitystreams#Public'
+        announce_id = None
         announce_json = \
             create_announce(curr_session,
                             base_dir,
@@ -9105,7 +9106,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
 
-        first_post_id = repeat_url.replace('/', '--')
+        if announce_id:
+            first_post_id = announce_id.replace('/', '--')
+        else:
+            first_post_id = repeat_url.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
@@ -9226,12 +9230,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
 
-        first_post_id = repeat_url.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
-
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
-            str(page_number) + first_post_id + timeline_bookmark
+            str(page_number) + timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_announce_button',
                             self.server.debug)
