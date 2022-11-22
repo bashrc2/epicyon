@@ -4279,7 +4279,7 @@ def expire_cache(base_dir: str, person_cache: {},
 
 def _expire_announce_cache_for_person(base_dir: str,
                                       nickname: str, domain: str,
-                                      max_age_days: int, debug: bool) -> int:
+                                      max_age_days: int) -> int:
     """Expires entries within the announces cache
     """
     cache_dir = base_dir + '/cache/announce/' + nickname
@@ -4296,7 +4296,7 @@ def _expire_announce_cache_for_person(base_dir: str,
             continue
         last_modified = file_last_modified(full_filename)
         # get time difference
-        if not valid_post_date(last_modified, max_age_days, debug):
+        if not valid_post_date(last_modified, max_age_days, False):
             try:
                 os.remove(full_filename)
             except OSError:
@@ -4349,7 +4349,7 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                 expired_announces = \
                     _expire_announce_cache_for_person(base_dir,
                                                       nickname, domain,
-                                                      max_cache_age_days, True)
+                                                      max_cache_age_days)
                 print('Expired ' + str(expired_announces) +
                       ' cached announces for ' + nickname + '@' + domain)
                 if archive_dir:
