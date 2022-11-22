@@ -4352,7 +4352,7 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                                                       nickname, domain,
                                                       max_cache_age_days, True)
                 print('Expired ' + str(expired_announces) +
-                      ' cached announces')
+                      ' cached announces for ' + nickname + '@' + domain)
                 if archive_dir:
                     archive_subdir = archive_dir + '/accounts/' + \
                         handle + '/outbox'
