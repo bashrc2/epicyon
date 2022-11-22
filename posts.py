@@ -4285,6 +4285,7 @@ def _expire_announce_cache_for_person(base_dir: str,
     cache_dir = \
         acct_dir(base_dir, nickname, domain) + '/cache/announce/' + nickname
     if not os.path.isdir(cache_dir):
+        print('No cached announces for ' + nickname + '@' + domain)
         return 0
     expired_post_count = 0
     posts_in_cache = os.scandir(cache_dir)
@@ -4350,9 +4351,8 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                     _expire_announce_cache_for_person(base_dir,
                                                       nickname, domain,
                                                       max_cache_age_days, True)
-                if expired_announces > 0:
-                    print('Expired ' + str(expired_announces) +
-                          ' cached announces')
+                print('Expired ' + str(expired_announces) +
+                      ' cached announces')
                 if archive_dir:
                     archive_subdir = archive_dir + '/accounts/' + \
                         handle + '/outbox'
