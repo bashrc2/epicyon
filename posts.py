@@ -4282,8 +4282,7 @@ def _expire_announce_cache_for_person(base_dir: str,
                                       max_age_days: int, debug: bool) -> int:
     """Expires entries within the announces cache
     """
-    cache_dir = \
-        acct_dir(base_dir, nickname, domain) + '/cache/announce/' + nickname
+    cache_dir = base_dir + '/cache/announce/' + nickname
     if not os.path.isdir(cache_dir):
         print('No cached announces for ' + nickname + '@' + domain)
         return 0
@@ -4293,11 +4292,9 @@ def _expire_announce_cache_for_person(base_dir: str,
         cache_filename = cache_filename.name
         # Time of file creation
         full_filename = os.path.join(cache_dir, cache_filename)
-        print(full_filename)
         if not os.path.isfile(full_filename):
             continue
         last_modified = file_last_modified(full_filename)
-        print('last modified: ' + str(last_modified))
         # get time difference
         if not valid_post_date(last_modified, max_age_days, debug):
             try:
