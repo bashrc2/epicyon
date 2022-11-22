@@ -4265,7 +4265,8 @@ def _create_box_indexed(recent_posts_cache: {},
 def expire_cache(base_dir: str, person_cache: {},
                  http_prefix: str, archive_dir: str,
                  recent_posts_cache: {},
-                 max_posts_in_box: int):
+                 max_posts_in_box: int,
+                 max_cache_age_days: int):
     """Thread used to expire actors from the cache and archive old posts
     """
     while True:
@@ -4273,12 +4274,42 @@ def expire_cache(base_dir: str, person_cache: {},
         time.sleep(60 * 60 * 24)
         expire_person_cache(person_cache)
         archive_posts(base_dir, http_prefix, archive_dir, recent_posts_cache,
-                      max_posts_in_box)
+                      max_posts_in_box, max_cache_age_days)
+
+
+def _expire_announce_cache_for_person(base_dir: str,
+                                      nickname: str, domain: str,
+                                      max_age_days: int, debug: bool) -> int:
+    """Expires entries within the announces cache
+    """
+    cache_dir = \
+        acct_dir(base_dir, nickname, domain) + '/cache/announce/' + nickname
+    if not os.path.isdir(cache_dir):
+        return 0
+    expired_post_count = 0
+    posts_in_cache = os.scandir(cache_dir)
+    for cache_filename in posts_in_cache:
+        cache_filename = cache_filename.name
+        # Time of file creation
+        full_filename = os.path.join(cache_dir, cache_filename)
+        if not os.path.isfile(full_filename):
+            continue
+        last_modified = file_last_modified(full_filename)
+        # get time difference
+        if not valid_post_date(last_modified, max_age_days, debug):
+            try:
+                os.remove(full_filename)
+            except OSError:
+                print('EX: unable to delete from announce cache ' +
+                      full_filename)
+            expired_post_count += 1
+    return expired_post_count
 
 
 def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                   recent_posts_cache: {},
-                  max_posts_in_box=32000) -> None:
+                  max_posts_in_box: int = 32000,
+                  max_cache_age_days: int = 30) -> None:
     """Archives posts for all accounts
     """
     if max_posts_in_box == 0:
@@ -4315,6 +4346,13 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                                          nickname, domain, base_dir,
                                          'inbox', archive_subdir,
                                          recent_posts_cache, max_posts_in_box)
+                expired_announces = \
+                    _expire_announce_cache_for_person(base_dir,
+                                                      nickname, domain,
+                                                      max_cache_age_days, True)
+                if expired_announces > 0:
+                    print('Expired ' + str(expired_announces) +
+                          ' cached announces')
                 if archive_dir:
                     archive_subdir = archive_dir + '/accounts/' + \
                         handle + '/outbox'

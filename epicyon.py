@@ -585,6 +585,9 @@ def _command_options() -> None:
     parser.add_argument('--maxposts', dest='archiveMaxPosts', type=int,
                         default=32000,
                         help='Maximum number of posts in in/outbox')
+    parser.add_argument('--maxCacheAgeDays', dest='maxCacheAgeDays', type=int,
+                        default=30,
+                        help='Maximum age of files in the announce cache')
     parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
                         default=1,
                         help='Minimum number of votes to remove or add' +
@@ -2832,7 +2835,8 @@ def _command_options() -> None:
         # archiving is for non-instance posts
         archive_media(base_dir, argb.archive, argb.archiveWeeks)
         archive_posts(base_dir, http_prefix, argb.archive, {},
-                      argb.archiveMaxPosts)
+                      argb.archiveMaxPosts,
+                      argb.maxCacheAgeDays)
         print('Archiving complete')
         # expiry is for instance posts, where an expiry period
         # has been set within profile settings
