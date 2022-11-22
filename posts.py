@@ -4293,9 +4293,11 @@ def _expire_announce_cache_for_person(base_dir: str,
         cache_filename = cache_filename.name
         # Time of file creation
         full_filename = os.path.join(cache_dir, cache_filename)
+        print(full_filename)
         if not os.path.isfile(full_filename):
             continue
         last_modified = file_last_modified(full_filename)
+        print('last modified: ' + str(last_modified))
         # get time difference
         if not valid_post_date(last_modified, max_age_days, debug):
             try:
