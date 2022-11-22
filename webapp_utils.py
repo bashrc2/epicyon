@@ -125,10 +125,9 @@ def csv_following_list(following_filename: str,
                     allowed_announce(base_dir, nickname, domain,
                                      following_nickname,
                                      following_domain)
-
-                following_list_csv += \
-                    following_address + ',' + \
-                    str(announce_is_allowed).lower() + ','
+                notify_on_new = 'false'
+                languages = ''
+                person_notes = ''
                 person_notes_filename = \
                     acct_dir(base_dir, nickname, domain) + \
                     '/notes/' + following_address + '.txt'
@@ -140,8 +139,15 @@ def csv_following_list(following_filename: str,
                         person_notes = person_notes.replace('"', "'")
                         person_notes = person_notes.replace('\n', '<br>')
                         person_notes = person_notes.replace('  ', ' ')
-                        following_list_csv += person_notes
-            msg = 'Account address,Show boosts,Notes\n' + following_list_csv
+                following_list_csv += \
+                    'Account address,Show boosts,' + \
+                    'Notify on new posts,Languages,Notes\n' + \
+                    following_address + ',' + \
+                    str(announce_is_allowed).lower() + ',' + \
+                    notify_on_new + ',' + \
+                    languages + ',' + \
+                    person_notes + '\n'
+            msg = following_list_csv
         return msg
     return ''
 
