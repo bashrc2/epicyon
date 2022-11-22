@@ -64,9 +64,10 @@ def _update_import_following(base_dir: str,
             if ',' in line:
                 fields = line.split(',')
                 line = fields[0].strip()
-                if len(fields) >= 3:
-                    notes = fields[2]
+                if len(fields) >= 5:
+                    notes = fields[4]
             if line.startswith('#'):
+                # comment
                 continue
             following_nickname = get_nickname_from_actor(line)
             if not following_nickname:

@@ -22114,6 +22114,7 @@ def run_daemon(max_hashtags: int,
     httpd.maxMessageLength = 64000
     # Maximum overall number of posts per box
     httpd.maxPostsInBox = 32000
+    httpd.maxCacheAgeDays = 30
     httpd.domain = domain
     httpd.port = port
     httpd.domain_full = get_full_domain(domain, port)
@@ -22259,7 +22260,8 @@ def run_daemon(max_hashtags: int,
                                 httpd.http_prefix,
                                 archive_dir,
                                 httpd.recent_posts_cache,
-                                httpd.maxPostsInBox), daemon=True)
+                                httpd.maxPostsInBox,
+                                httpd.maxCacheAgeDays), daemon=True)
     begin_thread(httpd.thrCache, 'run_daemon thrCache')
 
     # number of mins after which sending posts or updates will expire
