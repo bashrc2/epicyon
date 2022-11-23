@@ -585,7 +585,6 @@ You can suspend an account on the instance by entering the nickname and then sel
 To block a fediverse handle (nickname@domain), hashtag or domain enter the thing that you wish to block and then select the **Block** button. You can do the same with the **Unblock** button to reverse your decision.
 
 When creating a block you can also add a space followed by any text describing the reason for the block. Such as:
-
 ``` text
 annoyingdomain.com A spam instance
 ```
@@ -607,7 +606,6 @@ You can also filter words within the bio of users making follow requests. This a
 From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify **blocked accounts** or domains (one per line).
 
 When creating a block you can also add a space followed by any text describing the reason for the block. This can help as a reminder as to why you blocked someone. Such as:
-
 ``` text
 chud@chuddydomain.com Slobbering. Ferocious. Carnivorous. Underground.
 sealion@endlessreplies.net Another bad faith "debater"
