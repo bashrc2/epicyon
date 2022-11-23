@@ -39,10 +39,77 @@ from conversation import mute_conversation
 from conversation import unmute_conversation
 
 
+def _add_global_block_reason(base_dir: str,
+                             block_nickname: str, block_domain: str,
+                             reason: str) -> bool:
+    """Store a global block reason
+    """
+    if not reason:
+        return False
+
+    blocking_reasons_filename = \
+        base_dir + '/accounts/blocking_reasons.txt'
+
+    if not block_nickname.startswith('#'):
+        # is the handle already blocked?
+        block_id = block_nickname + '@' + block_domain
+    else:
+        block_id = block_nickname
+
+    reason = reason.replace('\n', '').strip()
+    reason_line = block_id + ' ' + reason + '\n'
+
+    if os.path.isfile(blocking_reasons_filename):
+        if not text_in_file(block_id,
+                            blocking_reasons_filename):
+            try:
+                with open(blocking_reasons_filename, 'a+',
+                          encoding='utf-8') as reas_file:
+                    reas_file.write(reason_line)
+            except OSError:
+                print('EX: unable to add blocking reason ' +
+                      block_id)
+        else:
+            reasons_str = ''
+            try:
+                with open(blocking_reasons_filename, 'r',
+                          encoding='utf-8') as reas_file:
+                    reasons_str = reas_file.read()
+            except OSError:
+                print('EX: unable to read blocking reasons')
+            reasons_lines = reasons_str.split('\n')
+            new_reasons_str = ''
+            for line in reasons_lines:
+                if not line.startswith(block_id + ' '):
+                    new_reasons_str += line + '\n'
+                    continue
+                new_reasons_str = reason_line
+            try:
+                with open(blocking_reasons_filename, 'w+',
+                          encoding='utf-8') as reas_file:
+                    reas_file.write(new_reasons_str)
+            except OSError:
+                print('EX: unable to save blocking reasons' +
+                      blocking_reasons_filename)
+    else:
+        try:
+            with open(blocking_reasons_filename, 'w+',
+                      encoding='utf-8') as reas_file:
+                reas_file.write(reason_line)
+        except OSError:
+            print('EX: unable to save blocking reason ' +
+                  block_id + ' ' + blocking_reasons_filename)
+
+
 def add_global_block(base_dir: str,
-                     block_nickname: str, block_domain: str) -> bool:
+                     block_nickname: str, block_domain: str,
+                     reason: str) -> bool:
     """Global block which applies to all accounts
     """
+    _add_global_block_reason(base_dir,
+                             block_nickname, block_domain,
+                             reason)
+
     blocking_filename = base_dir + '/accounts/blocking.txt'
     if not block_nickname.startswith('#'):
         # is the handle already blocked?
