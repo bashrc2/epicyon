@@ -91,6 +91,8 @@ def get_account_blocks(base_dir: str,
     blocklist = blocking_file_text.split('\n')
     for handle in blocklist:
         handle = handle.strip()
+        if not handle:
+            continue
         reason = \
             get_global_block_reason(handle,
                                     blocking_reasons_filename)
