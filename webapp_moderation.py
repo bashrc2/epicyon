@@ -460,7 +460,10 @@ def html_moderation_info(translate: {}, base_dir: str,
                             _get_global_block_reason(line,
                                                      blocking_reasons_filename)
                         if reason:
-                            blocked_str += line + ' ' + reason + '\n'
+                            blocked_str += \
+                                line + ' ' + \
+                                '<span class="blockreason">' + \
+                                reason + '</span>\n'
                             continue
                     blocked_str += line + '\n'
             info_form += '<div class="container">\n'

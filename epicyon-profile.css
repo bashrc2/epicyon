@@ -35,6 +35,7 @@
     --pageslist-color: #dddddd;
     --pageslist-selected-color: white;
     --main-fg-color: #dddddd;
+    --block-reason-color: lightgreen;
     --verified-site-color: lightgreen;
     --cw-color: #dddddd;
     --cw-style: normal;
@@ -294,6 +295,10 @@ mark {
 
 .diff_remove {
     color: var(--diff-remove);
+}
+
+.blockreason {
+    color: var(--block-reason-color);
 }
 
 .accesskeys {
