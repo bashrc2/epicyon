@@ -2640,7 +2640,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if full_block_domain or nickname.startswith('#'):
                         if nickname.startswith('#') and ' ' in nickname:
                             nickname = nickname.split(' ')[0]
-                            moderation_reason = nickname.split(' ', 1)[0]
                         add_global_block(base_dir, nickname,
                                          full_block_domain, moderation_reason)
                 if moderation_button == 'unblock':
