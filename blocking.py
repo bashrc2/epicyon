@@ -39,6 +39,70 @@ from conversation import mute_conversation
 from conversation import unmute_conversation
 
 
+def get_global_block_reason(search_text: str,
+                            blocking_reasons_filename: str) -> str:
+    """Returns the reason why a domain was globally blocked
+    """
+    if not text_in_file(search_text, blocking_reasons_filename):
+        return ''
+
+    reasons_str = ''
+    try:
+        with open(blocking_reasons_filename, 'r',
+                  encoding='utf-8') as fp_reas:
+            reasons_str = fp_reas.read()
+    except OSError:
+        print('WARN: Failed to raed blocking reasons ' +
+              blocking_reasons_filename)
+    if not reasons_str:
+        return ''
+
+    reasons_lines = reasons_str.split('\n')
+    for line in reasons_lines:
+        if line.startswith(search_text):
+            if ' ' in line:
+                return line.split(' ', 1)[1]
+    return ''
+
+
+def get_account_blocks(base_dir: str,
+                       nickname: str, domain: str) -> str:
+    """Returne the text for the textarea for "blocked accounts"
+    when editing profile
+    """
+    account_directory = acct_dir(base_dir, nickname, domain)
+    blocking_filename = \
+        account_directory + '/blocking.txt'
+    blocking_reasons_filename = \
+        account_directory + '/blocking_reasons.txt'
+
+    if not os.path.isfile(blocking_filename):
+        return ''
+
+    blocked_accounts_textarea = ''
+    blocking_file_text = ''
+    try:
+        with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
+            blocking_file_text = fp_block.read()
+    except OSError:
+        print('EX: Failed to read ' + blocking_filename)
+        return ''
+
+    blocklist = blocking_file_text.split('\n')
+    for handle in blocklist:
+        handle = handle.strip()
+        reason = \
+            get_global_block_reason(handle,
+                                    blocking_reasons_filename)
+        if reason:
+            blocked_accounts_textarea += \
+                handle + ' - ' + reason + '\n'
+            continue
+        blocked_accounts_textarea += handle + '\n'
+
+    return blocked_accounts_textarea
+
+
 def add_account_blocks(base_dir: str,
                        nickname: str, domain: str,
                        blocked_accounts_textarea: str) -> bool:
@@ -53,7 +117,11 @@ def add_account_blocks(base_dir: str,
     for line in blocklist:
         line = line.strip()
         reason = None
-        if ' ' in line:
+        if ' - ' in line:
+            block_id = line.split(' - ', 1)[0]
+            reason = line.split(' - ', 1)[1]
+            blocking_reasons_file_text += block_id + ' ' + reason + '\n'
+        elif ' ' in line:
             block_id = line.split(' ', 1)[0]
             reason = line.split(' ', 1)[1]
             blocking_reasons_file_text += block_id + ' ' + reason + '\n'

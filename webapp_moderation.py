@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
-from utils import text_in_file
 from utils import is_artist
 from utils import is_account_dir
 from utils import get_full_domain
@@ -28,6 +27,7 @@ from webapp_utils import get_banner_file
 from webapp_utils import get_content_warning_button
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
+from blocking import get_global_block_reason
 from blocking import is_blocked_domain
 from blocking import is_blocked
 from session import create_session
@@ -298,32 +298,6 @@ def html_account_info(translate: {},
     return info_form
 
 
-def _get_global_block_reason(search_text: str,
-                             blocking_reasons_filename: str) -> str:
-    """Returns the reason why a domain was globally blocked
-    """
-    if not text_in_file(search_text, blocking_reasons_filename):
-        return ''
-
-    reasons_str = ''
-    try:
-        with open(blocking_reasons_filename, 'r',
-                  encoding='utf-8') as fp_reas:
-            reasons_str = fp_reas.read()
-    except OSError:
-        print('WARN: Failed to raed blocking reasons ' +
-              blocking_reasons_filename)
-    if not reasons_str:
-        return ''
-
-    reasons_lines = reasons_str.split('\n')
-    for line in reasons_lines:
-        if line.startswith(search_text):
-            if ' ' in line:
-                return line.split(' ', 1)[1]
-    return ''
-
-
 def html_moderation_info(translate: {}, base_dir: str,
                          nickname: str, domain: str, theme: str,
                          access_keys: {}) -> str:
@@ -457,8 +431,8 @@ def html_moderation_info(translate: {}, base_dir: str,
                     line = remove_eol(line).strip()
                     if blocking_reasons_exist:
                         reason = \
-                            _get_global_block_reason(line,
-                                                     blocking_reasons_filename)
+                            get_global_block_reason(line,
+                                                    blocking_reasons_filename)
                         if reason:
                             blocked_str += \
                                 line + ' - ' + reason + '\n'
