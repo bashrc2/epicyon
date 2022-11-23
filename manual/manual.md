@@ -581,8 +581,14 @@ If a post made on your instance has been reported as violating the terms of serv
 ### Suspending an account
 You can suspend an account on the instance by entering the nickname and then selecting the **Suspend** button. Accounts are usually suspended pending investigation into some terms of service violation. You can use the **Unsuspend** button to re-enable an account.
 
-### Instance level blocking
+### Instance level blocking of handles or domains
 To block a fediverse handle (nickname@domain), hashtag or domain enter the thing that you wish to block and then select the **Block** button. You can do the same with the **Unblock** button to reverse your decision.
+
+When creating a block you can also add a space followed by any text describing the reason for the block. Such as:
+
+``` text
+annoyingdomain.com A spam instance
+```
 
 If you want to see what is being blocked at the instance level then select the **Info** button.
 
