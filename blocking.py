@@ -39,6 +39,64 @@ from conversation import mute_conversation
 from conversation import unmute_conversation
 
 
+def add_account_blocks(base_dir: str,
+                       nickname: str, domain: str,
+                       blocked_accounts_textarea: str) -> bool:
+    """Update the blockfile for an account after editing their
+    profile and changing "blocked accounts"
+    """
+    if blocked_accounts_textarea is None:
+        return False
+    blocklist = blocked_accounts_textarea.split('\n')
+    blocking_file_text = ''
+    blocking_reasons_file_text = ''
+    for line in blocklist:
+        line = line.strip()
+        reason = None
+        if ' ' in line:
+            block_id = line.split(' ', 1)[0]
+            reason = line.split(' ', 1)[1]
+            blocking_reasons_file_text += block_id + ' ' + reason + '\n'
+        else:
+            block_id = line
+        blocking_file_text += block_id + '\n'
+
+    account_directory = acct_dir(base_dir, nickname, domain)
+    blocking_filename = \
+        account_directory + '/blocking.txt'
+    blocking_reasons_filename = \
+        account_directory + '/blocking_reasons.txt'
+
+    if not blocking_file_text:
+        if os.path.isfile(blocking_filename):
+            try:
+                os.remove(blocking_filename)
+            except OSError:
+                print('EX: _profile_edit unable to delete  blocking ' +
+                      blocking_filename)
+        if os.path.isfile(blocking_reasons_filename):
+            try:
+                os.remove(blocking_reasons_filename)
+            except OSError:
+                print('EX: _profile_edit unable to delete blocking reasons' +
+                      blocking_reasons_filename)
+        return True
+
+    try:
+        with open(blocking_filename, 'w+', encoding='utf-8') as fp_block:
+            fp_block.write(blocking_file_text)
+    except OSError:
+        print('EX: Failed to write ' + blocking_filename)
+
+    try:
+        with open(blocking_reasons_filename, 'w+',
+                  encoding='utf-8') as fp_block:
+            fp_block.write(blocking_reasons_file_text)
+    except OSError:
+        print('EX: Failed to write ' + blocking_reasons_filename)
+    return True
+
+
 def _add_global_block_reason(base_dir: str,
                              block_nickname: str, block_domain: str,
                              reason: str) -> bool:

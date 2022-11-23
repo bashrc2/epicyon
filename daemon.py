@@ -142,6 +142,7 @@ from media import replace_twitter
 from media import attach_media
 from media import path_is_video
 from media import path_is_audio
+from blocking import add_account_blocks
 from blocking import get_cw_list_variable
 from blocking import load_cw_lists
 from blocking import update_blocked_cache
@@ -7413,25 +7414,13 @@ class PubServer(BaseHTTPRequestHandler):
                                       auto_cw_filename)
 
                     # save blocked accounts list
-                    blocked_filename = \
-                        acct_dir(base_dir, nickname, domain) + \
-                        '/blocking.txt'
                     if fields.get('blocked'):
-                        try:
-                            with open(blocked_filename, 'w+',
-                                      encoding='utf-8') as blockedfile:
-                                blockedfile.write(fields['blocked'])
-                        except OSError:
-                            print('EX: unable to write blocked accounts ' +
-                                  blocked_filename)
+                        add_account_blocks(base_dir,
+                                           nickname, domain,
+                                           fields['blocked'])
                     else:
-                        if os.path.isfile(blocked_filename):
-                            try:
-                                os.remove(blocked_filename)
-                            except OSError:
-                                print('EX: _profile_edit ' +
-                                      'unable to delete ' +
-                                      blocked_filename)
+                        add_account_blocks(base_dir,
+                                           nickname, domain, '')
 
                     # Save DM allowed instances list.
                     # The allow list for incoming DMs,
