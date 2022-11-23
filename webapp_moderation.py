@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
+from utils import text_in_file
 from utils import is_artist
 from utils import is_account_dir
 from utils import get_full_domain
@@ -297,6 +298,32 @@ def html_account_info(translate: {},
     return info_form
 
 
+def _get_global_block_reason(search_text: str,
+                             blocking_reasons_filename: str) -> str:
+    """Returns the reason why a domain was globally blocked
+    """
+    if not text_in_file(search_text, blocking_reasons_filename):
+        return ''
+
+    reasons_str = ''
+    try:
+        with open(blocking_reasons_filename, 'r',
+                  encoding='utf-8') as fp_reas:
+            reasons_str = fp_reas.read()
+    except OSError:
+        print('WARN: Failed to raed blocking reasons ' +
+              blocking_reasons_filename)
+    if not reasons_str:
+        return ''
+
+    reasons_lines = reasons_str.split('\n')
+    for line in reasons_lines:
+        if line.startswith(search_text):
+            if ' ' in line:
+                return line.split(' ', 1)[1]
+    return ''
+
+
 def html_moderation_info(translate: {}, base_dir: str,
                          nickname: str, domain: str, theme: str,
                          access_keys: {}) -> str:
@@ -414,6 +441,11 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     blocking_filename = base_dir + '/accounts/blocking.txt'
     if os.path.isfile(blocking_filename):
+        blocking_reasons_filename = \
+            base_dir + '/accounts/blocking_reasons.txt'
+        blocking_reasons_exist = False
+        if os.path.isfile(blocking_reasons_filename):
+            blocking_reasons_exist = True
         with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
             blocked_lines = fp_block.readlines()
             blocked_str = ''
@@ -423,6 +455,13 @@ def html_moderation_info(translate: {}, base_dir: str,
                     if not line:
                         continue
                     line = remove_eol(line).strip()
+                    if blocking_reasons_exist:
+                        reason = \
+                            _get_global_block_reason(line,
+                                                     blocking_reasons_filename)
+                        if reason:
+                            blocked_str += line + ' ' + reason + '\n'
+                            continue
                     blocked_str += line + '\n'
             info_form += '<div class="container">\n'
             info_form += \
