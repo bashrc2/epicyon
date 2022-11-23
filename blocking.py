@@ -83,7 +83,7 @@ def _add_global_block_reason(base_dir: str,
                 if not line.startswith(block_id + ' '):
                     new_reasons_str += line + '\n'
                     continue
-                new_reasons_str = reason_line
+                new_reasons_str += reason_line
             try:
                 with open(blocking_reasons_filename, 'w+',
                           encoding='utf-8') as reas_file:
@@ -214,11 +214,54 @@ def add_block(base_dir: str, nickname: str, domain: str,
     return True
 
 
+def _remove_global_block_reason(base_dir: str,
+                                unblock_nickname: str,
+                                unblock_domain: str) -> bool:
+    """Remove a globla block reason
+    """
+    unblocking_filename = base_dir + '/accounts/blocking_reasons.txt'
+    if not os.path.isfile(unblocking_filename):
+        return False
+
+    if not unblock_nickname.startswith('#'):
+        unblock_id = unblock_nickname + '@' + unblock_domain
+    else:
+        unblock_id = unblock_nickname
+
+    if not text_in_file(unblock_id + ' ', unblocking_filename):
+        return False
+
+    reasons_str = ''
+    try:
+        with open(unblocking_filename, 'r',
+                  encoding='utf-8') as reas_file:
+            reasons_str = reas_file.read()
+    except OSError:
+        print('EX: unable to read blocking reasons 2')
+    reasons_lines = reasons_str.split('\n')
+    new_reasons_str = ''
+    for line in reasons_lines:
+        if line.startswith(unblock_id + ' '):
+            continue
+        new_reasons_str += line + '\n'
+    try:
+        with open(unblocking_filename, 'w+',
+                  encoding='utf-8') as reas_file:
+            reas_file.write(new_reasons_str)
+    except OSError:
+        print('EX: unable to save blocking reasons 2' +
+              unblocking_filename)
+
+
 def remove_global_block(base_dir: str,
                         unblock_nickname: str,
                         unblock_domain: str) -> bool:
     """Unblock the given global block
     """
+    _remove_global_block_reason(base_dir,
+                                unblock_nickname,
+                                unblock_domain)
+
     unblocking_filename = base_dir + '/accounts/blocking.txt'
     if not unblock_nickname.startswith('#'):
         unblock_handle = unblock_nickname + '@' + unblock_domain

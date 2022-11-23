@@ -2642,23 +2642,27 @@ class PubServer(BaseHTTPRequestHandler):
                                          full_block_domain, moderation_reason)
                 if moderation_button == 'unblock':
                     full_block_domain = None
-                    if moderation_text.startswith('http') or \
-                       moderation_text.startswith('ipfs') or \
-                       moderation_text.startswith('ipns') or \
-                       moderation_text.startswith('hyper'):
+                    if ' ' in moderation_text:
+                        moderation_domain = moderation_text.split(' ', 1)[0]
+                    else:
+                        moderation_domain = moderation_text
+                    if moderation_domain.startswith('http') or \
+                       moderation_domain.startswith('ipfs') or \
+                       moderation_domain.startswith('ipns') or \
+                       moderation_domain.startswith('hyper'):
                         # https://domain
                         block_domain, block_port = \
-                            get_domain_from_actor(moderation_text)
+                            get_domain_from_actor(moderation_domain)
                         full_block_domain = \
                             get_full_domain(block_domain, block_port)
-                    if '@' in moderation_text:
+                    if '@' in moderation_domain:
                         # nick@domain or *@domain
-                        full_block_domain = moderation_text.split('@')[1]
+                        full_block_domain = moderation_domain.split('@')[1]
                     else:
                         # assume the text is a domain name
-                        if not full_block_domain and '.' in moderation_text:
+                        if not full_block_domain and '.' in moderation_domain:
                             nickname = '*'
-                            full_block_domain = moderation_text.strip()
+                            full_block_domain = moderation_domain.strip()
                     if full_block_domain or nickname.startswith('#'):
                         remove_global_block(base_dir, nickname,
                                             full_block_domain)
