@@ -80,6 +80,7 @@ from blog import get_blog_address
 from webapp_post import individual_post_as_html
 from webapp_timeline import html_individual_share
 from webapp_timeline import page_number_buttons
+from blocking import get_account_blocks
 from blocking import get_cw_list_variable
 from blocking import is_blocked
 from content import bold_reading_string
@@ -1787,12 +1788,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         with open(auto_cw_filename, 'r', encoding='utf-8') as cw_file:
             auto_cw = cw_file.read()
 
-    blocked_str = ''
-    blocked_filename = \
-        acct_dir(base_dir, nickname, domain) + '/blocking.txt'
-    if os.path.isfile(blocked_filename):
-        with open(blocked_filename, 'r', encoding='utf-8') as blockedfile:
-            blocked_str = blockedfile.read()
+    blocked_str = get_account_blocks(base_dir, nickname, domain)
 
     dm_allowed_instances_str = ''
     dm_allowed_instances_filename = \

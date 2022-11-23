@@ -142,6 +142,7 @@ from media import replace_twitter
 from media import attach_media
 from media import path_is_video
 from media import path_is_audio
+from blocking import add_account_blocks
 from blocking import get_cw_list_variable
 from blocking import load_cw_lists
 from blocking import update_blocked_cache
@@ -2611,45 +2612,63 @@ class PubServer(BaseHTTPRequestHandler):
                     remove_global_filter(base_dir, moderation_text)
                 if moderation_button == 'block':
                     full_block_domain = None
-                    if moderation_text.startswith('http') or \
-                       moderation_text.startswith('ipfs') or \
-                       moderation_text.startswith('ipns') or \
-                       moderation_text.startswith('hyper'):
+                    moderation_text = moderation_text.strip()
+                    moderation_reason = None
+                    if ' ' in moderation_text:
+                        moderation_domain = moderation_text.split(' ', 1)[0]
+                        moderation_reason = moderation_text.split(' ', 1)[1]
+                    else:
+                        moderation_domain = moderation_text
+                    if moderation_domain.startswith('http') or \
+                       moderation_domain.startswith('ipfs') or \
+                       moderation_domain.startswith('ipns') or \
+                       moderation_domain.startswith('hyper'):
                         # https://domain
                         block_domain, block_port = \
-                            get_domain_from_actor(moderation_text)
+                            get_domain_from_actor(moderation_domain)
                         full_block_domain = \
                             get_full_domain(block_domain, block_port)
-                    if '@' in moderation_text:
+                    if '@' in moderation_domain:
                         # nick@domain or *@domain
-                        full_block_domain = moderation_text.split('@')[1]
+                        full_block_domain = \
+                            moderation_domain.split('@')[1]
                     else:
                         # assume the text is a domain name
-                        if not full_block_domain and '.' in moderation_text:
+                        if not full_block_domain and '.' in moderation_domain:
                             nickname = '*'
-                            full_block_domain = moderation_text.strip()
+                            full_block_domain = \
+                                moderation_domain.strip()
                     if full_block_domain or nickname.startswith('#'):
-                        add_global_block(base_dir, nickname, full_block_domain)
+                        if nickname.startswith('#') and ' ' in nickname:
+                            nickname = nickname.split(' ')[0]
+                        add_global_block(base_dir, nickname,
+                                         full_block_domain, moderation_reason)
                 if moderation_button == 'unblock':
                     full_block_domain = None
-                    if moderation_text.startswith('http') or \
-                       moderation_text.startswith('ipfs') or \
-                       moderation_text.startswith('ipns') or \
-                       moderation_text.startswith('hyper'):
+                    if ' ' in moderation_text:
+                        moderation_domain = moderation_text.split(' ', 1)[0]
+                    else:
+                        moderation_domain = moderation_text
+                    if moderation_domain.startswith('http') or \
+                       moderation_domain.startswith('ipfs') or \
+                       moderation_domain.startswith('ipns') or \
+                       moderation_domain.startswith('hyper'):
                         # https://domain
                         block_domain, block_port = \
-                            get_domain_from_actor(moderation_text)
+                            get_domain_from_actor(moderation_domain)
                         full_block_domain = \
                             get_full_domain(block_domain, block_port)
-                    if '@' in moderation_text:
+                    if '@' in moderation_domain:
                         # nick@domain or *@domain
-                        full_block_domain = moderation_text.split('@')[1]
+                        full_block_domain = moderation_domain.split('@')[1]
                     else:
                         # assume the text is a domain name
-                        if not full_block_domain and '.' in moderation_text:
+                        if not full_block_domain and '.' in moderation_domain:
                             nickname = '*'
-                            full_block_domain = moderation_text.strip()
+                            full_block_domain = moderation_domain.strip()
                     if full_block_domain or nickname.startswith('#'):
+                        if nickname.startswith('#') and ' ' in nickname:
+                            nickname = nickname.split(' ')[0]
                         remove_global_block(base_dir, nickname,
                                             full_block_domain)
                 if moderation_button == 'remove':
@@ -7395,25 +7414,13 @@ class PubServer(BaseHTTPRequestHandler):
                                       auto_cw_filename)
 
                     # save blocked accounts list
-                    blocked_filename = \
-                        acct_dir(base_dir, nickname, domain) + \
-                        '/blocking.txt'
                     if fields.get('blocked'):
-                        try:
-                            with open(blocked_filename, 'w+',
-                                      encoding='utf-8') as blockedfile:
-                                blockedfile.write(fields['blocked'])
-                        except OSError:
-                            print('EX: unable to write blocked accounts ' +
-                                  blocked_filename)
+                        add_account_blocks(base_dir,
+                                           nickname, domain,
+                                           fields['blocked'])
                     else:
-                        if os.path.isfile(blocked_filename):
-                            try:
-                                os.remove(blocked_filename)
-                            except OSError:
-                                print('EX: _profile_edit ' +
-                                      'unable to delete ' +
-                                      blocked_filename)
+                        add_account_blocks(base_dir,
+                                           nickname, domain, '')
 
                     # Save DM allowed instances list.
                     # The allow list for incoming DMs,
@@ -18880,7 +18887,7 @@ class PubServer(BaseHTTPRequestHandler):
             block_domain = urllib.parse.unquote_plus(block_domain.strip())
             if '?' in block_domain:
                 block_domain = block_domain.split('?')[0]
-            add_global_block(self.server.base_dir, '*', block_domain)
+            add_global_block(self.server.base_dir, '*', block_domain, None)
             msg = \
                 html_account_info(self.server.translate,
                                   self.server.base_dir,

@@ -1,5 +1,6 @@
 {
-    "verified-site-color": "lightgreen",
+    "block-reason-color": "green",
+    "verified-site-color": "green",
     "diff-add": "#111",
     "diff-remove": "#333",
     "code-color": "blue",

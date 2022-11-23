@@ -27,6 +27,7 @@ from webapp_utils import get_banner_file
 from webapp_utils import get_content_warning_button
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
+from blocking import get_global_block_reason
 from blocking import is_blocked_domain
 from blocking import is_blocked
 from session import create_session
@@ -414,6 +415,11 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     blocking_filename = base_dir + '/accounts/blocking.txt'
     if os.path.isfile(blocking_filename):
+        blocking_reasons_filename = \
+            base_dir + '/accounts/blocking_reasons.txt'
+        blocking_reasons_exist = False
+        if os.path.isfile(blocking_reasons_filename):
+            blocking_reasons_exist = True
         with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
             blocked_lines = fp_block.readlines()
             blocked_str = ''
@@ -423,6 +429,14 @@ def html_moderation_info(translate: {}, base_dir: str,
                     if not line:
                         continue
                     line = remove_eol(line).strip()
+                    if blocking_reasons_exist:
+                        reason = \
+                            get_global_block_reason(line,
+                                                    blocking_reasons_filename)
+                        if reason:
+                            blocked_str += \
+                                line + ' - ' + reason + '\n'
+                            continue
                     blocked_str += line + '\n'
             info_form += '<div class="container">\n'
             info_form += \

@@ -39,10 +39,205 @@ from conversation import mute_conversation
 from conversation import unmute_conversation
 
 
+def get_global_block_reason(search_text: str,
+                            blocking_reasons_filename: str) -> str:
+    """Returns the reason why a domain was globally blocked
+    """
+    if not text_in_file(search_text, blocking_reasons_filename):
+        return ''
+
+    reasons_str = ''
+    try:
+        with open(blocking_reasons_filename, 'r',
+                  encoding='utf-8') as fp_reas:
+            reasons_str = fp_reas.read()
+    except OSError:
+        print('WARN: Failed to raed blocking reasons ' +
+              blocking_reasons_filename)
+    if not reasons_str:
+        return ''
+
+    reasons_lines = reasons_str.split('\n')
+    for line in reasons_lines:
+        if line.startswith(search_text):
+            if ' ' in line:
+                return line.split(' ', 1)[1]
+    return ''
+
+
+def get_account_blocks(base_dir: str,
+                       nickname: str, domain: str) -> str:
+    """Returne the text for the textarea for "blocked accounts"
+    when editing profile
+    """
+    account_directory = acct_dir(base_dir, nickname, domain)
+    blocking_filename = \
+        account_directory + '/blocking.txt'
+    blocking_reasons_filename = \
+        account_directory + '/blocking_reasons.txt'
+
+    if not os.path.isfile(blocking_filename):
+        return ''
+
+    blocked_accounts_textarea = ''
+    blocking_file_text = ''
+    try:
+        with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
+            blocking_file_text = fp_block.read()
+    except OSError:
+        print('EX: Failed to read ' + blocking_filename)
+        return ''
+
+    blocklist = blocking_file_text.split('\n')
+    for handle in blocklist:
+        handle = handle.strip()
+        if not handle:
+            continue
+        reason = \
+            get_global_block_reason(handle,
+                                    blocking_reasons_filename)
+        if reason:
+            blocked_accounts_textarea += \
+                handle + ' - ' + reason + '\n'
+            continue
+        blocked_accounts_textarea += handle + '\n'
+
+    return blocked_accounts_textarea
+
+
+def add_account_blocks(base_dir: str,
+                       nickname: str, domain: str,
+                       blocked_accounts_textarea: str) -> bool:
+    """Update the blockfile for an account after editing their
+    profile and changing "blocked accounts"
+    """
+    if blocked_accounts_textarea is None:
+        return False
+    blocklist = blocked_accounts_textarea.split('\n')
+    blocking_file_text = ''
+    blocking_reasons_file_text = ''
+    for line in blocklist:
+        line = line.strip()
+        reason = None
+        if ' - ' in line:
+            block_id = line.split(' - ', 1)[0]
+            reason = line.split(' - ', 1)[1]
+            blocking_reasons_file_text += block_id + ' ' + reason + '\n'
+        elif ' ' in line:
+            block_id = line.split(' ', 1)[0]
+            reason = line.split(' ', 1)[1]
+            blocking_reasons_file_text += block_id + ' ' + reason + '\n'
+        else:
+            block_id = line
+        blocking_file_text += block_id + '\n'
+
+    account_directory = acct_dir(base_dir, nickname, domain)
+    blocking_filename = \
+        account_directory + '/blocking.txt'
+    blocking_reasons_filename = \
+        account_directory + '/blocking_reasons.txt'
+
+    if not blocking_file_text:
+        if os.path.isfile(blocking_filename):
+            try:
+                os.remove(blocking_filename)
+            except OSError:
+                print('EX: _profile_edit unable to delete  blocking ' +
+                      blocking_filename)
+        if os.path.isfile(blocking_reasons_filename):
+            try:
+                os.remove(blocking_reasons_filename)
+            except OSError:
+                print('EX: _profile_edit unable to delete blocking reasons' +
+                      blocking_reasons_filename)
+        return True
+
+    try:
+        with open(blocking_filename, 'w+', encoding='utf-8') as fp_block:
+            fp_block.write(blocking_file_text)
+    except OSError:
+        print('EX: Failed to write ' + blocking_filename)
+
+    try:
+        with open(blocking_reasons_filename, 'w+',
+                  encoding='utf-8') as fp_block:
+            fp_block.write(blocking_reasons_file_text)
+    except OSError:
+        print('EX: Failed to write ' + blocking_reasons_filename)
+    return True
+
+
+def _add_global_block_reason(base_dir: str,
+                             block_nickname: str, block_domain: str,
+                             reason: str) -> bool:
+    """Store a global block reason
+    """
+    if not reason:
+        return False
+
+    blocking_reasons_filename = \
+        base_dir + '/accounts/blocking_reasons.txt'
+
+    if not block_nickname.startswith('#'):
+        # is the handle already blocked?
+        block_id = block_nickname + '@' + block_domain
+    else:
+        block_id = block_nickname
+
+    reason = reason.replace('\n', '').strip()
+    reason_line = block_id + ' ' + reason + '\n'
+
+    if os.path.isfile(blocking_reasons_filename):
+        if not text_in_file(block_id,
+                            blocking_reasons_filename):
+            try:
+                with open(blocking_reasons_filename, 'a+',
+                          encoding='utf-8') as reas_file:
+                    reas_file.write(reason_line)
+            except OSError:
+                print('EX: unable to add blocking reason ' +
+                      block_id)
+        else:
+            reasons_str = ''
+            try:
+                with open(blocking_reasons_filename, 'r',
+                          encoding='utf-8') as reas_file:
+                    reasons_str = reas_file.read()
+            except OSError:
+                print('EX: unable to read blocking reasons')
+            reasons_lines = reasons_str.split('\n')
+            new_reasons_str = ''
+            for line in reasons_lines:
+                if not line.startswith(block_id + ' '):
+                    new_reasons_str += line + '\n'
+                    continue
+                new_reasons_str += reason_line
+            try:
+                with open(blocking_reasons_filename, 'w+',
+                          encoding='utf-8') as reas_file:
+                    reas_file.write(new_reasons_str)
+            except OSError:
+                print('EX: unable to save blocking reasons' +
+                      blocking_reasons_filename)
+    else:
+        try:
+            with open(blocking_reasons_filename, 'w+',
+                      encoding='utf-8') as reas_file:
+                reas_file.write(reason_line)
+        except OSError:
+            print('EX: unable to save blocking reason ' +
+                  block_id + ' ' + blocking_reasons_filename)
+
+
 def add_global_block(base_dir: str,
-                     block_nickname: str, block_domain: str) -> bool:
+                     block_nickname: str, block_domain: str,
+                     reason: str) -> bool:
     """Global block which applies to all accounts
     """
+    _add_global_block_reason(base_dir,
+                             block_nickname, block_domain,
+                             reason)
+
     blocking_filename = base_dir + '/accounts/blocking.txt'
     if not block_nickname.startswith('#'):
         # is the handle already blocked?
@@ -147,11 +342,54 @@ def add_block(base_dir: str, nickname: str, domain: str,
     return True
 
 
+def _remove_global_block_reason(base_dir: str,
+                                unblock_nickname: str,
+                                unblock_domain: str) -> bool:
+    """Remove a globla block reason
+    """
+    unblocking_filename = base_dir + '/accounts/blocking_reasons.txt'
+    if not os.path.isfile(unblocking_filename):
+        return False
+
+    if not unblock_nickname.startswith('#'):
+        unblock_id = unblock_nickname + '@' + unblock_domain
+    else:
+        unblock_id = unblock_nickname
+
+    if not text_in_file(unblock_id + ' ', unblocking_filename):
+        return False
+
+    reasons_str = ''
+    try:
+        with open(unblocking_filename, 'r',
+                  encoding='utf-8') as reas_file:
+            reasons_str = reas_file.read()
+    except OSError:
+        print('EX: unable to read blocking reasons 2')
+    reasons_lines = reasons_str.split('\n')
+    new_reasons_str = ''
+    for line in reasons_lines:
+        if line.startswith(unblock_id + ' '):
+            continue
+        new_reasons_str += line + '\n'
+    try:
+        with open(unblocking_filename, 'w+',
+                  encoding='utf-8') as reas_file:
+            reas_file.write(new_reasons_str)
+    except OSError:
+        print('EX: unable to save blocking reasons 2' +
+              unblocking_filename)
+
+
 def remove_global_block(base_dir: str,
                         unblock_nickname: str,
                         unblock_domain: str) -> bool:
     """Unblock the given global block
     """
+    _remove_global_block_reason(base_dir,
+                                unblock_nickname,
+                                unblock_domain)
+
     unblocking_filename = base_dir + '/accounts/blocking.txt'
     if not unblock_nickname.startswith('#'):
         unblock_handle = unblock_nickname + '@' + unblock_domain

@@ -581,8 +581,13 @@ If a post made on your instance has been reported as violating the terms of serv
 ### Suspending an account
 You can suspend an account on the instance by entering the nickname and then selecting the **Suspend** button. Accounts are usually suspended pending investigation into some terms of service violation. You can use the **Unsuspend** button to re-enable an account.
 
-### Instance level blocking
+### Instance level blocking of handles or domains
 To block a fediverse handle (nickname@domain), hashtag or domain enter the thing that you wish to block and then select the **Block** button. You can do the same with the **Unblock** button to reverse your decision.
+
+When creating a block you can also add a space followed by any text describing the reason for the block. Such as:
+``` text
+annoyingdomain.com A spam instance
+```
 
 If you want to see what is being blocked at the instance level then select the **Info** button.
 
@@ -598,7 +603,15 @@ From the main timeline select the top banner to go to your profile, then select 
 You can also filter words within the bio of users making follow requests. This allows unwanted followers to be automatically rejected if their bio contains particular words.
 
 ### Blocking accounts or domains
-From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify blocked accounts or domains (one per line). Be sure to select **Publish** to finalize your settings.
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify **blocked accounts** or domains (one per line).
+
+When creating a block you can also add a space followed by any text describing the reason for the block. This can help as a reminder as to why you blocked someone. Such as:
+``` text
+chud@chuddydomain.com Slobbering. Ferocious. Carnivorous. Underground.
+sealion@endlessreplies.net Another bad faith "debater"
+```
+
+Be sure to select **Publish** to finalize your settings.
 
 ### Replacing words
 Sometimes you may want to replace words within received posts. This can be for added clarity, to dissipate annoyance or just for fun.
