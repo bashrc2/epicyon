@@ -2638,6 +2638,9 @@ class PubServer(BaseHTTPRequestHandler):
                             full_block_domain = \
                                 moderation_domain.strip()
                     if full_block_domain or nickname.startswith('#'):
+                        if nickname.startswith('#') and ' ' in nickname:
+                            nickname = nickname.split(' ')[0]
+                            moderation_reason = nickname.split(' ', 1)[0]
                         add_global_block(base_dir, nickname,
                                          full_block_domain, moderation_reason)
                 if moderation_button == 'unblock':
@@ -2664,6 +2667,8 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname = '*'
                             full_block_domain = moderation_domain.strip()
                     if full_block_domain or nickname.startswith('#'):
+                        if nickname.startswith('#') and ' ' in nickname:
+                            nickname = nickname.split(' ')[0]
                         remove_global_block(base_dir, nickname,
                                             full_block_domain)
                 if moderation_button == 'remove':
