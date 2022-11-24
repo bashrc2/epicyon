@@ -294,8 +294,18 @@ def _verify_recent_signature(signed_date_str: str) -> bool:
     12 hours of the current time
     """
     curr_date = datetime.datetime.utcnow()
-    date_format = "%a, %d %b %Y %H:%M:%S %Z"
-    signed_date = datetime.datetime.strptime(signed_date_str, date_format)
+    formats = ("%a, %d %b %Y %H:%M:%S %Z",
+               "%a, %d %b %Y %H:%M:%S %z")
+    signed_date = None
+    for date_format in formats:
+        try:
+            signed_date = \
+                datetime.datetime.strptime(signed_date_str, date_format)
+        except BaseException:
+            continue
+        break
+    if not signed_date:
+        return False
     time_diff_sec = (curr_date - signed_date).seconds
     # 12 hours tollerance
     if time_diff_sec > 43200:
