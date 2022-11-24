@@ -309,6 +309,8 @@ def create_signed_header(date_str: str, private_key_pem: str, nickname: str,
                               to_domain, to_port,
                               path, http_prefix, message_body_json_str,
                               content_type, algorithm, digest_algorithm)
+    if not signature_header:
+        return {}
     headers['signature'] = signature_header
     return headers
 
