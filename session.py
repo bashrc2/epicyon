@@ -200,8 +200,6 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
         create_signed_header(None, signing_priv_key_pem, 'actor', domain, port,
                              to_domain, to_port, path, http_prefix,
                              with_digest, message_str, content_type)
-    if not signature_header_json:
-        return {}
     if debug:
         print('Signed GET signature_header_json ' + str(signature_header_json))
     # update the session headers from the signature headers

@@ -316,7 +316,6 @@ def _test_http_signed_get(base_dir: str):
                              host_domain, port,
                              boxpath, http_prefix, False,
                              None, accept)
-    assert signature_header
 
     headers['signature'] = signature_header['signature']
     getreq_method = not with_digest
@@ -521,8 +520,6 @@ def _test_http_sig_new(algorithm: str, digest_algorithm: str):
                               domain, port,
                               path_str, http_prefix, message_body_json_str,
                               algorithm, digest_algorithm, debug)
-    assert signature_index_header
-    assert signature_header
     print('signature_index_header1: ' + str(signature_index_header))
     print('signature_header1: ' + str(signature_header))
     sig_input = "keyId=\"https://example.com/users/foo#main-key\"; " + \
@@ -626,7 +623,6 @@ def _test_httpsig_base(with_digest: bool, base_dir: str):
                               boxpath, http_prefix, message_body_json_str,
                               content_type, algorithm, digest_algorithm)
 
-    assert signature_header
     headers['signature'] = signature_header
     getreq_method = not with_digest
     debug = True
@@ -6933,8 +6929,6 @@ def _test_httpsig_base_new(with_digest: bool, base_dir: str,
                                   boxpath, http_prefix, message_body_json_str,
                                   algorithm, digest_algorithm, debug)
 
-    assert signature_index_header
-    assert signature_header
     headers['signature'] = signature_header
     headers['signature-input'] = signature_index_header
     print('headers: ' + str(headers))

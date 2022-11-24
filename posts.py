@@ -2516,15 +2516,11 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                              to_domain, to_port,
                              post_path, http_prefix, with_digest,
                              post_json_str, 'application/activity+json')
-    if not signature_header_json:
-        return 8
     signature_header_json_ld = \
         create_signed_header(None, private_key_pem, nickname, domain, port,
                              to_domain, to_port,
                              post_path, http_prefix, with_digest,
                              post_json_str, 'application/ld+json')
-    if not signature_header_json_ld:
-        return 9
 
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
@@ -2949,16 +2945,12 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                              post_path, http_prefix, with_digest,
                              post_json_str,
                              'application/activity+json')
-    if not signature_header_json:
-        return 10
     signature_header_json_ld = \
         create_signed_header(None, private_key_pem, nickname, domain, port,
                              to_domain, to_port,
                              post_path, http_prefix, with_digest,
                              post_json_str,
                              'application/ld+json')
-    if not signature_header_json_ld:
-        return 11
     # optionally add a token so that the receiving instance may access
     # your shared items catalog
     if shared_items_token:
