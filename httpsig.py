@@ -77,7 +77,13 @@ def sign_post_headers(date_str: str, private_key_pem: str,
     to_domain = get_full_domain(to_domain, to_port)
 
     if not date_str:
-        date_str = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+        try:
+            date_str = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+        except BaseException as ex:
+            print('EX: sign_post_headers date ' +
+                  str(ex) + ' ' +
+                  str(gmtime()) + " %a, %d %b %Y %H:%M:%S %Z")
+            return ''
     if nickname != domain and nickname.lower() != 'actor':
         key_id = local_actor_url(http_prefix, nickname, domain)
     else:
@@ -159,9 +165,21 @@ def sign_post_headers_new(date_str: str, private_key_pem: str,
     time_format = "%a, %d %b %Y %H:%M:%S %Z"
     if not date_str:
         curr_time = gmtime()
-        date_str = strftime(time_format, curr_time)
+        try:
+            date_str = strftime(time_format, curr_time)
+        except BaseException as ex:
+            print('EX: sign_post_headers_new date 1 ' +
+                  str(ex) + ' ' +
+                  time_format + ' ' + curr_time)
+            return '', ''
     else:
-        curr_time = datetime.datetime.strptime(date_str, time_format)
+        try:
+            curr_time = datetime.datetime.strptime(date_str, time_format)
+        except BaseException as ex:
+            print('EX: sign_post_headers_new date 2 ' +
+                  str(ex) + ' ' +
+                  date_str + ' ' + time_format)
+            return '', ''
     seconds_since_epoch = \
         int((curr_time - datetime.datetime(1970, 1, 1)).total_seconds())
     key_id = local_actor_url(http_prefix, nickname, domain) + '#main-key'
@@ -248,7 +266,13 @@ def create_signed_header(date_str: str, private_key_pem: str, nickname: str,
 
     # if no date is given then create one
     if not date_str:
-        date_str = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+        try:
+            date_str = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+        except BaseException as ex:
+            print('EX: create_signed_header date ' +
+                  str(ex) + ' ' +
+                  "%a, %d %b %Y %H:%M:%S %Z " + str(gmtime()))
+            return {}
 
     # Content-Type or Accept header
     if not content_type:
@@ -295,7 +319,13 @@ def _verify_recent_signature(signed_date_str: str) -> bool:
     """
     curr_date = datetime.datetime.utcnow()
     date_format = "%a, %d %b %Y %H:%M:%S %Z"
-    signed_date = datetime.datetime.strptime(signed_date_str, date_format)
+    try:
+        signed_date = datetime.datetime.strptime(signed_date_str, date_format)
+    except BaseException as ex:
+        print('EX: _verify_recent_signature date ' +
+              str(ex) + ' ' +
+              signed_date_str + ' ' + date_format)
+        return False
     time_diff_sec = (curr_date - signed_date).seconds
     # 12 hours tollerance
     if time_diff_sec > 43200:
