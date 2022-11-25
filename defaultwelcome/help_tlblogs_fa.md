@@ -1,5 +1,5 @@
-This timeline contains any blogs written by you or anyone that you're following.
+این جدول زمانی حاوی هر وبلاگی است که توسط شما یا هر کسی که دنبال می کنید نوشته شده است.
 
-You can create a new blog post using the **publish** icon at the top of the right column.
+می توانید با استفاده از نماد **انتشار** در بالای ستون سمت راست، یک پست وبلاگ جدید ایجاد کنید.
 
-Blog posts are different from ordinary fediverse posts. They use the ActivityPub *Article* type, which is intended for long-form writing. They can also have citations, selected from items in the newswire.
+پست‌های وبلاگ با پست‌های معمولی fediverse متفاوت هستند. آنها از نوع ActivityPub *Article* استفاده می کنند که برای نوشتن طولانی در نظر گرفته شده است. آنها همچنین می توانند نقل قول هایی داشته باشند که از آیتم های موجود در اخبار انتخاب شده اند.

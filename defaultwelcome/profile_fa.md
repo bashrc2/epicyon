@@ -1,2 +1,2 @@
-### Account Setup
-Select your avatar image and add your name and description. Use a small avatar image (eg. 128x128 pixels) so that it's quick to download.
+### تنظیمات حساب
+تصویر آواتار خود را انتخاب کنید و نام و توضیحات خود را اضافه کنید. از یک تصویر آواتار کوچک (مثلاً ۱۲۸×۱۲۸ پیکسل) استفاده کنید تا سریع دانلود شود.

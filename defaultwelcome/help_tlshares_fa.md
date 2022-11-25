@@ -1,6 +1,6 @@
-### Shared items
-These are typically physical objects or local services, exchanged or given away without use of money.
+### موارد مشترک
+اینها معمولاً اشیاء فیزیکی یا خدمات محلی هستند که بدون استفاده از پول مبادله یا ارائه می شوند.
 
-For example, you may want to share **equipment** between members of a sports team on the same instance, share any surplus **clothing**, share **gadgets** which you are no longer using, or share plants and gardening **tools** between people using the same growing space.
+به عنوان مثال، ممکن است بخواهید **تجهیزات** را بین اعضای یک تیم ورزشی در یک مثال به اشتراک بگذارید، **لباس*های اضافی** را به اشتراک بگذارید، **گجت*هایی** را که دیگر استفاده نمی کنید، یا گیاهان را به اشتراک بگذارید و باغبانی **ابزار** بین افرادی که از همان فضای رشد استفاده می کنند.
 
-To avoid spam, shared items are not federated via ActivityPub and are local to members on the same instance.
+برای جلوگیری از هرزنامه، موارد به اشتراک گذاشته شده از طریق ActivityPub فدرال نمی شوند و برای اعضای همان نمونه محلی هستند.

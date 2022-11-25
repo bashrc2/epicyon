@@ -1,7 +1,7 @@
-![Welcome image](/helpimages/welcome.jpg)
-### Welcome to INSTANCE
-This is an ActivityPub server designed for easy self-hosting of a few people on low power systems, such as single board computers or old laptops.
+![تصویر خوش آمدید](/helpimages/welcome.jpg)
+### به INSTANCE خوش آمدید
+این یک سرور ActivityPub است که برای میزبانی آسان چند نفر در سیستم‌های کم مصرف، مانند رایانه‌های تک برد یا لپ‌تاپ‌های قدیمی طراحی شده است.
 
-Run your own social network presence the way you want to, and say goodbye to Big Tech.
+حضور خود را در شبکه های اجتماعی به روشی که می خواهید اجرا کنید و با Big Tech خداحافظی کنید.
 
-Now, lets get going...
+حالا بیا بریم...

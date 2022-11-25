@@ -1,18 +1,18 @@
-### Congratulations!
-You are now ready to begin using Epicyon. This is a moderated social space, so please make sure to abide by our [terms of service](/terms), and have fun.
+### تبریک می گویم!
+اکنون آماده شروع استفاده از Epicyon هستید. این یک فضای اجتماعی تعدیل شده است، بنابراین لطفاً از [شرایط خدمات](terms/) ما پیروی کنید و از آن لذت ببرید.
 
-#### Hints
-Use the **magnifier** icon 🔍 to search for fediverse handles and follow people.
+#### نکات
+از نماد **ذره‌بین** 🔍 برای جستجوی دسته‌های مختلف و دنبال کردن افراد استفاده کنید.
 
-Selecting the **banner at the top** of the screen switches between timeline view and your profile.
+انتخاب **بنر در بالای صفحه** بین نمای جدول زمانی و نمایه شما تغییر می کند.
 
-The screen will not automatically refresh when posts arrive, so use **F5** or the **Inbox** button to refresh.
+هنگام رسیدن پست ها، صفحه به طور خودکار بازخوانی نمی شود، بنابراین از دکمه **F5** یا **Inbox** برای بازخوانی استفاده کنید.
 
-#### Rite of Passage
-Corporate culture trains you to want the maximum number of followers and likes - to seek personal fame and shallow, outrage-inducing interactions to grab attention.
+#### آیین گذر
+فرهنگ شرکتی به شما آموزش می‌دهد که حداکثر تعداد فالوور و لایک را بخواهید - به دنبال شهرت شخصی و تعاملات سطحی و خشم‌انگیز برای جلب توجه باشید.
 
-So if you are coming from that culture, please be aware that this is a different type of system with a very different set of expectations.
+بنابراین اگر از آن فرهنگ آمده‌اید، لطفاً توجه داشته باشید که این یک نوع سیستم متفاوت با مجموعه‌ای از انتظارات متفاوت است.
 
-Having a lot of followers is not necessary, and often it's undesirable. People may block you, and that's ok. Nobody has a right to an audience. If someone blocks you then you're not being censored. People are just exercising their freedom to associate with whoever they wish.
+داشتن فالوورهای زیاد ضروری نیست و اغلب نامطلوب است. ممکن است افراد شما را بلاک کنند، و این اشکالی ندارد. هیچ کس حق ندارد مخاطب داشته باشد. اگر کسی شما را بلاک کند، سانسور نمی شوید. مردم فقط از آزادی خود برای معاشرت با هر کسی که می خواهند استفاده می کنند.
 
-Standards of personal behavior are expected to be better than in the corporate systems. Your behavior also has consequences for the reputation of this instance. If you behave in an inconsiderate manner which goes against the terms of service then your account may be suspended or removed.
+انتظار می رود استانداردهای رفتار شخصی بهتر از سیستم های شرکتی باشد. رفتار شما برای شهرت این نمونه نیز پیامدهایی دارد. اگر رفتاری بی ملاحظه و مغایر با شرایط خدمات داشته باشید، ممکن است حساب شما به حالت تعلیق درآید یا حذف شود.

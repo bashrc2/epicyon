@@ -1,3 +1,3 @@
-Direct messages will appear here, as a chronological timeline.
+پیام‌های مستقیم در اینجا به‌عنوان یک جدول زمانی ظاهر می‌شوند.
 
-To avoid spam and improve security, by default you will only be able to receive direct messages *from people that you're following*. You can turn this off within your profile settings if you need to, by selecting the top **banner** and then the **edit** icon.
+برای جلوگیری از هرزنامه و بهبود امنیت، به طور پیش‌فرض فقط می‌توانید پیام‌های مستقیم *از افرادی که دنبال می‌کنید* دریافت کنید. در صورت نیاز، می‌توانید با انتخاب **بنر** بالا و سپس نماد **ویرایش**، این را در تنظیمات نمایه خود غیرفعال کنید.

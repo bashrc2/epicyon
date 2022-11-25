@@ -1,1 +1,1 @@
-Your sent posts will appear here, as a cronological timeline.
+پست های ارسالی شما در اینجا به عنوان جدول زمانی نمایش داده می شود.

@@ -1,1 +1,1 @@
-Any incoming posts which contain **images**, **video** or **audio** files will appear here, together with their descriptions.
+هر پست دریافتی که حاوی فایل‌های **تصاویر**، **ویدئو** یا **صوتی** باشد همراه با توضیحات آنها در اینجا ظاهر می‌شود.

@@ -1,1 +1,1 @@
-Any bookmarked posts appear here.
+هر پست نشانک گذاری شده در اینجا ظاهر می شود.
