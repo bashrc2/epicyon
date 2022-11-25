@@ -278,7 +278,8 @@ def html_new_post(edit_post_params: {},
                   box_name: str,
                   reply_is_chat: bool, bold_reading: bool,
                   dogwhistles: {},
-                  min_images_for_accounts: []) -> str:
+                  min_images_for_accounts: [],
+                  default_month: int, default_year) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -312,6 +313,12 @@ def html_new_post(edit_post_params: {},
     default_location = ''
     default_start_time = ''
     default_end_time = ''
+    if default_month and default_year:
+        default_month_str = str(default_month)
+        if default_month < 10:
+            default_month_str = '0' + default_month_str
+        default_start_time = \
+            str(default_year) + '-' + default_month_str + '-01T09:00:00'
     if edited_post_json:
         # if this is an edited post then get the subject line or
         # content warning
