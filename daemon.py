@@ -3495,7 +3495,8 @@ class PubServer(BaseHTTPRequestHandler):
                               reply_is_chat,
                               bold_reading,
                               self.server.dogwhistles,
-                              self.server.min_images_for_accounts)
+                              self.server.min_images_for_accounts,
+                              None, None)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -3649,7 +3650,8 @@ class PubServer(BaseHTTPRequestHandler):
                               reply_is_chat,
                               bold_reading,
                               self.server.dogwhistles,
-                              self.server.min_images_for_accounts)
+                              self.server.min_images_for_accounts,
+                              None, None)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -15278,7 +15280,23 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the new post screen
         """
         is_new_post_endpoint = False
+        new_post_month = None
+        new_post_year = None
         if '/users/' in path and '/new' in path:
+            if '?month=' in path:
+                month_str = path.split('?month=')[1]
+                if ';' in month_str:
+                    month_str = month_str.split(';')[0]
+                if month_str.isdigit():
+                    new_post_month = int(month_str)
+            if new_post_month and ';year=' in path:
+                year_str = path.split(';year=')[1]
+                if ';' in year_str:
+                    year_str = year_str.split(';')[0]
+                if year_str.isdigit():
+                    new_post_year = int(year_str)
+                if new_post_year:
+                    path = path.split('?month=')[0]
             # Various types of new post in the web interface
             new_post_endpoints = get_new_post_endpoints()
             for curr_post_type in new_post_endpoints:
@@ -15367,7 +15385,8 @@ class PubServer(BaseHTTPRequestHandler):
                               reply_is_chat,
                               bold_reading,
                               self.server.dogwhistles,
-                              self.server.min_images_for_accounts)
+                              self.server.min_images_for_accounts,
+                              new_post_month, new_post_year)
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
                 self._404()
