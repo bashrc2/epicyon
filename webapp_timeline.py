@@ -963,6 +963,7 @@ def html_timeline(default_timeline: str,
             minimize_all_images = True
 
         # show each post in the timeline
+        tl_items_str = ''
         for item in timeline_json['orderedItems']:
             if item['type'] == 'Create' or \
                item['type'] == 'Announce':
@@ -1030,19 +1031,24 @@ def html_timeline(default_timeline: str,
                                          timeline_start_time, box_name, '12')
 
                 if curr_tl_str:
-                    if curr_tl_str not in tl_str:
+                    if curr_tl_str not in tl_items_str:
                         last_post_id = \
                             remove_id_ending(item['id']).replace('/', '#')
                         item_ctr += 1
                         if not reverse_sequence:
-                            tl_str += text_mode_separator + curr_tl_str
+                            tl_items_str += text_mode_separator + curr_tl_str
                             if separator_str:
-                                tl_str += separator_str
+                                tl_items_str += separator_str
                         else:
-                            tl_str = text_mode_separator + curr_tl_str + tl_str
+                            tl_items_str = \
+                                text_mode_separator + curr_tl_str + \
+                                tl_items_str
                             if separator_str:
-                                tl_str = text_mode_separator + curr_tl_str + \
-                                    separator_str + tl_str
+                                tl_items_str = \
+                                    text_mode_separator + curr_tl_str + \
+                                    separator_str + tl_items_str
+        tl_str += tl_items_str
+
         if box_name == 'tlmedia':
             tl_str += '</div>\n'
 
