@@ -1197,7 +1197,10 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
             break
         if len(outbox_feed['orderedItems']) == 0:
             break
+        shown_items = []
         for item in outbox_feed['orderedItems']:
+            if not item.get('id'):
+                continue
             if item['type'] == 'Create':
                 post_str = \
                     individual_post_as_html(signing_priv_key_pem,
@@ -1224,8 +1227,9 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, False,
                                             bold_reading, dogwhistles,
                                             minimize_all_images)
-                if post_str:
+                if post_str and item['id'] not in shown_items:
                     profile_str += post_str + separator_str
+                    shown_items.append(item['id'])
                     ctr += 1
                     if ctr >= max_items:
                         break
