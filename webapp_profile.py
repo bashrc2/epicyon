@@ -2157,7 +2157,8 @@ def _html_edit_profile_options(is_admin: bool,
                                hide_reaction_button: str,
                                translate: {}, bold_reading: bool,
                                nickname: str,
-                               min_images_for_accounts: []) -> str:
+                               min_images_for_accounts: [],
+                               reverse_sequence: []) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2203,6 +2204,14 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(minimize_all_images_str, 'minimizeAllImages',
                        minimize_all_images)
+    reverse = False
+    if nickname in reverse_sequence:
+        reverse = True
+    reverse_str = \
+        bold_reading_string(translate['Reverse timelines'])
+    edit_profile_form += \
+        edit_check_box(reverse_str, 'reverseTimelines', reverse)
+
     edit_profile_form += '    </div>\n'
     return edit_profile_form
 
@@ -2374,7 +2383,8 @@ def html_edit_profile(server, translate: {},
                       cw_lists: {}, lists_enabled: str,
                       system_language: str,
                       min_images_for_accounts: [],
-                      max_recent_posts: int) -> str:
+                      max_recent_posts: int,
+                      reverse_sequence: []) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2569,7 +2579,8 @@ def html_edit_profile(server, translate: {},
                                    notify_likes, notify_reactions,
                                    hide_like_button, hide_reaction_button,
                                    translate, bold_reading,
-                                   nickname, min_images_for_accounts)
+                                   nickname, min_images_for_accounts,
+                                   reverse_sequence)
 
     # Contact information
     edit_profile_form += \

@@ -4040,3 +4040,33 @@ def load_reverse_timeline(base_dir: str) -> []:
                     reverse_sequence.append(nickname)
         break
     return reverse_sequence
+
+
+def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
+    """Saves flags for each user indicating whether they prefer to
+    see reversed timelines
+    """
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for acct in dirs:
+            if not is_account_dir(acct):
+                continue
+            nickname = acct.split('@')[0]
+            domain = acct.split('@')[1]
+            reverse_filename = \
+                acct_dir(base_dir, nickname, domain) + '/.reverse_timeline'
+            if nickname in reverse_sequence:
+                if not os.path.isfile(reverse_filename):
+                    try:
+                        with open(reverse_filename, 'w+',
+                                  encoding='utf-8') as fp_reverse:
+                            fp_reverse.write('\n')
+                    except OSError:
+                        print('EX: failed to save reverse ' + reverse_filename)
+            else:
+                if os.path.isfile(reverse_filename):
+                    try:
+                        os.remove(reverse_filename)
+                    except OSError:
+                        print('EX: failed to delete reverse ' +
+                              reverse_filename)
+        break

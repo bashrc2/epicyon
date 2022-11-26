@@ -269,6 +269,7 @@ from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from utils import load_reverse_timeline
+from utils import save_reverse_timeline
 from utils import load_min_images_for_accounts
 from utils import set_minimize_all_images
 from utils import get_json_content_from_accept
@@ -7188,6 +7189,21 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: _profile_edit ' +
                                       'unable to delete ' +
                                       bold_reading_filename)
+
+                    # reverse timelines checkbox
+                    reverse = False
+                    if fields.get('reverseTimelines'):
+                        if fields['reverseTimelines'] == 'on':
+                            reverse = True
+                            if nickname not in self.server.reverse_sequence:
+                                self.server.reverse_sequence.append(nickname)
+                            save_reverse_timeline(base_dir,
+                                                  self.server.reverse_sequence)
+                    if not reverse:
+                        if nickname in self.server.reverse_sequence:
+                            self.server.reverse_sequence.remove(nickname)
+                            save_reverse_timeline(base_dir,
+                                                  self.server.reverse_sequence)
 
                     # notify about new Likes
                     if on_final_welcome_screen:
@@ -15530,7 +15546,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.lists_enabled,
                                     self.server.system_language,
                                     self.server.min_images_for_accounts,
-                                    self.server.max_recent_posts)
+                                    self.server.max_recent_posts,
+                                    self.server.reverse_sequence)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
