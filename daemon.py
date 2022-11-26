@@ -268,6 +268,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import load_reverse_timeline
 from utils import load_min_images_for_accounts
 from utils import set_minimize_all_images
 from utils import get_json_content_from_accept
@@ -21936,7 +21937,7 @@ def run_daemon(max_hashtags: int,
     # caches css files
     httpd.css_cache = {}
 
-    httpd.reverse_sequence = []
+    httpd.reverse_sequence = load_reverse_timeline(base_dir)
 
     httpd.clacks = get_config_param(base_dir, 'clacks')
     if not httpd.clacks:
