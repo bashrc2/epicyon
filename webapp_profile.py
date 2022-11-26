@@ -611,6 +611,31 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
     return html_str
 
 
+def _get_max_profile_posts(base_dir: str, nickname: str, domain: str,
+                           max_recent_posts: int) -> int:
+    """Returns the maximum number of posts to show on the profile screen
+    """
+    max_posts_filename = \
+        acct_dir(base_dir, nickname, domain) + '/max_profile_posts.txt'
+    if not os.path.isfile(max_posts_filename):
+        return max_recent_posts
+    max_profile_posts = max_recent_posts
+    try:
+        with open(max_posts_filename, 'r', encoding='utf-8') as fp_posts:
+            max_posts_str = fp_posts.read()
+            if max_posts_str:
+                if max_posts_str.isdigit():
+                    max_profile_posts = int(max_posts_str)
+    except OSError:
+        print('EX: unable to read maximum profile posts ' +
+              max_posts_filename)
+    if max_profile_posts < 1:
+        max_profile_posts = 1
+    if max_profile_posts > 20:
+        max_profile_posts = 20
+    return max_profile_posts
+
+
 def html_profile(signing_priv_key_pem: str,
                  rss_icon_at_top: bool,
                  icons_as_buttons: bool,
@@ -1071,9 +1096,11 @@ def html_profile(signing_priv_key_pem: str,
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
     if selected == 'posts':
+        max_profile_posts = _get_max_profile_posts(base_dir, nickname, domain,
+                                                   max_recent_posts)
         min_images_for_accounts = []
         profile_str += \
-            _html_profile_posts(recent_posts_cache, max_recent_posts,
+            _html_profile_posts(recent_posts_cache, max_profile_posts,
                                 translate,
                                 base_dir, http_prefix, authorized,
                                 nickname, domain, port,
