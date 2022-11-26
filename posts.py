@@ -5979,9 +5979,9 @@ def get_max_profile_posts(base_dir: str, nickname: str, domain: str,
     """
     max_posts_filename = \
         acct_dir(base_dir, nickname, domain) + '/max_profile_posts.txt'
+    max_profile_posts = 4
     if not os.path.isfile(max_posts_filename):
-        return max_recent_posts
-    max_profile_posts = max_recent_posts
+        return max_profile_posts
     try:
         with open(max_posts_filename, 'r', encoding='utf-8') as fp_posts:
             max_posts_str = fp_posts.read()
@@ -5993,8 +5993,8 @@ def get_max_profile_posts(base_dir: str, nickname: str, domain: str,
               max_posts_filename)
     if max_profile_posts < 1:
         max_profile_posts = 1
-    if max_profile_posts > 20:
-        max_profile_posts = 20
+    if max_profile_posts > max_recent_posts:
+        max_profile_posts = max_recent_posts
     return max_profile_posts
 
 

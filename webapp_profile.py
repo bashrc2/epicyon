@@ -1073,7 +1073,7 @@ def html_profile(signing_priv_key_pem: str,
 
     if selected == 'posts':
         max_profile_posts = get_max_profile_posts(base_dir, nickname, domain,
-                                                  max_recent_posts)
+                                                  20)
         min_images_for_accounts = []
         profile_str += \
             _html_profile_posts(recent_posts_cache, max_profile_posts,
