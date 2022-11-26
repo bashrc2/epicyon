@@ -83,6 +83,8 @@ from person import remove_account
 from person import can_remove_post
 from person import person_snooze
 from person import person_unsnooze
+from posts import get_max_profile_posts
+from posts import set_max_profile_posts
 from posts import get_post_expiry_keep_dms
 from posts import set_post_expiry_keep_dms
 from posts import get_post_expiry_days
@@ -6512,6 +6514,21 @@ class PubServer(BaseHTTPRequestHandler):
                         if post_expiry_period_days > 0:
                             set_post_expiry_days(base_dir, nickname, domain, 0)
                             actor_changed = True
+
+                    # set maximum preview posts on profile screen
+                    max_profile_posts = \
+                        get_max_profile_posts(base_dir, nickname, domain,
+                                              self.server.max_recent_posts)
+                    if fields.get('maxRecentProfilePosts'):
+                        if fields['maxRecentProfilePosts'] != \
+                           str(max_profile_posts):
+                            max_profile_posts = \
+                                fields['maxRecentProfilePosts']
+                            set_max_profile_posts(base_dir, nickname, domain,
+                                                  max_profile_posts)
+                    else:
+                        set_max_profile_posts(base_dir, nickname, domain,
+                                              self.server.max_recent_posts)
 
                     # change tox address
                     current_tox_address = get_tox_address(actor_json)

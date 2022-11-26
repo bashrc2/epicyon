@@ -5971,3 +5971,46 @@ def get_original_post_from_announce_url(announce_url: str, base_dir: str,
                 url = orig_post_id
 
     return actor, url, orig_filename
+
+
+def get_max_profile_posts(base_dir: str, nickname: str, domain: str,
+                          max_recent_posts: int) -> int:
+    """Returns the maximum number of posts to show on the profile screen
+    """
+    max_posts_filename = \
+        acct_dir(base_dir, nickname, domain) + '/max_profile_posts.txt'
+    if not os.path.isfile(max_posts_filename):
+        return max_recent_posts
+    max_profile_posts = max_recent_posts
+    try:
+        with open(max_posts_filename, 'r', encoding='utf-8') as fp_posts:
+            max_posts_str = fp_posts.read()
+            if max_posts_str:
+                if max_posts_str.isdigit():
+                    max_profile_posts = int(max_posts_str)
+    except OSError:
+        print('EX: unable to read maximum profile posts ' +
+              max_posts_filename)
+    if max_profile_posts < 1:
+        max_profile_posts = 1
+    if max_profile_posts > 20:
+        max_profile_posts = 20
+    return max_profile_posts
+
+
+def set_max_profile_posts(base_dir: str, nickname: str, domain: str,
+                          max_recent_posts: int) -> bool:
+    """Sets the maximum number of posts to show on the profile screen
+    """
+    max_posts_filename = \
+        acct_dir(base_dir, nickname, domain) + '/max_profile_posts.txt'
+    max_recent_posts_str = str(max_recent_posts)
+    try:
+        with open(max_posts_filename, 'w+',
+                  encoding='utf-8') as fp_posts:
+            fp_posts.write(max_recent_posts_str)
+    except OSError:
+        print('EX: unable to save maximum profile posts ' +
+              max_posts_filename)
+        return False
+    return True
