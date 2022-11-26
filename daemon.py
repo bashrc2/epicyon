@@ -12264,6 +12264,9 @@ class PubServer(BaseHTTPRequestHandler):
                         bold_reading = False
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
+                        reverse_sequence = False
+                        if nickname in self.server.reverse_sequence:
+                            reverse_sequence = True
                         msg = \
                             html_inbox(default_timeline,
                                        recent_posts_cache,
@@ -12307,7 +12310,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        timezone, bold_reading,
                                        self.server.dogwhistles,
                                        ua_str,
-                                       self.server.min_images_for_accounts)
+                                       self.server.min_images_for_accounts,
+                                       reverse_sequence)
                         if getreq_start_time:
                             fitness_performance(getreq_start_time,
                                                 self.server.fitness,
@@ -12440,6 +12444,9 @@ class PubServer(BaseHTTPRequestHandler):
                         bold_reading = False
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
+                        reverse_sequence = False
+                        if nickname in self.server.reverse_sequence:
+                            reverse_sequence = True
                         msg = \
                             html_inbox_dms(self.server.default_timeline,
                                            self.server.recent_posts_cache,
@@ -12481,7 +12488,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
                                            self.server.dogwhistles, ua_str,
-                                           self.server.min_images_for_accounts)
+                                           self.server.min_images_for_accounts,
+                                           reverse_sequence)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -12604,6 +12612,9 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    reverse_sequence = False
+                    if nickname in self.server.reverse_sequence:
+                        reverse_sequence = True
                     msg = \
                         html_inbox_replies(self.server.default_timeline,
                                            self.server.recent_posts_cache,
@@ -12646,7 +12657,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            timezone, bold_reading,
                                            self.server.dogwhistles,
                                            ua_str,
-                                           self.server.min_images_for_accounts)
+                                           self.server.min_images_for_accounts,
+                                           reverse_sequence)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12765,6 +12777,9 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    reverse_sequence = False
+                    if nickname in self.server.reverse_sequence:
+                        reverse_sequence = True
                     msg = \
                         html_inbox_media(self.server.default_timeline,
                                          self.server.recent_posts_cache,
@@ -12807,7 +12822,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.lists_enabled,
                                          timezone, bold_reading,
                                          self.server.dogwhistles, ua_str,
-                                         self.server.min_images_for_accounts)
+                                         self.server.min_images_for_accounts,
+                                         reverse_sequence)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12926,6 +12942,9 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    reverse_sequence = False
+                    if nickname in self.server.reverse_sequence:
+                        reverse_sequence = True
                     msg = \
                         html_inbox_blogs(self.server.default_timeline,
                                          self.server.recent_posts_cache,
@@ -12968,7 +12987,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.lists_enabled,
                                          timezone, bold_reading,
                                          self.server.dogwhistles, ua_str,
-                                         self.server.min_images_for_accounts)
+                                         self.server.min_images_for_accounts,
+                                         reverse_sequence)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13094,6 +13114,9 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    reverse_sequence = False
+                    if nickname in self.server.reverse_sequence:
+                        reverse_sequence = True
                     msg = \
                         html_inbox_news(self.server.default_timeline,
                                         self.server.recent_posts_cache,
@@ -13137,7 +13160,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, bold_reading,
                                         self.server.dogwhistles, ua_str,
-                                        self.server.min_images_for_accounts)
+                                        self.server.min_images_for_accounts,
+                                        reverse_sequence)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13267,6 +13291,9 @@ class PubServer(BaseHTTPRequestHandler):
                         bold_reading = True
                     min_images_for_accounts = \
                         self.server.min_images_for_accounts
+                    reverse_sequence = False
+                    if nickname in self.server.reverse_sequence:
+                        reverse_sequence = True
                     msg = \
                         html_inbox_features(self.server.default_timeline,
                                             self.server.recent_posts_cache,
@@ -13310,7 +13337,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.lists_enabled,
                                             timezone, bold_reading,
                                             self.server.dogwhistles, ua_str,
-                                            min_images_for_accounts)
+                                            min_images_for_accounts,
+                                            reverse_sequence)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13395,6 +13423,9 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    reverse_sequence = False
+                    if nickname in self.server.reverse_sequence:
+                        reverse_sequence = True
                     msg = \
                         html_shares(self.server.default_timeline,
                                     self.server.recent_posts_cache,
@@ -13434,7 +13465,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.lists_enabled, timezone,
                                     bold_reading, self.server.dogwhistles,
                                     ua_str,
-                                    self.server.min_images_for_accounts)
+                                    self.server.min_images_for_accounts,
+                                    reverse_sequence)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13492,6 +13524,9 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    reverse_sequence = False
+                    if nickname in self.server.reverse_sequence:
+                        reverse_sequence = True
                     msg = \
                         html_wanted(self.server.default_timeline,
                                     self.server.recent_posts_cache,
@@ -13531,7 +13566,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.lists_enabled,
                                     timezone, bold_reading,
                                     self.server.dogwhistles, ua_str,
-                                    self.server.min_images_for_accounts)
+                                    self.server.min_images_for_accounts,
+                                    reverse_sequence)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13627,6 +13663,9 @@ class PubServer(BaseHTTPRequestHandler):
                         bold_reading = False
                         if self.server.bold_reading.get(nickname):
                             bold_reading = True
+                        reverse_sequence = False
+                        if nickname in self.server.reverse_sequence:
+                            reverse_sequence = True
                         msg = \
                             html_bookmarks(self.server.default_timeline,
                                            self.server.recent_posts_cache,
@@ -13669,7 +13708,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.lists_enabled,
                                            timezone, bold_reading,
                                            self.server.dogwhistles, ua_str,
-                                           self.server.min_images_for_accounts)
+                                           self.server.min_images_for_accounts,
+                                           reverse_sequence)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -13785,6 +13825,9 @@ class PubServer(BaseHTTPRequestHandler):
                 bold_reading = False
                 if self.server.bold_reading.get(nickname):
                     bold_reading = True
+                reverse_sequence = False
+                if nickname in self.server.reverse_sequence:
+                    reverse_sequence = True
                 msg = \
                     html_outbox(self.server.default_timeline,
                                 self.server.recent_posts_cache,
@@ -13825,7 +13868,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.lists_enabled,
                                 timezone, bold_reading,
                                 self.server.dogwhistles, ua_str,
-                                self.server.min_images_for_accounts)
+                                self.server.min_images_for_accounts,
+                                reverse_sequence)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -13936,6 +13980,9 @@ class PubServer(BaseHTTPRequestHandler):
                             bold_reading = True
                         min_images_for_accounts = \
                             self.server.min_images_for_accounts
+                        reverse_sequence = False
+                        if nickname in self.server.reverse_sequence:
+                            reverse_sequence = True
                         msg = \
                             html_moderation(self.server.default_timeline,
                                             self.server.recent_posts_cache,
@@ -13978,7 +14025,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             timezone, bold_reading,
                                             self.server.dogwhistles,
                                             ua_str,
-                                            min_images_for_accounts)
+                                            min_images_for_accounts,
+                                            reverse_sequence)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -21887,6 +21935,8 @@ def run_daemon(max_hashtags: int,
 
     # caches css files
     httpd.css_cache = {}
+
+    httpd.reverse_sequence = []
 
     httpd.clacks = get_config_param(base_dir, 'clacks')
     if not httpd.clacks:
