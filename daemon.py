@@ -6518,7 +6518,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # set maximum preview posts on profile screen
                     max_profile_posts = \
                         get_max_profile_posts(base_dir, nickname, domain,
-                                              self.server.max_recent_posts)
+                                              20)
                     if fields.get('maxRecentProfilePosts'):
                         if fields['maxRecentProfilePosts'] != \
                            str(max_profile_posts):
@@ -6528,7 +6528,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   max_profile_posts)
                     else:
                         set_max_profile_posts(base_dir, nickname, domain,
-                                              self.server.max_recent_posts)
+                                              20)
 
                     # change tox address
                     current_tox_address = get_tox_address(actor_json)
