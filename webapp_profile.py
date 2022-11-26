@@ -1072,8 +1072,8 @@ def html_profile(signing_priv_key_pem: str,
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
     if selected == 'posts':
-        max_profile_posts = get_max_profile_posts(base_dir, nickname, domain,
-                                                  20)
+        max_profile_posts = \
+            get_max_profile_posts(base_dir, nickname, domain, 20)
         min_images_for_accounts = []
         profile_str += \
             _html_profile_posts(recent_posts_cache, max_profile_posts,
@@ -1092,7 +1092,8 @@ def html_profile(signing_priv_key_pem: str,
                                 signing_priv_key_pem,
                                 cw_lists, lists_enabled,
                                 timezone, bold_reading, {},
-                                min_images_for_accounts) + license_str
+                                min_images_for_accounts,
+                                max_profile_posts) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1167,13 +1168,14 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         cw_lists: {}, lists_enabled: str,
                         timezone: str, bold_reading: bool,
                         dogwhistles: {},
-                        min_images_for_accounts: []) -> str:
+                        min_images_for_accounts: [],
+                        max_profile_posts: int) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
     separator_str = html_post_separator(base_dir, None)
     profile_str = ''
-    max_items = 4
+    max_items = max_profile_posts
     ctr = 0
     curr_page = 1
     box_name = 'outbox'
