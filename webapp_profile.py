@@ -2249,7 +2249,8 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
                             moved_to: str, donate_url: str, website_url: str,
                             gemini_link: str, blog_address: str,
                             actor_json: {}, translate: {},
-                            nickname: str, domain: str) -> str:
+                            nickname: str, domain: str,
+                            max_recent_posts: int) -> str:
     """main info on edit profile screen
     """
     image_formats = get_image_formats()
@@ -2333,6 +2334,13 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
         edit_check_box(translate['Keep DMs during post expiry'],
                        'expiryKeepDMs', keep_dms)
 
+    max_profile_posts = \
+        _get_max_profile_posts(base_dir, nickname, domain, max_recent_posts)
+    edit_profile_form += \
+        edit_number_field(translate['Preview posts on profile screen'],
+                          'maxRecentProfilePosts', max_profile_posts,
+                          1, 20, max_recent_posts)
+
     edit_profile_form += '    </div>\n'
     return edit_profile_form
 
@@ -2387,7 +2395,8 @@ def html_edit_profile(server, translate: {},
                       default_reply_interval_hrs: int,
                       cw_lists: {}, lists_enabled: str,
                       system_language: str,
-                      min_images_for_accounts: []) -> str:
+                      min_images_for_accounts: [],
+                      max_recent_posts: int) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2571,7 +2580,7 @@ def html_edit_profile(server, translate: {},
                                 moved_to, donate_url, website_url,
                                 gemini_link,
                                 blog_address, actor_json, translate,
-                                nickname, domain)
+                                nickname, domain, max_recent_posts)
 
     # Option checkboxes
     edit_profile_form += \

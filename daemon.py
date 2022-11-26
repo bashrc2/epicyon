@@ -15463,7 +15463,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
                                     self.server.system_language,
-                                    self.server.min_images_for_accounts)
+                                    self.server.min_images_for_accounts,
+                                    self.server.max_recent_posts)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
