@@ -44,6 +44,7 @@ from posts import get_person_box
 from posts import is_moderator
 from posts import parse_user_feed
 from posts import is_create_inside_announce
+from posts import get_max_profile_posts
 from donate import get_donation_url
 from donate import get_website
 from donate import get_gemini_link
@@ -1071,9 +1072,11 @@ def html_profile(signing_priv_key_pem: str,
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
     if selected == 'posts':
+        max_profile_posts = \
+            get_max_profile_posts(base_dir, nickname, domain, 20)
         min_images_for_accounts = []
         profile_str += \
-            _html_profile_posts(recent_posts_cache, max_recent_posts,
+            _html_profile_posts(recent_posts_cache, max_profile_posts,
                                 translate,
                                 base_dir, http_prefix, authorized,
                                 nickname, domain, port,
@@ -1089,7 +1092,8 @@ def html_profile(signing_priv_key_pem: str,
                                 signing_priv_key_pem,
                                 cw_lists, lists_enabled,
                                 timezone, bold_reading, {},
-                                min_images_for_accounts) + license_str
+                                min_images_for_accounts,
+                                max_profile_posts) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1164,13 +1168,14 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         cw_lists: {}, lists_enabled: str,
                         timezone: str, bold_reading: bool,
                         dogwhistles: {},
-                        min_images_for_accounts: []) -> str:
+                        min_images_for_accounts: [],
+                        max_profile_posts: int) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
     separator_str = html_post_separator(base_dir, None)
     profile_str = ''
-    max_items = 4
+    max_items = max_profile_posts
     ctr = 0
     curr_page = 1
     box_name = 'outbox'
@@ -1192,7 +1197,10 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
             break
         if len(outbox_feed['orderedItems']) == 0:
             break
+        shown_items = []
         for item in outbox_feed['orderedItems']:
+            if not item.get('id'):
+                continue
             if item['type'] == 'Create':
                 post_str = \
                     individual_post_as_html(signing_priv_key_pem,
@@ -1219,8 +1227,9 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, False,
                                             bold_reading, dogwhistles,
                                             minimize_all_images)
-                if post_str:
+                if post_str and item['id'] not in shown_items:
                     profile_str += post_str + separator_str
+                    shown_items.append(item['id'])
                     ctr += 1
                     if ctr >= max_items:
                         break
@@ -2152,7 +2161,8 @@ def _html_edit_profile_options(is_admin: bool,
                                hide_reaction_button: str,
                                translate: {}, bold_reading: bool,
                                nickname: str,
-                               min_images_for_accounts: []) -> str:
+                               min_images_for_accounts: [],
+                               reverse_sequence: []) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2198,6 +2208,14 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(minimize_all_images_str, 'minimizeAllImages',
                        minimize_all_images)
+    reverse = False
+    if nickname in reverse_sequence:
+        reverse = True
+    reverse_str = \
+        bold_reading_string(translate['Reverse timelines'])
+    edit_profile_form += \
+        edit_check_box(reverse_str, 'reverseTimelines', reverse)
+
     edit_profile_form += '    </div>\n'
     return edit_profile_form
 
@@ -2222,7 +2240,8 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
                             moved_to: str, donate_url: str, website_url: str,
                             gemini_link: str, blog_address: str,
                             actor_json: {}, translate: {},
-                            nickname: str, domain: str) -> str:
+                            nickname: str, domain: str,
+                            max_recent_posts: int) -> str:
     """main info on edit profile screen
     """
     image_formats = get_image_formats()
@@ -2306,6 +2325,13 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
         edit_check_box(translate['Keep DMs during post expiry'],
                        'expiryKeepDMs', keep_dms)
 
+    max_profile_posts = \
+        get_max_profile_posts(base_dir, nickname, domain, max_recent_posts)
+    edit_profile_form += \
+        edit_number_field(translate['Preview posts on profile screen'],
+                          'maxRecentProfilePosts', max_profile_posts,
+                          1, 20, max_recent_posts)
+
     edit_profile_form += '    </div>\n'
     return edit_profile_form
 
@@ -2360,7 +2386,9 @@ def html_edit_profile(server, translate: {},
                       default_reply_interval_hrs: int,
                       cw_lists: {}, lists_enabled: str,
                       system_language: str,
-                      min_images_for_accounts: []) -> str:
+                      min_images_for_accounts: [],
+                      max_recent_posts: int,
+                      reverse_sequence: []) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2544,7 +2572,7 @@ def html_edit_profile(server, translate: {},
                                 moved_to, donate_url, website_url,
                                 gemini_link,
                                 blog_address, actor_json, translate,
-                                nickname, domain)
+                                nickname, domain, max_recent_posts)
 
     # Option checkboxes
     edit_profile_form += \
@@ -2555,7 +2583,8 @@ def html_edit_profile(server, translate: {},
                                    notify_likes, notify_reactions,
                                    hide_like_button, hide_reaction_button,
                                    translate, bold_reading,
-                                   nickname, min_images_for_accounts)
+                                   nickname, min_images_for_accounts,
+                                   reverse_sequence)
 
     # Contact information
     edit_profile_form += \

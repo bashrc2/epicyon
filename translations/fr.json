@@ -600,5 +600,7 @@
     "Allow announces": "Autoriser les annonces",
     "Send": "Envoyer",
     "Minimize all images": "Réduire toutes les images",
-    "Edit post": "Modifier le message"
+    "Edit post": "Modifier le message",
+    "Preview posts on profile screen": "Prévisualiser les messages sur l'écran de profil",
+    "Reverse timelines": "Chronologies inversées"
 }

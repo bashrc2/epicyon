@@ -499,7 +499,8 @@ def html_timeline(default_timeline: str,
                   cw_lists: {}, lists_enabled: str,
                   timezone: str, bold_reading: bool,
                   dogwhistles: {}, ua_str: str,
-                  min_images_for_accounts: []) -> str:
+                  min_images_for_accounts: [],
+                  reverse_sequence: bool) -> str:
     """Show the timeline as html
     """
     enable_timing_log = False
@@ -962,6 +963,7 @@ def html_timeline(default_timeline: str,
             minimize_all_images = True
 
         # show each post in the timeline
+        tl_items_str = ''
         for item in timeline_json['orderedItems']:
             if item['type'] == 'Create' or \
                item['type'] == 'Announce':
@@ -1029,13 +1031,24 @@ def html_timeline(default_timeline: str,
                                          timeline_start_time, box_name, '12')
 
                 if curr_tl_str:
-                    if curr_tl_str not in tl_str:
+                    if curr_tl_str not in tl_items_str:
                         last_post_id = \
                             remove_id_ending(item['id']).replace('/', '#')
                         item_ctr += 1
-                        tl_str += text_mode_separator + curr_tl_str
-                        if separator_str:
-                            tl_str += separator_str
+                        if not reverse_sequence:
+                            tl_items_str += text_mode_separator + curr_tl_str
+                            if separator_str:
+                                tl_items_str += separator_str
+                        else:
+                            tl_items_str = \
+                                text_mode_separator + curr_tl_str + \
+                                tl_items_str
+                            if separator_str:
+                                tl_items_str = \
+                                    text_mode_separator + curr_tl_str + \
+                                    separator_str + tl_items_str
+        tl_str += tl_items_str
+
         if box_name == 'tlmedia':
             tl_str += '</div>\n'
 
@@ -1272,7 +1285,8 @@ def html_shares(default_timeline: str,
                 cw_lists: {}, lists_enabled: str,
                 timezone: str, bold_reading: bool,
                 dogwhistles: {}, ua_str: str,
-                min_images_for_accounts: []) -> str:
+                min_images_for_accounts: [],
+                reverse_sequence: bool) -> str:
     """Show the shares timeline as html
     """
     manually_approve_followers = \
@@ -1304,7 +1318,8 @@ def html_shares(default_timeline: str,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
-                         min_images_for_accounts)
+                         min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_wanted(default_timeline: str,
@@ -1335,7 +1350,8 @@ def html_wanted(default_timeline: str,
                 cw_lists: {}, lists_enabled: str,
                 timezone: str, bold_reading: bool,
                 dogwhistles: {}, ua_str: str,
-                min_images_for_accounts: []) -> str:
+                min_images_for_accounts: [],
+                reverse_sequence: bool) -> str:
     """Show the wanted timeline as html
     """
     manually_approve_followers = \
@@ -1367,7 +1383,8 @@ def html_wanted(default_timeline: str,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
-                         min_images_for_accounts)
+                         min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_inbox(default_timeline: str,
@@ -1399,7 +1416,8 @@ def html_inbox(default_timeline: str,
                cw_lists: {}, lists_enabled: str,
                timezone: str, bold_reading: bool,
                dogwhistles: {}, ua_str: str,
-               min_images_for_accounts: []) -> str:
+               min_images_for_accounts: [],
+               reverse_sequence: bool) -> str:
     """Show the inbox as html
     """
     manually_approve_followers = \
@@ -1431,7 +1449,8 @@ def html_inbox(default_timeline: str,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
-                         min_images_for_accounts)
+                         min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_bookmarks(default_timeline: str,
@@ -1463,7 +1482,8 @@ def html_bookmarks(default_timeline: str,
                    cw_lists: {}, lists_enabled: str,
                    timezone: str, bold_reading: bool,
                    dogwhistles: {}, ua_str: str,
-                   min_images_for_accounts: []) -> str:
+                   min_images_for_accounts: [],
+                   reverse_sequence: bool) -> str:
     """Show the bookmarks as html
     """
     manually_approve_followers = \
@@ -1494,7 +1514,8 @@ def html_bookmarks(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
-                         min_images_for_accounts)
+                         min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_inbox_dms(default_timeline: str,
@@ -1526,7 +1547,8 @@ def html_inbox_dms(default_timeline: str,
                    cw_lists: {}, lists_enabled: str,
                    timezone: str, bold_reading: bool,
                    dogwhistles: {}, ua_str: str,
-                   min_images_for_accounts: []) -> str:
+                   min_images_for_accounts: [],
+                   reverse_sequence: bool) -> str:
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1553,7 +1575,8 @@ def html_inbox_dms(default_timeline: str,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
-                         min_images_for_accounts)
+                         min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_inbox_replies(default_timeline: str,
@@ -1585,7 +1608,8 @@ def html_inbox_replies(default_timeline: str,
                        cw_lists: {}, lists_enabled: str,
                        timezone: str, bold_reading: bool,
                        dogwhistles: {}, ua_str: str,
-                       min_images_for_accounts: []) -> str:
+                       min_images_for_accounts: [],
+                       reverse_sequence: bool) -> str:
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1610,7 +1634,8 @@ def html_inbox_replies(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles, ua_str, min_images_for_accounts)
+                         dogwhistles, ua_str, min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_inbox_media(default_timeline: str,
@@ -1642,7 +1667,8 @@ def html_inbox_media(default_timeline: str,
                      cw_lists: {}, lists_enabled: str,
                      timezone: str, bold_reading: bool,
                      dogwhistles: {}, ua_str: str,
-                     min_images_for_accounts: []) -> str:
+                     min_images_for_accounts: [],
+                     reverse_sequence: bool) -> str:
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1667,7 +1693,8 @@ def html_inbox_media(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles, ua_str, min_images_for_accounts)
+                         dogwhistles, ua_str, min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_inbox_blogs(default_timeline: str,
@@ -1699,7 +1726,8 @@ def html_inbox_blogs(default_timeline: str,
                      cw_lists: {}, lists_enabled: str,
                      timezone: str, bold_reading: bool,
                      dogwhistles: {}, ua_str: str,
-                     min_images_for_accounts: []) -> str:
+                     min_images_for_accounts: [],
+                     reverse_sequence: bool) -> str:
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1724,7 +1752,8 @@ def html_inbox_blogs(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles, ua_str, min_images_for_accounts)
+                         dogwhistles, ua_str, min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_inbox_features(default_timeline: str,
@@ -1757,7 +1786,8 @@ def html_inbox_features(default_timeline: str,
                         cw_lists: {}, lists_enabled: str,
                         timezone: str, bold_reading: bool,
                         dogwhistles: {}, ua_str: str,
-                        min_images_for_accounts: []) -> str:
+                        min_images_for_accounts: [],
+                        reverse_sequence: bool) -> str:
     """Show the features timeline as html
     """
     return html_timeline(default_timeline,
@@ -1781,7 +1811,8 @@ def html_inbox_features(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles, ua_str, min_images_for_accounts)
+                         dogwhistles, ua_str, min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_inbox_news(default_timeline: str,
@@ -1813,7 +1844,8 @@ def html_inbox_news(default_timeline: str,
                     cw_lists: {}, lists_enabled: str,
                     timezone: str, bold_reading: bool,
                     dogwhistles: {}, ua_str: str,
-                    min_images_for_accounts: []) -> str:
+                    min_images_for_accounts: [],
+                    reverse_sequence: bool) -> str:
     """Show the news timeline as html
     """
     return html_timeline(default_timeline,
@@ -1837,7 +1869,8 @@ def html_inbox_news(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles, ua_str, min_images_for_accounts)
+                         dogwhistles, ua_str, min_images_for_accounts,
+                         reverse_sequence)
 
 
 def html_outbox(default_timeline: str,
@@ -1869,7 +1902,8 @@ def html_outbox(default_timeline: str,
                 cw_lists: {}, lists_enabled: str,
                 timezone: str, bold_reading: bool,
                 dogwhistles: {}, ua_str: str,
-                min_images_for_accounts: []) -> str:
+                min_images_for_accounts: [],
+                reverse_sequence: bool) -> str:
     """Show the Outbox as html
     """
     manually_approve_followers = \
@@ -1896,4 +1930,5 @@ def html_outbox(default_timeline: str,
                          access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
-                         dogwhistles, ua_str, min_images_for_accounts)
+                         dogwhistles, ua_str, min_images_for_accounts,
+                         reverse_sequence)

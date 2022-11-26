@@ -600,5 +600,7 @@
     "Allow announces": "Permet anuncis",
     "Send": "Enviar",
     "Minimize all images": "Minimitzar totes les imatges",
-    "Edit post": "Edita la publicació"
+    "Edit post": "Edita la publicació",
+    "Preview posts on profile screen": "Previsualitza les publicacions a la pantalla del perfil",
+    "Reverse timelines": "Cronologia inversa"
 }

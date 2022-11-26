@@ -600,5 +600,7 @@
     "Allow announces": "Разрешить объявления",
     "Send": "Отправлять",
     "Minimize all images": "Свернуть все изображения",
-    "Edit post": "Редактировать сообщение"
+    "Edit post": "Редактировать сообщение",
+    "Preview posts on profile screen": "Предварительный просмотр сообщений на экране профиля",
+    "Reverse timelines": "Обратные сроки"
 }
