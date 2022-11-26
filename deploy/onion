@@ -33,14 +33,14 @@ if [ -f /usr/bin/pacman ]; then
            imagemagick python-pillow python-requests \
            perl-image-exiftool python-numpy python-dateutil \
            certbot flake8 git qrencode bandit
-    pip3 install pyLD pyqrcode pypng
+    pip3 install pyqrcode pypng
 else
     apt-get update
     apt-get -y install imagemagick python3-cryptography \
             python3-dateutil python3-idna python3-requests \
             python3-numpy python3-pil.imagetk python3-pip \
             python3-setuptools python3-socks python3-idna \
-            libimage-exiftool-perl python3-flake8 python3-pyld \
+            libimage-exiftool-perl python3-flake8 \
             python3-django-timezone-field tor nginx git qrencode \
             python3-pyqrcode python3-png python3-bandit
 fi
