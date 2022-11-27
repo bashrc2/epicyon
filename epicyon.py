@@ -111,6 +111,7 @@ from desktop_client import run_desktop_client
 from happening import dav_month_via_server
 from happening import dav_day_via_server
 from content import import_emoji
+from relationships import get_moved_accounts
 
 
 def str2bool(value_str) -> bool:
@@ -343,6 +344,9 @@ def _command_options() -> None:
     parser.add_argument('--posts', dest='posts', type=str,
                         default=None,
                         help='Show posts for the given handle')
+    parser.add_argument('--moved', dest='moved', type=str,
+                        default=None,
+                        help='Show moved accounts for the given handle')
     parser.add_argument('--postDomains', dest='postDomains', type=str,
                         default=None,
                         help='Show domains referenced in public '
@@ -858,6 +862,45 @@ def _command_options() -> None:
                                    proxy_type, argb.port, http_prefix, debug,
                                    __version__, argb.language,
                                    signing_priv_key_pem, origin_domain)
+        sys.exit()
+
+    if argb.moved:
+        if not argb.domain:
+            origin_domain = get_config_param(base_dir, 'domain')
+        else:
+            origin_domain = argb.domain
+        if debug:
+            print('origin_domain: ' + str(origin_domain))
+        if '@' not in argb.moved:
+            if '/users/' in argb.moved:
+                moved_nickname = get_nickname_from_actor(argb.moved)
+                moved_domain, moved_port = get_domain_from_actor(argb.moved)
+                argb.moved = \
+                    get_full_domain(moved_nickname + '@' + moved_domain,
+                                    moved_port)
+            else:
+                print('Syntax: --moved nickname@domain')
+                sys.exit()
+        if not argb.http:
+            argb.port = 443
+        nickname = argb.moved.split('@')[0]
+        domain = argb.moved.split('@')[1]
+        proxy_type = None
+        if argb.tor or domain.endswith('.onion'):
+            proxy_type = 'tor'
+            if domain.endswith('.onion'):
+                argb.port = 80
+        elif argb.i2p or domain.endswith('.i2p'):
+            proxy_type = 'i2p'
+            if domain.endswith('.i2p'):
+                argb.port = 80
+        elif argb.gnunet:
+            proxy_type = 'gnunet'
+        if not argb.language:
+            argb.language = 'en'
+        moved_dict = \
+            get_moved_accounts(base_dir, nickname, domain, 'following.txt')
+        pprint(moved_dict)
         sys.exit()
 
     if argb.postDomains:

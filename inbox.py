@@ -1089,7 +1089,15 @@ def _person_receive_update(base_dir: str,
             print('actor updated for ' + person_json['id'])
 
     if person_json.get('movedTo'):
-        new_actor = person_json['id'] + ' ' + person_json['movedTo']
+        prev_domain, prev_port = get_domain_from_actor(person_json['id'])
+        prev_domain_full = get_full_domain(prev_domain, prev_port)
+        prev_nickname = get_nickname_from_actor(person_json['id'])
+        new_domain, new_port = get_domain_from_actor(person_json['movedTo'])
+        new_domain_full = get_full_domain(new_domain, new_port)
+        new_nickname = get_nickname_from_actor(person_json['movedTo'])
+
+        new_actor = prev_nickname + '@' + prev_domain_full + ' ' + \
+            new_nickname + '@' + new_domain_full
         refollow_str = ''
         refollow_filename = base_dir + '/accounts/actors_moved.txt'
         refollow_file_exists = False
