@@ -680,6 +680,8 @@ def html_profile(signing_priv_key_pem: str,
         profile_description = standardize_text(profile_description)
     posts_button = 'button'
     following_button = 'button'
+    moved_button = 'button'
+    moved_button = 'button'
     followers_button = 'button'
     roles_button = 'button'
     skills_button = 'button'
@@ -689,6 +691,8 @@ def html_profile(signing_priv_key_pem: str,
         posts_button = 'buttonselected'
     elif selected == 'following':
         following_button = 'buttonselected'
+    elif selected == 'moved':
+        moved_button = 'buttonselected'
     elif selected == 'followers':
         followers_button = 'buttonselected'
     elif selected == 'roles':
@@ -1032,6 +1036,12 @@ def html_profile(signing_priv_key_pem: str,
         '<button class="' + followers_button + \
         '"><span>' + followers_str + ' </span></button></a>'
     if not is_group:
+        if authorized:
+            profile_str += \
+                '    <a href="' + users_path + \
+                '/moved#buttonheader" tabindex="2">' + \
+                '<button class="' + moved_button + '"><span>' + \
+                translate['Moved'] + ' </span></button></a>'
         profile_str += \
             '    <a href="' + users_path + \
             '/roles#buttonheader" tabindex="2">' + \
@@ -1097,6 +1107,19 @@ def html_profile(signing_priv_key_pem: str,
                                 max_profile_posts) + license_str
     if not is_group:
         if selected == 'following':
+            profile_str += \
+                _html_profile_following(translate, base_dir, http_prefix,
+                                        authorized, nickname,
+                                        domain, session,
+                                        cached_webfingers,
+                                        person_cache, extra_json,
+                                        project_version, ["unfollow"],
+                                        selected,
+                                        users_path, page_number,
+                                        max_items_per_page,
+                                        dormant_months, debug,
+                                        signing_priv_key_pem)
+        if authorized and selected == 'moved':
             profile_str += \
                 _html_profile_following(translate, base_dir, http_prefix,
                                         authorized, nickname,
