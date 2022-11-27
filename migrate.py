@@ -169,20 +169,21 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
+        follower_handles = []
         with open(followers_filename, 'r', encoding='utf-8') as foll3:
             follower_handles = foll3.readlines()
 
-            handle_lower = handle.lower()
+        handle_lower = handle.lower()
 
-            # remove followers who have moved
-            with open(followers_filename, 'w+', encoding='utf-8') as foll4:
-                for follower_handle in follower_handles:
-                    if follower_handle.strip("\n").strip("\r").lower() != \
-                       handle_lower:
-                        foll4.write(follower_handle)
-                    else:
-                        ctr += 1
-                        print('Removed follower who has moved ' + handle)
+        # remove followers who have moved
+        with open(followers_filename, 'w+', encoding='utf-8') as foll4:
+            for follower_handle in follower_handles:
+                if follower_handle.strip("\n").strip("\r").lower() != \
+                   handle_lower:
+                    foll4.write(follower_handle)
+                else:
+                    ctr += 1
+                    print('Removed follower who has moved ' + handle)
 
     return ctr
 
