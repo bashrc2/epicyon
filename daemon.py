@@ -14376,19 +14376,15 @@ class PubServer(BaseHTTPRequestHandler):
             get_moved_feed(base_dir, domain, port, path,
                            http_prefix, authorized, FOLLOWS_PER_PAGE)
         if following:
-            print('DEBUG: get_moved_feed ' + str(following))
             if self._request_http():
                 page_number = 1
                 if '?page=' not in path:
                     search_path = path
                     # get a page of following, not the summary
                     following = \
-                        get_following_feed(base_dir,
-                                           domain,
-                                           port,
-                                           path + '?page=true',
-                                           http_prefix,
-                                           authorized, FOLLOWS_PER_PAGE)
+                        get_moved_feed(base_dir, domain, port, path,
+                                       http_prefix, authorized,
+                                       FOLLOWS_PER_PAGE)
                 else:
                     page_number_str = path.split('?page=')[1]
                     if ';' in page_number_str:
