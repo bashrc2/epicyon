@@ -717,8 +717,7 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
         metadata + \
         '    <meta name="apple-mobile-web-app-status-bar-style" ' + \
         'content="' + pwa_theme_background_color + '">\n' + \
-        '    <meta name="viewport" content="width=device-width, ' + \
-        'initial-scale=1">\n' + \
+        '    <meta name="viewport" content="initial-scale=1">\n' + \
         '    <title>' + instance_title + '</title>\n' + \
         '  </head>\n' + \
         '  <body>\n'
