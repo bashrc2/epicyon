@@ -26,7 +26,7 @@
     "likes-margin-right-mobile": "0px",
     "likes-margin-top-mobile": "0px",
     "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
-    "pwa-theme-background-color": "black-translucent",
+    "pwa-theme-background-color": "black",
     "dropdown-fg-color": "#d5c7b7",
     "dropdown-bg-color": "#4c4e41",
     "dropdown-bg-color-hover": "#3c4e41",
