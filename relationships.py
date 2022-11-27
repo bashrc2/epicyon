@@ -62,9 +62,9 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
                    follows_per_page=12) -> {}:
     """Returns the moved accounts feed from GET requests.
     """
-    # Show a small number of follows to non-authorized viewers
+    # Don't show moved accounts to non-authorized viewers
     if not authorized:
-        follows_per_page = 6
+        follows_per_page = 0
 
     if '/moved' not in path:
         return None
@@ -116,8 +116,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             'first': first_str,
             'id': id_str,
             'totalItems': total_str,
-            'type': 'OrderedCollection',
-            'orderedItems': []
+            'type': 'OrderedCollection'
         }
         return following
 
