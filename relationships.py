@@ -115,6 +115,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': first_str,
             'id': id_str,
+            'orderedItems': [],
             'totalItems': total_str,
             'type': 'OrderedCollection'
         }
