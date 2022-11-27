@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import remove_id_ending
 from utils import standardize_text
 from utils import get_display_name
 from utils import is_group_account
@@ -1199,9 +1200,10 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
             break
         shown_items = []
         for item in outbox_feed['orderedItems']:
-            if not item.get('id'):
-                continue
             if item['type'] == 'Create':
+                if not item['object'].get('id'):
+                    continue
+                item_id = remove_id_ending(item['object']['id'])
                 post_str = \
                     individual_post_as_html(signing_priv_key_pem,
                                             True, recent_posts_cache,
@@ -1227,9 +1229,9 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, False,
                                             bold_reading, dogwhistles,
                                             minimize_all_images)
-                if post_str and item['id'] not in shown_items:
+                if post_str and item_id not in shown_items:
                     profile_str += post_str + separator_str
-                    shown_items.append(item['id'])
+                    shown_items.append(item_id)
                     ctr += 1
                     if ctr >= max_items:
                         break
