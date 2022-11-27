@@ -129,41 +129,42 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
+        following_handles = []
         with open(following_filename, 'r', encoding='utf-8') as foll1:
             following_handles = foll1.readlines()
 
-            moved_to_handle = moved_to_nickname + '@' + moved_to_domain_full
-            handle_lower = handle.lower()
+        moved_to_handle = moved_to_nickname + '@' + moved_to_domain_full
+        handle_lower = handle.lower()
 
-            refollow_filename = \
-                acct_dir(base_dir, nickname, domain) + '/refollow.txt'
+        refollow_filename = \
+            acct_dir(base_dir, nickname, domain) + '/refollow.txt'
 
-            # unfollow the old handle
-            with open(following_filename, 'w+', encoding='utf-8') as foll2:
-                for follow_handle in following_handles:
-                    if follow_handle.strip("\n").strip("\r").lower() != \
-                       handle_lower:
-                        foll2.write(follow_handle)
+        # unfollow the old handle
+        with open(following_filename, 'w+', encoding='utf-8') as foll2:
+            for follow_handle in following_handles:
+                if follow_handle.strip("\n").strip("\r").lower() != \
+                   handle_lower:
+                    foll2.write(follow_handle)
+                else:
+                    handle_nickname = handle.split('@')[0]
+                    handle_domain = handle.split('@')[1]
+                    unfollow_account(base_dir, nickname, domain,
+                                     handle_nickname,
+                                     handle_domain,
+                                     debug, group_account, 'following.txt')
+                    ctr += 1
+                    print('Unfollowed ' + handle + ' who has moved to ' +
+                          moved_to_handle)
+
+                    # save the new handles to the refollow list
+                    if os.path.isfile(refollow_filename):
+                        with open(refollow_filename, 'a+',
+                                  encoding='utf-8') as refoll:
+                            refoll.write(moved_to_handle + '\n')
                     else:
-                        handle_nickname = handle.split('@')[0]
-                        handle_domain = handle.split('@')[1]
-                        unfollow_account(base_dir, nickname, domain,
-                                         handle_nickname,
-                                         handle_domain,
-                                         debug, group_account, 'following.txt')
-                        ctr += 1
-                        print('Unfollowed ' + handle + ' who has moved to ' +
-                              moved_to_handle)
-
-                        # save the new handles to the refollow list
-                        if os.path.isfile(refollow_filename):
-                            with open(refollow_filename, 'a+',
-                                      encoding='utf-8') as refoll:
-                                refoll.write(moved_to_handle + '\n')
-                        else:
-                            with open(refollow_filename, 'w+',
-                                      encoding='utf-8') as refoll:
-                                refoll.write(moved_to_handle + '\n')
+                        with open(refollow_filename, 'w+',
+                                  encoding='utf-8') as refoll:
+                            refoll.write(moved_to_handle + '\n')
 
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
