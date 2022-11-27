@@ -3,7 +3,7 @@
     "verified-site-color": "lightgreen",
     "code-color": "lightblue",
     "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
-    "pwa-theme-background-color": "black-translucent",
+    "pwa-theme-background-color": "black",
     "dropdown-fg-color": "#ffc4bc",
     "dropdown-bg-color": "#1f0d10",
     "dropdown-bg-color-hover": "#222",
