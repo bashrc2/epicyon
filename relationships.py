@@ -49,6 +49,5 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
     result = {}
     for handle in follow_list:
         if refollow_dict.get(handle):
-            new_handle = refollow_dict[handle]
-            result[handle] = new_handle
+            result[handle] = refollow_dict[handle]
     return result
