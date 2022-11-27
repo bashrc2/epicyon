@@ -1088,6 +1088,31 @@ def _person_receive_update(base_dir: str,
         if debug:
             print('actor updated for ' + person_json['id'])
 
+    if person_json.get('movedTo'):
+        new_actor = person_json['id'] + ' ' + person_json['movedTo']
+        refollow_str = ''
+        refollow_filename = base_dir + '/accounts/actors_moved.txt'
+        refollow_file_exists = False
+        if os.path.isfile(refollow_filename):
+            try:
+                with open(refollow_filename, 'r',
+                          encoding='utf-8') as fp_refollow:
+                    refollow_str = fp_refollow.read()
+                    refollow_file_exists = True
+            except OSError:
+                print('EX: unable to read ' + refollow_filename)
+        if new_actor not in refollow_str:
+            refollow_type = 'w+'
+            if refollow_file_exists:
+                refollow_type = 'a+'
+            try:
+                with open(refollow_filename, refollow_type,
+                          encoding='utf-8') as fp_refollow:
+                    fp_refollow.write(new_actor + '\n')
+            except OSError:
+                print('EX: unable to write to ' +
+                      refollow_filename)
+
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
     actor_str = person_json['id'].replace('/', '-')
