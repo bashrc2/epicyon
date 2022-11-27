@@ -28,6 +28,11 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
         print('EX: get_moved_accounts unable to read ' +
               refollow_filename)
     refollow_list = refollow_str.split('\n')
+    refollow_dict = {}
+    for line in refollow_list:
+        prev_handle = line.split(' ')[0]
+        new_handle = line.split(' ')[1]
+        refollow_dict[prev_handle] = new_handle
 
     follow_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + filename
@@ -43,9 +48,7 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
 
     result = {}
     for handle in follow_list:
-        for line in refollow_list:
-            if line.startswith(handle + ' '):
-                new_handle = line.split(' ')[1]
-                result[handle] = new_handle
-                break
+        if refollow_dict.get(handle):
+            new_handle = refollow_dict[handle]
+            result[handle] = new_handle
     return result
