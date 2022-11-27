@@ -14376,7 +14376,7 @@ class PubServer(BaseHTTPRequestHandler):
             get_moved_feed(base_dir, domain, port, path,
                            http_prefix, authorized, FOLLOWS_PER_PAGE)
         if following:
-            print('DEBUG: get_moved_feed ' + str(get_moved_feed))
+            print('DEBUG: get_moved_feed ' + str(following))
             if self._request_http():
                 page_number = 1
                 if '?page=' not in path:
