@@ -116,7 +116,8 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             'first': first_str,
             'id': id_str,
             'totalItems': total_str,
-            'type': 'OrderedCollection'
+            'type': 'OrderedCollection',
+            'orderedItems': []
         }
         return following
 
