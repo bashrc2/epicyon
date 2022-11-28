@@ -38,7 +38,8 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
     refollow_list = refollow_str.split('\n')
     refollow_dict = {}
     for line in refollow_list:
-        print(line)
+        if ' ' not in line:
+            continue
         prev_handle = line.split(' ')[0]
         new_handle = line.split(' ')[1]
         refollow_dict[prev_handle] = new_handle
