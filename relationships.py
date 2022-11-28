@@ -39,7 +39,6 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
     refollow_dict = {}
     for line in refollow_list:
         if ' ' not in line:
-            print('Missing space separator "' + line + '"')
             continue
         prev_handle = line.split(' ')[0]
         new_handle = line.split(' ')[1]
