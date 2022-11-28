@@ -219,7 +219,8 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
         for account in dirs:
             if not is_account_dir(account):
                 continue
-            following_filename = base_dir + '/' + account + '/following.txt'
+            following_filename = \
+                base_dir + '/accounts/' + account + '/following.txt'
             if not os.path.isfile(following_filename):
                 continue
             following_str = ''
