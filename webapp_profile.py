@@ -639,6 +639,10 @@ def html_profile(signing_priv_key_pem: str,
                  timezone: str, bold_reading: bool) -> str:
     """Show the profile page as html
     """
+    show_moved_accounts = False
+    if authorized:
+        show_moved_accounts = True
+
     nickname = profile_json['preferredUsername']
     if not nickname:
         return ""
@@ -984,14 +988,26 @@ def html_profile(signing_priv_key_pem: str,
         html_hide_from_screen_reader('✍') + ' ' + translate['Edit']
     menu_followers = \
         html_hide_from_screen_reader('👪') + ' ' + followers_str
+    if show_moved_accounts:
+        menu_moved = \
+            html_hide_from_screen_reader('⌂') + ' ' + translate['Moved']
     menu_logout = \
         html_hide_from_screen_reader('❎') + ' ' + translate['Logout']
-    nav_links = {
-        menu_timeline: user_path_str + '/' + deft,
-        menu_edit: user_path_str + '/editprofile',
-        menu_followers: user_path_str + '/followers#timeline',
-        menu_logout: '/logout'
-    }
+    if not show_moved_accounts:
+        nav_links = {
+            menu_timeline: user_path_str + '/' + deft,
+            menu_edit: user_path_str + '/editprofile',
+            menu_followers: user_path_str + '/followers#timeline',
+            menu_logout: '/logout'
+        }
+    else:
+        nav_links = {
+            menu_timeline: user_path_str + '/' + deft,
+            menu_edit: user_path_str + '/editprofile',
+            menu_followers: user_path_str + '/followers#timeline',
+            menu_moved: user_path_str + '/moved#timeline',
+            menu_logout: '/logout'
+        }
     if not is_group:
         menu_following = \
             html_hide_from_screen_reader('👥') + ' ' + translate['Following']
@@ -1036,7 +1052,7 @@ def html_profile(signing_priv_key_pem: str,
         '<button class="' + followers_button + \
         '"><span>' + followers_str + ' </span></button></a>'
     if not is_group:
-        if authorized:
+        if show_moved_accounts:
             profile_str += \
                 '    <a href="' + users_path + \
                 '/moved#buttonheader" tabindex="2">' + \
@@ -1119,7 +1135,7 @@ def html_profile(signing_priv_key_pem: str,
                                         max_items_per_page,
                                         dormant_months, debug,
                                         signing_priv_key_pem)
-        if authorized and selected == 'moved':
+        if show_moved_accounts and selected == 'moved':
             profile_str += \
                 _html_profile_following(translate, base_dir, http_prefix,
                                         authorized, nickname,
