@@ -193,6 +193,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
     if debug:
         print('Updating moved actors')
     actors_dict = {}
+    ctr = 0
     for _, _, files in os.walk(actors_cache_dir):
         for actor_str in files:
             if not actor_str.endswith('.json'):
@@ -204,13 +205,13 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
             domain_full = get_full_domain(domain, port)
             handle = nickname + '@' + domain_full
             actors_dict[handle] = orig_str
+            ctr += 1
         break
 
-    if debug:
-        if actors_dict:
-            print('Actors dict created')
-        else:
-            print('No cached actors found')
+    if actors_dict:
+        print('Actors dict created ' + str(ctr))
+    else:
+        print('No cached actors found')
 
     # get the handles to be checked for movedTo attribute
     handles_to_check = []
@@ -236,13 +237,14 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
                     handles_to_check.append(handle)
         break
 
-    if debug:
-        if handles_to_check:
-            print('All accounts handles list generated')
-        else:
-            print('No accounts are following')
+    if handles_to_check:
+        print('All accounts handles list generated ' +
+              str(len(handles_to_check)))
+    else:
+        print('No accounts are following')
 
     moved_str = ''
+    ctr = 0
     for handle in handles_to_check:
         if not actors_dict.get(handle):
             continue
@@ -255,12 +257,12 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
         if not actor_json.get('movedTo'):
             continue
         moved_str += handle + ' ' + actor_json['movedTo'] + '\n'
+        ctr = ctr + 1
 
-    if debug:
-        if moved_str:
-            print('Moved accounts detected')
-        else:
-            print('No moved accounts detected')
+    if moved_str:
+        print('Moved accounts detected ' + str(ctr))
+    else:
+        print('No moved accounts detected')
 
     moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
     if not moved_str:
