@@ -14382,8 +14382,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if '?page=' not in path:
                     search_path = path
                     # get a page of following, not the summary
-                    path = path.replace('/moved', '/moved?page=' +
-                                        str(page_number))
                     following = \
                         get_moved_feed(base_dir, domain, port, path,
                                        http_prefix, authorized,
@@ -14434,6 +14432,7 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    print('moved following: ' + str(following))
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
