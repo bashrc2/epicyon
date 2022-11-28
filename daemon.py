@@ -14382,6 +14382,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if '?page=' not in path:
                     search_path = path
                     # get a page of following, not the summary
+                    path = path.replace('/moved', '/moved?page=' +
+                                        str(page_number))
                     following = \
                         get_moved_feed(base_dir, domain, port, path,
                                        http_prefix, authorized,

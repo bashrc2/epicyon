@@ -46,9 +46,6 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
         refollow_dict[prev_handle] = new_handle
         ctr = ctr + 1
 
-    print(str(ctr) + ' moved accounts')
-    print('moved_dict: ' + str(refollow_dict))
-
     follow_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + filename
     follow_str = ''
@@ -65,7 +62,6 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
     for handle in follow_list:
         if refollow_dict.get(handle):
             result[handle] = refollow_dict[handle]
-    print('moved_dict 2: ' + str(result))
     return result
 
 
