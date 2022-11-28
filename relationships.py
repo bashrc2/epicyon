@@ -227,7 +227,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
             try:
                 with open(following_filename, 'r',
                           encoding='utf-8') as fp_foll:
-                    following_str - fp_foll.read()
+                    following_str = fp_foll.read()
             except OSError:
                 print('EX: update_moved_actors unable to read ' +
                       following_filename)
