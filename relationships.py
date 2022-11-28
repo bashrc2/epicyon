@@ -14,23 +14,27 @@ from utils import get_full_domain
 from utils import local_actor_url
 from utils import remove_domain_port
 from utils import remove_eol
+from utils import is_account_dir
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import load_json
 
 
 def get_moved_accounts(base_dir: str, nickname: str, domain: str,
                        filename: str = 'following.txt') -> {}:
     """returns a dict of moved accounts
     """
-    refollow_filename = base_dir + '/accounts/actors_moved.txt'
-    if not os.path.isfile(refollow_filename):
+    moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
+    if not os.path.isfile(moved_accounts_filename):
         return {}
     refollow_str = ''
     try:
-        with open(refollow_filename, 'r',
+        with open(moved_accounts_filename, 'r',
                   encoding='utf-8') as fp_refollow:
             refollow_str = fp_refollow.read()
     except OSError:
         print('EX: get_moved_accounts unable to read ' +
-              refollow_filename)
+              moved_accounts_filename)
     refollow_list = refollow_str.split('\n')
     refollow_dict = {}
     for line in refollow_list:
@@ -175,3 +179,103 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             local_actor_url(http_prefix, nickname, domain) + \
             '/moved?page=' + str(last_page)
     return following
+
+
+def update_moved_actors(base_dir: str, debug: bool) -> None:
+    """Updates the file containing moved actors
+    """
+    actors_cache_dir = base_dir + '/cache/actors'
+    if not os.path.isdir(actors_cache_dir):
+        if debug:
+            print('No cached actors')
+        return
+
+    if debug:
+        print('Updating moved actors')
+    actors_dict = {}
+    for _, _, files in os.walk(actors_cache_dir):
+        for actor_str in files:
+            if not actor_str.endswith('.json'):
+                continue
+            orig_str = actor_str
+            actor_str = actor_str.replace('.json', '').replace('#', '/')
+            nickname = get_nickname_from_actor(actor_str)
+            domain, port = get_domain_from_actor(actor_str)
+            domain_full = get_full_domain(domain, port)
+            handle = nickname + '@' + domain_full
+            actors_dict[handle] = orig_str
+        break
+
+    if debug:
+        if actors_dict:
+            print('Actors dict created')
+        else:
+            print('No cached actors found')
+
+    # get the handles to be checked for movedTo attribute
+    handles_to_check = []
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for account in dirs:
+            if not is_account_dir(account):
+                continue
+            following_filename = base_dir + '/' + account + '/following.txt'
+            if not os.path.isfile(following_filename):
+                continue
+            following_str = ''
+            try:
+                with open(following_filename, 'r',
+                          encoding='utf-8') as fp_foll:
+                    following_str - fp_foll.read()
+            except OSError:
+                print('EX: update_moved_actors unable to read ' +
+                      following_filename)
+                continue
+            following_list = following_str.split('\n')
+            for handle in following_list:
+                if handle not in handles_to_check:
+                    handles_to_check.append(handle)
+        break
+
+    if debug:
+        if handles_to_check:
+            print('All accounts handles list generated')
+        else:
+            print('No accounts are following')
+
+    moved_str = ''
+    for handle in handles_to_check:
+        if not actors_dict.get(handle):
+            continue
+        actor_filename = base_dir + '/cache/actors/' + actors_dict[handle]
+        if not os.path.isfile(actor_filename):
+            continue
+        actor_json = load_json(actor_filename, 1, 1)
+        if not actor_json:
+            continue
+        if not actor_json.get('movedTo'):
+            continue
+        moved_str += handle + ' ' + actor_json['movedTo'] + '\n'
+
+    if debug:
+        if moved_str:
+            print('Moved accounts detected')
+        else:
+            print('No moved accounts detected')
+
+    moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
+    if not moved_str:
+        if os.path.isfile(moved_accounts_filename):
+            try:
+                os.remove(moved_accounts_filename)
+            except OSError:
+                print('EX: update_moved_actors unable to remove ' +
+                      moved_accounts_filename)
+        return
+
+    try:
+        with open(moved_accounts_filename, 'w+',
+                  encoding='utf-8') as fp_moved:
+            fp_moved.write(moved_str)
+    except OSError:
+        print('EX: update_moved_actors unable to save ' +
+              moved_accounts_filename)

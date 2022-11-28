@@ -416,6 +416,7 @@ from qrcode import save_domain_qrcode
 from importFollowing import run_import_following_watchdog
 from maps import map_format_from_tagmaps_path
 from relationships import get_moved_feed
+from relationships import update_moved_actors
 import os
 
 
@@ -22076,6 +22077,8 @@ def run_daemon(max_hashtags: int,
         if domain != 'localhost':
             print('Invalid domain: ' + domain)
             return
+
+    update_moved_actors(base_dir, debug)
 
     if unit_test:
         server_address = (domain, proxy_port)
