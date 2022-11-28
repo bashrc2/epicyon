@@ -641,7 +641,9 @@ def html_profile(signing_priv_key_pem: str,
     """
     show_moved_accounts = False
     if authorized:
-        show_moved_accounts = True
+        moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
+        if os.path.isfile(moved_accounts_filename):
+            show_moved_accounts = True
 
     nickname = profile_json['preferredUsername']
     if not nickname:
