@@ -76,6 +76,8 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
 
     if '/moved' not in path:
         return None
+    if '?page=' not in path:
+        path = path.replace('/moved', '/moved?page=true')
     # handle page numbers
     header_only = True
     page_number = None
