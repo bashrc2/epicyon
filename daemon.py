@@ -8385,7 +8385,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.news_instance,
                                     authorized,
                                     access_keys, is_group,
-                                    self.server.theme_name)
+                                    self.server.theme_name,
+                                    self.server.blocked_cache)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)

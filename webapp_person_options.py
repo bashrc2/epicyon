@@ -163,7 +163,8 @@ def html_person_options(default_timeline: str,
                         authorized: bool,
                         access_keys: {},
                         is_group: bool,
-                        theme: str) -> str:
+                        theme: str,
+                        blocked_cache: []) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_domain, options_port = get_domain_from_actor(options_actor)
@@ -300,10 +301,15 @@ def html_person_options(default_timeline: str,
         new_domain, _ = get_domain_from_actor(moved_to)
         if new_nickname and new_domain:
             new_handle = new_nickname + '@' + new_domain
+            blocked_icon_str = ''
+            if is_blocked(base_dir, nickname, domain,
+                          new_nickname, new_domain, blocked_cache):
+                blocked_icon_str = '❌'
             options_str += \
                 '  <p class="optionsText">' + \
                 translate['New account'] + \
-                ': <a href="' + moved_to + '">@' + new_handle + '</a></p>\n'
+                ': <a href="' + moved_to + '">@' + new_handle + '</a>' + \
+                blocked_icon_str + '</p>\n'
     elif also_known_as:
         other_accounts_html = \
             '  <p class="optionsText">' + \
