@@ -1144,7 +1144,7 @@ def html_profile(signing_priv_key_pem: str,
                                         domain, session,
                                         cached_webfingers,
                                         person_cache, extra_json,
-                                        project_version, ["unfollow"],
+                                        project_version, ["moveAccount"],
                                         selected,
                                         users_path, page_number,
                                         max_items_per_page,
@@ -2786,6 +2786,13 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                     ';1;' + avatar_url + \
                     '"><button class="buttonunfollow">' + \
                     translate[unfollow_str] + '</button></a>\n'
+            elif btn == 'moveAccount':
+                buttons_str += \
+                    '<a href="/users/' + actor_nickname + \
+                    '?options=' + follow_url + \
+                    ';1;' + avatar_url + \
+                    '"><button class="buttonunfollow">' + \
+                    translate['Move'] + '</button></a>\n'
 
     result_str = '<div class="container">\n'
     result_str += \
