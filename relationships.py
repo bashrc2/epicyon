@@ -158,6 +158,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
     curr_page = 1
     page_ctr = 0
     total_ctr = 0
+    print('DEBUG: get_moved_feed moved page_number ' + str(page_number))
     for handle, new_handle in lines.items():
         # nickname@domain
         page_ctr += 1
@@ -173,7 +174,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             else:
                 # group actor
                 url = http_prefix + '://' + dom + '/c/' + nick
-                following['orderedItems'].append(url)
+            following['orderedItems'].append(url)
         if page_ctr >= follows_per_page:
             page_ctr = 0
             curr_page += 1
