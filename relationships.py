@@ -81,6 +81,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
     # handle page numbers
     header_only = True
     page_number = None
+    print('DEBUG: get_moved_feed path ' + path)
     if '?page=' in path:
         page_number = path.split('?page=')[1]
         if len(page_number) > 5:
@@ -113,6 +114,9 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
 
     lines = get_moved_accounts(base_dir, nickname, domain,
                                'following.txt')
+
+    print('DEBUG: get_moved_feed moved lines ' +
+          str(lines) + ' ' + str(header_only))
 
     if header_only:
         first_str = \
@@ -151,10 +155,6 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
 
     handle_domain = domain
     handle_domain = remove_domain_port(handle_domain)
-    accounts_dir = acct_dir(base_dir, nickname, handle_domain)
-    filename = accounts_dir + '/moved.txt'
-    if not os.path.isfile(filename):
-        return following
     curr_page = 1
     page_ctr = 0
     total_ctr = 0
