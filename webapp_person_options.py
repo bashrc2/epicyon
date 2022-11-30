@@ -167,6 +167,7 @@ def html_person_options(default_timeline: str,
                         blocked_cache: []) -> str:
     """Show options for a person: view/follow/block/report
     """
+    options_link_str = ''
     options_domain, options_port = get_domain_from_actor(options_actor)
     if not options_domain:
         return None
@@ -212,15 +213,10 @@ def html_person_options(default_timeline: str,
                       options_nickname, options_domain_full):
             block_str = 'Block'
 
-    options_link_str = ''
     if options_link:
         options_link_str += \
             '    <input type="hidden" name="postUrl" value="' + \
             options_link + '">\n'
-    if moved_to:
-        options_link_str += \
-            '    <input type="hidden" name="movedToActor" value="' + \
-            moved_to + '">\n'
     css_filename = base_dir + '/epicyon-options.css'
     if os.path.isfile(base_dir + '/options.css'):
         css_filename = base_dir + '/options.css'
@@ -317,6 +313,9 @@ def html_person_options(default_timeline: str,
                 ': <a href="' + moved_to + '">@' + new_handle + '</a>' + \
                 blocked_icon_str
             if follow_str == 'Unfollow' and not blocked_icon_str:
+                options_str += \
+                    '    <input type="hidden" name="movedToActor" value="' + \
+                    moved_to + '">\n'
                 options_str += \
                     '<button type="submit" ' + \
                     'class="button" name="submitMove' + \
