@@ -2240,7 +2240,7 @@ def _get_reserved_words() -> str:
             'minimal', 'search', 'eventdelete',
             'searchemoji', 'catalog', 'conversationId',
             'mention', 'http', 'https', 'ipfs', 'ipns',
-            'ontologies', 'data', 'postedit')
+            'ontologies', 'data', 'postedit', 'moved')
 
 
 def get_nickname_validation_pattern() -> str:

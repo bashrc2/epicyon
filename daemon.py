@@ -415,6 +415,8 @@ from crawlers import load_known_web_bots
 from qrcode import save_domain_qrcode
 from importFollowing import run_import_following_watchdog
 from maps import map_format_from_tagmaps_path
+from relationships import get_moved_feed
+from relationships import update_moved_actors
 import os
 
 
@@ -3005,6 +3007,11 @@ class PubServer(BaseHTTPRequestHandler):
         if '&' in options_actor:
             options_actor = options_actor.split('&')[0]
 
+        # actor for the movedTo
+        options_actor_moved = options_confirm_params.split('movedToActor=')[1]
+        if '&' in options_actor_moved:
+            options_actor_moved = options_actor_moved.split('&')[0]
+
         # url of the avatar
         options_avatar_url = options_confirm_params.split('avatarUrl=')[1]
         if '&' in options_avatar_url:
@@ -3409,6 +3416,25 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
             self._write(msg)
+            self.server.postreq_busy = False
+            return
+
+        # person options screen, move button
+        # See html_person_options followStr
+        if '&submitMove=' in options_confirm_params:
+            if debug:
+                print('Moving ' + options_actor_moved)
+            msg = \
+                html_confirm_follow(self.server.translate,
+                                    base_dir,
+                                    users_path,
+                                    options_actor_moved,
+                                    options_avatar_url).encode('utf-8')
+            if msg:
+                msglen = len(msg)
+                self._set_headers('text/html', msglen,
+                                  cookie, calling_domain, False)
+                self._write(msg)
             self.server.postreq_busy = False
             return
 
@@ -8383,7 +8409,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.news_instance,
                                     authorized,
                                     access_keys, is_group,
-                                    self.server.theme_name)
+                                    self.server.theme_name,
+                                    self.server.blocked_cache)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -14363,6 +14390,142 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         return False
 
+    def _show_moved_feed(self, authorized: bool,
+                         calling_domain: str, referer_domain: str,
+                         path: str, base_dir: str, http_prefix: str,
+                         domain: str, port: int, getreq_start_time,
+                         proxy_type: str, cookie: str,
+                         debug: str, curr_session) -> bool:
+        """Shows the moved feed
+        """
+        following = \
+            get_moved_feed(base_dir, domain, port, path,
+                           http_prefix, authorized, FOLLOWS_PER_PAGE)
+        if following:
+            if self._request_http():
+                page_number = 1
+                if '?page=' not in path:
+                    search_path = path
+                    # get a page of following, not the summary
+                    following = \
+                        get_moved_feed(base_dir, domain, port, path,
+                                       http_prefix, authorized,
+                                       FOLLOWS_PER_PAGE)
+                else:
+                    page_number_str = path.split('?page=')[1]
+                    if ';' in page_number_str:
+                        page_number_str = page_number_str.split(';')[0]
+                    if '#' in page_number_str:
+                        page_number_str = page_number_str.split('#')[0]
+                    if len(page_number_str) > 5:
+                        page_number_str = "1"
+                    if page_number_str.isdigit():
+                        page_number = int(page_number_str)
+                    search_path = path.split('?page=')[0]
+                get_person = \
+                    person_lookup(domain,
+                                  search_path.replace('/moved', ''),
+                                  base_dir)
+                if get_person:
+                    curr_session = \
+                        self._establish_session("show_moved_feed",
+                                                curr_session, proxy_type)
+                    if not curr_session:
+                        self._404()
+                        return True
+
+                    access_keys = self.server.access_keys
+                    city = None
+                    timezone = None
+                    if '/users/' in path:
+                        nickname = path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if self.server.key_shortcuts.get(nickname):
+                            access_keys = \
+                                self.server.key_shortcuts[nickname]
+
+                        city = get_spoofed_city(self.server.city,
+                                                base_dir, nickname, domain)
+                        if self.server.account_timezone.get(nickname):
+                            timezone = \
+                                self.server.account_timezone.get(nickname)
+                    content_license_url = \
+                        self.server.content_license_url
+                    shared_items_federated_domains = \
+                        self.server.shared_items_federated_domains
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
+                    msg = \
+                        html_profile(self.server.signing_priv_key_pem,
+                                     self.server.rss_icon_at_top,
+                                     self.server.icons_as_buttons,
+                                     self.server.default_timeline,
+                                     self.server.recent_posts_cache,
+                                     self.server.max_recent_posts,
+                                     self.server.translate,
+                                     self.server.project_version,
+                                     base_dir, http_prefix,
+                                     authorized,
+                                     get_person, 'moved',
+                                     curr_session,
+                                     self.server.cached_webfingers,
+                                     self.server.person_cache,
+                                     self.server.yt_replace_domain,
+                                     self.server.twitter_replacement_domain,
+                                     self.server.show_published_date_only,
+                                     self.server.newswire,
+                                     self.server.theme_name,
+                                     self.server.dormant_months,
+                                     self.server.peertube_instances,
+                                     self.server.allow_local_network_access,
+                                     self.server.text_mode_banner,
+                                     self.server.debug,
+                                     access_keys, city,
+                                     self.server.system_language,
+                                     self.server.max_like_count,
+                                     shared_items_federated_domains,
+                                     following,
+                                     page_number,
+                                     FOLLOWS_PER_PAGE,
+                                     self.server.cw_lists,
+                                     self.server.lists_enabled,
+                                     content_license_url,
+                                     timezone, bold_reading).encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/html',
+                                      msglen, cookie, calling_domain, False)
+                    self._write(msg)
+                    fitness_performance(getreq_start_time,
+                                        self.server.fitness,
+                                        '_GET', '_show_moved_feed',
+                                        debug)
+                    return True
+            else:
+                if self._secure_mode(curr_session, proxy_type):
+                    msg_str = json.dumps(following,
+                                         ensure_ascii=False)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
+                    msglen = len(msg)
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
+                    self._set_headers(protocol_str, msglen,
+                                      None, calling_domain, False)
+                    self._write(msg)
+                    fitness_performance(getreq_start_time,
+                                        self.server.fitness,
+                                        '_GET', '_show_moved_feed json',
+                                        debug)
+                else:
+                    self._404()
+                return True
+        return False
+
     def _show_followers_feed(self, authorized: bool,
                              calling_domain: str, referer_domain: str,
                              path: str, base_dir: str, http_prefix: str,
@@ -19147,6 +19310,24 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', 'show profile 3 done',
                             self.server.debug)
 
+        if self._show_moved_feed(authorized,
+                                 calling_domain, referer_domain,
+                                 self.path,
+                                 self.server.base_dir,
+                                 self.server.http_prefix,
+                                 self.server.domain,
+                                 self.server.port,
+                                 getreq_start_time,
+                                 proxy_type,
+                                 cookie, self.server.debug,
+                                 curr_session):
+            self.server.getreq_busy = False
+            return
+
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', 'show moved 4 done',
+                            self.server.debug)
+
         if self._show_followers_feed(authorized,
                                      calling_domain, referer_domain,
                                      self.path,
@@ -19162,7 +19343,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', 'show profile 4 done',
+                            '_GET', 'show profile 5 done',
                             self.server.debug)
 
         # look up a person
@@ -21922,6 +22103,8 @@ def run_daemon(max_hashtags: int,
             print('Invalid domain: ' + domain)
             return
 
+    update_moved_actors(base_dir, debug)
+
     if unit_test:
         server_address = (domain, proxy_port)
         pub_handler = partial(PubServerUnitTest)
@@ -22018,6 +22201,7 @@ def run_daemon(max_hashtags: int,
         'Page down': '.',
         'submitButton': 'y',
         'followButton': 'f',
+        'moveButton': 'm',
         'blockButton': 'b',
         'infoButton': 'i',
         'snoozeButton': 's',

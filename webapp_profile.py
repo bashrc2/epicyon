@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import remove_id_ending
 from utils import standardize_text
 from utils import get_display_name
 from utils import is_group_account
@@ -638,6 +639,12 @@ def html_profile(signing_priv_key_pem: str,
                  timezone: str, bold_reading: bool) -> str:
     """Show the profile page as html
     """
+    show_moved_accounts = False
+    if authorized:
+        moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
+        if os.path.isfile(moved_accounts_filename):
+            show_moved_accounts = True
+
     nickname = profile_json['preferredUsername']
     if not nickname:
         return ""
@@ -679,6 +686,8 @@ def html_profile(signing_priv_key_pem: str,
         profile_description = standardize_text(profile_description)
     posts_button = 'button'
     following_button = 'button'
+    moved_button = 'button'
+    moved_button = 'button'
     followers_button = 'button'
     roles_button = 'button'
     skills_button = 'button'
@@ -688,6 +697,8 @@ def html_profile(signing_priv_key_pem: str,
         posts_button = 'buttonselected'
     elif selected == 'following':
         following_button = 'buttonselected'
+    elif selected == 'moved':
+        moved_button = 'buttonselected'
     elif selected == 'followers':
         followers_button = 'buttonselected'
     elif selected == 'roles':
@@ -979,14 +990,26 @@ def html_profile(signing_priv_key_pem: str,
         html_hide_from_screen_reader('✍') + ' ' + translate['Edit']
     menu_followers = \
         html_hide_from_screen_reader('👪') + ' ' + followers_str
+    if show_moved_accounts:
+        menu_moved = \
+            html_hide_from_screen_reader('⌂') + ' ' + translate['Moved']
     menu_logout = \
         html_hide_from_screen_reader('❎') + ' ' + translate['Logout']
-    nav_links = {
-        menu_timeline: user_path_str + '/' + deft,
-        menu_edit: user_path_str + '/editprofile',
-        menu_followers: user_path_str + '/followers#timeline',
-        menu_logout: '/logout'
-    }
+    if not show_moved_accounts:
+        nav_links = {
+            menu_timeline: user_path_str + '/' + deft,
+            menu_edit: user_path_str + '/editprofile',
+            menu_followers: user_path_str + '/followers#timeline',
+            menu_logout: '/logout'
+        }
+    else:
+        nav_links = {
+            menu_timeline: user_path_str + '/' + deft,
+            menu_edit: user_path_str + '/editprofile',
+            menu_followers: user_path_str + '/followers#timeline',
+            menu_moved: user_path_str + '/moved#timeline',
+            menu_logout: '/logout'
+        }
     if not is_group:
         menu_following = \
             html_hide_from_screen_reader('👥') + ' ' + translate['Following']
@@ -1031,6 +1054,12 @@ def html_profile(signing_priv_key_pem: str,
         '<button class="' + followers_button + \
         '"><span>' + followers_str + ' </span></button></a>'
     if not is_group:
+        if show_moved_accounts:
+            profile_str += \
+                '    <a href="' + users_path + \
+                '/moved#buttonheader" tabindex="2">' + \
+                '<button class="' + moved_button + '"><span>' + \
+                translate['Moved'] + ' </span></button></a>'
         profile_str += \
             '    <a href="' + users_path + \
             '/roles#buttonheader" tabindex="2">' + \
@@ -1103,6 +1132,19 @@ def html_profile(signing_priv_key_pem: str,
                                         cached_webfingers,
                                         person_cache, extra_json,
                                         project_version, ["unfollow"],
+                                        selected,
+                                        users_path, page_number,
+                                        max_items_per_page,
+                                        dormant_months, debug,
+                                        signing_priv_key_pem)
+        if show_moved_accounts and selected == 'moved':
+            profile_str += \
+                _html_profile_following(translate, base_dir, http_prefix,
+                                        authorized, nickname,
+                                        domain, session,
+                                        cached_webfingers,
+                                        person_cache, extra_json,
+                                        project_version, ["moveAccount"],
                                         selected,
                                         users_path, page_number,
                                         max_items_per_page,
@@ -1199,9 +1241,10 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
             break
         shown_items = []
         for item in outbox_feed['orderedItems']:
-            if not item.get('id'):
-                continue
             if item['type'] == 'Create':
+                if not item['object'].get('id'):
+                    continue
+                item_id = remove_id_ending(item['object']['id'])
                 post_str = \
                     individual_post_as_html(signing_priv_key_pem,
                                             True, recent_posts_cache,
@@ -1227,9 +1270,9 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, False,
                                             bold_reading, dogwhistles,
                                             minimize_all_images)
-                if post_str and item['id'] not in shown_items:
+                if post_str and item_id not in shown_items:
                     profile_str += post_str + separator_str
-                    shown_items.append(item['id'])
+                    shown_items.append(item_id)
                     ctr += 1
                     if ctr >= max_items:
                         break
@@ -2743,6 +2786,13 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                     ';1;' + avatar_url + \
                     '"><button class="buttonunfollow">' + \
                     translate[unfollow_str] + '</button></a>\n'
+            elif btn == 'moveAccount':
+                buttons_str += \
+                    '<a href="/users/' + actor_nickname + \
+                    '?options=' + follow_url + \
+                    ';1;' + avatar_url + \
+                    '"><button class="buttonunfollow">' + \
+                    translate['Move'] + '</button></a>\n'
 
     result_str = '<div class="container">\n'
     result_str += \

@@ -1088,6 +1088,39 @@ def _person_receive_update(base_dir: str,
         if debug:
             print('actor updated for ' + person_json['id'])
 
+    if person_json.get('movedTo'):
+        prev_domain, prev_port = get_domain_from_actor(person_json['id'])
+        prev_domain_full = get_full_domain(prev_domain, prev_port)
+        prev_nickname = get_nickname_from_actor(person_json['id'])
+        new_domain, new_port = get_domain_from_actor(person_json['movedTo'])
+        new_domain_full = get_full_domain(new_domain, new_port)
+        new_nickname = get_nickname_from_actor(person_json['movedTo'])
+
+        new_actor = prev_nickname + '@' + prev_domain_full + ' ' + \
+            new_nickname + '@' + new_domain_full
+        refollow_str = ''
+        refollow_filename = base_dir + '/accounts/actors_moved.txt'
+        refollow_file_exists = False
+        if os.path.isfile(refollow_filename):
+            try:
+                with open(refollow_filename, 'r',
+                          encoding='utf-8') as fp_refollow:
+                    refollow_str = fp_refollow.read()
+                    refollow_file_exists = True
+            except OSError:
+                print('EX: unable to read ' + refollow_filename)
+        if new_actor not in refollow_str:
+            refollow_type = 'w+'
+            if refollow_file_exists:
+                refollow_type = 'a+'
+            try:
+                with open(refollow_filename, refollow_type,
+                          encoding='utf-8') as fp_refollow:
+                    fp_refollow.write(new_actor + '\n')
+            except OSError:
+                print('EX: unable to write to ' +
+                      refollow_filename)
+
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
     actor_str = person_json['id'].replace('/', '-')

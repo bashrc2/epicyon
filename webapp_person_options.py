@@ -163,9 +163,11 @@ def html_person_options(default_timeline: str,
                         authorized: bool,
                         access_keys: {},
                         is_group: bool,
-                        theme: str) -> str:
+                        theme: str,
+                        blocked_cache: []) -> str:
     """Show options for a person: view/follow/block/report
     """
+    options_link_str = ''
     options_domain, options_port = get_domain_from_actor(options_actor)
     if not options_domain:
         return None
@@ -211,9 +213,8 @@ def html_person_options(default_timeline: str,
                       options_nickname, options_domain_full):
             block_str = 'Block'
 
-    options_link_str = ''
     if options_link:
-        options_link_str = \
+        options_link_str += \
             '    <input type="hidden" name="postUrl" value="' + \
             options_link + '">\n'
     css_filename = base_dir + '/epicyon-options.css'
@@ -295,15 +296,32 @@ def html_person_options(default_timeline: str,
     if follows_you and authorized:
         options_str += \
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
+    options_str += '  <form method="POST" action="' + \
+        origin_path_str + '/personoptions">\n'
     if moved_to:
         new_nickname = get_nickname_from_actor(moved_to)
         new_domain, _ = get_domain_from_actor(moved_to)
         if new_nickname and new_domain:
             new_handle = new_nickname + '@' + new_domain
+            blocked_icon_str = ''
+            if is_blocked(base_dir, nickname, domain,
+                          new_nickname, new_domain, blocked_cache):
+                blocked_icon_str = '❌'
             options_str += \
                 '  <p class="optionsText">' + \
                 translate['New account'] + \
-                ': <a href="' + moved_to + '">@' + new_handle + '</a></p>\n'
+                ': <a href="' + moved_to + '">@' + new_handle + '</a>' + \
+                blocked_icon_str
+            if follow_str == 'Unfollow' and not blocked_icon_str:
+                options_str += \
+                    '    <input type="hidden" name="movedToActor" value="' + \
+                    moved_to + '">\n'
+                options_str += \
+                    '<button type="submit" ' + \
+                    'class="button" name="submitMove' + \
+                    '" accesskey="' + access_keys['moveButton'] + '">' + \
+                    translate['Move'] + '</button>'
+            options_str += '</p>\n'
     elif also_known_as:
         other_accounts_html = \
             '  <p class="optionsText">' + \
@@ -332,7 +350,7 @@ def html_person_options(default_timeline: str,
 
     if email_address:
         options_str += \
-            '<p class="imText">' + translate['Email'] + \
+            '  <p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
             email_address + '">' + remove_html(email_address) + '</a></p>\n'
     if web_address:
@@ -340,50 +358,51 @@ def html_person_options(default_timeline: str,
         if '://' not in web_str:
             web_str = 'https://' + web_str
         options_str += \
-            '<p class="imText">🌐 <a href="' + web_str + '">' + \
+            '  <p class="imText">🌐 <a href="' + web_str + '">' + \
             web_address + '</a></p>\n'
     if gemini_link:
         gemini_str = remove_html(gemini_link)
         if '://' not in gemini_str:
             gemini_str = 'gemini://' + gemini_str
         options_str += \
-            '<p class="imText">♊ <a href="' + gemini_str + '">' + \
+            '  <p class="imText">♊ <a href="' + gemini_str + '">' + \
             gemini_link + '</a></p>\n'
     if xmpp_address:
         options_str += \
-            '<p class="imText">' + translate['XMPP'] + \
+            '  <p class="imText">' + translate['XMPP'] + \
             ': <a href="xmpp:' + remove_html(xmpp_address) + '">' + \
             xmpp_address + '</a></p>\n'
     if matrix_address:
         options_str += \
-            '<p class="imText">' + translate['Matrix'] + ': ' + \
+            '  <p class="imText">' + translate['Matrix'] + ': ' + \
             remove_html(matrix_address) + '</p>\n'
     if ssb_address:
         options_str += \
-            '<p class="imText">SSB: ' + remove_html(ssb_address) + '</p>\n'
+            '  <p class="imText">SSB: ' + remove_html(ssb_address) + '</p>\n'
     if blog_address:
         options_str += \
-            '<p class="imText">Blog: <a href="' + \
+            '  <p class="imText">Blog: <a href="' + \
             remove_html(blog_address) + '">' + \
             remove_html(blog_address) + '</a></p>\n'
     if tox_address:
         options_str += \
-            '<p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
+            '  <p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
     if briar_address:
         if briar_address.startswith('briar://'):
             options_str += \
-                '<p class="imText">' + \
+                '  <p class="imText">' + \
                 remove_html(briar_address) + '</p>\n'
         else:
             options_str += \
-                '<p class="imText">briar://' + \
+                '  <p class="imText">briar://' + \
                 remove_html(briar_address) + '</p>\n'
     if cwtch_address:
         options_str += \
-            '<p class="imText">Cwtch: ' + remove_html(cwtch_address) + '</p>\n'
+            '  <p class="imText">Cwtch: ' + \
+            remove_html(cwtch_address) + '</p>\n'
     if enigma_pub_key:
         options_str += \
-            '<p class="imText">Enigma: ' + \
+            '  <p class="imText">Enigma: ' + \
             remove_html(enigma_pub_key) + '</p>\n'
     if pgp_fingerprint:
         options_str += '<p class="pgp">PGP: ' + \
@@ -391,8 +410,6 @@ def html_person_options(default_timeline: str,
     if pgp_pub_key:
         options_str += '<p class="pgp">' + \
             remove_html(pgp_pub_key).replace('\n', '<br>') + '</p>\n'
-    options_str += '  <form method="POST" action="' + \
-        origin_path_str + '/personoptions">\n'
     options_str += '    <input type="hidden" name="pageNumber" value="' + \
         str(page_number) + '">\n'
     options_str += '    <input type="hidden" name="actor" value="' + \
