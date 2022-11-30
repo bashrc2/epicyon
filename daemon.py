@@ -3422,18 +3422,19 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, move button
         # See html_person_options followStr
         if '&submitMove=' in options_confirm_params:
-            if debug:
-                print('Moving ' + options_actor_moved)
+            # if debug:
+            print('Moving ' + options_actor_moved)
             msg = \
                 html_confirm_follow(self.server.translate,
                                     base_dir,
                                     users_path,
                                     options_actor_moved,
                                     options_avatar_url).encode('utf-8')
-            msglen = len(msg)
-            self._set_headers('text/html', msglen,
-                              cookie, calling_domain, False)
-            self._write(msg)
+            if msg:
+                msglen = len(msg)
+                self._set_headers('text/html', msglen,
+                                  cookie, calling_domain, False)
+                self._write(msg)
             self.server.postreq_busy = False
             return
 
