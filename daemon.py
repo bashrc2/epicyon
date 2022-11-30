@@ -3007,6 +3007,11 @@ class PubServer(BaseHTTPRequestHandler):
         if '&' in options_actor:
             options_actor = options_actor.split('&')[0]
 
+        # actor for the movedTo
+        options_actor_moved = options_confirm_params.split('movedToActor=')[1]
+        if '&' in options_actor_moved:
+            options_actor_moved = options_actor_moved.split('&')[0]
+
         # url of the avatar
         options_avatar_url = options_confirm_params.split('avatarUrl=')[1]
         if '&' in options_avatar_url:
@@ -3406,6 +3411,24 @@ class PubServer(BaseHTTPRequestHandler):
                                     base_dir,
                                     users_path,
                                     options_actor,
+                                    options_avatar_url).encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, calling_domain, False)
+            self._write(msg)
+            self.server.postreq_busy = False
+            return
+
+        # person options screen, move button
+        # See html_person_options followStr
+        if '&submitMove=' in options_confirm_params:
+            if debug:
+                print('Moving ' + options_actor_moved)
+            msg = \
+                html_confirm_follow(self.server.translate,
+                                    base_dir,
+                                    users_path,
+                                    options_actor_moved,
                                     options_avatar_url).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,

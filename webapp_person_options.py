@@ -217,6 +217,10 @@ def html_person_options(default_timeline: str,
         options_link_str = \
             '    <input type="hidden" name="postUrl" value="' + \
             options_link + '">\n'
+    if moved_to:
+        options_link_str += \
+            '    <input type="hidden" name="movedToActor" value="' + \
+            moved_to + '">\n'
     css_filename = base_dir + '/epicyon-options.css'
     if os.path.isfile(base_dir + '/options.css'):
         css_filename = base_dir + '/options.css'
@@ -309,7 +313,14 @@ def html_person_options(default_timeline: str,
                 '  <p class="optionsText">' + \
                 translate['New account'] + \
                 ': <a href="' + moved_to + '">@' + new_handle + '</a>' + \
-                blocked_icon_str + '</p>\n'
+                blocked_icon_str
+            if follow_str == 'Unfollow' and not blocked_icon_str:
+                options_str += \
+                    '<button type="submit" ' + \
+                    'class="button" name="submitMove' + \
+                    '" accesskey="' + access_keys['moveButton'] + '">' + \
+                    translate['Move'] + '</button>'
+            options_str += '</p>\n'
     elif also_known_as:
         other_accounts_html = \
             '  <p class="optionsText">' + \
