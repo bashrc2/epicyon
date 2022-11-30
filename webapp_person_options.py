@@ -300,6 +300,8 @@ def html_person_options(default_timeline: str,
     if follows_you and authorized:
         options_str += \
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
+    options_str += '  <form method="POST" action="' + \
+        origin_path_str + '/personoptions">\n'
     if moved_to:
         new_nickname = get_nickname_from_actor(moved_to)
         new_domain, _ = get_domain_from_actor(moved_to)
@@ -408,8 +410,6 @@ def html_person_options(default_timeline: str,
     if pgp_pub_key:
         options_str += '<p class="pgp">' + \
             remove_html(pgp_pub_key).replace('\n', '<br>') + '</p>\n'
-    options_str += '  <form method="POST" action="' + \
-        origin_path_str + '/personoptions">\n'
     options_str += '    <input type="hidden" name="pageNumber" value="' + \
         str(page_number) + '">\n'
     options_str += '    <input type="hidden" name="actor" value="' + \
