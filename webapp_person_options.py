@@ -214,7 +214,7 @@ def html_person_options(default_timeline: str,
 
     options_link_str = ''
     if options_link:
-        options_link_str = \
+        options_link_str += \
             '    <input type="hidden" name="postUrl" value="' + \
             options_link + '">\n'
     if moved_to:
@@ -351,7 +351,7 @@ def html_person_options(default_timeline: str,
 
     if email_address:
         options_str += \
-            '<p class="imText">' + translate['Email'] + \
+            '  <p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
             email_address + '">' + remove_html(email_address) + '</a></p>\n'
     if web_address:
@@ -359,50 +359,51 @@ def html_person_options(default_timeline: str,
         if '://' not in web_str:
             web_str = 'https://' + web_str
         options_str += \
-            '<p class="imText">🌐 <a href="' + web_str + '">' + \
+            '  <p class="imText">🌐 <a href="' + web_str + '">' + \
             web_address + '</a></p>\n'
     if gemini_link:
         gemini_str = remove_html(gemini_link)
         if '://' not in gemini_str:
             gemini_str = 'gemini://' + gemini_str
         options_str += \
-            '<p class="imText">♊ <a href="' + gemini_str + '">' + \
+            '  <p class="imText">♊ <a href="' + gemini_str + '">' + \
             gemini_link + '</a></p>\n'
     if xmpp_address:
         options_str += \
-            '<p class="imText">' + translate['XMPP'] + \
+            '  <p class="imText">' + translate['XMPP'] + \
             ': <a href="xmpp:' + remove_html(xmpp_address) + '">' + \
             xmpp_address + '</a></p>\n'
     if matrix_address:
         options_str += \
-            '<p class="imText">' + translate['Matrix'] + ': ' + \
+            '  <p class="imText">' + translate['Matrix'] + ': ' + \
             remove_html(matrix_address) + '</p>\n'
     if ssb_address:
         options_str += \
-            '<p class="imText">SSB: ' + remove_html(ssb_address) + '</p>\n'
+            '  <p class="imText">SSB: ' + remove_html(ssb_address) + '</p>\n'
     if blog_address:
         options_str += \
-            '<p class="imText">Blog: <a href="' + \
+            '  <p class="imText">Blog: <a href="' + \
             remove_html(blog_address) + '">' + \
             remove_html(blog_address) + '</a></p>\n'
     if tox_address:
         options_str += \
-            '<p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
+            '  <p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
     if briar_address:
         if briar_address.startswith('briar://'):
             options_str += \
-                '<p class="imText">' + \
+                '  <p class="imText">' + \
                 remove_html(briar_address) + '</p>\n'
         else:
             options_str += \
-                '<p class="imText">briar://' + \
+                '  <p class="imText">briar://' + \
                 remove_html(briar_address) + '</p>\n'
     if cwtch_address:
         options_str += \
-            '<p class="imText">Cwtch: ' + remove_html(cwtch_address) + '</p>\n'
+            '  <p class="imText">Cwtch: ' + \
+            remove_html(cwtch_address) + '</p>\n'
     if enigma_pub_key:
         options_str += \
-            '<p class="imText">Enigma: ' + \
+            '  <p class="imText">Enigma: ' + \
             remove_html(enigma_pub_key) + '</p>\n'
     if pgp_fingerprint:
         options_str += '<p class="pgp">PGP: ' + \
