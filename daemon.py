@@ -3421,6 +3421,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # person options screen, move button
         # See html_person_options followStr
+        print('DEBUG: options_confirm_params ' + str(options_confirm_params))
         if '&submitMove=' in options_confirm_params:
             # if debug:
             print('Moving ' + options_actor_moved)
