@@ -122,6 +122,7 @@ from follow import is_following_actor
 from follow import get_following_feed
 from follow import send_follow_request
 from follow import unfollow_account
+from follow import remove_follower
 from follow import create_initial_last_seen
 from skills import get_skills_from_list
 from skills import no_of_actor_skills
@@ -4057,6 +4058,10 @@ class PubServer(BaseHTTPRequestHandler):
                                      blocker_nickname, domain_full,
                                      blocking_nickname, blocking_domain_full,
                                      curr_session, proxy_type)
+                remove_follower(base_dir, blocker_nickname,
+                                domain,
+                                blocking_nickname,
+                                blocking_domain_full)
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
