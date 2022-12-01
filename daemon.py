@@ -3010,7 +3010,8 @@ class PubServer(BaseHTTPRequestHandler):
         # actor for the movedTo
         options_actor_moved = None
         if 'movedToActor=' in options_confirm_params:
-            options_actor_moved = options_confirm_params.split('movedToActor=')[1]
+            options_actor_moved = \
+                options_confirm_params.split('movedToActor=')[1]
             if '&' in options_actor_moved:
                 options_actor_moved = options_actor_moved.split('&')[0]
 
