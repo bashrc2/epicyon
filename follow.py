@@ -1492,6 +1492,7 @@ def remove_follower(base_dir: str,
     except OSError:
         print('EX: remove_follower unable to read followers ' +
               followers_filename)
+        return False
     followers_list = followers_str.split('\n')
 
     handle = remove_nickname + '@' + remove_domain
@@ -1507,7 +1508,7 @@ def remove_follower(base_dir: str,
         return False
     try:
         with open(followers_filename, 'w+', encoding='utf-8') as fp_foll:
-            fp_foll.write(followers_str)
+            fp_foll.write(new_followers_str)
     except OSError:
         print('EX: remove_follower unable to write followers ' +
               followers_filename)
