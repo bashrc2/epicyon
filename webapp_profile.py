@@ -688,6 +688,7 @@ def html_profile(signing_priv_key_pem: str,
     following_button = 'button'
     moved_button = 'button'
     moved_button = 'button'
+    inactive_button = 'button'
     followers_button = 'button'
     roles_button = 'button'
     skills_button = 'button'
@@ -699,6 +700,8 @@ def html_profile(signing_priv_key_pem: str,
         following_button = 'buttonselected'
     elif selected == 'moved':
         moved_button = 'buttonselected'
+    elif selected == 'inactive':
+        inactive_button = 'buttonselected'
     elif selected == 'followers':
         followers_button = 'buttonselected'
     elif selected == 'roles':
@@ -993,6 +996,8 @@ def html_profile(signing_priv_key_pem: str,
     if show_moved_accounts:
         menu_moved = \
             html_hide_from_screen_reader('⌂') + ' ' + translate['Moved']
+    menu_inactive = \
+        html_hide_from_screen_reader('💤') + ' ' + translate['Inactive']
     menu_logout = \
         html_hide_from_screen_reader('❎') + ' ' + translate['Logout']
     if not show_moved_accounts:
@@ -1008,6 +1013,7 @@ def html_profile(signing_priv_key_pem: str,
             menu_edit: user_path_str + '/editprofile',
             menu_followers: user_path_str + '/followers#timeline',
             menu_moved: user_path_str + '/moved#timeline',
+            menu_inactive: user_path_str + '/inactive#timeline',
             menu_logout: '/logout'
         }
     if not is_group:
@@ -1053,6 +1059,11 @@ def html_profile(signing_priv_key_pem: str,
         '/followers#buttonheader" tabindex="2">' + \
         '<button class="' + followers_button + \
         '"><span>' + followers_str + ' </span></button></a>'
+    profile_str += \
+        '    <a href="' + users_path + \
+        '/inactive#buttonheader" tabindex="2">' + \
+        '<button class="' + inactive_button + \
+        '"><span>' + translate['Inactive'] + ' </span></button></a>'
     if not is_group:
         if show_moved_accounts:
             profile_str += \
@@ -1151,6 +1162,17 @@ def html_profile(signing_priv_key_pem: str,
                                         dormant_months, debug,
                                         signing_priv_key_pem)
     if selected == 'followers':
+        profile_str += \
+            _html_profile_following(translate, base_dir, http_prefix,
+                                    authorized, nickname,
+                                    domain, session,
+                                    cached_webfingers,
+                                    person_cache, extra_json,
+                                    project_version, ["block"],
+                                    selected, users_path, page_number,
+                                    max_items_per_page, dormant_months, debug,
+                                    signing_priv_key_pem)
+    if authorized and selected == 'inactive':
         profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
                                     authorized, nickname,

@@ -1474,3 +1474,42 @@ def follower_approval_active(base_dir: str,
                 manually_approves_followers = \
                     actor_json['manuallyApprovesFollowers']
     return manually_approves_followers
+
+
+def remove_follower(base_dir: str,
+                    nickname: str, domain: str,
+                    remove_nickname: str, remove_domain: str) -> bool:
+    """Removes a follower
+    """
+    followers_filename = \
+        acct_dir(base_dir, nickname, domain) + '/followers.txt'
+    if not os.path.isfile(followers_filename):
+        return False
+    followers_str = ''
+    try:
+        with open(followers_filename, 'r', encoding='utf-8') as fp_foll:
+            followers_str = fp_foll.read()
+    except OSError:
+        print('EX: remove_follower unable to read followers ' +
+              followers_filename)
+        return False
+    followers_list = followers_str.split('\n')
+
+    handle = remove_nickname + '@' + remove_domain
+    handle = handle.lower()
+    new_followers_str = ''
+    found = False
+    for handle2 in followers_list:
+        if handle2.lower() != handle:
+            new_followers_str += handle2 + '\n'
+        else:
+            found = True
+    if not found:
+        return False
+    try:
+        with open(followers_filename, 'w+', encoding='utf-8') as fp_foll:
+            fp_foll.write(new_followers_str)
+    except OSError:
+        print('EX: remove_follower unable to write followers ' +
+              followers_filename)
+    return True
