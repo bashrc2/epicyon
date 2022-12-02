@@ -15698,7 +15698,7 @@ class PubServer(BaseHTTPRequestHandler):
                     is_new_post_endpoint = True
                     break
         if not is_new_post_endpoint:
-            print('Is not an endpoint ' + path + ' ' + curr_post_type)
+            print('Is not an endpoint ' + path)
         if is_new_post_endpoint:
             nickname = get_nickname_from_actor(path)
             if not nickname:
