@@ -50,6 +50,17 @@ sudo pacman -S tor python-pip python-pysocks python-cryptography \
 sudo pip3 install pyqrcode pypng
 ```
 
+One package needs to be built manually from the Arch User Repository (AUR), since it is not included in the usual repositories.
+
+``` bash
+su - epicyon
+cd /tmp
+git clone https://aur.archlinux.org/python-django-timezone-field.git
+cd python-django-timezone-field.git
+makepkg -sir
+exit
+```
+
 Or on Debian:
 
 ``` bash
