@@ -597,7 +597,7 @@ def html_calendar(person_cache: {}, translate: {},
 
     new_event_str = \
         '<br><center>\n<p>\n' + \
-        '<a href="' + cal_actor + '/newreminder?newreminder?month=' + \
+        '<a href="' + cal_actor + '/newreminder?month=' + \
         str(month_number) + ';year=' + str(year) + '" tabindex="2">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
