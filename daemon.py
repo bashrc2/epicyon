@@ -15691,14 +15691,13 @@ class PubServer(BaseHTTPRequestHandler):
                     new_post_year = int(year_str)
                 if new_post_year:
                     path = path.split('?month=')[0]
+                    self.path = path
             # Various types of new post in the web interface
             new_post_endpoints = get_new_post_endpoints()
             for curr_post_type in new_post_endpoints:
                 if path.endswith('/' + curr_post_type):
                     is_new_post_endpoint = True
                     break
-        if not is_new_post_endpoint:
-            print('Is not an endpoint ' + path)
         if is_new_post_endpoint:
             nickname = get_nickname_from_actor(path)
             if not nickname:
