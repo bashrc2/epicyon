@@ -15691,7 +15691,6 @@ class PubServer(BaseHTTPRequestHandler):
                     new_post_year = int(year_str)
                 if new_post_year:
                     path = path.split('?month=')[0]
-                    self.path = path
             # Various types of new post in the web interface
             new_post_endpoints = get_new_post_endpoints()
             for curr_post_type in new_post_endpoints:

@@ -595,10 +595,11 @@ def html_calendar(person_cache: {}, translate: {},
         html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys,
                                  month_name)
 
+    # '?month=' + str(month_number) + ';year=' + str(year) + \
     new_event_str = \
         '<br><center>\n<p>\n' + \
-        '<a href="' + cal_actor + '/newreminder?month=' + \
-        str(month_number) + ';year=' + str(year) + '" tabindex="2">➕ ' + \
+        '<a href="' + cal_actor + '/newreminder' + \
+        '" tabindex="2">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
     calendar_icon_str = \
