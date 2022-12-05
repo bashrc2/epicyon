@@ -6382,6 +6382,19 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'closed')
                                 self.server.registration = False
 
+                        # change registrations remaining
+                        reg_str = "registrationsRemaining"
+                        remaining = get_config_param(base_dir, reg_str)
+                        if fields.get('regRemaining'):
+                            if fields['regRemaining'] != remaining:
+                                remaining = fields['regRemaining']
+                                if remaining < 0:
+                                    remaining = 0
+                                elif remaining > 10:
+                                    remaining = 10
+                                set_config_param(base_dir, reg_str,
+                                                 remaining)
+
                         # libretranslate URL
                         curr_libretranslate_url = \
                             get_config_param(base_dir,

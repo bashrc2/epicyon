@@ -1572,6 +1572,16 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     instance_str += \
         edit_check_box(translate['Registrations open'],
                        'regOpen', registrations_open)
+    if registrations_open:
+        remaining_config_exists = \
+            get_config_param(base_dir, 'registrationsRemaining')
+        registrations_remaining = 0
+        if remaining_config_exists is not None:
+            registrations_remaining = int(remaining_config_exists)
+        instance_str += \
+            edit_number_field(translate['Registrations remaining'],
+                              'regRemaining',
+                              registrations_remaining, 0, 10, 10)
     instance_str += \
         '  <label class="labels">\n' + \
         translate['Security'] + '</label><br>\n'
