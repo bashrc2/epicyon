@@ -1570,8 +1570,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     if get_config_param(base_dir, "registration") == 'open':
         registrations_open = True
     instance_str += \
-        edit_text_field(translate['Registrations open'],
-                        'regOpen', registrations_open)
+        edit_check_box(translate['Registrations open'],
+                       'regOpen', registrations_open)
     instance_str += \
         '  <label class="labels">\n' + \
         translate['Security'] + '</label><br>\n'
