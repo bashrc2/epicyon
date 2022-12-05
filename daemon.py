@@ -6371,7 +6371,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 remaining = \
                                     get_config_param(base_dir,
                                                      'registrationsRemaining')
-                                if not remaining
+                                if not remaining:
                                     set_config_param(base_dir,
                                                      'registrationsRemaining',
                                                      10)
