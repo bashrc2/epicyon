@@ -1582,6 +1582,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
             edit_number_field(translate['Registrations remaining'],
                               'regRemaining',
                               registrations_remaining, 0, 10, 10)
+        instance_str += '  <br>\n'
     instance_str += \
         '  <label class="labels">\n' + \
         translate['Security'] + '</label><br>\n'
