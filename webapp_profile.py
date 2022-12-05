@@ -1565,8 +1565,15 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         '  <label class="labels">' + \
         translate['Instance Logo'] + '</label>' + \
         '  <input type="file" id="instanceLogo" name="instanceLogo"' + \
-        '      accept="' + image_formats + '"><br>\n' + \
-        '  <br><label class="labels">' + \
+        '      accept="' + image_formats + '"><br>\n  <br>\n'
+    registrations_open = False
+    if get_config_param(base_dir, "registration") == 'open':
+        registrations_open = True
+    instance_str += \
+        edit_text_field(translate['Registrations open'],
+                        'regOpen', registrations_open)
+    instance_str += \
+        '  <label class="labels">\n' + \
         translate['Security'] + '</label><br>\n'
 
     node_info_str = \
