@@ -130,7 +130,12 @@ def html_login(translate: {},
     # show the register button
     register_button_str = ''
     if get_config_param(base_dir, 'registration') == 'open':
-        if int(get_config_param(base_dir, 'registrationsRemaining')) > 0:
+        remaining = 0
+        if get_config_param(base_dir, 'registrationsRemaining'):
+            remaining = get_config_param(base_dir, 'registrationsRemaining')
+            if isinstance(remaining, str):
+                remaining = int(remaining)
+        if remaining > 0:
             if accounts > 0:
                 idx = 'Welcome. Please login or register a new account.'
                 login_text = \

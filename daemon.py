@@ -6357,6 +6357,31 @@ class PubServer(BaseHTTPRequestHandler):
                                 set_config_param(base_dir, 'customSubmitText',
                                                  '')
 
+                        # change registrations open status
+                        registrations_open = False
+                        if self.server.registration or \
+                           get_config_param(base_dir,
+                                            "registration") == 'open':
+                            registrations_open = True
+                        if fields.get('regOpen'):
+                            if fields['regOpen'] != registrations_open:
+                                registrations_open = fields['regOpen']
+                                set_config_param(base_dir, 'registration',
+                                                 'open')
+                                remaining = \
+                                    get_config_param(base_dir,
+                                                     'registrationsRemaining')
+                                if not remaining:
+                                    set_config_param(base_dir,
+                                                     'registrationsRemaining',
+                                                     10)
+                                self.server.registration = True
+                        else:
+                            if registrations_open:
+                                set_config_param(base_dir, 'registration',
+                                                 'closed')
+                                self.server.registration = False
+
                         # libretranslate URL
                         curr_libretranslate_url = \
                             get_config_param(base_dir,
