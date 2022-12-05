@@ -6368,6 +6368,13 @@ class PubServer(BaseHTTPRequestHandler):
                                 registrations_open = fields['regOpen']
                                 set_config_param(base_dir, 'registration',
                                                  'open')
+                                remaining = \
+                                    get_config_param(base_dir,
+                                                     'registrationsRemaining')
+                                if not remaining
+                                    set_config_param(base_dir,
+                                                     'registrationsRemaining',
+                                                     10)
                                 self.server.registration = True
                         else:
                             if registrations_open:
