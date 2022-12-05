@@ -6387,7 +6387,7 @@ class PubServer(BaseHTTPRequestHandler):
                         remaining = get_config_param(base_dir, reg_str)
                         if fields.get('regRemaining'):
                             if fields['regRemaining'] != remaining:
-                                remaining = fields['regRemaining']
+                                remaining = int(fields['regRemaining'])
                                 if remaining < 0:
                                     remaining = 0
                                 elif remaining > 10:
