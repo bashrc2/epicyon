@@ -198,10 +198,16 @@ def _markdown_replace_links(markdown: str) -> str:
                     section_text = \
                         section_text.replace('!' + replace_str, html_link)
                 if replace_str in section_text:
-                    html_link = \
-                        '<a href="' + link_url + '" target="_blank" ' + \
-                        'rel="nofollow noopener noreferrer">' + \
-                        link_text + '</a>'
+                    if not link_url.startswith('#'):
+                        # external link
+                        html_link = \
+                            '<a href="' + link_url + '" target="_blank" ' + \
+                            'rel="nofollow noopener noreferrer">' + \
+                            link_text + '</a>'
+                    else:
+                        # bookmark
+                        html_link = \
+                            '<a href="' + link_url + '">' + link_text + '</a>'
                     section_text = \
                         section_text.replace(replace_str, html_link)
             ctr += 1
