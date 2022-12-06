@@ -385,8 +385,10 @@ def markdown_to_html(markdown: str) -> str:
 
         for hsh, hashes in titles.items():
             if line.startswith(hashes):
+                bookmark_str = line.lower().replace(' ', '-')
                 line = line.replace(hashes, '').strip()
-                line = '<' + hsh + ' id="' + line + '">' + line + '</' + hsh + '>\n'
+                line = '<' + hsh + ' id="' + bookmark_str + '">' + \
+                    line + '</' + hsh + '>\n'
                 ctr = -1
                 break
         html_str += line
