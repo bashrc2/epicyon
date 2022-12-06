@@ -198,10 +198,16 @@ def _markdown_replace_links(markdown: str) -> str:
                     section_text = \
                         section_text.replace('!' + replace_str, html_link)
                 if replace_str in section_text:
-                    html_link = \
-                        '<a href="' + link_url + '" target="_blank" ' + \
-                        'rel="nofollow noopener noreferrer">' + \
-                        link_text + '</a>'
+                    if not link_url.startswith('#'):
+                        # external link
+                        html_link = \
+                            '<a href="' + link_url + '" target="_blank" ' + \
+                            'rel="nofollow noopener noreferrer">' + \
+                            link_text + '</a>'
+                    else:
+                        # bookmark
+                        html_link = \
+                            '<a href="' + link_url + '">' + link_text + '</a>'
                     section_text = \
                         section_text.replace(replace_str, html_link)
             ctr += 1
@@ -385,8 +391,10 @@ def markdown_to_html(markdown: str) -> str:
 
         for hsh, hashes in titles.items():
             if line.startswith(hashes):
+                bookmark_str = line.split(' ', 1)[1].lower().replace(' ', '-')
                 line = line.replace(hashes, '').strip()
-                line = '<' + hsh + '>' + line + '</' + hsh + '>\n'
+                line = '<' + hsh + ' id="' + bookmark_str + '">' + \
+                    line + '</' + hsh + '>\n'
                 ctr = -1
                 break
         html_str += line
