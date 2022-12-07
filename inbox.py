@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import is_account_dir
 from utils import remove_eol
 from utils import text_in_file
 from utils import get_media_descriptions_from_post
@@ -131,6 +132,7 @@ from notifyOnPost import notify_when_person_posts
 from conversation import update_conversation
 from webapp_hashtagswarm import html_hash_tag_swarm
 from person import valid_sending_actor
+from person import get_person_avatar_url
 from fitnessFunctions import fitness_performance
 from content import reject_twitter_summary
 from content import load_dogwhistles
@@ -1020,12 +1022,57 @@ def _receive_undo(base_dir: str, message_json: {}, debug: bool,
     return False
 
 
+def _notify_moved(base_dir: str, domain_full: str,
+                  prev_actor_handle: str, new_actor_handle: str,
+                  prev_actor: str, prev_avatar_image_url: str,
+                  http_prefix: str) -> None:
+    """Notify that an actor has moved
+    """
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for account in dirs:
+            if not is_account_dir(account):
+                continue
+            account_dir = base_dir + '/accounts/' + account
+            following_filename = account_dir + '/following.txt'
+            if not os.path.isfile(following_filename):
+                continue
+            if not text_in_file(prev_actor_handle + '\n', following_filename):
+                continue
+            if text_in_file(new_actor_handle + '\n', following_filename):
+                continue
+            # notify
+            moved_file = account_dir + '/.newMoved'
+            if os.path.isfile(moved_file):
+                if not text_in_file('##sent##', moved_file):
+                    continue
+
+            nickname = account.split('@')[0]
+            url = \
+                http_prefix + '://' + domain_full + '/users/' + nickname + \
+                '?options=' + prev_actor + ';1;' + prev_avatar_image_url
+            moved_str = \
+                prev_actor_handle + ' ' + new_actor_handle + ' ' + url
+
+            if os.path.isfile(moved_file):
+                with open(moved_file, 'r',
+                          encoding='utf-8') as fp_move:
+                    prev_moved_str = fp_move.read()
+                    if prev_moved_str == moved_str:
+                        continue
+            try:
+                with open(moved_file, 'w+', encoding='utf-8') as fp_move:
+                    fp_move.write(moved_str)
+            except OSError:
+                print('EX: ERROR: unable to save moved notification ' +
+                      moved_file)
+
+
 def _person_receive_update(base_dir: str,
                            domain: str, port: int,
                            update_nickname: str, update_domain: str,
                            update_port: int,
                            person_json: {}, person_cache: {},
-                           debug: bool) -> bool:
+                           debug: bool, http_prefix: str) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
     if debug:
@@ -1120,6 +1167,15 @@ def _person_receive_update(base_dir: str,
             except OSError:
                 print('EX: unable to write to ' +
                       refollow_filename)
+            prev_avatar_url = \
+                get_person_avatar_url(base_dir, person_json['id'],
+                                      person_cache)
+            if prev_avatar_url is None:
+                prev_avatar_url = ''
+            _notify_moved(base_dir, domain_full,
+                          prev_nickname + '@' + prev_domain_full,
+                          new_nickname + '@' + new_domain_full,
+                          person_json['id'], prev_avatar_url, http_prefix)
 
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
@@ -1406,7 +1462,7 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                           update_nickname, update_domain,
                                           update_port,
                                           message_json['object'],
-                                          person_cache, debug):
+                                          person_cache, debug, http_prefix):
                     print('Person Update: ' + str(message_json))
                     if debug:
                         print('DEBUG: Profile update was received for ' +
