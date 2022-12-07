@@ -5848,7 +5848,8 @@ def _test_markdown_to_html():
     assert markdown_to_html(markdown) == 'This is <b>just</b> plain text'
 
     markdown = '# Title1\n### Title3\n## Title2\n'
-    expected = '<h1>Title1</h1>\n<h3>Title3</h3>\n<h2>Title2</h2>\n'
+    expected = '<h1 id="title1">Title1</h1>\n' + \
+        '<h3 id="title3">Title3</h3>\n<h2 id="title2">Title2</h2>\n'
     result = markdown_to_html(markdown)
     if result != expected:
         print(result)
