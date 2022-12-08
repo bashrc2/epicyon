@@ -264,6 +264,8 @@ from shares import shares_catalog_account_endpoint
 from shares import shares_catalog_csv_endpoint
 from categories import set_hashtag_category
 from categories import update_hashtag_categories
+from languages import load_default_post_languages
+from languages import set_default_post_language
 from languages import get_actor_languages
 from languages import set_actor_languages
 from languages import get_understood_languages
@@ -346,6 +348,7 @@ from utils import has_group_type
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
+from content import add_name_emojis_to_tags
 from content import load_dogwhistles
 from content import valid_url_lengths
 from content import contains_invalid_local_links
@@ -3491,6 +3494,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain_full,
                                          self.server.person_cache)
 
+            default_post_language = self.server.system_language
+            if self.server.default_post_language.get(nickname):
+                default_post_language = \
+                    self.server.default_post_language[nickname]
             msg = \
                 html_new_post({}, False, self.server.translate,
                               base_dir,
@@ -3531,7 +3538,7 @@ class PubServer(BaseHTTPRequestHandler):
                               bold_reading,
                               self.server.dogwhistles,
                               self.server.min_images_for_accounts,
-                              None, None)
+                              None, None, default_post_language)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -3647,6 +3654,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain_full,
                                          self.server.person_cache)
 
+            default_post_language = self.server.system_language
+            if self.server.default_post_language.get(nickname):
+                default_post_language = \
+                    self.server.default_post_language[nickname]
             msg = \
                 html_new_post({}, False, self.server.translate,
                               base_dir,
@@ -3686,7 +3697,7 @@ class PubServer(BaseHTTPRequestHandler):
                               bold_reading,
                               self.server.dogwhistles,
                               self.server.min_images_for_accounts,
-                              None, None)
+                              None, None, default_post_language)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -6816,6 +6827,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actor_changed = True
 
                     # change user bio
+                    actor_json['tag'] = []
                     if fields.get('bio'):
                         if fields['bio'] != actor_json['summary']:
                             bio_str = remove_html(fields['bio'])
@@ -6831,7 +6843,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                   bio_str, [], actor_tags,
                                                   self.server.translate)
                                 if actor_tags:
-                                    actor_json['tag'] = []
                                     for _, tag in actor_tags.items():
                                         actor_json['tag'].append(tag)
                                 actor_changed = True
@@ -7695,6 +7706,9 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # save actor json file within accounts
                     if actor_changed:
+                        add_name_emojis_to_tags(base_dir, http_prefix,
+                                                domain, self.server.port,
+                                                actor_json)
                         # update the context for the actor
                         actor_json['@context'] = [
                             'https://www.w3.org/ns/activitystreams',
@@ -15776,6 +15790,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain_full,
                                          self.server.person_cache)
 
+            default_post_language = self.server.system_language
+            if self.server.default_post_language.get(nickname):
+                default_post_language = \
+                    self.server.default_post_language[nickname]
             msg = \
                 html_new_post(edit_post_params, media_instance,
                               translate,
@@ -15818,7 +15836,8 @@ class PubServer(BaseHTTPRequestHandler):
                               bold_reading,
                               self.server.dogwhistles,
                               self.server.min_images_for_accounts,
-                              new_post_month, new_post_year)
+                              new_post_month, new_post_year,
+                              default_post_language)
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
                 self._404()
@@ -20061,6 +20080,11 @@ class PubServer(BaseHTTPRequestHandler):
                 fields['location'] = None
             if not fields.get('languagesDropdown'):
                 fields['languagesDropdown'] = self.server.system_language
+            set_default_post_language(self.server.base_dir, nickname,
+                                      self.server.domain,
+                                      fields['languagesDropdown'])
+            self.server.default_post_language[nickname] = \
+                fields['languagesDropdown']
 
             if not citations_button_press:
                 # Store a file which contains the time in seconds
@@ -22339,6 +22363,9 @@ def run_daemon(max_hashtags: int,
 
     # which accounts should minimize all attached images by default
     httpd.min_images_for_accounts = load_min_images_for_accounts(base_dir)
+
+    # default language for each account when creating a new post
+    httpd.default_post_language = load_default_post_languages(base_dir)
 
     # caches css files
     httpd.css_cache = {}

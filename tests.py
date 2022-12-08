@@ -135,6 +135,7 @@ from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
+from content import add_name_emojis_to_tags
 from content import combine_textarea_lines
 from content import detect_dogwhistles
 from content import remove_script
@@ -7591,6 +7592,22 @@ def _test_uninvert():
     assert result == expected
 
 
+def _test_emoji_in_actor_name(base_dir: str) -> None:
+    print('test_emoji_in_actor_name')
+    actor_json = {
+        'name': 'First Sea Lord Wibbles :verified:',
+        'tag': []
+    }
+    http_prefix = 'https'
+    domain = 'fluffysupernova.city'
+    port = 443
+    add_name_emojis_to_tags(base_dir, http_prefix,
+                            domain, port, actor_json)
+    assert len(actor_json['tag']) == 1
+    assert actor_json['tag'][0].get('updated')
+    assert actor_json['tag'][0]['name'] == ':verified:'
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7608,6 +7625,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_emoji_in_actor_name(base_dir)
     _test_uninvert()
     _test_hashtag_maps()
     _test_combine_lines()
