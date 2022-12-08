@@ -346,6 +346,7 @@ from utils import has_group_type
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
+from content import add_name_emojis_to_tags
 from content import load_dogwhistles
 from content import valid_url_lengths
 from content import contains_invalid_local_links
@@ -6816,6 +6817,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actor_changed = True
 
                     # change user bio
+                    actor_json['tag'] = []
                     if fields.get('bio'):
                         if fields['bio'] != actor_json['summary']:
                             bio_str = remove_html(fields['bio'])
@@ -6831,7 +6833,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                   bio_str, [], actor_tags,
                                                   self.server.translate)
                                 if actor_tags:
-                                    actor_json['tag'] = []
                                     for _, tag in actor_tags.items():
                                         actor_json['tag'].append(tag)
                                 actor_changed = True
@@ -7695,6 +7696,9 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # save actor json file within accounts
                     if actor_changed:
+                        add_name_emojis_to_tags(base_dir, http_prefix,
+                                                domain, self.server.port,
+                                                actor_json)
                         # update the context for the actor
                         actor_json['@context'] = [
                             'https://www.w3.org/ns/activitystreams',

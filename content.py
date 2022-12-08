@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import get_full_domain
 from utils import get_user_paths
 from utils import convert_published_to_local_timezone
 from utils import has_object_dict
@@ -1998,3 +1999,77 @@ def reject_twitter_summary(base_dir: str, nickname: str, domain: str,
        'birdsite' in summary_lower:
         return True
     return False
+
+
+def add_name_emojis_to_tags(base_dir: str, http_prefix: str,
+                            domain: str, port: int,
+                            actor_json: {}) -> None:
+    """Add any custom emojis within the name of an actor to
+    the tag list
+    """
+    if not actor_json.get('name'):
+        return
+    name = actor_json['name']
+
+    # does the name contain an emoji?
+    if ':' not in name:
+        return
+    if ':' not in name.split(':', 1)[1]:
+        return
+
+    # get emojis from the actor name
+    words = name.split(' ')
+    emojis = []
+    for wrd in words:
+        if wrd.startswith(':') and wrd.endswith(':'):
+            if wrd not in emojis:
+                emojis.append(wrd)
+    if not emojis:
+        return
+
+    actor_tags = []
+    if actor_json.get('tag'):
+        actor_tags = actor_json['tag']
+
+    # is the emoji already in the tag list?
+    for tag_dict in actor_tags:
+        if not tag_dict.get('type'):
+            continue
+        if tag_dict['type'] != 'Emoji':
+            continue
+        if not tag_dict.get('name'):
+            continue
+        if not tag_dict['name'].startswith(':'):
+            continue
+        if not tag_dict['name'].endswith(':'):
+            continue
+        if tag_dict['name'] in emojis:
+            emojis.remove(tag_dict['name'])
+    if not emojis:
+        return
+
+    domain_full = get_full_domain(domain, port)
+    for emoji_tag_name in emojis:
+        emoji_name = emoji_tag_name.replace(':', '')
+        emoji_id = \
+            http_prefix + '://' + domain_full + '/emoji/' + \
+            emoji_name
+        url = emoji_id + '.png'
+        emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
+        updated = None
+        if os.path.isfile(emoji_filename):
+            updated = file_last_modified(emoji_filename)
+        new_tag = {
+            'icon': {
+                'mediaType': 'image/png',
+                'type': 'Image',
+                'url': url
+            },
+            'id': emoji_id,
+            'name': emoji_tag_name,
+            'type': 'Emoji',
+            'updated': '2022-11-15T23:45:42Z'
+        }
+        if updated:
+            new_tag['updated'] = updated
+        actor_json['tag'].append(new_tag)
