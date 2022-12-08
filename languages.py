@@ -8,7 +8,10 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import json
+import os
 from urllib import request, parse
+from utils import is_account_dir
+from utils import acct_dir
 from utils import get_actor_languages_list
 from utils import remove_html
 from utils import has_object_dict
@@ -326,3 +329,43 @@ def auto_translate_post(base_dir: str, post_json_object: {},
                 translated_text
         return translated_text
     return ''
+
+
+def set_default_post_language(base_dir: str, nickname: str, domain: str,
+                              language: str) -> None:
+    """Sets the default language for new posts
+    """
+    default_post_language_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.new_post_language'
+    try:
+        with open(default_post_language_filename, 'w+',
+                  encoding='utf-8') as fp_lang:
+            fp_lang.write(language)
+    except OSError:
+        print('EX: Unable to write default post language ' +
+              default_post_language_filename)
+
+
+def load_default_post_languages(base_dir: str) -> {}:
+    """Returns a dictionary containing the default languages
+    for new posts for each account
+    """
+    result = {}
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for handle in dirs:
+            if not is_account_dir(handle):
+                continue
+            nickname = handle.split('@')[0]
+            domain = handle.split('@')[1]
+            default_post_language_filename = \
+                acct_dir(base_dir, nickname, domain) + '/.new_post_language'
+            if not os.path.isfile(default_post_language_filename):
+                continue
+            try:
+                with open(default_post_language_filename, 'r',
+                          encoding='utf-8') as fp_lang:
+                    result[nickname] = fp_lang.read()
+            except OSError:
+                print('EX: Unable to read default post language ' +
+                      default_post_language_filename)
+    return result

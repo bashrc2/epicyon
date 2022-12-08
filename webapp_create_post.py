@@ -279,7 +279,8 @@ def html_new_post(edit_post_params: {},
                   reply_is_chat: bool, bold_reading: bool,
                   dogwhistles: {},
                   min_images_for_accounts: [],
-                  default_month: int, default_year) -> str:
+                  default_month: int, default_year: int,
+                  default_post_language: str) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -796,9 +797,9 @@ def html_new_post(edit_post_params: {},
             languages_dropdown += '  </select><br>'
             languages_dropdown = \
                 languages_dropdown.replace('<option value="' +
-                                           system_language + '">',
+                                           default_post_language + '">',
                                            '<option value="' +
-                                           system_language +
+                                           default_post_language +
                                            '" selected>')
             replies_section += \
                 '      <label class="labels">' + \
