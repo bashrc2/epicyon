@@ -176,6 +176,7 @@ from mastoapiv1 import get_nickname_from_masto_api_v1id
 from webapp_post import prepare_html_post_nickname
 from speaker import speaker_replace_links
 from markdown import markdown_to_html
+from languages import get_reply_language
 from languages import set_actor_languages
 from languages import get_actor_languages
 from languages import get_links_from_content
@@ -7608,6 +7609,35 @@ def _test_emoji_in_actor_name(base_dir: str) -> None:
     assert actor_json['tag'][0]['name'] == ':verified:'
 
 
+def _test_reply_language(base_dir: str) -> None:
+    print('reply_language')
+
+    post_json_object = {
+        'object': {
+            'contentMap': {
+                'en': 'This is some content'
+            }
+        }
+    }
+    assert get_reply_language(base_dir, post_json_object) == 'en'
+
+    post_json_object = {
+        'object': {
+            'contentMap': {
+                'xx': 'This is some content',
+                'de': 'This is some content'
+            }
+        }
+    }
+    assert get_reply_language(base_dir, post_json_object) == 'de'
+
+    post_json_object = {
+        'object': {
+        }
+    }
+    assert not get_reply_language(base_dir, post_json_object)
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7625,6 +7655,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_reply_language(base_dir)
     _test_emoji_in_actor_name(base_dir)
     _test_uninvert()
     _test_hashtag_maps()

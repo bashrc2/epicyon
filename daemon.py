@@ -264,6 +264,7 @@ from shares import shares_catalog_account_endpoint
 from shares import shares_catalog_csv_endpoint
 from categories import set_hashtag_category
 from categories import update_hashtag_categories
+from languages import get_reply_language
 from languages import load_default_post_languages
 from languages import set_default_post_language
 from languages import get_actor_languages
@@ -15772,12 +15773,22 @@ class PubServer(BaseHTTPRequestHandler):
 
             custom_submit_text = get_config_param(base_dir, 'customSubmitText')
 
+            default_post_language = self.server.system_language
+            if self.server.default_post_language.get(nickname):
+                default_post_language = \
+                    self.server.default_post_language[nickname]
+
             post_json_object = None
             if in_reply_to_url:
                 reply_post_filename = \
                     locate_post(base_dir, nickname, domain, in_reply_to_url)
                 if reply_post_filename:
                     post_json_object = load_json(reply_post_filename)
+                    if post_json_object:
+                        reply_language = \
+                            get_reply_language(base_dir, post_json_object)
+                        if reply_language:
+                            default_post_language = reply_language
 
             bold_reading = False
             if self.server.bold_reading.get(nickname):
@@ -15790,10 +15801,6 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain_full,
                                          self.server.person_cache)
 
-            default_post_language = self.server.system_language
-            if self.server.default_post_language.get(nickname):
-                default_post_language = \
-                    self.server.default_post_language[nickname]
             msg = \
                 html_new_post(edit_post_params, media_instance,
                               translate,

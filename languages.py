@@ -369,3 +369,20 @@ def load_default_post_languages(base_dir: str) -> {}:
                 print('EX: Unable to read default post language ' +
                       default_post_language_filename)
     return result
+
+
+def get_reply_language(base_dir: str,
+                       post_json_object: {}) -> str:
+    """Returns the language that te given post was written in
+    """
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+    if not post_obj.get('contentMap'):
+        return None
+    for lang, content in post_obj['contentMap'].items():
+        lang_filename = base_dir + '/translations/' + lang + '.json'
+        if not os.path.isfile(lang_filename):
+            continue
+        return lang
+    return None
