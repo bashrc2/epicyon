@@ -20844,7 +20844,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  edited_published,
                                                  edited_postid,
                                                  recent_posts_cache,
-                                                 'outbox',
+                                                 'dm',
                                                  self.server.max_mentions,
                                                  self.server.max_emoji,
                                                  allow_local_network_access,
