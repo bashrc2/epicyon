@@ -940,6 +940,11 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
     filename = box_dir + '/' + post_id.replace('/', '#') + '.json'
 
     save_json(post_json_object, filename)
+    # if this is an outbox post with a duplicate in the inbox then save to both
+    if '/outbox/' in filename:
+        inbox_filename = filename.replace('/outbox/', '/inbox/')
+        if os.path.isfile(inbox_filename):
+            save_json(post_json_object, inbox_filename)
     return filename
 
 
