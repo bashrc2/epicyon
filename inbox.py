@@ -1347,7 +1347,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         mitm = True
     bold_reading = False
     bold_reading_filename = \
-        base_dir + '/accounts/' + nickname + '@' + domain + '/.boldReading'
+        acct_dir(base_dir, nickname, domain) + '/.boldReading'
     if os.path.isfile(bold_reading_filename):
         bold_reading = True
     timezone = get_account_timezone(base_dir, nickname, domain)
