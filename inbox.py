@@ -1319,6 +1319,12 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     # Change Update to Create
     message_json['type'] = 'Create'
     save_json(message_json, post_filename)
+    # if the post has been saved both within the outbox and inbox
+    # (eg. edited reminder)
+    if '/outbox/' in post_filename:
+        inbox_post_filename = post_filename.replace('/outbox/', '/inbox/')
+        if os.path.isfile(inbox_post_filename):
+            save_json(message_json, inbox_post_filename)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cached_post_filename = \
