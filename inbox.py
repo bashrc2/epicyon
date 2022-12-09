@@ -1262,7 +1262,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     message_id = remove_id_ending(message_json['object']['id'])
     if '#' in message_id:
         message_id = message_id.split('#', 1)[0]
-    # find the post which was edited
+    # find the original post which was edited
     post_filename = locate_post(base_dir, nickname, domain, message_id)
     if not post_filename:
         print('EDITPOST: ' + message_id + ' has already expired')
@@ -1276,7 +1276,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         print('EDITPOST: contains invalid content' + str(message_json))
         return False
 
-    # load the json for the post
+    # load the json for the original post
     post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         return False
