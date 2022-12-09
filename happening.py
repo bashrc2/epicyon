@@ -332,7 +332,8 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                 for post_id in calendar_post_ids:
                     calendar_file.write(post_id + '\n')
         except OSError:
-            print('EX: unable to write ' + calendar_filename)
+            print('EX: unable to recreate events file 1 ' +
+                  calendar_filename)
 
     return events
 
@@ -656,7 +657,8 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
                 for post_id in calendar_post_ids:
                     calendar_file.write(post_id + '\n')
         except OSError:
-            print('EX: unable to write ' + calendar_filename)
+            print('EX: unable to recreate events file 2 ' +
+                  calendar_filename)
 
     return events
 
@@ -738,7 +740,8 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
                 for post_id in calendar_post_ids:
                     calendar_file.write(post_id + '\n')
         except OSError:
-            print('EX: unable to write ' + calendar_filename)
+            print('EX: unable to recreate events file 3 ' +
+                  calendar_filename)
 
     return events
 
@@ -768,7 +771,8 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
                 if message_id not in line:
                     fp_cal.write(line)
     except OSError:
-        print('EX: unable to write ' + calendar_filename)
+        print('EX: unable to remove calendar event ' +
+              calendar_filename)
 
 
 def _dav_decode_token(token: str) -> (int, int, str):
