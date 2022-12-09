@@ -113,8 +113,6 @@ def csv_following_list(following_filename: str,
             for following_address in following_list:
                 if not following_address:
                     continue
-                if following_list_csv:
-                    following_list_csv += '\n'
 
                 following_nickname = \
                     get_nickname_from_actor(following_address)
@@ -139,9 +137,11 @@ def csv_following_list(following_filename: str,
                         person_notes = person_notes.replace('"', "'")
                         person_notes = person_notes.replace('\n', '<br>')
                         person_notes = person_notes.replace('  ', ' ')
+                if not following_list_csv:
+                    following_list_csv = \
+                        'Account address,Show boosts,' + \
+                        'Notify on new posts,Languages,Notes\n'
                 following_list_csv += \
-                    'Account address,Show boosts,' + \
-                    'Notify on new posts,Languages,Notes\n' + \
                     following_address + ',' + \
                     str(announce_is_allowed).lower() + ',' + \
                     notify_on_new + ',' + \

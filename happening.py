@@ -176,7 +176,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         with open(calendar_filename, 'a+', encoding='utf-8') as calendar_file:
             calendar_file.write(post_id + '\n')
     except OSError:
-        print('EX: unable to append ' + calendar_filename)
+        print('EX: unable to append to calendar ' + calendar_filename)
 
     # create a file which will trigger a notification that
     # a new event has been added
