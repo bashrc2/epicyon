@@ -20822,7 +20822,56 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     print('DEBUG: new reminder to ' +
-                          str(message_json['object']['to']))
+                          str(message_json['object']['to']) + ' ' +
+                          str(edited_postid))
+                    if edited_postid:
+                        recent_posts_cache = self.server.recent_posts_cache
+                        allow_local_network_access = \
+                            self.server.allow_local_network_access
+                        signing_priv_key_pem = \
+                            self.server.signing_priv_key_pem
+                        twitter_replacement_domain = \
+                            self.server.twitter_replacement_domain
+                        show_published_date_only = \
+                            self.server.show_published_date_only
+                        min_images_for_accounts = \
+                            self.server.min_images_for_accounts
+                        peertube_instances = \
+                            self.server.peertube_instances
+                        self._update_edited_post(self.server.base_dir,
+                                                 nickname, self.server.domain,
+                                                 message_json,
+                                                 edited_published,
+                                                 edited_postid,
+                                                 recent_posts_cache,
+                                                 'dm',
+                                                 self.server.max_mentions,
+                                                 self.server.max_emoji,
+                                                 allow_local_network_access,
+                                                 self.server.debug,
+                                                 self.server.system_language,
+                                                 self.server.http_prefix,
+                                                 self.server.domain_full,
+                                                 self.server.person_cache,
+                                                 signing_priv_key_pem,
+                                                 self.server.max_recent_posts,
+                                                 self.server.translate,
+                                                 curr_session,
+                                                 self.server.cached_webfingers,
+                                                 self.server.port,
+                                                 self.server.allow_deletion,
+                                                 self.server.yt_replace_domain,
+                                                 twitter_replacement_domain,
+                                                 show_published_date_only,
+                                                 peertube_instances,
+                                                 self.server.theme_name,
+                                                 self.server.max_like_count,
+                                                 self.server.cw_lists,
+                                                 self.server.dogwhistles,
+                                                 min_images_for_accounts,
+                                                 self.server.max_hashtags)
+                        print('DEBUG: sending edited reminder post ' +
+                              str(message_json))
                     if self._post_to_outbox(message_json,
                                             self.server.project_version,
                                             nickname,

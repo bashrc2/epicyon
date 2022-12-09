@@ -2046,6 +2046,28 @@ def is_dm(post_json_object: {}) -> bool:
     return True
 
 
+def is_reminder(post_json_object: {}) -> bool:
+    """Returns true if the given post is a reminder
+    """
+    if not is_dm(post_json_object):
+        return False
+    if not post_json_object['object'].get('to'):
+        return False
+    if not post_json_object['object'].get('attributedTo'):
+        return False
+    if not post_json_object['object'].get('tag'):
+        return False
+    if len(post_json_object['object']['to']) != 1:
+        return False
+    if post_json_object['object']['to'][0] != \
+       post_json_object['object']['attributedTo']:
+        return False
+    for tag in post_json_object['object']['tag']:
+        if tag['type'] == 'Event':
+            return True
+    return False
+
+
 def _is_remote_dm(domain_full: str, post_json_object: {}) -> bool:
     """Is the given post a DM from a different domain?
     """

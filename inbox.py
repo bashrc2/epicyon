@@ -1262,7 +1262,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     message_id = remove_id_ending(message_json['object']['id'])
     if '#' in message_id:
         message_id = message_id.split('#', 1)[0]
-    # find the post which was edited
+    # find the original post which was edited
     post_filename = locate_post(base_dir, nickname, domain, message_id)
     if not post_filename:
         print('EDITPOST: ' + message_id + ' has already expired')
@@ -1276,7 +1276,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         print('EDITPOST: contains invalid content' + str(message_json))
         return False
 
-    # load the json for the post
+    # load the json for the original post
     post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         return False
@@ -1319,6 +1319,12 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     # Change Update to Create
     message_json['type'] = 'Create'
     save_json(message_json, post_filename)
+    # if the post has been saved both within the outbox and inbox
+    # (eg. edited reminder)
+    if '/outbox/' in post_filename:
+        inbox_post_filename = post_filename.replace('/outbox/', '/inbox/')
+        if os.path.isfile(inbox_post_filename):
+            save_json(message_json, inbox_post_filename)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cached_post_filename = \
@@ -1347,7 +1353,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         mitm = True
     bold_reading = False
     bold_reading_filename = \
-        base_dir + '/accounts/' + nickname + '@' + domain + '/.boldReading'
+        acct_dir(base_dir, nickname, domain) + '/.boldReading'
     if os.path.isfile(bold_reading_filename):
         bold_reading = True
     timezone = get_account_timezone(base_dir, nickname, domain)

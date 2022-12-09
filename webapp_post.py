@@ -40,6 +40,7 @@ from utils import has_object_dict
 from utils import update_announce_collection
 from utils import is_pgp_encrypted
 from utils import is_dm
+from utils import is_reminder
 from utils import is_chat_message
 from utils import reject_post_id
 from utils import is_recent_post
@@ -607,6 +608,21 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '?postedit=' + \
                 post_id.split('/statuses/')[1] + ';scope=public' + \
+                ';actor=' + actor_nickname + reply_to + \
+                '" title="' + edit_post_str + '" tabindex="10">' + \
+                '<img loading="lazy" decoding="async" title="' + \
+                edit_post_str + '" alt="' + edit_post_str + \
+                ' |" src="/icons/edit.png"/></a>\n'
+        elif is_reminder(post_json_object):
+            # Edit a reminder
+            edit_post_str = 'Edit reminder'
+            if translate.get(edit_post_str):
+                edit_post_str = translate[edit_post_str]
+            edit_str += \
+                '        ' + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?postedit=' + \
+                post_id.split('/statuses/')[1] + ';scope=reminder' + \
                 ';actor=' + actor_nickname + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \

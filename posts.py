@@ -940,6 +940,29 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
     filename = box_dir + '/' + post_id.replace('/', '#') + '.json'
 
     save_json(post_json_object, filename)
+    # if this is an outbox post with a duplicate in the inbox then save to both
+    # This happens for edited posts
+    if '/outbox/' in filename:
+        inbox_filename = filename.replace('/outbox/', '/inbox/')
+        if os.path.isfile(inbox_filename):
+            save_json(post_json_object, inbox_filename)
+            base_filename = \
+                filename.replace('/outbox/',
+                                 '/postcache/').replace('.json', '')
+            ssml_filename = base_filename + '.ssml'
+            if os.path.isfile(ssml_filename):
+                try:
+                    os.remove(ssml_filename)
+                except OSError:
+                    print('EX: save_post_to_box unable to delete ssml file ' +
+                          ssml_filename)
+            html_filename = base_filename + '.html'
+            if os.path.isfile(html_filename):
+                try:
+                    os.remove(html_filename)
+                except OSError:
+                    print('EX: save_post_to_box unable to delete html file ' +
+                          html_filename)
     return filename
 
 
