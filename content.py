@@ -1474,7 +1474,11 @@ def save_media_in_form_post(media_bytes, debug: bool,
             elif extension == 'wav4':
                 extension = 'wav'
             if filename_base:
-                filename = filename_base + '.' + extension
+                if not filename_base.endswith('.' + extension):
+                    filename = filename_base + '.' + extension
+                else:
+                    # already has the extension
+                    filename = filename_base
             search_lst = search_str.decode().split('/', maxsplit=1)
             attachment_media_type = \
                 search_lst[0].replace('Content-Type: ', '')

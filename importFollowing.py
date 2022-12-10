@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import time
 import random
+from utils import get_full_domain
 from utils import acct_dir
 from utils import is_account_dir
 from utils import get_nickname_from_actor
@@ -55,17 +56,21 @@ def _update_import_following(base_dir: str,
         main_session = None
         lines = following_str.split('\n')
         random.shuffle(lines)
+        print('FOLLOW: ' + handle + ' attempting to follow ' + str(lines))
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
         for line in lines:
+            if '://' not in line and '@' not in line:
+                continue
+            if ',' not in line:
+                continue
             orig_line = line
             notes = None
             line = line.strip()
-            if ',' in line:
-                fields = line.split(',')
-                line = fields[0].strip()
-                if len(fields) >= 5:
-                    notes = fields[4]
+            fields = line.split(',')
+            line = fields[0].strip()
+            if len(fields) >= 5:
+                notes = fields[4]
             if line.startswith('#'):
                 # comment
                 continue
@@ -80,6 +85,8 @@ def _update_import_following(base_dir: str,
                 # don't follow yourself
                 continue
             following_handle = following_nickname + '@' + following_domain
+            following_handle_full = following_nickname + '@' + \
+                get_full_domain(following_domain, following_port)
             if notes:
                 notes = notes.replace('<br>', '\n')
                 person_notes_filename = \
@@ -92,8 +99,8 @@ def _update_import_following(base_dir: str,
                 except OSError:
                     print('EX: Unable to import notes for ' +
                           following_handle)
-            if is_following_actor(base_dir,
-                                  nickname, domain, following_handle):
+            if is_following_actor(base_dir, nickname, domain,
+                                  following_handle_full):
                 # remove the followed handle from the import list
                 following_str = following_str.replace(orig_line + '\n', '')
                 try:
@@ -110,9 +117,6 @@ def _update_import_following(base_dir: str,
             curr_port = httpd.port
             curr_http_prefix = httpd.http_prefix
             following_actor = following_handle
-            if ':' in following_domain:
-                following_port = following_handle.split(':')[1]
-                following_domain = following_domain.split(':')[0]
 
             # get the appropriate session
             curr_session = main_session
@@ -177,6 +181,8 @@ def _update_import_following(base_dir: str,
             except OSError:
                 print('EX: unable to remove import 2 ' + line +
                       ' from ' + import_filename)
+            print('FOLLOW: import sent follow to ' + line +
+                  ' from ' + import_filename)
             return True
     return False
 
