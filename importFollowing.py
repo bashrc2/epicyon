@@ -55,17 +55,21 @@ def _update_import_following(base_dir: str,
         main_session = None
         lines = following_str.split('\n')
         random.shuffle(lines)
+        print('FOLLOW: ' + handle + ' attempting to follow ' + str(lines))
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
         for line in lines:
+            if '://' not in line and '@' not in line:
+                continue
+            if ',' not in line:
+                continue
             orig_line = line
             notes = None
             line = line.strip()
-            if ',' in line:
-                fields = line.split(',')
-                line = fields[0].strip()
-                if len(fields) >= 5:
-                    notes = fields[4]
+            fields = line.split(',')
+            line = fields[0].strip()
+            if len(fields) >= 5:
+                notes = fields[4]
             if line.startswith('#'):
                 # comment
                 continue
@@ -111,8 +115,16 @@ def _update_import_following(base_dir: str,
             curr_http_prefix = httpd.http_prefix
             following_actor = following_handle
             if ':' in following_domain:
-                following_port = following_handle.split(':')[1]
                 following_domain = following_domain.split(':')[0]
+                following_port = following_handle.split(':')[1]
+                if following_port.isdigit():
+                    following_port = int(following_port)
+                else:
+                    if following_domain.endswith('.onion') or \
+                       following_domain.endswith('.i2p'):
+                        following_port = 80
+                    else:
+                        following_port = 443
 
             # get the appropriate session
             curr_session = main_session
