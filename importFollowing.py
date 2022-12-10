@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import time
 import random
+from utils import get_full_domain
 from utils import acct_dir
 from utils import is_account_dir
 from utils import get_nickname_from_actor
@@ -84,6 +85,8 @@ def _update_import_following(base_dir: str,
                 # don't follow yourself
                 continue
             following_handle = following_nickname + '@' + following_domain
+            following_handle_full = following_nickname + '@' + \
+                get_full_domain(following_domain, following_port)
             if notes:
                 notes = notes.replace('<br>', '\n')
                 person_notes_filename = \
@@ -96,8 +99,8 @@ def _update_import_following(base_dir: str,
                 except OSError:
                     print('EX: Unable to import notes for ' +
                           following_handle)
-            if is_following_actor(base_dir,
-                                  nickname, domain, following_handle):
+            if is_following_actor(base_dir, nickname, domain,
+                                  following_handle_full):
                 # remove the followed handle from the import list
                 following_str = following_str.replace(orig_line + '\n', '')
                 try:
@@ -114,17 +117,6 @@ def _update_import_following(base_dir: str,
             curr_port = httpd.port
             curr_http_prefix = httpd.http_prefix
             following_actor = following_handle
-            if ':' in following_domain:
-                following_domain = following_domain.split(':')[0]
-                following_port = following_handle.split(':')[1]
-                if following_port.isdigit():
-                    following_port = int(following_port)
-                else:
-                    if following_domain.endswith('.onion') or \
-                       following_domain.endswith('.i2p'):
-                        following_port = 80
-                    else:
-                        following_port = 443
 
             # get the appropriate session
             curr_session = main_session
