@@ -189,6 +189,8 @@ def _update_import_following(base_dir: str,
             except OSError:
                 print('EX: unable to remove import 2 ' + line +
                       ' from ' + import_filename)
+            print('FOLLOW: import sent follow to ' + line +
+                  ' from ' + import_filename)
             return True
     return False
 
