@@ -579,6 +579,14 @@ a:focus {
     filter: brightness(var(--icon-brightness-change));
 }
 
+.containerHeader a:link {
+    background: transparent;
+}
+
+.containerHeader a:visited {
+    background: transparent;
+}
+
 .buttonunfollow:hover {
     background-color: var(--button-background-hover);
     color: var(--button-text-hover);
