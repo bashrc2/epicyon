@@ -1112,7 +1112,7 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
     invalid_strings = [
-        'ampproject', 'googleapis', '_exec('
+        'ampproject', 'googleapis', '_exec(', ' id=', ' name='
     ]
     if _is_dangerous_string_simple(content, allow_local_network_access,
                                    separators, invalid_strings):
