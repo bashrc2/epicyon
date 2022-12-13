@@ -260,15 +260,15 @@ function notifications {
         fi
 
         # send notifications for moved accounts to XMPP/email users
-        epicyonMovedFile="$epicyonDir/.newMoved"
-        if [ -f "$epicyonMovedFile" ]; then
+        epicyonMovedFile="${epicyonDir}/.newMoved"
+        if [ -f "${epicyonMovedFile}" ]; then
             if ! grep -q "##sent##" "$epicyonMovedFile"; then
                 epicyonMovedMessage=$(notification_translate_text 'has moved to')
                 epicyonMovedFrom=$(cat "$epicyonMovedFile" | awk -F ' ' '{print $1}')
                 epicyonMovedTo=$(cat "$epicyonMovedFile" | awk -F ' ' '{print $2}')
                 epicyonMovedUrl=$(cat "$epicyonMovedFile" | awk -F ' ' '{print $3}')
                 epicyonMovedLink="<a href=\"${epicyonMovedUrl}\">${epicyonMovedTo}</a>"
-                epicyonMovedFileContent=$("$(echo "$epicyonMovedFrom")" "$(echo "$epicyonMovedMessage")" "$(echo "$epicyonMovedLink")")
+                epicyonMovedFileContent=$($(echo "$epicyonMovedFrom")" "$(echo "$epicyonMovedMessage")" "$(echo "$epicyonMovedLink"))
                 if [[ "$epicyonMovedFileContent" == *':'* ]]; then
                     epicyonMovedMessage="Epicyon: $epicyonMovedFileContent"
                 fi
