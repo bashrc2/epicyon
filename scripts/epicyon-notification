@@ -270,9 +270,9 @@ function notifications {
                 epicyonMovedLink="<a href=\"${epicyonMovedUrl}\">${epicyonMovedTo}</a>"
                 epicyonMovedFileContent=$($(echo "$epicyonMovedFrom")" "$(echo "$epicyonMovedMessage")" "$(echo "$epicyonMovedLink"))
                 if [[ "$epicyonMovedFileContent" == *':'* ]]; then
-                    epicyonMovedMessage="Epicyon: $epicyonMovedFileContent"
+                    epicyonMovedFileContent="Epicyon: $epicyonMovedFileContent"
                 fi
-                sendNotification "$USERNAME" "Epicyon" "$epicyonMovedMessage"
+                sendNotification "$USERNAME" "Epicyon" "$epicyonMovedFileContent"
                 echo "##sent##" > "$epicyonMovedFile"
                 chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonMovedFile"
             fi
