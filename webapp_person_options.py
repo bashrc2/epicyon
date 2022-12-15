@@ -211,7 +211,7 @@ def html_person_options(default_timeline: str,
                                   options_nickname, options_domain_full)
         if is_blocked(base_dir, nickname, domain,
                       options_nickname, options_domain_full):
-            block_str = 'Block'
+            block_str = 'Unblock'
 
     if options_link:
         options_link_str += \
