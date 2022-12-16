@@ -219,6 +219,33 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     return standardize_text(content)
 
 
+def get_language_from_post(post_json_object: {}, system_language: str,
+                           languages_understood: [],
+                           content_type: str = "content") -> str:
+    """Returns the content language from the post
+    including searching for a matching entry within contentMap
+    """
+    this_post_json = post_json_object
+    if has_object_dict(post_json_object):
+        this_post_json = post_json_object['object']
+    if not this_post_json.get(content_type):
+        return system_language
+    map_dict = content_type + 'Map'
+    if this_post_json.get(map_dict):
+        if isinstance(this_post_json[map_dict], dict):
+            if this_post_json[map_dict].get(system_language):
+                sys_lang = this_post_json[map_dict][system_language]
+                if isinstance(sys_lang, str):
+                    return system_language
+            else:
+                # is there a contentMap/summaryMap entry for one of
+                # the understood languages?
+                for lang in languages_understood:
+                    if this_post_json[map_dict].get(lang):
+                        return lang
+    return system_language
+
+
 def get_media_descriptions_from_post(post_json_object: {}) -> str:
     """Returns all attached media descriptions as a single text.
     This is used for filtering
