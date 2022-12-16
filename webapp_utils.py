@@ -1944,3 +1944,12 @@ def text_mode_browser(ua_str: str) -> bool:
         if agent in ua_str:
             return True
     return False
+
+
+def language_right_to_left(language: str) -> bool:
+    """is the given language written from right to left?
+    """
+    rtl_languages = ('ar', 'fa')
+    if language in rtl_languages:
+        return True
+    return False

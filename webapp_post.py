@@ -35,6 +35,7 @@ from utils import remove_html
 from utils import get_actor_languages_list
 from utils import get_base_content_from_post
 from utils import get_content_from_post
+from utils import get_language_from_post
 from utils import get_summary_from_post
 from utils import has_object_dict
 from utils import update_announce_collection
@@ -78,6 +79,7 @@ from content import get_mentions_from_html
 from content import switch_words
 from person import is_person_snoozed
 from person import get_person_avatar_url
+from webapp_utils import language_right_to_left
 from webapp_utils import get_banner_file
 from webapp_utils import get_avatar_image_url
 from webapp_utils import update_avatar_image_cache
@@ -2163,6 +2165,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
         languages_understood = get_actor_languages_list(actor_json)
     content_str = get_content_from_post(post_json_object, system_language,
                                         languages_understood)
+    content_language = \
+        get_language_from_post(post_json_object, system_language,
+                               languages_understood)
     content_str = dont_speak_hashtags(content_str)
 
     attachment_str, gallery_str = \
@@ -2248,6 +2253,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not content_str:
         content_str = get_content_from_post(post_json_object, system_language,
                                             languages_understood)
+        content_language = \
+            get_language_from_post(post_json_object, system_language,
+                                   languages_understood)
         content_str = dont_speak_hashtags(content_str)
     if not content_str:
         content_str = \
@@ -2429,7 +2437,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
         content_str = ''
     else:
         if not is_patch:
-            content_str = '      <div class="message">' + \
+            message_class = 'message'
+            if language_right_to_left(content_language):
+                message_class = 'message_rtl'
+            content_str = '      <div class="' + message_class + '">' + \
                 content_str + \
                 '      </div>\n'
         else:

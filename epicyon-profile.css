@@ -653,6 +653,17 @@ a:focus {
     hyphens: auto;
     text-wrap: pretty;
     text-align: justify;
+    direction: ltr;
+}
+
+.message_rtl {
+    margin-left: 0%;
+    margin-right: 0%;
+    width: 100%;
+    hyphens: auto;
+    text-wrap: pretty;
+    text-align: justify;
+    direction: rtl;
 }
 
 .addedHashtag:link {
