@@ -26,6 +26,7 @@ from utils import get_status_number
 from utils import get_full_domain
 from utils import text_in_file
 from utils import remove_eol
+from utils import is_arabic
 from filters import is_filtered
 from context import get_individual_post_context
 from session import get_method
@@ -288,6 +289,9 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                 if content:
                     if not _event_text_match(content, text_match):
                         continue
+                    if content_language != 'ar':
+                        if is_arabic(content):
+                            content_language = 'ar'
 
             public_event = is_public_post(post_json_object)
 

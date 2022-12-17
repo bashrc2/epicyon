@@ -219,6 +219,23 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     return standardize_text(content)
 
 
+def is_arabic(content: str) -> bool:
+    """Returns true if the given text contains arabic
+    """
+    if not content:
+        return False
+    result = re.sub(r'[^0-9\u0600-\u06ff\u0750-\u077f' +
+                    '\ufb50-\ufbc1\ufbd3-\ufd3f\ufd50-' +
+                    '\ufd8f\ufd50-\ufd8f\ufe70-\ufefc\uFDF0-\uFDFD]+',
+                    ' ', content)
+    if result:
+        result = result.strip()
+        # more than a third of the content
+        if len(result) > len(content) / 3:
+            return True
+    return False
+
+
 def get_language_from_post(post_json_object: {}, system_language: str,
                            languages_understood: [],
                            content_type: str = "content") -> str:
@@ -236,13 +253,24 @@ def get_language_from_post(post_json_object: {}, system_language: str,
             if this_post_json[map_dict].get(system_language):
                 sys_lang = this_post_json[map_dict][system_language]
                 if isinstance(sys_lang, str):
+                    content = this_post_json[map_dict][system_language]
+                    if is_arabic(content):
+                        return 'ar'
                     return system_language
             else:
                 # is there a contentMap/summaryMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
                     if this_post_json[map_dict].get(lang):
+                        content = this_post_json[map_dict][lang]
+                        if is_arabic(content):
+                            return 'ar'
                         return lang
+    else:
+        if isinstance(this_post_json[content_type], str):
+            content = this_post_json[content_type]
+            if is_arabic(content):
+                return 'ar'
     return system_language
 
 
