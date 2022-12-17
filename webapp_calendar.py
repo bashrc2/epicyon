@@ -10,6 +10,7 @@ __module_group__ = "Calendar"
 import os
 from datetime import datetime
 from datetime import date
+from utils import is_arabic
 from utils import get_display_name
 from utils import get_config_param
 from utils import get_nickname_from_actor
@@ -230,6 +231,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                                 event_place = event_map
 
             # prepend a link to the sender of the calendar item
+            orig_event_description = event_description
             if sender_name and event_description:
                 # if the sender is also mentioned within the event
                 # description then this is a reminder
@@ -257,6 +259,9 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     translate['Delete this event'] + '" src="/' + \
                     'icons/delete.png" /></a></td>\n'
 
+            if event_language != 'ar' and orig_event_description:
+                if is_arabic(orig_event_description):
+                    event_language = 'ar'
             is_rtl = language_right_to_left(event_language)
 
             event_class = 'calendar__day__event'
