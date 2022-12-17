@@ -271,7 +271,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
             if event_is_public:
                 event_class = 'calendar__day__event__public'
                 if is_rtl:
-                    event_class = 'calendar__day__event__public__trl'
+                    event_class = 'calendar__day__event__public__rtl'
                 cal_item_class = 'calItemPublic'
             if event_time:
                 if event_end_time:
