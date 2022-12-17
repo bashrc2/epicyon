@@ -253,24 +253,13 @@ def get_language_from_post(post_json_object: {}, system_language: str,
             if this_post_json[map_dict].get(system_language):
                 sys_lang = this_post_json[map_dict][system_language]
                 if isinstance(sys_lang, str):
-                    content = this_post_json[map_dict][system_language]
-                    if is_arabic(content):
-                        return 'ar'
                     return system_language
             else:
                 # is there a contentMap/summaryMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
                     if this_post_json[map_dict].get(lang):
-                        content = this_post_json[map_dict][lang]
-                        if is_arabic(content):
-                            return 'ar'
                         return lang
-    else:
-        if isinstance(this_post_json[content_type], str):
-            content = this_post_json[content_type]
-            if is_arabic(content):
-                return 'ar'
     return system_language
 
 
