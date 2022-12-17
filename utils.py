@@ -219,23 +219,6 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     return standardize_text(content)
 
 
-def is_arabic(content: str) -> bool:
-    """Returns true if the given text contains arabic
-    """
-    if not content:
-        return False
-    result = re.sub(r'[^0-9\u0600-\u06ff\u0750-\u077f' +
-                    '\ufb50-\ufbc1\ufbd3-\ufd3f\ufd50-' +
-                    '\ufd8f\ufd50-\ufd8f\ufe70-\ufefc\uFDF0-\uFDFD]+',
-                    ' ', content)
-    if result:
-        result = result.strip()
-        # more than a third of the content
-        if len(result) > len(content) / 3:
-            return True
-    return False
-
-
 def get_language_from_post(post_json_object: {}, system_language: str,
                            languages_understood: [],
                            content_type: str = "content") -> str:

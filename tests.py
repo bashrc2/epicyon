@@ -54,7 +54,6 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
-from utils import is_arabic
 from utils import remove_inverted_text
 from utils import remove_square_capitals
 from utils import standardize_text
@@ -7639,16 +7638,6 @@ def _test_reply_language(base_dir: str) -> None:
     assert not get_reply_language(base_dir, post_json_object)
 
 
-def _test_is_arabic() -> None:
-    print('is_arabic')
-    test = "Some English. هذا نص عربي"
-    assert is_arabic(test)
-    test = "Some English"
-    assert not is_arabic(test)
-    test = ""
-    assert not is_arabic(test)
-
-
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7666,7 +7655,6 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
-    _test_is_arabic()
     _test_reply_language(base_dir)
     _test_emoji_in_actor_name(base_dir)
     _test_uninvert()
