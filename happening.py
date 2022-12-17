@@ -273,6 +273,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
             if not _is_happening_post(post_json_object):
                 continue
 
+            content_language = system_language
             if post_json_object.get('object'):
                 content = None
                 if post_json_object['object'].get('contentMap'):
@@ -280,6 +281,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                     if post_json_object['object']['contentMap'].get(sys_lang):
                         content = \
                             post_json_object['object']['contentMap'][sys_lang]
+                        content_language = sys_lang
                 if not content:
                     if post_json_object['object'].get('content'):
                         content = post_json_object['object']['content']
@@ -314,6 +316,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                             tag['sender'] = post_id.split('#statuses#')[0]
                             tag['sender'] = tag['sender'].replace('#', '/')
                             tag['public'] = public_event
+                            tag['language'] = content_language
                         post_event.append(tag)
                 else:
                     # tag is a place
