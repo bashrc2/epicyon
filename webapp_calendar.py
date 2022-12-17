@@ -26,6 +26,7 @@ from happening import get_todays_events
 from happening import get_calendar_events
 from happening import get_todays_events_icalendar
 from happening import get_month_events_icalendar
+from webapp_utils import language_right_to_left
 from webapp_utils import get_banner_file
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
@@ -84,6 +85,9 @@ def html_calendar_delete_confirm(translate: {}, base_dir: str,
         str(month_number) + '">\n'
     delete_post_str += '    <input type="hidden" name="day" value="' + \
         str(day_number) + '">\n'
+    if post_time:
+        delete_post_str += '    <input type="hidden" name="time" value="' + \
+            post_time + '">\n'
     delete_post_str += \
         '    <input type="hidden" name="pageNumber" value="1">\n'
     delete_post_str += \
@@ -108,7 +112,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
                        year: int, month_number: int, day_number: int,
                        nickname: str, domain: str, day_events: [],
                        month_name: str, actor: str,
-                       theme: str, access_keys: {}) -> str:
+                       theme: str, access_keys: {},
+                       system_language: str) -> str:
     """Show a day within the calendar
     """
     account_dir = acct_dir(base_dir, nickname, domain)
@@ -170,6 +175,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
             start_time_str = ''
             end_time_str = ''
             event_description = None
+            event_language = system_language
             event_place = None
             post_id = None
             sender_name = ''
@@ -177,6 +183,10 @@ def _html_calendar_day(person_cache: {}, translate: {},
             event_is_public = False
             # get the time place and description
             for evnt in event_post:
+                event_language = system_language
+                if evnt.get('language'):
+                    event_language = evnt['language']
+
                 if evnt['type'] == 'Event':
                     if evnt.get('post_id'):
                         post_id = evnt['post_id']
@@ -250,10 +260,16 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     translate['Delete this event'] + '" src="/' + \
                     'icons/delete.png" /></a></td>\n'
 
+            is_rtl = language_right_to_left(event_language)
+
             event_class = 'calendar__day__event'
+            if is_rtl:
+                event_class = 'calendar__day__event__rtl'
             cal_item_class = 'calItem'
             if event_is_public:
                 event_class = 'calendar__day__event__public'
+                if is_rtl:
+                    event_class = 'calendar__day__event__public__rtl'
                 cal_item_class = 'calItemPublic'
             if event_time:
                 if event_end_time:
@@ -401,7 +417,8 @@ def html_calendar(person_cache: {}, translate: {},
                                   year, month_number, day_number,
                                   nickname, domain, day_events,
                                   month_name, actor,
-                                  theme, access_keys)
+                                  theme, access_keys,
+                                  system_language)
 
     if icalendar:
         return get_month_events_icalendar(base_dir, nickname, domain,

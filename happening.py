@@ -273,6 +273,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
             if not _is_happening_post(post_json_object):
                 continue
 
+            content_language = system_language
             if post_json_object.get('object'):
                 content = None
                 if post_json_object['object'].get('contentMap'):
@@ -280,6 +281,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                     if post_json_object['object']['contentMap'].get(sys_lang):
                         content = \
                             post_json_object['object']['contentMap'][sys_lang]
+                        content_language = sys_lang
                 if not content:
                     if post_json_object['object'].get('content'):
                         content = post_json_object['object']['content']
@@ -314,6 +316,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                             tag['sender'] = post_id.split('#statuses#')[0]
                             tag['sender'] = tag['sender'].replace('#', '/')
                             tag['public'] = public_event
+                            tag['language'] = content_language
                         post_event.append(tag)
                 else:
                     # tag is a place
@@ -759,17 +762,26 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
     if '/' in message_id:
         message_id = message_id.replace('/', '#')
     if not text_in_file(message_id, calendar_filename):
+        message_id = message_id.replace('#', '/')
+        if not text_in_file(message_id, calendar_filename):
+            return
+    lines_str = ''
+    try:
+        with open(calendar_filename, 'r', encoding='utf-8') as fp_cal:
+            lines_str = fp_cal.read()
+    except OSError:
+        print('EX: unable to read calendar file ' +
+              calendar_filename)
+    if not lines_str:
         return
-    lines = None
-    with open(calendar_filename, 'r', encoding='utf-8') as fp_cal:
-        lines = fp_cal.readlines()
-    if not lines:
-        return
+    lines = lines_str.split('\n')
+    print('Removing calendar event: ' + message_id)
     try:
         with open(calendar_filename, 'w+', encoding='utf-8') as fp_cal:
             for line in lines:
-                if message_id not in line:
-                    fp_cal.write(line)
+                if message_id in line:
+                    continue
+                fp_cal.write(line + '\n')
     except OSError:
         print('EX: unable to remove calendar event ' +
               calendar_filename)

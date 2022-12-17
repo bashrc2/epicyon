@@ -172,13 +172,34 @@ a:focus {
     font-size: 28px;
     position: relative;
     padding: 20px;
+    direction: ltr;
 }
+
+.calendar__day__event__rtl {
+    color: var(--event-color);
+    background-color: var(--event-background-private);
+    float: left;
+    font-size: 28px;
+    position: relative;
+    padding: 20px;
+    direction: rtl;
+}
+
 .calendar__day__event__public {
     color: var(--event-public-color);
     float: left;
     font-size: 28px;
     position: relative;
     padding: 20px;
+    direction: ltr;
+}
+.calendar__day__event__public__rtl {
+    color: var(--event-public-color);
+    float: left;
+    font-size: 28px;
+    position: relative;
+    padding: 20px;
+    direction: rtl;
 }
 .place {
     color: var(--place-color);
