@@ -762,17 +762,26 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
     if '/' in message_id:
         message_id = message_id.replace('/', '#')
     if not text_in_file(message_id, calendar_filename):
+        message_id = message_id.replace('#', '/')
+        if not text_in_file(message_id, calendar_filename):
+            return
+    lines_str = ''
+    try:
+        with open(calendar_filename, 'r', encoding='utf-8') as fp_cal:
+            lines_str = fp_cal.read()
+    except OSError:
+        print('EX: unable to read calendar file ' +
+              calendar_filename)
+    if not lines_str:
         return
-    lines = None
-    with open(calendar_filename, 'r', encoding='utf-8') as fp_cal:
-        lines = fp_cal.readlines()
-    if not lines:
-        return
+    lines = lines_str.split('\n')
+    print('Removing calendar event: ' + message_id)
     try:
         with open(calendar_filename, 'w+', encoding='utf-8') as fp_cal:
             for line in lines:
-                if message_id not in line:
-                    fp_cal.write(line)
+                if message_id in line:
+                    continue
+                fp_cal.write(line + '\n')
     except OSError:
         print('EX: unable to remove calendar event ' +
               calendar_filename)

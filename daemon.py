@@ -5064,8 +5064,17 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitYes=' in remove_post_confirm_params:
             remove_post_confirm_params = \
                 urllib.parse.unquote_plus(remove_post_confirm_params)
-            remove_message_id = \
-                remove_post_confirm_params.split('messageId=')[1]
+            if 'messageId=' in remove_post_confirm_params:
+                remove_message_id = \
+                    remove_post_confirm_params.split('messageId=')[1]
+            elif 'eventid=' in remove_post_confirm_params:
+                remove_message_id = \
+                    remove_post_confirm_params.split('eventid=')[1]
+            else:
+                self.send_response(400)
+                self.end_headers()
+                self.server.postreq_busy = False
+                return
             if '&' in remove_message_id:
                 remove_message_id = remove_message_id.split('&')[0]
             print('remove_message_id: ' + remove_message_id)

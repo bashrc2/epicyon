@@ -85,6 +85,9 @@ def html_calendar_delete_confirm(translate: {}, base_dir: str,
         str(month_number) + '">\n'
     delete_post_str += '    <input type="hidden" name="day" value="' + \
         str(day_number) + '">\n'
+    if post_time:
+        delete_post_str += '    <input type="hidden" name="time" value="' + \
+            post_time + '">\n'
     delete_post_str += \
         '    <input type="hidden" name="pageNumber" value="1">\n'
     delete_post_str += \
