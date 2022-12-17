@@ -22,10 +22,12 @@ from utils import remove_domain_port
 from utils import acct_dir
 from utils import local_actor_url
 from utils import replace_users_with_at
+from utils import get_language_from_post
 from happening import get_todays_events
 from happening import get_calendar_events
 from happening import get_todays_events_icalendar
 from happening import get_month_events_icalendar
+from webapp_utils import language_right_to_left
 from webapp_utils import get_banner_file
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
@@ -108,7 +110,9 @@ def _html_calendar_day(person_cache: {}, translate: {},
                        year: int, month_number: int, day_number: int,
                        nickname: str, domain: str, day_events: [],
                        month_name: str, actor: str,
-                       theme: str, access_keys: {}) -> str:
+                       theme: str, access_keys: {},
+                       system_language: str,
+                       languages_understood: []) -> str:
     """Show a day within the calendar
     """
     account_dir = acct_dir(base_dir, nickname, domain)
@@ -250,10 +254,19 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     translate['Delete this event'] + '" src="/' + \
                     'icons/delete.png" /></a></td>\n'
 
+            content_language = \
+                get_language_from_post(event_post, system_language,
+                                       languages_understood)
+            is_rtl = language_right_to_left(content_language)
+
             event_class = 'calendar__day__event'
+            if is_rtl:
+                event_class = 'calendar__day__event__rtl'
             cal_item_class = 'calItem'
             if event_is_public:
                 event_class = 'calendar__day__event__public'
+                if is_rtl:
+                    event_class = 'calendar__day__event__public__trl'
                 cal_item_class = 'calItemPublic'
             if event_time:
                 if event_end_time:
@@ -322,7 +335,8 @@ def html_calendar(person_cache: {}, translate: {},
                   http_prefix: str, domain_full: str,
                   text_mode_banner: str, access_keys: {},
                   icalendar: bool, system_language: str,
-                  default_timeline: str, theme: str) -> str:
+                  default_timeline: str, theme: str,
+                  languages_understood: []) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -401,7 +415,8 @@ def html_calendar(person_cache: {}, translate: {},
                                   year, month_number, day_number,
                                   nickname, domain, day_events,
                                   month_name, actor,
-                                  theme, access_keys)
+                                  theme, access_keys,
+                                  system_language, languages_understood)
 
     if icalendar:
         return get_month_events_icalendar(base_dir, nickname, domain,

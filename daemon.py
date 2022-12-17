@@ -18296,6 +18296,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.key_shortcuts.get(nickname):
                     access_keys = self.server.key_shortcuts[nickname]
 
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
+
                 # show the calendar screen
                 msg = html_calendar(self.server.person_cache,
                                     self.server.translate,
@@ -18306,7 +18313,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     access_keys,
                                     False, self.server.system_language,
                                     self.server.default_timeline,
-                                    self.server.theme_name)
+                                    self.server.theme_name,
+                                    languages_understood)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -18338,6 +18346,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.key_shortcuts.get(nickname):
                     access_keys = self.server.key_shortcuts[nickname]
 
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
+
                 # show the calendar screen
                 msg = html_calendar(self.server.person_cache,
                                     self.server.translate,
@@ -18349,7 +18364,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     True,
                                     self.server.system_language,
                                     self.server.default_timeline,
-                                    self.server.theme_name)
+                                    self.server.theme_name,
+                                    languages_understood)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
