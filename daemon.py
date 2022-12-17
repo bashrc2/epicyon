@@ -1080,6 +1080,7 @@ class PubServer(BaseHTTPRequestHandler):
         #     self.send_header('ETag', '"' + etag + '"')
         if last_modified:
             self.send_header('last-modified', last_modified)
+        self.send_header('accept-ranges', 'bytes')
         self.end_headers()
 
     def _etag_exists(self, media_filename: str) -> bool:
