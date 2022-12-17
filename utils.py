@@ -231,7 +231,7 @@ def is_arabic(content: str) -> bool:
     if result:
         result = result.strip()
         # more than a third of the content
-        if len(result) > 1:
+        if len(result) > len(content) / 3:
             return True
     return False
 
