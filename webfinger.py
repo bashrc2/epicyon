@@ -12,6 +12,7 @@ import urllib.parse
 from session import get_json
 from cache import store_webfinger_in_cache
 from cache import get_webfinger_from_cache
+from utils import acct_handle_dir
 from utils import get_attachment_property_value
 from utils import get_full_domain
 from utils import load_json
@@ -520,7 +521,7 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
     if not wf_json:
         return
 
-    actor_filename = base_dir + '/accounts/' + handle + '.json'
+    actor_filename = acct_handle_dir(base_dir, handle) + '.json'
     actor_json = load_json(actor_filename)
     if not actor_json:
         return

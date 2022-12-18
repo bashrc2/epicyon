@@ -20,6 +20,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import acct_handle_dir
 from utils import remove_eol
 from utils import get_domain_from_actor
 from utils import valid_hash_tag
@@ -1538,8 +1539,8 @@ def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
             if is_suspended(base_dir, nickname):
                 continue
 
-            if os.path.isfile(base_dir + '/accounts/' + handle +
-                              '/.nonewswire'):
+            handle_dir = acct_handle_dir(base_dir, handle)
+            if os.path.isfile(handle_dir + '/.nonewswire'):
                 continue
 
             # is there a blogs timeline for this account?

@@ -10,6 +10,7 @@ __module_group__ = "Calendar"
 import os
 import time
 import datetime
+from utils import acct_handle_dir
 from utils import has_object_dict
 from utils import get_status_number
 from utils import load_json
@@ -27,7 +28,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
     the outbox
     """
     schedule_index_filename = \
-        base_dir + '/accounts/' + handle + '/schedule.index'
+        acct_handle_dir(base_dir, handle) + '/schedule.index'
     if not os.path.isfile(schedule_index_filename):
         return
 
@@ -35,7 +36,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
     curr_time = datetime.datetime.utcnow()
     days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
 
-    schedule_dir = base_dir + '/accounts/' + handle + '/scheduled/'
+    schedule_dir = acct_handle_dir(base_dir, handle) + '/scheduled/'
     index_lines = []
     delete_schedule_post = False
     nickname = handle.split('@')[0]
@@ -168,7 +169,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
 
     # write the new schedule index file
     schedule_index_file = \
-        base_dir + '/accounts/' + handle + '/schedule.index'
+        acct_handle_dir(base_dir, handle) + '/schedule.index'
     with open(schedule_index_file, 'w+', encoding='utf-8') as schedule_file:
         for line in index_lines:
             schedule_file.write(line)

@@ -22,6 +22,7 @@ from posts import get_person_box
 from session import post_json
 from session import post_image
 from session import create_session
+from utils import acct_handle_dir
 from utils import remove_eol
 from utils import has_object_string_type
 from utils import date_string_to_seconds
@@ -275,7 +276,7 @@ def _indicate_new_share_available(base_dir: str, http_prefix: str,
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
-            account_dir = base_dir + '/accounts/' + handle
+            account_dir = acct_handle_dir(base_dir, handle)
             if shares_file_type == 'shares':
                 new_share_file = account_dir + '/.newShare'
             else:
@@ -421,7 +422,7 @@ def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
     handle_domain = remove_domain_port(domain)
     handle = nickname + '@' + handle_domain
     shares_filename = \
-        base_dir + '/accounts/' + handle + '/' + shares_file_type + '.json'
+        acct_handle_dir(base_dir, handle) + '/' + shares_file_type + '.json'
     if not os.path.isfile(shares_filename):
         return
     shares_json = load_json(shares_filename, 1, 2)

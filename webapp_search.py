@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import acct_handle_dir
 from utils import get_base_content_from_post
 from utils import is_account_dir
 from utils import get_config_param
@@ -299,7 +300,7 @@ def html_search_shared_items(translate: {},
             if not is_account_dir(handle):
                 continue
             contact_nickname = handle.split('@')[0]
-            shares_filename = base_dir + '/accounts/' + handle + \
+            shares_filename = acct_handle_dir(base_dir, handle) + \
                 '/' + shares_file_type + '.json'
             if not os.path.isfile(shares_filename):
                 continue

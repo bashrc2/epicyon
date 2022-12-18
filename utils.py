@@ -290,6 +290,10 @@ def acct_dir(base_dir: str, nickname: str, domain: str) -> str:
     return base_dir + '/accounts/' + nickname + '@' + domain
 
 
+def acct_handle_dir(base_dir: str, handle: str) -> str:
+    return base_dir + '/accounts/' + handle
+
+
 def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
     """Is the given account a featured writer, appearing in the features
     timeline on news instances?
@@ -749,7 +753,8 @@ def get_followers_of_person(base_dir: str,
     followers = []
     domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         return followers
     for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
@@ -981,9 +986,10 @@ def create_person_dir(nickname: str, domain: str, base_dir: str,
     """Create a directory for a person
     """
     handle = nickname + '@' + domain
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
-        os.mkdir(base_dir + '/accounts/' + handle)
-    box_dir = base_dir + '/accounts/' + handle + '/' + dir_name
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
+        os.mkdir(handle_dir)
+    box_dir = acct_handle_dir(base_dir, handle) + '/' + dir_name
     if not os.path.isdir(box_dir):
         os.mkdir(box_dir)
     return box_dir
@@ -1450,7 +1456,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     else:
         handle = nickname + '@' + domain
 
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('WARN: account for ' + handle + ' does not exist')
         return False
 
@@ -1464,7 +1471,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         handle_to_follow = '!' + handle_to_follow
 
     # was this person previously unfollowed?
-    unfollowed_filename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
+    unfollowed_filename = acct_handle_dir(base_dir, handle) + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
         if text_in_file(handle_to_follow, unfollowed_filename):
             # remove them from the unfollowed file
@@ -1484,7 +1491,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     handle_to_follow = follow_nickname + '@' + follow_domain
     if group_account:
         handle_to_follow = '!' + handle_to_follow
-    filename = base_dir + '/accounts/' + handle + '/' + follow_file
+    filename = acct_handle_dir(base_dir, handle) + '/' + follow_file
     if os.path.isfile(filename):
         if text_in_file(handle_to_follow, filename):
             if debug:

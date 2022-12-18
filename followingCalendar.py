@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Calendar"
 
 import os
-from utils import acct_dir
 
 
 def _text_in_file2(text: str, filename: str,
@@ -33,7 +32,7 @@ def _text_in_file2(text: str, filename: str,
 def _dir_acct(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the directory of an account
     """
-    return acct_dir(base_dir,  nickname, domain)
+    return base_dir + '/accounts/' + nickname + '@' + domain
 
 
 def _port_domain_remove(domain: str) -> str:

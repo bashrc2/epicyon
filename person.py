@@ -38,6 +38,7 @@ from roles import set_role
 from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import acct_handle_dir
 from utils import safe_system_string
 from utils import get_attachment_property_value
 from utils import get_nickname_from_actor
@@ -117,12 +118,13 @@ def set_profile_image(base_dir: str, http_prefix: str,
     full_domain = get_full_domain(domain, port)
 
     handle = nickname + '@' + domain
-    person_filename = base_dir + '/accounts/' + handle + '.json'
+    person_filename = acct_handle_dir(base_dir, handle) + '.json'
     if not os.path.isfile(person_filename):
         print('person definition not found: ' + person_filename)
         return False
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
-        print('Account not found: ' + base_dir + '/accounts/' + handle)
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
+        print('Account not found: ' + handle_dir)
         return False
 
     icon_filename_base = 'icon'
@@ -155,7 +157,7 @@ def set_profile_image(base_dir: str, http_prefix: str,
     elif image_filename.endswith('.svg'):
         media_type = 'image/svg+xml'
         icon_filename = icon_filename_base + '.svg'
-    profile_filename = base_dir + '/accounts/' + handle + '/' + icon_filename
+    profile_filename = acct_handle_dir(base_dir, handle) + '/' + icon_filename
 
     person_json = load_json(person_filename)
     if person_json:
@@ -957,7 +959,7 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
         return None
     domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
-    filename = base_dir + '/accounts/' + handle + '.json'
+    filename = acct_handle_dir(base_dir, handle) + '.json'
     if not os.path.isfile(filename):
         return None
     person_json = load_json(filename)
@@ -1087,7 +1089,7 @@ def set_display_nickname(base_dir: str, nickname: str, domain: str,
     if len(display_name) > 32:
         return False
     handle = nickname + '@' + domain
-    filename = base_dir + '/accounts/' + handle + '.json'
+    filename = acct_handle_dir(base_dir, handle) + '.json'
     if not os.path.isfile(filename):
         return False
 
@@ -1105,7 +1107,7 @@ def set_bio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
     if len(bio) > 32:
         return False
     handle = nickname + '@' + domain
-    filename = base_dir + '/accounts/' + handle + '.json'
+    filename = acct_handle_dir(base_dir, handle) + '.json'
     if not os.path.isfile(filename):
         return False
 
@@ -1280,15 +1282,16 @@ def remove_account(base_dir: str, nickname: str,
     if os.path.isdir(base_dir + '/deactivated/' + handle):
         shutil.rmtree(base_dir + '/deactivated/' + handle,
                       ignore_errors=False, onerror=None)
-    if os.path.isdir(base_dir + '/accounts/' + handle):
-        shutil.rmtree(base_dir + '/accounts/' + handle,
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if os.path.isdir(handle_dir):
+        shutil.rmtree(handle_dir,
                       ignore_errors=False, onerror=None)
-    if os.path.isfile(base_dir + '/accounts/' + handle + '.json'):
+    if os.path.isfile(handle_dir + '.json'):
         try:
-            os.remove(base_dir + '/accounts/' + handle + '.json')
+            os.remove(handle_dir + '.json')
         except OSError:
             print('EX: remove_account unable to delete ' +
-                  base_dir + '/accounts/' + handle + '.json')
+                  handle_dir + '.json')
     if os.path.isfile(base_dir + '/wfendpoints/' + handle + '.json'):
         try:
             os.remove(base_dir + '/wfendpoints/' + handle + '.json')
@@ -1330,7 +1333,7 @@ def deactivate_account(base_dir: str, nickname: str, domain: str) -> bool:
     """
     handle = nickname + '@' + domain
 
-    account_dir = base_dir + '/accounts/' + handle
+    account_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(account_dir):
         return False
     deactivated_dir = base_dir + '/deactivated'
@@ -1365,7 +1368,7 @@ def activate_account(base_dir: str, nickname: str, domain: str) -> None:
     deactivated_dir = base_dir + '/deactivated'
     deactivated_account_dir = deactivated_dir + '/' + handle
     if os.path.isdir(deactivated_account_dir):
-        account_dir = base_dir + '/accounts/' + handle
+        account_dir = acct_handle_dir(base_dir, handle)
         if not os.path.isdir(account_dir):
             shutil.move(deactivated_account_dir, account_dir)
 

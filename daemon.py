@@ -273,6 +273,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import acct_handle_dir
 from utils import load_reverse_timeline
 from utils import save_reverse_timeline
 from utils import load_min_images_for_accounts
@@ -21248,7 +21249,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not handle:
             return False
         if isinstance(handle, str):
-            person_dir = self.server.base_dir + '/accounts/' + handle
+            person_dir = acct_handle_dir(self.server.base_dir, handle)
             if not os.path.isdir(person_dir + '/devices'):
                 return False
             devices_list = []
@@ -22304,7 +22305,7 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
     for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if '@' in handle:
-                token_filename = base_dir + '/accounts/' + handle + '/.token'
+                token_filename = acct_handle_dir(base_dir, handle) + '/.token'
                 if not os.path.isfile(token_filename):
                     continue
                 nickname = handle.split('@')[0]
