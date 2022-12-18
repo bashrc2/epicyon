@@ -176,6 +176,7 @@ from webapp_podcast import html_podcast_episode
 from webapp_theme_designer import html_theme_designer
 from webapp_minimalbutton import set_minimal
 from webapp_minimalbutton import is_minimal
+from webapp_utils import get_default_path
 from webapp_utils import get_avatar_image_url
 from webapp_utils import html_hashtag_blocked
 from webapp_utils import html_following_list
@@ -272,6 +273,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import acct_handle_dir
 from utils import load_reverse_timeline
 from utils import save_reverse_timeline
 from utils import load_min_images_for_accounts
@@ -18225,16 +18227,9 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain, nickname)
                 set_minimal(self.server.base_dir,
                             self.server.domain, nickname, not_min)
-                if not (self.server.media_instance or
-                        self.server.blogs_instance):
-                    self.path = '/users/' + nickname + '/inbox'
-                else:
-                    if self.server.blogs_instance:
-                        self.path = '/users/' + nickname + '/tlblogs'
-                    elif self.server.media_instance:
-                        self.path = '/users/' + nickname + '/tlmedia'
-                    else:
-                        self.path = '/users/' + nickname + '/tlfeatures'
+                self.path = get_default_path(self.server.media_instance,
+                                             self.server.blogs_instance,
+                                             nickname)
 
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
@@ -21254,7 +21249,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not handle:
             return False
         if isinstance(handle, str):
-            person_dir = self.server.base_dir + '/accounts/' + handle
+            person_dir = acct_handle_dir(self.server.base_dir, handle)
             if not os.path.isdir(person_dir + '/devices'):
                 return False
             devices_list = []
@@ -22310,7 +22305,7 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
     for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if '@' in handle:
-                token_filename = base_dir + '/accounts/' + handle + '/.token'
+                token_filename = acct_handle_dir(base_dir, handle) + '/.token'
                 if not os.path.isfile(token_filename):
                     continue
                 nickname = handle.split('@')[0]

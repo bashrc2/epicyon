@@ -32,6 +32,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import acct_handle_dir
 from utils import is_dm
 from utils import remove_eol
 from utils import text_in_file
@@ -134,7 +135,7 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
     """Returns the number of followers of the given handle from the
     given domain
     """
-    filename = base_dir + '/accounts/' + handle + '/' + follow_file
+    filename = acct_handle_dir(base_dir, handle) + '/' + follow_file
     if not os.path.isfile(filename):
         return 0
 
@@ -1022,7 +1023,7 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
     """
     handle = nickname + '@' + domain
     schedule_index_filename = \
-        base_dir + '/accounts/' + handle + '/schedule.index'
+        acct_handle_dir(base_dir, handle) + '/schedule.index'
 
     index_str = event_date_str + ' ' + post_id.replace('/', '#')
     if os.path.isfile(schedule_index_filename):
@@ -2150,7 +2151,8 @@ def get_mentioned_people(base_dir: str, http_prefix: str,
             print('DEBUG: mentioned handle ' + handle)
         if '@' not in handle:
             handle = handle + '@' + domain
-            if not os.path.isdir(base_dir + '/accounts/' + handle):
+            handle_dir = acct_handle_dir(base_dir, handle)
+            if not os.path.isdir(handle_dir):
                 continue
         else:
             external_domain = handle.split('@')[1]
@@ -2322,7 +2324,7 @@ def create_report_post(base_dir: str,
 
         # save a notification file so that the moderator
         # knows something new has appeared
-        new_report_file = base_dir + '/accounts/' + handle + '/.newReport'
+        new_report_file = acct_handle_dir(base_dir, handle) + '/.newReport'
         if os.path.isfile(new_report_file):
             continue
         try:
@@ -2745,7 +2747,7 @@ def group_followers_by_domain(base_dir: str, nickname: str, domain: str) -> {}:
     """Returns a dictionary with followers grouped by domain
     """
     handle = nickname + '@' + domain
-    followers_filename = base_dir + '/accounts/' + handle + '/followers.txt'
+    followers_filename = acct_handle_dir(base_dir, handle) + '/followers.txt'
     if not os.path.isfile(followers_filename):
         return None
     grouped = {}
@@ -4353,18 +4355,14 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                 domain = handle.split('@')[1]
                 archive_subdir = None
                 if archive_dir:
-                    if not os.path.isdir(archive_dir + '/accounts/' + handle):
-                        os.mkdir(archive_dir + '/accounts/' + handle)
-                    if not os.path.isdir(archive_dir + '/accounts/' +
-                                         handle + '/inbox'):
-                        os.mkdir(archive_dir + '/accounts/' +
-                                 handle + '/inbox')
-                    if not os.path.isdir(archive_dir + '/accounts/' +
-                                         handle + '/outbox'):
-                        os.mkdir(archive_dir + '/accounts/' +
-                                 handle + '/outbox')
-                    archive_subdir = archive_dir + '/accounts/' + \
-                        handle + '/inbox'
+                    archive_handle_dir = acct_handle_dir(archive_dir, handle)
+                    if not os.path.isdir(archive_handle_dir):
+                        os.mkdir(archive_handle_dir)
+                    if not os.path.isdir(archive_handle_dir + '/inbox'):
+                        os.mkdir(archive_handle_dir + '/inbox')
+                    if not os.path.isdir(archive_handle_dir + '/outbox'):
+                        os.mkdir(archive_handle_dir + '/outbox')
+                    archive_subdir = archive_handle_dir + '/inbox'
                 archive_posts_for_person(http_prefix,
                                          nickname, domain, base_dir,
                                          'inbox', archive_subdir,
@@ -4443,7 +4441,7 @@ def get_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str) -> int:
     keep_dms = True
     handle = nickname + '@' + domain
     expire_dms_filename = \
-        base_dir + '/accounts/' + handle + '/.expire_posts_dms'
+        acct_handle_dir(base_dir, handle) + '/.expire_posts_dms'
     if os.path.isfile(expire_dms_filename):
         keep_dms = False
     return keep_dms
@@ -4455,7 +4453,7 @@ def set_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str,
     """
     handle = nickname + '@' + domain
     expire_dms_filename = \
-        base_dir + '/accounts/' + handle + '/.expire_posts_dms'
+        acct_handle_dir(base_dir, handle) + '/.expire_posts_dms'
     if keep_dms:
         if os.path.isfile(expire_dms_filename):
             try:
@@ -4484,7 +4482,7 @@ def expire_posts(base_dir: str, http_prefix: str,
             nickname = handle.split('@')[0]
             domain = handle.split('@')[1]
             expire_posts_filename = \
-                base_dir + '/accounts/' + handle + '/.expire_posts_days'
+                acct_handle_dir(base_dir, handle) + '/.expire_posts_days'
             if not os.path.isfile(expire_posts_filename):
                 continue
             keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
@@ -4519,7 +4517,7 @@ def get_post_expiry_days(base_dir: str, nickname: str, domain: str) -> int:
     """
     handle = nickname + '@' + domain
     expire_posts_filename = \
-        base_dir + '/accounts/' + handle + '/.expire_posts_days'
+        acct_handle_dir(base_dir, handle) + '/.expire_posts_days'
     if not os.path.isfile(expire_posts_filename):
         return 0
     days_str = None
@@ -4542,7 +4540,7 @@ def set_post_expiry_days(base_dir: str, nickname: str, domain: str,
     """
     handle = nickname + '@' + domain
     expire_posts_filename = \
-        base_dir + '/accounts/' + handle + '/.expire_posts_days'
+        acct_handle_dir(base_dir, handle) + '/.expire_posts_days'
     try:
         with open(expire_posts_filename, 'w+', encoding='utf-8') as fp_expire:
             fp_expire.write(str(max_age_days))
@@ -4577,7 +4575,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     # remove entries from the index
     handle = nickname + '@' + domain
     index_filename = \
-        base_dir + '/accounts/' + handle + '/' + boxname + '.index'
+        acct_handle_dir(base_dir, handle) + '/' + boxname + '.index'
     if os.path.isfile(index_filename):
         index_ctr = 0
         # get the existing index entries as a string

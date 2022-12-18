@@ -11,6 +11,7 @@ import os
 from follow import followed_account_accepts
 from follow import followed_account_rejects
 from follow import remove_from_follow_requests
+from utils import acct_handle_dir
 from utils import load_json
 from utils import remove_domain_port
 from utils import get_port_from_domain
@@ -149,7 +150,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
     handle = nickname + '@' + domain
     print('Manual follow accept: ' + handle +
           ' approving follow request from ' + approve_handle)
-    account_dir = base_dir + '/accounts/' + handle
+    account_dir = acct_handle_dir(base_dir, handle)
     approve_follows_filename = account_dir + '/followrequests.txt'
     if not os.path.isfile(approve_follows_filename):
         print('Manual follow accept: follow requests file ' +

@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from utils import acct_handle_dir
 from utils import remove_id_ending
 from utils import get_attachment_property_value
 from utils import is_account_dir
@@ -464,7 +465,7 @@ def shares_timeline_json(actor: str, pageNumber: int, items_per_page: int,
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
-            account_dir = base_dir + '/accounts/' + handle
+            account_dir = acct_handle_dir(base_dir, handle)
             shares_filename = account_dir + '/' + shares_file_type + '.json'
             if not os.path.isfile(shares_filename):
                 continue
@@ -1953,3 +1954,16 @@ def language_right_to_left(language: str) -> bool:
     if language in rtl_languages:
         return True
     return False
+
+
+def get_default_path(media_instance: bool, blogs_instance: bool,
+                     nickname: str) -> str:
+    """Returns the default timeline
+    """
+    if blogs_instance:
+        path = '/users/' + nickname + '/tlblogs'
+    elif media_instance:
+        path = '/users/' + nickname + '/tlmedia'
+    else:
+        path = '/users/' + nickname + '/inbox'
+    return path

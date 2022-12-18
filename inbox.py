@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import acct_handle_dir
 from utils import is_account_dir
 from utils import remove_eol
 from utils import text_in_file
@@ -800,7 +801,8 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, to_list: [],
             # get the handle for the account on this instance
             nickname = recipient.split(domain_match)[1]
             handle = nickname + '@' + domain
-            if os.path.isdir(base_dir + '/accounts/' + handle):
+            handle_dir = acct_handle_dir(base_dir, handle)
+            if os.path.isdir(handle_dir):
                 recipients_dict[handle] = None
             else:
                 if debug:
@@ -1518,7 +1520,8 @@ def _receive_like(recent_posts_cache: {},
             print('DEBUG: "statuses" missing from object in ' +
                   message_json['type'])
         return False
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
     handle_name = handle.split('@')[0]
@@ -1652,7 +1655,8 @@ def _receive_undo_like(recent_posts_cache: {},
             print('DEBUG: "statuses" missing from like object in ' +
                   message_json['type'])
         return False
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of undo like - ' + handle)
     # if this post in the outbox of the person?
     handle_name = handle.split('@')[0]
@@ -1785,10 +1789,10 @@ def _receive_reaction(recent_posts_cache: {},
             print('DEBUG: "statuses" missing from object in ' +
                   message_json['type'])
         return False
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of emoji reaction - ' + handle)
-    if os.path.isfile(base_dir + '/accounts/' + handle +
-                      '/.hideReactionButton'):
+    if os.path.isfile(handle_dir + '/.hideReactionButton'):
         print('Emoji reaction rejected by ' + handle +
               ' due to their settings')
         return True
@@ -1965,10 +1969,10 @@ def _receive_zot_reaction(recent_posts_cache: {},
             print('DEBUG: "statuses" missing from inReplyTo in ' +
                   message_json['object']['type'])
         return False
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of zot emoji reaction - ' + handle)
-    if os.path.isfile(base_dir + '/accounts/' + handle +
-                      '/.hideReactionButton'):
+    if os.path.isfile(handle_dir + '/.hideReactionButton'):
         print('Zot emoji reaction rejected by ' + handle +
               ' due to their settings')
         return True
@@ -2124,7 +2128,8 @@ def _receive_undo_reaction(recent_posts_cache: {},
             print('DEBUG: "statuses" missing from reaction object in ' +
                   message_json['type'])
         return False
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of undo reaction - ' + handle)
     # if this post in the outbox of the person?
     handle_name = handle.split('@')[0]
@@ -2504,7 +2509,8 @@ def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
     if message_json['actor'] not in message_json['object']:
         if debug:
             print('DEBUG: actor is not the owner of the post to be deleted')
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
     message_id = remove_id_ending(message_json['object'])
@@ -2604,7 +2610,8 @@ def _receive_announce(recent_posts_cache: {},
         if debug:
             print('DEBUG: announced domain is blocked')
         return False
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of announce - ' + handle)
 
     # is the announce actor blocked?
@@ -2825,7 +2832,8 @@ def _receive_undo_announce(recent_posts_cache: {},
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + ' announce')
         return False
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of undo announce - ' + handle)
     # if this post in the outbox of the person?
     handle_name = handle.split('@')[0]
@@ -3176,7 +3184,7 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
 def _dm_notify(base_dir: str, handle: str, url: str) -> None:
     """Creates a notification that a new DM has arrived
     """
-    account_dir = base_dir + '/accounts/' + handle
+    account_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(account_dir):
         return
     dm_file = account_dir + '/.newDM'
@@ -3272,7 +3280,7 @@ def _like_notify(base_dir: str, domain: str,
         if not i2p_domain and not onion_domain:
             return
 
-    account_dir = base_dir + '/accounts/' + handle
+    account_dir = acct_handle_dir(base_dir,  handle)
 
     # are like notifications enabled?
     notify_likes_enabled_filename = account_dir + '/.notifyLikes'
@@ -3335,7 +3343,7 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
         if '/' + onion_domain + '/users/' + nickname not in url:
             return
 
-    account_dir = base_dir + '/accounts/' + handle
+    account_dir = acct_handle_dir(base_dir, handle)
 
     # are reaction notifications enabled?
     notify_reaction_enabled_filename = account_dir + '/.notifyReactions'
@@ -3388,7 +3396,7 @@ def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
     This is for followed accounts with the notify checkbox enabled
     on the person options screen
     """
-    account_dir = base_dir + '/accounts/' + handle
+    account_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(account_dir):
         return
     notify_file = account_dir + '/.newNotifiedPost'
@@ -3408,7 +3416,7 @@ def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
 def _reply_notify(base_dir: str, handle: str, url: str) -> None:
     """Creates a notification that a new reply has arrived
     """
-    account_dir = base_dir + '/accounts/' + handle
+    account_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(account_dir):
         return
     reply_file = account_dir + '/.newReply'
@@ -3424,7 +3432,7 @@ def _git_patch_notify(base_dir: str, handle: str, subject: str,
                       from_nickname: str, from_domain: str) -> None:
     """Creates a notification that a new git patch has arrived
     """
-    account_dir = base_dir + '/accounts/' + handle
+    account_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(account_dir):
         return
     patch_file = account_dir + '/.newPatch'
@@ -3440,7 +3448,7 @@ def _git_patch_notify(base_dir: str, handle: str, subject: str,
 def _group_handle(base_dir: str, handle: str) -> bool:
     """Is the given account handle a group?
     """
-    actor_file = base_dir + '/accounts/' + handle + '.json'
+    actor_file = acct_handle_dir(base_dir, handle) + '.json'
     if not os.path.isfile(actor_file):
         return False
     actor_json = load_json(actor_file)
@@ -3478,7 +3486,7 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
             domain_str = shared_federated_domain.strip()
             shared_items_federated_domains.append(domain_str)
 
-    followers_file = base_dir + '/accounts/' + handle + '/followers.txt'
+    followers_file = acct_handle_dir(base_dir, handle) + '/followers.txt'
     if not os.path.isfile(followers_file):
         return
     if not post_json_object.get('to'):
@@ -3572,7 +3580,7 @@ def inbox_update_index(boxname: str, base_dir: str, handle: str,
     The new entry is added to the top of the file
     """
     index_filename = \
-        base_dir + '/accounts/' + handle + '/' + boxname + '.index'
+        acct_handle_dir(base_dir, handle) + '/' + boxname + '.index'
     if debug:
         print('DEBUG: Updating index ' + index_filename)
 
@@ -5124,10 +5132,11 @@ def _receive_follow_request(session, session_onion, session_i2p,
             return True
     handle_to_follow = nickname_to_follow + '@' + domain_to_follow
     if domain_to_follow == domain:
-        if not os.path.isdir(base_dir + '/accounts/' + handle_to_follow):
+        handle_dir = acct_handle_dir(base_dir, handle_to_follow)
+        if not os.path.isdir(handle_dir):
             if debug:
                 print('DEBUG: followed account not found - ' +
-                      base_dir + '/accounts/' + handle_to_follow)
+                      handle_dir)
             return True
 
     is_already_follower = False
@@ -5891,7 +5900,7 @@ def run_inbox_queue(server,
                 mitm = True
             bold_reading = False
             bold_reading_filename = \
-                base_dir + '/accounts/' + handle + '/.boldReading'
+                acct_handle_dir(base_dir, handle) + '/.boldReading'
             if os.path.isfile(bold_reading_filename):
                 bold_reading = True
             _inbox_after_initial(server, inbox_start_time,

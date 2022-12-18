@@ -13,6 +13,7 @@ from hashlib import md5
 from datetime import datetime
 from datetime import timedelta
 
+from utils import acct_handle_dir
 from utils import is_public_post
 from utils import load_json
 from utils import save_json
@@ -94,10 +95,10 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
     See https://framagit.org/framasoft/mobilizon/-/blob/
     master/lib/federation/activity_stream/converter/event.ex
     """
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
-        print('WARN: Account does not exist at ' +
-              base_dir + '/accounts/' + handle)
-    calendar_path = base_dir + '/accounts/' + handle + '/calendar'
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
+        print('WARN: Account does not exist at ' + handle_dir)
+    calendar_path = handle_dir + '/calendar'
     if not os.path.isdir(calendar_path):
         os.mkdir(calendar_path)
 
@@ -121,11 +122,11 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         print('Mobilizon type event')
         # if this is a full description of an event then save it
         # as a separate json file
-        events_path = base_dir + '/accounts/' + handle + '/events'
+        events_path = handle_dir + '/events'
         if not os.path.isdir(events_path):
             os.mkdir(events_path)
         events_year_path = \
-            base_dir + '/accounts/' + handle + '/events/' + str(event_year)
+            handle_dir + '/events/' + str(event_year)
         if not os.path.isdir(events_year_path):
             os.mkdir(events_year_path)
         event_id = str(event_year) + '-' + event_time.strftime("%m") + '-' + \
@@ -134,7 +135,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
         save_json(event_json, event_filename)
         # save to the events timeline
-        tl_events_filename = base_dir + '/accounts/' + handle + '/events.txt'
+        tl_events_filename = handle_dir + '/events.txt'
 
         if os.path.isfile(tl_events_filename):
             _remove_event_from_timeline(event_id, tl_events_filename)
@@ -180,7 +181,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
     # create a file which will trigger a notification that
     # a new event has been added
-    cal_notify_filename = base_dir + '/accounts/' + handle + '/.newCalendar'
+    cal_notify_filename = handle_dir + '/.newCalendar'
     notify_str = \
         '/calendar?year=' + str(event_year) + '?month=' + \
         str(event_month_number) + '?day=' + str(event_day_of_month)
@@ -962,7 +963,8 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
             "name": location
         })
     handle = nickname + '@' + domain
-    outbox_dir = base_dir + '/accounts/' + handle + '/outbox'
+    handle_dir = acct_handle_dir(base_dir, handle)
+    outbox_dir = handle_dir + '/outbox'
     if not os.path.isdir(outbox_dir):
         return False
     filename = outbox_dir + '/' + post_id.replace('/', '#') + '.json'

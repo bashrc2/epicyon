@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
+from utils import acct_handle_dir
 from utils import has_object_string_object
 from utils import has_object_string_type
 from utils import remove_domain_port
@@ -304,8 +305,9 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
         handle_to_unfollow = '!' + handle_to_unfollow
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')
-    if not os.path.isdir(base_dir + '/accounts/' + handle):
-        os.mkdir(base_dir + '/accounts/' + handle)
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not os.path.isdir(handle_dir):
+        os.mkdir(handle_dir)
 
     accounts_dir = acct_dir(base_dir, nickname, domain)
     filename = accounts_dir + '/' + follow_file
