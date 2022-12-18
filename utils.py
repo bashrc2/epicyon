@@ -3816,7 +3816,7 @@ def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the timezone for the given account
     """
     tz_filename = \
-        base_dir + '/accounts/' + nickname + '@' + domain + '/timezone.txt'
+        acct_dir(base_dir, nickname, domain) + '/timezone.txt'
     if not os.path.isfile(tz_filename):
         return None
     timezone = None
@@ -3830,7 +3830,7 @@ def set_account_timezone(base_dir: str, nickname: str, domain: str,
     """Sets the timezone for the given account
     """
     tz_filename = \
-        base_dir + '/accounts/' + nickname + '@' + domain + '/timezone.txt'
+        acct_dir(base_dir, nickname, domain) + '/timezone.txt'
     timezone = timezone.strip()
     with open(tz_filename, 'w+', encoding='utf-8') as fp_timezone:
         fp_timezone.write(timezone)

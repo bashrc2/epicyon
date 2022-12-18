@@ -2158,9 +2158,9 @@ def _html_edit_notifications(base_dir: str, nickname: str, domain: str,
     ntfy_topic = ''
 
     ntfy_url_file = \
-        base_dir + '/accounts/' + nickname + '@' + domain + '/.ntfy_url'
+        acct_dir(base_dir, nickname, domain) + '/.ntfy_url'
     ntfy_topic_file = \
-        base_dir + '/accounts/' + nickname + '@' + domain + '/.ntfy_topic'
+        acct_dir(base_dir, nickname, domain) + '/.ntfy_topic'
     if os.path.isfile(ntfy_url_file):
         try:
             with open(ntfy_url_file, 'r', encoding='utf-8') as fp_ntfy:
