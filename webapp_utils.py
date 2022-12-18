@@ -1953,3 +1953,16 @@ def language_right_to_left(language: str) -> bool:
     if language in rtl_languages:
         return True
     return False
+
+
+def get_default_path(media_instance: bool, blogs_instance: bool,
+                     nickname: str) -> str:
+    """Returns the default timeline
+    """
+    if blogs_instance:
+        path = '/users/' + nickname + '/tlblogs'
+    elif media_instance:
+        path = '/users/' + nickname + '/tlmedia'
+    else:
+        path = '/users/' + nickname + '/inbox'
+    return path

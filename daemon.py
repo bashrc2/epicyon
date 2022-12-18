@@ -176,6 +176,7 @@ from webapp_podcast import html_podcast_episode
 from webapp_theme_designer import html_theme_designer
 from webapp_minimalbutton import set_minimal
 from webapp_minimalbutton import is_minimal
+from webapp_utils import get_default_path
 from webapp_utils import get_avatar_image_url
 from webapp_utils import html_hashtag_blocked
 from webapp_utils import html_following_list
@@ -18225,16 +18226,9 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain, nickname)
                 set_minimal(self.server.base_dir,
                             self.server.domain, nickname, not_min)
-                if not (self.server.media_instance or
-                        self.server.blogs_instance):
-                    self.path = '/users/' + nickname + '/inbox'
-                else:
-                    if self.server.blogs_instance:
-                        self.path = '/users/' + nickname + '/tlblogs'
-                    elif self.server.media_instance:
-                        self.path = '/users/' + nickname + '/tlmedia'
-                    else:
-                        self.path = '/users/' + nickname + '/tlfeatures'
+                self.path = get_default_path(self.server.media_instance,
+                                             self.server.blogs_instance,
+                                             nickname)
 
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
