@@ -1,5 +1,5 @@
 #!/bin/bash
-journalctl -u epicyon | grep 'getJson Forbidden ' > .blocked_events.txt
+journalctl -u epicyon | grep 'get_json Forbidden ' > .blocked_events.txt
 if [ ! -f .blocked_events.txt ]; then
     echo 'No blocking events'
 else
