@@ -84,6 +84,6 @@
     "quote-right-margin": "0.1em",
     "header-font": "'bgrove'",
     "*font-family": "'bgrove'",
-    "*src": "url('fonts/StonehengeRegular.ttf') format('truetype')",
+    "*src": "url('fonts/Atkinson-Hyperlegible-Regular.woff2') format('woff2')",
     "reply-icon-direction": "-1"
 }
