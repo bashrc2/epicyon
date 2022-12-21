@@ -82,8 +82,10 @@
     "timeline-border-radius": "20px",
     "image-corners": "8%",
     "quote-right-margin": "0.1em",
-    "header-font": "'bgrove'",
-    "*font-family": "'bgrove'",
+    "*font-family": "'Hyperlegible'",
     "*src": "url('fonts/Atkinson-Hyperlegible-Regular.woff2') format('woff2')",
+    "header-font": "'StonehengeRegular'",
+    "**font-family": "'StonehengeRegular'",
+    "**src": "url('fonts/StonehengeRegular.ttf') format('truetype')",
     "reply-icon-direction": "-1"
 }
