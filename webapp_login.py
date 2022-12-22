@@ -61,7 +61,8 @@ def html_login(translate: {},
                http_prefix: str, domain: str,
                system_language: str,
                autocomplete: bool,
-               ua_str: str) -> str:
+               ua_str: str,
+               theme_name: str) -> str:
     """Shows the login screen
     """
     accounts = no_of_accounts(base_dir)
@@ -97,7 +98,11 @@ def html_login(translate: {},
 
     if not login_image_filename:
         login_image_filename = base_dir + '/accounts/' + login_image
-        copyfile(base_dir + '/img/login.png', login_image_filename)
+        source_image = base_dir + '/img/login.png'
+        theme_image = base_dir + '/theme/' + theme_name + '/login.png'
+        if os.path.isfile(theme_image):
+            source_image = theme_image
+        copyfile(source_image, login_image_filename)
 
     text_mode_logo = get_text_mode_logo(base_dir)
     text_mode_logo_html = html_keyboard_navigation(text_mode_logo, {}, {})
