@@ -79,7 +79,7 @@
     "lines-color": "#c5d2b9",
     "day-number": "#c5d2b9",
     "day-number2": "#ccc",
-    "event-background": "#42383c",
+    "event-background": "#333",
     "event-background-private": "#222",
     "timeline-border-radius": "20px",
     "image-corners": "8%",
