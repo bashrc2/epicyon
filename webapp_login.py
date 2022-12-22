@@ -9,7 +9,9 @@ __module_group__ = "Web Interface"
 
 import os
 import time
+import filecmp
 from shutil import copyfile
+from utils import get_image_extensions
 from utils import get_config_param
 from utils import no_of_accounts
 from utils import get_nickname_validation_pattern
@@ -66,42 +68,40 @@ def html_login(translate: {},
     """Shows the login screen
     """
     accounts = no_of_accounts(base_dir)
-
-    login_image = 'login.png'
+    extensions = get_image_extensions()
     login_image_filename = None
-    if os.path.isfile(base_dir + '/accounts/' + login_image):
-        login_image_filename = base_dir + '/accounts/' + login_image
-    elif os.path.isfile(base_dir + '/accounts/login.jpg'):
-        login_image = 'login.jpg'
-        login_image_filename = base_dir + '/accounts/' + login_image
-    elif os.path.isfile(base_dir + '/accounts/login.jpeg'):
-        login_image = 'login.jpeg'
-        login_image_filename = base_dir + '/accounts/' + login_image
-    elif os.path.isfile(base_dir + '/accounts/login.gif'):
-        login_image = 'login.gif'
-        login_image_filename = base_dir + '/accounts/' + login_image
-    elif os.path.isfile(base_dir + '/accounts/login.svg'):
-        login_image = 'login.svg'
-        login_image_filename = base_dir + '/accounts/' + login_image
-    elif os.path.isfile(base_dir + '/accounts/login.webp'):
-        login_image = 'login.webp'
-        login_image_filename = base_dir + '/accounts/' + login_image
-    elif os.path.isfile(base_dir + '/accounts/login.avif'):
-        login_image = 'login.avif'
-        login_image_filename = base_dir + '/accounts/' + login_image
-    elif os.path.isfile(base_dir + '/accounts/login.heic'):
-        login_image = 'login.heic'
-        login_image_filename = base_dir + '/accounts/' + login_image
-    elif os.path.isfile(base_dir + '/accounts/login.jxl'):
-        login_image = 'login.jxl'
-        login_image_filename = base_dir + '/accounts/' + login_image
 
+    # does a login image exist for the current theme?
+    for ext in extensions:
+        login_image = 'login.' + ext
+        theme_image = \
+            base_dir + '/theme/' + theme_name + \
+            '/' + login_image
+        if os.path.isfile(theme_image):
+            login_image_filename = \
+                base_dir + '/accounts/' + login_image
+            if os.path.isfile(login_image_filename):
+                if not filecmp.cmp(theme_image,
+                                   login_image_filename):
+                    copyfile(theme_image, login_image_filename)
+            else:
+                copyfile(theme_image, login_image_filename)
+            break
+
+    # does a custom login image exist?
     if not login_image_filename:
+        for ext in extensions:
+            login_image = 'login.' + ext
+            image_filename = base_dir + '/accounts/' + login_image
+            if os.path.isfile(image_filename):
+                login_image_filename = image_filename
+                break
+
+    # no login image found, so use the default
+    if not login_image_filename:
+        login_image = 'login.png'
         login_image_filename = base_dir + '/accounts/' + login_image
         source_image = base_dir + '/img/login.png'
-        theme_image = base_dir + '/theme/' + theme_name + '/login.png'
-        if os.path.isfile(theme_image):
-            source_image = theme_image
         copyfile(source_image, login_image_filename)
 
     text_mode_logo = get_text_mode_logo(base_dir)
