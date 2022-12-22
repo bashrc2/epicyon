@@ -14,7 +14,7 @@
     "event-color": "white",
     "login-bg-color": "#362e31",
     "welcome-bg-color": "#ccc",
-    "login-fg-color": "black",
+    "login-fg-color": "white",
     "welcome-fg-color": "black",
     "options-bg-color": "black",
     "newswire-publish-icon": "True",
