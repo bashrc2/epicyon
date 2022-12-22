@@ -16263,7 +16263,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.http_prefix,
                                self.server.domain_full,
                                self.server.system_language,
-                               False, ua_str).encode('utf-8')
+                               False, ua_str,
+                               self.server.theme_name).encode('utf-8')
                 msglen = len(msg)
                 self._logout_headers('text/html', msglen, calling_domain)
                 self._write(msg)
@@ -18029,7 +18030,8 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.http_prefix,
                              self.server.domain_full,
                              self.server.system_language,
-                             True, ua_str).encode('utf-8')
+                             True, ua_str,
+                             self.server.theme_name).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
