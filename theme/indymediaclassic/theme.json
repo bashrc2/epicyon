@@ -40,6 +40,7 @@
     "font-size5": "22px",
     "main-bg-color": "black",
     "login-bg-color": "black",
+    "login-logo-width": "40vw",
     "welcome-bg-color": "black",
     "options-bg-color": "black",
     "post-bg-color": "black",
