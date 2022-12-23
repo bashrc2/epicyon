@@ -6099,7 +6099,7 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
                 'object': post_json
             }
             post_json = wrapped_post
-        conversation_thread.append(post_json)
+        conversation_thread = [post_json] + conversation_thread
         if not post_json['object'].get('inReplyTo'):
             if debug:
                 print(post_id + ' is not a reply')
@@ -6117,4 +6117,4 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
         if debug:
             if not post_json:
                 print(post_id + ' returned no json')
-    return conversation_thread.reverse()
+    return conversation_thread
