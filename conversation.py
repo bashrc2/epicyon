@@ -34,7 +34,7 @@ def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
 
 def update_conversation(base_dir: str, nickname: str, domain: str,
                         post_json_object: {}) -> bool:
-    """Ads a post to a conversation index in the /conversation subdirectory
+    """Adds a post to a conversation index in the /conversation subdirectory
     """
     conversation_filename = \
         _get_conversation_filename(base_dir, nickname, domain,
