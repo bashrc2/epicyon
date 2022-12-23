@@ -1556,9 +1556,11 @@ def _get_footer_with_icons(show_icons: bool,
         reply_str + announce_str + like_str + bookmark_str + reaction_str
     footer_str += delete_str + mute_str + edit_str
     if not is_news_post(post_json_object):
-        footer_str += '        <a href="/users/' + \
-            nickname + '?convthread=' + \
-            published_link.replace('/', '--') + '" class="' + \
+        date_link = published_link
+        if post_json_object['object'].get('inReplyTo'):
+            date_link = '/users/' + nickname + '?convthread=' + \
+                published_link.replace('/', '--')
+        footer_str += '        <a href="' + date_link + '" class="' + \
             time_class + '" tabindex="10"><span itemprop="datePublished">' + \
             published_str + '</span></a>\n'
     else:
