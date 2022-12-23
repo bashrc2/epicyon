@@ -6035,3 +6035,86 @@ def set_max_profile_posts(base_dir: str, nickname: str, domain: str,
               max_posts_filename)
         return False
     return True
+
+
+def download_conversation_posts(session, http_prefix: str, base_dir: str,
+                                nickname: str, domain: str,
+                                post_id: str, debug: bool) -> []:
+    """Downloads all posts for a conversation and returns a list of the
+    json objects
+    """
+    if '://' not in post_id:
+        return []
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'application/ld+json; profile="' + profile_str + '"'
+    }
+    conversation_thread = []
+    signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+    post_id = remove_id_ending(post_id)
+    post_filename = \
+        locate_post(base_dir, nickname, domain, post_id)
+    if post_filename:
+        post_json = load_json(post_filename)
+    else:
+        post_json = get_json(signing_priv_key_pem, session, post_id,
+                             as_header, None, debug, __version__,
+                             http_prefix, domain)
+    if debug:
+        if not post_json:
+            print(post_id + ' returned no json')
+    while post_json:
+        if not has_object_dict(post_json):
+            if not post_json.get('attributedTo'):
+                print(str(post_json))
+                if debug:
+                    print(post_id + ' has no attributedTo')
+                break
+            if not isinstance(post_json['attributedTo'], str):
+                break
+            if not post_json.get('published'):
+                if debug:
+                    print(post_id + ' has no published date')
+                break
+            if not post_json.get('to'):
+                if debug:
+                    print(post_id + ' has no "to" list')
+                break
+            if not isinstance(post_json['to'], list):
+                break
+            if 'cc' not in post_json:
+                if debug:
+                    print(post_id + ' has no "cc" list')
+                break
+            if not isinstance(post_json['cc'], list):
+                break
+            wrapped_post = {
+                "@context": "https://www.w3.org/ns/activitystreams",
+                'id': post_id + '/activity',
+                'type': 'Create',
+                'actor': post_json['attributedTo'],
+                'published': post_json['published'],
+                'to': post_json['to'],
+                'cc': post_json['cc'],
+                'object': post_json
+            }
+            post_json = wrapped_post
+        conversation_thread.append(post_json)
+        if not post_json['object'].get('inReplyTo'):
+            if debug:
+                print(post_id + ' is not a reply')
+            break
+        post_id = post_json['object']['inReplyTo']
+        post_id = remove_id_ending(post_id)
+        post_filename = \
+            locate_post(base_dir, nickname, domain, post_id)
+        if post_filename:
+            post_json = load_json(post_filename)
+        else:
+            post_json = get_json(signing_priv_key_pem, session, post_id,
+                                 as_header, None, debug, __version__,
+                                 http_prefix, domain)
+        if debug:
+            if not post_json:
+                print(post_id + ' returned no json')
+    return conversation_thread

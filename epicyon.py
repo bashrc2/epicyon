@@ -26,6 +26,7 @@ from roles import set_role
 from webfinger import webfinger_handle
 from bookmarks import send_bookmark_via_server
 from bookmarks import send_undo_bookmark_via_server
+from posts import download_conversation_posts
 from posts import set_post_expiry_days
 from posts import get_instance_actor_key
 from posts import send_mute_via_server
@@ -183,6 +184,9 @@ def _command_options() -> None:
     parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                         default=None,
                         help='Nickname of the account to use')
+    parser.add_argument('--conversation', dest='conversation', type=str,
+                        default=None,
+                        help='Download a conversation for the given post id')
     parser.add_argument('--screenreader', dest='screenreader', type=str,
                         default=None,
                         help='Name of the screen reader: ' +
@@ -1112,7 +1116,12 @@ def _command_options() -> None:
         sys.exit()
 
     if argb.json:
-        session = create_session(None)
+        proxy_type = None
+        if '.onion/' in argb.json:
+            proxy_type = 'tor'
+        elif '.i2p/' in argb.json:
+            proxy_type = 'i2p'
+        session = create_session(proxy_type)
         profile_str = 'https://www.w3.org/ns/activitystreams'
         as_header = {
             'Accept': 'application/ld+json; profile="' + profile_str + '"'
@@ -1134,6 +1143,38 @@ def _command_options() -> None:
                              http_prefix, domain)
         if test_json:
             pprint(test_json)
+        sys.exit()
+
+    if argb.conversation:
+        post_id = argb.conversation
+        if '://' not in post_id:
+            print('--conversation should be the url of a post')
+            sys.exit()
+        proxy_type = None
+        if '.onion/' in post_id:
+            proxy_type = 'tor'
+        elif '.i2p/' in post_id:
+            proxy_type = 'i2p'
+        session = create_session(proxy_type)
+        if not argb.domain:
+            argb.domain = get_config_param(base_dir, 'domain')
+        domain = ''
+        if argb.domain:
+            domain = argb.domain
+        if not domain:
+            print('Please specify a domain with the --domain option')
+            sys.exit()
+        nickname = ''
+        if argb.nickname:
+            nickname = argb.nickname
+        if not nickname:
+            print('Please specify a nickname with the --nickname option')
+            sys.exit()
+        conv_json = download_conversation_posts(session, http_prefix,
+                                                base_dir, nickname, domain,
+                                                post_id, argb.debug)
+        if conv_json:
+            pprint(conv_json)
         sys.exit()
 
     if argb.ssml:
