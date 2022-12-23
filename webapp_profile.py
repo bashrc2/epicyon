@@ -1202,7 +1202,7 @@ def html_profile(signing_priv_key_pem: str,
 #                                     domain_full,
 #                                     extra_json, 'wanted') + license_str
     # end of #timeline
-    profile_str += '</div>'
+    profile_str += '</div>\n<br><br>\n'
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
