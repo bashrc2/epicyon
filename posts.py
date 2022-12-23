@@ -6117,4 +6117,4 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
         if debug:
             if not post_json:
                 print(post_id + ' returned no json')
-    return conversation_thread
+    return conversation_thread.reverse()
