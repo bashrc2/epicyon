@@ -21,6 +21,7 @@ from announce import no_of_announces
 from like import liked_by_person
 from like import no_of_likes
 from follow import is_following_actor
+from posts import download_conversation_posts
 from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
@@ -91,6 +92,7 @@ from webapp_utils import get_post_attachments_as_html
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_broken_link_substitute
+from webapp_utils import html_post_separator
 from webapp_media import add_embedded_elements
 from webapp_question import insert_question
 from devices import e2e_edecrypt_message_from_device
@@ -1541,7 +1543,8 @@ def _get_footer_with_icons(show_icons: bool,
                            bookmark_str: str,
                            delete_str: str, mute_str: str, edit_str: str,
                            post_json_object: {}, published_link: str,
-                           time_class: str, published_str: str) -> str:
+                           time_class: str, published_str: str,
+                           nickname: str) -> str:
     """Returns the html for a post footer containing icons
     """
     if not show_icons:
@@ -1553,7 +1556,11 @@ def _get_footer_with_icons(show_icons: bool,
         reply_str + announce_str + like_str + bookmark_str + reaction_str
     footer_str += delete_str + mute_str + edit_str
     if not is_news_post(post_json_object):
-        footer_str += '        <a href="' + published_link + '" class="' + \
+        date_link = published_link
+        if post_json_object['object'].get('inReplyTo'):
+            date_link = '/users/' + nickname + '?convthread=' + \
+                published_link.replace('/', '--')
+        footer_str += '        <a href="' + date_link + '" class="' + \
             time_class + '" tabindex="10"><span itemprop="datePublished">' + \
             published_str + '</span></a>\n'
     else:
@@ -2289,7 +2296,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                like_str, reaction_str, bookmark_str,
                                delete_str, mute_str, edit_str,
                                post_json_object, published_link,
-                               time_class, published_str)
+                               time_class, published_str, nickname)
     if new_footer_str:
         footer_str = new_footer_str
 
@@ -2841,3 +2848,90 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
         '</header>\n'
 
     return header_str + reacted_to_post_str + emoji_picks_str + html_footer()
+
+
+def html_conversation_thread(post_id: str,
+                             translate: {}, base_dir: str,
+                             http_prefix: str,
+                             nickname: str, domain: str,
+                             project_version: str,
+                             recent_posts_cache: {},
+                             max_recent_posts: int,
+                             session,
+                             cached_webfingers,
+                             person_cache: {},
+                             port: int,
+                             yt_replace_domain: str,
+                             twitter_replacement_domain: str,
+                             show_published_date_only: bool,
+                             peertube_instances: [],
+                             allow_local_network_access: bool,
+                             theme_name: str,
+                             system_language: str,
+                             max_like_count: int,
+                             signing_priv_key_pem: str,
+                             cw_lists: {},
+                             lists_enabled: str,
+                             timezone: str, bold_reading: bool,
+                             dogwhistles: {}, access_keys: {},
+                             min_images_for_accounts: [],
+                             debug: bool) -> str:
+    """Show a page containing a conversation thread
+    """
+    conv_posts = \
+        download_conversation_posts(session, http_prefix, base_dir,
+                                    nickname, domain,
+                                    post_id, debug)
+
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
+
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    conv_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+
+    if not conv_posts:
+        conv_str += html_footer()
+        return conv_str
+
+    separator_str = html_post_separator(base_dir, None)
+
+    minimize_all_images = False
+    if nickname in min_images_for_accounts:
+        minimize_all_images = True
+    for post_json_object in conv_posts:
+        show_individual_post_icons = False
+        allow_deletion = False
+        post_str = \
+            individual_post_as_html(signing_priv_key_pem,
+                                    True, recent_posts_cache,
+                                    max_recent_posts,
+                                    translate, None,
+                                    base_dir, session, cached_webfingers,
+                                    person_cache,
+                                    nickname, domain, port,
+                                    post_json_object,
+                                    None, True, allow_deletion,
+                                    http_prefix, project_version,
+                                    'search',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count,
+                                    show_individual_post_icons,
+                                    show_individual_post_icons,
+                                    False, False, False, False,
+                                    cw_lists, lists_enabled,
+                                    timezone, False, bold_reading,
+                                    dogwhistles,
+                                    minimize_all_images)
+        if post_str:
+            conv_str += separator_str + post_str
+
+    conv_str += html_footer()
+    return conv_str

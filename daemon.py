@@ -221,6 +221,7 @@ from webapp_suspended import html_suspended
 from webapp_tos import html_terms_of_service
 from webapp_confirm import html_confirm_follow
 from webapp_confirm import html_confirm_unfollow
+from webapp_post import html_conversation_thread
 from webapp_post import html_emoji_reaction_picker
 from webapp_post import html_post_replies
 from webapp_post import html_individual_post
@@ -11801,6 +11802,72 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(actor_absolute, cookie, calling_domain)
         return True
 
+    def _show_conversation_thread(self, authorized: bool,
+                                  calling_domain: str, path: str,
+                                  base_dir: str, http_prefix: str,
+                                  domain: str, port: int,
+                                  debug: str, curr_session) -> bool:
+        """get conversation thread from the date link on a post
+        """
+        if not authorized:
+            return False
+        if not path.startswith('/users/'):
+            return False
+        if '?convthread=' not in path:
+            return False
+        post_id = path.split('?convthread=')[1].strip()
+        post_id = post_id.replace('--', '/')
+        nickname = path.split('/users/')[1]
+        if '?convthread=' in nickname:
+            nickname = nickname.split('?convthread=')[0]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        timezone = None
+        if self.server.account_timezone.get(nickname):
+            timezone = \
+                self.server.account_timezone.get(nickname)
+        bold_reading = False
+        if self.server.bold_reading.get(nickname):
+            bold_reading = True
+        conv_str = \
+            html_conversation_thread(post_id, self.server.translate,
+                                     base_dir,
+                                     http_prefix,
+                                     nickname,
+                                     domain,
+                                     self.server.project_version,
+                                     self.server.recent_posts_cache,
+                                     self.server.max_recent_posts,
+                                     curr_session,
+                                     self.server.cached_webfingers,
+                                     self.server.person_cache,
+                                     port,
+                                     self.server.yt_replace_domain,
+                                     self.server.twitter_replacement_domain,
+                                     self.server.show_published_date_only,
+                                     self.server.peertube_instances,
+                                     self.server.allow_local_network_access,
+                                     self.server.theme_name,
+                                     self.server.system_language,
+                                     self.server.max_like_count,
+                                     self.server.signing_priv_key_pem,
+                                     self.server.cw_lists,
+                                     self.server.lists_enabled,
+                                     timezone, bold_reading,
+                                     self.server.dogwhistles,
+                                     self.server.access_keys,
+                                     self.server.min_images_for_accounts,
+                                     self.server.debug)
+        if conv_str:
+            msg = conv_str.encode('utf-8')
+            msglen = len(msg)
+            self._login_headers('text/html',
+                                msglen, calling_domain)
+            self._write(msg)
+        self._404()
+        self.server.getreq_busy = False
+        return True
+
     def _show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                  calling_domain: str, referer_domain: str,
                                  path: str,
@@ -16416,6 +16483,19 @@ class PubServer(BaseHTTPRequestHandler):
                       self.server.path + ' ' + calling_domain)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'get_known_bots',
+                                self.server.debug)
+            return
+
+        if self._show_conversation_thread(authorized,
+                                          calling_domain, self.path,
+                                          self.server.base_dir,
+                                          self.server.http_prefix,
+                                          self.server.domain,
+                                          self.server.port,
+                                          self.server.debug,
+                                          self.server.session):
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', '_show_conversation_thread',
                                 self.server.debug)
             return
 
