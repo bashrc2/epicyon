@@ -1,7 +1,7 @@
 {
     "block-reason-color": "lightgreen",
     "verified-site-color": "lightgreen",
-    "code-color": "blue",
+    "code-color": "lightblue",
     "pwa-theme-color": "apple-mobile-web-app-status-bar-style",
     "pwa-theme-background-color": "black",
     "dropdown-fg-color": "white",
