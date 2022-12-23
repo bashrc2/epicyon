@@ -2890,7 +2890,7 @@ def html_conversation_thread(post_id: str,
     conv_str = \
         html_header_with_external_style(css_filename, instance_title, None)
 
-    if len(conv_posts) == 0:
+    if not conv_posts:
         conv_str += html_footer()
         return conv_str
 
