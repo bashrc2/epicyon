@@ -749,6 +749,7 @@ def html_history_search(translate: {}, base_dir: str,
         history_search_form += \
             '<center><h5>' + translate['No results'] + \
             '</h5></center>'
+        history_search_form += html_footer()
         return history_search_form
 
     separator_str = html_post_separator(base_dir, None)
