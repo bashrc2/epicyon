@@ -4132,6 +4132,7 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
 def is_quote_toot(post_json_object: str) -> bool:
     """Returns true if the given post is a quote toot
     """
-    if post_json_object['object'].get('quoteUri'):
+    if post_json_object['object'].get('quoteUri') or \
+       post_json_object['object'].get('quoteUrl'):
         return True
     return False
