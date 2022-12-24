@@ -4146,7 +4146,11 @@ def is_quote_toot(post_json_object: str) -> bool:
                     continue
                 if not item.get('mediaType'):
                     continue
+                if not isinstance(item['type'], str):
+                    continue
                 if item['type'] != 'Link':
+                    continue
+                if not isinstance(item['mediaType'], str):
                     continue
                 if 'json' not in item['mediaType']:
                     continue
