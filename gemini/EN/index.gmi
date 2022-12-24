@@ -17,7 +17,7 @@ Epicyon is a fediverse server suitable for self-hosting a small number of accoun
 
 Key features:
 
- * Open standards: HTML, CSS, ActivityPub, RSS, CalDAV.
+ * Open standards: HTML, CSS, ActivityPub S2S and C2S, RSS, CalDAV.
  * Supports common web browsers and shell browsers.
  * Will not drain your mobile or laptop battery.
  * Customisable themes. It doesn't have to look bland.
