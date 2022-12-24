@@ -2917,6 +2917,7 @@ def html_conversation_thread(post_id: str,
         html_header_with_external_style(css_filename, instance_title, None)
 
     separator_str = html_post_separator(base_dir, None)
+    text_mode_separator = '<div class="transparent"><hr></div>'
 
     minimize_all_images = False
     if nickname in min_images_for_accounts:
@@ -2951,7 +2952,7 @@ def html_conversation_thread(post_id: str,
                                     dogwhistles,
                                     minimize_all_images)
         if post_str:
-            conv_str += separator_str + post_str
+            conv_str += text_mode_separator + separator_str + post_str
 
-    conv_str += html_footer()
+    conv_str += text_mode_separator + html_footer()
     return conv_str
