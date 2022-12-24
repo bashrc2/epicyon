@@ -1,4 +1,11 @@
 {
+    "lines-color": "grey",
+    "place-color": "lightblue",
+    "event-public-color": "#282c37",
+    "event-color": "grey",
+    "event-background": "darkblue",
+    "event-background-private": "darkblue",
+    "event-foreground": "white",
     "cw-color": "#dddddd",
     "day-number": "#ccc",
     "calendar-bg-color": "#002365",
