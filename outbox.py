@@ -31,6 +31,7 @@ from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
+from utils import is_quote_toot
 from blocking import is_blocked_domain
 from blocking import outbox_block
 from blocking import outbox_undo_block
@@ -263,6 +264,10 @@ def post_message_to_outbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if has_object_dict(message_json):
+        if is_quote_toot(message_json):
+            print('REJECT: POST quote toot ' + str(message_json))
+            return False
+
         content_str = get_base_content_from_post(message_json, system_language)
         if content_str:
             _capitalize_hashtag(content_str, message_json,

@@ -4127,3 +4127,11 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
                         print('EX: failed to delete reverse ' +
                               reverse_filename)
         break
+
+
+def is_quote_toot(post_json_object: str) -> bool:
+    """Returns true if the given post is a quote toot
+    """
+    if post_json_object['object'].get('quoteUri'):
+        return True
+    return False

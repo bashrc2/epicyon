@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import is_quote_toot
 from utils import acct_handle_dir
 from utils import is_account_dir
 from utils import remove_eol
@@ -656,6 +657,10 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
         post_domain = get_full_domain(post_domain, post_port)
 
     if has_object_dict(post_json_object):
+        if is_quote_toot(post_json_object):
+            if debug:
+                print('REJECT: inbox quote toot ' + str(post_json_object))
+            return None
         if post_json_object['object'].get('inReplyTo'):
             if isinstance(post_json_object['object']['inReplyTo'], str):
                 in_reply_to = \
