@@ -1117,7 +1117,8 @@ def _boost_own_post_html(translate: {}) -> str:
 
 
 def _announce_unattributed_html(translate: {},
-                                post_json_object: {}) -> str:
+                                post_json_object: {},
+                                nickname: str) -> str:
     """Returns the html for an announce title where there
     is no attribution on the announced post
     """
@@ -1125,30 +1126,35 @@ def _announce_unattributed_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
+    post_link = '/users/' + nickname + '?convthread=' + \
+        post_id.replace('/', '--')
     return '    <img loading="lazy" decoding="async" title="' + \
         announces_str + '" alt="' + \
         announces_str + '" src="/icons' + \
         '/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '      <a href="' + post_id + \
+        '      <a href="' + post_link + \
         '" class="announceOrReply" tabindex="10">@unattributed</a>\n'
 
 
 def _announce_with_display_name_html(translate: {},
                                      post_json_object: {},
-                                     announce_display_name: str) -> str:
+                                     announce_display_name: str,
+                                     nickname: str) -> str:
     """Returns html for an announce having a display name
     """
     announces_str = 'announces'
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
+    post_link = '/users/' + nickname + '?convthread=' + \
+        post_id.replace('/', '--')
     return '          <img loading="lazy" decoding="async" title="' + \
         announces_str + '" alt="' + \
         announces_str + '" src="/' + \
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '        <a href="' + post_id + '" ' + \
+        '        <a href="' + post_link + '" ' + \
         'class="announceOrReply" tabindex="10">' + \
         '<span itemprop="author">' + \
         announce_display_name + '</span></a>\n'
@@ -1182,7 +1188,8 @@ def _get_post_title_announce_html(base_dir: str,
 
     # has no attribution
     if not obj_json.get('attributedTo'):
-        title_str += _announce_unattributed_html(translate, post_json_object)
+        title_str += \
+            _announce_unattributed_html(translate, post_json_object, nickname)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1202,7 +1209,8 @@ def _get_post_title_announce_html(base_dir: str,
     if attributed_to:
         announce_nickname = get_nickname_from_actor(attributed_to)
     if not announce_nickname:
-        title_str += _announce_unattributed_html(translate, post_json_object)
+        title_str += \
+            _announce_unattributed_html(translate, post_json_object, nickname)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1229,7 +1237,8 @@ def _get_post_title_announce_html(base_dir: str,
     _log_post_timing(enable_timing_log, post_start_time, '13.3.1')
     title_str += \
         _announce_with_display_name_html(translate, post_json_object,
-                                         announce_display_name)
+                                         announce_display_name,
+                                         nickname)
 
     if mitm:
         title_str += _mitm_warning_html(translate)
@@ -1282,18 +1291,22 @@ def _reply_to_yourself_html(translate: {}) -> str:
 
 
 def _reply_to_unknown_html(translate: {},
-                           post_json_object: {}) -> str:
+                           post_json_object: {},
+                           nickname: str) -> str:
     """Returns the html title for a reply to an unknown handle
     """
     replying_to_str = 'replying to'
     if translate.get(replying_to_str):
         replying_to_str = translate[replying_to_str]
+    post_id = post_json_object['object']['inReplyTo']
+    post_link = '/users/' + nickname + '?convthread=' + \
+        post_id.replace('/', '--')
     return '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
         replying_to_str + '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n' + \
         '        <a href="' + \
-        post_json_object['object']['inReplyTo'] + \
+        post_link + \
         '" class="announceOrReply" tabindex="10">@unknown</a>\n'
 
 
@@ -1309,38 +1322,44 @@ def _mitm_warning_html(translate: {}) -> str:
 
 def _reply_with_unknown_path_html(translate: {},
                                   post_json_object: {},
-                                  post_domain: str) -> str:
+                                  post_domain: str,
+                                  nickname: str) -> str:
     """Returns html title for a reply with an unknown path
     eg. does not contain /statuses/
     """
     replying_to_str = 'replying to'
     if translate.get(replying_to_str):
         replying_to_str = translate[replying_to_str]
+    post_id = post_json_object['object']['inReplyTo']
+    post_link = '/users/' + nickname + '?convthread=' + \
+        post_id.replace('/', '--')
     return '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + \
         '" alt="' + replying_to_str + \
         '" src="/icons/reply.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '        <a href="' + \
-        post_json_object['object']['inReplyTo'] + \
+        '        <a href="' + post_link + \
         '" class="announceOrReply" tabindex="10">' + \
         post_domain + '</a>\n'
 
 
 def _get_reply_html(translate: {},
-                    in_reply_to: str, reply_display_name: str) -> str:
+                    in_reply_to: str, reply_display_name: str,
+                    nickname: str) -> str:
     """Returns html title for a reply
     """
     replying_to_str = 'replying to'
     if translate.get(replying_to_str):
         replying_to_str = translate[replying_to_str]
+    post_link = '/users/' + nickname + '?convthread=' + \
+        in_reply_to.replace('/', '--')
     return '        ' + \
         '<img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
         replying_to_str + '" src="/' + \
         'icons/reply.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '        <a href="' + in_reply_to + \
+        '        <a href="' + post_link + \
         '" class="announceOrReply" tabindex="10">' + \
         '<span itemprop="audience">' + \
         reply_display_name + '</span></a>\n'
@@ -1397,7 +1416,8 @@ def _get_post_title_reply_html(base_dir: str,
         if post_domain:
             title_str += \
                 _reply_with_unknown_path_html(translate,
-                                              post_json_object, post_domain)
+                                              post_json_object, post_domain,
+                                              nickname)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1405,13 +1425,15 @@ def _get_post_title_reply_html(base_dir: str,
     reply_actor = in_reply_to.split('/statuses/')[0]
     reply_nickname = get_nickname_from_actor(reply_actor)
     if not reply_nickname:
-        title_str += _reply_to_unknown_html(translate, post_json_object)
+        title_str += \
+            _reply_to_unknown_html(translate, post_json_object, nickname)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
     reply_domain, _ = get_domain_from_actor(reply_actor)
     if not (reply_nickname and reply_domain):
-        title_str += _reply_to_unknown_html(translate, post_json_object)
+        title_str += \
+            _reply_to_unknown_html(translate, post_json_object, nickname)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1435,7 +1457,8 @@ def _get_post_title_reply_html(base_dir: str,
                                       reply_display_name, False, translate)
         _log_post_timing(enable_timing_log, post_start_time, '13.6')
 
-    title_str += _get_reply_html(translate, in_reply_to, reply_display_name)
+    title_str += \
+        _get_reply_html(translate, in_reply_to, reply_display_name, nickname)
 
     if mitm:
         title_str += _mitm_warning_html(translate)
@@ -1556,10 +1579,8 @@ def _get_footer_with_icons(show_icons: bool,
         reply_str + announce_str + like_str + bookmark_str + reaction_str
     footer_str += delete_str + mute_str + edit_str
     if not is_news_post(post_json_object):
-        date_link = published_link
-        if post_json_object['object'].get('inReplyTo'):
-            date_link = '/users/' + nickname + '?convthread=' + \
-                published_link.replace('/', '--')
+        date_link = '/users/' + nickname + '?convthread=' + \
+            published_link.replace('/', '--')
         footer_str += '        <a href="' + date_link + '" class="' + \
             time_class + '" tabindex="10"><span itemprop="datePublished">' + \
             published_str + '</span></a>\n'
@@ -2883,6 +2904,9 @@ def html_conversation_thread(post_id: str,
                                     nickname, domain,
                                     post_id, debug)
 
+    if not conv_posts:
+        return None
+
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2891,10 +2915,6 @@ def html_conversation_thread(post_id: str,
         get_config_param(base_dir, 'instanceTitle')
     conv_str = \
         html_header_with_external_style(css_filename, instance_title, None)
-
-    if not conv_posts:
-        conv_str += html_footer()
-        return conv_str
 
     separator_str = html_post_separator(base_dir, None)
 

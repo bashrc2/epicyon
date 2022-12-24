@@ -11864,8 +11864,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._login_headers('text/html',
                                 msglen, calling_domain)
             self._write(msg)
-        self._404()
         self.server.getreq_busy = False
+        self._redirect_headers(post_id, None, calling_domain)
         return True
 
     def _show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
