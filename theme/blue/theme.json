@@ -1,4 +1,6 @@
 {
+    "font-size-links": "25px",
+    "font-size-newswire": "25px",
     "block-reason-color": "lightgreen",
     "verified-site-color": "lightgreen",
     "code-color": "white",
