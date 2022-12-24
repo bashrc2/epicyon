@@ -1,4 +1,7 @@
 {
+    "cw-color": "#dddddd",
+    "day-number": "#ccc",
+    "calendar-bg-color": "#002365",
     "font-size-links": "25px",
     "font-size-newswire": "25px",
     "block-reason-color": "lightgreen",
@@ -28,6 +31,7 @@
     "gallery-font-size-mobile": "55px",
     "pageslist-color": "#dddddd",
     "pageslist-selected-color": "white",
+    "main-fg-color": "#dddddd",
     "main-bg-color": "#002365",
     "login-bg-color": "#002365",
     "welcome-bg-color": "#002365",
