@@ -7355,6 +7355,35 @@ def _test_diff_content() -> None:
     assert html_str == expected
 
 
+def _test_missing_theme_colors(base_dir: str) -> None:
+    print('test_missing_colors')
+
+    theme_filename = base_dir + '/theme/default/theme.json'
+    assert os.path.isfile(theme_filename)
+    default_theme_json = load_json(theme_filename)
+    assert default_theme_json
+
+    themes = get_themes_list(base_dir)
+    for theme_name in themes:
+        if theme_name == 'default':
+            continue
+        theme_filename = \
+            base_dir + '/theme/' + theme_name.lower() + '/theme.json'
+        if not os.path.isfile(theme_filename):
+            continue
+        theme_json = load_json(theme_filename)
+        if not theme_json:
+            continue
+        updated = False
+        for property, value in default_theme_json.items():
+            if not theme_json.get(property):
+                theme_json[property] = value
+                updated = True
+        if updated:
+            save_json(theme_json, theme_filename)
+            print(theme_name + ' updated')
+
+
 def _test_color_contrast_value(base_dir: str) -> None:
     print('test_color_contrast_value')
     minimum_color_contrast = 4.5
@@ -7371,7 +7400,8 @@ def _test_color_contrast_value(base_dir: str) -> None:
     assert contrast < 6
     themes = get_themes_list(base_dir)
     for theme_name in themes:
-        theme_filename = base_dir + '/theme/' + theme_name + '/theme.json'
+        theme_filename = \
+            base_dir + '/theme/' + theme_name.lower() + '/theme.json'
         if not os.path.isfile(theme_filename):
             continue
         theme_json = load_json(theme_filename)
@@ -7655,6 +7685,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_missing_theme_colors(base_dir)
     _test_reply_language(base_dir)
     _test_emoji_in_actor_name(base_dir)
     _test_uninvert()
