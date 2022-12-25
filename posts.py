@@ -4331,6 +4331,35 @@ def _expire_announce_cache_for_person(base_dir: str,
     return expired_post_count
 
 
+def _expire_posts_cache_for_person(base_dir: str,
+                                   nickname: str, domain: str,
+                                   max_age_days: int) -> int:
+    """Expires entries within the posts cache
+    """
+    cache_dir = acct_dir(base_dir, nickname, domain) + '/postcache'
+    if not os.path.isdir(cache_dir):
+        print('No cached posts for ' + nickname + '@' + domain)
+        return 0
+    expired_post_count = 0
+    posts_in_cache = os.scandir(cache_dir)
+    for cache_filename in posts_in_cache:
+        cache_filename = cache_filename.name
+        # Time of file creation
+        full_filename = os.path.join(cache_dir, cache_filename)
+        if not os.path.isfile(full_filename):
+            continue
+        last_modified = file_last_modified(full_filename)
+        # get time difference
+        if not valid_post_date(last_modified, max_age_days, False):
+            try:
+                os.remove(full_filename)
+            except OSError:
+                print('EX: unable to delete from post cache ' +
+                      full_filename)
+            expired_post_count += 1
+    return expired_post_count
+
+
 def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                   recent_posts_cache: {},
                   max_posts_in_box: int = 32000,
@@ -4373,6 +4402,12 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                                                       max_cache_age_days)
                 print('Expired ' + str(expired_announces) +
                       ' cached announces for ' + nickname + '@' + domain)
+                expired_posts = \
+                    _expire_posts_cache_for_person(base_dir,
+                                                   nickname, domain,
+                                                   max_cache_age_days)
+                print('Expired ' + str(expired_posts) +
+                      ' cached posts for ' + nickname + '@' + domain)
                 if archive_dir:
                     archive_subdir = archive_dir + '/accounts/' + \
                         handle + '/outbox'
