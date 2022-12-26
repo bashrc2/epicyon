@@ -1062,8 +1062,7 @@ def html_timeline(default_timeline: str,
         # firstpost does not overlap on the next timeline
         if last_item_str:
             tl_str = tl_str.replace(last_item_str, '')
-        else:
-            tl_str += text_mode_separator
+        tl_str += text_mode_separator
         first_post = ''
         if last_post_id:
             first_post = ';firstpost=' + last_post_id.replace('#', '--')
