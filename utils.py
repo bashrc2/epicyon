@@ -39,6 +39,12 @@ INVALID_CHARACTERS = (
     '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡'
 )
 
+INVALID_ACTOR_URL_CHARACTERS = (
+    ' ', '​', '<', '>', '%', '{', '}', '|', '\\', '^', '`',
+    '?', '#', '[', ']', '@', '!', '$', '&', "'", '(', ')',
+    '*', '+', ',', ';', '='
+)
+
 
 def _standardize_text_range(text: str,
                             range_start: int, range_end: int,
@@ -969,6 +975,16 @@ def contains_invalid_chars(json_str: str) -> bool:
         if is_invalid in json_str:
             return True
     return False
+
+
+def contains_invalid_actor_url_chars(url: str) -> bool:
+    """Does the given actor url contain invalid characters?
+    """
+    for is_invalid in INVALID_ACTOR_URL_CHARACTERS:
+        if is_invalid in url:
+            return True
+
+    return contains_invalid_chars(url)
 
 
 def remove_invalid_chars(text: str) -> str:
