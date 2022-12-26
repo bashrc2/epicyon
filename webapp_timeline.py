@@ -951,6 +951,7 @@ def html_timeline(default_timeline: str,
 
     last_post_id = ''
 
+    last_item_str = ''
     if timeline_json:
         # if this is the media timeline then add an extra gallery container
         if box_name == 'tlmedia':
@@ -1032,20 +1033,19 @@ def html_timeline(default_timeline: str,
 
                 if curr_tl_str:
                     if curr_tl_str not in tl_items_str:
+                        last_item_str = text_mode_separator + curr_tl_str
                         last_post_id = \
                             remove_id_ending(item['id']).replace('/', '#')
                         item_ctr += 1
                         if not reverse_sequence:
-                            tl_items_str += text_mode_separator + curr_tl_str
+                            tl_items_str += last_item_str
                             if separator_str:
                                 tl_items_str += separator_str
                         else:
-                            tl_items_str = \
-                                text_mode_separator + curr_tl_str + \
-                                tl_items_str
+                            tl_items_str = last_item_str + tl_items_str
                             if separator_str:
                                 tl_items_str = \
-                                    text_mode_separator + curr_tl_str + \
+                                    last_item_str + \
                                     separator_str + tl_items_str
         tl_str += tl_items_str
 
@@ -1058,6 +1058,10 @@ def html_timeline(default_timeline: str,
 
     # page down arrow
     if item_ctr > 0:
+        # if showing the page down icon then remove the last item so that
+        # firstpost does not overlap on the next timeline
+        if last_item_str:
+            tl_str = tl_str.replace(last_item_str, '')
         tl_str += text_mode_separator
         first_post = ''
         if last_post_id:
