@@ -4028,10 +4028,8 @@ def _create_box_items(base_dir: str,
             if first_post_id and total_posts_count == 0:
                 if first_post_id not in post_filename:
                     continue
-                if first_post_id in post_filename:
-                    total_posts_count = \
-                        int((page_number - 1) * items_per_page)
-                    continue
+                total_posts_count = \
+                    int((page_number - 1) * items_per_page)
 
             # Has this post passed through the newswire voting stage?
             if not _passed_newswire_voting(newswire_votes_threshold,
