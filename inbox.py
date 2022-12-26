@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import contains_invalid_actor_url_chars
 from utils import is_quote_toot
 from utils import acct_handle_dir
 from utils import is_account_dir
@@ -2756,14 +2757,17 @@ def _receive_announce(recent_posts_cache: {},
         # so that their avatar can be shown
         lookup_actor = None
         if post_json_object.get('attributedTo'):
-            if isinstance(post_json_object['attributedTo'], str):
-                lookup_actor = post_json_object['attributedTo']
+            attrib = post_json_object['attributedTo']
+            if isinstance(attrib, str):
+                if not contains_invalid_actor_url_chars(attrib):
+                    lookup_actor = attrib
         else:
             if has_object_dict(post_json_object):
                 if post_json_object['object'].get('attributedTo'):
                     attrib = post_json_object['object']['attributedTo']
                     if isinstance(attrib, str):
-                        lookup_actor = attrib
+                        if not contains_invalid_actor_url_chars(attrib):
+                            lookup_actor = attrib
         if lookup_actor:
             if has_users_path(lookup_actor):
                 if '/statuses/' in lookup_actor:

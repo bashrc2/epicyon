@@ -15,6 +15,7 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from utils import contains_invalid_actor_url_chars
 from utils import get_attachment_property_value
 from utils import get_account_timezone
 from utils import has_object_string_type
@@ -319,6 +320,9 @@ def post_message_to_outbox(session, translate: {},
         # actor should look like a url
         if '://' not in message_json['actor'] or \
            '.' not in message_json['actor']:
+            return False
+
+        if contains_invalid_actor_url_chars(message_json['actor']):
             return False
 
         # sent by an actor on a local network address?
