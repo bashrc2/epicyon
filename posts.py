@@ -32,6 +32,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import contains_invalid_actor_url_chars
 from utils import acct_handle_dir
 from utils import is_dm
 from utils import remove_eol
@@ -233,8 +234,12 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
                       'contains single user instance actor ' +
                       str(source_id) + ' ' + str(link))
         else:
-            return link['href'].replace('/@', '/users/')
-        return link['href']
+            url = link['href'].replace('/@', '/users/')
+            if not contains_invalid_actor_url_chars(url):
+                return url
+        url = link['href']
+        if not contains_invalid_actor_url_chars(url):
+            return url
     return None
 
 
