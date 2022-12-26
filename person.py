@@ -44,6 +44,7 @@ from utils import get_attachment_property_value
 from utils import get_nickname_from_actor
 from utils import remove_html
 from utils import contains_invalid_chars
+from utils import contains_invalid_actor_url_chars
 from utils import replace_users_with_at
 from utils import remove_eol
 from utils import remove_domain_port
@@ -1776,6 +1777,12 @@ def valid_sending_actor(session, base_dir: str,
     # who sent this post?
     sending_actor = post_json_object['actor']
 
+    if not isinstance(sending_actor, str):
+        return False
+
+    if contains_invalid_actor_url_chars(sending_actor):
+        return False
+
     # If you are following them then allow their posts
     if is_following_actor(base_dir, nickname, domain, sending_actor):
         return True
@@ -1802,6 +1809,7 @@ def valid_sending_actor(session, base_dir: str,
         print('REJECT: no preferredUsername within actor ' + str(actor_json))
         return False
 
+    # is this a known spam actor?
     actor_spam_filter_filename = \
         acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
     if not os.path.isfile(actor_spam_filter_filename):
