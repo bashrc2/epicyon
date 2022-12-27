@@ -4025,6 +4025,8 @@ def _create_box_items(base_dir: str,
             if not post_filename:
                 break
 
+            # if a first post is specified then wait until it is found
+            # before starting to generate the timeline
             if first_post_id and total_posts_count == 0:
                 if first_post_id not in post_filename:
                     continue
@@ -4056,6 +4058,7 @@ def _create_box_items(base_dir: str,
             post_url = remove_eol(post_filename)
             post_url = post_url.replace('.json', '').strip()
 
+            # is this a duplicate?
             if post_url in post_urls_in_box:
                 continue
 
