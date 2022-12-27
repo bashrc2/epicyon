@@ -26,6 +26,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import license_link_from_name
 from utils import dont_speak_hashtags
 from utils import remove_eol
 from utils import disallow_announce
@@ -1581,15 +1582,8 @@ def _get_footer_with_icons(show_icons: bool,
     if not is_news_post(post_json_object):
         footer_str += '        '
         if content_license_url:
-            # show the CC symbol
-            copyright_symbol = '🅭 '
-            if '/zero/' in content_license_url:
-                copyright_symbol = '🄍 '
-            footer_str += '<a href="' + \
-                content_license_url + '" class="' + \
-                time_class + '" tabindex="10">' + \
-                '<span itemprop="license"> ' + \
-                copyright_symbol + ' </span></a>'
+            footer_str += _get_copyright_footer(content_license_url,
+                                                time_class)
         # show the date
         date_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('/', '--')
@@ -1725,34 +1719,30 @@ def _get_content_license(post_json_object: {}) -> str:
             continue
         value = item['value']
         if '://' not in value:
-            value_upper = value.upper()
-            if 'CC-BY-SA-NC' in value_upper or \
-               'CC-BY-NC-SA' in value_upper or \
-               'CC BY SA NC' in value_upper or \
-               'CC BY NC SA' in value_upper:
-                value = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
-            elif 'CC-BY-SA' in value_upper or 'CC-SA-BY' in value_upper or \
-                 'CC BY SA' in value_upper or 'CC SA BY' in value_upper:
-                value = 'https://creativecommons.org/licenses/by-sa/4.0'
-            elif 'CC-BY-NC' in value_upper or 'CC BY NC' in value_upper:
-                value = 'https://creativecommons.org/licenses/by-nc/4.0'
-            elif 'CC-BY-ND' in value_upper or 'CC BY ND' in value_upper:
-                value = 'https://creativecommons.org/licenses/by-nc-nd/4.0'
-            elif 'CC-BY' in value_upper or 'CC BY' in value_upper:
-                value = 'https://creativecommons.org/licenses/by/4.0'
-            elif 'GFDL' in value_upper or 'GNU FREE DOC' in value_upper:
-                value = 'https://www.gnu.org/licenses/fdl-1.3.html'
-            elif 'OPL' in value_upper or 'OPEN PUBLICATION LIC' in value_upper:
-                value = 'https://opencontent.org/openpub'
-            elif 'PDL' in value_upper or \
-                 'PUBLIC DOCUMENTATION LIC' in value_upper:
-                value = 'http://www.openoffice.org/licenses/PDL.html'
-            elif 'FREEBSD' in value_upper:
-                value = 'https://www.freebsd.org/copyright/freebsd-doc-license'
-            else:
-                value = 'https://creativecommons.org/publicdomain/zero/1.0'
+            value = license_link_from_name(value)
         return value
     return None
+
+
+def _get_copyright_footer(content_license_url: str,
+                          time_class: str) -> str:
+    """Returns the footer copyright link
+    """
+    # show the CC symbol
+    copyright_symbol = '🅭 '
+    if '/zero/' in content_license_url:
+        copyright_symbol = '🄍 '
+    elif 'unlicense' in content_license_url:
+        copyright_symbol = '🅮'
+    elif 'wtfpl' in content_license_url:
+        copyright_symbol = '🅮'
+    elif '/fdl' in content_license_url:
+        copyright_symbol = '🄎'
+    return '<a href="' + \
+        content_license_url + '" class="' + \
+        time_class + '" tabindex="10">' + \
+        '<span itemprop="license">' + \
+        copyright_symbol + '</span></a> '
 
 
 def individual_post_as_html(signing_priv_key_pem: str,
@@ -2286,8 +2276,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
        domain + ':' + str(port) + '/users/' in published_link:
         published_link = '/users/' + published_link.split('/users/')[1]
 
+    content_license_url = _get_content_license(post_json_object)
     if not is_news_post(post_json_object):
-        footer_str = '<a href="' + published_link + \
+        footer_str = ''
+        if content_license_url:
+            footer_str += _get_copyright_footer(content_license_url,
+                                                time_class)
+        footer_str += '<a href="' + published_link + \
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
     else:
@@ -2367,7 +2362,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if disallow_reply(content_all_str):
             reply_str = ''
 
-    content_license_url = _get_content_license(post_json_object)
     new_footer_str = \
         _get_footer_with_icons(show_icons,
                                container_class_icons,
