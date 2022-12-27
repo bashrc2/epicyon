@@ -1721,16 +1721,30 @@ def _get_content_license(post_json_object: {}) -> str:
             continue
         value = item['value']
         if '://' not in value:
-            if value in ('CC-BY-SA-NC', 'CC-BY-NC-SA'):
+            value_upper = value.upper()
+            if 'CC-BY-SA-NC' in value_upper or \
+               'CC-BY-NC-SA' in value_upper or \
+               'CC BY SA NC' in value_upper or \
+               'CC BY NC SA' in value_upper:
                 value = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
-            elif value == 'CC-BY':
-                value = 'https://creativecommons.org/licenses/by/4.0'
-            elif value in ('CC-BY-SA', 'CC-SA-BY'):
+            elif 'CC-BY-SA' in value_upper or 'CC-SA-BY' in value_upper or \
+                 'CC BY SA' in value_upper or 'CC SA BY' in value_upper:
                 value = 'https://creativecommons.org/licenses/by-sa/4.0'
-            elif value == 'CC-BY-NC':
+            elif 'CC-BY-NC' in value_upper or 'CC BY NC' in value_upper:
                 value = 'https://creativecommons.org/licenses/by-nc/4.0'
-            elif value == 'CC-BY-ND':
+            elif 'CC-BY-ND' in value_upper or 'CC BY ND' in value_upper:
                 value = 'https://creativecommons.org/licenses/by-nc-nd/4.0'
+            elif 'CC-BY' in value_upper or 'CC BY' in value_upper:
+                value = 'https://creativecommons.org/licenses/by/4.0'
+            elif 'GFDL' in value_upper or 'GNU FREE DOC' in value_upper:
+                value = 'https://www.gnu.org/licenses/fdl-1.3.html'
+            elif 'OPL' in value_upper or 'OPEN PUBLICATION LIC' in value_upper:
+                value = 'https://opencontent.org/openpub'
+            elif 'PDL' in value_upper or \
+                 'PUBLIC DOCUMENTATION LIC' in value_upper:
+                value = 'http://www.openoffice.org/licenses/PDL.html'
+            elif 'FREEBSD' in value_upper:
+                value = 'https://www.freebsd.org/copyright/freebsd-doc-license'
             else:
                 value = 'https://creativecommons.org/publicdomain/zero/1.0'
         return value
