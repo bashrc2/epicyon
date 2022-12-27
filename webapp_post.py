@@ -1567,7 +1567,7 @@ def _get_footer_with_icons(show_icons: bool,
                            delete_str: str, mute_str: str, edit_str: str,
                            post_json_object: {}, published_link: str,
                            time_class: str, published_str: str,
-                           nickname: str) -> str:
+                           nickname: str, content_license_url: str) -> str:
     """Returns the html for a post footer containing icons
     """
     if not show_icons:
@@ -1579,12 +1579,21 @@ def _get_footer_with_icons(show_icons: bool,
         reply_str + announce_str + like_str + bookmark_str + reaction_str
     footer_str += delete_str + mute_str + edit_str
     if not is_news_post(post_json_object):
+        footer_str += '        '
+        if content_license_url:
+            # show the CC symbol
+            footer_str += '<a href="' + \
+                content_license_url + '" class="' + \
+                time_class + '" tabindex="10">' + \
+                '<span itemprop="license">  🅭</span></a> '
+        # show the date
         date_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('/', '--')
-        footer_str += '        <a href="' + date_link + '" class="' + \
+        footer_str += '<a href="' + date_link + '" class="' + \
             time_class + '" tabindex="10"><span itemprop="datePublished">' + \
             published_str + '</span></a>\n'
     else:
+        # show the date
         footer_str += '        <a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
             '" class="' + time_class + '" tabindex="10">' + \
@@ -1696,6 +1705,36 @@ def _add_dogwhistle_warnings(summary: str, content: str,
         else:
             summary = whistle_str
     return summary
+
+
+def _get_content_license(post_json_object: {}) -> str:
+    """Returns the content license for the given post
+    """
+    if not post_json_object['object'].get('attachment'):
+        return None
+    for item in post_json_object['object']['attachment']:
+        if not item.get('name'):
+            continue
+        if not item.get('value'):
+            continue
+        if item['name'] != 'license':
+            continue
+        value = item['value']
+        if '://' not in value:
+            if value in ('CC-BY-SA-NC', 'CC-BY-NC-SA'):
+                value = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
+            elif value == 'CC-BY':
+                value = 'https://creativecommons.org/licenses/by/4.0'
+            elif value in ('CC-BY-SA', 'CC-SA-BY'):
+                value = 'https://creativecommons.org/licenses/by-sa/4.0'
+            elif value == 'CC-BY-NC':
+                value = 'https://creativecommons.org/licenses/by-nc/4.0'
+            elif value == 'CC-BY-ND':
+                value = 'https://creativecommons.org/licenses/by-nc-nd/4.0'
+            else:
+                value = 'https://creativecommons.org/publicdomain/zero/1.0'
+        return value
+    return None
 
 
 def individual_post_as_html(signing_priv_key_pem: str,
@@ -2310,6 +2349,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if disallow_reply(content_all_str):
             reply_str = ''
 
+    content_license_url = _get_content_license(post_json_object)
     new_footer_str = \
         _get_footer_with_icons(show_icons,
                                container_class_icons,
@@ -2317,7 +2357,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                like_str, reaction_str, bookmark_str,
                                delete_str, mute_str, edit_str,
                                post_json_object, published_link,
-                               time_class, published_str, nickname)
+                               time_class, published_str, nickname,
+                               content_license_url)
     if new_footer_str:
         footer_str = new_footer_str
 
