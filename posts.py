@@ -1133,6 +1133,17 @@ def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
     return sensitive, summary
 
 
+def _attach_post_license(post_json_object: {},
+                         content_license_url: str) -> None:
+    """Attaches a license to each post
+    """
+    post_json_object['attachment'].append({
+        "type": "PropertyValue",
+        "name": "license",
+        "value": content_license_url
+    })
+
+
 def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                      http_prefix: str, content: str, status_number: str,
                      published: str, new_post_id: str, post_context: {},
@@ -1205,6 +1216,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                          new_post['object'], attach_image_filename,
                          media_type, image_description, city, low_bandwidth,
                          content_license_url)
+    _attach_post_license(new_post['object'], content_license_url)
     return new_post
 
 
@@ -1270,6 +1282,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                          new_post, attach_image_filename,
                          media_type, image_description, city, low_bandwidth,
                          content_license_url)
+    _attach_post_license(new_post, content_license_url)
     return new_post
 
 
