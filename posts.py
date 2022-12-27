@@ -4013,6 +4013,9 @@ def _create_box_items(base_dir: str,
     if not os.path.isfile(index_filename):
         return total_posts_count, posts_added_to_timeline
 
+    # format the first post into an hashed url
+    # Why are url's hashed? Since storage is in the filesystem this avoids
+    # confusion with directories by not using the / character
     if first_post_id:
         first_post_id = first_post_id.replace('--', '#')
         first_post_id = first_post_id.replace('/', '#')
@@ -4025,6 +4028,8 @@ def _create_box_items(base_dir: str,
             if not post_filename:
                 break
 
+            # if a first post is specified then wait until it is found
+            # before starting to generate the timeline
             if first_post_id and total_posts_count == 0:
                 if first_post_id not in post_filename:
                     continue
@@ -4056,6 +4061,7 @@ def _create_box_items(base_dir: str,
             post_url = remove_eol(post_filename)
             post_url = post_url.replace('.json', '').strip()
 
+            # is this a duplicate?
             if post_url in post_urls_in_box:
                 continue
 
@@ -4214,7 +4220,7 @@ def _create_box_indexed(recent_posts_cache: {},
                               original_domain,
                               nickname, domain,
                               index_box_name,
-                              first_post_id,
+                              None,
                               page_number,
                               items_per_page,
                               newswire_votes_threshold,
