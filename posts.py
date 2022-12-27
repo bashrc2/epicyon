@@ -4013,6 +4013,9 @@ def _create_box_items(base_dir: str,
     if not os.path.isfile(index_filename):
         return total_posts_count, posts_added_to_timeline
 
+    # format the first post into an hashed url
+    # Why are url's hashed? Since storage is in the filesystem this avoids
+    # confusion with directories by not using the / character
     if first_post_id:
         first_post_id = first_post_id.replace('--', '#')
         first_post_id = first_post_id.replace('/', '#')
