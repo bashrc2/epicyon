@@ -1585,7 +1585,7 @@ def _get_footer_with_icons(show_icons: bool,
             footer_str += '<a href="' + \
                 content_license_url + '" class="' + \
                 time_class + '" tabindex="10">' + \
-                '<span itemprop="license">  🅭</span></a> '
+                '<span itemprop="license">🅭 </span></a>'
         # show the date
         date_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('/', '--')
