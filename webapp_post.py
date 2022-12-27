@@ -1582,15 +1582,8 @@ def _get_footer_with_icons(show_icons: bool,
     if not is_news_post(post_json_object):
         footer_str += '        '
         if content_license_url:
-            # show the CC symbol
-            copyright_symbol = '🅭 '
-            if '/zero/' in content_license_url:
-                copyright_symbol = '🄍 '
-            footer_str += '<a href="' + \
-                content_license_url + '" class="' + \
-                time_class + '" tabindex="10">' + \
-                '<span itemprop="license">' + \
-                copyright_symbol + '</span></a> '
+            footer_str += _get_copyright_footer(content_license_url,
+                                                time_class)
         # show the date
         date_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('/', '--')
@@ -1729,6 +1722,27 @@ def _get_content_license(post_json_object: {}) -> str:
             value = license_link_from_name(value)
         return value
     return None
+
+
+def _get_copyright_footer(content_license_url: str,
+                          time_class: str) -> str:
+    """Returns the footer copyright link
+    """
+    # show the CC symbol
+    copyright_symbol = '🅭 '
+    if '/zero/' in content_license_url:
+        copyright_symbol = '🄍 '
+    elif 'unlicense' in content_license_url:
+        copyright_symbol = '🅮'
+    elif 'wtfpl' in content_license_url:
+        copyright_symbol = '🅮'
+    elif '/fdl' in content_license_url:
+        copyright_symbol = '🄎'
+    return '<a href="' + \
+        content_license_url + '" class="' + \
+        time_class + '" tabindex="10">' + \
+        '<span itemprop="license">' + \
+        copyright_symbol + '</span></a> '
 
 
 def individual_post_as_html(signing_priv_key_pem: str,
@@ -2266,15 +2280,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not is_news_post(post_json_object):
         footer_str = ''
         if content_license_url:
-            # show the CC symbol
-            copyright_symbol = '🅭 '
-            if '/zero/' in content_license_url:
-                copyright_symbol = '🄍 '
-            footer_str += '<a href="' + \
-                content_license_url + '" class="' + \
-                time_class + '" tabindex="10">' + \
-                '<span itemprop="license">' + \
-                copyright_symbol + '</span></a> '
+            footer_str += _get_copyright_footer(content_license_url,
+                                                time_class)
         footer_str += '<a href="' + published_link + \
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
