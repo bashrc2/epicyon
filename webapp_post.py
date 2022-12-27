@@ -1749,6 +1749,10 @@ def _get_content_license(post_json_object: {}) -> str:
                 value = 'http://www.openoffice.org/licenses/PDL.html'
             elif 'FREEBSD' in value_upper:
                 value = 'https://www.freebsd.org/copyright/freebsd-doc-license'
+            elif 'WTF' in value_upper:
+                value = 'http://www.wtfpl.net/txt/copying'
+            elif 'UNLICENSE' in value_upper:
+                value = 'https://unlicense.org'
             else:
                 value = 'https://creativecommons.org/publicdomain/zero/1.0'
         return value
@@ -2286,8 +2290,20 @@ def individual_post_as_html(signing_priv_key_pem: str,
        domain + ':' + str(port) + '/users/' in published_link:
         published_link = '/users/' + published_link.split('/users/')[1]
 
+    content_license_url = _get_content_license(post_json_object)
     if not is_news_post(post_json_object):
-        footer_str = '<a href="' + published_link + \
+        footer_str = ''
+        if content_license_url:
+            # show the CC symbol
+            copyright_symbol = '🅭 '
+            if '/zero/' in content_license_url:
+                copyright_symbol = '🄍 '
+            footer_str += '<a href="' + \
+                content_license_url + '" class="' + \
+                time_class + '" tabindex="10">' + \
+                '<span itemprop="license">' + \
+                copyright_symbol + '</span></a> '
+        footer_str += '<a href="' + published_link + \
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
     else:
@@ -2367,7 +2383,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if disallow_reply(content_all_str):
             reply_str = ''
 
-    content_license_url = _get_content_license(post_json_object)
     new_footer_str = \
         _get_footer_with_icons(show_icons,
                                container_class_icons,
