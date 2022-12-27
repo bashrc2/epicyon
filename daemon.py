@@ -274,6 +274,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import license_link_from_name
 from utils import acct_handle_dir
 from utils import load_reverse_timeline
 from utils import save_reverse_timeline
@@ -6454,11 +6455,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 set_config_param(base_dir,
                                                  'libretranslateApiKey', '')
 
-                        # change instance short description
+                        # change instance content license
                         if fields.get('contentLicenseUrl'):
                             if fields['contentLicenseUrl'] != \
                                self.server.content_license_url:
                                 license_str = fields['contentLicenseUrl']
+                                if '://' not in license_str:
+                                    license_str = \
+                                        license_link_from_name(license_str)
                                 set_config_param(base_dir,
                                                  'contentLicenseUrl',
                                                  license_str)
