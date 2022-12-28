@@ -1419,7 +1419,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     # TODO: this should probably be retrieved somehow from the server
     signing_priv_key_pem = None
 
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     blocked_cache = {}
     languages_understood = []

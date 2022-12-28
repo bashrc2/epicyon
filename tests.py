@@ -770,7 +770,7 @@ def create_server_alice(path: str, domain: str, port: int,
         test_is_article = False
         conversation_id = None
         translate = {}
-        content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+        content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
         create_public_post(path, nickname, domain, port, http_prefix,
                            "No wise fish would go anywhere without a porpoise",
                            test_save_to_file,
@@ -839,7 +839,7 @@ def create_server_alice(path: str, domain: str, port: int,
     max_like_count = 10
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
@@ -933,7 +933,7 @@ def create_server_bob(path: str, domain: str, port: int,
         test_location = None
         test_is_article = False
         conversation_id = None
-        content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+        content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
         translate = {}
         create_public_post(path, nickname, domain, port, http_prefix,
                            "It's your life, live it your way.",
@@ -1003,7 +1003,7 @@ def create_server_bob(path: str, domain: str, port: int,
     max_like_count = 10
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
@@ -1089,7 +1089,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     low_bandwidth = True
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
@@ -1177,7 +1177,7 @@ def create_server_group(path: str, domain: str, port: int,
     low_bandwidth = True
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     dyslexic_font = False
     crawlers_allowed = []
     check_actor_timeout = 2
@@ -1229,7 +1229,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     languages_understood = [system_language]
     http_prefix = 'http'
     proxy_type = None
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -1559,7 +1559,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     http_prefix = 'http'
     proxy_type = None
     federation_list = []
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -1753,7 +1753,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     http_prefix = 'http'
     proxy_type = None
     federation_list = []
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -2175,7 +2175,7 @@ def test_group_follow(base_dir: str) -> None:
     http_prefix = 'http'
     proxy_type = None
     federation_list = []
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -2869,7 +2869,7 @@ def _test_create_person_account(base_dir: str):
     conversation_id = None
     low_bandwidth = True
     translate = {}
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     content = \
         "If your \"independent organization\" is government funded...\n\n" + \
         "(yawn)\n\n...then it's not really independent.\n\n" + \
@@ -2992,7 +2992,7 @@ def test_client_to_server(base_dir: str):
 
     global TEST_SERVER_ALICE_RUNNING
     global TEST_SERVER_BOB_RUNNING
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     TEST_SERVER_ALICE_RUNNING = False
     TEST_SERVER_BOB_RUNNING = False
 
@@ -4693,7 +4693,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     test_is_article = False
     conversation_id = None
     low_bandwidth = True
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     translate = {}
     reply = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -5643,7 +5643,7 @@ def _test_links_within_post(base_dir: str) -> None:
     test_is_article = False
     conversation_id = None
     low_bandwidth = True
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     translate = {}
 
     post_json_object = \
@@ -6733,7 +6733,7 @@ def _test_can_replyto(base_dir: str) -> None:
     test_is_article = False
     conversation_id = None
     low_bandwidth = True
-    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     translate = {}
 
     post_json_object = \

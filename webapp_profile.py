@@ -1537,7 +1537,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     content_license_url = \
         get_config_param(base_dir, 'contentLicenseUrl')
     if not content_license_url:
-        content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+        content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     instance_str = begin_edit_section(translate['Instance Settings'])
 

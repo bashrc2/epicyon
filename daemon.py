@@ -6470,7 +6470,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     license_str
                         else:
                             license_str = \
-                                'https://creativecommons.org/licenses/by/4.0'
+                                'https://creativecommons.org/' + \
+                                'licenses/by-nc/4.0'
                             set_config_param(base_dir,
                                              'contentLicenseUrl',
                                              license_str)
@@ -22555,7 +22556,7 @@ def run_daemon(max_hashtags: int,
 
     # license for content of the instance
     if not content_license_url:
-        content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+        content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     httpd.content_license_url = content_license_url
 
     # fitness metrics
