@@ -406,7 +406,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                         cw_lists, lists_enabled,
                                         timezone, False,
                                         bold_reading, dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             i += 1
             if i >= 8:
                 break
@@ -1291,7 +1291,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             cw_lists, lists_enabled,
                                             timezone, False,
                                             bold_reading, dogwhistles,
-                                            minimize_all_images)
+                                            minimize_all_images, None)
                 if post_str and item_id not in shown_items:
                     profile_str += post_str + separator_str
                     shown_items.append(item_id)

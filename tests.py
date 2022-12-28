@@ -173,6 +173,7 @@ from newswire import parse_feed_date
 from newswire import limit_word_lengths
 from mastoapiv1 import get_masto_api_v1id_from_nickname
 from mastoapiv1 import get_nickname_from_masto_api_v1id
+from webapp_post import replace_link_variable
 from webapp_post import prepare_html_post_nickname
 from speaker import speaker_replace_links
 from markdown import markdown_to_html
@@ -7668,6 +7669,25 @@ def _test_reply_language(base_dir: str) -> None:
     assert not get_reply_language(base_dir, post_json_object)
 
 
+def _test_replace_variable():
+    print('test_replace_variable')
+    link = 'red?firstpost=123'
+    result = replace_link_variable(link, 'firstpost', '456', '?')
+    expected = 'red?firstpost=456'
+    if result != expected:
+        print('expected: ' + expected)
+        print('result:   ' + result)
+    assert result == expected
+
+    link = 'red?firstpost=123?test?firstpost=444?abc'
+    result = replace_link_variable(link, 'firstpost', '356', '?')
+    expected = 'red?firstpost=356?test?firstpost=356?abc'
+    if result != expected:
+        print('expected: ' + expected)
+        print('result:   ' + result)
+    assert result == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7685,6 +7705,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_replace_variable()
     _test_missing_theme_colors(base_dir)
     _test_reply_language(base_dir)
     _test_emoji_in_actor_name(base_dir)

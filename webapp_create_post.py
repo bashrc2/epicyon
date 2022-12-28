@@ -429,7 +429,7 @@ def html_new_post(edit_post_params: {},
                                                     cw_lists, lists_enabled,
                                                     timezone, False,
                                                     bold_reading, dogwhistles,
-                                                    minimize_all_images)
+                                                    minimize_all_images, None)
 
                 reply_str = '<input type="hidden" ' + \
                     'name="replyTo" value="' + in_reply_to + '">\n'

@@ -9089,6 +9089,13 @@ class PubServer(BaseHTTPRequestHandler):
         repeat_url = path.split('?repeat=')[1]
         if '?' in repeat_url:
             repeat_url = repeat_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -9252,15 +9259,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.lists_enabled,
                                     timezone, mitm, bold_reading,
                                     self.server.dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
-
-        if announce_id:
-            first_post_id = announce_id.replace('/', '--')
-        else:
-            first_post_id = repeat_url.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
@@ -9284,6 +9285,14 @@ class PubServer(BaseHTTPRequestHandler):
         repeat_url = path.split('?unrepeat=')[1]
         if '?' in repeat_url:
             repeat_url = repeat_url.split('?')[0]
+
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         timeline_bookmark = ''
         if '?bm=' in path:
@@ -9382,7 +9391,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
-            str(page_number) + timeline_bookmark
+            str(page_number) + first_post_id + timeline_bookmark
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_announce_button',
                             self.server.debug)
@@ -9639,6 +9648,13 @@ class PubServer(BaseHTTPRequestHandler):
         like_url = path.split('?like=')[1]
         if '?' in like_url:
             like_url = like_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -9809,7 +9825,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             else:
                 print('WARN: Liked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -9820,9 +9836,6 @@ class PubServer(BaseHTTPRequestHandler):
                   like_url)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
-
-        first_post_id = like_url2.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -9848,6 +9861,13 @@ class PubServer(BaseHTTPRequestHandler):
         like_url = path.split('?unlike=')[1]
         if '?' in like_url:
             like_url = like_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -10009,16 +10029,13 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             else:
                 print('WARN: Unliked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
         actor_absolute = self._get_instance_url(calling_domain) + actor
-
-        first_post_id = like_url2.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -10046,6 +10063,13 @@ class PubServer(BaseHTTPRequestHandler):
         reaction_url = path.split('?react=')[1]
         if '?' in reaction_url:
             reaction_url = reaction_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -10238,7 +10262,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             else:
                 print('WARN: Emoji reaction post not found: ' +
                       reaction_post_filename)
@@ -10247,9 +10271,6 @@ class PubServer(BaseHTTPRequestHandler):
                   reaction_url)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
-
-        first_post_id = reaction_url2.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -10275,6 +10296,13 @@ class PubServer(BaseHTTPRequestHandler):
         reaction_url = path.split('?unreact=')[1]
         if '?' in reaction_url:
             reaction_url = reaction_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -10457,15 +10485,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             else:
                 print('WARN: Unreaction post not found: ' +
                       reaction_post_filename)
 
         actor_absolute = self._get_instance_url(calling_domain) + actor
-
-        first_post_id = reaction_url2.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -10594,6 +10619,13 @@ class PubServer(BaseHTTPRequestHandler):
         bookmark_url = path.split('?bookmark=')[1]
         if '?' in bookmark_url:
             bookmark_url = bookmark_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -10721,16 +10753,13 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             else:
                 print('WARN: Bookmarked post not found: ' + bookmark_filename)
         # self._post_to_outbox(bookmark_json,
         # self.server.project_version, None,
         # curr_session, proxy_type)
         actor_absolute = self._get_instance_url(calling_domain) + actor
-
-        first_post_id = bookmark_url.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -10756,6 +10785,13 @@ class PubServer(BaseHTTPRequestHandler):
         bookmark_url = path.split('?unbookmark=')[1]
         if '?' in bookmark_url:
             bookmark_url = bookmark_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -10885,14 +10921,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             else:
                 print('WARN: Unbookmarked post not found: ' +
                       bookmark_filename)
         actor_absolute = self._get_instance_url(calling_domain) + actor
-
-        first_post_id = bookmark_url.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -11031,6 +11064,13 @@ class PubServer(BaseHTTPRequestHandler):
         mute_url = path.split('?mute=')[1]
         if '?' in mute_url:
             mute_url = mute_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -11136,7 +11176,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             else:
                 print('WARN: Muted post not found: ' + mute_filename)
 
@@ -11150,9 +11190,6 @@ class PubServer(BaseHTTPRequestHandler):
                 path.split('?mute=')[0]
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_mute_button', self.server.debug)
-
-        first_post_id = mute_url.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         page_number_str = str(page_number)
         redirect_str = \
@@ -11171,6 +11208,13 @@ class PubServer(BaseHTTPRequestHandler):
         mute_url = path.split('?unmute=')[1]
         if '?' in mute_url:
             mute_url = mute_url.split('?')[0]
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
         timeline_bookmark = ''
         if '?bm=' in path:
             timeline_bookmark = path.split('?bm=')[1]
@@ -11276,7 +11320,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.lists_enabled,
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
             else:
                 print('WARN: Unmuted post not found: ' + mute_filename)
         if calling_domain.endswith('.onion') and onion_domain:
@@ -11287,9 +11331,6 @@ class PubServer(BaseHTTPRequestHandler):
                 'http://' + i2p_domain + path.split('?unmute=')[0]
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_undo_mute_button', self.server.debug)
-
-        first_post_id = mute_url.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
         page_number_str = str(page_number)
         redirect_str = \

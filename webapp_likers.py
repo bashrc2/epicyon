@@ -113,7 +113,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                 cw_lists, lists_enabled,
                                 timezone, mitm, bold_reading,
                                 dogwhistles,
-                                minimize_all_images)
+                                minimize_all_images, None)
 
     # show likers beneath the post
     obj = post_json_object

@@ -986,15 +986,16 @@ def html_timeline(default_timeline: str,
                 if box_name != 'tlmedia' and recent_posts_cache.get('html'):
                     post_id = remove_id_ending(item['id']).replace('/', '#')
                     if recent_posts_cache['html'].get(post_id):
+                        if not first_post_id:
+                            first_post_id = post_id
+                        last_post_id = post_id
                         curr_tl_str = recent_posts_cache['html'][post_id]
                         curr_tl_str = \
                             prepare_post_from_html_cache(nickname,
                                                          curr_tl_str,
                                                          box_name,
-                                                         page_number)
-                        if not first_post_id:
-                            first_post_id = post_id
-                        last_post_id = post_id
+                                                         page_number,
+                                                         first_post_id)
                         _log_timeline_timing(enable_timing_log,
                                              timeline_start_time,
                                              box_name, '10')
@@ -1035,7 +1036,8 @@ def html_timeline(default_timeline: str,
                                                 cw_lists, lists_enabled,
                                                 timezone, mitm,
                                                 bold_reading, dogwhistles,
-                                                minimize_all_images)
+                                                minimize_all_images,
+                                                first_post_id)
                     _log_timeline_timing(enable_timing_log,
                                          timeline_start_time, box_name, '12')
 
