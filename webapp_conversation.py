@@ -96,7 +96,7 @@ def html_conversation_view(post_id: str,
                                     cw_lists, lists_enabled,
                                     timezone, False, bold_reading,
                                     dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
         if post_str:
             conv_str += text_mode_separator + separator_str + post_str
 

@@ -480,7 +480,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             theme_name, system_language, max_like_count,
                             not_dm, True, True, False, True, False,
                             cw_lists, lists_enabled, timezone, mitm,
-                            bold_reading, dogwhistles, minimize_all_images)
+                            bold_reading, dogwhistles, minimize_all_images,
+                            None)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -1388,7 +1389,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             False, True, False, cw_lists,
                             lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles,
-                            minimize_all_images)
+                            minimize_all_images, None)
     return True
 
 
@@ -1617,7 +1618,7 @@ def _receive_like(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
     return True
 
 
@@ -1742,7 +1743,7 @@ def _receive_undo_like(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
     return True
 
 
@@ -1899,7 +1900,7 @@ def _receive_reaction(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
     return True
 
 
@@ -2080,7 +2081,7 @@ def _receive_zot_reaction(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
     return True
 
 
@@ -2225,7 +2226,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
     return True
 
 
@@ -2346,7 +2347,7 @@ def _receive_bookmark(recent_posts_cache: {},
                                 False, True, False, cw_lists,
                                 lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
-                                minimize_all_images)
+                                minimize_all_images, None)
     return True
 
 
@@ -2469,7 +2470,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                                 manually_approve_followers,
                                 False, True, False, cw_lists, lists_enabled,
                                 timezone, mitm, bold_reading,
-                                dogwhistles, minimize_all_images)
+                                dogwhistles, minimize_all_images, None)
     return True
 
 
@@ -2710,7 +2711,7 @@ def _receive_announce(recent_posts_cache: {},
                                 False, True, False, cw_lists,
                                 lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
-                                minimize_all_images)
+                                minimize_all_images, None)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -3938,7 +3939,7 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             False, True, False, cw_lists,
                             lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles,
-                            minimize_all_images)
+                            minimize_all_images, None)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,

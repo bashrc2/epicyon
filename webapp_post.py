@@ -275,8 +275,31 @@ def prepare_html_post_nickname(nickname: str, post_html: str) -> str:
     return new_post_str
 
 
+def replace_link_variable(link: str, variable_name: str, value: str,
+                          separator: str = '?') -> str:
+    """Replaces a variable within the given link
+    """
+    full_var = separator + variable_name + '='
+    if full_var not in link:
+        return link
+
+    curr_str = link
+    result = ''
+    while full_var in curr_str:
+        prefix = curr_str.split(full_var, 1)[0] + full_var
+        next_str = curr_str.split(full_var, 1)[1]
+        if separator in next_str:
+            next_str = next_str.split(separator, 1)[1]
+            result += prefix + value + separator
+            curr_str = next_str
+        else:
+            result += prefix + value
+            curr_str = ''
+    return result + curr_str
+
+
 def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
-                                 page_number: int) -> str:
+                                 page_number: int, first_post_id: str) -> str:
     """Sets the page number on a cached html post
     """
     # if on the bookmarks timeline then remain there
@@ -289,10 +312,30 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
             post_html = \
                 post_html.replace('?page=' + page_number_str, '?page=-999')
 
+    # add the page number
     with_page_number = \
         post_html.replace(';-999;', ';' + str(page_number) + ';')
     with_page_number = \
         with_page_number.replace('?page=-999', '?page=' + str(page_number))
+
+    # add first post in the timeline
+    if first_post_id is None:
+        first_post_id = ''
+
+    first_post_id = first_post_id.replace('#', '/')
+    if '?firstpost=' in with_page_number:
+        with_page_number = \
+            replace_link_variable(with_page_number,
+                                  'firstpost', first_post_id, '?')
+    elif ';firstpost=' in with_page_number:
+        with_page_number = \
+            replace_link_variable(with_page_number,
+                                  'firstpost', first_post_id, ';')
+    else:
+        with_page_number = \
+            with_page_number.replace('?page=',
+                                     '?firstpost=' + first_post_id +
+                                     '?page=')
     return prepare_html_post_nickname(nickname, with_page_number)
 
 
@@ -339,7 +382,8 @@ def _get_post_from_recent_cache(session,
                                 page_number: int,
                                 recent_posts_cache: {},
                                 max_recent_posts: int,
-                                signing_priv_key_pem: str) -> str:
+                                signing_priv_key_pem: str,
+                                first_post_id: str) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if box_name == 'tlmedia':
@@ -378,7 +422,7 @@ def _get_post_from_recent_cache(session,
 
     post_html = \
         prepare_post_from_html_cache(nickname, post_html,
-                                     box_name, page_number)
+                                     box_name, page_number, first_post_id)
     update_recent_posts_cache(recent_posts_cache, max_recent_posts,
                               post_json_object, post_html)
     _log_post_timing(enable_timing_log, post_start_time, '3')
@@ -539,7 +583,8 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
 
 def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                         post_json_object: {}, actor_nickname: str,
-                        translate: {}, is_event: bool) -> str:
+                        translate: {}, is_event: bool,
+                        first_post_id: str) -> str:
     """Returns html for the edit icon/button
     """
     edit_str = ''
@@ -561,6 +606,10 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
         if post_json_object['object'].get('inReplyTo'):
             reply_to = ';replyTo=' + post_json_object['object']['inReplyTo']
 
+        first_post_str = ''
+        if first_post_id:
+            first_post_str = ';firstpost=' + first_post_id
+
         if is_blog_post(post_json_object):
             edit_blog_post_str = 'Edit blog post'
             if translate.get(edit_blog_post_str):
@@ -571,7 +620,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                     '<a class="imageAnchor" href="/users/' + \
                     nickname + '/tlblogs?editblogpost=' + \
                     post_id.split('/statuses/')[1] + \
-                    ';actor=' + actor_nickname + \
+                    ';actor=' + actor_nickname + first_post_str + \
                     '" title="' + edit_blog_post_str + '" tabindex="10">' + \
                     '<img loading="lazy" decoding="async" title="' + \
                     edit_blog_post_str + '" alt="' + edit_blog_post_str + \
@@ -582,7 +631,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                     '<a class="imageAnchor" href="/users/' + \
                     nickname + '/editnewspost=' + \
                     post_id.split('/statuses/')[1] + \
-                    '?actor=' + actor_nickname + \
+                    '?actor=' + actor_nickname + first_post_str + \
                     '" title="' + edit_blog_post_str + '" tabindex="10">' + \
                     '<img loading="lazy" decoding="async" title="' + \
                     edit_blog_post_str + '" alt="' + edit_blog_post_str + \
@@ -596,7 +645,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '/tlblogs?editeventpost=' + \
                 post_id.split('/statuses/')[1] + \
-                '?actor=' + actor_nickname + \
+                '?actor=' + actor_nickname + first_post_str + \
                 '" title="' + edit_event_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_event_str + '" alt="' + edit_event_str + \
@@ -611,7 +660,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '?postedit=' + \
                 post_id.split('/statuses/')[1] + ';scope=public' + \
-                ';actor=' + actor_nickname + reply_to + \
+                ';actor=' + actor_nickname + first_post_str + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
@@ -626,7 +675,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '?postedit=' + \
                 post_id.split('/statuses/')[1] + ';scope=reminder' + \
-                ';actor=' + actor_nickname + reply_to + \
+                ';actor=' + actor_nickname + first_post_str + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
@@ -641,7 +690,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '?postedit=' + \
                 post_id.split('/statuses/')[1] + ';scope=dm' + \
-                ';actor=' + actor_nickname + reply_to + \
+                ';actor=' + actor_nickname + first_post_str + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
@@ -656,7 +705,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '?postedit=' + \
                 post_id.split('/statuses/')[1] + ';scope=unlisted' + \
-                ';actor=' + actor_nickname + reply_to + \
+                ';actor=' + actor_nickname + first_post_str + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
@@ -671,7 +720,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 '<a class="imageAnchor" href="/users/' + \
                 nickname + '?postedit=' + \
                 post_id.split('/statuses/')[1] + ';scope=followers' + \
-                ';actor=' + actor_nickname + reply_to + \
+                ';actor=' + actor_nickname + first_post_str + reply_to + \
                 '" title="' + edit_post_str + '" tabindex="10">' + \
                 '<img loading="lazy" decoding="async" title="' + \
                 edit_post_str + '" alt="' + edit_post_str + \
@@ -692,7 +741,8 @@ def _get_announce_icon_html(is_announced: bool,
                             page_number_param: str,
                             timeline_post_bookmark: str,
                             box_name: str,
-                            max_announce_count: int) -> str:
+                            max_announce_count: int,
+                            first_post_id: str) -> str:
     """Returns html for announce icon/button at the bottom of the post
     """
     announce_str = ''
@@ -759,13 +809,17 @@ def _get_announce_icon_html(is_announced: bool,
             announce_count_str.replace('(', '').replace(')', '').strip()
         announce_str += '</a></label>\n'
 
+    first_post_str = ''
+    if first_post_id:
+        first_post_str = '?firstpost=' + first_post_id
+
     announce_link_str = '?' + \
         announce_link + '=' + announce_post_id + page_number_param
     announce_str += \
         '        <a class="imageAnchor" href="/users/' + \
         nickname + announce_link_str + unannounce_link_str + \
         '?actor=' + post_json_object['actor'] + \
-        '?bm=' + timeline_post_bookmark + \
+        '?bm=' + timeline_post_bookmark + first_post_str + \
         '?tl=' + box_name + '" title="' + announce_title + '" tabindex="10">\n'
 
     announce_str += \
@@ -785,7 +839,8 @@ def _get_like_icon_html(nickname: str, domain_full: str,
                         translate: {}, page_number_param: str,
                         timeline_post_bookmark: str,
                         box_name: str,
-                        max_like_count: int) -> str:
+                        max_like_count: int,
+                        first_post_id: str) -> str:
     """Returns html for like icon/button
     """
     if not show_like_button or is_moderation_post:
@@ -837,12 +892,16 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         like_str += like_count_str.replace('(', '').replace(')', '').strip()
         like_str += '</a></label>\n'
 
+    first_post_str = ''
+    if first_post_id:
+        first_post_str = '?firstpost=' + first_post_id
+
     like_str += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         like_link + '=' + like_post_id + \
         page_number_param + \
         '?actor=' + post_json_object['actor'] + \
-        '?bm=' + timeline_post_bookmark + \
+        '?bm=' + timeline_post_bookmark + first_post_str + \
         '?tl=' + box_name + '" title="' + like_title + like_count_str + \
         '" tabindex="10">\n'
     like_str += \
@@ -861,7 +920,8 @@ def _get_bookmark_icon_html(nickname: str, domain_full: str,
                             enable_timing_log: bool,
                             post_start_time, box_name: str,
                             page_number_param: str,
-                            timeline_post_bookmark: str) -> str:
+                            timeline_post_bookmark: str,
+                            first_post_id: str) -> str:
     """Returns html for bookmark icon/button
     """
     bookmark_str = ''
@@ -886,12 +946,17 @@ def _get_bookmark_icon_html(nickname: str, domain_full: str,
     bookmark_post_id = \
         remove_hash_from_post_id(post_json_object['object']['id'])
     bookmark_post_id = remove_id_ending(bookmark_post_id)
+
+    first_post_str = ''
+    if first_post_id:
+        first_post_str = '?firstpost=' + first_post_id
+
     bookmark_str = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         bookmark_link + '=' + bookmark_post_id + \
         page_number_param + \
         '?actor=' + post_json_object['actor'] + \
-        '?bm=' + timeline_post_bookmark + \
+        '?bm=' + timeline_post_bookmark + first_post_str + \
         '?tl=' + box_name + '" title="' + bookmark_title + \
         '" tabindex="10">\n'
     bookmark_str += \
@@ -910,7 +975,8 @@ def _get_reaction_icon_html(nickname: str, post_json_object: {},
                             enable_timing_log: bool,
                             post_start_time, box_name: str,
                             page_number_param: str,
-                            timeline_post_reaction: str) -> str:
+                            timeline_post_reaction: str,
+                            first_post_id: str) -> str:
     """Returns html for reaction icon/button
     """
     reaction_str = ''
@@ -926,11 +992,16 @@ def _get_reaction_icon_html(nickname: str, post_json_object: {},
     reaction_post_id = \
         remove_hash_from_post_id(post_json_object['object']['id'])
     reaction_post_id = remove_id_ending(reaction_post_id)
+
+    first_post_str = ''
+    if first_post_id:
+        first_post_str = '?firstpost=' + first_post_id
+
     reaction_str = \
         '        <a class="imageAnchor" href="/users/' + nickname + \
         '?selreact=' + reaction_post_id + page_number_param + \
         '?actor=' + post_json_object['actor'] + \
-        '?bm=' + timeline_post_reaction + \
+        '?bm=' + timeline_post_reaction + first_post_str + \
         '?tl=' + box_name + '" title="' + reaction_title + \
         '" tabindex="10">\n'
     reaction_str += \
@@ -950,7 +1021,8 @@ def _get_mute_icon_html(is_muted: bool,
                         page_number_param: str,
                         box_name: str,
                         timeline_post_bookmark: str,
-                        translate: {}) -> str:
+                        translate: {},
+                        first_post_id: str) -> str:
     """Returns html for mute icon/button
     """
     mute_str = ''
@@ -959,6 +1031,10 @@ def _get_mute_icon_html(is_muted: bool,
          message_id.startswith(post_actor))):
         return mute_str
 
+    first_post_str = ''
+    if first_post_id:
+        first_post_str = '?firstpost=' + first_post_id
+
     if not is_muted:
         mute_this_post_str = 'Mute this post'
         if translate.get('Mute this post'):
@@ -966,7 +1042,7 @@ def _get_mute_icon_html(is_muted: bool,
         mute_str = \
             '        <a class="imageAnchor" href="/users/' + nickname + \
             '?mute=' + message_id + page_number_param + '?tl=' + box_name + \
-            '?bm=' + timeline_post_bookmark + \
+            '?bm=' + timeline_post_bookmark + first_post_str + \
             '" title="' + mute_this_post_str + '" tabindex="10">\n'
         mute_str += \
             '          ' + \
@@ -982,7 +1058,8 @@ def _get_mute_icon_html(is_muted: bool,
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?unmute=' + message_id + \
             page_number_param + '?tl=' + box_name + '?bm=' + \
-            timeline_post_bookmark + '" title="' + undo_mute_str + \
+            timeline_post_bookmark + first_post_str + \
+            '" title="' + undo_mute_str + \
             '" tabindex="10">\n'
         mute_str += \
             '          ' + \
@@ -999,7 +1076,8 @@ def _get_delete_icon_html(nickname: str, domain_full: str,
                           message_id: str,
                           post_json_object: {},
                           page_number_param: str,
-                          translate: {}) -> str:
+                          translate: {},
+                          first_post_id: str) -> str:
     """Returns html for delete icon/button
     """
     delete_str = ''
@@ -1011,10 +1089,15 @@ def _get_delete_icon_html(nickname: str, domain_full: str,
                 delete_this_post_str = 'Delete this post'
                 if translate.get(delete_this_post_str):
                     delete_this_post_str = translate[delete_this_post_str]
+
+                first_post_str = ''
+                if first_post_id:
+                    first_post_str = '?firstpost=' + first_post_id
+
                 delete_str = \
                     '        <a class="imageAnchor" href="/users/' + \
-                    nickname + \
-                    '?delete=' + message_id + page_number_param + \
+                    nickname + '?delete=' + message_id + \
+                    page_number_param + first_post_str + \
                     '" title="' + delete_this_post_str + '" tabindex="10">\n'
                 delete_str += \
                     '          ' + \
@@ -1773,7 +1856,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             timezone: str,
                             mitm: bool, bold_reading: bool,
                             dogwhistles: {},
-                            minimize_all_images: bool) -> str:
+                            minimize_all_images: bool,
+                            first_post_id: str) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -1844,7 +1928,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                     page_number,
                                     recent_posts_cache,
                                     max_recent_posts,
-                                    signing_priv_key_pem)
+                                    signing_priv_key_pem,
+                                    first_post_id)
     if post_html:
         return post_html
     if use_cache_only and post_json_object['type'] != 'Announce':
@@ -1975,7 +2060,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                         page_number,
                                         recent_posts_cache,
                                         max_recent_posts,
-                                        signing_priv_key_pem)
+                                        signing_priv_key_pem,
+                                        first_post_id)
         if post_html:
             return post_html
 
@@ -2104,7 +2190,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     edit_str = _get_edit_icon_html(base_dir, nickname, domain_full,
                                    post_json_object, actor_nickname,
-                                   translate, False)
+                                   translate, False, first_post_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '11')
 
@@ -2120,7 +2206,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 translate,
                                 page_number_param,
                                 timeline_post_bookmark,
-                                box_name, max_like_count)
+                                box_name, max_like_count,
+                                first_post_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '12')
 
@@ -2149,7 +2236,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                    post_start_time,
                                    translate, page_number_param,
                                    timeline_post_bookmark,
-                                   box_name, max_like_count)
+                                   box_name, max_like_count,
+                                   first_post_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '12.5')
 
@@ -2161,7 +2249,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 enable_timing_log,
                                 post_start_time, box_name,
                                 page_number_param,
-                                timeline_post_bookmark)
+                                timeline_post_bookmark,
+                                first_post_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '12.9')
 
@@ -2173,7 +2262,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 enable_timing_log,
                                 post_start_time, box_name,
                                 page_number_param,
-                                timeline_post_bookmark)
+                                timeline_post_bookmark,
+                                first_post_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '12.10')
 
@@ -2191,7 +2281,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             page_number_param,
                             box_name,
                             timeline_post_bookmark,
-                            translate)
+                            translate, first_post_id)
 
     delete_str = \
         _get_delete_icon_html(nickname, domain_full,
@@ -2200,7 +2290,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                               message_id,
                               post_json_object,
                               page_number_param,
-                              translate)
+                              translate, first_post_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '13.1')
 
@@ -2665,7 +2755,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 False, authorized, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
-                                minimize_all_images)
+                                minimize_all_images, None)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2708,7 +2798,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, mitm,
                                             bold_reading,
                                             dogwhistles,
-                                            minimize_all_images) + post_str
+                                            minimize_all_images,
+                                            None) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2748,7 +2839,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             cw_lists, lists_enabled,
                                             timezone, False,
                                             bold_reading, dogwhistles,
-                                            minimize_all_images)
+                                            minimize_all_images, None)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2810,7 +2901,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         cw_lists, lists_enabled,
                                         timezone, False,
                                         bold_reading, dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2869,7 +2960,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 False, False, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, False,
                                 bold_reading, dogwhistles,
-                                minimize_all_images)
+                                minimize_all_images, None)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

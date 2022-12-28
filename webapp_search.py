@@ -807,7 +807,7 @@ def html_history_search(translate: {}, base_dir: str,
                                     cw_lists, lists_enabled,
                                     timezone, False, bold_reading,
                                     dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -1026,7 +1026,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     store_to_sache, False, cw_lists,
                                     lists_enabled, timezone, False,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images)
+                                    minimize_all_images, None)
         if post_str:
             hashtag_search_form += separator_str + post_str
         index += 1

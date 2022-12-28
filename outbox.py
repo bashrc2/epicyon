@@ -570,7 +570,7 @@ def post_message_to_outbox(session, translate: {},
                                         cw_lists, lists_enabled,
                                         timezone, mitm,
                                         bold_reading, dogwhistles,
-                                        minimize_all_images)
+                                        minimize_all_images, None)
 
     if is_edited_post:
         message_json['type'] = 'Update'

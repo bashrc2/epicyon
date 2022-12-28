@@ -96,7 +96,7 @@ def html_confirm_delete(server,
                                 False, False, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
-                                minimize_all_images)
+                                minimize_all_images, None)
     delete_post_str += '<center>'
     delete_post_str += \
         '  <p class="followText">' + \

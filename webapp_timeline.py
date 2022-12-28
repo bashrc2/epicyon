@@ -500,7 +500,8 @@ def html_timeline(default_timeline: str,
                   timezone: str, bold_reading: bool,
                   dogwhistles: {}, ua_str: str,
                   min_images_for_accounts: [],
-                  reverse_sequence: bool) -> str:
+                  reverse_sequence: bool,
+                  last_post_id: str) -> str:
     """Show the timeline as html
     """
     enable_timing_log = False
@@ -925,10 +926,14 @@ def html_timeline(default_timeline: str,
         tl_str += '<br>' + \
             page_number_buttons(users_path, box_name, page_number,
                                 'timelineposts')
+        first_post_str = ''
+        if page_number > 2:
+            if last_post_id:
+                first_post_str = ';firstpost=' + last_post_id
         tl_str += \
             '  <center>\n' + \
             '    <a href="' + users_path + '/' + box_name + \
-            '?page=' + str(page_number - 1) + \
+            '?page=' + str(page_number - 1) + first_post_str + \
             '#timelineposts" accesskey="' + access_keys['Page up'] + '" ' + \
             'class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
@@ -949,6 +954,7 @@ def html_timeline(default_timeline: str,
     if box_name == 'inbox':
         use_cache_only = True
 
+    first_post_id = ''
     last_post_id = ''
 
     last_item_str = ''
@@ -980,13 +986,16 @@ def html_timeline(default_timeline: str,
                 if box_name != 'tlmedia' and recent_posts_cache.get('html'):
                     post_id = remove_id_ending(item['id']).replace('/', '#')
                     if recent_posts_cache['html'].get(post_id):
+                        if not first_post_id:
+                            first_post_id = post_id
+                        last_post_id = post_id
                         curr_tl_str = recent_posts_cache['html'][post_id]
                         curr_tl_str = \
                             prepare_post_from_html_cache(nickname,
                                                          curr_tl_str,
                                                          box_name,
-                                                         page_number)
-                        last_post_id = post_id
+                                                         page_number,
+                                                         first_post_id)
                         _log_timeline_timing(enable_timing_log,
                                              timeline_start_time,
                                              box_name, '10')
@@ -1027,7 +1036,8 @@ def html_timeline(default_timeline: str,
                                                 cw_lists, lists_enabled,
                                                 timezone, mitm,
                                                 bold_reading, dogwhistles,
-                                                minimize_all_images)
+                                                minimize_all_images,
+                                                first_post_id)
                     _log_timeline_timing(enable_timing_log,
                                          timeline_start_time, box_name, '12')
 
@@ -1036,6 +1046,8 @@ def html_timeline(default_timeline: str,
                         last_item_str = text_mode_separator + curr_tl_str
                         last_post_id = \
                             remove_id_ending(item['id']).replace('/', '#')
+                        if not first_post_id:
+                            first_post_id = last_post_id
                         item_ctr += 1
                         if not reverse_sequence:
                             tl_items_str += last_item_str
@@ -1066,11 +1078,14 @@ def html_timeline(default_timeline: str,
         first_post = ''
         if last_post_id:
             first_post = ';firstpost=' + last_post_id.replace('#', '--')
+        last_post = ''
+        if first_post_id:
+            last_post = ';lastpost=' + first_post_id.replace('#', '--')
         tl_str += \
             '      <br>\n' + \
             '      <center>\n' + \
             '        <a href="' + users_path + '/' + box_name + '?page=' + \
-            str(page_number + 1) + first_post + \
+            str(page_number + 1) + last_post + first_post + \
             '#timelineposts" accesskey="' + access_keys['Page down'] + '" ' + \
             'class="imageAnchor" tabindex="9">' + \
             '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
@@ -1323,7 +1338,7 @@ def html_shares(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, None)
 
 
 def html_wanted(default_timeline: str,
@@ -1388,7 +1403,7 @@ def html_wanted(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, None)
 
 
 def html_inbox(default_timeline: str,
@@ -1421,7 +1436,8 @@ def html_inbox(default_timeline: str,
                timezone: str, bold_reading: bool,
                dogwhistles: {}, ua_str: str,
                min_images_for_accounts: [],
-               reverse_sequence: bool) -> str:
+               reverse_sequence: bool,
+               last_post_id: str) -> str:
     """Show the inbox as html
     """
     manually_approve_followers = \
@@ -1454,7 +1470,7 @@ def html_inbox(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, last_post_id)
 
 
 def html_bookmarks(default_timeline: str,
@@ -1519,7 +1535,7 @@ def html_bookmarks(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, None)
 
 
 def html_inbox_dms(default_timeline: str,
@@ -1552,7 +1568,8 @@ def html_inbox_dms(default_timeline: str,
                    timezone: str, bold_reading: bool,
                    dogwhistles: {}, ua_str: str,
                    min_images_for_accounts: [],
-                   reverse_sequence: bool) -> str:
+                   reverse_sequence: bool,
+                   last_post_id: str) -> str:
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1580,7 +1597,7 @@ def html_inbox_dms(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, last_post_id)
 
 
 def html_inbox_replies(default_timeline: str,
@@ -1613,7 +1630,8 @@ def html_inbox_replies(default_timeline: str,
                        timezone: str, bold_reading: bool,
                        dogwhistles: {}, ua_str: str,
                        min_images_for_accounts: [],
-                       reverse_sequence: bool) -> str:
+                       reverse_sequence: bool,
+                       last_post_id: str) -> str:
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1639,7 +1657,7 @@ def html_inbox_replies(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, last_post_id)
 
 
 def html_inbox_media(default_timeline: str,
@@ -1672,7 +1690,8 @@ def html_inbox_media(default_timeline: str,
                      timezone: str, bold_reading: bool,
                      dogwhistles: {}, ua_str: str,
                      min_images_for_accounts: [],
-                     reverse_sequence: bool) -> str:
+                     reverse_sequence: bool,
+                     last_post_id: str) -> str:
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1698,7 +1717,7 @@ def html_inbox_media(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, last_post_id)
 
 
 def html_inbox_blogs(default_timeline: str,
@@ -1731,7 +1750,8 @@ def html_inbox_blogs(default_timeline: str,
                      timezone: str, bold_reading: bool,
                      dogwhistles: {}, ua_str: str,
                      min_images_for_accounts: [],
-                     reverse_sequence: bool) -> str:
+                     reverse_sequence: bool,
+                     last_post_id: str) -> str:
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1757,7 +1777,7 @@ def html_inbox_blogs(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, last_post_id)
 
 
 def html_inbox_features(default_timeline: str,
@@ -1816,7 +1836,7 @@ def html_inbox_features(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, None)
 
 
 def html_inbox_news(default_timeline: str,
@@ -1874,7 +1894,7 @@ def html_inbox_news(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, None)
 
 
 def html_outbox(default_timeline: str,
@@ -1935,4 +1955,4 @@ def html_outbox(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence)
+                         reverse_sequence, None)

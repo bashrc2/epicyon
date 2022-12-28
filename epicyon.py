@@ -149,7 +149,8 @@ def _command_options() -> None:
                         default=None,
                         help='Location for an event when sending a c2s post')
     parser.add_argument('--content_license_url', type=str,
-                        default='https://creativecommons.org/licenses/by/4.0',
+                        default='https://creativecommons.org/' +
+                        'licenses/by-nc/4.0',
                         help='Url of the license used for the ' +
                         'instance content')
     parser.add_argument('--import_emoji', type=str,

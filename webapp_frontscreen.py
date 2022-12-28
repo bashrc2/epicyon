@@ -95,7 +95,7 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             cw_lists, lists_enabled,
                                             timezone, False,
                                             bold_reading, dogwhistles,
-                                            minimize_all_images)
+                                            minimize_all_images, None)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1
