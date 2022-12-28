@@ -131,6 +131,8 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
         if not post_json:
             print(post_id + ' returned no json')
     while post_json:
+        if not isinstance(post_json, dict):
+            break
         if not has_object_dict(post_json):
             if not post_json.get('attributedTo'):
                 print(str(post_json))
