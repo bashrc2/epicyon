@@ -927,8 +927,9 @@ def html_timeline(default_timeline: str,
             page_number_buttons(users_path, box_name, page_number,
                                 'timelineposts')
         first_post_str = ''
-        if last_post_id:
-            first_post_str = ';firstpost=' + last_post_id
+        if page_number > 2:
+            if last_post_id:
+                first_post_str = ';firstpost=' + last_post_id
         tl_str += \
             '  <center>\n' + \
             '    <a href="' + users_path + '/' + box_name + \
