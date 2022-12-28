@@ -88,7 +88,7 @@ def html_moderation(default_timeline: str,
                          max_like_count, shared_items_federated_domains,
                          signing_priv_key_pem, cw_lists, lists_enabled,
                          timezone, bold_reading, dogwhistles, ua_str,
-                         min_images_for_accounts, reverse_sequence)
+                         min_images_for_accounts, reverse_sequence, None)
 
 
 def html_account_info(translate: {},

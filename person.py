@@ -996,6 +996,8 @@ def person_box_json(recent_posts_cache: {},
     if ';firstpost=' in path:
         first_post_id = \
             path.split(';firstpost=')[1]
+        if ';' in first_post_id:
+            first_post_id = first_post_id.split(';')[0]
         first_post_id = \
             first_post_id.replace('--', '/')
 

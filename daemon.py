@@ -12457,6 +12457,11 @@ class PubServer(BaseHTTPRequestHandler):
                         reverse_sequence = False
                         if nickname in self.server.reverse_sequence:
                             reverse_sequence = True
+                        last_post_id = None
+                        if ';lastpost=' in path:
+                            last_post_id = path.split(';lastpost=')[1]
+                            if ';' in last_post_id:
+                                last_post_id = last_post_id.split(';')[0]
                         msg = \
                             html_inbox(default_timeline,
                                        recent_posts_cache,
@@ -12501,7 +12506,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.dogwhistles,
                                        ua_str,
                                        self.server.min_images_for_accounts,
-                                       reverse_sequence)
+                                       reverse_sequence, last_post_id)
                         if getreq_start_time:
                             fitness_performance(getreq_start_time,
                                                 self.server.fitness,
@@ -12637,6 +12642,11 @@ class PubServer(BaseHTTPRequestHandler):
                         reverse_sequence = False
                         if nickname in self.server.reverse_sequence:
                             reverse_sequence = True
+                        last_post_id = None
+                        if ';lastpost=' in path:
+                            last_post_id = path.split(';lastpost=')[1]
+                            if ';' in last_post_id:
+                                last_post_id = last_post_id.split(';')[0]
                         msg = \
                             html_inbox_dms(self.server.default_timeline,
                                            self.server.recent_posts_cache,
@@ -12679,7 +12689,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            timezone, bold_reading,
                                            self.server.dogwhistles, ua_str,
                                            self.server.min_images_for_accounts,
-                                           reverse_sequence)
+                                           reverse_sequence, last_post_id)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -12805,6 +12815,11 @@ class PubServer(BaseHTTPRequestHandler):
                     reverse_sequence = False
                     if nickname in self.server.reverse_sequence:
                         reverse_sequence = True
+                    last_post_id = None
+                    if ';lastpost=' in path:
+                        last_post_id = path.split(';lastpost=')[1]
+                        if ';' in last_post_id:
+                            last_post_id = last_post_id.split(';')[0]
                     msg = \
                         html_inbox_replies(self.server.default_timeline,
                                            self.server.recent_posts_cache,
@@ -12848,7 +12863,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.dogwhistles,
                                            ua_str,
                                            self.server.min_images_for_accounts,
-                                           reverse_sequence)
+                                           reverse_sequence, last_post_id)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12970,6 +12985,11 @@ class PubServer(BaseHTTPRequestHandler):
                     reverse_sequence = False
                     if nickname in self.server.reverse_sequence:
                         reverse_sequence = True
+                    last_post_id = None
+                    if ';lastpost=' in path:
+                        last_post_id = path.split(';lastpost=')[1]
+                        if ';' in last_post_id:
+                            last_post_id = last_post_id.split(';')[0]
                     msg = \
                         html_inbox_media(self.server.default_timeline,
                                          self.server.recent_posts_cache,
@@ -13013,7 +13033,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          timezone, bold_reading,
                                          self.server.dogwhistles, ua_str,
                                          self.server.min_images_for_accounts,
-                                         reverse_sequence)
+                                         reverse_sequence, last_post_id)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -13135,6 +13155,11 @@ class PubServer(BaseHTTPRequestHandler):
                     reverse_sequence = False
                     if nickname in self.server.reverse_sequence:
                         reverse_sequence = True
+                    last_post_id = None
+                    if ';lastpost=' in path:
+                        last_post_id = path.split(';lastpost=')[1]
+                        if ';' in last_post_id:
+                            last_post_id = last_post_id.split(';')[0]
                     msg = \
                         html_inbox_blogs(self.server.default_timeline,
                                          self.server.recent_posts_cache,
@@ -13178,7 +13203,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          timezone, bold_reading,
                                          self.server.dogwhistles, ua_str,
                                          self.server.min_images_for_accounts,
-                                         reverse_sequence)
+                                         reverse_sequence, last_post_id)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
