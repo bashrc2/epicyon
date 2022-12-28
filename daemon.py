@@ -83,6 +83,7 @@ from person import remove_account
 from person import can_remove_post
 from person import person_snooze
 from person import person_unsnooze
+from keys import get_instance_actor_key
 from posts import get_max_profile_posts
 from posts import set_max_profile_posts
 from posts import get_post_expiry_keep_dms
@@ -91,7 +92,6 @@ from posts import get_post_expiry_days
 from posts import set_post_expiry_days
 from posts import get_original_post_from_announce_url
 from posts import save_post_to_box
-from posts import get_instance_actor_key
 from posts import remove_post_interactions
 from posts import outbox_message_create_wrap
 from posts import get_pinned_post_as_json
@@ -221,7 +221,7 @@ from webapp_suspended import html_suspended
 from webapp_tos import html_terms_of_service
 from webapp_confirm import html_confirm_follow
 from webapp_confirm import html_confirm_unfollow
-from webapp_post import html_conversation_thread
+from webapp_conversation import html_conversation_view
 from webapp_post import html_emoji_reaction_picker
 from webapp_post import html_post_replies
 from webapp_post import html_individual_post
@@ -11834,34 +11834,34 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.bold_reading.get(nickname):
             bold_reading = True
         conv_str = \
-            html_conversation_thread(post_id, self.server.translate,
-                                     base_dir,
-                                     http_prefix,
-                                     nickname,
-                                     domain,
-                                     self.server.project_version,
-                                     self.server.recent_posts_cache,
-                                     self.server.max_recent_posts,
-                                     curr_session,
-                                     self.server.cached_webfingers,
-                                     self.server.person_cache,
-                                     port,
-                                     self.server.yt_replace_domain,
-                                     self.server.twitter_replacement_domain,
-                                     self.server.show_published_date_only,
-                                     self.server.peertube_instances,
-                                     self.server.allow_local_network_access,
-                                     self.server.theme_name,
-                                     self.server.system_language,
-                                     self.server.max_like_count,
-                                     self.server.signing_priv_key_pem,
-                                     self.server.cw_lists,
-                                     self.server.lists_enabled,
-                                     timezone, bold_reading,
-                                     self.server.dogwhistles,
-                                     self.server.access_keys,
-                                     self.server.min_images_for_accounts,
-                                     self.server.debug)
+            html_conversation_view(post_id, self.server.translate,
+                                   base_dir,
+                                   http_prefix,
+                                   nickname,
+                                   domain,
+                                   self.server.project_version,
+                                   self.server.recent_posts_cache,
+                                   self.server.max_recent_posts,
+                                   curr_session,
+                                   self.server.cached_webfingers,
+                                   self.server.person_cache,
+                                   port,
+                                   self.server.yt_replace_domain,
+                                   self.server.twitter_replacement_domain,
+                                   self.server.show_published_date_only,
+                                   self.server.peertube_instances,
+                                   self.server.allow_local_network_access,
+                                   self.server.theme_name,
+                                   self.server.system_language,
+                                   self.server.max_like_count,
+                                   self.server.signing_priv_key_pem,
+                                   self.server.cw_lists,
+                                   self.server.lists_enabled,
+                                   timezone, bold_reading,
+                                   self.server.dogwhistles,
+                                   self.server.access_keys,
+                                   self.server.min_images_for_accounts,
+                                   self.server.debug)
         if conv_str:
             msg = conv_str.encode('utf-8')
             msglen = len(msg)

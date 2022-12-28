@@ -1400,7 +1400,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
         assert 'यह एक परीक्षण है' in received_json['object']['content']
         print('Check that message received from Alice contains an attachment')
         assert received_json['object']['attachment']
-        assert len(received_json['object']['attachment']) == 1
+        assert len(received_json['object']['attachment']) == 2
         attached = received_json['object']['attachment'][0]
         pprint(attached)
         assert attached.get('type')
