@@ -26,9 +26,9 @@ from roles import set_role
 from webfinger import webfinger_handle
 from bookmarks import send_bookmark_via_server
 from bookmarks import send_undo_bookmark_via_server
-from posts import download_conversation_posts
+from conversation import download_conversation_posts
+from keys import get_instance_actor_key
 from posts import set_post_expiry_days
-from posts import get_instance_actor_key
 from posts import send_mute_via_server
 from posts import send_undo_mute_via_server
 from posts import c2s_box_json

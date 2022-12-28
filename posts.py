@@ -101,6 +101,7 @@ from petnames import resolve_petnames
 from video import convert_video_to_note
 from context import get_individual_post_context
 from maps import geocoords_from_map_link
+from keys import get_person_key
 
 
 def is_moderator(base_dir: str, nickname: str) -> bool:
@@ -149,60 +150,6 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
                 if domain == follower_domain:
                     ctr += 1
     return ctr
-
-
-def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
-    """Returns the private key for a local account
-    """
-    if not domain or not nickname:
-        return None
-    handle = nickname + '@' + domain
-    key_filename = base_dir + '/keys/private/' + handle.lower() + '.key'
-    if not os.path.isfile(key_filename):
-        return None
-    with open(key_filename, 'r', encoding='utf-8') as pem_file:
-        return pem_file.read()
-    return None
-
-
-def get_instance_actor_key(base_dir: str, domain: str) -> str:
-    """Returns the private key for the instance actor used for
-    signing GET posts
-    """
-    return _get_local_private_key(base_dir, 'inbox', domain)
-
-
-def _get_local_public_key(base_dir: str, nickname: str, domain: str) -> str:
-    """Returns the public key for a local account
-    """
-    if not domain or not nickname:
-        return None
-    handle = nickname + '@' + domain
-    key_filename = base_dir + '/keys/public/' + handle.lower() + '.key'
-    if not os.path.isfile(key_filename):
-        return None
-    with open(key_filename, 'r', encoding='utf-8') as pem_file:
-        return pem_file.read()
-    return None
-
-
-def _get_person_key(nickname: str, domain: str, base_dir: str,
-                    key_type: str = 'public', debug: bool = False):
-    """Returns the public or private key of a person
-    """
-    if key_type == 'private':
-        key_pem = _get_local_private_key(base_dir, nickname, domain)
-    else:
-        key_pem = _get_local_public_key(base_dir, nickname, domain)
-    if not key_pem:
-        if debug:
-            print('DEBUG: ' + key_type + ' key file not found')
-        return ''
-    if len(key_pem) < 20:
-        if debug:
-            print('DEBUG: private key was too short: ' + key_pem)
-        return ''
-    return key_pem
 
 
 def _clean_html(raw_html: str) -> str:
@@ -2532,7 +2479,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                           translate)
 
     # get the senders private key
-    private_key_pem = _get_person_key(nickname, domain, base_dir, 'private')
+    private_key_pem = get_person_key(nickname, domain, base_dir, 'private')
     if len(private_key_pem) == 0:
         return 6
 
@@ -2937,7 +2884,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         if account_domain == i2p_domain:
             account_domain = curr_domain
     private_key_pem = \
-        _get_person_key(nickname, account_domain, base_dir, 'private', debug)
+        get_person_key(nickname, account_domain, base_dir, 'private', debug)
     if len(private_key_pem) == 0:
         if debug:
             print('DEBUG: Private key not found for ' +
@@ -6094,86 +6041,3 @@ def set_max_profile_posts(base_dir: str, nickname: str, domain: str,
               max_posts_filename)
         return False
     return True
-
-
-def download_conversation_posts(session, http_prefix: str, base_dir: str,
-                                nickname: str, domain: str,
-                                post_id: str, debug: bool) -> []:
-    """Downloads all posts for a conversation and returns a list of the
-    json objects
-    """
-    if '://' not in post_id:
-        return []
-    profile_str = 'https://www.w3.org/ns/activitystreams'
-    as_header = {
-        'Accept': 'application/ld+json; profile="' + profile_str + '"'
-    }
-    conversation_thread = []
-    signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    post_id = remove_id_ending(post_id)
-    post_filename = \
-        locate_post(base_dir, nickname, domain, post_id)
-    if post_filename:
-        post_json = load_json(post_filename)
-    else:
-        post_json = get_json(signing_priv_key_pem, session, post_id,
-                             as_header, None, debug, __version__,
-                             http_prefix, domain)
-    if debug:
-        if not post_json:
-            print(post_id + ' returned no json')
-    while post_json:
-        if not has_object_dict(post_json):
-            if not post_json.get('attributedTo'):
-                print(str(post_json))
-                if debug:
-                    print(post_id + ' has no attributedTo')
-                break
-            if not isinstance(post_json['attributedTo'], str):
-                break
-            if not post_json.get('published'):
-                if debug:
-                    print(post_id + ' has no published date')
-                break
-            if not post_json.get('to'):
-                if debug:
-                    print(post_id + ' has no "to" list')
-                break
-            if not isinstance(post_json['to'], list):
-                break
-            if 'cc' not in post_json:
-                if debug:
-                    print(post_id + ' has no "cc" list')
-                break
-            if not isinstance(post_json['cc'], list):
-                break
-            wrapped_post = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'id': post_id + '/activity',
-                'type': 'Create',
-                'actor': post_json['attributedTo'],
-                'published': post_json['published'],
-                'to': post_json['to'],
-                'cc': post_json['cc'],
-                'object': post_json
-            }
-            post_json = wrapped_post
-        conversation_thread = [post_json] + conversation_thread
-        if not post_json['object'].get('inReplyTo'):
-            if debug:
-                print(post_id + ' is not a reply')
-            break
-        post_id = post_json['object']['inReplyTo']
-        post_id = remove_id_ending(post_id)
-        post_filename = \
-            locate_post(base_dir, nickname, domain, post_id)
-        if post_filename:
-            post_json = load_json(post_filename)
-        else:
-            post_json = get_json(signing_priv_key_pem, session, post_id,
-                                 as_header, None, debug, __version__,
-                                 http_prefix, domain)
-        if debug:
-            if not post_json:
-                print(post_id + ' returned no json')
-    return conversation_thread
