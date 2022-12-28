@@ -322,6 +322,7 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
     if first_post_id is None:
         first_post_id = ''
 
+    first_post_id = first_post_id.replace('#', '/')
     if '?firstpost=' in with_page_number:
         with_page_number = \
             replace_link_variable(with_page_number,
