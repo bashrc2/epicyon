@@ -116,7 +116,7 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
     as_header = {
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
-    conversation_thread = []
+    conversation_view = []
     signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     post_id = remove_id_ending(post_id)
     post_filename = \
@@ -166,7 +166,7 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
                 'object': post_json
             }
             post_json = wrapped_post
-        conversation_thread = [post_json] + conversation_thread
+        conversation_view = [post_json] + conversation_view
         if not post_json['object'].get('inReplyTo'):
             if debug:
                 print(post_id + ' is not a reply')
@@ -184,4 +184,4 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
         if debug:
             if not post_json:
                 print(post_id + ' returned no json')
-    return conversation_thread
+    return conversation_view
