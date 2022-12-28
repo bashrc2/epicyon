@@ -9708,6 +9708,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         like_actor = \
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
+        print('actor_liked path: ' + path)
         actor_liked = path.split('?actor=')[1]
         if '?' in actor_liked:
             actor_liked = actor_liked.split('?')[0]
