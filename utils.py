@@ -3895,7 +3895,7 @@ def is_i2p_request(calling_domain: str, referer_domain: str,
     return False
 
 
-def disallow_announce(content: str) -> bool:
+def disallow_announce(content: str, attachment: []) -> bool:
     """Are announces/boosts not allowed for the given post?
     """
     disallow_strings = (
@@ -3919,6 +3919,21 @@ def disallow_announce(content: str) -> bool:
     for diss in disallow_strings:
         if diss in content_lower:
             return True
+
+    # check for attached images without descriptions
+    if isinstance(attachment, list):
+        for item in attachment:
+            if not isinstance(item. dict):
+                continue
+            if not item.get('mediaType'):
+                continue
+            if not item.get('url'):
+                continue
+            if not item['mediaType'].startswith('image/'):
+                continue
+            if not item.get('name'):
+                # no image description
+                return True
     return False
 
 

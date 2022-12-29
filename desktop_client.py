@@ -2195,8 +2195,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_summary = ''
                     if post_json_object['object'].get('summary'):
                         post_summary = post_json_object['object']['summary']
+                    attachment = []
+                    if post_json_object['object'].get('attachment'):
+                        attachment = post_json_object['object']['attachment']
                     if not disallow_announce(post_summary + ' ' +
-                                             post_content):
+                                             post_content, attachment):
                         if post_json_object.get('id'):
                             post_id = post_json_object['id']
                             announce_actor = \
