@@ -2441,9 +2441,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                                dogwhistles, translate)
 
         content_all_str = str(summary_str) + ' ' + content_str
-        # does an emoji indicate a no boost preference?
-        # if so then don't show the repeat/announce icon
-        if disallow_announce(content_all_str):
+        # does an emoji or lack of alt text on an image indicate a
+        # no boost preference? if so then don't show the repeat/announce icon
+        attachment = []
+        if post_json_object['object'].get('attachment'):
+            attachment = post_json_object['object']['attachment']
+        if disallow_announce(content_all_str, attachment):
             announce_str = ''
         # does an emoji indicate a no replies preference?
         # if so then don't show the reply icon
