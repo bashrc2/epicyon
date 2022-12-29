@@ -98,7 +98,9 @@ def html_conversation_view(post_id: str,
                                     dogwhistles,
                                     minimize_all_images, None)
         if post_str:
-            conv_str += text_mode_separator + separator_str + post_str
+            # check for "HTTP/1.1 303 See Other Server"
+            if not post_str.startswith('HTTP/'):
+                conv_str += text_mode_separator + separator_str + post_str
 
     conv_str += text_mode_separator + html_footer()
     return conv_str
