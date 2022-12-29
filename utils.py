@@ -3923,7 +3923,7 @@ def disallow_announce(content: str, attachment: []) -> bool:
     # check for attached images without descriptions
     if isinstance(attachment, list):
         for item in attachment:
-            if not isinstance(item. dict):
+            if not isinstance(item, dict):
                 continue
             if not item.get('mediaType'):
                 continue
