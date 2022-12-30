@@ -727,12 +727,18 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
             with open(blocking_filename, 'r',
                       encoding='utf-8') as fp_noannounce:
                 file_text = fp_noannounce.read()
-                file_text = file_text.replace(handle + '\n', '')
-                file_text = \
-                    file_text.replace(handle.lower() + '\n', '')
         except OSError:
             print('EX: unable to read noannounce: ' +
                   blocking_filename + ' ' + handle)
+
+        new_file_text = ''
+        file_text_list = file_text.split('\n')
+        handle_lower = handle.lower()
+        for allowed in file_text_list:
+            if allowed.lower() != handle_lower:
+                new_file_text += allowed + '\n'
+        file_text = new_file_text
+
         try:
             with open(blocking_filename, 'w+',
                       encoding='utf-8') as fp_noannounce:

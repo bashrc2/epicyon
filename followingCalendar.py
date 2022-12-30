@@ -144,9 +144,14 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
             # already added
             return
         # remove from calendar file
-        following_handles = following_handles.replace(handle + '\n', '')
-        following_handles = \
-            following_handles.replace(handle.lower() + '\n', '')
+        new_following_handles = ''
+        following_handles_list = following_handles.split('\n')
+        handle_lower = handle.lower()
+        for followed in following_handles_list:
+            if followed.lower() != handle_lower:
+                new_following_handles += followed + '\n'
+        following_handles = new_following_handles
+        # save the result
         try:
             with open(calendar_filename, 'w+',
                       encoding='utf-8') as fp_cal:
