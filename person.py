@@ -1644,7 +1644,6 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
             print(original_actor + ' is a group actor')
         person_url = original_actor
     else:
-        print('Test 1')
         handle = nickname + '@' + domain
         wf_request = webfinger_handle(session, handle,
                                       http_prefix, cached_webfingers,
