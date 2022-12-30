@@ -69,6 +69,17 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
         with open(notify_on_post_filename, 'w+',
                   encoding='utf-8') as fp_notify:
             fp_notify.write(following_handles)
+    elif handle + '\n' in following_handles.lower():
+        print(handle + ' exists in notifyOnPost.txt')
+        if add:
+            # already added
+            return
+        # remove from calendar file
+        following_handles = \
+            following_handles.replace(handle.lower() + '\n', '')
+        with open(notify_on_post_filename, 'w+',
+                  encoding='utf-8') as fp_notify:
+            fp_notify.write(following_handles)
     else:
         print(handle + ' not in notifyOnPost.txt')
         # not already in the notifyOnPost file
@@ -113,4 +124,4 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
         with open(notify_on_post_filename, 'w+',
                   encoding='utf-8') as fp_notify:
             fp_notify.write('')
-    return text_in_file(handle + '\n', notify_on_post_filename)
+    return text_in_file(handle + '\n', notify_on_post_filename, False)

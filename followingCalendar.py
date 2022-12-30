@@ -79,7 +79,7 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
                     fp_cal.write(following_handles)
             except OSError:
                 print('EX: receiving_calendar_events 2 ' + calendar_filename)
-    return _text_in_file2(handle + '\n', calendar_filename)
+    return _text_in_file2(handle + '\n', calendar_filename, False)
 
 
 def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
@@ -144,6 +144,20 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
             return
         # remove from calendar file
         following_handles = following_handles.replace(handle + '\n', '')
+        try:
+            with open(calendar_filename, 'w+',
+                      encoding='utf-8') as fp_cal:
+                fp_cal.write(following_handles)
+        except OSError:
+            print('EX: _receive_calendar_events 3 ' + calendar_filename)
+    elif handle + '\n' in following_handles.lower():
+        print(handle + ' exists in followingCalendar.txt')
+        if add:
+            # already added
+            return
+        # remove from calendar file
+        following_handles = \
+            following_handles.replace(handle.lower() + '\n', '')
         try:
             with open(calendar_filename, 'w+',
                       encoding='utf-8') as fp_cal:
