@@ -31,7 +31,7 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
     handle = following_nickname + '@' + following_domain
 
     # check that you are following this handle
-    if not text_in_file(handle + '\n', following_filename):
+    if not text_in_file(handle + '\n', following_filename, False):
         print('WARN: ' + handle + ' is not in ' + following_filename)
         return
 
@@ -59,13 +59,21 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
                 fp_notify.write(following_handles + handle + '\n')
 
     # already in the notifyOnPost file?
-    if handle + '\n' in following_handles:
+    if handle + '\n' in following_handles or \
+       handle + '\n' in following_handles.lower():
         print(handle + ' exists in notifyOnPost.txt')
         if add:
             # already added
             return
         # remove from calendar file
-        following_handles = following_handles.replace(handle + '\n', '')
+        new_following_handles = ''
+        following_handles_list = following_handles.split('\n')
+        handle_lower = handle.lower()
+        for followed in following_handles_list:
+            if followed.lower() != handle_lower:
+                new_following_handles += followed + '\n'
+        following_handles = new_following_handles
+
         with open(notify_on_post_filename, 'w+',
                   encoding='utf-8') as fp_notify:
             fp_notify.write(following_handles)
@@ -113,4 +121,4 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
         with open(notify_on_post_filename, 'w+',
                   encoding='utf-8') as fp_notify:
             fp_notify.write('')
-    return text_in_file(handle + '\n', notify_on_post_filename)
+    return text_in_file(handle + '\n', notify_on_post_filename, False)

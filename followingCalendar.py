@@ -79,7 +79,7 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
                     fp_cal.write(following_handles)
             except OSError:
                 print('EX: receiving_calendar_events 2 ' + calendar_filename)
-    return _text_in_file2(handle + '\n', calendar_filename)
+    return _text_in_file2(handle + '\n', calendar_filename, False)
 
 
 def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
@@ -100,7 +100,7 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
     handle = following_nickname + '@' + following_domain
 
     # check that you are following this handle
-    if not _text_in_file2(handle + '\n', following_filename):
+    if not _text_in_file2(handle + '\n', following_filename, False):
         print('WARN: ' + handle + ' is not in ' + following_filename)
         return
 
@@ -137,13 +137,21 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
                 print('EX: unable to write ' + calendar_filename)
 
     # already in the calendar file?
-    if handle + '\n' in following_handles:
+    if handle + '\n' in following_handles or \
+       handle + '\n' in following_handles.lower():
         print(handle + ' exists in followingCalendar.txt')
         if add:
             # already added
             return
         # remove from calendar file
-        following_handles = following_handles.replace(handle + '\n', '')
+        new_following_handles = ''
+        following_handles_list = following_handles.split('\n')
+        handle_lower = handle.lower()
+        for followed in following_handles_list:
+            if followed.lower() != handle_lower:
+                new_following_handles += followed + '\n'
+        following_handles = new_following_handles
+        # save the result
         try:
             with open(calendar_filename, 'w+',
                       encoding='utf-8') as fp_cal:

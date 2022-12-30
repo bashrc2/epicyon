@@ -54,8 +54,8 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
         return
     handle = following_nickname + '@' + following_domain
 
-    # check that you are following this handle
-    if not text_in_file(handle + '\n', following_filename):
+    # check that you are following this handle (not case sensitive)
+    if not text_in_file(handle + '\n', following_filename, False):
         print('WARN: ' + handle + ' is not in ' + following_filename)
         return
 

@@ -693,22 +693,22 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
         base_dir + '/accounts/noannounce.txt'
     if os.path.isfile(global_announce_blocks_filename):
         if text_in_file('*@' + block_domain,
-                        global_announce_blocks_filename):
+                        global_announce_blocks_filename, False):
             return False
         if block_handle:
             block_str = block_handle + '\n'
             if text_in_file(block_str,
-                            global_announce_blocks_filename):
+                            global_announce_blocks_filename, False):
                 return False
 
     # non-cached account level announce blocks
     account_dir = acct_dir(base_dir, nickname, domain)
     blocking_filename = account_dir + '/noannounce.txt'
     if os.path.isfile(blocking_filename):
-        if text_in_file('*@' + block_domain + '\n', blocking_filename):
+        if text_in_file('*@' + block_domain + '\n', blocking_filename, False):
             return False
         if block_handle:
-            if text_in_file(block_handle + '\n', blocking_filename):
+            if text_in_file(block_handle + '\n', blocking_filename, False):
                 return False
     return True
 
@@ -721,16 +721,24 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
     account_dir = acct_dir(base_dir, nickname, domain)
     blocking_filename = account_dir + '/noannounce.txt'
     handle = following_nickname + '@' + following_domain
-    if text_in_file(handle + '\n', blocking_filename):
+    if text_in_file(handle + '\n', blocking_filename, False):
         file_text = ''
         try:
             with open(blocking_filename, 'r',
                       encoding='utf-8') as fp_noannounce:
                 file_text = fp_noannounce.read()
-                file_text = file_text.replace(handle + '\n', '')
         except OSError:
             print('EX: unable to read noannounce: ' +
                   blocking_filename + ' ' + handle)
+
+        new_file_text = ''
+        file_text_list = file_text.split('\n')
+        handle_lower = handle.lower()
+        for allowed in file_text_list:
+            if allowed.lower() != handle_lower:
+                new_file_text += allowed + '\n'
+        file_text = new_file_text
+
         try:
             with open(blocking_filename, 'w+',
                       encoding='utf-8') as fp_noannounce:
@@ -749,7 +757,7 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
     blocking_filename = account_dir + '/noannounce.txt'
     handle = following_nickname + '@' + following_domain
     file_text = ''
-    if not text_in_file(handle + '\n', blocking_filename):
+    if not text_in_file(handle + '\n', blocking_filename, False):
         try:
             with open(blocking_filename, 'r',
                       encoding='utf-8') as fp_noannounce:
