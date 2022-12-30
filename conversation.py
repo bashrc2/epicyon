@@ -168,7 +168,7 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
                 'object': post_json
             }
             post_json = wrapped_post
-        if not post_json['object'].get('content'):
+        if not post_json['object'].get('published'):
             break
         conversation_view = [post_json] + conversation_view
         if not post_json['object'].get('inReplyTo'):
