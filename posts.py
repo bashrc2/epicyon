@@ -173,7 +173,8 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
     for link in wf_request['links']:
         if not (link.get('type') and link.get('href')):
             continue
-        if link['type'] != 'application/activity+json':
+        if 'application/activity+json' not in link['type'] and \
+           'application/ld+json' not in link['type']:
             continue
         if '/@' not in link['href']:
             if debug and not has_users_path(link['href']):

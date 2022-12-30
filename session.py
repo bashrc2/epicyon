@@ -109,6 +109,8 @@ def _get_json_request(session, url: str, domain_full: str, session_headers: {},
                 print('WARN: get_json Not Found url: ' + url)
             elif result.status_code == 410:
                 print('WARN: get_json no longer available url: ' + url)
+            elif result.status_code == 303:
+                print('WARN: get_json redirect not permitted: ' + url)
             else:
                 session_headers2 = session_headers.copy()
                 if session_headers2.get('Authorization'):
