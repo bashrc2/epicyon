@@ -63,7 +63,7 @@ def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
                 fp_min.write('')
         except OSError:
             print('EX: minimizing_attached_images 2 ' + minimize_filename)
-    return text_in_file(handle + '\n', minimize_filename)
+    return text_in_file(handle + '\n', minimize_filename, False)
 
 
 def get_broken_link_substitute() -> str:
