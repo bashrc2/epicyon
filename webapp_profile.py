@@ -97,6 +97,8 @@ def _valid_profile_preview_post(post_json_object: {},
     """Returns true if the given post should appear on a person/group profile
     after searching for a handle
     """
+    if not isinstance(post_json_object, dict):
+        return False, None
     is_announced_feed_item = False
     if is_create_inside_announce(post_json_object):
         is_announced_feed_item = True
