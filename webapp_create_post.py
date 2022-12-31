@@ -24,6 +24,7 @@ from utils import get_currencies
 from utils import get_category_types
 from utils import get_account_timezone
 from utils import get_supported_languages
+from webapp_utils import html_following_data_list
 from webapp_utils import html_common_emoji
 from webapp_utils import begin_edit_section
 from webapp_utils import end_edit_section
@@ -37,48 +38,6 @@ from webapp_post import individual_post_as_html
 from maps import get_map_preferences_url
 from maps import get_map_preferences_coords
 from maps import get_location_from_tags
-
-
-def _html_following_data_list(base_dir: str, nickname: str,
-                              domain: str, domain_full: str) -> str:
-    """Returns a datalist of handles being followed
-    """
-    list_str = '<datalist id="followingHandles">\n'
-    following_filename = \
-        acct_dir(base_dir, nickname, domain) + '/following.txt'
-    msg = None
-    if os.path.isfile(following_filename):
-        with open(following_filename, 'r',
-                  encoding='utf-8') as following_file:
-            msg = following_file.read()
-            # add your own handle, so that you can send DMs
-            # to yourself as reminders
-            msg += nickname + '@' + domain_full + '\n'
-    if msg:
-        # include petnames
-        petnames_filename = \
-            acct_dir(base_dir, nickname, domain) + '/petnames.txt'
-        if os.path.isfile(petnames_filename):
-            following_list = []
-            with open(petnames_filename, 'r',
-                      encoding='utf-8') as petnames_file:
-                pet_str = petnames_file.read()
-                # extract each petname and append it
-                petnames_list = pet_str.split('\n')
-                for pet in petnames_list:
-                    following_list.append(pet.split(' ')[0])
-            # add the following.txt entries
-            following_list += msg.split('\n')
-        else:
-            # no petnames list exists - just use following.txt
-            following_list = msg.split('\n')
-        following_list.sort()
-        if following_list:
-            for following_address in following_list:
-                if following_address:
-                    list_str += '<option>@' + following_address + '</option>\n'
-    list_str += '</datalist>\n'
-    return list_str
 
 
 def _html_new_post_drop_down(scope_icon: str, scope_description: str,
@@ -1066,7 +1025,8 @@ def html_new_post(edit_post_params: {},
             '    <input type="text" name="mentions" ' + \
             'list="followingHandles" value="' + mentions_str + '" selected>\n'
         new_post_form += \
-            _html_following_data_list(base_dir, nickname, domain, domain_full)
+            html_following_data_list(base_dir, nickname, domain, domain_full,
+                                     'following', True)
         new_post_form += ''
         selected_str = ''
 

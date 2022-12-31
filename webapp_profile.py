@@ -63,6 +63,7 @@ from filters import is_filtered
 from follow import is_follower_of_person
 from follow import get_follower_domains
 from webapp_frontscreen import html_front_screen
+from webapp_utils import html_following_data_list
 from webapp_utils import edit_number_field
 from webapp_utils import html_keyboard_navigation
 from webapp_utils import html_hide_from_screen_reader
@@ -1097,6 +1098,28 @@ def html_profile(signing_priv_key_pem: str,
     profile_str += logout_str + edit_profile_str
     profile_str += '  </center>'
     profile_str += '</div>'
+
+    # search for following or followers
+    if authorized:
+        if selected in ('following', 'followers'):
+            follow_search_str = '<div class="container">\n'
+            follow_search_str += \
+                '<form method="POST" action="' + users_path + \
+                '/searchhandle?page=1">\n'
+            follow_search_str += \
+                '  <input type="hidden" ' + \
+                'name="actor" value="' + actor + '">\n'
+            follow_search_str += \
+                '  <input type="search" name="searchtext" ' + \
+                'list="' + selected + 'Handles" placeholder="🔎">\n'
+            follow_search_str += \
+                html_following_data_list(base_dir, nickname, domain,
+                                         domain_full, selected, False)
+            follow_search_str += \
+                '  <button type="submit" class="button" ' + \
+                'name="submitSearch">' + translate['Search'] + '</button>\n'
+            follow_search_str += '</form>\n</div>\n'
+            profile_str += follow_search_str
 
     # start of #timeline
     profile_str += '<div id="timeline">\n'
