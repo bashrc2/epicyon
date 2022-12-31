@@ -2008,7 +2008,11 @@ def html_following_data_list(base_dir: str, nickname: str,
         following_list.sort()
         if following_list:
             for following_address in following_list:
-                if following_address:
-                    list_str += '<option>@' + following_address + '</option>\n'
+                if not following_address:
+                    continue
+                if '@' not in following_address and \
+                   '://' not in following_address:
+                    continue
+                list_str += '<option>@' + following_address + '</option>\n'
     list_str += '</datalist>\n'
     return list_str
