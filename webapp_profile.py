@@ -1110,7 +1110,7 @@ def html_profile(signing_priv_key_pem: str,
                 '  <input type="hidden" ' + \
                 'name="actor" value="' + actor + '">\n'
             follow_search_str += \
-                '  <input type="text" name="searchtext" ' + \
+                '  <input type="search" name="searchtext" ' + \
                 'list="' + selected + 'Handles" placeholder="🔎">\n'
             follow_search_str += \
                 html_following_data_list(base_dir, nickname, domain,
