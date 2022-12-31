@@ -74,6 +74,10 @@ body, html {
     image-rendering: var(--rendering);
 }
 
+form {
+    background-color: var(--options-bg-color);
+}
+
 a, u {
     color: var(--options-fg-color);
 }
