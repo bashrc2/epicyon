@@ -1025,7 +1025,8 @@ def html_new_post(edit_post_params: {},
             '    <input type="text" name="mentions" ' + \
             'list="followingHandles" value="' + mentions_str + '" selected>\n'
         new_post_form += \
-            html_following_data_list(base_dir, nickname, domain, domain_full)
+            html_following_data_list(base_dir, nickname, domain, domain_full,
+                                     'following')
         new_post_form += ''
         selected_str = ''
 

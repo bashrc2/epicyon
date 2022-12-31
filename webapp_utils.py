@@ -1971,7 +1971,7 @@ def get_default_path(media_instance: bool, blogs_instance: bool,
 
 def html_following_data_list(base_dir: str, nickname: str,
                              domain: str, domain_full: str,
-                             following_type: str = "following") -> str:
+                             following_type: str) -> str:
     """Returns a datalist of handles being followed
     followingHandles, followersHandles
     """
