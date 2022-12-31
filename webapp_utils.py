@@ -1971,7 +1971,8 @@ def get_default_path(media_instance: bool, blogs_instance: bool,
 
 def html_following_data_list(base_dir: str, nickname: str,
                              domain: str, domain_full: str,
-                             following_type: str) -> str:
+                             following_type: str,
+                             use_petnames: bool) -> str:
     """Returns a datalist of handles being followed
     followingHandles, followersHandles
     """
@@ -1990,7 +1991,7 @@ def html_following_data_list(base_dir: str, nickname: str,
         # include petnames
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
-        if os.path.isfile(petnames_filename):
+        if use_petnames and os.path.isfile(petnames_filename):
             following_list = []
             with open(petnames_filename, 'r',
                       encoding='utf-8') as petnames_file:
