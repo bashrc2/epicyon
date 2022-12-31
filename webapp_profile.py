@@ -1111,7 +1111,7 @@ def html_profile(signing_priv_key_pem: str,
                 'name="actor" value="' + actor + '">\n'
             follow_search_str += \
                 '  <input type="text" name="searchtext" ' + \
-                'list="' + selected + 'Handles" value="">\n'
+                'list="' + selected + 'Handles" placeholder="🔎">\n'
             follow_search_str += \
                 html_following_data_list(base_dir, nickname, domain,
                                          domain_full, selected)
