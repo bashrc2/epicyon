@@ -1973,7 +1973,7 @@ def html_following_data_list(base_dir: str, nickname: str,
                              domain: str, domain_full: str,
                              following_type: str = "following") -> str:
     """Returns a datalist of handles being followed
-    folloingHandles, followersHandles
+    followingHandles, followersHandles
     """
     list_str = '<datalist id="' + following_type + 'Handles">\n'
     following_filename = \
