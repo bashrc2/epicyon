@@ -1758,7 +1758,7 @@ h3 {
         color: var(--time-color);
         margin: var(--time-vertical-align) 20px;
     }
-    input[type=text], input[type=password], select, textarea {
+    input[type=text], input[type=search], input[type=password], select, textarea {
         width: 100%;
         padding: 12px;
         border: 1px solid #ccc;
@@ -2557,7 +2557,7 @@ h3 {
         color: var(--time-color);
         margin: var(--time-vertical-align-mobile) 20px;
     }
-    input[type=text], input[type=password], select, textarea {
+    input[type=text], input[type=search], input[type=password], select, textarea {
         width: 100%;
         padding: 12px;
         border: 1px solid #ccc;
@@ -3354,7 +3354,7 @@ h3 {
         color: var(--time-color);
         margin: var(--time-vertical-align-tiny) 20px;
     }
-    input[type=text], input[type=password], select, textarea {
+    input[type=text], input[type=search], input[type=password], select, textarea {
         width: 100%;
         padding: 12px;
         border: 1px solid #ccc;
