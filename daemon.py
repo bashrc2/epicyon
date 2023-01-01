@@ -3086,6 +3086,103 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitView=' in options_confirm_params:
             if debug:
                 print('Viewing ' + options_actor)
+
+            show_published_date_only = \
+                self.server.show_published_date_only
+            allow_local_network_access = \
+                self.server.allow_local_network_access
+
+            access_keys = self.server.access_keys
+            if self.server.key_shortcuts.get(chooser_nickname):
+                access_keys = self.server.key_shortcuts[chooser_nickname]
+
+            signing_priv_key_pem = \
+                self.server.signing_priv_key_pem
+            twitter_replacement_domain = \
+                self.server.twitter_replacement_domain
+            peertube_instances = \
+                self.server.peertube_instances
+            yt_replace_domain = \
+                self.server.yt_replace_domain
+            cached_webfingers = \
+                self.server.cached_webfingers
+            recent_posts_cache = \
+                self.server.recent_posts_cache
+            timezone = None
+            if self.server.account_timezone.get(chooser_nickname):
+                timezone = \
+                    self.server.account_timezone.get(chooser_nickname)
+
+            profile_handle = remove_eol(options_actor).strip()
+
+            # establish the session
+            curr_proxy_type = self.server.proxy_type
+            if '.onion/' in profile_handle or \
+               profile_handle.endswith('.onion'):
+                curr_proxy_type = 'tor'
+                curr_session = self.server.session_onion
+            elif ('.i2p/' in profile_handle or
+                  profile_handle.endswith('.i2p')):
+                curr_proxy_type = 'i2p'
+                curr_session = self.server.session_i2p
+
+            curr_session = \
+                self._establish_session("handle search",
+                                        curr_session,
+                                        curr_proxy_type)
+            if not curr_session:
+                self.server.postreq_busy = False
+                return
+
+            bold_reading = False
+            if self.server.bold_reading.get(chooser_nickname):
+                bold_reading = True
+
+            min_images_for_accounts = \
+                self.server.min_images_for_accounts
+            profile_str = \
+                html_profile_after_search(recent_posts_cache,
+                                          self.server.max_recent_posts,
+                                          self.server.translate,
+                                          base_dir,
+                                          users_path,
+                                          http_prefix,
+                                          chooser_nickname,
+                                          domain,
+                                          port,
+                                          profile_handle,
+                                          curr_session,
+                                          cached_webfingers,
+                                          self.server.person_cache,
+                                          self.server.debug,
+                                          self.server.project_version,
+                                          yt_replace_domain,
+                                          twitter_replacement_domain,
+                                          show_published_date_only,
+                                          self.server.default_timeline,
+                                          peertube_instances,
+                                          allow_local_network_access,
+                                          self.server.theme_name,
+                                          access_keys,
+                                          self.server.system_language,
+                                          self.server.max_like_count,
+                                          signing_priv_key_pem,
+                                          self.server.cw_lists,
+                                          self.server.lists_enabled,
+                                          timezone,
+                                          self.server.onion_domain,
+                                          self.server.i2p_domain,
+                                          bold_reading,
+                                          self.server.dogwhistles,
+                                          min_images_for_accounts)
+            if profile_str:
+                msg = profile_str.encode('utf-8')
+                msglen = len(msg)
+                self._login_headers('text/html',
+                                    msglen, calling_domain)
+                self._write(msg)
+                self.server.postreq_busy = False
+                return
             self._redirect_headers(options_actor,
                                    cookie, calling_domain)
             self.server.postreq_busy = False
@@ -4487,6 +4584,10 @@ class PubServer(BaseHTTPRequestHandler):
             elif ('@' in search_str or
                   ('://' in search_str and
                    has_users_path(search_str))):
+                remote_only = False
+                if search_str.endswith(';remote'):
+                    search_str = search_str.replace(';remote', '')
+                    remote_only = True
                 if search_str.endswith(':') or \
                    search_str.endswith(';') or \
                    search_str.endswith('.'):
@@ -4506,7 +4607,8 @@ class PubServer(BaseHTTPRequestHandler):
                 profile_path_str = path.replace('/searchhandle', '')
 
                 # are we already following the searched for handle?
-                if is_following_actor(base_dir, nickname, domain, search_str):
+                if not remote_only and \
+                   is_following_actor(base_dir, nickname, domain, search_str):
                     # get the actor
                     if not has_users_path(search_str):
                         search_nickname = get_nickname_from_actor(search_str)
