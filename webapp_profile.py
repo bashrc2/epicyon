@@ -63,7 +63,7 @@ from filters import is_filtered
 from follow import is_follower_of_person
 from follow import get_follower_domains
 from webapp_frontscreen import html_front_screen
-from webapp_utils import html_following_data_list
+from webapp_utils import html_following_dropdown
 from webapp_utils import edit_number_field
 from webapp_utils import html_keyboard_navigation
 from webapp_utils import html_hide_from_screen_reader
@@ -1110,11 +1110,8 @@ def html_profile(signing_priv_key_pem: str,
                 '  <input type="hidden" ' + \
                 'name="actor" value="' + actor + '">\n'
             follow_search_str += \
-                '  <input type="search" name="searchtext" ' + \
-                'list="' + selected + 'Handles" placeholder="🔎">\n'
-            follow_search_str += \
-                html_following_data_list(base_dir, nickname, domain,
-                                         domain_full, selected, False)
+                html_following_dropdown(base_dir, nickname, domain,
+                                        domain_full, selected, False)
             follow_search_str += \
                 '  <button type="submit" class="button" ' + \
                 'name="submitSearch">' + translate['Search'] + '</button>\n'
