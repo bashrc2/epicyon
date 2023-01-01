@@ -2073,7 +2073,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
                 following_address = following_line.split(' ')[1]
                 foll_domain, _ = get_domain_from_actor(following_address)
                 if prev_foll_domain and prev_foll_domain != foll_domain:
-                    list_str += '<option value=""></option>\n'
+                    list_str += '<option value="" disabled></option>\n'
                 prev_foll_domain = foll_domain
                 list_str += '<option value="' + following_address + '">' + \
                     following_address + '</option>\n'
