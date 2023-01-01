@@ -375,12 +375,13 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             '  </form>\n' + \
             '</div>\n'
 
+    text_mode_separator = '<div class="transparent"><hr></div>'
+
     user_feed = \
         parse_user_feed(signing_priv_key_pem,
                         session, outbox_url, as_header, project_version,
                         http_prefix, from_domain, debug)
     if user_feed:
-        text_mode_separator = '<div class="transparent"><hr></div>'
         minimize_all_images = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
