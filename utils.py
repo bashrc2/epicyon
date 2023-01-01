@@ -36,7 +36,7 @@ VALID_HASHTAG_CHARS = \
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
 INVALID_CHARACTERS = (
-    '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡'
+    '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡', '​'
 )
 
 INVALID_ACTOR_URL_CHARACTERS = (
