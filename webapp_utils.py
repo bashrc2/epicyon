@@ -2053,6 +2053,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
         else:
             # no petnames list exists - just use following.txt
             following_list = msg.split('\n')
+        list_str += '<option value="" selected></option>\n'
         following_list.sort()
         if following_list:
             for following_address in following_list:

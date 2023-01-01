@@ -1114,7 +1114,7 @@ def html_profile(signing_priv_key_pem: str,
                                         domain_full, selected, False)
             follow_search_str += \
                 '  <button type="submit" class="button" ' + \
-                'name="submitSearch">' + translate['Search'] + '</button>\n'
+                'name="submitSearch">' + translate['View'] + '</button>\n'
             follow_search_str += '</form>\n</div>\n'
             profile_str += follow_search_str
 
