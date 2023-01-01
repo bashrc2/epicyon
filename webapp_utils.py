@@ -2068,8 +2068,13 @@ def html_following_dropdown(base_dir: str, nickname: str,
                                           foll_nick + '@' + foll_domain)
             domain_sorted_list.sort()
 
+            prev_foll_domain = ''
             for following_line in domain_sorted_list:
                 following_address = following_line.split(' ')[1]
+                foll_domain, _ = get_domain_from_actor(following_address)
+                if prev_foll_domain and prev_foll_domain != foll_domain:
+                    list_str += '<option value=""></option>\n'
+                prev_foll_domain = foll_domain
                 list_str += '<option value="' + following_address + '">' + \
                     following_address + '</option>\n'
     list_str += '</select>\n'
