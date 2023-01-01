@@ -2054,14 +2054,22 @@ def html_following_dropdown(base_dir: str, nickname: str,
             # no petnames list exists - just use following.txt
             following_list = msg.split('\n')
         list_str += '<option value="" selected></option>\n'
-        following_list.sort()
         if following_list:
+            domain_sorted_list = []
             for following_address in following_list:
-                if not following_address:
-                    continue
                 if '@' not in following_address and \
                    '://' not in following_address:
                     continue
+                foll_nick = get_nickname_from_actor(following_address)
+                foll_domain, _ = get_domain_from_actor(following_address)
+                if not foll_domain or not foll_nick:
+                    continue
+                domain_sorted_list.append(foll_domain + ' ' +
+                                          foll_nick + '@' + foll_domain)
+            domain_sorted_list.sort()
+
+            for following_line in domain_sorted_list:
+                following_address = following_line.split(' ')[1]
                 list_str += '<option value="' + following_address + '">' + \
                     following_address + '</option>\n'
     list_str += '</select>\n'
