@@ -2370,7 +2370,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if content_license_url:
             footer_str += _get_copyright_footer(content_license_url,
                                                 time_class)
-        footer_str += '<a href="' + published_link + \
+        conv_link = '/users/' + nickname + '?convthread=' + \
+            published_link.replace('/', '--')
+        footer_str += '<a href="' + conv_link + \
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
     else:

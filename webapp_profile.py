@@ -62,6 +62,7 @@ from cwtch import get_cwtch_address
 from filters import is_filtered
 from follow import is_follower_of_person
 from follow import get_follower_domains
+from follow import is_following_actor
 from webapp_frontscreen import html_front_screen
 from webapp_utils import html_following_dropdown
 from webapp_utils import edit_number_field
@@ -338,10 +339,13 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             '    <center>\n'
         profile_str += \
             '      <input type="hidden" name="actor" value="' + \
-            person_url + '">\n' + \
-            '      <button type="submit" class="button" name="submitYes" ' + \
-            'accesskey="' + access_keys['followButton'] + '">' + \
-            translate[follow_str] + '</button>\n'
+            person_url + '">\n'
+        if not is_following_actor(base_dir, nickname, domain, person_url):
+            profile_str += \
+                '      <button type="submit" class="button" ' + \
+                'name="submitYes" ' + \
+                'accesskey="' + access_keys['followButton'] + '">' + \
+                translate[follow_str] + '</button>\n'
         profile_str += \
             '      <button type="submit" class="button" name="submitView" ' + \
             'accesskey="' + access_keys['viewButton'] + '">' + \
@@ -376,6 +380,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                         session, outbox_url, as_header, project_version,
                         http_prefix, from_domain, debug)
     if user_feed:
+        text_mode_separator = '<div class="transparent"><hr></div>'
         minimize_all_images = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
@@ -387,6 +392,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                 continue
 
             profile_str += \
+                text_mode_separator + \
                 individual_post_as_html(signing_priv_key_pem,
                                         True, recent_posts_cache,
                                         max_recent_posts,
@@ -417,7 +423,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     instance_title = get_config_param(base_dir, 'instanceTitle')
     return html_header_with_external_style(css_filename,
                                            instance_title, None) + \
-        profile_str + html_footer()
+        profile_str + text_mode_separator + html_footer()
 
 
 def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
