@@ -62,6 +62,7 @@ from cwtch import get_cwtch_address
 from filters import is_filtered
 from follow import is_follower_of_person
 from follow import get_follower_domains
+from follow import is_following_actor
 from webapp_frontscreen import html_front_screen
 from webapp_utils import html_following_dropdown
 from webapp_utils import edit_number_field
@@ -338,10 +339,13 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             '    <center>\n'
         profile_str += \
             '      <input type="hidden" name="actor" value="' + \
-            person_url + '">\n' + \
-            '      <button type="submit" class="button" name="submitYes" ' + \
-            'accesskey="' + access_keys['followButton'] + '">' + \
-            translate[follow_str] + '</button>\n'
+            person_url + '">\n'
+        if not is_following_actor(base_dir, nickname, domain, person_url):
+            profile_str += \
+                '      <button type="submit" class="button" ' + \
+                'name="submitYes" ' + \
+                'accesskey="' + access_keys['followButton'] + '">' + \
+                translate[follow_str] + '</button>\n'
         profile_str += \
             '      <button type="submit" class="button" name="submitView" ' + \
             'accesskey="' + access_keys['viewButton'] + '">' + \
