@@ -544,7 +544,7 @@ def html_blog_page(authorized: bool, session,
     timeline_json = \
         create_blogs_timeline(base_dir,
                               nickname, domain, port, http_prefix,
-                              no_of_items, False, page_number, '')
+                              no_of_items, False, page_number)
 
     if not timeline_json:
         return blog_str + html_footer()
@@ -633,7 +633,7 @@ def html_blog_page_rss2(base_dir: str, http_prefix: str, translate: {},
                                           nickname, domain, port,
                                           http_prefix,
                                           no_of_items, False,
-                                          page_number, '')
+                                          page_number)
 
     if not timeline_json:
         if include_header:
@@ -672,7 +672,7 @@ def html_blog_page_rss3(base_dir: str, http_prefix: str,
     timeline_json = \
         create_blogs_timeline(base_dir,
                               nickname, domain, port, http_prefix,
-                              no_of_items, False, page_number, '')
+                              no_of_items, False, page_number)
 
     if not timeline_json:
         return blog_rss3
