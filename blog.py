@@ -35,6 +35,7 @@ from utils import load_json
 from utils import first_paragraph_from_string
 from utils import get_actor_property_url
 from utils import acct_dir
+from utils import escape_text
 from posts import create_blogs_timeline
 from newswire import rss2header
 from newswire import rss2footer
@@ -375,12 +376,13 @@ def _html_blog_post_rss2(domain: str, post_json_object: {},
                post_json_object['object'].get('published'):
                 published = post_json_object['object']['published']
                 pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-                title_str = post_json_object['object']['summary']
+                title_str = escape_text(post_json_object['object']['summary'])
                 rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
                     get_base_content_from_post(post_json_object,
                                                system_language)
                 description = first_paragraph_from_string(content)
+                description = escape_text(description)
                 rss_str = '     <item>'
                 rss_str += '         <title>' + title_str + '</title>'
                 rss_str += '         <link>' + message_link + '</link>'

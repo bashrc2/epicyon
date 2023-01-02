@@ -4226,3 +4226,18 @@ def license_link_from_name(license: str) -> str:
     else:
         value = 'https://creativecommons.org/publicdomain/zero/1.0'
     return value
+
+
+def escape_text(txt: str) -> str:
+    """Escape text for inclusion in xml/rss
+    """
+    replacements = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&apos;"
+    }
+    for orig, replacement in replacements.items():
+        txt = txt.replace(orig, replacement)
+    return txt
