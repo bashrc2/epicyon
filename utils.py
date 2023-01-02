@@ -4228,17 +4228,22 @@ def license_link_from_name(license: str) -> str:
     return value
 
 
-def escape_text(txt: str) -> str:
-    """Escape text for inclusion in xml/rss
+def _get_escaped_chars() -> {}:
+    """Returns escaped characters
     """
-    replacements = {
+    return {
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
         "'": "&apos;"
     }
-    for orig, replacement in replacements.items():
+
+
+def escape_text(txt: str) -> str:
+    """Escape text for inclusion in xml/rss
+    """
+    for orig, replacement in _get_escaped_chars().items():
         txt = txt.replace(orig, replacement)
     return txt
 
@@ -4246,13 +4251,6 @@ def escape_text(txt: str) -> str:
 def unescaped_text(txt: str) -> str:
     """Escape text for inclusion in xml/rss
     """
-    replacements = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&apos;"
-    }
-    for orig, replacement in replacements.items():
+    for orig, replacement in _get_escaped_chars().items():
         txt = txt.replace(replacement, orig)
     return txt
