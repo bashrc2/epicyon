@@ -36,7 +36,7 @@ VALID_HASHTAG_CHARS = \
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
 INVALID_CHARACTERS = (
-    '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡'
+    '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡', '​'
 )
 
 INVALID_ACTOR_URL_CHARACTERS = (
@@ -4226,3 +4226,31 @@ def license_link_from_name(license: str) -> str:
     else:
         value = 'https://creativecommons.org/publicdomain/zero/1.0'
     return value
+
+
+def _get_escaped_chars() -> {}:
+    """Returns escaped characters
+    """
+    return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&apos;"
+    }
+
+
+def escape_text(txt: str) -> str:
+    """Escape text for inclusion in xml/rss
+    """
+    for orig, replacement in _get_escaped_chars().items():
+        txt = txt.replace(orig, replacement)
+    return txt
+
+
+def unescaped_text(txt: str) -> str:
+    """Escape text for inclusion in xml/rss
+    """
+    for orig, replacement in _get_escaped_chars().items():
+        txt = txt.replace(replacement, orig)
+    return txt

@@ -1071,7 +1071,7 @@ def person_box_json(recent_posts_cache: {},
     if boxname == 'tlblogs':
         return create_blogs_timeline(base_dir, nickname, domain, port,
                                      http_prefix, no_of_items, header_only,
-                                     page_number, first_post_id)
+                                     page_number)
     if boxname == 'outbox':
         return create_outbox(base_dir, nickname, domain, port,
                              http_prefix,

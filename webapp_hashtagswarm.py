@@ -11,6 +11,7 @@ import os
 from datetime import datetime
 from utils import get_nickname_from_actor
 from utils import get_config_param
+from utils import escape_text
 from categories import get_hashtag_categories
 from categories import get_hashtag_category
 from webapp_utils import set_custom_background
@@ -41,7 +42,7 @@ def get_hashtag_categories_feed(base_dir: str,
     for category_str, hashtag_list in hashtag_categories.items():
         rss_str += \
             '<item>\n' + \
-            '  <title>' + category_str + '</title>\n'
+            '  <title>' + escape_text(category_str) + '</title>\n'
         list_str = ''
         for hashtag in hashtag_list:
             if ':' in hashtag:
@@ -50,7 +51,8 @@ def get_hashtag_categories_feed(base_dir: str,
                 continue
             list_str += hashtag + ' '
         rss_str += \
-            '  <description>' + list_str.strip() + '</description>\n' + \
+            '  <description>' + \
+            escape_text(list_str.strip()) + '</description>\n' + \
             '  <link/>\n' + \
             '  <pubDate>' + rss_date_str + '</pubDate>\n' + \
             '</item>\n'

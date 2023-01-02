@@ -26,6 +26,7 @@ from utils import search_box_posts
 from utils import get_alt_path
 from utils import acct_dir
 from utils import local_actor_url
+from utils import escape_text
 from skills import no_of_actor_skills
 from skills import get_skills_from_list
 from categories import get_hashtag_category
@@ -1133,12 +1134,13 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
                 if post_json_object['object'].get('summary'):
                     hashtag_feed += \
                         '         <title>' + \
-                        post_json_object['object']['summary'] + \
+                        escape_text(post_json_object['object']['summary']) + \
                         '</title>'
                 description = \
                     get_base_content_from_post(post_json_object,
                                                system_language)
                 description = first_paragraph_from_string(description)
+                description = escape_text(description)
                 hashtag_feed += \
                     '         <description>' + description + '</description>'
                 hashtag_feed += \
