@@ -1073,7 +1073,8 @@ def html_timeline(default_timeline: str,
         # if showing the page down icon then remove the last item so that
         # firstpost does not overlap on the next timeline
         if last_item_str and first_post_id != last_post_id:
-            tl_str = tl_str.replace(last_item_str, '')
+            if item_ctr > items_per_page / 2:
+                tl_str = tl_str.replace(last_item_str, '')
         tl_str += text_mode_separator
         first_post = ''
         if last_post_id:
