@@ -3626,12 +3626,11 @@ def create_replies_timeline(recent_posts_cache: {},
 
 def create_blogs_timeline(base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, items_per_page: int,
-                          header_only: bool, page_number: int,
-                          first_post_id: str) -> {}:
+                          header_only: bool, page_number: int) -> {}:
     return _create_box_indexed({}, base_dir, 'tlblogs', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
-                               0, False, 0, page_number, first_post_id)
+                               0, False, 0, page_number)
 
 
 def create_features_timeline(base_dir: str,
