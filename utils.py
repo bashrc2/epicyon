@@ -4241,3 +4241,18 @@ def escape_text(txt: str) -> str:
     for orig, replacement in replacements.items():
         txt = txt.replace(orig, replacement)
     return txt
+
+
+def unescaped_text(txt: str) -> str:
+    """Escape text for inclusion in xml/rss
+    """
+    replacements = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&apos;"
+    }
+    for orig, replacement in replacements.items():
+        txt = txt.replace(replacement, orig)
+    return txt
