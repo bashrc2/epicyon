@@ -664,6 +664,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     if has_object_dict(post_json_object):
         if is_quote_toot(post_json_object, content_str):
             print('REJECT: inbox quote toot ' + str(post_json_object))
+            return None
+
         if post_json_object['object'].get('inReplyTo'):
             if isinstance(post_json_object['object']['inReplyTo'], str):
                 in_reply_to = \
