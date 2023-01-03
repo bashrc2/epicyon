@@ -658,11 +658,14 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             return None
         post_domain = get_full_domain(post_domain, post_port)
 
+    content_str = \
+        get_base_content_from_post(post_json_object, system_language)
+
     if has_object_dict(post_json_object):
-        if is_quote_toot(post_json_object):
-            if debug:
-                print('REJECT: inbox quote toot ' + str(post_json_object))
+        if is_quote_toot(post_json_object, content_str):
+            print('REJECT: inbox quote toot ' + str(post_json_object))
             return None
+
         if post_json_object['object'].get('inReplyTo'):
             if isinstance(post_json_object['object']['inReplyTo'], str):
                 in_reply_to = \
@@ -690,8 +693,6 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                         return None
 
     # filter on the content of the post
-    content_str = \
-        get_base_content_from_post(post_json_object, system_language)
     if content_str:
         summary_str = \
             get_summary_from_post(post_json_object,
@@ -3312,6 +3313,7 @@ def _like_notify(base_dir: str, domain: str,
         liker_handle = actor
     if liker_handle == handle:
         return
+
     like_str = liker_handle + ' ' + url + '?likedBy=' + actor
     prev_like_file = account_dir + '/.prevLike'
     # was there a previous like notification?

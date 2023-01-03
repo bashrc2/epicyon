@@ -1649,7 +1649,8 @@ def _get_footer_with_icons(show_icons: bool,
                            delete_str: str, mute_str: str, edit_str: str,
                            post_json_object: {}, published_link: str,
                            time_class: str, published_str: str,
-                           nickname: str, content_license_url: str) -> str:
+                           nickname: str, content_license_url: str,
+                           translate: {}) -> str:
     """Returns the html for a post footer containing icons
     """
     if not show_icons:
@@ -1664,7 +1665,7 @@ def _get_footer_with_icons(show_icons: bool,
         footer_str += '        '
         if content_license_url:
             footer_str += _get_copyright_footer(content_license_url,
-                                                time_class)
+                                                translate)
         # show the date
         date_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('/', '--')
@@ -1806,24 +1807,30 @@ def _get_content_license(post_json_object: {}) -> str:
 
 
 def _get_copyright_footer(content_license_url: str,
-                          time_class: str) -> str:
+                          translate: {}) -> str:
     """Returns the footer copyright link
     """
     # show the CC symbol
-    copyright_symbol = '🅭 '
+    icon_filename = 'license_cc.png'
     if '/zero/' in content_license_url:
-        copyright_symbol = '🄍 '
+        icon_filename = 'license_cc0.png'
     elif 'unlicense' in content_license_url:
-        copyright_symbol = '🅮'
+        icon_filename = 'license_un.png'
     elif 'wtfpl' in content_license_url:
-        copyright_symbol = '🅮'
+        icon_filename = 'license_wtf.png'
     elif '/fdl' in content_license_url:
-        copyright_symbol = '🄎'
-    return '<a href="' + \
-        content_license_url + '" class="' + \
-        time_class + '" tabindex="10">' + \
-        '<span itemprop="license">' + \
-        copyright_symbol + '</span></a> '
+        icon_filename = 'license_fdl.png'
+
+    description = translate['Content License']
+    copyright_str = \
+        '        ' + \
+        '<a class="imageAnchor" href="' + content_license_url + \
+        '" title="' + description + '" tabindex="10">' + \
+        '<img loading="lazy" decoding="async" title="' + \
+        description + '" alt="' + description + \
+        ' |" src="/icons/' + icon_filename + '"/></a>\n'
+
+    return copyright_str
 
 
 def individual_post_as_html(signing_priv_key_pem: str,
@@ -2366,15 +2373,20 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     content_license_url = _get_content_license(post_json_object)
     if not is_news_post(post_json_object):
-        footer_str = ''
+        if show_icons:
+            footer_str = ''
+        else:
+            footer_str = '<div class="' + container_class_icons + '">\n'
         if content_license_url:
             footer_str += _get_copyright_footer(content_license_url,
-                                                time_class)
+                                                translate)
         conv_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('/', '--')
         footer_str += '<a href="' + conv_link + \
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
+        if not show_icons:
+            footer_str += '</div>\n'
     else:
         footer_str = '<a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
@@ -2463,7 +2475,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                delete_str, mute_str, edit_str,
                                post_json_object, published_link,
                                time_class, published_str, nickname,
-                               content_license_url)
+                               content_license_url, translate)
     if new_footer_str:
         footer_str = new_footer_str
 

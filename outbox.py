@@ -265,7 +265,7 @@ def post_message_to_outbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if has_object_dict(message_json):
-        if is_quote_toot(message_json):
+        if is_quote_toot(message_json, ''):
             print('REJECT: POST quote toot ' + str(message_json))
             return False
 
