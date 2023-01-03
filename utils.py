@@ -4161,7 +4161,7 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
         break
 
 
-def is_quote_toot(post_json_object: str) -> bool:
+def is_quote_toot(post_json_object: str, content: str) -> bool:
     """Returns true if the given post is a quote toot
     """
     # Pleroma implementation
@@ -4187,6 +4187,9 @@ def is_quote_toot(post_json_object: str) -> bool:
                 if 'json' not in item['mediaType']:
                     continue
                 return True
+    if content:
+        if 'QT: ' in content:
+            return True
     return False
 
 
