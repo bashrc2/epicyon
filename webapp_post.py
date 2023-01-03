@@ -2386,7 +2386,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
         if not show_icons:
-            footer_str = '</div>\n'
+            footer_str += '</div>\n'
     else:
         footer_str = '<a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
