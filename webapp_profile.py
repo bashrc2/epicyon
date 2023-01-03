@@ -896,16 +896,21 @@ def html_profile(signing_priv_key_pem: str,
                             if follower_domain not in curr_follower_domains:
                                 new_follower_domain = ' ✨'
 
+                            # Show the handle of the potential follower
+                            # being approved, linking to search on that handle
                             base_path = '/users/' + nickname
                             follow_approvals_section += \
-                                '<div class="container">'
-                            follow_approvals_section += \
-                                '<a href="' + follower_actor + \
-                                '" tabindex="2">'
-                            follow_approvals_section += \
-                                '<span class="followRequestHandle">' + \
-                                follower_handle + \
-                                new_follower_domain + '</span></a>'
+                                '<div class="container">\n' + \
+                                '  <form method="POST" action="' + \
+                                base_path + '/searchhandle?page=1">\n' + \
+                                '    <input type="hidden" ' + \
+                                'name="actor" value="' + \
+                                follower_actor + '">\n' + \
+                                '    <button type="submit" ' + \
+                                'class="followApproveHandle" ' + \
+                                'name="submitSearch" tabindex="2">' + \
+                                follower_handle + new_follower_domain + \
+                                '</button>\n  </form>\n'
 
                             # show Approve and Deny buttons
                             follow_approvals_section += \
