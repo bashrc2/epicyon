@@ -2373,7 +2373,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     content_license_url = _get_content_license(post_json_object)
     if not is_news_post(post_json_object):
-        footer_str = ''
+        if show_icons:
+            footer_str = ''
+        else:
+            footer_str = '<div class="' + container_class_icons + '">\n'
         if content_license_url:
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
@@ -2382,6 +2385,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
         footer_str += '<a href="' + conv_link + \
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
+        if not show_icons:
+            footer_str = '</div>\n'
     else:
         footer_str = '<a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
