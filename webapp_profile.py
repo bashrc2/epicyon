@@ -906,7 +906,10 @@ def html_profile(signing_priv_key_pem: str,
                                 '    <input type="hidden" ' + \
                                 'name="actor" value="' + \
                                 follower_actor + '">\n' + \
-                                '    <button type="submit" ' + \
+                                '    <input type="hidden" ' + \
+                                'name="searchtext" value="' + \
+                                follower_handle + new_follower_domain + \
+                                '">\n    <button type="submit" ' + \
                                 'class="followApproveHandle" ' + \
                                 'name="submitSearch" tabindex="2">' + \
                                 follower_handle + new_follower_domain + \
