@@ -3617,7 +3617,19 @@ def _test_web_links():
         '<a href="https://somesite.net" tabindex="10" ' + \
         'rel="nofollow noopener noreferrer"' + \
         ' target="_blank"><span class="invisible">https://' + \
-        '</span><span class="ellipsis">somesite.net</span></a'
+        '</span><span class="ellipsis">somesite.net</span></a>'
+    if expected_text not in linked_text:
+        print(expected_text + '\n')
+        print(linked_text)
+    assert expected_text in linked_text
+
+    example_text = \
+        'This post has an arxiv link arXiv:2203.15752 some other text'
+    linked_text = add_web_links(example_text)
+    expected_text = \
+        '<a href="https://arxiv.org/abs/2203.15752" tabindex="10" ' + \
+        'rel="nofollow noopener noreferrer"' + \
+        ' target="_blank"><span class="ellipsis">arXiv:2203.15752</span></a>'
     if expected_text not in linked_text:
         print(expected_text + '\n')
         print(linked_text)
