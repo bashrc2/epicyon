@@ -436,6 +436,12 @@ The location field on a post can be a description, but it can also be a map geol
 
 Selecting the *location* header will open the last known geolocation, so if your current location is near this makes it quicker to find. 
 
+## Scientific references
+It is possible to have references to scientific papers linked automatically, such that they are readable with one click/press. Supported references are [arXiv](https://arxiv.org) and [Digital object identifier (DOI)](https://en.wikipedia.org/wiki/Digital_object_identifier). For example:
+```text
+This is a reference to a paper: arxiv:2203.15752
+```
+
 # The Timeline
 ## Layout
 ![Layout](manual-layout.png)
