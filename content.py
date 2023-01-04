@@ -585,6 +585,25 @@ def _shorten_linked_urls(content: str) -> str:
     return content
 
 
+def _contains_doi_reference(wrd: str, replace_dict: {}) -> bool:
+    """Handle DOI scientific references
+    """
+    if not wrd.startswith('doi:') and \
+       not wrd.startswith('DOI:'):
+        return False
+
+    doi_ref_str = wrd.split(':', 1)[1]
+    doi_site = 'https://sci-hub.ru'
+    markup = '<a href="' + doi_site + '/' + \
+        doi_ref_str + '" tabindex="10" ' + \
+        'rel="nofollow noopener noreferrer" ' + \
+        'target="_blank">' + \
+        '<span class="ellipsis">doi:' + doi_ref_str + \
+        '</span></a>'
+    replace_dict[wrd] = markup
+    return True
+
+
 def _contains_arxiv_reference(wrd: str, replace_dict: {}) -> bool:
     """Handle arxiv scientific references
     """
@@ -620,6 +639,19 @@ def _contains_arxiv_reference(wrd: str, replace_dict: {}) -> bool:
     return True
 
 
+def _contains_academic_references(content: str) -> bool:
+    """Does the given content contain academic references
+    """
+    prefixes = (
+        'arXiv:', 'arx:', 'arxiv:',
+        'doi:', 'DOI:'
+    )
+    for reference in prefixes:
+        if reference in content:
+            return True
+    return False
+
+
 def add_web_links(content: str) -> str:
     """Adds markup for web links
     """
@@ -639,7 +671,7 @@ def add_web_links(content: str) -> str:
 
     # if there are no prefixes then just keep the content we have
     if not prefix_found:
-        if 'arXiv:' in content or 'arx:' in content or 'arxiv:' in content:
+        if _contains_academic_references(content):
             prefix_found = True
         else:
             return content
@@ -651,6 +683,8 @@ def add_web_links(content: str) -> str:
         if ':' not in wrd:
             continue
         if _contains_arxiv_reference(wrd, replace_dict):
+            continue
+        if _contains_doi_reference(wrd, replace_dict):
             continue
         # does the word begin with a prefix?
         prefix_found = False

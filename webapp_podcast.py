@@ -299,7 +299,7 @@ def html_podcast_episode(translate: {},
                          text_mode_banner: str, access_keys: {},
                          session, session_onion, session_i2p,
                          http_prefix: str, debug: bool) -> str:
-    """Returns html for a podcast episode, giebn an item from the newswire
+    """Returns html for a podcast episode, an item from the newswire
     """
     css_filename = base_dir + '/epicyon-podcast.css'
     if os.path.isfile(base_dir + '/podcast.css'):

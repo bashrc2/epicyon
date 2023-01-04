@@ -3623,6 +3623,11 @@ def _test_web_links():
         print(linked_text)
     assert expected_text in linked_text
 
+    # NOTE: it is difficult to find academic studies of the fediverse which
+    # do not in some way violate consent or embody an arrogant status
+    # quo attitude. Did all those scraped accounts agree to be part of
+    # an academic study? Did they even consider consent as an issue?
+    # It seems doubtful. We are just like algae under a microscope to them.
     example_text = \
         'This post has an arxiv link arXiv:2203.15752 some other text'
     linked_text = add_web_links(example_text)
@@ -3630,6 +3635,20 @@ def _test_web_links():
         '<a href="https://arxiv.org/abs/2203.15752" tabindex="10" ' + \
         'rel="nofollow noopener noreferrer"' + \
         ' target="_blank"><span class="ellipsis">arXiv:2203.15752</span></a>'
+    if expected_text not in linked_text:
+        print(expected_text + '\n')
+        print(linked_text)
+    assert expected_text in linked_text
+
+    example_text = \
+        'This post has an doi link ' + \
+        'doi:10.1109/INFCOMW.2019.8845221 some other text'
+    linked_text = add_web_links(example_text)
+    expected_text = \
+        '<a href="https://sci-hub.ru/10.1109/INFCOMW.2019.8845221" ' + \
+        'tabindex="10" rel="nofollow noopener noreferrer"' + \
+        ' target="_blank"><span class="ellipsis">' + \
+        'doi:10.1109/INFCOMW.2019.8845221</span></a>'
     if expected_text not in linked_text:
         print(expected_text + '\n')
         print(linked_text)
