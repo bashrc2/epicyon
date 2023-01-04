@@ -604,13 +604,41 @@ def add_web_links(content: str) -> str:
 
     # if there are no prefixes then just keep the content we have
     if not prefix_found:
-        return content
+        if 'arXiv:' in content or 'arx:' in content or 'arxiv:' in content:
+            prefix_found = True
+        else:
+            return content
 
     content = content.replace('\r', '')
     words = content.replace('\n', ' --linebreak-- ').split(' ')
     replace_dict = {}
     for wrd in words:
         if ':' not in wrd:
+            continue
+        # handle arxiv scientific references
+        if wrd.startswith('arXiv:') or \
+           wrd.startswith('arx:') or \
+           wrd.startswith('arxiv:'):
+            arxiv_ref_str = wrd.split(':', 1)[1].lower()
+            if '.' in arxiv_ref_str:
+                arxiv_ref = arxiv_ref_str.split('.')
+            elif ':' in arxiv_ref_str:
+                arxiv_ref = arxiv_ref_str.split(':')
+            else:
+                continue
+            if len(arxiv_ref) == 2:
+                arxiv_day = arxiv_ref[1]
+                if 'v' in arxiv_day:
+                    arxiv_day = arxiv_day.split('v')[0]
+                if arxiv_ref[0].isdigit() and arxiv_day.isdigit():
+                    ref_str = arxiv_ref[0] + '.' + arxiv_ref[1]
+                    markup = '<a href="https://arxiv.org/abs/' + \
+                        ref_str + '" tabindex="10" ' + \
+                        'rel="nofollow noopener noreferrer" ' + \
+                        'target="_blank">' + \
+                        '<span class="ellipsis">arXiv:' + ref_str + \
+                        '</span></a>'
+                    replace_dict[wrd] = markup
             continue
         # does the word begin with a prefix?
         prefix_found = False
