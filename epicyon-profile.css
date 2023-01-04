@@ -1731,7 +1731,7 @@ h3 {
         min-width: 80px;
         cursor: pointer;
         margin: 0 5px;
-        float: right;
+        float: left;
     }
     .followApprove {
         border-radius: var(--button-corner-radius);
@@ -2532,7 +2532,7 @@ h3 {
         cursor: pointer;
         margin: 15px;
     }
-    .followApprove {
+    .followApproveHandle {
         border-radius: var(--button-corner-radius);
         background-color: var(--main-bg-color);
         border: none;
@@ -2546,7 +2546,7 @@ h3 {
         min-width: 80px;
         cursor: pointer;
         margin: 0 15px;
-        float: right;
+        float: left;
     }
     .followApprove {
         border-radius: var(--button-corner-radius);
@@ -3359,7 +3359,7 @@ h3 {
         min-width: 80px;
         cursor: pointer;
         margin: 0 15px;
-        float: right;
+        float: left;
     }
     .followApprove {
         border-radius: var(--button-corner-radius);
