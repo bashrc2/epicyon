@@ -585,6 +585,41 @@ def _shorten_linked_urls(content: str) -> str:
     return content
 
 
+def _contains_arxiv_reference(wrd: str, replace_dict: {}) -> bool:
+    """Handle arxiv scientific references
+    """
+    if not wrd.startswith('arXiv:') and \
+       not wrd.startswith('arx:') and \
+       not wrd.startswith('arxiv:'):
+        return False
+
+    arxiv_ref_str = wrd.split(':', 1)[1].lower()
+    if '.' in arxiv_ref_str:
+        arxiv_ref = arxiv_ref_str.split('.')
+    elif ':' in arxiv_ref_str:
+        arxiv_ref = arxiv_ref_str.split(':')
+    else:
+        return False
+    if len(arxiv_ref) != 2:
+        return False
+    if not arxiv_ref[0].isdigit():
+        return False
+    arxiv_day = arxiv_ref[1]
+    if 'v' in arxiv_day:
+        arxiv_day = arxiv_day.split('v')[0]
+    if not arxiv_day.isdigit():
+        return False
+    ref_str = arxiv_ref[0] + '.' + arxiv_ref[1]
+    markup = '<a href="https://arxiv.org/abs/' + \
+        ref_str + '" tabindex="10" ' + \
+        'rel="nofollow noopener noreferrer" ' + \
+        'target="_blank">' + \
+        '<span class="ellipsis">arXiv:' + ref_str + \
+        '</span></a>'
+    replace_dict[wrd] = markup
+    return True
+
+
 def add_web_links(content: str) -> str:
     """Adds markup for web links
     """
@@ -615,30 +650,7 @@ def add_web_links(content: str) -> str:
     for wrd in words:
         if ':' not in wrd:
             continue
-        # handle arxiv scientific references
-        if wrd.startswith('arXiv:') or \
-           wrd.startswith('arx:') or \
-           wrd.startswith('arxiv:'):
-            arxiv_ref_str = wrd.split(':', 1)[1].lower()
-            if '.' in arxiv_ref_str:
-                arxiv_ref = arxiv_ref_str.split('.')
-            elif ':' in arxiv_ref_str:
-                arxiv_ref = arxiv_ref_str.split(':')
-            else:
-                continue
-            if len(arxiv_ref) == 2:
-                arxiv_day = arxiv_ref[1]
-                if 'v' in arxiv_day:
-                    arxiv_day = arxiv_day.split('v')[0]
-                if arxiv_ref[0].isdigit() and arxiv_day.isdigit():
-                    ref_str = arxiv_ref[0] + '.' + arxiv_ref[1]
-                    markup = '<a href="https://arxiv.org/abs/' + \
-                        ref_str + '" tabindex="10" ' + \
-                        'rel="nofollow noopener noreferrer" ' + \
-                        'target="_blank">' + \
-                        '<span class="ellipsis">arXiv:' + ref_str + \
-                        '</span></a>'
-                    replace_dict[wrd] = markup
+        if _contains_arxiv_reference(wrd, replace_dict):
             continue
         # does the word begin with a prefix?
         prefix_found = False
