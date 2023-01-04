@@ -904,11 +904,10 @@ def html_profile(signing_priv_key_pem: str,
                                 '  <form method="POST" action="' + \
                                 base_path + '/searchhandle?page=1">\n' + \
                                 '    <input type="hidden" ' + \
-                                'name="actor" value="' + \
-                                follower_actor + '">\n' + \
+                                'name="actor" value="' + actor + '">\n' + \
                                 '    <input type="hidden" ' + \
                                 'name="searchtext" value="' + \
-                                follower_handle + new_follower_domain + \
+                                follower_actor + \
                                 '">\n    <button type="submit" ' + \
                                 'class="followApproveHandle" ' + \
                                 'name="submitSearch" tabindex="2">' + \
