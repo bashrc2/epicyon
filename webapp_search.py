@@ -1079,6 +1079,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     as_header = {
         'Accept': 'application/activity+json; profile="' + profile_str + '"'
     }
+    debug = True
     hashtag_json = \
         get_json(signing_priv_key_pem,
                  session, hashtag_url, as_header, None, debug,
