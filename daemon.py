@@ -18485,7 +18485,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.getreq_busy = False
                 return
             if not html_getreq:
-                # TODO
                 self._hashtag_search_json(calling_domain, referer_domain,
                                           self.path, cookie,
                                           self.server.base_dir,
@@ -18495,8 +18494,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.port,
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
-                                          getreq_start_time,
-                                          curr_session)
+                                          getreq_start_time)
                 self.server.getreq_busy = False
                 return
             self._hashtag_search(calling_domain,
