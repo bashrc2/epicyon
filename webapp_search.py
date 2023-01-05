@@ -1107,13 +1107,6 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     elif page_number < 1:
         page_number = 1
 
-    # get the start end end within the index file
-    start_index = int((page_number - 1) * posts_per_page)
-    end_index = start_index + posts_per_page
-    no_of_lines = len(lines)
-    if end_index >= no_of_lines and no_of_lines > 0:
-        end_index = no_of_lines - 1
-
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     hashtag_search_form = \
@@ -1136,7 +1129,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
 
     tag_link = '/users/' + nickname + '?remotetag=' + \
         hashtag_url.replace('/', '--')
-    if start_index > 0:
+    if page_number > 1:
         # previous page link
         hashtag_search_form += \
             '  <center>\n' + \
@@ -1148,18 +1141,14 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
-    index = start_index
-    while index <= end_index:
-        post_id = lines[index]
+    for post_id in lines:
         post_json_object = \
             get_json(signing_priv_key_pem,
                      session, post_id, as_header, None, debug,
                      __version__, http_prefix, domain)
         if not post_json_object:
-            index += 1
             continue
         if not isinstance(post_json_object, dict):
-            index += 1
             continue
         if not has_object_dict(post_json_object):
             if post_json_object.get('id') and \
@@ -1178,10 +1167,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                 }
                 post_json_object = new_post_json_object
             else:
-                index += 1
                 continue
         if not is_public_post(post_json_object):
-            index += 1
             continue
         show_individual_post_icons = False
         allow_deletion = False
@@ -1225,9 +1212,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                     minimize_all_images, None)
         if post_str:
             hashtag_search_form += separator_str + post_str
-        index += 1
 
-    if end_index < no_of_lines - 1:
+    if len(lines) >= 5:
         # next page link
         hashtag_search_form += \
             '  <center>\n' + \
