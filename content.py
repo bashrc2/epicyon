@@ -786,6 +786,8 @@ def replace_remote_hashtags(content: str,
             ctr += 1
             continue
         link = section.split('"')[0]
+        if '://' not in link:
+            continue
         if '?remotetag=' in link:
             ctr += 1
             continue
