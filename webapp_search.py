@@ -1087,6 +1087,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     if not hashtag_json:
         if 'orderedItems' in hashtag_json:
             lines = hashtag_json['orderedItems']
+    else:
+        print('WARN: no hashtags returned for url ' + hashtag_url)
 
     separator_str = html_post_separator(base_dir, None)
 
@@ -1147,6 +1149,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                      session, post_id, as_header, None, debug,
                      __version__, http_prefix, domain)
         if not post_json_object:
+            print('No hashtag post for ' + post_id)
             continue
         if not isinstance(post_json_object, dict):
             continue
@@ -1169,6 +1172,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             else:
                 continue
         if not is_public_post(post_json_object):
+            print('Hashtag post is not public ' + post_id)
             continue
         show_individual_post_icons = False
         allow_deletion = False
