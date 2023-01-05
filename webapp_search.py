@@ -1220,20 +1220,21 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
         if not post_filename:
             continue
         post_json_object = load_json(post_filename)
-        if post_json_object:
-            if not has_object_dict(post_json_object):
-                continue
-            if not is_public_post(post_json_object):
-                continue
-            if not post_json_object['object'].get('id'):
-                continue
-            # add to feed
-            page_items += 1
-            if page_items < posts_per_page * (page_number - 1):
-                continue
-            id_str = remove_id_ending(post_json_object['object']['id'])
-            hashtag_json['orderedItems'].append(id_str)
-            hashtag_json['totalItems'] += 1
+        if not post_json_object:
+            continue
+        if not has_object_dict(post_json_object):
+            continue
+        if not is_public_post(post_json_object):
+            continue
+        if not post_json_object['object'].get('id'):
+            continue
+        # add to feed
+        page_items += 1
+        if page_items < posts_per_page * (page_number - 1):
+            continue
+        id_str = remove_id_ending(post_json_object['object']['id'])
+        hashtag_json['orderedItems'].append(id_str)
+        hashtag_json['totalItems'] += 1
         if hashtag_json['totalItems'] >= posts_per_page:
             break
 
