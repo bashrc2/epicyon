@@ -1160,16 +1160,18 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         if not has_object_dict(post_json_object):
             if post_json_object.get('id') and \
                'to' in post_json_object and \
-               'cc' in post_json_object and \
-               post_json_object.get('actor'):
+               'cc' in post_json_object:
                 new_url = \
-                    remove_id_ending(post_json_object['id']) + '/activity'
+                    remove_id_ending(post_json_object['id'])
+                actor = new_url
+                if '/statuses/' in actor:
+                    actor = actor.split('/statuses/')[0]
                 new_post_json_object = {
                     "type": "Create",
-                    "id": new_url,
+                    "id": new_url + '/activity',
                     "to": post_json_object['to'],
                     "cc": post_json_object['cc'],
-                    "actor": post_json_object['actor'],
+                    "actor": actor,
                     "object": post_json_object
                 }
                 post_json_object = new_post_json_object
