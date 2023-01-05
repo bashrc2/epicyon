@@ -135,6 +135,7 @@ from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
+from content import replace_remote_hashtags
 from content import add_name_emojis_to_tags
 from content import combine_textarea_lines
 from content import detect_dogwhistles
@@ -7719,6 +7720,31 @@ def _test_replace_variable():
     assert result == expected
 
 
+def _test_replace_remote_tags() -> None:
+    print('replace_remote_tags')
+    nickname = 'mynick'
+    domain = 'furious.duck'
+    content = 'This is a test'
+    result = replace_remote_hashtags(content, nickname, domain)
+    assert result == content
+
+    link = "https://something/else/mytag"
+    content = 'This is href="' + link + '" test'
+    result = replace_remote_hashtags(content, nickname, domain)
+    assert result == content
+
+    link = "https://something/tags/mytag"
+    content = 'This is href="' + link + '" test'
+    result = replace_remote_hashtags(content, nickname, domain)
+    expected = \
+        'This is href="/users/' + nickname + '?remotetag=' + \
+        link.replace('/', '--') + '" test'
+    if result != expected:
+        print(expected)
+        print(result)
+    assert result == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7736,6 +7762,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_replace_remote_tags()
     _test_replace_variable()
     _test_missing_theme_colors(base_dir)
     _test_reply_language(base_dir)
