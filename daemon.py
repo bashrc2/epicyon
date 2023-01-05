@@ -18488,6 +18488,10 @@ class PubServer(BaseHTTPRequestHandler):
             allow_local_network_access = self.server.allow_local_network_access
             show_published_date_only = self.server.show_published_date_only
             twitter_replacement_domain = self.server.twitter_replacement_domain
+            timezone = None
+            if self.server.account_timezone.get(nickname):
+                timezone = \
+                    self.server.account_timezone.get(nickname)
             msg = \
                 html_hashtag_search_remote(nickname,
                                            self.server.domain,
@@ -18514,7 +18518,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.signing_priv_key_pem,
                                            self.server.cw_lists,
                                            self.server.lists_enabled,
-                                           self.server.timezone,
+                                           timezone,
                                            self.server.bold_reading,
                                            self.server.dogwhistles,
                                            self.server.min_images_for_accounts,
