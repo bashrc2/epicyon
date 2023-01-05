@@ -67,6 +67,7 @@ from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
+from content import replace_remote_hashtags
 from content import detect_dogwhistles
 from content import create_edits_html
 from content import bold_reading_string
@@ -2445,6 +2446,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 system_language, translate)
         if not content_str:
             return ''
+    content_str = \
+        replace_remote_hashtags(content_str, nickname, domain)
 
     summary_str = ''
     if content_str:

@@ -765,6 +765,46 @@ def _add_hash_tags(word_str: str, http_prefix: str, domain: str,
     return True
 
 
+def replace_remote_hashtags(content: str,
+                            nickname: str, domain: str) -> str:
+    """Replaces remote hashtags with a local version
+    """
+    if not domain:
+        return content
+
+    if ' href="' not in content:
+        return content
+
+    sections = content.split(' href="')
+    ctr = 0
+    replacements = {}
+    for section in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        if '"' not in section:
+            ctr += 1
+            continue
+        link = section.split('"')[0]
+        if '?remotetag=' in link:
+            ctr += 1
+            continue
+        if '/tags/' not in link:
+            ctr += 1
+            continue
+        if '/' + domain not in link:
+            new_link = '/users/' + nickname + \
+                '?remotetag=' + link.replace('/', '--')
+            replacements[link] = new_link
+        ctr += 1
+    if not replacements:
+        return content
+    for old_link, new_link in replacements.items():
+        content = content.replace('"' + old_link + '"',
+                                  '"' + new_link + '"')
+    return content
+
+
 def _add_emoji(base_dir: str, word_str: str,
                http_prefix: str, domain: str,
                replace_emoji: {}, post_tags: {},

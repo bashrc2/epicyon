@@ -46,6 +46,7 @@ from webapp_utils import html_search_result_share
 from webapp_post import individual_post_as_html
 from webapp_hashtagswarm import html_hash_tag_swarm
 from maps import html_hashtag_maps
+from session import get_json
 
 
 def html_search_emoji(translate: {}, base_dir: str, search_str: str,
@@ -1040,6 +1041,198 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             '  <center>\n' + \
             '    <a href="/users/' + nickname + '/tags/' + hashtag + \
             '?page=' + str(page_number + 1) + \
+            '"><img loading="lazy" decoding="async" ' + \
+            'class="pageicon" src="/icons' + \
+            '/pagedown.png" title="' + translate['Page down'] + \
+            '" alt="' + translate['Page down'] + '"></a>' + \
+            '  </center>'
+    hashtag_search_form += html_footer()
+    return hashtag_search_form
+
+
+def html_hashtag_search_remote(nickname: str, domain: str, port: int,
+                               recent_posts_cache: {}, max_recent_posts: int,
+                               translate: {},
+                               base_dir: str, hashtag_url: str,
+                               page_number: int, posts_per_page: int,
+                               session, cached_webfingers: {},
+                               person_cache: {},
+                               http_prefix: str, project_version: str,
+                               yt_replace_domain: str,
+                               twitter_replacement_domain: str,
+                               show_published_date_only: bool,
+                               peertube_instances: [],
+                               allow_local_network_access: bool,
+                               theme_name: str, system_language: str,
+                               max_like_count: int,
+                               signing_priv_key_pem: str,
+                               cw_lists: {}, lists_enabled: str,
+                               timezone: str, bold_reading: bool,
+                               dogwhistles: {},
+                               min_images_for_accounts: [],
+                               debug: bool) -> str:
+    """Show a page containing search results for a remote hashtag
+    """
+    hashtag = hashtag_url.split('/')[-1]
+
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'application/ld+json; profile="' + profile_str + '"'
+    }
+    hashtag_json = \
+        get_json(signing_priv_key_pem,
+                 session, hashtag_url, as_header, None, debug,
+                 __version__, http_prefix, domain)
+    lines = []
+    if not hashtag_json:
+        if 'orderedItems' in hashtag_json:
+            lines = hashtag_json['orderedItems']
+
+    separator_str = html_post_separator(base_dir, None)
+
+    # check that the directory for the nickname exists
+    if nickname:
+        account_dir = acct_dir(base_dir, nickname, domain)
+        if not os.path.isdir(account_dir):
+            return None
+
+    # read the css
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
+
+    # ensure that the page number is in bounds
+    if not page_number:
+        page_number = 1
+    elif page_number < 1:
+        page_number = 1
+
+    # get the start end end within the index file
+    start_index = int((page_number - 1) * posts_per_page)
+    end_index = start_index + posts_per_page
+    no_of_lines = len(lines)
+    if end_index >= no_of_lines and no_of_lines > 0:
+        end_index = no_of_lines - 1
+
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    hashtag_search_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+
+    # add the page title
+    hashtag_search_form += '<center>\n' + \
+        '<h1>#' + hashtag
+
+    # RSS link for hashtag feed
+    hashtag_rss = hashtag_url
+    if '.html' in hashtag_rss:
+        hashtag_rss = hashtag_rss.replace('.html', '')
+    hashtag_search_form += ' <a href="' + hashtag_rss + '.rss">'
+    hashtag_search_form += \
+        '<img style="width:3%;min-width:50px" ' + \
+        'loading="lazy" decoding="async" ' + \
+        'alt="RSS 2.0" title="RSS 2.0" src="/' + \
+        'icons/logorss.png" /></a></h1>\n'
+
+    tag_link = '/users/' + nickname + '?remotetag=' + \
+        hashtag_url.replace('/', '--')
+    if start_index > 0:
+        # previous page link
+        hashtag_search_form += \
+            '  <center>\n' + \
+            '    <a href="' + tag_link + ';page=' + \
+            str(page_number - 1) + \
+            '"><img loading="lazy" decoding="async" ' + \
+            'class="pageicon" src="/' + \
+            'icons/pageup.png" title="' + \
+            translate['Page up'] + \
+            '" alt="' + translate['Page up'] + \
+            '"></a>\n  </center>\n'
+    index = start_index
+    while index <= end_index:
+        post_id = lines[index]
+        post_json_object = \
+            get_json(signing_priv_key_pem,
+                     session, post_id, as_header, None, debug,
+                     __version__, http_prefix, domain)
+        if not post_json_object:
+            index += 1
+            continue
+        if not isinstance(post_json_object, dict):
+            index += 1
+            continue
+        if not has_object_dict(post_json_object):
+            if post_json_object.get('id') and \
+               'to' in post_json_object and \
+               'cc' in post_json_object and \
+               post_json_object.get('actor'):
+                new_url = \
+                    remove_id_ending(post_json_object['id']) + '/activity'
+                new_post_json_object = {
+                    "type": "Create",
+                    "id": new_url,
+                    "to": post_json_object['to'],
+                    "cc": post_json_object['cc'],
+                    "actor": post_json_object['actor'],
+                    "object": post_json_object
+                }
+                post_json_object = new_post_json_object
+            else:
+                index += 1
+                continue
+        if not is_public_post(post_json_object):
+            index += 1
+            continue
+        show_individual_post_icons = False
+        allow_deletion = False
+        show_repeats = show_individual_post_icons
+        show_icons = show_individual_post_icons
+        manually_approves_followers = False
+        show_public_only = False
+        store_to_sache = False
+        allow_downloads = True
+        avatar_url = None
+        show_avatar_options = True
+        minimize_all_images = False
+        if nickname in min_images_for_accounts:
+            minimize_all_images = True
+        post_str = \
+            individual_post_as_html(signing_priv_key_pem,
+                                    allow_downloads, recent_posts_cache,
+                                    max_recent_posts,
+                                    translate, None,
+                                    base_dir, session, cached_webfingers,
+                                    person_cache,
+                                    nickname, domain, port,
+                                    post_json_object,
+                                    avatar_url, show_avatar_options,
+                                    allow_deletion,
+                                    http_prefix, project_version,
+                                    'search',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count,
+                                    show_repeats, show_icons,
+                                    manually_approves_followers,
+                                    show_public_only,
+                                    store_to_sache, False, cw_lists,
+                                    lists_enabled, timezone, False,
+                                    bold_reading, dogwhistles,
+                                    minimize_all_images, None)
+        if post_str:
+            hashtag_search_form += separator_str + post_str
+        index += 1
+
+    if end_index < no_of_lines - 1:
+        # next page link
+        hashtag_search_form += \
+            '  <center>\n' + \
+            '    <a href="' + tag_link + \
+            ';page=' + str(page_number + 1) + \
             '"><img loading="lazy" decoding="async" ' + \
             'class="pageicon" src="/icons' + \
             '/pagedown.png" title="' + translate['Page down'] + \
