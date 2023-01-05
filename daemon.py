@@ -14,6 +14,7 @@ import json
 import time
 import urllib.parse
 import datetime
+import os
 from socket import error as SocketError
 import errno
 from functools import partial
@@ -239,6 +240,7 @@ from webapp_search import html_skills_search
 from webapp_search import html_history_search
 from webapp_search import html_hashtag_search
 from webapp_search import rss_hashtag_search
+from webapp_search import hashtag_search_json
 from webapp_search import html_search_emoji
 from webapp_search import html_search_shared_items
 from webapp_search import html_search_emoji_text_entry
@@ -427,8 +429,6 @@ from maps import map_format_from_tagmaps_path
 from relationships import get_moved_feed
 from relationships import get_inactive_feed
 from relationships import update_moved_actors
-import os
-
 
 # maximum number of posts to list in outbox feed
 MAX_POSTS_IN_FEED = 12
@@ -9173,6 +9173,62 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, calling_domain)
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_hashtag_search_rss2',
+                            self.server.debug)
+
+    def _hashtag_search_json(self, calling_domain: str,
+                             referer_domain: str,
+                             path: str, cookie: str,
+                             base_dir: str, http_prefix: str,
+                             domain: str, domain_full: str, port: int,
+                             onion_domain: str, i2p_domain: str,
+                             getreq_start_time) -> None:
+        """Return a json collection for a hashtag
+        """
+        page_number = 1
+        if '?page=' in path:
+            page_number_str = path.split('?page=')[1]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
+            path = path.split('?page=')[0]
+        hashtag = path.split('/tags/')[1]
+        if is_blocked_hashtag(base_dir, hashtag):
+            self._400()
+            return
+        nickname = None
+        if '/users/' in path:
+            actor = \
+                http_prefix + '://' + domain_full + path
+            nickname = \
+                get_nickname_from_actor(actor)
+        hashtag_json = \
+            hashtag_search_json(nickname,
+                                domain, port,
+                                base_dir, hashtag,
+                                page_number, MAX_POSTS_IN_FEED,
+                                http_prefix)
+        if hashtag_json:
+            msg_str = json.dumps(hashtag_json)
+            msg_str = self._convert_domains(calling_domain, referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('application/json', msglen,
+                              None, calling_domain, True)
+            self._write(msg)
+        else:
+            origin_path_str = path.split('/tags/')[0]
+            origin_path_str_absolute = \
+                http_prefix + '://' + domain_full + origin_path_str
+            if calling_domain.endswith('.onion') and onion_domain:
+                origin_path_str_absolute = \
+                    'http://' + onion_domain + origin_path_str
+            elif (calling_domain.endswith('.i2p') and onion_domain):
+                origin_path_str_absolute = \
+                    'http://' + i2p_domain + origin_path_str
+            self._redirect_headers(origin_path_str_absolute,
+                                   cookie, calling_domain)
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', '_hashtag_search_json',
                             self.server.debug)
 
     def _announce_button(self, calling_domain: str, path: str,
@@ -18416,6 +18472,21 @@ class PubServer(BaseHTTPRequestHandler):
            (authorized and '/tags/' in self.path):
             if self.path.startswith('/tags/rss2/'):
                 self._hashtag_search_rss2(calling_domain,
+                                          self.path, cookie,
+                                          self.server.base_dir,
+                                          self.server.http_prefix,
+                                          self.server.domain,
+                                          self.server.domain_full,
+                                          self.server.port,
+                                          self.server.onion_domain,
+                                          self.server.i2p_domain,
+                                          getreq_start_time,
+                                          curr_session)
+                self.server.getreq_busy = False
+                return
+            if not html_getreq:
+                # TODO
+                self._hashtag_search_json(calling_domain, referer_domain,
                                           self.path, cookie,
                                           self.server.base_dir,
                                           self.server.http_prefix,

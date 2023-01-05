@@ -11,6 +11,8 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import remove_id_ending
+from utils import has_object_dict
 from utils import acct_handle_dir
 from utils import get_base_content_from_post
 from utils import is_account_dir
@@ -1157,3 +1159,82 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
             break
 
     return hashtag_feed + rss2tag_footer()
+
+
+def hashtag_search_json(nickname: str, domain: str, port: int,
+                        base_dir: str, hashtag: str,
+                        page_number: int, posts_per_page: int,
+                        http_prefix: str) -> {}:
+    """Show a json collection for a hashtag
+    """
+    if hashtag.startswith('#'):
+        hashtag = hashtag[1:]
+    hashtag = urllib.parse.unquote(hashtag)
+    hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtag_index_file):
+        if hashtag != hashtag.lower():
+            hashtag = hashtag.lower()
+            hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtag_index_file):
+        print('WARN: hashtag file not found ' + hashtag_index_file)
+        return None
+
+    # check that the directory for the nickname exists
+    if nickname:
+        account_dir = acct_dir(base_dir, nickname, domain)
+        if not os.path.isdir(account_dir):
+            nickname = None
+
+    # read the index
+    lines = []
+    with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
+        lines = fp_hash.readlines()
+    if not lines:
+        return None
+
+    domain_full = get_full_domain(domain, port)
+
+    url = http_prefix + '://' + domain_full + '/tags/' + \
+        hashtag + '?page=' + str(page_number)
+    hashtag_json = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': url,
+        'orderedItems': [],
+        'totalItems': 0,
+        'type': 'OrderedCollection'
+    }
+    page_items = 0
+    for index, _ in enumerate(lines):
+        post_id = lines[index].strip('\n').strip('\r')
+        if '  ' not in post_id:
+            nickname = get_nickname_from_actor(post_id)
+            if not nickname:
+                continue
+        else:
+            post_fields = post_id.split('  ')
+            if len(post_fields) != 3:
+                continue
+            nickname = post_fields[1]
+            post_id = post_fields[2]
+        post_filename = locate_post(base_dir, nickname, domain, post_id)
+        if not post_filename:
+            continue
+        post_json_object = load_json(post_filename)
+        if post_json_object:
+            if not has_object_dict(post_json_object):
+                continue
+            if not is_public_post(post_json_object):
+                continue
+            if not post_json_object['object'].get('id'):
+                continue
+            # add to feed
+            page_items += 1
+            if page_items < posts_per_page * (page_number - 1):
+                continue
+            id_str = remove_id_ending(post_json_object['object']['id'])
+            hashtag_json['orderedItems'].append(id_str)
+            hashtag_json['totalItems'] += 1
+        if hashtag_json['totalItems'] >= posts_per_page:
+            break
+
+    return hashtag_json
