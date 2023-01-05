@@ -1146,6 +1146,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
     for post_id in lines:
+        print('Hashtag post_id ' + post_id)
         post_json_object = \
             get_json(signing_priv_key_pem,
                      session, post_id, as_header, None, debug,
@@ -1154,6 +1155,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             print('No hashtag post for ' + post_id)
             continue
         if not isinstance(post_json_object, dict):
+            print('Hashtag post is not a dict ' + str(post_json_object))
             continue
         if not has_object_dict(post_json_object):
             if post_json_object.get('id') and \
@@ -1172,6 +1174,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                 }
                 post_json_object = new_post_json_object
             else:
+                print('Hashtag post does not contain necessary fields ' +
+                      str(post_json_object))
                 continue
         if not is_public_post(post_json_object):
             print('Hashtag post is not public ' + post_id)
