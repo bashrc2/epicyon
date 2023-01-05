@@ -1081,7 +1081,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     }
     debug = True
     hashtag_json = \
-        get_json(signing_priv_key_pem,
+        get_json(None,
                  session, hashtag_url, as_header, None, debug,
                  __version__, http_prefix, domain)
     lines = []
