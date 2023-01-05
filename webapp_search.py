@@ -1077,7 +1077,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
 
     profile_str = 'https://www.w3.org/ns/activitystreams'
     as_header = {
-        'Accept': 'application/ld+json; profile="' + profile_str + '"'
+        'Accept': 'application/activity+json; profile="' + profile_str + '"'
     }
     hashtag_json = \
         get_json(signing_priv_key_pem,
