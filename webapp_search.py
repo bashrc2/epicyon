@@ -1087,6 +1087,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     if hashtag_json:
         if 'orderedItems' in hashtag_json:
             lines = hashtag_json['orderedItems']
+        else:
+            print('No orderedItems in hashtag collection ' + str(hashtag_json))
     else:
         print('WARN: no hashtags returned for url ' + hashtag_url)
 
