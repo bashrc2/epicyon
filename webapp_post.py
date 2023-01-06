@@ -1822,7 +1822,9 @@ def _get_copyright_footer(content_license_url: str,
     elif '/fdl' in content_license_url:
         icon_filename = 'license_fdl.png'
 
-    description = translate['Content License']
+    description = 'Content License'
+    if translate.get('Content License'):
+        description = translate['Content License']
     copyright_str = \
         '        ' + \
         '<a class="imageAnchor" href="' + content_license_url + \
