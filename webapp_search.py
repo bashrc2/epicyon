@@ -1079,9 +1079,12 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     as_header = {
         'Accept': 'application/activity+json; profile="' + profile_str + '"'
     }
+    hashtag_url_with_page = hashtag_url
+    if '?page=' not in hashtag_url_with_page:
+        hashtag_url_with_page += '?page=' + str(page_number)
     hashtag_json = \
         get_json(signing_priv_key_pem,
-                 session, hashtag_url, as_header, None, debug,
+                 session, hashtag_url_with_page, as_header, None, debug,
                  __version__, http_prefix, domain)
     lines = []
     if hashtag_json:
