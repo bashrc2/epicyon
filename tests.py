@@ -5960,6 +5960,11 @@ def _test_extract_text_fields_from_post():
 
 
 def _test_speaker_replace_link():
+    http_prefix = 'https'
+    nickname = 'mynick'
+    domain = 'mydomain'
+    domain_full = domain
+
     print('testSpeakerReplaceLinks')
     text = 'The Tor Project: For Snowflake volunteers: If you use ' + \
         'Firefox, Brave, or Chrome, our Snowflake extension turns ' + \
@@ -5970,12 +5975,26 @@ def _test_speaker_replace_link():
         'how-to-help-running-snowflake/'
     detected_links = []
     result = \
-        speaker_replace_links(text, {'Linked': 'Web link'}, detected_links)
+        speaker_replace_links(http_prefix, nickname, domain, domain_full,
+                              text, {'Linked': 'Web link'}, detected_links)
     assert len(detected_links) == 1
     assert detected_links[0] == \
         'https://support.torproject.org/censorship/' + \
         'how-to-help-running-snowflake/'
     assert 'Web link support.torproject.org' in result
+
+    remote_link = 'https://somedomain/tags/sometag'
+    text = 'Test with a hashtag ' + remote_link + ' link'
+    detected_links = []
+    result = \
+        speaker_replace_links(http_prefix, nickname, domain, domain_full,
+                              text, {'Linked': 'Web link'}, detected_links)
+    assert len(detected_links) == 1
+    local_link = \
+        'https://' + domain_full + '/users/' + nickname + \
+        '?remotetag=' + remote_link.replace('/', '--')
+    assert detected_links[0] == local_link
+    assert 'Web link somedomain' in result
 
 
 def _test_camel_case_split():

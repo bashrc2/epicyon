@@ -170,7 +170,9 @@ def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
     return say_text
 
 
-def speaker_replace_links(say_text: str, translate: {},
+def speaker_replace_links(http_prefix: str, nickname: str,
+                          orig_domain: str, orig_domain_full: str,
+                          say_text: str, translate: {},
                           detected_links: []) -> str:
     """Replaces any links in the given text with "link to [domain]".
     Instead of reading out potentially very long and meaningless links
@@ -181,6 +183,7 @@ def speaker_replace_links(say_text: str, translate: {},
         text = text.replace(char, ' ')
     text = text.replace('__v=', '?v=')
     replacements = {}
+    replacements_hashtags = {}
     words_list = text.split(' ')
     if translate.get('Linked'):
         linked_str = translate['Linked']
@@ -216,8 +219,16 @@ def speaker_replace_links(say_text: str, translate: {},
         if domain.startswith('www.'):
             domain = domain.replace('www.', '')
         replacements[domain_full] = '. ' + linked_str + ' ' + domain + '.'
-        detected_links.append(domain_full)
+        if '/tags/' in domain_full and domain != orig_domain:
+            remote_hashtag_link = \
+                http_prefix + '://' + orig_domain_full + '/users/' + \
+                nickname + '?remotetag=' + domain_full.replace('/', '--')
+            detected_links.append(remote_hashtag_link)
+        else:
+            detected_links.append(domain_full)
     for replace_str, new_str in replacements.items():
+        say_text = say_text.replace(replace_str, new_str)
+    for replace_str, new_str in replacements_hashtags.items():
         say_text = say_text.replace(replace_str, new_str)
     return say_text.replace('..', '.')
 
@@ -382,9 +393,11 @@ def get_ssml_box(base_dir: str, path: str,
                                   gender, box_name)
 
 
-def speakable_text(base_dir: str, content: str, translate: {}) -> (str, []):
+def speakable_text(http_prefix: str,
+                   nickname: str, domain: str, domain_full: str,
+                   base_dir: str, content: str, translate: {}) -> (str, []):
     """Convert the given text to a speakable version
-    which includes changes for prononciation
+    which includes changes for pronunciation
     """
     content = str(content)
     if is_pgp_encrypted(content):
@@ -395,7 +408,9 @@ def speakable_text(base_dir: str, content: str, translate: {}) -> (str, []):
         content = content.replace(' <3', ' ' + translate['heart'])
     content = remove_html(html_replace_quote_marks(content))
     detected_links = []
-    content = speaker_replace_links(content, translate, detected_links)
+    content = speaker_replace_links(http_prefix,
+                                    nickname, domain, domain_full,
+                                    content, translate, detected_links)
     # replace all double spaces
     while '  ' in content:
         content = content.replace('  ', ' ')
@@ -432,7 +447,9 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
         if ' <3' in content:
             content = content.replace(' <3', ' ' + translate['heart'])
         content = remove_html(html_replace_quote_marks(content))
-        content = speaker_replace_links(content, translate, detected_links)
+        content = speaker_replace_links(http_prefix,
+                                        nickname, domain, domain_full,
+                                        content, translate, detected_links)
         # replace all double spaces
         while '  ' in content:
             content = content.replace('  ', ' ')
