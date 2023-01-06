@@ -964,6 +964,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
     index = start_index
+    text_mode_separator = '<div class="transparent"><hr></div>'
     while index <= end_index:
         post_id = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:
@@ -1032,8 +1033,11 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None)
         if post_str:
-            hashtag_search_form += separator_str + post_str
+            hashtag_search_form += \
+                text_mode_separator + separator_str + post_str
         index += 1
+
+    hashtag_search_form += text_mode_separator
 
     if end_index < no_of_lines - 1:
         # next page link
@@ -1148,6 +1152,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
+    text_mode_separator = '<div class="transparent"><hr></div>'
     for post_id in lines:
         print('Hashtag post_id ' + post_id)
         post_json_object = \
@@ -1226,7 +1231,10 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None)
         if post_str:
-            hashtag_search_form += separator_str + post_str
+            hashtag_search_form += \
+                text_mode_separator + separator_str + post_str
+
+    hashtag_search_form += text_mode_separator
 
     if len(lines) >= 5 and hashtag_json.get('next'):
         # next page link
