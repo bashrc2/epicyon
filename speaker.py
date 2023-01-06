@@ -28,7 +28,6 @@ from utils import has_object_dict
 from utils import acct_dir
 from utils import local_actor_url
 from content import html_replace_quote_marks
-from content import replace_remote_hashtags
 
 SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
 
@@ -432,7 +431,6 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
         # replace some emoji before removing html
         if ' <3' in content:
             content = content.replace(' <3', ' ' + translate['heart'])
-        content = replace_remote_hashtags(content, nickname, domain)
         content = remove_html(html_replace_quote_marks(content))
         content = speaker_replace_links(content, translate, detected_links)
         # replace all double spaces
