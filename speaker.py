@@ -223,7 +223,7 @@ def speaker_replace_links(say_text: str, translate: {},
     return say_text.replace('..', '.')
 
 
-def _add_ssm_lemphasis(say_text: str) -> str:
+def _add_ssml_emphasis(say_text: str) -> str:
     """Adds emphasis to *emphasised* text
     """
     if '*' not in say_text:
@@ -342,7 +342,7 @@ def _speaker_endpoint_ssml(display_name: str, summary: str,
             else:
                 gender = 'neutral'
 
-    content = _add_ssm_lemphasis(content)
+    content = _add_ssml_emphasis(content)
     voice_params = 'name="' + display_name + '" gender="' + gender + '"'
     if summary is None:
         summary = ''
