@@ -1153,6 +1153,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
     text_mode_separator = '<div class="transparent"><hr></div>'
+    post_ctr = 0
     for post_id in lines:
         print('Hashtag post_id ' + post_id)
         post_json_object = \
@@ -1233,10 +1234,13 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str
+            post_ctr += 1
+            if post_ctr >= posts_per_page:
+                break
 
     hashtag_search_form += text_mode_separator
 
-    if len(lines) >= 5 and hashtag_json.get('next'):
+    if post_ctr >= 5 and hashtag_json.get('next'):
         # next page link
         hashtag_search_form += \
             '  <center>\n' + \
