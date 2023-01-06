@@ -1136,7 +1136,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
 
     tag_link = '/users/' + nickname + '?remotetag=' + \
         hashtag_url.replace('/', '--')
-    if page_number > 1 and hashtag_json.get('first'):
+    if page_number > 1 and hashtag_json.get('prev'):
         # previous page link
         hashtag_search_form += \
             '  <center>\n' + \
@@ -1228,7 +1228,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         if post_str:
             hashtag_search_form += separator_str + post_str
 
-    if len(lines) >= 5 and hashtag_json.get('first'):
+    if len(lines) >= 5 and hashtag_json.get('next'):
         # next page link
         hashtag_search_form += \
             '  <center>\n' + \
