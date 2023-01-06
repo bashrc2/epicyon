@@ -14,6 +14,7 @@ import json
 import time
 import urllib.parse
 import datetime
+import os
 from socket import error as SocketError
 import errno
 from functools import partial
@@ -238,7 +239,9 @@ from webapp_column_right import html_edit_news_post
 from webapp_search import html_skills_search
 from webapp_search import html_history_search
 from webapp_search import html_hashtag_search
+from webapp_search import html_hashtag_search_remote
 from webapp_search import rss_hashtag_search
+from webapp_search import hashtag_search_json
 from webapp_search import html_search_emoji
 from webapp_search import html_search_shared_items
 from webapp_search import html_search_emoji_text_entry
@@ -427,8 +430,6 @@ from maps import map_format_from_tagmaps_path
 from relationships import get_moved_feed
 from relationships import get_inactive_feed
 from relationships import update_moved_actors
-import os
-
 
 # maximum number of posts to list in outbox feed
 MAX_POSTS_IN_FEED = 12
@@ -9173,6 +9174,62 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, calling_domain)
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_hashtag_search_rss2',
+                            self.server.debug)
+
+    def _hashtag_search_json(self, calling_domain: str,
+                             referer_domain: str,
+                             path: str, cookie: str,
+                             base_dir: str, http_prefix: str,
+                             domain: str, domain_full: str, port: int,
+                             onion_domain: str, i2p_domain: str,
+                             getreq_start_time) -> None:
+        """Return a json collection for a hashtag
+        """
+        page_number = 1
+        if '?page=' in path:
+            page_number_str = path.split('?page=')[1]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
+            path = path.split('?page=')[0]
+        hashtag = path.split('/tags/')[1]
+        if is_blocked_hashtag(base_dir, hashtag):
+            self._400()
+            return
+        nickname = None
+        if '/users/' in path:
+            actor = \
+                http_prefix + '://' + domain_full + path
+            nickname = \
+                get_nickname_from_actor(actor)
+        hashtag_json = \
+            hashtag_search_json(nickname,
+                                domain, port,
+                                base_dir, hashtag,
+                                page_number, MAX_POSTS_IN_FEED,
+                                http_prefix)
+        if hashtag_json:
+            msg_str = json.dumps(hashtag_json)
+            msg_str = self._convert_domains(calling_domain, referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('application/json', msglen,
+                              None, calling_domain, True)
+            self._write(msg)
+        else:
+            origin_path_str = path.split('/tags/')[0]
+            origin_path_str_absolute = \
+                http_prefix + '://' + domain_full + origin_path_str
+            if calling_domain.endswith('.onion') and onion_domain:
+                origin_path_str_absolute = \
+                    'http://' + onion_domain + origin_path_str
+            elif (calling_domain.endswith('.i2p') and onion_domain):
+                origin_path_str_absolute = \
+                    'http://' + i2p_domain + origin_path_str
+            self._redirect_headers(origin_path_str_absolute,
+                                   cookie, calling_domain)
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', '_hashtag_search_json',
                             self.server.debug)
 
     def _announce_button(self, calling_domain: str, path: str,
@@ -18411,6 +18468,73 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.getreq_busy = False
                 return
 
+        if '?remotetag=' in self.path and \
+           '/users/' in self.path and authorized:
+            actor = self.path.split('?remotetag=')[0]
+            nickname = get_nickname_from_actor(actor)
+            hashtag_url = self.path.split('?remotetag=')[1]
+            if ';' in hashtag_url:
+                hashtag_url = hashtag_url.split(';')[0]
+            hashtag_url = hashtag_url.replace('--', '/')
+
+            page_number = 1
+            if ';page=' in self.path:
+                page_number_str = self.path.split(';page=')[1]
+                if ';' in page_number_str:
+                    page_number_str = page_number_str.split(';')[0]
+                if page_number_str.isdigit():
+                    page_number = int(page_number_str)
+
+            allow_local_network_access = self.server.allow_local_network_access
+            show_published_date_only = self.server.show_published_date_only
+            twitter_replacement_domain = self.server.twitter_replacement_domain
+            timezone = None
+            if self.server.account_timezone.get(nickname):
+                timezone = \
+                    self.server.account_timezone.get(nickname)
+            msg = \
+                html_hashtag_search_remote(nickname,
+                                           self.server.domain,
+                                           self.server.port,
+                                           self.server.recent_posts_cache,
+                                           self.server.max_recent_posts,
+                                           self.server.translate,
+                                           self.server.base_dir,
+                                           hashtag_url,
+                                           page_number, MAX_POSTS_IN_FEED,
+                                           self.server.session,
+                                           self.server.cached_webfingers,
+                                           self.server.person_cache,
+                                           self.server.http_prefix,
+                                           self.server.project_version,
+                                           self.server.yt_replace_domain,
+                                           twitter_replacement_domain,
+                                           show_published_date_only,
+                                           self.server.peertube_instances,
+                                           allow_local_network_access,
+                                           self.server.theme_name,
+                                           self.server.system_language,
+                                           self.server.max_like_count,
+                                           self.server.signing_priv_key_pem,
+                                           self.server.cw_lists,
+                                           self.server.lists_enabled,
+                                           timezone,
+                                           self.server.bold_reading,
+                                           self.server.dogwhistles,
+                                           self.server.min_images_for_accounts,
+                                           self.server.debug)
+            if msg:
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('text/html', msglen, cookie, calling_domain,
+                                  False)
+                self._write(msg)
+                self.server.getreq_busy = False
+                return
+            self._404()
+            self.server.getreq_busy = False
+            return
+
         # hashtag search
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
@@ -18426,6 +18550,19 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.i2p_domain,
                                           getreq_start_time,
                                           curr_session)
+                self.server.getreq_busy = False
+                return
+            if not html_getreq:
+                self._hashtag_search_json(calling_domain, referer_domain,
+                                          self.path, cookie,
+                                          self.server.base_dir,
+                                          self.server.http_prefix,
+                                          self.server.domain,
+                                          self.server.domain_full,
+                                          self.server.port,
+                                          self.server.onion_domain,
+                                          self.server.i2p_domain,
+                                          getreq_start_time)
                 self.server.getreq_busy = False
                 return
             self._hashtag_search(calling_domain,

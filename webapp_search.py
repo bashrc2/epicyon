@@ -11,6 +11,8 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import remove_id_ending
+from utils import has_object_dict
 from utils import acct_handle_dir
 from utils import get_base_content_from_post
 from utils import is_account_dir
@@ -44,6 +46,7 @@ from webapp_utils import html_search_result_share
 from webapp_post import individual_post_as_html
 from webapp_hashtagswarm import html_hash_tag_swarm
 from maps import html_hashtag_maps
+from session import get_json
 
 
 def html_search_emoji(translate: {}, base_dir: str, search_str: str,
@@ -961,6 +964,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
     index = start_index
+    text_mode_separator = '<div class="transparent"><hr></div>'
     while index <= end_index:
         post_id = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:
@@ -1029,8 +1033,11 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None)
         if post_str:
-            hashtag_search_form += separator_str + post_str
+            hashtag_search_form += \
+                text_mode_separator + separator_str + post_str
         index += 1
+
+    hashtag_search_form += text_mode_separator
 
     if end_index < no_of_lines - 1:
         # next page link
@@ -1038,6 +1045,207 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             '  <center>\n' + \
             '    <a href="/users/' + nickname + '/tags/' + hashtag + \
             '?page=' + str(page_number + 1) + \
+            '"><img loading="lazy" decoding="async" ' + \
+            'class="pageicon" src="/icons' + \
+            '/pagedown.png" title="' + translate['Page down'] + \
+            '" alt="' + translate['Page down'] + '"></a>' + \
+            '  </center>'
+    hashtag_search_form += html_footer()
+    return hashtag_search_form
+
+
+def html_hashtag_search_remote(nickname: str, domain: str, port: int,
+                               recent_posts_cache: {}, max_recent_posts: int,
+                               translate: {},
+                               base_dir: str, hashtag_url: str,
+                               page_number: int, posts_per_page: int,
+                               session, cached_webfingers: {},
+                               person_cache: {},
+                               http_prefix: str, project_version: str,
+                               yt_replace_domain: str,
+                               twitter_replacement_domain: str,
+                               show_published_date_only: bool,
+                               peertube_instances: [],
+                               allow_local_network_access: bool,
+                               theme_name: str, system_language: str,
+                               max_like_count: int,
+                               signing_priv_key_pem: str,
+                               cw_lists: {}, lists_enabled: str,
+                               timezone: str, bold_reading: bool,
+                               dogwhistles: {},
+                               min_images_for_accounts: [],
+                               debug: bool) -> str:
+    """Show a page containing search results for a remote hashtag
+    """
+    hashtag = hashtag_url.split('/')[-1]
+
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'application/activity+json; profile="' + profile_str + '"'
+    }
+    hashtag_url_with_page = hashtag_url
+    if '?page=' not in hashtag_url_with_page:
+        hashtag_url_with_page += '?page=' + str(page_number)
+    hashtag_json = \
+        get_json(signing_priv_key_pem,
+                 session, hashtag_url_with_page, as_header, None, debug,
+                 __version__, http_prefix, domain)
+    lines = []
+    if hashtag_json:
+        if 'orderedItems' in hashtag_json:
+            lines = hashtag_json['orderedItems']
+        else:
+            print('No orderedItems in hashtag collection ' + str(hashtag_json))
+    else:
+        print('WARN: no hashtags returned for url ' + hashtag_url)
+
+    separator_str = html_post_separator(base_dir, None)
+
+    # check that the directory for the nickname exists
+    if nickname:
+        account_dir = acct_dir(base_dir, nickname, domain)
+        if not os.path.isdir(account_dir):
+            return None
+
+    # read the css
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
+
+    # ensure that the page number is in bounds
+    if not page_number:
+        page_number = 1
+    elif page_number < 1:
+        page_number = 1
+
+    instance_title = \
+        get_config_param(base_dir, 'instanceTitle')
+    hashtag_search_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
+
+    # add the page title
+    hashtag_search_form += '<center>\n' + \
+        '<h1>#' + hashtag
+
+    # RSS link for hashtag feed
+    hashtag_rss = hashtag_url
+    if '.html' in hashtag_rss:
+        hashtag_rss = hashtag_rss.replace('.html', '')
+    hashtag_search_form += ' <a href="' + hashtag_rss + '.rss">'
+    hashtag_search_form += \
+        '<img style="width:3%;min-width:50px" ' + \
+        'loading="lazy" decoding="async" ' + \
+        'alt="RSS 2.0" title="RSS 2.0" src="/' + \
+        'icons/logorss.png" /></a></h1>\n'
+
+    tag_link = '/users/' + nickname + '?remotetag=' + \
+        hashtag_url.replace('/', '--')
+    if page_number > 1 and hashtag_json.get('prev'):
+        # previous page link
+        hashtag_search_form += \
+            '  <center>\n' + \
+            '    <a href="' + tag_link + ';page=' + \
+            str(page_number - 1) + \
+            '"><img loading="lazy" decoding="async" ' + \
+            'class="pageicon" src="/' + \
+            'icons/pageup.png" title="' + \
+            translate['Page up'] + \
+            '" alt="' + translate['Page up'] + \
+            '"></a>\n  </center>\n'
+    text_mode_separator = '<div class="transparent"><hr></div>'
+    post_ctr = 0
+    for post_id in lines:
+        print('Hashtag post_id ' + post_id)
+        post_json_object = \
+            get_json(signing_priv_key_pem,
+                     session, post_id, as_header, None, debug,
+                     __version__, http_prefix, domain)
+        if not post_json_object:
+            print('No hashtag post for ' + post_id)
+            continue
+        if not isinstance(post_json_object, dict):
+            print('Hashtag post is not a dict ' + str(post_json_object))
+            continue
+        if not has_object_dict(post_json_object):
+            if post_json_object.get('id') and \
+               'to' in post_json_object and \
+               'cc' in post_json_object:
+                new_url = \
+                    remove_id_ending(post_json_object['id'])
+                actor = new_url
+                if '/statuses/' in actor:
+                    actor = actor.split('/statuses/')[0]
+                new_post_json_object = {
+                    "type": "Create",
+                    "id": new_url + '/activity',
+                    "to": post_json_object['to'],
+                    "cc": post_json_object['cc'],
+                    "actor": actor,
+                    "object": post_json_object
+                }
+                post_json_object = new_post_json_object
+            else:
+                print('Hashtag post does not contain necessary fields ' +
+                      str(post_json_object))
+                continue
+        if not is_public_post(post_json_object):
+            print('Hashtag post is not public ' + post_id)
+            continue
+        show_individual_post_icons = False
+        allow_deletion = False
+        show_repeats = show_individual_post_icons
+        show_icons = show_individual_post_icons
+        manually_approves_followers = False
+        show_public_only = False
+        store_to_sache = False
+        allow_downloads = True
+        avatar_url = None
+        show_avatar_options = True
+        minimize_all_images = False
+        if nickname in min_images_for_accounts:
+            minimize_all_images = True
+        post_str = \
+            individual_post_as_html(signing_priv_key_pem,
+                                    allow_downloads, recent_posts_cache,
+                                    max_recent_posts,
+                                    translate, None,
+                                    base_dir, session, cached_webfingers,
+                                    person_cache,
+                                    nickname, domain, port,
+                                    post_json_object,
+                                    avatar_url, show_avatar_options,
+                                    allow_deletion,
+                                    http_prefix, project_version,
+                                    'search',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count,
+                                    show_repeats, show_icons,
+                                    manually_approves_followers,
+                                    show_public_only,
+                                    store_to_sache, False, cw_lists,
+                                    lists_enabled, timezone, False,
+                                    bold_reading, dogwhistles,
+                                    minimize_all_images, None)
+        if post_str:
+            hashtag_search_form += \
+                text_mode_separator + separator_str + post_str
+            post_ctr += 1
+            if post_ctr >= posts_per_page:
+                break
+
+    hashtag_search_form += text_mode_separator
+
+    if post_ctr >= 5 and hashtag_json.get('next'):
+        # next page link
+        hashtag_search_form += \
+            '  <center>\n' + \
+            '    <a href="' + tag_link + \
+            ';page=' + str(page_number + 1) + \
             '"><img loading="lazy" decoding="async" ' + \
             'class="pageicon" src="/icons' + \
             '/pagedown.png" title="' + translate['Page down'] + \
@@ -1157,3 +1365,83 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
             break
 
     return hashtag_feed + rss2tag_footer()
+
+
+def hashtag_search_json(nickname: str, domain: str, port: int,
+                        base_dir: str, hashtag: str,
+                        page_number: int, posts_per_page: int,
+                        http_prefix: str) -> {}:
+    """Show a json collection for a hashtag
+    """
+    if hashtag.startswith('#'):
+        hashtag = hashtag[1:]
+    hashtag = urllib.parse.unquote(hashtag)
+    hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtag_index_file):
+        if hashtag != hashtag.lower():
+            hashtag = hashtag.lower()
+            hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtag_index_file):
+        print('WARN: hashtag file not found ' + hashtag_index_file)
+        return None
+
+    # check that the directory for the nickname exists
+    if nickname:
+        account_dir = acct_dir(base_dir, nickname, domain)
+        if not os.path.isdir(account_dir):
+            nickname = None
+
+    # read the index
+    lines = []
+    with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
+        lines = fp_hash.readlines()
+    if not lines:
+        return None
+
+    domain_full = get_full_domain(domain, port)
+
+    url = http_prefix + '://' + domain_full + '/tags/' + \
+        hashtag + '?page=' + str(page_number)
+    hashtag_json = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': url,
+        'orderedItems': [],
+        'totalItems': 0,
+        'type': 'OrderedCollection'
+    }
+    page_items = 0
+    for index, _ in enumerate(lines):
+        post_id = lines[index].strip('\n').strip('\r')
+        if '  ' not in post_id:
+            nickname = get_nickname_from_actor(post_id)
+            if not nickname:
+                continue
+        else:
+            post_fields = post_id.split('  ')
+            if len(post_fields) != 3:
+                continue
+            nickname = post_fields[1]
+            post_id = post_fields[2]
+        post_filename = locate_post(base_dir, nickname, domain, post_id)
+        if not post_filename:
+            continue
+        post_json_object = load_json(post_filename)
+        if not post_json_object:
+            continue
+        if not has_object_dict(post_json_object):
+            continue
+        if not is_public_post(post_json_object):
+            continue
+        if not post_json_object['object'].get('id'):
+            continue
+        # add to feed
+        page_items += 1
+        if page_items < posts_per_page * (page_number - 1):
+            continue
+        id_str = remove_id_ending(post_json_object['object']['id'])
+        hashtag_json['orderedItems'].append(id_str)
+        hashtag_json['totalItems'] += 1
+        if hashtag_json['totalItems'] >= posts_per_page:
+            break
+
+    return hashtag_json
