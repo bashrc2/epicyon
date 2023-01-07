@@ -179,12 +179,13 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
                 if dangerous_markup(post_json['object'][field_name], False):
                     post_json['object'][field_name] = \
                         remove_html(post_json['object'][field_name])
-            if post_json['object'].get(field_name + 'Map'):
-                map_dict = post_json['object'][field_name + 'Map'].items()
+            map_name = field_name + 'Map'
+            if post_json['object'].get(map_name):
+                map_dict = post_json['object'][map_name].items()
                 for lang, content in map_dict:
                     if dangerous_markup(content, False):
                         content = remove_html(content)
-                        post_json['object'][field_name + 'Map'][lang] = content
+                        post_json['object'][map_name][lang] = content
 
         conversation_view = [post_json] + conversation_view
         if not post_json['object'].get('inReplyTo'):

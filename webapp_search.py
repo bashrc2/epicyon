@@ -11,6 +11,8 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import dangerous_markup
+from utils import remove_html
 from utils import remove_id_ending
 from utils import has_object_dict
 from utils import acct_handle_dir
@@ -1191,6 +1193,23 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         if not is_public_post(post_json_object):
             print('Hashtag post is not public ' + post_id)
             continue
+
+        # remove any dangerous markup
+        for field_name in ('content', 'summary'):
+            if post_json_object['object'].get(field_name):
+                if dangerous_markup(post_json_object['object'][field_name],
+                                    False):
+                    post_json_object['object'][field_name] = \
+                        remove_html(post_json_object['object'][field_name])
+            map_name = field_name + 'Map'
+            if post_json_object['object'].get(map_name):
+                map_dict = post_json_object['object'][map_name].items()
+                for lang, content in map_dict:
+                    if dangerous_markup(content, False):
+                        content = remove_html(content)
+                        post_json_object['object'][map_name][lang] = \
+                            content
+
         show_individual_post_icons = False
         allow_deletion = False
         show_repeats = show_individual_post_icons
