@@ -1238,6 +1238,7 @@ def get_post_attachments_as_html(base_dir: str,
         image_description = ''
         if attach.get('name'):
             image_description = attach['name'].replace('"', "'")
+            image_description = remove_html(image_description)
         if _is_image_mime_type(media_type):
             image_url = attach['url']
 

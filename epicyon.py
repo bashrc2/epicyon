@@ -72,6 +72,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import remove_html
 from utils import remove_eol
 from utils import text_in_file
 from utils import remove_domain_port
@@ -1665,7 +1666,7 @@ def _command_options() -> None:
         cc_url = None
         send_message = argb.message
         # client_to_server = argb.client
-        attached_image_description = argb.imageDescription
+        attached_image_description = remove_html(argb.imageDescription)
         city = 'London, England'
         send_threads = []
         post_log = []

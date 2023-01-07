@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import remove_html
 from utils import safe_system_string
 from utils import text_in_file
 from utils import disallow_announce
@@ -25,7 +26,6 @@ from utils import has_object_dict
 from utils import get_full_domain
 from utils import is_dm
 from utils import load_translations_from_file
-from utils import remove_html
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import is_pgp_encrypted
@@ -682,6 +682,7 @@ def _get_image_description(post_json_object: {}) -> str:
         message_str = img['name']
         if message_str:
             message_str = message_str.strip()
+            message_str = remove_html(message_str)
             if not message_str.endswith('.'):
                 image_description += message_str + '. '
             else:
