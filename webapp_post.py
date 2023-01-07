@@ -2729,12 +2729,23 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         by_str_handle = by_str_nickname + '@' + by_str_domain
         if translate.get(by_text):
             by_text = translate[by_text]
-        post_str += \
-            '<p>' + by_text + ' <a href="' + by_str + '" tabindex="10">@' + \
-            by_str_handle + '</a>' + by_text_extra + '\n'
-
+        # Liked by handle
         domain_full = get_full_domain(domain, port)
         actor = '/users/' + nickname
+        post_str += \
+            '<p>' + by_text + ' '
+        post_str += \
+            '<form method="POST" accept-charset="UTF-8" action="' + \
+            actor + '/searchhandle">\n' + \
+            '<input type="hidden" ' + \
+            'name="actor" value="' + actor + '">' + \
+            '<input type="hidden" ' + \
+            'name="searchtext" value="' + by_str + \
+            '"><button type="submit" ' + \
+            'class="followApproveHandle" ' + \
+            'name="submitSearch" tabindex="10">' + \
+            by_str_handle + '</button></form>'
+        post_str += by_text_extra + '\n'
         follow_str = '  <form method="POST" ' + \
             'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
         follow_str += \
