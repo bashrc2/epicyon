@@ -1726,7 +1726,7 @@ h3 {
         font-size: var(--font-size-header);
         font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding);
-        max-width: 400px;
+        max-width: 80%;
         min-width: 80px;
         cursor: pointer;
         margin: 0 5px;
@@ -2540,7 +2540,7 @@ h3 {
         font-size: var(--font-size3);
         font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-mobile);
-        max-width: 400px;
+        max-width: 80%;
         min-width: 80px;
         cursor: pointer;
         margin: 0 15px;
@@ -3352,7 +3352,7 @@ h3 {
         font-size: var(--font-size3);
         font-family: 'Arial, Helvetica, sans-serif';
         padding: var(--button-height-padding-tiny);
-        max-width: 400px;
+        max-width: 80%;
         min-width: 80px;
         cursor: pointer;
         margin: 0 15px;
