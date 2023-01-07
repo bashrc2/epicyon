@@ -123,74 +123,76 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
     post_filename = \
         locate_post(base_dir, nickname, domain, post_id)
     if post_filename:
-        post_json = load_json(post_filename)
+        post_json_object = load_json(post_filename)
     else:
-        post_json = get_json(signing_priv_key_pem, session, post_id,
-                             as_header, None, debug, __version__,
-                             http_prefix, domain)
+        post_json_object = \
+            get_json(signing_priv_key_pem, session, post_id,
+                     as_header, None, debug, __version__,
+                     http_prefix, domain)
     if debug:
-        if not post_json:
+        if not post_json_object:
             print(post_id + ' returned no json')
-    while post_json:
-        if not isinstance(post_json, dict):
+    while post_json_object:
+        if not isinstance(post_json_object, dict):
             break
-        if not has_object_dict(post_json):
-            if not post_json.get('attributedTo'):
-                print(str(post_json))
+        if not has_object_dict(post_json_object):
+            if not post_json_object.get('attributedTo'):
+                print(str(post_json_object))
                 if debug:
                     print(post_id + ' has no attributedTo')
                 break
-            if not isinstance(post_json['attributedTo'], str):
+            if not isinstance(post_json_object['attributedTo'], str):
                 break
-            if not post_json.get('published'):
+            if not post_json_object.get('published'):
                 if debug:
                     print(post_id + ' has no published date')
                 break
-            if not post_json.get('to'):
+            if not post_json_object.get('to'):
                 if debug:
                     print(post_id + ' has no "to" list')
                 break
-            if not isinstance(post_json['to'], list):
+            if not isinstance(post_json_object['to'], list):
                 break
-            if 'cc' not in post_json:
+            if 'cc' not in post_json_object:
                 if debug:
                     print(post_id + ' has no "cc" list')
                 break
-            if not isinstance(post_json['cc'], list):
+            if not isinstance(post_json_object['cc'], list):
                 break
             wrapped_post = {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'id': post_id + '/activity',
                 'type': 'Create',
-                'actor': post_json['attributedTo'],
-                'published': post_json['published'],
-                'to': post_json['to'],
-                'cc': post_json['cc'],
-                'object': post_json
+                'actor': post_json_object['attributedTo'],
+                'published': post_json_object['published'],
+                'to': post_json_object['to'],
+                'cc': post_json_object['cc'],
+                'object': post_json_object
             }
-            post_json = wrapped_post
-        if not post_json['object'].get('published'):
+            post_json_object = wrapped_post
+        if not post_json_object['object'].get('published'):
             break
 
         # render harmless any dangerous markup
-        harmless_markup(post_json)
+        harmless_markup(post_json_object)
 
-        conversation_view = [post_json] + conversation_view
-        if not post_json['object'].get('inReplyTo'):
+        conversation_view = [post_json_object] + conversation_view
+        if not post_json_object['object'].get('inReplyTo'):
             if debug:
                 print(post_id + ' is not a reply')
             break
-        post_id = post_json['object']['inReplyTo']
+        post_id = post_json_object['object']['inReplyTo']
         post_id = remove_id_ending(post_id)
         post_filename = \
             locate_post(base_dir, nickname, domain, post_id)
         if post_filename:
-            post_json = load_json(post_filename)
+            post_json_object = load_json(post_filename)
         else:
-            post_json = get_json(signing_priv_key_pem, session, post_id,
-                                 as_header, None, debug, __version__,
-                                 http_prefix, domain)
+            post_json_object = \
+                get_json(signing_priv_key_pem, session, post_id,
+                         as_header, None, debug, __version__,
+                         http_prefix, domain)
         if debug:
-            if not post_json:
+            if not post_json_object:
                 print(post_id + ' returned no json')
     return conversation_view
