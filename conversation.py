@@ -14,6 +14,7 @@ from utils import remove_id_ending
 from utils import text_in_file
 from utils import locate_post
 from utils import load_json
+from utils import harmless_markup
 from keys import get_instance_actor_key
 from session import get_json
 
@@ -170,6 +171,10 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
             post_json = wrapped_post
         if not post_json['object'].get('published'):
             break
+
+        # render harmless any dangerous markup
+        harmless_markup(post_json)
+
         conversation_view = [post_json] + conversation_view
         if not post_json['object'].get('inReplyTo'):
             if debug:

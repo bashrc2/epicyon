@@ -473,7 +473,7 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
                 if img.get('name'):
                     if isinstance(img['name'], str):
                         image_description += \
-                            img['name'] + '. '
+                            remove_html(img['name']) + '. '
 
     is_direct = is_dm(post_json_object)
     actor = local_actor_url(http_prefix, nickname, domain_full)

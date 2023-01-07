@@ -4257,3 +4257,22 @@ def unescaped_text(txt: str) -> str:
     for orig, replacement in _get_escaped_chars().items():
         txt = txt.replace(replacement, orig)
     return txt
+
+
+def harmless_markup(post_json_object: {}) -> None:
+    """render harmless any dangerous markup
+    """
+    for field_name in ('content', 'summary'):
+        if post_json_object['object'].get(field_name):
+            if dangerous_markup(post_json_object['object'][field_name],
+                                False):
+                post_json_object['object'][field_name] = \
+                    remove_html(post_json_object['object'][field_name])
+        map_name = field_name + 'Map'
+        if post_json_object['object'].get(map_name):
+            map_dict = post_json_object['object'][map_name].items()
+            for lang, content in map_dict:
+                if dangerous_markup(content, False):
+                    content = remove_html(content)
+                    post_json_object['object'][map_name][lang] = \
+                        content
