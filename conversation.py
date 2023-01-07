@@ -14,6 +14,8 @@ from utils import remove_id_ending
 from utils import text_in_file
 from utils import locate_post
 from utils import load_json
+from utils import dangerous_markup
+from utils import remove_html
 from keys import get_instance_actor_key
 from session import get_json
 
@@ -170,6 +172,20 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
             post_json = wrapped_post
         if not post_json['object'].get('published'):
             break
+
+        # remove any dangerous markup
+        for field_name in ('content', 'summary'):
+            if post_json['object'].get(field_name):
+                if dangerous_markup(post_json['object'][field_name], False):
+                    post_json['object'][field_name] = \
+                        remove_html(post_json['object'][field_name])
+            if post_json['object'].get(field_name + 'Map'):
+                map_dict = post_json['object'][field_name + 'Map'].items()
+                for lang, content in map_dict:
+                    if dangerous_markup(content, False):
+                        content = remove_html(content)
+                        post_json['object'][field_name + 'Map'][lang] = content
+
         conversation_view = [post_json] + conversation_view
         if not post_json['object'].get('inReplyTo'):
             if debug:
