@@ -807,7 +807,9 @@ def _read_local_box_post(session, nickname: str, domain: str,
                             _text_only_content(content)
                         content += _get_image_description(post_json_object2)
                         message_str, _ = \
-                            speakable_text(base_dir, content, translate)
+                            speakable_text(http_prefix,
+                                           nickname, domain, domain_full,
+                                           base_dir, content, translate)
                         say_str = content
                         _say_command(say_str, message_str, screenreader,
                                      system_language, espeak)
@@ -837,7 +839,9 @@ def _read_local_box_post(session, nickname: str, domain: str,
             return {}
 
     content = _safe_message(content)
-    message_str, _ = speakable_text(base_dir, content, translate)
+    message_str, _ = speakable_text(http_prefix,
+                                    nickname, domain, domain_full,
+                                    base_dir, content, translate)
 
     if screenreader:
         time.sleep(2)
@@ -870,7 +874,9 @@ def _read_local_box_post(session, nickname: str, domain: str,
     return post_json_object
 
 
-def _desktop_show_actor(base_dir: str, actor_json: {}, translate: {},
+def _desktop_show_actor(http_prefix: str,
+                        nickname: str, domain: str, domain_full: str,
+                        base_dir: str, actor_json: {}, translate: {},
                         system_language: str, screenreader: str,
                         espeak) -> None:
     """Shows information for the given actor
@@ -901,16 +907,20 @@ def _desktop_show_actor(base_dir: str, actor_json: {}, translate: {},
     if actor_json.get('summary'):
         say_str = html.unescape(remove_html(actor_json['summary']))
         say_str = say_str.replace('"', "'")
-        say_str2 = speakable_text(base_dir, say_str, translate)[0]
+        say_str2 = speakable_text(http_prefix,
+                                  nickname, domain, domain_full,
+                                  base_dir, say_str, translate)[0]
         _say_command(say_str, say_str2, screenreader, system_language, espeak)
 
 
-def _desktop_show_profile(session, nickname: str, domain: str,
+def _desktop_show_profile(session, nickname: str,
+                          domain: str, domain_full: str,
                           base_dir: str, index: int, box_json: {},
                           system_language: str,
                           screenreader: str, espeak,
                           translate: {}, post_json_object: {},
-                          signing_priv_key_pem: str) -> {}:
+                          signing_priv_key_pem: str,
+                          http_prefix: str) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
     """
@@ -947,17 +957,21 @@ def _desktop_show_profile(session, nickname: str, domain: str,
         get_actor_json(domain, actor, is_http, is_gnunet, is_ipfs, is_ipns,
                        False, True, signing_priv_key_pem, session)
 
-    _desktop_show_actor(base_dir, actor_json, translate,
+    _desktop_show_actor(http_prefix,
+                        nickname, domain, domain_full,
+                        base_dir, actor_json, translate,
                         system_language, screenreader, espeak)
 
     return actor_json
 
 
-def _desktop_show_profile_from_handle(session, domain: str, base_dir: str,
+def _desktop_show_profile_from_handle(session, nickname: str, domain: str,
+                                      domain_full: str, base_dir: str,
                                       handle: str, system_language: str,
                                       screenreader: str, espeak,
                                       translate: {},
-                                      signing_priv_key_pem: str) -> {}:
+                                      signing_priv_key_pem: str,
+                                      http_prefix: str) -> {}:
     """Shows the profile for a handle
     Returns the actor json
     """
@@ -966,7 +980,8 @@ def _desktop_show_profile_from_handle(session, domain: str, base_dir: str,
                        False, True,
                        signing_priv_key_pem, session)
 
-    _desktop_show_actor(base_dir, actor_json, translate,
+    _desktop_show_actor(http_prefix, nickname, domain, domain_full,
+                        base_dir, actor_json, translate,
                         system_language, screenreader, espeak)
 
     return actor_json
@@ -1733,14 +1748,16 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 if command_str == 'profile':
                     if post_json_object:
                         actor_json = \
-                            _desktop_show_profile(session, nickname, domain,
+                            _desktop_show_profile(session, nickname,
+                                                  domain, domain_full,
                                                   base_dir, post_index,
                                                   box_json,
                                                   system_language,
                                                   screenreader,
                                                   espeak, translate,
                                                   post_json_object,
-                                                  signing_priv_key_pem)
+                                                  signing_priv_key_pem,
+                                                  http_prefix)
                     else:
                         post_index_str = '1'
                 else:
@@ -1750,13 +1767,15 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     profile_handle = post_index_str
                     _desktop_clear_screen()
                     _desktop_show_banner()
-                    _desktop_show_profile_from_handle(session, domain,
+                    _desktop_show_profile_from_handle(session, nickname,
+                                                      domain, domain_full,
                                                       base_dir,
                                                       profile_handle,
                                                       system_language,
                                                       screenreader,
                                                       espeak, translate,
-                                                      signing_priv_key_pem)
+                                                      signing_priv_key_pem,
+                                                      http_prefix)
                     say_str = 'Press Enter to continue...'
                     say_str2 = _highlight_text(say_str)
                     _say_command(say_str2, say_str,
@@ -1771,12 +1790,14 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         post_index_str = "1"
                     post_index = int(post_index_str)
                     actor_json = \
-                        _desktop_show_profile(session, nickname, domain,
+                        _desktop_show_profile(session, nickname,
+                                              domain, domain_full,
                                               base_dir, post_index,
                                               box_json,
                                               system_language, screenreader,
                                               espeak, translate,
-                                              None, signing_priv_key_pem)
+                                              None, signing_priv_key_pem,
+                                              http_prefix)
                     say_str = 'Press Enter to continue...'
                     say_str2 = _highlight_text(say_str)
                     _say_command(say_str2, say_str,
@@ -2553,7 +2574,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         get_base_content_from_post(post_json_object,
                                                    system_language)
                     message_str, detected_links = \
-                        speakable_text(base_dir, content, translate)
+                        speakable_text(http_prefix,
+                                       nickname, domain, domain_full,
+                                       base_dir, content, translate)
                     link_opened = False
                     for url in detected_links:
                         if '://' in url:

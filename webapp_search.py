@@ -1409,6 +1409,13 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
         'totalItems': 0,
         'type': 'OrderedCollection'
     }
+    hashtag_json['first'] = \
+        http_prefix + '://' + domain_full + '/tags/' + \
+        hashtag + '?page=1'
+    if page_number > 1:
+        hashtag_json['prev'] = \
+            http_prefix + '://' + domain_full + '/tags/' + \
+            hashtag + '?page=' + str(page_number - 1)
     page_items = 0
     for index, _ in enumerate(lines):
         post_id = lines[index].strip('\n').strip('\r')
@@ -1442,6 +1449,9 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
         hashtag_json['orderedItems'].append(id_str)
         hashtag_json['totalItems'] += 1
         if hashtag_json['totalItems'] >= posts_per_page:
+            hashtag_json['next'] = \
+                http_prefix + '://' + domain_full + '/tags/' + \
+                hashtag + '?page=' + str(page_number + 1)
             break
 
     return hashtag_json
