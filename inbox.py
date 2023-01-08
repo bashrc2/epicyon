@@ -898,7 +898,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
     else:
         if debug and post_json_object.get('object'):
             if isinstance(post_json_object['object'], str):
-                if '/statuses/' in post_json_object['object']:
+                if '/statuses/' in post_json_object['object'] or \
+                   '/objects/' in post_json_object['object']:
                     print('DEBUG: inbox item is a link to a post')
                 else:
                     if '/users/' in post_json_object['object']:
@@ -2774,6 +2775,8 @@ def _receive_announce(recent_posts_cache: {},
             if has_users_path(lookup_actor):
                 if '/statuses/' in lookup_actor:
                     lookup_actor = lookup_actor.split('/statuses/')[0]
+                elif '/objects/' in lookup_actor:
+                    lookup_actor = lookup_actor.split('/objects/')[0]
 
                 if is_recent_post(post_json_object, 3):
                     if not os.path.isfile(post_filename + '.tts'):
