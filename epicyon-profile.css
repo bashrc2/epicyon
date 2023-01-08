@@ -721,6 +721,7 @@ a:focus {
 .containericons {
     padding: 0px 0px;
     margin: 0px var(--containericons-horizontal-offset);
+    float: left;
 }
 
 .replyingto {
