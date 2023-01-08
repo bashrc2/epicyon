@@ -5282,7 +5282,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if not announced_json.get('content'):
+        if 'content' not in announced_json:
             print('WARN: announced post does not have content ' +
                   str(announced_json))
             _reject_announce(announce_filename,
