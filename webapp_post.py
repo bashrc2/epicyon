@@ -158,9 +158,9 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
             "    <meta content=\"" + obj_json['published'] + \
             "\" property=\"og:published_time\" />\n"
     if not obj_json.get('attachment') or obj_json.get('sensitive'):
-        if obj_json.get('content') and not obj_json.get('sensitive'):
+        if 'content' in obj_json and not obj_json.get('sensitive'):
             obj_content = obj_json['content']
-            if obj_json.get('contentMap'):
+            if 'contentMap' in obj_json:
                 if obj_json['contentMap'].get(system_language):
                     obj_content = obj_json['contentMap'][system_language]
             description = remove_html(obj_content)
@@ -190,9 +190,9 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
         elif attach_json['mediaType'].startswith('audio/'):
             description = 'Attached: 1 audio'
         if description:
-            if obj_json.get('content') and not obj_json.get('sensitive'):
+            if 'content' in obj_json and not obj_json.get('sensitive'):
                 obj_content = obj_json['content']
-                if obj_json.get('contentMap'):
+                if 'contentMap' in obj_json:
                     if obj_json['contentMap'].get(system_language):
                         obj_content = obj_json['contentMap'][system_language]
                 description += '\n\n' + remove_html(obj_content)

@@ -2034,6 +2034,37 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     self.server.postreq_busy = False
                     return 3
+            # if this is a local only post, is it really local?
+            if 'localOnly' in message_json['object'] and \
+               message_json['object'].get('to') and \
+               message_json['object'].get('attributedTo'):
+                if message_json['object']['localOnly'] is True:
+                    # check that the to addresses are local
+                    if isinstance(message_json['object']['to'], list):
+                        for to_actor in message_json['object']['to']:
+                            to_domain, to_port = \
+                                get_domain_from_actor(to_actor)
+                            to_domain_full = \
+                                get_full_domain(to_domain, to_port)
+                            if self.server.domain_full != to_domain_full:
+                                print("REJECT: inbox " +
+                                      "local only post isn't local " +
+                                      str(message_json))
+                                self._400()
+                                self.server.postreq_busy = False
+                                return 3
+                    # check that the sender is local
+                    local_actor = message_json['object']['attributedTo']
+                    local_domain, local_port = \
+                        get_domain_from_actor(local_actor)
+                    local_domain_full = \
+                        get_full_domain(local_domain, local_port)
+                    if self.server.domain_full != local_domain_full:
+                        print("REJECT: inbox local only post isn't local " +
+                              str(message_json))
+                        self._400()
+                        self.server.postreq_busy = False
+                        return 3
 
         # actor should look like a url
         if debug:
@@ -4851,6 +4882,36 @@ class PubServer(BaseHTTPRequestHandler):
                       curr_session, proxy_type: str) -> None:
         """Receive a vote via POST
         """
+        first_post_id = ''
+        if '?firstpost=' in path:
+            first_post_id = path.split('?firstpost=')[1]
+            path = path.split('?firstpost=')[0]
+        if ';firstpost=' in path:
+            first_post_id = path.split(';firstpost=')[1]
+            path = path.split(';firstpost=')[0]
+        if first_post_id:
+            if '?' in first_post_id:
+                first_post_id = first_post_id.split('?')[0]
+            if ';' in first_post_id:
+                first_post_id = first_post_id.split(';')[0]
+            first_post_id = first_post_id.replace('/', '--')
+            first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
+        last_post_id = ''
+        if '?lastpost=' in path:
+            last_post_id = path.split('?lastpost=')[1]
+            path = path.split('?lastpost=')[0]
+        if ';lastpost=' in path:
+            last_post_id = path.split(';lastpost=')[1]
+            path = path.split(';lastpost=')[0]
+        if last_post_id:
+            if '?' in last_post_id:
+                last_post_id = last_post_id.split('?')[0]
+            if ';' in last_post_id:
+                last_post_id = last_post_id.split(';')[0]
+            last_post_id = last_post_id.replace('/', '--')
+            last_post_id = ';lastpost=' + last_post_id.replace('#', '--')
+
         page_number = 1
         if '?page=' in path:
             page_number_str = path.split('?page=')[1]
@@ -4860,7 +4921,6 @@ class PubServer(BaseHTTPRequestHandler):
                 page_number_str = "1"
             if page_number_str.isdigit():
                 page_number = int(page_number_str)
-            path = path.split('?page=')[0]
 
         # the actor who votes
         users_path = path.replace('/question', '')
@@ -4926,7 +4986,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = 'http://' + i2p_domain + users_path
         actor_path_str = \
             actor + '/' + self.server.default_timeline + \
-            '?page=' + str(page_number)
+            '?page=' + str(page_number) + first_post_id + last_post_id
         self._redirect_headers(actor_path_str, cookie,
                                calling_domain)
         self.server.postreq_busy = False
@@ -21998,7 +22058,9 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             # a vote/question/poll is posted
             if self.path.endswith('/question') or \
-               '/question?page=' in self.path:
+               '/question?page=' in self.path or \
+               '/question?firstpost=' in self.path or \
+               '/question?lastpost=' in self.path:
                 self._receive_vote(calling_domain, cookie,
                                    self.path,
                                    self.server.http_prefix,

@@ -772,10 +772,10 @@ a:focus {
 }
 
 .container img.attachment {
-    max-width: 140%;
+    width: 125%;
+    max-width: 145%;
     margin-left: -2%;
     margin-right: 2%;
-    width: 125%;
     padding-bottom: 3%;
 }
 

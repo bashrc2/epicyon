@@ -1199,7 +1199,8 @@ def can_remove_post(base_dir: str,
                     domain: str, port: int, post_id: str) -> bool:
     """Returns true if the given post can be removed
     """
-    if '/statuses/' not in post_id:
+    if '/statuses/' not in post_id and \
+       '/objects/' not in post_id:
         return False
 
     domain_full = get_full_domain(domain, port)

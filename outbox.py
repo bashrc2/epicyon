@@ -207,7 +207,7 @@ def _capitalize_hashtag(content: str, message_json: {},
     if '#' + original_tag not in content:
         return
     content = content.replace('#' + original_tag, '#' + capitalized_tag)
-    if message_json['object'].get('contentMap'):
+    if 'contentMap' in message_json['object']:
         if message_json['object']['contentMap'].get(system_language):
             message_json['object']['contentMap'][system_language] = content
     message_json['object']['contentMap'][system_language] = content
@@ -265,6 +265,29 @@ def post_message_to_outbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if has_object_dict(message_json):
+        # if this is a local only post, is it really local?
+        if 'localOnly' in message_json['object'] and \
+           message_json['object'].get('to') and \
+           message_json['object'].get('attributedTo'):
+            if message_json['object']['localOnly'] is True:
+                # check that the to addresses are local
+                if isinstance(message_json['object']['to'], list):
+                    for to_actor in message_json['object']['to']:
+                        to_domain, to_port = get_domain_from_actor(to_actor)
+                        to_domain_full = get_full_domain(to_domain, to_port)
+                        if domain_full != to_domain_full:
+                            print("REJECT: local only post isn't local " +
+                                  str(message_json))
+                            return False
+                # check that the sender is local
+                local_actor = message_json['object']['attributedTo']
+                local_domain, local_port = get_domain_from_actor(local_actor)
+                local_domain_full = get_full_domain(local_domain, local_port)
+                if domain_full != local_domain_full:
+                    print("REJECT: local only post isn't local " +
+                          str(message_json))
+                    return False
+
         if is_quote_toot(message_json, ''):
             print('REJECT: POST quote toot ' + str(message_json))
             return False
