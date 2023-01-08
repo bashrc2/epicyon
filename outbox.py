@@ -265,6 +265,18 @@ def post_message_to_outbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if has_object_dict(message_json):
+        # if this is a local only post, is it really local?
+        if 'localOnly' in message_json['object'] and \
+           message_json['object'].get('attributedTo'):
+            if message_json['object']['localOnly'] is True:
+                local_actor = message_json['object']['attributedTo']
+                local_domain, local_port = get_domain_from_actor(local_actor)
+                local_domain_full = get_full_domain(local_domain, local_port)
+                if domain_full != local_domain_full:
+                    print("REJECT: local only post isn't local " +
+                          str(message_json))
+                    return False
+
         if is_quote_toot(message_json, ''):
             print('REJECT: POST quote toot ' + str(message_json))
             return False
