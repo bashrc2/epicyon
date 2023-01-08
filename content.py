@@ -2006,8 +2006,8 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         return ''
     if not has_object_dict(post_json_object):
         return ''
-    if not post_json_object['object'].get('content'):
-        if not post_json_object['object'].get('contentMap'):
+    if 'content' not in post_json_object['object']:
+        if 'contentMap' not in post_json_object['object']:
             return ''
     edit_dates_list = []
     for modified, _ in edits_json.items():
@@ -2015,14 +2015,14 @@ def create_edits_html(edits_json: {}, post_json_object: {},
     edit_dates_list.sort(reverse=True)
     edits_str = ''
     content = None
-    if post_json_object['object'].get('contentMap'):
+    if 'contentMap' in post_json_object['object']:
         if post_json_object['object']['contentMap'].get(system_language):
             content = \
                 post_json_object['object']['contentMap'][system_language]
-    if not content:
-        if post_json_object['object'].get('content'):
+    if content is None:
+        if 'content' in post_json_object['object']:
             content = post_json_object['object']['content']
-    if not content:
+    if content is None:
         return ''
     content = remove_html(content)
     for modified in edit_dates_list:
@@ -2030,17 +2030,17 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         if not has_object_dict(prev_json):
             continue
         prev_content = None
-        if not prev_json['object'].get('content'):
-            if not prev_json['object'].get('contentMap'):
+        if 'content' not in prev_json['object']:
+            if 'contentMap' not in prev_json['object']:
                 continue
-        if prev_json['object'].get('contentMap'):
+        if 'contentMap' in prev_json['object']:
             if prev_json['object']['contentMap'].get(system_language):
                 prev_content = \
                     prev_json['object']['contentMap'][system_language]
-        if not prev_content:
-            if prev_json['object'].get('content'):
+        if prev_content is None:
+            if 'content' in prev_json['object']:
                 prev_content = prev_json['object']['content']
-        if not prev_content:
+        if prev_content is None:
             continue
         prev_content = remove_html(prev_content)
         if content == prev_content:

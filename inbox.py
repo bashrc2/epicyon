@@ -341,7 +341,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
     # get geolocations from content
     map_links = []
     published = None
-    if post_json_object['object'].get('content'):
+    if 'content' in post_json_object['object']:
         published = post_json_object['object']['published']
         post_content = post_json_object['object']['content']
         map_links += get_map_links_from_post_content(post_content)
@@ -1295,9 +1295,9 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         return False
     if not has_object_dict(post_json_object):
         return False
-    if not post_json_object['object'].get('content'):
+    if 'content' not in post_json_object['object']:
         return False
-    if not message_json['object'].get('content'):
+    if 'content' not in message_json['object']:
         return False
     # does the actor match?
     if post_json_object['actor'] != message_json['actor']:
@@ -1776,7 +1776,7 @@ def _receive_reaction(recent_posts_cache: {},
         return False
     if not has_object_string(message_json, debug):
         return False
-    if not message_json.get('content'):
+    if 'content' not in message_json:
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "content"')
         return False
@@ -1939,7 +1939,7 @@ def _receive_zot_reaction(recent_posts_cache: {},
         return False
     if message_json['object']['type'] != 'Note':
         return False
-    if not message_json['object'].get('content'):
+    if 'content' not in message_json['object']:
         if debug:
             print('DEBUG: ' + message_json['object']['type'] +
                   ' has no "content"')
@@ -2119,7 +2119,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
         return False
     if not has_object_string_object(message_json, debug):
         return False
-    if not message_json['object'].get('content'):
+    if 'content' not in message_json['object']:
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "content"')
         return False
@@ -3012,7 +3012,7 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     """
     if not has_object_dict(message_json):
         return True
-    if not message_json['object'].get('content'):
+    if 'content' not in message_json['object']:
         return True
 
     if not message_json['object'].get('published'):

@@ -5315,7 +5315,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
         # Check the content of the announce
         content_str = announced_json['content']
         using_content_map = False
-        if announced_json.get('contentMap'):
+        if 'contentMap' in announced_json:
             if announced_json['contentMap'].get(system_language):
                 content_str = announced_json['contentMap'][system_language]
                 using_content_map = True
@@ -5879,7 +5879,7 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
         return '', None
     if not post_json_object['object'].get('id'):
         return '', None
-    if not post_json_object['object'].get('content'):
+    if 'content' not in post_json_object['object']:
         return '', None
     if not post_json_object['object'].get('attributedTo'):
         return '', None
@@ -5923,7 +5923,7 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
         return '', None
     if not lastpost_json['object'].get('id'):
         return '', None
-    if not lastpost_json['object'].get('content'):
+    if 'content' not in lastpost_json['object']:
         return '', None
     if not lastpost_json['object'].get('attributedTo'):
         return '', None
@@ -5937,12 +5937,12 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
     if debug:
         print(post_id + ' might be an edit of ' + lastpost_id)
     lastpost_content = lastpost_json['object']['content']
-    if lastpost_json['object'].get('contentMap'):
+    if 'contentMap' in lastpost_json['object']:
         if lastpost_json['object']['contentMap'].get(system_language):
             lastpost_content = \
                 lastpost_json['object']['contentMap'][system_language]
     content = post_json_object['object']['content']
-    if post_json_object['object'].get('contentMap'):
+    if 'contentMap' in post_json_object['object']:
         if post_json_object['object']['contentMap'].get(system_language):
             content = \
                 post_json_object['object']['contentMap'][system_language]

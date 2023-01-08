@@ -91,7 +91,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                     return None
                 content += '<p>' + post_json_object['license']['name'] + '</p>'
     post_content = post_json_object['content']
-    if post_json_object.get('contentMap'):
+    if 'contentMap' in post_json_object:
         if post_json_object['contentMap'].get(system_language):
             post_content = post_json_object['contentMap'][system_language]
     content += post_content

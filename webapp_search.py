@@ -1333,7 +1333,7 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
                     break
                 continue
             # add to feed
-            if post_json_object['object'].get('content') and \
+            if 'content' in post_json_object['object'] and \
                post_json_object['object'].get('attributedTo') and \
                post_json_object['object'].get('published'):
                 published = post_json_object['object']['published']

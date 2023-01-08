@@ -1381,15 +1381,15 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
     """
     if not lists_enabled:
         return
-    if not post_json_object['object'].get('content'):
-        if not post_json_object['object'].get('contentMap'):
+    if 'content' not in post_json_object['object']:
+        if 'contentMap' not in post_json_object['object']:
             return
     cw_text = ''
     if post_json_object['object'].get('summary'):
         cw_text = post_json_object['object']['summary']
 
     content = None
-    if post_json_object['object'].get('contentMap'):
+    if 'contentMap' in post_json_object['object']:
         if post_json_object['object']['contentMap'].get(system_language):
             content = \
                 post_json_object['object']['contentMap'][system_language]

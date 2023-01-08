@@ -207,7 +207,7 @@ def _capitalize_hashtag(content: str, message_json: {},
     if '#' + original_tag not in content:
         return
     content = content.replace('#' + original_tag, '#' + capitalized_tag)
-    if message_json['object'].get('contentMap'):
+    if 'contentMap' in message_json['object']:
         if message_json['object']['contentMap'].get(system_language):
             message_json['object']['contentMap'][system_language] = content
     message_json['object']['contentMap'][system_language] = content

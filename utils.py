@@ -287,7 +287,7 @@ def get_base_content_from_post(post_json_object: {},
     this_post_json = post_json_object
     if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
-    if not this_post_json.get('content'):
+    if 'content' not in this_post_json:
         return ''
     return this_post_json['content']
 
@@ -2571,7 +2571,7 @@ def is_blog_post(post_json_object: {}) -> bool:
         return False
     if not has_object_string_type(post_json_object, False):
         return False
-    if not post_json_object['object'].get('content'):
+    if 'content' not in post_json_object['object']:
         return False
     if post_json_object['object']['type'] != 'Article':
         return False
