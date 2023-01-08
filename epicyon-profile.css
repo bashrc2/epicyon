@@ -721,7 +721,6 @@ a:focus {
 .containericons {
     padding: 0px 0px;
     margin: 0px var(--containericons-horizontal-offset);
-    float: left;
 }
 
 .replyingto {
@@ -773,6 +772,8 @@ a:focus {
 }
 
 .container img.attachment {
+    background-size: cover;
+    background-position: center;
     width: auto;
     max-width: 125%;
     max-height: 80vh;
