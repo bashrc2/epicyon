@@ -772,12 +772,12 @@ a:focus {
 }
 
 .container img.attachment {
+    width: auto;
     max-width: 140%;
     max-height: 80vh;
     margin-left: -2%;
     margin-right: 2%;
     padding-bottom: 3%;
-    height: auto;
 }
 
 .container img.right {
