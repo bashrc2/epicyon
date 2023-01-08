@@ -773,6 +773,7 @@ a:focus {
 
 .container img.attachment {
     max-width: 140%;
+    max-height: 80vh;
     margin-left: -2%;
     margin-right: 2%;
     width: 125%;
