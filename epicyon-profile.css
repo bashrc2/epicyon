@@ -777,6 +777,7 @@ a:focus {
     margin-left: -2%;
     margin-right: 2%;
     padding-bottom: 3%;
+    height: auto;
 }
 
 .container img.right {
