@@ -772,6 +772,7 @@ a:focus {
 }
 
 .container img.attachment {
+    object-fit: cover;
     background-size: cover;
     background-position: center;
     width: auto;
