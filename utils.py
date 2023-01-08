@@ -4164,12 +4164,12 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
 def is_quote_toot(post_json_object: str, content: str) -> bool:
     """Returns true if the given post is a quote toot
     """
-    # Pleroma implementation
+    # Pleroma/Misskey implementations
     if post_json_object['object'].get('quoteUri') or \
        post_json_object['object'].get('quoteUrl') or \
        post_json_object['object'].get('_misskey_quote'):
         return True
-    # More correct ActivityPub implementation
+    # More correct ActivityPub implementation - adding a Link tag
     if post_json_object['object'].get('tag'):
         if isinstance(post_json_object['object']['tag'], list):
             for item in post_json_object['object']['tag']:
@@ -4188,6 +4188,7 @@ def is_quote_toot(post_json_object: str, content: str) -> bool:
                 if 'json' not in item['mediaType']:
                     continue
                 return True
+    # Twitter-style indicator
     if content:
         if 'QT: ' in content:
             return True
