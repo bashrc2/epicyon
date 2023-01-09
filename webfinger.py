@@ -259,11 +259,8 @@ def wellknown_protocol_handler(path: str, base_dir: str,
     if not path.startswith('/.well-known/protocol-handler?'):
         return None
 
-    print('Test1: ' + path)
-
     if 'target=' in path:
         path = urllib.parse.unquote(path)
-        print('Test1: ' + path)
         target = path.split('target=')[1]
         if ';' in target:
             target = target.split(';')[0]
