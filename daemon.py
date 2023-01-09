@@ -18079,6 +18079,7 @@ class PubServer(BaseHTTPRequestHandler):
         if html_getreq and self.path != '/login' and \
            not is_image_file(self.path) and \
            self.path != '/' and \
+           not self.path.startswith('/.well-known/protocol-handler') and \
            self.path != '/users/news/linksmobile' and \
            self.path != '/users/news/newswiremobile':
             if self._redirect_to_login_screen(calling_domain, self.path,
