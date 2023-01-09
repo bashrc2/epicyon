@@ -21,6 +21,8 @@ from http.client import HTTPConnection
 
 
 def create_session(proxy_type: str):
+    """ Creates a new session
+    """
     session = None
     try:
         session = requests.session()
@@ -226,6 +228,8 @@ def get_json(signing_priv_key_pem: str,
              version: str = __version__, http_prefix: str = 'https',
              domain: str = 'testdomain',
              timeout_sec: int = 20, quiet: bool = False) -> {}:
+    """Download some json
+    """
     if not isinstance(url, str):
         if debug and not quiet:
             print('url: ' + str(url))
@@ -263,6 +267,8 @@ def get_vcard(xml_format: bool,
               session, url: str, params: {}, debug: bool,
               version: str, http_prefix: str, domain: str,
               timeout_sec: int = 20, quiet: bool = False) -> {}:
+    """Download a vcard
+    """
     if not isinstance(url, str):
         if debug and not quiet:
             print('url: ' + str(url))
@@ -341,6 +347,8 @@ def download_html(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
                   version: str, http_prefix: str, domain: str,
                   timeout_sec: int = 20, quiet: bool = False) -> {}:
+    """Download a html document
+    """
     if not isinstance(url, str):
         if debug and not quiet:
             print('url: ' + str(url))
@@ -473,6 +481,8 @@ def download_ssml(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
                   version: str, http_prefix: str, domain: str,
                   timeout_sec: int = 20, quiet: bool = False) -> {}:
+    """Download a ssml document
+    """
     if not isinstance(url, str):
         if debug and not quiet:
             print('url: ' + str(url))

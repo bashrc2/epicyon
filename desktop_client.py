@@ -1825,6 +1825,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                             if post_json_object['object'].get('conversation'):
                                 conversation_id = \
                                     post_json_object['object']['conversation']
+                            elif post_json_object['object'].get('context'):
+                                conversation_id = \
+                                    post_json_object['object']['context']
                             session_reply = create_session(proxy_type)
                             _desktop_reply_to_post(session_reply, post_id,
                                                    base_dir, nickname,
