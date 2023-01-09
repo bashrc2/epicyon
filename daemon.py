@@ -1727,12 +1727,12 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         # protocol handler. See https://fedi-to.github.io/protocol-handler.html
         if self.path.startswith('/.well-known/protocol-handler'):
-            if referer_domain.endswidth('.onion'):
+            if calling_domain.endswidth('.onion'):
                 protocol_url = \
                     wellknown_protocol_handler(self.path,
                                                self.server.base_dir, 'http',
                                                self.server.onion_domain)
-            elif referer_domain.endswidth('.i2p'):
+            elif calling_domain.endswidth('.i2p'):
                 protocol_url = \
                     wellknown_protocol_handler(self.path, self.server.base_dir,
                                                'http', self.server.i2p_domain)
