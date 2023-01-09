@@ -268,6 +268,8 @@ def wellknown_protocol_handler(path: str, base_dir: str,
         if not target.startswith('web+epicyon:'):
             return None
         handle = target.split(':', 1)[1].strip()
+        if handle.startswith('//'):
+            handle = handle[2:]
         if handle.startswith('@'):
             handle = handle[1:]
         if '@' in handle:
