@@ -30,6 +30,7 @@ from session import set_session_for_sender
 from webfinger import webfinger_meta
 from webfinger import webfinger_node_info
 from webfinger import webfinger_lookup
+from webfinger import wellknown_protocol_handler
 from webfinger import webfinger_update
 from mastoapiv1 import masto_api_v1_response
 from metadata import meta_data_node_info
@@ -1686,7 +1687,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.security_txt_is_active = False
         return True
 
-    def _webfinger(self, calling_domain: str, referer_domain: str) -> bool:
+    def _webfinger(self, calling_domain: str, referer_domain: str,
+                   cookie: str) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
         if self.server.debug:
@@ -1723,6 +1725,29 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.startswith('/friendi'):
             self._404()
             return True
+        # protocol handler. See https://fedi-to.github.io/protocol-handler.html
+        if self.path.startswith('/.well-known/protocol-handler'):
+            if referer_domain.endswidth('.onion'):
+                protocol_url = \
+                    wellknown_protocol_handler(self.path,
+                                               self.server.base_dir, 'http',
+                                               self.server.onion_domain)
+            elif referer_domain.endswidth('.i2p'):
+                protocol_url = \
+                    wellknown_protocol_handler(self.path, self.server.base_dir,
+                                               'http', self.server.i2p_domain)
+            else:
+                protocol_url = \
+                    wellknown_protocol_handler(self.path, self.server.base_dir,
+                                               self.server.http_prefix,
+                                               self.server.domain_full)
+            if protocol_url:
+                self._redirect_headers(protocol_url, cookie,
+                                       calling_domain)
+            else:
+                self._404()
+            return True
+        # nodeinfo
         if self.path.startswith('/.well-known/nodeinfo') or \
            self.path.startswith('/.well-known/x-nodeinfo'):
             if calling_domain.endswith('.onion') and \
@@ -18386,7 +18411,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # get webfinger endpoint for a person
-        if self._webfinger(calling_domain, referer_domain):
+        if self._webfinger(calling_domain, referer_domain, cookie):
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'webfinger called',
                                 self.server.debug)

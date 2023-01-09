@@ -252,6 +252,36 @@ def webfinger_meta(http_prefix: str, domain_full: str) -> str:
     return meta_str
 
 
+def wellknown_protocol_handler(path: str, base_dir: str,
+                               http_prefix: str, domain_full: str) -> {}:
+    """See https://fedi-to.github.io/protocol-handler.html
+    """
+    if not path.startswith('/.well-known/protocol-handler?'):
+        return None
+
+    if 'target=' in path:
+        target = path.split('target=')[1]
+        if ';' in target:
+            target = target.split(';')[0]
+        if not target:
+            return None
+        if not target.startswith('web+epicyon:'):
+            return None
+        handle = target.split(':', 1)[1].strip()
+        if handle.startswith('@'):
+            handle = handle[1:]
+        if '@' in handle:
+            nickname = handle.split('@')[0]
+            domain = handle.split('@')[1]
+        else:
+            nickname = handle
+            domain = domain_full
+        # not an open redirect
+        if domain == domain_full:
+            return http_prefix + '://' + domain_full + '/users/' + nickname
+    return None
+
+
 def webfinger_lookup(path: str, base_dir: str,
                      domain: str, onion_domain: str, i2p_domain: str,
                      port: int, debug: bool) -> {}:
