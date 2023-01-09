@@ -267,6 +267,7 @@ def wellknown_protocol_handler(path: str, base_dir: str,
         if not target:
             return None
         if not target.startswith('web+epicyon:') and \
+           not target.startswith('web+mastodon:') and \
            not target.startswith('web+ap:'):
             return None
         handle = target.split(':', 1)[1].strip()
