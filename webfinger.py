@@ -255,6 +255,7 @@ def webfinger_meta(http_prefix: str, domain_full: str) -> str:
 def wellknown_protocol_handler(path: str, base_dir: str,
                                http_prefix: str, domain_full: str) -> {}:
     """See https://fedi-to.github.io/protocol-handler.html
+    Only return the path, not the full url
     """
     if not path.startswith('/.well-known/protocol-handler?'):
         return None
@@ -281,7 +282,7 @@ def wellknown_protocol_handler(path: str, base_dir: str,
             domain = domain_full
         # not an open redirect
         if domain == domain_full:
-            return http_prefix + '://' + domain_full + '/users/' + nickname
+            return '/users/' + nickname
     return None
 
 
