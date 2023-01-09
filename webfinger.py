@@ -260,6 +260,7 @@ def wellknown_protocol_handler(path: str, base_dir: str,
         return None
 
     if 'target=' in path:
+        path = urllib.parse.unquote(path)
         target = path.split('target=')[1]
         if ';' in target:
             target = target.split(';')[0]
