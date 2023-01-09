@@ -2177,10 +2177,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 comments_enabled = False
 
     conversation_id = None
-    if isinstance(post_json_object['object'], dict) and \
-       'conversation' in post_json_object['object']:
-        if post_json_object['object']['conversation']:
-            conversation_id = post_json_object['object']['conversation']
+    if isinstance(post_json_object['object'], dict):
+        if 'conversation' in post_json_object['object']:
+            if post_json_object['object']['conversation']:
+                conversation_id = post_json_object['object']['conversation']
+        elif 'context' in post_json_object['object']:
+            if post_json_object['object']['context']:
+                conversation_id = post_json_object['object']['context']
 
     public_reply = False
     unlisted_reply = False

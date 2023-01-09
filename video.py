@@ -150,6 +150,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
         'object': {
             'id': new_post_id,
             'conversation': conversation_id,
+            'context': conversation_id,
             'type': 'Note',
             'summary': None,
             'inReplyTo': None,

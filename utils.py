@@ -2032,13 +2032,17 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
     """
     if not has_object_dict(post_json_object):
         return False
-    if not post_json_object['object'].get('conversation'):
+    if not post_json_object['object'].get('conversation') and \
+       not post_json_object['object'].get('context'):
         return False
     if not post_json_object['object'].get('id'):
         return False
     conversation_dir = \
         acct_dir(base_dir, nickname, domain) + '/conversation'
-    conversation_id = post_json_object['object']['conversation']
+    if post_json_object['object'].get('conversation'):
+        conversation_id = post_json_object['object']['conversation']
+    else:
+        conversation_id = post_json_object['object']['context']
     conversation_id = conversation_id.replace('/', '#')
     post_id = post_json_object['object']['id']
     conversation_filename = conversation_dir + '/' + conversation_id

@@ -911,6 +911,7 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
         "object": {
             "id": post_id,
             "conversation": post_id,
+            "context": post_id,
             "type": "Note",
             "summary": None,
             "inReplyTo": None,

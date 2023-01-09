@@ -3993,6 +3993,8 @@ def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
     conversation_id = None
     if post_json_object['object'].get('conversation'):
         conversation_id = post_json_object['object']['conversation']
+    elif post_json_object['object'].get('context'):
+        conversation_id = post_json_object['object']['context']
 
     if not post_json_object['object'].get('inReplyTo'):
         return is_reply_to_muted_post
