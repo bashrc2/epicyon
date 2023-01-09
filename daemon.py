@@ -277,6 +277,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import is_public_post_from_url
 from utils import license_link_from_name
 from utils import acct_handle_dir
 from utils import load_reverse_timeline
@@ -11588,10 +11589,10 @@ class PubServer(BaseHTTPRequestHandler):
         # get the replies file
         post_dir = \
             acct_dir(base_dir, nickname, domain) + '/' + boxname
+        orig_post_url = http_prefix + ':##' + domain_full + '#users#' + \
+            nickname + '#statuses#' + status_number
         post_replies_filename = \
-            post_dir + '/' + \
-            http_prefix + ':##' + domain_full + '#users#' + \
-            nickname + '#statuses#' + status_number + '.replies'
+            post_dir + '/' + orig_post_url + '.replies'
         if not os.path.isfile(post_replies_filename):
             # There are no replies,
             # so show empty collection
@@ -11719,6 +11720,13 @@ class PubServer(BaseHTTPRequestHandler):
                 'partOf': part_of_str,
                 'type': 'OrderedCollectionPage'
             }
+
+            # if the original post is public then return the replies
+            replies_are_public = \
+                is_public_post_from_url(base_dir, nickname, domain,
+                                        orig_post_url)
+            if replies_are_public:
+                authorized = True
 
             # populate the items list with replies
             populate_replies_json(base_dir, nickname, domain,
