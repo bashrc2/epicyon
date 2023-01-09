@@ -1117,7 +1117,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _redirect_headers(self, redirect: str, cookie: str,
-                          calling_domain: str) -> None:
+                          calling_domain: str,
+                          code: int = 303) -> None:
         if '://' not in redirect:
             if calling_domain.endswith('.onion') and self.server.onion_domain:
                 redirect = 'http://' + self.server.onion_domain + redirect
@@ -1130,7 +1131,10 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: redirect was not an absolute url, changed to ' +
                   redirect)
 
-        self.send_response(303)
+        self.send_response(code)
+
+        if code != 303:
+            print('Redirect headers: ' + str(code))
 
         if cookie:
             cookie_str = cookie.replace('SET:', '').strip()
@@ -1743,7 +1747,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.domain_full)
             if protocol_url:
                 self._redirect_headers(protocol_url, cookie,
-                                       calling_domain)
+                                       calling_domain, 308)
             else:
                 self._404()
             return True
