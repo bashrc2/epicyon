@@ -252,12 +252,12 @@ def webfinger_meta(http_prefix: str, domain_full: str) -> str:
     return meta_str
 
 
-def wellknown_protocol_handler(path: str,
-                               http_prefix: str, domain_full: str) -> {}:
+def wellknown_protocol_handler(path: str, http_prefix: str,
+                               domain_full: str) -> ({}, str):
     """See https://fedi-to.github.io/protocol-handler.html
     """
     if not path.startswith('/.well-known/protocol-handler?'):
-        return None
+        return None, None
 
     if 'target=' in path:
         path = urllib.parse.unquote(path)
@@ -265,11 +265,11 @@ def wellknown_protocol_handler(path: str,
         if ';' in target:
             target = target.split(';')[0]
         if not target:
-            return None
+            return None, None
         if not target.startswith('web+epicyon:') and \
            not target.startswith('web+mastodon:') and \
            not target.startswith('web+ap:'):
-            return None
+            return None, None
         handle = target.split(':', 1)[1].strip()
         if handle.startswith('//'):
             handle = handle[2:]
@@ -283,11 +283,15 @@ def wellknown_protocol_handler(path: str,
             domain_and_path = domain_full
         # not an open redirect
         if domain_and_path.startswith(domain_full):
+            command = ''
+            if '/' in nickname:
+                command = nickname.split('/')[0]
+                nickname = nickname.split('/')[1]
             domain_length = len(domain_full)
             path_str = domain_and_path[domain_length:]
             return http_prefix + '://' + domain_full + \
-                '/users/' + nickname + path_str
-    return None
+                '/users/' + nickname + path_str, command
+    return None, None
 
 
 def webfinger_lookup(path: str, base_dir: str,
