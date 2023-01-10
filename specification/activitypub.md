@@ -121,6 +121,7 @@ Let's see an example! Let's say Alyssa wants to catch up with her friend, Ben Bi
   "rejectReplies": False,
   "mediaType": "text/html",
   "attachment": [],
+  "conversation": "3728447592750257207548",
   "summary": "Book",
   "content": "Say, did you finish reading that book I lent you?"
 }
@@ -149,6 +150,7 @@ Since this is a non-activity object, the server recognizes that this is an objec
     "rejectReplies": False,
     "mediaType": "text/html",
     "attachment": [],
+    "conversation": "3728447592750257207548",
     "summary": "Book",
     "content": "Say, did you finish reading that book I lent you?"
   }
@@ -182,12 +184,15 @@ Cool! A while later, Alyssa checks what new messages she's gotten. Her phone pol
     "published": "2039-10-15T12:45:45Z",
     "rejectReplies": False,
     "mediaType": "text/html",
+    "conversation": "3728447592750257207548",
     "content": "<p>Argh, yeah, sorry, I'll get it back to you tomorrow.</p>
                 <p>I was reviewing the section on register machines,
                 since it's been a while since I wrote one.</p>"
   }
 }
 ```
+
+Here the *conversation* field is any unique identifier grouping the posts within this thread together. Hence even if some posts within a chain of replies are subsequently deleted the overall thread can still be obtained.
 
 Alyssa is relieved, and likes Ben's post:
 
@@ -241,6 +246,7 @@ Feeling happy about things, she decides to post a public message to her follower
            "https://www.w3.org/ns/activitystreams#Public"],
     "published": "2039-10-15T13:11:16Z",
     "rejectReplies": False,
+    "conversation": "57834623544792956335",
     "mediaType": "text/html",
     "content": "Lending books to friends is nice.  Getting them back is even nicer! :)"
   }
@@ -303,6 +309,7 @@ As an example, if example.com receives the activity
     "attributedTo": "https://example.org/users/alice",
     "mediaType": "text/html",
     "published": "2031-03-27T14:10:25Z",
+    "conversation": "7342325925675729",
     "content": "I'm a goat"
   }
 }
@@ -347,6 +354,7 @@ The value of `source` is itself an object which uses its own `content` and `medi
                {"@language": "en"}],
   "type": "Note",
   "id": "http://postparty.example/users/username/statuses/2415",
+  "conversation": "45327948756365",
   "mediaType": "text/html"
   "content": "<p>I <em>really</em> like strawberries!</p>",
   "source": {
@@ -386,6 +394,7 @@ In the case of attached images, the `name` field can be used to supply a descrip
     "published": "2032-09-14T19:17:02Z",
     "summary": "",
     "sensitive": False,
+    "conversation": "67243561372468724",
     "mediaType": "text/html",
     "content": "This is a post with an attached image",
     "attachment": [
@@ -422,6 +431,7 @@ When a new post is created, if it has `content` containing one or more hashtags 
     "to": ["https://example.net/users/fearghus/followers",
            "https://www.w3.org/ns/activitystreams#Public"],
     "published": "2032-05-29T15:08:47Z",
+    "conversation": "5342890426429480",
     "mediaType": "text/html",
     "content": "Posting with <a href=\"https://example.net/tags/ActivityPub\" class=\"mention hashtag\" rel=\"tag\">#<span>ActivityPub</span></a>",
     "tag": [
@@ -768,6 +778,7 @@ For example, when Chris likes the following article by Amy:
   "type": "Article",
   "name": "Minimal ActivityPub update client",
   "content": "Today I finished morph, a client for posting ActivityStreams2...",
+  "conversation": "1894367735757303",
   "attributedTo": "https://rhiaro.co.uk/@amy",
   "to": ["https://rhiaro.co.uk/followers"],
   "cc": ["https://e14n.com/@evan"]
@@ -837,6 +848,7 @@ The above example could be converted to this:
     "id": "https://example.com/@mallory/statuses/72",
     "type": "Note",
     "attributedTo": "https://example.net/users/mallory",
+    "conversation": "784365462623755",
     "content": "This is a note",
     "published": "2015-02-10T15:04:55Z",
     "to": ["https://example.org/@john"],
