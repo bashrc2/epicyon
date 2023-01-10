@@ -8082,6 +8082,16 @@ class PubServer(BaseHTTPRequestHandler):
                     "platform": "fdroid",
                     "url": app3
                 }
+            ],
+            "protocol_handlers": [
+                {
+                    "protocol": "web+ap",
+                    "url": "?target=%s"
+                },
+                {
+                    "protocol": "web+epicyon",
+                    "url": "?target=%s"
+                }
             ]
         }
         msg_str = json.dumps(manifest, ensure_ascii=False)
