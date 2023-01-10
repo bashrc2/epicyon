@@ -252,7 +252,7 @@ def webfinger_meta(http_prefix: str, domain_full: str) -> str:
     return meta_str
 
 
-def wellknown_protocol_handler(path: str, base_dir: str,
+def wellknown_protocol_handler(path: str,
                                http_prefix: str, domain_full: str) -> {}:
     """See https://fedi-to.github.io/protocol-handler.html
     """

@@ -1733,16 +1733,15 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/.well-known/protocol-handler'):
             if calling_domain.endswith('.onion'):
                 protocol_url = \
-                    wellknown_protocol_handler(self.path,
-                                               self.server.base_dir, 'http',
+                    wellknown_protocol_handler(self.path, 'http',
                                                self.server.onion_domain)
             elif calling_domain.endswith('.i2p'):
                 protocol_url = \
-                    wellknown_protocol_handler(self.path, self.server.base_dir,
+                    wellknown_protocol_handler(self.path,
                                                'http', self.server.i2p_domain)
             else:
                 protocol_url = \
-                    wellknown_protocol_handler(self.path, self.server.base_dir,
+                    wellknown_protocol_handler(self.path,
                                                self.server.http_prefix,
                                                self.server.domain_full)
             if protocol_url:
