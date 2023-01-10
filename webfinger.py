@@ -277,13 +277,16 @@ def wellknown_protocol_handler(path: str, base_dir: str,
             handle = handle[1:]
         if '@' in handle:
             nickname = handle.split('@')[0]
-            domain = handle.split('@')[1]
+            domain_and_path = handle.split('@')[1]
         else:
             nickname = handle
-            domain = domain_full
+            domain_and_path = domain_full
         # not an open redirect
-        if domain == domain_full:
-            return http_prefix + '://' + domain_full + '/users/' + nickname
+        if domain_and_path.startswith(domain_full):
+            domain_length = len(domain_full)
+            path_str = domain_and_path[domain_length:]
+            return http_prefix + '://' + domain_full + \
+                '/users/' + nickname + path_str
     return None
 
 
