@@ -3823,7 +3823,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
     if not sending_to_self:
         # is this a vote on a question?
         if is_vote(base_dir, nickname, domain,
-                   post_json_object):
+                   post_json_object, debug):
             # make the content the same as the vote answer
             post_json_object['object']['content'] = \
                 post_json_object['object']['name']
@@ -3908,7 +3908,8 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     """
     # if this is a reply to a question then update the votes
     question_json, question_post_filename = \
-        question_update_votes(base_dir, nickname, domain, post_json_object)
+        question_update_votes(base_dir, nickname, domain,
+                              post_json_object, debug)
     if not question_json:
         return
     if not question_post_filename:
@@ -4442,7 +4443,7 @@ def _inbox_after_initial(server, inbox_start_time,
         post_json_object = message_json
     nickname = handle.split('@')[0]
 
-    if is_vote(base_dir, nickname, domain, post_json_object):
+    if is_vote(base_dir, nickname, domain, post_json_object, debug):
         _receive_question_vote(server, base_dir, nickname, domain,
                                http_prefix, handle, debug,
                                post_json_object, recent_posts_cache,

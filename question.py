@@ -16,7 +16,7 @@ from utils import text_in_file
 
 
 def is_vote(base_dir: str, nickname: str, domain: str,
-            post_json_object: {}) -> bool:
+            post_json_object: {}, debug: bool) -> bool:
     """ is the given post a vote on a Question?
     """
     post_obj = post_json_object
@@ -30,26 +30,48 @@ def is_vote(base_dir: str, nickname: str, domain: str,
     if not post_obj.get('name'):
         return False
 
+    if debug:
+        print('VOTE: ' + str(post_obj))
+
     # is the replied to post a Question?
     in_reply_to = post_obj['inReplyTo']
     question_post_filename = \
         locate_post(base_dir, nickname, domain, in_reply_to)
     if not question_post_filename:
+        if debug:
+            print('VOTE REJECT: question does not exist ' + in_reply_to)
         return False
     question_json = load_json(question_post_filename)
     if not question_json:
+        if debug:
+            print('VOTE REJECT: invalid json ' + question_post_filename)
         return False
     if not has_object_dict(question_json):
+        if debug:
+            print('VOTE REJECT: question without object ' +
+                  question_post_filename)
         return False
     if not question_json['object'].get('type'):
+        if debug:
+            print('VOTE REJECT: question without type ' +
+                  question_post_filename)
         return False
     if question_json['type'] != 'Question':
+        if debug:
+            print('VOTE REJECT: not a question ' +
+                  question_post_filename)
         return False
 
     # does the question have options?
     if not question_json['object'].get('oneOf'):
+        if debug:
+            print('VOTE REJECT: question has no options ' +
+                  question_post_filename)
         return False
     if not isinstance(question_json['object']['oneOf'], list):
+        if debug:
+            print('VOTE REJECT: question options is not a list ' +
+                  question_post_filename)
         return False
 
     # does the reply name field match any possible question option?
@@ -62,16 +84,19 @@ def is_vote(base_dir: str, nickname: str, domain: str,
             found_answer_json = possible_answer
             break
     if not found_answer_json:
+        if debug:
+            print('VOTE REJECT: question answer not found ' +
+                  question_post_filename + ' ' + reply_vote)
         return False
     return True
 
 
 def question_update_votes(base_dir: str, nickname: str, domain: str,
-                          reply_json: {}) -> ({}, str):
+                          reply_json: {}, debug: bool) -> ({}, str):
     """ For a given reply update the votes on a question
     Returns the question json object if the vote totals were changed
     """
-    if not is_vote(base_dir, nickname, domain, reply_json):
+    if not is_vote(base_dir, nickname, domain, reply_json, debug):
         return None, None
 
     post_obj = reply_json
