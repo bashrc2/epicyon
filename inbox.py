@@ -119,6 +119,7 @@ from posts import send_signed_json
 from posts import send_to_followers_thread
 from webapp_post import individual_post_as_html
 from question import question_update_votes
+from question import is_vote
 from media import replace_you_tube
 from media import replace_twitter
 from git import is_git_patch
@@ -4424,8 +4425,33 @@ def _inbox_after_initial(server, inbox_start_time,
         post_json_object = message_json['post']
     else:
         post_json_object = message_json
-
     nickname = handle.split('@')[0]
+
+    if is_vote(base_dir, nickname, domain, post_json_object):
+        _receive_question_vote(server, base_dir, nickname, domain,
+                               http_prefix, handle, debug,
+                               post_json_object, recent_posts_cache,
+                               session, session_onion, session_i2p,
+                               onion_domain, i2p_domain, port,
+                               federation_list, send_threads, post_log,
+                               cached_webfingers, person_cache,
+                               signing_priv_key_pem,
+                               max_recent_posts, translate,
+                               allow_deletion,
+                               yt_replace_domain,
+                               twitter_replacement_domain,
+                               peertube_instances,
+                               allow_local_network_access,
+                               theme_name, system_language,
+                               max_like_count,
+                               cw_lists, lists_enabled,
+                               bold_reading, dogwhistles,
+                               server.min_images_for_accounts)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_question_vote',
+                            debug)
+        inbox_start_time = time.time()
+
     json_obj = None
     domain_full = get_full_domain(domain, port)
     if _valid_post_content(base_dir, nickname, domain,
@@ -4492,30 +4518,6 @@ def _inbox_after_initial(server, inbox_start_time,
                          max_replies, debug)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'populate_replies',
-                            debug)
-        inbox_start_time = time.time()
-
-        _receive_question_vote(server, base_dir, nickname, domain,
-                               http_prefix, handle, debug,
-                               post_json_object, recent_posts_cache,
-                               session, session_onion, session_i2p,
-                               onion_domain, i2p_domain, port,
-                               federation_list, send_threads, post_log,
-                               cached_webfingers, person_cache,
-                               signing_priv_key_pem,
-                               max_recent_posts, translate,
-                               allow_deletion,
-                               yt_replace_domain,
-                               twitter_replacement_domain,
-                               peertube_instances,
-                               allow_local_network_access,
-                               theme_name, system_language,
-                               max_like_count,
-                               cw_lists, lists_enabled,
-                               bold_reading, dogwhistles,
-                               server.min_images_for_accounts)
-        fitness_performance(inbox_start_time, server.fitness,
-                            'INBOX', '_receive_question_vote',
                             debug)
         inbox_start_time = time.time()
 

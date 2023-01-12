@@ -674,30 +674,35 @@ class PubServer(BaseHTTPRequestHandler):
                                      nickname,
                                      self.server.domain_full,
                                      self.server.person_cache)
+        reply_to_nickname = get_nickname_from_actor(in_reply_to)
+        reply_to_domain, reply_to_port = get_domain_from_actor(in_reply_to)
+        reply_to_domain_full = get_full_domain(reply_to_domain, reply_to_port)
+        mentions_str = '@' + reply_to_nickname + '@' + reply_to_domain_full
 
         message_json = \
-            create_public_post(self.server.base_dir,
-                               nickname,
-                               self.server.domain, self.server.port,
-                               self.server.http_prefix,
-                               answer, False, False,
-                               comments_enabled,
-                               attach_image_filename, media_type,
-                               image_description, city,
-                               in_reply_to,
-                               in_reply_to_atom_uri,
-                               subject,
-                               schedule_post,
-                               event_date,
-                               event_time, event_end_time,
-                               location, False,
-                               self.server.system_language,
-                               conversation_id,
-                               self.server.low_bandwidth,
-                               self.server.content_license_url,
-                               languages_understood,
-                               self.server.translate)
+            create_direct_message_post(self.server.base_dir, nickname,
+                                       self.server.domain, self.server.port,
+                                       self.server.http_prefix,
+                                       mentions_str + ' ' + answer,
+                                       False, False,
+                                       comments_enabled,
+                                       attach_image_filename,
+                                       media_type, image_description, city,
+                                       in_reply_to, in_reply_to_atom_uri,
+                                       subject, self.server.debug,
+                                       schedule_post,
+                                       event_date, event_time,
+                                       event_end_time,
+                                       location, self.server.system_language,
+                                       conversation_id,
+                                       self.server.low_bandwidth,
+                                       self.server.content_license_url,
+                                       languages_understood, False,
+                                       self.server.translate)
         if message_json:
+            # NOTE: content and contentMap are not required, but we will keep
+            # them in there so that the post does not get filtered out by
+            # inbox processing.
             # name field contains the answer
             message_json['object']['name'] = answer
             if self._post_to_outbox(message_json,
