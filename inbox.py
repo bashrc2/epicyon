@@ -3821,6 +3821,22 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
 
     # Not sending to yourself
     if not sending_to_self:
+        obj_has_dict = has_object_dict(post_json_object)
+        # is this a vote on a question?
+        if obj_has_dict:
+            if post_json_object['object'].get("name") and \
+               post_json_object['object'].get("inReplyTo"):
+                # make the content the same as the vote answer
+                post_json_object['object']['content'] = \
+                    post_json_object['object']['name']
+                # remove any other content
+                if post_json_object['object'].get("contentMap"):
+                    del post_json_object['object']['contentMap']
+                # remove any summary / cw
+                post_json_object['object']['summary'] = None
+                if post_json_object['object'].get("summaryMap"):
+                    del post_json_object['object']['summaryMap']
+                return True
         # get the handle of the DM sender
         send_h = sending_actor_nickname + '@' + sending_actor_domain
         # check the follow
@@ -3835,32 +3851,32 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                     # don't send bounces back to
                     # replies to bounce messages
                     obj = post_json_object['object']
-                    if isinstance(obj, dict):
-                        if not obj.get('inReplyTo'):
-                            bounced_id = \
-                                remove_id_ending(post_json_object['id'])
-                            bounce_chat = False
-                            if obj.get('type'):
-                                if obj['type'] == 'ChatMessage':
-                                    bounce_chat = True
-                            _bounce_dm(bounced_id,
-                                       session, http_prefix,
-                                       base_dir,
-                                       nickname, domain,
-                                       port, send_h,
-                                       federation_list,
-                                       send_threads, post_log,
-                                       cached_webfingers,
-                                       person_cache,
-                                       translate, debug,
-                                       last_bounce_message,
-                                       system_language,
-                                       signing_priv_key_pem,
-                                       content_license_url,
-                                       languages_understood,
-                                       bounce_chat,
-                                       curr_domain,
-                                       onion_domain, i2p_domain)
+                    if obj_has_dict and \
+                       not obj.get('inReplyTo'):
+                        bounced_id = \
+                            remove_id_ending(post_json_object['id'])
+                        bounce_chat = False
+                        if obj.get('type'):
+                            if obj['type'] == 'ChatMessage':
+                                bounce_chat = True
+                        _bounce_dm(bounced_id,
+                                   session, http_prefix,
+                                   base_dir,
+                                   nickname, domain,
+                                   port, send_h,
+                                   federation_list,
+                                   send_threads, post_log,
+                                   cached_webfingers,
+                                   person_cache,
+                                   translate, debug,
+                                   last_bounce_message,
+                                   system_language,
+                                   signing_priv_key_pem,
+                                   content_license_url,
+                                   languages_understood,
+                                   bounce_chat,
+                                   curr_domain,
+                                   onion_domain, i2p_domain)
                 return False
 
     # dm index will be updated
