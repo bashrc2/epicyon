@@ -119,6 +119,7 @@ from posts import send_signed_json
 from posts import send_to_followers_thread
 from webapp_post import individual_post_as_html
 from question import question_update_votes
+from question import is_vote
 from media import replace_you_tube
 from media import replace_twitter
 from git import is_git_patch
@@ -3820,6 +3821,20 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
 
     # Not sending to yourself
     if not sending_to_self:
+        # is this a vote on a question?
+        if is_vote(base_dir, nickname, domain,
+                   post_json_object, debug):
+            # make the content the same as the vote answer
+            post_json_object['object']['content'] = \
+                post_json_object['object']['name']
+            # remove any other content
+            if post_json_object['object'].get("contentMap"):
+                del post_json_object['object']['contentMap']
+            # remove any summary / cw
+            post_json_object['object']['summary'] = None
+            if post_json_object['object'].get("summaryMap"):
+                del post_json_object['object']['summaryMap']
+            return True
         # get the handle of the DM sender
         send_h = sending_actor_nickname + '@' + sending_actor_domain
         # check the follow
@@ -3831,35 +3846,36 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                 # send back a bounce DM
                 if post_json_object.get('id') and \
                    post_json_object.get('object'):
+                    obj_has_dict = has_object_dict(post_json_object)
                     # don't send bounces back to
                     # replies to bounce messages
                     obj = post_json_object['object']
-                    if isinstance(obj, dict):
-                        if not obj.get('inReplyTo'):
-                            bounced_id = \
-                                remove_id_ending(post_json_object['id'])
-                            bounce_chat = False
-                            if obj.get('type'):
-                                if obj['type'] == 'ChatMessage':
-                                    bounce_chat = True
-                            _bounce_dm(bounced_id,
-                                       session, http_prefix,
-                                       base_dir,
-                                       nickname, domain,
-                                       port, send_h,
-                                       federation_list,
-                                       send_threads, post_log,
-                                       cached_webfingers,
-                                       person_cache,
-                                       translate, debug,
-                                       last_bounce_message,
-                                       system_language,
-                                       signing_priv_key_pem,
-                                       content_license_url,
-                                       languages_understood,
-                                       bounce_chat,
-                                       curr_domain,
-                                       onion_domain, i2p_domain)
+                    if obj_has_dict and \
+                       not obj.get('inReplyTo'):
+                        bounced_id = \
+                            remove_id_ending(post_json_object['id'])
+                        bounce_chat = False
+                        if obj.get('type'):
+                            if obj['type'] == 'ChatMessage':
+                                bounce_chat = True
+                        _bounce_dm(bounced_id,
+                                   session, http_prefix,
+                                   base_dir,
+                                   nickname, domain,
+                                   port, send_h,
+                                   federation_list,
+                                   send_threads, post_log,
+                                   cached_webfingers,
+                                   person_cache,
+                                   translate, debug,
+                                   last_bounce_message,
+                                   system_language,
+                                   signing_priv_key_pem,
+                                   content_license_url,
+                                   languages_understood,
+                                   bounce_chat,
+                                   curr_domain,
+                                   onion_domain, i2p_domain)
                 return False
 
     # dm index will be updated
@@ -3892,7 +3908,8 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     """
     # if this is a reply to a question then update the votes
     question_json, question_post_filename = \
-        question_update_votes(base_dir, nickname, domain, post_json_object)
+        question_update_votes(base_dir, nickname, domain,
+                              post_json_object, debug)
     if not question_json:
         return
     if not question_post_filename:
@@ -4424,8 +4441,33 @@ def _inbox_after_initial(server, inbox_start_time,
         post_json_object = message_json['post']
     else:
         post_json_object = message_json
-
     nickname = handle.split('@')[0]
+
+    if is_vote(base_dir, nickname, domain, post_json_object, debug):
+        _receive_question_vote(server, base_dir, nickname, domain,
+                               http_prefix, handle, debug,
+                               post_json_object, recent_posts_cache,
+                               session, session_onion, session_i2p,
+                               onion_domain, i2p_domain, port,
+                               federation_list, send_threads, post_log,
+                               cached_webfingers, person_cache,
+                               signing_priv_key_pem,
+                               max_recent_posts, translate,
+                               allow_deletion,
+                               yt_replace_domain,
+                               twitter_replacement_domain,
+                               peertube_instances,
+                               allow_local_network_access,
+                               theme_name, system_language,
+                               max_like_count,
+                               cw_lists, lists_enabled,
+                               bold_reading, dogwhistles,
+                               server.min_images_for_accounts)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_question_vote',
+                            debug)
+        inbox_start_time = time.time()
+
     json_obj = None
     domain_full = get_full_domain(domain, port)
     if _valid_post_content(base_dir, nickname, domain,
@@ -4492,30 +4534,6 @@ def _inbox_after_initial(server, inbox_start_time,
                          max_replies, debug)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'populate_replies',
-                            debug)
-        inbox_start_time = time.time()
-
-        _receive_question_vote(server, base_dir, nickname, domain,
-                               http_prefix, handle, debug,
-                               post_json_object, recent_posts_cache,
-                               session, session_onion, session_i2p,
-                               onion_domain, i2p_domain, port,
-                               federation_list, send_threads, post_log,
-                               cached_webfingers, person_cache,
-                               signing_priv_key_pem,
-                               max_recent_posts, translate,
-                               allow_deletion,
-                               yt_replace_domain,
-                               twitter_replacement_domain,
-                               peertube_instances,
-                               allow_local_network_access,
-                               theme_name, system_language,
-                               max_like_count,
-                               cw_lists, lists_enabled,
-                               bold_reading, dogwhistles,
-                               server.min_images_for_accounts)
-        fitness_performance(inbox_start_time, server.fitness,
-                            'INBOX', '_receive_question_vote',
                             debug)
         inbox_start_time = time.time()
 
