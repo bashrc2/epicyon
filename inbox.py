@@ -3821,22 +3821,20 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
 
     # Not sending to yourself
     if not sending_to_self:
-        obj_has_dict = has_object_dict(post_json_object)
         # is this a vote on a question?
-        if obj_has_dict:
-            if post_json_object['object'].get("name") and \
-               post_json_object['object'].get("inReplyTo"):
-                # make the content the same as the vote answer
-                post_json_object['object']['content'] = \
-                    post_json_object['object']['name']
-                # remove any other content
-                if post_json_object['object'].get("contentMap"):
-                    del post_json_object['object']['contentMap']
-                # remove any summary / cw
-                post_json_object['object']['summary'] = None
-                if post_json_object['object'].get("summaryMap"):
-                    del post_json_object['object']['summaryMap']
-                return True
+        if is_vote(base_dir, nickname, domain,
+                   post_json_object):
+            # make the content the same as the vote answer
+            post_json_object['object']['content'] = \
+                post_json_object['object']['name']
+            # remove any other content
+            if post_json_object['object'].get("contentMap"):
+                del post_json_object['object']['contentMap']
+            # remove any summary / cw
+            post_json_object['object']['summary'] = None
+            if post_json_object['object'].get("summaryMap"):
+                del post_json_object['object']['summaryMap']
+            return True
         # get the handle of the DM sender
         send_h = sending_actor_nickname + '@' + sending_actor_domain
         # check the follow
@@ -3848,6 +3846,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                 # send back a bounce DM
                 if post_json_object.get('id') and \
                    post_json_object.get('object'):
+                    obj_has_dict = has_object_dict(post_json_object)
                     # don't send bounces back to
                     # replies to bounce messages
                     obj = post_json_object['object']
