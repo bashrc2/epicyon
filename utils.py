@@ -4166,7 +4166,7 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
 
 
 def is_quote_toot(post_json_object: str, content: str) -> bool:
-    """Returns true if the given post is a quote toot
+    """Returns true if the given post is a quote toot / quote tweet
     """
     # Pleroma/Misskey implementations
     if post_json_object['object'].get('quoteUri') or \

@@ -2080,3 +2080,59 @@ def html_following_dropdown(base_dir: str, nickname: str,
                     following_address + '</option>\n'
     list_str += '</select>\n'
     return list_str
+
+
+def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
+    """Returns any links to buy something from an external site
+    """
+    if not post_json_object['object'].get('tag'):
+        return {}
+    if not isinstance(post_json_object['object']['tag'], list):
+        return {}
+    links = {}
+    buy_strings = []
+    buy_strings += translate['Buy'].lower()
+    buy_strings += translate['Purchase'].lower()
+    buy_strings += translate['Subscribe'].lower()
+    for item in post_json_object['object']['tag']:
+        if not isinstance(item, dict):
+            continue
+        if not item.get('name'):
+            continue
+        if not isinstance(item['name'], str):
+            continue
+        if not item.get('type'):
+            continue
+        if not item.get('href'):
+            continue
+        if not isinstance(item['type'], str):
+            continue
+        if not isinstance(item['href'], str):
+            continue
+        if item['type'] != 'Link':
+            continue
+        if not item.get('mediaType'):
+            continue
+        if not isinstance(item['mediaType'], str):
+            continue
+        if 'html' not in item['mediaType']:
+            continue
+        item_name = item['name']
+        # there should be no html in the name
+        if remove_html(item_name) != item_name:
+            continue
+        # there should be no html in the link
+        if '<' in item['href'] or \
+           '://' not in item['href']:
+            continue
+        # does the name indicate buying?
+        for buy_str in buy_strings:
+            if buy_str in item_name.lower():
+                links[item_name] = item['href']
+                continue
+        # is the link on an allowlist of sites?
+        for site, keyword in buy_sites.items():
+            if keyword in item['href']:
+                links[site.title()] = item['href']
+                continue
+    return links

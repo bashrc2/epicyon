@@ -702,7 +702,8 @@ def html_history_search(translate: {}, base_dir: str,
                         lists_enabled: str,
                         timezone: str, bold_reading: bool,
                         dogwhistles: {}, access_keys: {},
-                        min_images_for_accounts: []) -> str:
+                        min_images_for_accounts: [],
+                        buy_sites: {}) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -812,7 +813,8 @@ def html_history_search(translate: {}, base_dir: str,
                                     cw_lists, lists_enabled,
                                     timezone, False, bold_reading,
                                     dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None,
+                                    buy_sites)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -840,7 +842,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                         timezone: str, bold_reading: bool,
                         dogwhistles: {}, map_format: str,
                         access_keys: {}, box_name: str,
-                        min_images_for_accounts: []) -> str:
+                        min_images_for_accounts: [],
+                        buy_sites: {}) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -1032,7 +1035,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     store_to_sache, False, cw_lists,
                                     lists_enabled, timezone, False,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None,
+                                    buy_sites)
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str
@@ -1075,7 +1079,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                timezone: str, bold_reading: bool,
                                dogwhistles: {},
                                min_images_for_accounts: [],
-                               debug: bool) -> str:
+                               debug: bool, buy_sites: {}) -> str:
     """Show a page containing search results for a remote hashtag
     """
     hashtag = hashtag_url.split('/')[-1]
@@ -1235,7 +1239,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                     store_to_sache, False, cw_lists,
                                     lists_enabled, timezone, False,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None,
+                                    buy_sites)
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str

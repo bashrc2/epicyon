@@ -238,7 +238,8 @@ def post_message_to_outbox(session, translate: {},
                            lists_enabled: str,
                            content_license_url: str,
                            dogwhistles: {},
-                           min_images_for_accounts: []) -> bool:
+                           min_images_for_accounts: [],
+                           buy_sites: {}) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -593,7 +594,8 @@ def post_message_to_outbox(session, translate: {},
                                         cw_lists, lists_enabled,
                                         timezone, mitm,
                                         bold_reading, dogwhistles,
-                                        minimize_all_images, None)
+                                        minimize_all_images, None,
+                                        buy_sites)
 
     if is_edited_post:
         message_json['type'] = 'Update'

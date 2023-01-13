@@ -43,6 +43,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
                         box_name: str, default_timeline: str,
                         bold_reading: bool, dogwhistles: {},
                         min_images_for_accounts: [],
+                        buy_sites: {},
                         dict_name: str = 'likes') -> str:
     """Returns html for a screen showing who liked a post
     """
@@ -113,7 +114,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                 cw_lists, lists_enabled,
                                 timezone, mitm, bold_reading,
                                 dogwhistles,
-                                minimize_all_images, None)
+                                minimize_all_images, None,
+                                buy_sites)
 
     # show likers beneath the post
     obj = post_json_object

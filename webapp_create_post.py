@@ -239,7 +239,8 @@ def html_new_post(edit_post_params: {},
                   dogwhistles: {},
                   min_images_for_accounts: [],
                   default_month: int, default_year: int,
-                  default_post_language: str) -> str:
+                  default_post_language: str,
+                  buy_sites: {}) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -390,7 +391,8 @@ def html_new_post(edit_post_params: {},
                                                     cw_lists, lists_enabled,
                                                     timezone, False,
                                                     bold_reading, dogwhistles,
-                                                    minimize_all_images, None)
+                                                    minimize_all_images, None,
+                                                    buy_sites)
 
                 reply_str = '<input type="hidden" ' + \
                     'name="replyTo" value="' + in_reply_to + '">\n'
