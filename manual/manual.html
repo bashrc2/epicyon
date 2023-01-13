@@ -17,6 +17,7 @@ defaults</a></li>
 <li><a href="#media-timeline">Media timeline</a></li>
 <li><a href="#moderation">Moderation</a></li>
 <li><a href="#themes">Themes</a></li>
+<li><a href="#buying-and-selling">Buying and selling</a></li>
 <li><a href="#sharing-economy">Sharing economy</a></li>
 <li><a href="#search">Search</a></li>
 <li><a href="#browsing-in-a-command-shell">Browsing in a command
@@ -65,7 +66,11 @@ hardware. Think many small communicating nodes rather than a small
 number of large servers. Also, in spite of the prevailing great
 obsession with scale, not everything needs to. You can federate with a
 small number of servers for a particular purpose - such as running a
-club or hackspace - and that’s ok.</p>
+club or hackspace - and that’s ok. It supports both the server-to-server
+(S2S) and client-to-server (C2S) versions of the ActivityPub protocol,
+with <a
+href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication">basic
+auth</a> for C2S authentication.</p>
 <p><a
 href="https://uxdesign.cc/mastodon-is-antiviral-design-42f090ab8d51?gi=9baf6195c60b">Anti-virality</a>
 is a common design approach in the fediverse, and Epicyon also follows
@@ -429,7 +434,7 @@ preferable, so that it matches your typical pattern of daily posting
 activity without giving away your real location.</p>
 <h3 id="verifying-your-website-or-blog">Verifying your website or
 blog</h3>
-<p>It is possible to indicate that a website of blog belongs to you by
+<p>It is possible to indicate that a website or blog belongs to you by
 linking it to your profile screen. Within the <em>head</em> html section
 of your website or blog index page include a line similar to:</p>
 <div class="sourceCode" id="cb18"><pre
@@ -571,6 +576,13 @@ post.</p>
 <p>Selecting the <em>location</em> header will open the last known
 geolocation, so if your current location is near this makes it quicker
 to find.</p>
+<h2 id="scientific-references">Scientific references</h2>
+<p>It is possible to have references to scientific papers linked
+automatically, such that they are readable with one click/press.
+Supported references are <a href="https://arxiv.org">arXiv</a> and <a
+href="https://en.wikipedia.org/wiki/Digital_object_identifier">Digital
+object identifier (DOI)</a>. For example:</p>
+<pre class="text"><code>This is a reference to a paper: arxiv:2203.15752</code></pre>
 <h1 id="the-timeline">The Timeline</h1>
 <h2 id="layout">Layout</h2>
 <figure>
@@ -902,6 +914,18 @@ you to change colors and values for user interface components.</p>
 <img src="manual-theme-designer.png" alt="Theme designer screen" />
 <figcaption aria-hidden="true">Theme designer screen</figcaption>
 </figure>
+<h1 id="buying-and-selling">Buying and selling</h1>
+<p>When creating a new post you have the option of specifying a <em>buy
+link</em> This is a link to a web page where you can buy some particular
+item. When someone receives the post if they have a compatible instance
+then a small shopping cart icon will appear at the bottom of the post
+along with the other icons. Clicking or pressing the shopping cart will
+then take you to the buying site. It’s a predictable and machine
+parsable way indicating that something is for sale, separate from the
+post content.</p>
+<p>To avoid spam, it is possible for the shopping icon to only appear if
+it links to one of an allowed list of seller domains. In this way you
+can be confident that you are only navigating to approved sites.</p>
 <h1 id="sharing-economy">Sharing economy</h1>
 <p>This is intended to add <a
 href="https://en.wikipedia.org/wiki/The_Freecycle_Network">Freecycle</a>
