@@ -24,6 +24,7 @@ from utils import get_currencies
 from utils import get_category_types
 from utils import get_account_timezone
 from utils import get_supported_languages
+from webapp_utils import get_buy_links
 from webapp_utils import html_following_data_list
 from webapp_utils import html_common_emoji
 from webapp_utils import begin_edit_section
@@ -240,7 +241,8 @@ def html_new_post(edit_post_params: {},
                   min_images_for_accounts: [],
                   default_month: int, default_year: int,
                   default_post_language: str,
-                  buy_sites: {}) -> str:
+                  buy_sites: {},
+                  default_buy_site: str) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -257,6 +259,12 @@ def html_new_post(edit_post_params: {},
                     return ''
         if not edited_post_json:
             return ''
+        buy_links = \
+            get_buy_links(edited_post_json, translate, buy_sites)
+        if buy_links:
+            for _, buy_url in buy_links.items():
+                default_buy_site = buy_url
+                break
         if edited_post_json['object'].get('conversation'):
             conversation_id = edited_post_json['object']['conversation']
         elif edited_post_json['object'].get('context'):
@@ -481,7 +489,6 @@ def html_new_post(edit_post_params: {},
         '    <textarea id="imageDescription" name="imageDescription" ' + \
         'style="height:' + str(image_description_height) + \
         'px" spellcheck="true" autocomplete="on"></textarea>\n'
-
     new_post_image_section += end_edit_section()
 
     new_post_emoji_section = ''
@@ -768,6 +775,9 @@ def html_new_post(edit_post_params: {},
                 '      <label class="labels">' + \
                 translate['Language used'] + '</label>\n'
             replies_section += languages_dropdown
+            buy_link_str = '🛒 ' + translate['Buy link']
+            replies_section += edit_text_field(buy_link_str + ':', 'buySite',
+                                               default_buy_site, 'https://...')
             replies_section += '</div>\n'
 
             date_and_location = \

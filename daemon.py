@@ -3671,6 +3671,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.default_post_language.get(nickname):
                 default_post_language = \
                     self.server.default_post_language[nickname]
+            default_buy_site = ''
             msg = \
                 html_new_post({}, False, self.server.translate,
                               base_dir,
@@ -3712,7 +3713,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.dogwhistles,
                               self.server.min_images_for_accounts,
                               None, None, default_post_language,
-                              self.server.buy_sites)
+                              self.server.buy_sites,
+                              default_buy_site)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -3832,6 +3834,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.default_post_language.get(nickname):
                 default_post_language = \
                     self.server.default_post_language[nickname]
+            default_buy_site = ''
             msg = \
                 html_new_post({}, False, self.server.translate,
                               base_dir,
@@ -3872,7 +3875,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.dogwhistles,
                               self.server.min_images_for_accounts,
                               None, None, default_post_language,
-                              self.server.buy_sites)
+                              self.server.buy_sites,
+                              default_buy_site)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -16268,7 +16272,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          nickname,
                                          self.server.domain_full,
                                          self.server.person_cache)
-
+            default_buy_site = ''
             msg = \
                 html_new_post(edit_post_params, media_instance,
                               translate,
@@ -16313,7 +16317,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.min_images_for_accounts,
                               new_post_month, new_post_year,
                               default_post_language,
-                              self.server.buy_sites)
+                              self.server.buy_sites,
+                              default_buy_site)
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
                 self._404()

@@ -1844,19 +1844,21 @@ def _get_buy_footer(buy_links: {}, translate: {}) -> str:
     if not buy_links:
         return ''
     icon_filename = 'buy.png'
-    buy_title, buy_url = buy_links.items()[0]
-    if buy_title:
-        description = buy_title
-    else:
-        description = translate['Buy']
-    buy_str = \
-        '        ' + \
-        '<a class="imageAnchor" href="' + buy_url + \
-        '" title="' + description + '" tabindex="10">' + \
-        '<img loading="lazy" decoding="async" title="' + \
-        description + '" alt="' + description + \
-        ' |" src="/icons/' + icon_filename + '"/></a>\n'
-
+    description = ''
+    buy_str = ''
+    for buy_title, buy_url in buy_links.items():
+        if buy_title:
+            description = buy_title
+        else:
+            description = translate['Buy']
+        buy_str = \
+            '        ' + \
+            '<a class="imageAnchor" href="' + buy_url + \
+            '" title="' + description + '" tabindex="10">' + \
+            '<img loading="lazy" decoding="async" title="' + \
+            description + '" alt="' + description + \
+            ' |" src="/icons/' + icon_filename + '"/></a>\n'
+        break
     return buy_str
 
 
