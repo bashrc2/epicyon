@@ -178,6 +178,7 @@ from webapp_podcast import html_podcast_episode
 from webapp_theme_designer import html_theme_designer
 from webapp_minimalbutton import set_minimal
 from webapp_minimalbutton import is_minimal
+from webapp_utils import load_buy_sites
 from webapp_utils import get_default_path
 from webapp_utils import get_avatar_image_url
 from webapp_utils import html_hashtag_blocked
@@ -22983,7 +22984,7 @@ def run_daemon(max_hashtags: int,
     assert not scan_themes_for_scripts(base_dir)
 
     # permitted sites from which the buy button may be displayed
-    httpd.buy_sites = {}
+    httpd.buy_sites = load_buy_sites(base_dir)
 
     # which accounts should minimize all attached images by default
     httpd.min_images_for_accounts = load_min_images_for_accounts(base_dir)
