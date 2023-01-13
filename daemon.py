@@ -7900,6 +7900,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     buy_icon_text = site_url
                                 if buy_sites.get(buy_icon_text):
                                     continue
+                                if '<' in site_url:
+                                    continue
                                 buy_sites[buy_icon_text] = site_url.strip()
                         if str(self.server.buy_sites) != \
                            str(buy_sites):
