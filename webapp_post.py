@@ -2508,10 +2508,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     # html for the buy icon
     buy_str = ''
-    if post_json_object['object'].get('tag'):
-        if not is_patch:
-            buy_links = get_buy_links(post_json_object, translate, buy_sites)
-            buy_str = _get_buy_footer(buy_links, translate)
+    if 'attachment' not in post_json_object['object']:
+        post_json_object['object']['attachment'] = []
+    if not is_patch:
+        buy_links = get_buy_links(post_json_object, translate, buy_sites)
+        buy_str = _get_buy_footer(buy_links, translate)
 
     new_footer_str = \
         _get_footer_with_icons(show_icons,

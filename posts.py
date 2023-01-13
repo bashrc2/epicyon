@@ -1105,6 +1105,8 @@ def _attach_buy_link(post_json_object: {},
     buy_str = 'Buy'
     if translate.get(buy_str):
         buy_str = translate[buy_str]
+    if 'attachment' not in post_json_object:
+        post_json_object['attachment'] = []
     post_json_object['attachment'].append({
         "type": "Link",
         "name": buy_str,

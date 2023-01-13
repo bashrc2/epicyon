@@ -2085,9 +2085,9 @@ def html_following_dropdown(base_dir: str, nickname: str,
 def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
     """Returns any links to buy something from an external site
     """
-    if not post_json_object['object'].get('tag'):
+    if not post_json_object['object'].get('attachment'):
         return {}
-    if not isinstance(post_json_object['object']['tag'], list):
+    if not isinstance(post_json_object['object']['attachment'], list):
         return {}
     links = {}
     buy_strings = []
@@ -2095,7 +2095,7 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
         if translate.get(buy_str):
             buy_str = translate[buy_str]
         buy_strings += buy_str.lower()
-    for item in post_json_object['object']['tag']:
+    for item in post_json_object['object']['attachment']:
         if not isinstance(item, dict):
             continue
         if not item.get('name'):
