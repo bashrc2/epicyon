@@ -1884,7 +1884,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                                  user_agents_blocked: str,
                                  crawlers_allowed: str,
                                  translate: {}, reply_interval_hours: int,
-                                 cw_lists: {}, lists_enabled: str) -> str:
+                                 cw_lists: {}, lists_enabled: str,
+                                 buy_sites: {}) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filter_str = ''
@@ -2069,6 +2070,20 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_profile_form += \
             edit_text_area(translate['Web Bots Allowed'], None,
                            'crawlersAllowedStr', crawlers_allowed_str,
+                           200, '', False)
+
+        buy_domains_list_str = ''
+        for buy_icon_text, buy_url in buy_sites.items():
+            if buy_icon_text != buy_url:
+                buy_domains_list_str += \
+                    buy_icon_text + ' ' + buy_url.strip() + '\n'
+            else:
+                buy_domains_list_str += buy_url.strip() + '\n'
+        buy_domains_str = \
+            "Buy links are allowed from the following domains"
+        edit_profile_form += \
+            edit_text_area(translate[buy_domains_str], None,
+                           'buySitesStr', buy_domains_list_str,
                            200, '', False)
 
         cw_lists_str = ''
@@ -2513,7 +2528,8 @@ def html_edit_profile(server, translate: {},
                       system_language: str,
                       min_images_for_accounts: [],
                       max_recent_posts: int,
-                      reverse_sequence: []) -> str:
+                      reverse_sequence: [],
+                      buy_sites: {}) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2754,7 +2770,7 @@ def html_edit_profile(server, translate: {},
         _html_edit_profile_filtering(base_dir, nickname, domain,
                                      user_agents_blocked, crawlers_allowed,
                                      translate, reply_interval_hours,
-                                     cw_lists, lists_enabled)
+                                     cw_lists, lists_enabled, buy_sites)
 
     # git projects section
     edit_profile_form += \

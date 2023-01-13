@@ -611,5 +611,6 @@
     "Edit reminder": "Hatırlatıcıyı düzenle",
     "Purchase": "Satın alma",
     "Subscribe": "Abone",
-    "Buy link": "Bağlantı satın al"
+    "Buy link": "Bağlantı satın al",
+    "Buy links are allowed from the following domains": "Aşağıdaki alanlardan satın alma bağlantılarına izin verilir"
 }

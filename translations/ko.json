@@ -611,5 +611,6 @@
     "Edit reminder": "알림 수정",
     "Purchase": "구입",
     "Subscribe": "구독하다",
-    "Buy link": "구매 링크"
+    "Buy link": "구매 링크",
+    "Buy links are allowed from the following domains": "다음 도메인에서 구매 링크가 허용됩니다."
 }

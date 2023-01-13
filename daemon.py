@@ -7882,6 +7882,40 @@ class PubServer(BaseHTTPRequestHandler):
                             set_config_param(base_dir, 'crawlersAllowed',
                                              crawlers_allowed_str)
 
+                        # save allowed buy domains
+                        buy_sites = {}
+                        if fields.get('buySitesStr'):
+                            buy_sites_str = \
+                                fields['buySitesStr']
+                            buy_sites_list = \
+                                buy_sites_str.split('\n')
+                            for site_url in buy_sites_list:
+                                if ' ' in site_url:
+                                    site_url = site_url.split(' ')[-1]
+                                    buy_icon_text = \
+                                        site_url.replace(site_url, '').strip()
+                                    if not buy_icon_text:
+                                        buy_icon_text = site_url
+                                else:
+                                    buy_icon_text = site_url
+                                if buy_sites.get(buy_icon_text):
+                                    continue
+                                buy_sites[buy_icon_text] = site_url.strip()
+                        if str(self.server.buy_sites) != \
+                           str(buy_sites):
+                            self.server.buy_sites = buy_sites
+                            buy_sites_filename = \
+                                base_dir + '/accounts/buy_sites.json'
+                            if buy_sites:
+                                save_json(buy_sites, buy_sites_filename)
+                            else:
+                                if os.path.isfile(buy_sites_filename):
+                                    try:
+                                        os.remove(buy_sites_filename)
+                                    except OSError:
+                                        print('EX: unable to delete ' +
+                                              buy_sites_filename)
+
                         # save peertube instances list
                         peertube_instances_file = \
                             base_dir + '/accounts/peertube.txt'
@@ -16398,7 +16432,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.system_language,
                                     self.server.min_images_for_accounts,
                                     self.server.max_recent_posts,
-                                    self.server.reverse_sequence)
+                                    self.server.reverse_sequence,
+                                    self.server.buy_sites)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)

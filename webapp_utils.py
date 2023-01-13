@@ -2148,7 +2148,7 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
 def load_buy_sites(base_dir: str) -> {}:
     """Loads domains from which buying is permitted
     """
-    buy_sites_filename = base_dir + '/accounts/buy_sites.txt'
+    buy_sites_filename = base_dir + '/accounts/buy_sites.json'
     if os.path.isfile(buy_sites_filename):
         buy_sites_json = load_json(buy_sites_filename)
         if buy_sites_json:

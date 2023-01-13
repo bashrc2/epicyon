@@ -611,5 +611,6 @@
     "Edit reminder": "Editar recordatorio",
     "Purchase": "Compra",
     "Subscribe": "Suscribir",
-    "Buy link": "Enlace de compra"
+    "Buy link": "Enlace de compra",
+    "Buy links are allowed from the following domains": "Se permiten enlaces de compra de los siguientes dominios"
 }

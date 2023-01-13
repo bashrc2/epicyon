@@ -611,5 +611,6 @@
     "Edit reminder": "编辑提醒",
     "Purchase": "购买",
     "Subscribe": "订阅",
-    "Buy link": "购买链接"
+    "Buy link": "购买链接",
+    "Buy links are allowed from the following domains": "允许来自以下域的购买链接"
 }

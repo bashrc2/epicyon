@@ -611,5 +611,6 @@
     "Edit reminder": "リマインダーを編集",
     "Purchase": "購入",
     "Subscribe": "申し込む",
-    "Buy link": "購入リンク"
+    "Buy link": "購入リンク",
+    "Buy links are allowed from the following domains": "次のドメインからの購入リンクが許可されています"
 }
