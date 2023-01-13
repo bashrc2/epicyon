@@ -2091,9 +2091,10 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
         return {}
     links = {}
     buy_strings = []
-    buy_strings += translate['Buy'].lower()
-    buy_strings += translate['Purchase'].lower()
-    buy_strings += translate['Subscribe'].lower()
+    for buy_str in ('Buy', 'Purchase', 'Subscribe'):
+        if translate.get(buy_str):
+            buy_str = translate[buy_str]
+        buy_strings += buy_str.lower()
     for item in post_json_object['object']['tag']:
         if not isinstance(item, dict):
             continue

@@ -667,6 +667,7 @@ class PubServer(BaseHTTPRequestHandler):
         event_end_time = None
         location = None
         conversation_id = None
+        buy_url = ''
         city = get_spoofed_city(self.server.city,
                                 self.server.base_dir,
                                 nickname, self.server.domain)
@@ -700,7 +701,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.low_bandwidth,
                                        self.server.content_license_url,
                                        languages_understood, False,
-                                       self.server.translate)
+                                       self.server.translate, buy_url)
         if message_json:
             # NOTE: content and contentMap are not required, but we will keep
             # them in there so that the post does not get filtered out by
@@ -20680,6 +20681,10 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 comments_enabled = True
 
+            buy_url = ''
+            if fields.get('buyUrl'):
+                buy_url = fields['buyUrl']
+
             if post_type == 'newpost':
                 if not fields.get('pinToProfile'):
                     pin_to_profile = False
@@ -20730,7 +20735,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.low_bandwidth,
                                        self.server.content_license_url,
                                        languages_understood,
-                                       self.server.translate)
+                                       self.server.translate, buy_url)
                 if message_json:
                     if edited_postid:
                         recent_posts_cache = self.server.recent_posts_cache
@@ -20870,7 +20875,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.low_bandwidth,
                                      self.server.content_license_url,
                                      languages_understood,
-                                     self.server.translate)
+                                     self.server.translate, buy_url)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -21035,7 +21040,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
                                          languages_understood,
-                                         self.server.translate)
+                                         self.server.translate, buy_url)
                 if message_json:
                     if edited_postid:
                         recent_posts_cache = self.server.recent_posts_cache
@@ -21146,7 +21151,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
                                                languages_understood,
-                                               self.server.translate)
+                                               self.server.translate,
+                                               buy_url)
                 if message_json:
                     if edited_postid:
                         recent_posts_cache = self.server.recent_posts_cache
@@ -21269,7 +21275,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                    content_license_url,
                                                    languages_understood,
                                                    reply_is_chat,
-                                                   self.server.translate)
+                                                   self.server.translate,
+                                                   buy_url)
                 if message_json:
                     print('DEBUG: posting DM edited_postid ' +
                           str(edited_postid))
@@ -21385,7 +21392,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
                                                languages_understood,
-                                               False, self.server.translate)
+                                               False, self.server.translate,
+                                               buy_url)
                 if message_json:
                     if fields['schedulePost']:
                         return 1

@@ -776,7 +776,7 @@ def html_new_post(edit_post_params: {},
                 translate['Language used'] + '</label>\n'
             replies_section += languages_dropdown
             buy_link_str = '🛒 ' + translate['Buy link']
-            replies_section += edit_text_field(buy_link_str, 'buySite',
+            replies_section += edit_text_field(buy_link_str, 'buyUrl',
                                                default_buy_site, 'https://...')
             replies_section += '</div>\n'
 

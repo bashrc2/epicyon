@@ -3745,6 +3745,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     location = None
     conversation_id = None
     low_bandwidth = False
+    buy_url = ''
     post_json_object = \
         create_direct_message_post(base_dir, nickname, domain, port,
                                    http_prefix, content,
@@ -3759,7 +3760,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    low_bandwidth,
                                    content_license_url,
                                    languages_understood, bounce_is_chat,
-                                   translate)
+                                   translate, buy_url)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sending_handle)
         return False

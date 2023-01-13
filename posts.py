@@ -1092,6 +1092,27 @@ def _attach_post_license(post_json_object: {},
     })
 
 
+def _attach_buy_link(post_json_object: {},
+                     buy_url: str, translate: {}) -> None:
+    """Attaches a link for buying something
+    """
+    if not buy_url:
+        return
+    if '://' not in buy_url:
+        return
+    if ' ' in buy_url or '<' in buy_url:
+        return
+    buy_str = 'Buy'
+    if translate.get(buy_str):
+        buy_str = translate[buy_str]
+    post_json_object['attachment'].append({
+        "type": "Link",
+        "name": buy_str,
+        "href": buy_url,
+        "mediaType": "text/html"
+    })
+
+
 def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                      http_prefix: str, content: str, status_number: str,
                      published: str, new_post_id: str, post_context: {},
@@ -1102,7 +1123,8 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                      post_object_type: str, summary: str,
                      in_reply_to_atom_uri: str, system_language: str,
                      conversation_id: str, low_bandwidth: bool,
-                     content_license_url: str) -> {}:
+                     content_license_url: str, buy_url: str,
+                     translate: {}) -> {}:
     """Creates a new server-to-server post
     """
     actor_url = local_actor_url(http_prefix, nickname, domain)
@@ -1166,6 +1188,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                          media_type, image_description, city, low_bandwidth,
                          content_license_url)
     _attach_post_license(new_post['object'], content_license_url)
+    _attach_buy_link(new_post['object'], buy_url, translate)
     return new_post
 
 
@@ -1179,7 +1202,8 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                      post_object_type: str, summary: str,
                      in_reply_to_atom_uri: str, system_language: str,
                      conversation_id: str, low_bandwidth: str,
-                     content_license_url: str) -> {}:
+                     content_license_url: str, buy_url: str,
+                     translate: {}) -> {}:
     """Creates a new client-to-server post
     """
     domain_full = get_full_domain(domain, port)
@@ -1233,6 +1257,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                          media_type, image_description, city, low_bandwidth,
                          content_license_url)
     _attach_post_license(new_post, content_license_url)
+    _attach_buy_link(new_post, buy_url, translate)
     return new_post
 
 
@@ -1433,7 +1458,8 @@ def _create_post_base(base_dir: str,
                       system_language: str,
                       conversation_id: str, low_bandwidth: bool,
                       content_license_url: str,
-                      languages_understood: [], translate: {}) -> {}:
+                      languages_understood: [], translate: {},
+                      buy_url: str) -> {}:
     """Creates a message
     """
     content = remove_invalid_chars(content)
@@ -1591,7 +1617,7 @@ def _create_post_base(base_dir: str,
                              post_object_type, summary,
                              in_reply_to_atom_uri, system_language,
                              conversation_id, low_bandwidth,
-                             content_license_url)
+                             content_license_url, buy_url, translate)
     else:
         new_post = \
             _create_post_c2s(base_dir, nickname, domain, port,
@@ -1604,7 +1630,7 @@ def _create_post_base(base_dir: str,
                              post_object_type, summary,
                              in_reply_to_atom_uri, system_language,
                              conversation_id, low_bandwidth,
-                             content_license_url)
+                             content_license_url, buy_url, translate)
 
     _create_post_mentions(cc_url, new_post, to_recipients, tags)
 
@@ -1845,7 +1871,8 @@ def create_public_post(base_dir: str,
                        location: str, is_article: bool, system_language: str,
                        conversation_id: str, low_bandwidth: bool,
                        content_license_url: str,
-                       languages_understood: [], translate: {}) -> {}:
+                       languages_understood: [], translate: {},
+                       buy_url: str) -> {}:
     """Public post
     """
     domain_full = get_full_domain(domain, port)
@@ -1879,7 +1906,7 @@ def create_public_post(base_dir: str,
                              event_status, ticket_url, system_language,
                              conversation_id, low_bandwidth,
                              content_license_url,
-                             languages_understood, translate)
+                             languages_understood, translate, buy_url)
 
 
 def _append_citations_to_blog_post(base_dir: str,
@@ -1924,7 +1951,8 @@ def create_blog_post(base_dir: str,
                      location: str, system_language: str,
                      conversation_id: str, low_bandwidth: bool,
                      content_license_url: str,
-                     languages_understood: [], translate: {}) -> {}:
+                     languages_understood: [], translate: {},
+                     buy_url: str) -> {}:
     blog_json = \
         create_public_post(base_dir,
                            nickname, domain, port, http_prefix,
@@ -1937,7 +1965,7 @@ def create_blog_post(base_dir: str,
                            event_date, event_time, event_end_time, location,
                            True, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
     blog_json['object']['url'] = \
         blog_json['object']['url'].replace('/@', '/users/')
     _append_citations_to_blog_post(base_dir, nickname, domain, blog_json)
@@ -1953,7 +1981,8 @@ def create_news_post(base_dir: str,
                      subject: str, system_language: str,
                      conversation_id: str, low_bandwidth: bool,
                      content_license_url: str,
-                     languages_understood: [], translate: {}) -> {}:
+                     languages_understood: [], translate: {},
+                     buy_url: str) -> {}:
     client_to_server = False
     in_reply_to = None
     in_reply_to_atom_uri = None
@@ -1974,7 +2003,7 @@ def create_news_post(base_dir: str,
                            event_date, event_time, event_end_time, location,
                            True, system_language, conversation_id,
                            low_bandwidth, content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
     blog['object']['type'] = 'Article'
     return blog
 
@@ -1995,6 +2024,7 @@ def create_question_post(base_dir: str,
     """
     domain_full = get_full_domain(domain, port)
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
+    buy_url = ''
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           'https://www.w3.org/ns/activitystreams#Public',
@@ -2008,7 +2038,7 @@ def create_question_post(base_dir: str,
                           None, None, None,
                           None, None, None, None, None, system_language,
                           None, low_bandwidth, content_license_url,
-                          languages_understood, translate)
+                          languages_understood, translate, buy_url)
     message_json['object']['type'] = 'Question'
     message_json['object']['oneOf'] = []
     message_json['object']['votersCount'] = 0
@@ -2043,7 +2073,8 @@ def create_unlisted_post(base_dir: str,
                          location: str, system_language: str,
                          conversation_id: str, low_bandwidth: bool,
                          content_license_url: str,
-                         languages_understood: [], translate: {}) -> {}:
+                         languages_understood: [], translate: {},
+                         buy_url: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domain_full = get_full_domain(domain, port)
@@ -2063,7 +2094,7 @@ def create_unlisted_post(base_dir: str,
                              None, None, None, None, None, system_language,
                              conversation_id, low_bandwidth,
                              content_license_url, languages_understood,
-                             translate)
+                             translate, buy_url)
 
 
 def create_followers_only_post(base_dir: str,
@@ -2082,7 +2113,7 @@ def create_followers_only_post(base_dir: str,
                                conversation_id: str, low_bandwidth: bool,
                                content_license_url: str,
                                languages_understood: [],
-                               translate: {}) -> {}:
+                               translate: {}, buy_url: str) -> {}:
     """Followers only post
     """
     domain_full = get_full_domain(domain, port)
@@ -2100,7 +2131,7 @@ def create_followers_only_post(base_dir: str,
                              None, None, None, None, None, system_language,
                              conversation_id, low_bandwidth,
                              content_license_url, languages_understood,
-                             translate)
+                             translate, buy_url)
 
 
 def get_mentioned_people(base_dir: str, http_prefix: str,
@@ -2157,7 +2188,8 @@ def create_direct_message_post(base_dir: str,
                                conversation_id: str, low_bandwidth: bool,
                                content_license_url: str,
                                languages_understood: [],
-                               dm_is_chat: bool, translate: {}) -> {}:
+                               dm_is_chat: bool, translate: {},
+                               buy_url: str) -> {}:
     """Direct Message post
     """
     content = resolve_petnames(base_dir, nickname, domain, content)
@@ -2183,7 +2215,7 @@ def create_direct_message_post(base_dir: str,
                           None, None, None, None, None, system_language,
                           conversation_id, low_bandwidth,
                           content_license_url, languages_understood,
-                          translate)
+                          translate, buy_url)
     # mentioned recipients go into To rather than Cc
     message_json['to'] = message_json['object']['cc']
     message_json['object']['to'] = message_json['to']
@@ -2269,11 +2301,11 @@ def create_report_post(base_dir: str,
     post_to = moderators_list
     post_cc = None
     post_json_object = None
+    buy_url = ''
     for to_url in post_to:
         # who is this report going to?
         to_nickname = to_url.split('/users/')[1]
         handle = to_nickname + '@' + domain
-
         post_json_object = \
             _create_post_base(base_dir, nickname, domain, port,
                               to_url, post_cc,
@@ -2286,7 +2318,7 @@ def create_report_post(base_dir: str,
                               None, None, None,
                               None, None, None, None, None, system_language,
                               None, low_bandwidth, content_license_url,
-                              languages_understood, translate)
+                              languages_understood, translate, buy_url)
         if not post_json_object:
             continue
 
@@ -2411,7 +2443,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
               shared_items_federated_domains: [],
               shared_item_federation_tokens: {},
               low_bandwidth: bool, content_license_url: str,
-              translate: {},
+              translate: {}, buy_url: str,
               debug: bool = False, in_reply_to: str = None,
               in_reply_to_atom_uri: str = None, subject: str = None) -> int:
     """Post to another inbox. Used by unit tests.
@@ -2479,7 +2511,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                           None, None, None, None, None, system_language,
                           conversation_id, low_bandwidth,
                           content_license_url, languages_understood,
-                          translate)
+                          translate, buy_url)
 
     # get the senders private key
     private_key_pem = get_person_key(nickname, domain, base_dir, 'private')
@@ -2576,7 +2608,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                          low_bandwidth: bool,
                          content_license_url: str,
                          event_date: str, event_time: str, event_end_time: str,
-                         location: str, translate: {},
+                         location: str, translate: {}, buy_url: str,
                          debug: bool = False,
                          in_reply_to: str = None,
                          in_reply_to_atom_uri: str = None,
@@ -2668,7 +2700,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                           None, None, None, None, None, system_language,
                           conversation_id, low_bandwidth,
                           content_license_url, languages_understood,
-                          translate)
+                          translate, buy_url)
 
     auth_header = create_basic_auth_header(from_nickname, password)
 

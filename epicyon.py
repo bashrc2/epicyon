@@ -149,6 +149,9 @@ def _command_options() -> None:
     parser.add_argument('--eventLocation', type=str,
                         default=None,
                         help='Location for an event when sending a c2s post')
+    parser.add_argument('--buyUrl', type=str,
+                        default=None,
+                        help='Link for buying something')
     parser.add_argument('--content_license_url', type=str,
                         default='https://creativecommons.org/' +
                         'licenses/by-nc/4.0',
@@ -1702,7 +1705,7 @@ def _command_options() -> None:
                              argb.low_bandwidth,
                              argb.content_license_url,
                              argb.eventDate, argb.eventTime, argb.eventEndTime,
-                             argb.eventLocation, translate,
+                             argb.eventLocation, translate, argb.buyUrl,
                              argb.debug,
                              reply_to, reply_to, argb.conversationId, subject)
         for _ in range(10):
@@ -3375,6 +3378,7 @@ def _command_options() -> None:
         low_bandwidth = False
         languages_understood = [argb.language]
         translate = {}
+        buy_url = ''
 
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "like this is totally just a #test man",
@@ -3389,7 +3393,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Zoiks!!!",
                            test_save_to_file,
@@ -3403,7 +3407,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Hey scoob we need like a hundred more #milkshakes",
                            test_save_to_file,
@@ -3417,7 +3421,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Getting kinda spooky around here",
                            test_save_to_file,
@@ -3431,7 +3435,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "And they would have gotten away with it too" +
                            "if it wasn't for those pesky hackers",
@@ -3446,7 +3450,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "man these centralized sites are like the worst!",
                            test_save_to_file,
@@ -3460,7 +3464,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "another mystery solved #test",
                            test_save_to_file,
@@ -3474,7 +3478,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "let's go bowling",
                            test_save_to_file,
@@ -3488,7 +3492,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
-                           languages_understood, translate)
+                           languages_understood, translate, buy_url)
         domain_full = domain + ':' + str(port)
         clear_follows(base_dir, nickname, domain)
         follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,
