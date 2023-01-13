@@ -147,7 +147,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                                           httpd.lists_enabled,
                                           httpd.content_license_url,
                                           httpd.dogwhistles,
-                                          httpd.min_images_for_accounts):
+                                          httpd.min_images_for_accounts,
+                                          httpd.buy_sites):
                 index_lines.remove(line)
                 try:
                     os.remove(post_filename)

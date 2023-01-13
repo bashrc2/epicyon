@@ -608,5 +608,9 @@
     "Inactive": "Inaktiv",
     "Registrations open": "Anmeldungen geöffnet",
     "Registrations remaining": "Anmeldungen verbleiben",
-    "Edit reminder": "Erinnerung bearbeiten"
+    "Edit reminder": "Erinnerung bearbeiten",
+    "Purchase": "Kaufen",
+    "Subscribe": "Abonnieren",
+    "Buy link": "Link kaufen",
+    "Buy links are allowed from the following domains": "Kauflinks sind von den folgenden Domains erlaubt"
 }

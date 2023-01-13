@@ -604,5 +604,9 @@
     "Inactive": "Inactive",
     "Registrations open": "Registrations open",
     "Registrations remaining": "Registrations remaining",
-    "Edit reminder": "Edit reminder"
+    "Edit reminder": "Edit reminder",
+    "Purchase": "Purchase",
+    "Subscribe": "Subscribe",
+    "Buy link": "Buy link",
+    "Buy links are allowed from the following domains": "Buy links are allowed from the following domains"
 }

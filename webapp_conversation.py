@@ -42,7 +42,7 @@ def html_conversation_view(post_id: str,
                            timezone: str, bold_reading: bool,
                            dogwhistles: {}, access_keys: {},
                            min_images_for_accounts: [],
-                           debug: bool) -> str:
+                           debug: bool, buy_sites: {}) -> str:
     """Show a page containing a conversation thread
     """
     conv_posts = \
@@ -96,7 +96,8 @@ def html_conversation_view(post_id: str,
                                     cw_lists, lists_enabled,
                                     timezone, False, bold_reading,
                                     dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None,
+                                    buy_sites)
         if post_str:
             # check for "HTTP/1.1 303 See Other Server"
             if 'X-AP-Instance-ID' not in post_str:

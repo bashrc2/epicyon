@@ -501,7 +501,8 @@ def html_timeline(default_timeline: str,
                   dogwhistles: {}, ua_str: str,
                   min_images_for_accounts: [],
                   reverse_sequence: bool,
-                  last_post_id: str) -> str:
+                  last_post_id: str,
+                  buy_sites: {}) -> str:
     """Show the timeline as html
     """
     enable_timing_log = False
@@ -1037,7 +1038,7 @@ def html_timeline(default_timeline: str,
                                                 timezone, mitm,
                                                 bold_reading, dogwhistles,
                                                 minimize_all_images,
-                                                first_post_id)
+                                                first_post_id, buy_sites)
                     _log_timeline_timing(enable_timing_log,
                                          timeline_start_time, box_name, '12')
 
@@ -1306,7 +1307,8 @@ def html_shares(default_timeline: str,
                 timezone: str, bold_reading: bool,
                 dogwhistles: {}, ua_str: str,
                 min_images_for_accounts: [],
-                reverse_sequence: bool) -> str:
+                reverse_sequence: bool,
+                buy_sites: {}) -> str:
     """Show the shares timeline as html
     """
     manually_approve_followers = \
@@ -1339,7 +1341,7 @@ def html_shares(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence, None)
+                         reverse_sequence, None, buy_sites)
 
 
 def html_wanted(default_timeline: str,
@@ -1371,7 +1373,8 @@ def html_wanted(default_timeline: str,
                 timezone: str, bold_reading: bool,
                 dogwhistles: {}, ua_str: str,
                 min_images_for_accounts: [],
-                reverse_sequence: bool) -> str:
+                reverse_sequence: bool,
+                buy_sites: {}) -> str:
     """Show the wanted timeline as html
     """
     manually_approve_followers = \
@@ -1404,7 +1407,7 @@ def html_wanted(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence, None)
+                         reverse_sequence, None, buy_sites)
 
 
 def html_inbox(default_timeline: str,
@@ -1438,7 +1441,8 @@ def html_inbox(default_timeline: str,
                dogwhistles: {}, ua_str: str,
                min_images_for_accounts: [],
                reverse_sequence: bool,
-               last_post_id: str) -> str:
+               last_post_id: str,
+               buy_sites: {}) -> str:
     """Show the inbox as html
     """
     manually_approve_followers = \
@@ -1471,7 +1475,8 @@ def html_inbox(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence, last_post_id)
+                         reverse_sequence, last_post_id,
+                         buy_sites)
 
 
 def html_bookmarks(default_timeline: str,
@@ -1504,7 +1509,8 @@ def html_bookmarks(default_timeline: str,
                    timezone: str, bold_reading: bool,
                    dogwhistles: {}, ua_str: str,
                    min_images_for_accounts: [],
-                   reverse_sequence: bool) -> str:
+                   reverse_sequence: bool,
+                   buy_sites: {}) -> str:
     """Show the bookmarks as html
     """
     manually_approve_followers = \
@@ -1536,7 +1542,7 @@ def html_bookmarks(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence, None)
+                         reverse_sequence, None, buy_sites)
 
 
 def html_inbox_dms(default_timeline: str,
@@ -1570,7 +1576,8 @@ def html_inbox_dms(default_timeline: str,
                    dogwhistles: {}, ua_str: str,
                    min_images_for_accounts: [],
                    reverse_sequence: bool,
-                   last_post_id: str) -> str:
+                   last_post_id: str,
+                   buy_sites: {}) -> str:
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1598,7 +1605,8 @@ def html_inbox_dms(default_timeline: str,
                          cw_lists, lists_enabled, timezone,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
-                         reverse_sequence, last_post_id)
+                         reverse_sequence, last_post_id,
+                         buy_sites)
 
 
 def html_inbox_replies(default_timeline: str,
@@ -1632,7 +1640,8 @@ def html_inbox_replies(default_timeline: str,
                        dogwhistles: {}, ua_str: str,
                        min_images_for_accounts: [],
                        reverse_sequence: bool,
-                       last_post_id: str) -> str:
+                       last_post_id: str,
+                       buy_sites: {}) -> str:
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1658,7 +1667,7 @@ def html_inbox_replies(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence, last_post_id)
+                         reverse_sequence, last_post_id, buy_sites)
 
 
 def html_inbox_media(default_timeline: str,
@@ -1692,7 +1701,8 @@ def html_inbox_media(default_timeline: str,
                      dogwhistles: {}, ua_str: str,
                      min_images_for_accounts: [],
                      reverse_sequence: bool,
-                     last_post_id: str) -> str:
+                     last_post_id: str,
+                     buy_sites: {}) -> str:
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1718,7 +1728,7 @@ def html_inbox_media(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence, last_post_id)
+                         reverse_sequence, last_post_id, buy_sites)
 
 
 def html_inbox_blogs(default_timeline: str,
@@ -1752,7 +1762,8 @@ def html_inbox_blogs(default_timeline: str,
                      dogwhistles: {}, ua_str: str,
                      min_images_for_accounts: [],
                      reverse_sequence: bool,
-                     last_post_id: str) -> str:
+                     last_post_id: str,
+                     buy_sites: {}) -> str:
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1778,7 +1789,7 @@ def html_inbox_blogs(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence, last_post_id)
+                         reverse_sequence, last_post_id, buy_sites)
 
 
 def html_inbox_features(default_timeline: str,
@@ -1812,7 +1823,8 @@ def html_inbox_features(default_timeline: str,
                         timezone: str, bold_reading: bool,
                         dogwhistles: {}, ua_str: str,
                         min_images_for_accounts: [],
-                        reverse_sequence: bool) -> str:
+                        reverse_sequence: bool,
+                        buy_sites: {}) -> str:
     """Show the features timeline as html
     """
     return html_timeline(default_timeline,
@@ -1837,7 +1849,7 @@ def html_inbox_features(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence, None)
+                         reverse_sequence, None, buy_sites)
 
 
 def html_inbox_news(default_timeline: str,
@@ -1870,7 +1882,8 @@ def html_inbox_news(default_timeline: str,
                     timezone: str, bold_reading: bool,
                     dogwhistles: {}, ua_str: str,
                     min_images_for_accounts: [],
-                    reverse_sequence: bool) -> str:
+                    reverse_sequence: bool,
+                    buy_sites: {}) -> str:
     """Show the news timeline as html
     """
     return html_timeline(default_timeline,
@@ -1895,7 +1908,7 @@ def html_inbox_news(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence, None)
+                         reverse_sequence, None, buy_sites)
 
 
 def html_outbox(default_timeline: str,
@@ -1928,7 +1941,8 @@ def html_outbox(default_timeline: str,
                 timezone: str, bold_reading: bool,
                 dogwhistles: {}, ua_str: str,
                 min_images_for_accounts: [],
-                reverse_sequence: bool) -> str:
+                reverse_sequence: bool,
+                buy_sites: {}) -> str:
     """Show the Outbox as html
     """
     manually_approve_followers = \
@@ -1956,4 +1970,4 @@ def html_outbox(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence, None)
+                         reverse_sequence, None, buy_sites)

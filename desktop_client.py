@@ -528,6 +528,7 @@ def _desktop_reply_to_post(session, post_id: str,
     event_time = None
     event_end_time = None
     location = None
+    buy_url = ''
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -540,7 +541,7 @@ def _desktop_reply_to_post(session, post_id: str,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             event_date, event_time, event_end_time, location,
-                            translate, debug, post_id, post_id,
+                            translate, buy_url, debug, post_id, post_id,
                             conversation_id, subject) == 0:
         say_str = 'Reply sent'
     else:
@@ -602,6 +603,7 @@ def _desktop_new_post(session,
     event_time = None
     event_end_time = None
     location = None
+    buy_url = ''
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -614,7 +616,7 @@ def _desktop_new_post(session,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             event_date, event_time, event_end_time, location,
-                            translate, debug, None, None,
+                            translate, buy_url, debug, None, None,
                             conversation_id, subject) == 0:
         say_str = 'Post sent'
     else:
@@ -1345,6 +1347,7 @@ def _desktop_new_dm_base(session, to_handle: str,
     event_time = None
     event_end_time = None
     location = None
+    buy_url = ''
 
     say_str = 'Sending'
     _say_command(say_str, say_str, screenreader, system_language, espeak)
@@ -1359,7 +1362,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             event_date, event_time, event_end_time, location,
-                            translate, debug, None, None,
+                            translate, buy_url, debug, None, None,
                             conversation_id, subject) == 0:
         say_str = 'Direct message sent'
     else:

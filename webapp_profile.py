@@ -164,7 +164,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                               timezone: str,
                               onion_domain: str, i2p_domain: str,
                               bold_reading: bool, dogwhistles: {},
-                              min_images_for_accounts: []) -> str:
+                              min_images_for_accounts: [],
+                              buy_sites: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -416,7 +417,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                         cw_lists, lists_enabled,
                                         timezone, False,
                                         bold_reading, dogwhistles,
-                                        minimize_all_images, None)
+                                        minimize_all_images, None,
+                                        buy_sites)
             i += 1
             if i >= 8:
                 break
@@ -646,7 +648,8 @@ def html_profile(signing_priv_key_pem: str,
                  max_items_per_page: int,
                  cw_lists: {}, lists_enabled: str,
                  content_license_url: str,
-                 timezone: str, bold_reading: bool) -> str:
+                 timezone: str, bold_reading: bool,
+                 buy_sites: {}) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -678,7 +681,7 @@ def html_profile(signing_priv_key_pem: str,
                                  shared_items_federated_domains, None,
                                  page_number, max_items_per_page, cw_lists,
                                  lists_enabled, {},
-                                 min_images_for_accounts)
+                                 min_images_for_accounts, buy_sites)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
@@ -1169,7 +1172,8 @@ def html_profile(signing_priv_key_pem: str,
                                 cw_lists, lists_enabled,
                                 timezone, bold_reading, {},
                                 min_images_for_accounts,
-                                max_profile_posts) + license_str
+                                max_profile_posts,
+                                buy_sites) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1269,7 +1273,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         timezone: str, bold_reading: bool,
                         dogwhistles: {},
                         min_images_for_accounts: [],
-                        max_profile_posts: int) -> str:
+                        max_profile_posts: int,
+                        buy_sites: {}) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1327,7 +1332,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             cw_lists, lists_enabled,
                                             timezone, False,
                                             bold_reading, dogwhistles,
-                                            minimize_all_images, None)
+                                            minimize_all_images, None,
+                                            buy_sites)
                 if post_str and item_id not in shown_items:
                     profile_str += post_str + separator_str
                     shown_items.append(item_id)
@@ -1878,7 +1884,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                                  user_agents_blocked: str,
                                  crawlers_allowed: str,
                                  translate: {}, reply_interval_hours: int,
-                                 cw_lists: {}, lists_enabled: str) -> str:
+                                 cw_lists: {}, lists_enabled: str,
+                                 buy_sites: {}) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filter_str = ''
@@ -2063,6 +2070,20 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_profile_form += \
             edit_text_area(translate['Web Bots Allowed'], None,
                            'crawlersAllowedStr', crawlers_allowed_str,
+                           200, '', False)
+
+        buy_domains_list_str = ''
+        for buy_icon_text, buy_url in buy_sites.items():
+            if buy_icon_text != buy_url:
+                buy_domains_list_str += \
+                    buy_icon_text + ' ' + buy_url.strip() + '\n'
+            else:
+                buy_domains_list_str += buy_url.strip() + '\n'
+        buy_domains_str = \
+            "Buy links are allowed from the following domains"
+        edit_profile_form += \
+            edit_text_area(translate[buy_domains_str], None,
+                           'buySitesStr', buy_domains_list_str,
                            200, '', False)
 
         cw_lists_str = ''
@@ -2507,7 +2528,8 @@ def html_edit_profile(server, translate: {},
                       system_language: str,
                       min_images_for_accounts: [],
                       max_recent_posts: int,
-                      reverse_sequence: []) -> str:
+                      reverse_sequence: [],
+                      buy_sites: {}) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2748,7 +2770,7 @@ def html_edit_profile(server, translate: {},
         _html_edit_profile_filtering(base_dir, nickname, domain,
                                      user_agents_blocked, crawlers_allowed,
                                      translate, reply_interval_hours,
-                                     cw_lists, lists_enabled)
+                                     cw_lists, lists_enabled, buy_sites)
 
     # git projects section
     edit_profile_form += \

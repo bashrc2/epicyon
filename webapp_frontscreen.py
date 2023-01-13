@@ -40,7 +40,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                              lists_enabled: str,
                              bold_reading: bool,
                              dogwhistles: {},
-                             min_images_for_accounts: []) -> str:
+                             min_images_for_accounts: [],
+                             buy_sites: {}) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -95,7 +96,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             cw_lists, lists_enabled,
                                             timezone, False,
                                             bold_reading, dogwhistles,
-                                            minimize_all_images, None)
+                                            minimize_all_images, None,
+                                            buy_sites)
                 if post_str:
                     profile_str += post_str + separator_str
                     ctr += 1
@@ -128,7 +130,8 @@ def html_front_screen(signing_priv_key_pem: str,
                       max_items_per_page: int,
                       cw_lists: {}, lists_enabled: str,
                       dogwhistles: {},
-                      min_images_for_accounts: []) -> str:
+                      min_images_for_accounts: [],
+                      buy_sites: {}) -> str:
     """Show the news instance front screen
     """
     bold_reading = False
@@ -204,7 +207,8 @@ def html_front_screen(signing_priv_key_pem: str,
                                  signing_priv_key_pem,
                                  cw_lists, lists_enabled,
                                  bold_reading, dogwhistles,
-                                 min_images_for_accounts) + license_str
+                                 min_images_for_accounts,
+                                 buy_sites) + license_str
 
     # Footer which is only used for system accounts
     profile_footer_str = '      </td>\n'

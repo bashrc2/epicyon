@@ -452,7 +452,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     mitm: bool,
                                     bold_reading: bool,
                                     dogwhistles: {},
-                                    min_images_for_accounts: []) -> None:
+                                    min_images_for_accounts: [],
+                                    buy_sites: {}) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -482,7 +483,7 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             not_dm, True, True, False, True, False,
                             cw_lists, lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles, minimize_all_images,
-                            None)
+                            None, buy_sites)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -1257,7 +1258,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                          theme_name: str, max_like_count: int,
                          cw_lists: {}, dogwhistles: {},
                          min_images_for_accounts: [],
-                         max_hashtags: int) -> bool:
+                         max_hashtags: int,
+                         buy_sites: {}) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -1392,7 +1394,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             False, True, False, cw_lists,
                             lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles,
-                            minimize_all_images, None)
+                            minimize_all_images, None,
+                            buy_sites)
     return True
 
 
@@ -1414,7 +1417,8 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                              theme_name: str, max_like_count: int,
                              cw_lists: {}, dogwhistles: {},
                              min_images_for_accounts: [],
-                             max_hashtags: int) -> bool:
+                             max_hashtags: int,
+                             buy_sites: {}) -> bool:
 
     """Receives an Update activity within the POST section of HTTPServer
     """
@@ -1456,7 +1460,7 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                     theme_name, max_like_count,
                                     cw_lists, dogwhistles,
                                     min_images_for_accounts,
-                                    max_hashtags):
+                                    max_hashtags, buy_sites):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:
@@ -1507,7 +1511,8 @@ def _receive_like(recent_posts_cache: {},
                   max_like_count: int, cw_lists: {},
                   lists_enabled: str,
                   bold_reading: bool, dogwhistles: {},
-                  min_images_for_accounts: []) -> bool:
+                  min_images_for_accounts: [],
+                  buy_sites: {}) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Like':
@@ -1621,7 +1626,7 @@ def _receive_like(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None, buy_sites)
     return True
 
 
@@ -1642,7 +1647,8 @@ def _receive_undo_like(recent_posts_cache: {},
                        max_like_count: int, cw_lists: {},
                        lists_enabled: str,
                        bold_reading: bool, dogwhistles: {},
-                       min_images_for_accounts: []) -> bool:
+                       min_images_for_accounts: [],
+                       buy_sites: {}) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -1746,7 +1752,8 @@ def _receive_undo_like(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None,
+                                    buy_sites)
     return True
 
 
@@ -1768,7 +1775,8 @@ def _receive_reaction(recent_posts_cache: {},
                       max_like_count: int, cw_lists: {},
                       lists_enabled: str, bold_reading: bool,
                       dogwhistles: {},
-                      min_images_for_accounts: []) -> bool:
+                      min_images_for_accounts: [],
+                      buy_sites: {}) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'EmojiReact':
@@ -1903,7 +1911,7 @@ def _receive_reaction(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None, buy_sites)
     return True
 
 
@@ -1925,7 +1933,8 @@ def _receive_zot_reaction(recent_posts_cache: {},
                           max_like_count: int, cw_lists: {},
                           lists_enabled: str, bold_reading: bool,
                           dogwhistles: {},
-                          min_images_for_accounts: []) -> bool:
+                          min_images_for_accounts: [],
+                          buy_sites: {}) -> bool:
     """Receives an zot-style emoji reaction within the POST section of
     HTTPServer A zot style emoji reaction is an ordinary reply Note whose
     content is exactly one emoji
@@ -2084,7 +2093,8 @@ def _receive_zot_reaction(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None,
+                                    buy_sites)
     return True
 
 
@@ -2107,7 +2117,8 @@ def _receive_undo_reaction(recent_posts_cache: {},
                            max_like_count: int, cw_lists: {},
                            lists_enabled: str,
                            bold_reading: bool, dogwhistles: {},
-                           min_images_for_accounts: []) -> bool:
+                           min_images_for_accounts: [],
+                           buy_sites: {}) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -2229,7 +2240,8 @@ def _receive_undo_reaction(recent_posts_cache: {},
                                     False, True, False, cw_lists,
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
-                                    minimize_all_images, None)
+                                    minimize_all_images, None,
+                                    buy_sites)
     return True
 
 
@@ -2249,7 +2261,8 @@ def _receive_bookmark(recent_posts_cache: {},
                       max_like_count: int, cw_lists: {},
                       lists_enabled: {}, bold_reading: bool,
                       dogwhistles: {},
-                      min_images_for_accounts: []) -> bool:
+                      min_images_for_accounts: [],
+                      buy_sites: {}) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -2350,7 +2363,8 @@ def _receive_bookmark(recent_posts_cache: {},
                                 False, True, False, cw_lists,
                                 lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
-                                minimize_all_images, None)
+                                minimize_all_images, None,
+                                buy_sites)
     return True
 
 
@@ -2372,7 +2386,8 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                            max_like_count: int, cw_lists: {},
                            lists_enabled: str, bold_reading: bool,
                            dogwhistles: {},
-                           min_images_for_accounts: []) -> bool:
+                           min_images_for_accounts: [],
+                           buy_sites: {}) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -2473,7 +2488,8 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                                 manually_approve_followers,
                                 False, True, False, cw_lists, lists_enabled,
                                 timezone, mitm, bold_reading,
-                                dogwhistles, minimize_all_images, None)
+                                dogwhistles, minimize_all_images, None,
+                                buy_sites)
     return True
 
 
@@ -2572,7 +2588,8 @@ def _receive_announce(recent_posts_cache: {},
                       max_like_count: int, cw_lists: {},
                       lists_enabled: str, bold_reading: bool,
                       dogwhistles: {}, mitm: bool,
-                      min_images_for_accounts: []) -> bool:
+                      min_images_for_accounts: [],
+                      buy_sites: {}) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -2714,7 +2731,8 @@ def _receive_announce(recent_posts_cache: {},
                                 False, True, False, cw_lists,
                                 lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
-                                minimize_all_images, None)
+                                minimize_all_images, None,
+                                buy_sites)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -3727,6 +3745,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     location = None
     conversation_id = None
     low_bandwidth = False
+    buy_url = ''
     post_json_object = \
         create_direct_message_post(base_dir, nickname, domain, port,
                                    http_prefix, content,
@@ -3741,7 +3760,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    low_bandwidth,
                                    content_license_url,
                                    languages_understood, bounce_is_chat,
-                                   translate)
+                                   translate, buy_url)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sending_handle)
         return False
@@ -3903,7 +3922,8 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                            max_like_count: int,
                            cw_lists: {}, lists_enabled: bool,
                            bold_reading: bool, dogwhistles: {},
-                           min_images_for_accounts: []) -> None:
+                           min_images_for_accounts: [],
+                           buy_sites: {}) -> None:
     """Updates the votes on a Question/poll
     """
     # if this is a reply to a question then update the votes
@@ -3961,7 +3981,8 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             False, True, False, cw_lists,
                             lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles,
-                            minimize_all_images, None)
+                            minimize_all_images, None,
+                            buy_sites)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,
@@ -4136,7 +4157,7 @@ def _inbox_after_initial(server, inbox_start_time,
                          languages_understood: [],
                          mitm: bool, bold_reading: bool,
                          dogwhistles: {},
-                         max_hashtags: int) -> bool:
+                         max_hashtags: int, buy_sites: {}) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -4185,7 +4206,8 @@ def _inbox_after_initial(server, inbox_start_time,
                      theme_name, system_language,
                      max_like_count, cw_lists, lists_enabled,
                      bold_reading, dogwhistles,
-                     server.min_images_for_accounts):
+                     server.min_images_for_accounts,
+                     buy_sites):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4211,7 +4233,8 @@ def _inbox_after_initial(server, inbox_start_time,
                           theme_name, system_language,
                           max_like_count, cw_lists, lists_enabled,
                           bold_reading, dogwhistles,
-                          server.min_images_for_accounts):
+                          server.min_images_for_accounts,
+                          buy_sites):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4238,7 +4261,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          theme_name, system_language,
                          max_like_count, cw_lists, lists_enabled,
                          bold_reading, dogwhistles,
-                         server.min_images_for_accounts):
+                         server.min_images_for_accounts,
+                         buy_sites):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4265,7 +4289,8 @@ def _inbox_after_initial(server, inbox_start_time,
                              theme_name, system_language,
                              max_like_count, cw_lists, lists_enabled,
                              bold_reading, dogwhistles,
-                             server.min_images_for_accounts):
+                             server.min_images_for_accounts,
+                             buy_sites):
         if debug:
             print('DEBUG: Zot reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4293,7 +4318,8 @@ def _inbox_after_initial(server, inbox_start_time,
                               theme_name, system_language,
                               max_like_count, cw_lists, lists_enabled,
                               bold_reading, dogwhistles,
-                              server.min_images_for_accounts):
+                              server.min_images_for_accounts,
+                              buy_sites):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4321,7 +4347,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          theme_name, system_language,
                          max_like_count, cw_lists, lists_enabled,
                          bold_reading, dogwhistles,
-                         server.min_images_for_accounts):
+                         server.min_images_for_accounts,
+                         server.buy_sites):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4349,7 +4376,8 @@ def _inbox_after_initial(server, inbox_start_time,
                               theme_name, system_language,
                               max_like_count, cw_lists, lists_enabled,
                               bold_reading, dogwhistles,
-                              server.min_images_for_accounts):
+                              server.min_images_for_accounts,
+                              server.buy_sites):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4385,7 +4413,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          peertube_instances,
                          max_like_count, cw_lists, lists_enabled,
                          bold_reading, dogwhistles, mitm,
-                         server.min_images_for_accounts):
+                         server.min_images_for_accounts,
+                         server.buy_sites):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4462,7 +4491,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                max_like_count,
                                cw_lists, lists_enabled,
                                bold_reading, dogwhistles,
-                               server.min_images_for_accounts)
+                               server.min_images_for_accounts,
+                               server.buy_sites)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_question_vote',
                             debug)
@@ -4779,7 +4809,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                                         timezone, mitm,
                                                         bold_reading,
                                                         dogwhistles,
-                                                        min_img_for_accounts)
+                                                        min_img_for_accounts,
+                                                        buy_sites)
                         fitness_performance(inbox_start_time,
                                             server.fitness,
                                             'INBOX',
@@ -5840,7 +5871,7 @@ def run_inbox_queue(server,
                                     theme_name, max_like_count,
                                     cw_lists, dogwhistles,
                                     server.min_images_for_accounts,
-                                    max_hashtags):
+                                    max_hashtags, server.buy_sites):
             if debug:
                 print('Queue: Update accepted from ' + key_id)
             if os.path.isfile(queue_filename):
@@ -5969,7 +6000,7 @@ def run_inbox_queue(server,
                                  content_license_url,
                                  languages_understood, mitm,
                                  bold_reading, dogwhistles,
-                                 max_hashtags)
+                                 max_hashtags, server.buy_sites)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'handle_after_initial',
                                 debug)

@@ -608,5 +608,9 @@
     "Inactive": "Неактивный",
     "Registrations open": "Регистрация открыта",
     "Registrations remaining": "Осталось регистраций",
-    "Edit reminder": "Изменить напоминание"
+    "Edit reminder": "Изменить напоминание",
+    "Purchase": "Покупка",
+    "Subscribe": "Подписаться",
+    "Buy link": "Купить ссылку",
+    "Buy links are allowed from the following domains": "Ссылки на покупку разрешены со следующих доменов"
 }

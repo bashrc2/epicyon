@@ -81,6 +81,7 @@ from content import get_mentions_from_html
 from content import switch_words
 from person import is_person_snoozed
 from person import get_person_avatar_url
+from webapp_utils import get_buy_links
 from webapp_utils import language_right_to_left
 from webapp_utils import get_banner_file
 from webapp_utils import get_avatar_image_url
@@ -1648,6 +1649,7 @@ def _get_footer_with_icons(show_icons: bool,
                            like_str: str, reaction_str: str,
                            bookmark_str: str,
                            delete_str: str, mute_str: str, edit_str: str,
+                           buy_str: str,
                            post_json_object: {}, published_link: str,
                            time_class: str, published_str: str,
                            nickname: str, content_license_url: str,
@@ -1661,7 +1663,7 @@ def _get_footer_with_icons(show_icons: bool,
     footer_str += '      <div class="' + container_class_icons + '">\n'
     footer_str += \
         reply_str + announce_str + like_str + bookmark_str + reaction_str
-    footer_str += delete_str + mute_str + edit_str
+    footer_str += delete_str + mute_str + edit_str + buy_str
     if not is_news_post(post_json_object):
         footer_str += '        '
         if content_license_url:
@@ -1836,6 +1838,26 @@ def _get_copyright_footer(content_license_url: str,
     return copyright_str
 
 
+def _get_buy_footer(buy_links: {}, translate: {}) -> str:
+    """Returns the footer buy link
+    """
+    if not buy_links:
+        return ''
+    icon_filename = 'buy.png'
+    description = translate['Buy']
+    buy_str = ''
+    for buy_title, buy_url in buy_links.items():
+        buy_str = \
+            '        ' + \
+            '<a class="imageAnchor" href="' + buy_url + \
+            '" title="' + description + '" tabindex="10">' + \
+            '<img loading="lazy" decoding="async" title="' + \
+            description + '" alt="' + description + \
+            ' |" src="/icons/' + icon_filename + '"/></a>\n'
+        break
+    return buy_str
+
+
 def individual_post_as_html(signing_priv_key_pem: str,
                             allow_downloads: bool,
                             recent_posts_cache: {}, max_recent_posts: int,
@@ -1867,7 +1889,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             mitm: bool, bold_reading: bool,
                             dogwhistles: {},
                             minimize_all_images: bool,
-                            first_post_id: str) -> str:
+                            first_post_id: str,
+                            buy_sites: {}) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2475,12 +2498,24 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if disallow_reply(content_all_str):
             reply_str = ''
 
+    is_patch = is_git_patch(base_dir, nickname, domain,
+                            post_json_object['object']['type'],
+                            summary_str, content_str)
+
+    # html for the buy icon
+    buy_str = ''
+    if 'attachment' not in post_json_object['object']:
+        post_json_object['object']['attachment'] = []
+    if not is_patch:
+        buy_links = get_buy_links(post_json_object, translate, buy_sites)
+        buy_str = _get_buy_footer(buy_links, translate)
+
     new_footer_str = \
         _get_footer_with_icons(show_icons,
                                container_class_icons,
                                reply_str, announce_str,
                                like_str, reaction_str, bookmark_str,
-                               delete_str, mute_str, edit_str,
+                               delete_str, mute_str, edit_str, buy_str,
                                post_json_object, published_link,
                                time_class, published_str, nickname,
                                content_license_url, translate)
@@ -2495,9 +2530,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not summary_str:
         summary_str = get_summary_from_post(post_json_object, system_language,
                                             languages_understood)
-    is_patch = is_git_patch(base_dir, nickname, domain,
-                            post_json_object['object']['type'],
-                            summary_str, content_str)
 
     _log_post_timing(enable_timing_log, post_start_time, '16')
 
@@ -2582,13 +2614,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '17')
 
     map_str = ''
+    buy_links = {}
     if post_json_object['object'].get('tag'):
         if not is_patch:
             content_str = \
                 replace_emoji_from_tags(session, base_dir, content_str,
                                         post_json_object['object']['tag'],
                                         'content', False, True)
-
+            buy_links = get_buy_links(post_json_object, translate, buy_sites)
         # show embedded map if the location contains a map url
         location_str = \
             get_location_from_tags(post_json_object['object']['tag'])
@@ -2707,7 +2740,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          cw_lists: {}, lists_enabled: str,
                          timezone: str, mitm: bool,
                          bold_reading: bool, dogwhistles: {},
-                         min_images_for_accounts: []) -> str:
+                         min_images_for_accounts: [],
+                         buy_sites: {}) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -2791,7 +2825,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 False, authorized, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
-                                minimize_all_images, None)
+                                minimize_all_images, None, buy_sites)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -2835,7 +2869,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             bold_reading,
                                             dogwhistles,
                                             minimize_all_images,
-                                            None) + post_str
+                                            None, buy_sites) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -2875,7 +2909,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             cw_lists, lists_enabled,
                                             timezone, False,
                                             bold_reading, dogwhistles,
-                                            minimize_all_images, None)
+                                            minimize_all_images, None,
+                                            buy_sites)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2906,7 +2941,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       lists_enabled: str,
                       timezone: str, bold_reading: bool,
                       dogwhistles: {},
-                      min_images_for_accounts: []) -> str:
+                      min_images_for_accounts: [],
+                      buy_sites: {}) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -2937,7 +2973,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         cw_lists, lists_enabled,
                                         timezone, False,
                                         bold_reading, dogwhistles,
-                                        minimize_all_images, None)
+                                        minimize_all_images, None,
+                                        buy_sites)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2968,7 +3005,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                box_name: str, page_number: int,
                                timezone: str, bold_reading: bool,
                                dogwhistles: {},
-                               min_images_for_accounts: []) -> str:
+                               min_images_for_accounts: [],
+                               buy_sites: {}) -> str:
     """Returns the emoji picker screen
     """
     minimize_all_images = False
@@ -2996,7 +3034,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 False, False, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, False,
                                 bold_reading, dogwhistles,
-                                minimize_all_images, None)
+                                minimize_all_images, None, buy_sites)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

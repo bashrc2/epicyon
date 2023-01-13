@@ -15,10 +15,11 @@
 14. [Media timeline](#media-timeline)
 15. [Moderation](#moderation)
 16. [Themes](#themes)
-17. [Sharing economy](#sharing-economy)
-18. [Search](#search)
-19. [Browsing in a command shell](#browsing-in-a-command-shell)
-20. [Building fediverse communities](#building-fediverse-communities)
+17. [Buying and selling](#buying-and-selling)
+18. [Sharing economy](#sharing-economy)
+19. [Search](#search)
+20. [Browsing in a command shell](#browsing-in-a-command-shell)
+21. [Building fediverse communities](#building-fediverse-communities)
 
 # Introduction
 *"Every new beginning comes from some other beginning’s end."*
@@ -654,6 +655,11 @@ Epicyon has multiple standard themes and if you are the administrator then if yo
 If you have the *artist* role then from the top of the left column of the main timeline you can select the *Theme Designer* icon, which usually resembles a paint roller or paint brush. This allows you to change colors and values for user interface components. 
 
 ![Theme designer screen](manual-theme-designer.png)
+
+# Buying and selling
+When creating a new post you have the option of specifying a *buy link* This is a link to a web page where you can buy some particular item. When someone receives the post if they have a compatible instance then a small shopping cart icon will appear at the bottom of the post along with the other icons. Clicking or pressing the shopping cart will then take you to the buying site. It's a predictable and machine parsable way indicating that something is for sale, separate from the post content.
+
+To avoid spam, it is possible for the shopping icon to only appear if it links to one of an allowed list of seller domains. In this way you can be confident that you are only navigating to approved sites.
 
 # Sharing economy
 This is intended to add [Freecycle](https://en.wikipedia.org/wiki/The_Freecycle_Network) type functionality within a social network context, leveraging your social connections on the instance, or between participating instances, to facilitate sharing and reduce wasteful consumerism.

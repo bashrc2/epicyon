@@ -2080,3 +2080,77 @@ def html_following_dropdown(base_dir: str, nickname: str,
                     following_address + '</option>\n'
     list_str += '</select>\n'
     return list_str
+
+
+def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
+    """Returns any links to buy something from an external site
+    """
+    if not post_json_object['object'].get('attachment'):
+        return {}
+    if not isinstance(post_json_object['object']['attachment'], list):
+        return {}
+    links = {}
+    buy_strings = []
+    for buy_str in ('Buy', 'Purchase', 'Subscribe'):
+        if translate.get(buy_str):
+            buy_str = translate[buy_str]
+        buy_strings += buy_str.lower()
+    for item in post_json_object['object']['attachment']:
+        if not isinstance(item, dict):
+            continue
+        if not item.get('name'):
+            continue
+        if not isinstance(item['name'], str):
+            continue
+        if not item.get('type'):
+            continue
+        if not item.get('href'):
+            continue
+        if not isinstance(item['type'], str):
+            continue
+        if not isinstance(item['href'], str):
+            continue
+        if item['type'] != 'Link':
+            continue
+        if not item.get('mediaType'):
+            continue
+        if not isinstance(item['mediaType'], str):
+            continue
+        if 'html' not in item['mediaType']:
+            continue
+        item_name = item['name']
+        # The name should not be excessively long
+        if len(item_name) > 32:
+            continue
+        # there should be no html in the name
+        if remove_html(item_name) != item_name:
+            continue
+        # there should be no html in the link
+        if '<' in item['href'] or \
+           '://' not in item['href'] or \
+           ' ' in item['href']:
+            continue
+        if buy_sites:
+            # limited to an allowlist of buying sites
+            for site, buy_domain in buy_sites.items():
+                if buy_domain in item['href']:
+                    links[site.title()] = item['href']
+                    continue
+        else:
+            # The name only needs to indicate that this is a buy link
+            for buy_str in buy_strings:
+                if buy_str in item_name.lower():
+                    links[item_name] = item['href']
+                    continue
+    return links
+
+
+def load_buy_sites(base_dir: str) -> {}:
+    """Loads domains from which buying is permitted
+    """
+    buy_sites_filename = base_dir + '/accounts/buy_sites.json'
+    if os.path.isfile(buy_sites_filename):
+        buy_sites_json = load_json(buy_sites_filename)
+        if buy_sites_json:
+            return buy_sites_json
+    return {}

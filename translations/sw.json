@@ -608,5 +608,9 @@
     "Inactive": "Isiyotumika",
     "Registrations open": "Usajili umefunguliwa",
     "Registrations remaining": "Usajili uliosalia",
-    "Edit reminder": "Badilisha kikumbusho"
+    "Edit reminder": "Badilisha kikumbusho",
+    "Purchase": "Nunua",
+    "Subscribe": "Jisajili",
+    "Buy link": "Nunua kiungo",
+    "Buy links are allowed from the following domains": "Viungo vya kununua vinaruhusiwa kutoka kwa vikoa vifuatavyo"
 }
