@@ -2118,23 +2118,29 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
         if 'html' not in item['mediaType']:
             continue
         item_name = item['name']
+        # The name should not be excessively long
+        if len(item_name) > 32:
+            continue
         # there should be no html in the name
         if remove_html(item_name) != item_name:
             continue
         # there should be no html in the link
         if '<' in item['href'] or \
-           '://' not in item['href']:
+           '://' not in item['href'] or \
+           ' ' in item['href']:
             continue
-        # does the name indicate buying?
-        for buy_str in buy_strings:
-            if buy_str in item_name.lower():
-                links[item_name] = item['href']
-                continue
-        # is the link on an allowlist of sites?
-        for site, keyword in buy_sites.items():
-            if keyword in item['href']:
-                links[site.title()] = item['href']
-                continue
+        if buy_sites:
+            # limited to an allowlist of buying sites
+            for site, buy_domain in buy_sites.items():
+                if buy_domain in item['href']:
+                    links[site.title()] = item['href']
+                    continue
+        else:
+            # The name only needs to indicate that this is a buy link
+            for buy_str in buy_strings:
+                if buy_str in item_name.lower():
+                    links[item_name] = item['href']
+                    continue
     return links
 
 
