@@ -264,7 +264,11 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
         if not actor_json.get('movedTo'):
             continue
         nickname = get_nickname_from_actor(actor_json['movedTo'])
+        if not nickname:
+            continue
         domain, port = get_domain_from_actor(actor_json['movedTo'])
+        if not domain:
+            continue
         domain_full = get_full_domain(domain, port)
         new_handle = nickname + '@' + domain_full
         moved_str += handle + ' ' + new_handle + '\n'
