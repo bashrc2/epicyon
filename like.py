@@ -114,12 +114,14 @@ def _create_like(recent_posts_cache: {},
             liked_post_nickname = get_nickname_from_actor(object_url)
             liked_post_domain, liked_post_port = \
                 get_domain_from_actor(object_url)
-            if '/' + str(liked_post_nickname) + '/' in object_url:
-                actor_liked = \
-                    object_url.split('/' + liked_post_nickname + '/')[0] + \
-                    '/' + liked_post_nickname
-                group_account = \
-                    has_group_type(base_dir, actor_liked, person_cache)
+            if liked_post_nickname and liked_post_domain:
+                if '/' + str(liked_post_nickname) + '/' in object_url:
+                    actor_liked = \
+                        object_url.split('/' +
+                                         liked_post_nickname + '/')[0] + \
+                        '/' + liked_post_nickname
+                    group_account = \
+                        has_group_type(base_dir, actor_liked, person_cache)
 
     if liked_post_nickname:
         post_filename = locate_post(base_dir, nickname, domain, object_url)

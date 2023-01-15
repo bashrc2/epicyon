@@ -760,8 +760,9 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
             if isinstance(item['object']['inReplyTo'], str):
                 post_domain, _ = \
                     get_domain_from_actor(item['object']['inReplyTo'])
-                if post_domain not in post_domains:
-                    post_domains.append(post_domain)
+                if post_domain:
+                    if post_domain not in post_domains:
+                        post_domains.append(post_domain)
 
         if item['object'].get('tag'):
             for tag_item in item['object']['tag']:
@@ -772,8 +773,9 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
                     if tag_item.get('href'):
                         post_domain, _ = \
                             get_domain_from_actor(tag_item['href'])
-                        if post_domain not in post_domains:
-                            post_domains.append(post_domain)
+                        if post_domain:
+                            if post_domain not in post_domains:
+                                post_domains.append(post_domain)
     return post_domains
 
 
@@ -818,6 +820,8 @@ def _get_posts_for_blocked_domains(base_dir: str,
             if isinstance(item['object']['inReplyTo'], str):
                 post_domain, _ = \
                     get_domain_from_actor(item['object']['inReplyTo'])
+                if not post_domain:
+                    continue
                 if is_blocked_domain(base_dir, post_domain):
                     if item['object'].get('url'):
                         url = item['object']['url']
@@ -837,6 +841,8 @@ def _get_posts_for_blocked_domains(base_dir: str,
                 if tag_type == 'mention' and tag_item.get('href'):
                     post_domain, _ = \
                         get_domain_from_actor(tag_item['href'])
+                    if not post_domain:
+                        continue
                     if is_blocked_domain(base_dir, post_domain):
                         if item['object'].get('url'):
                             url = item['object']['url']

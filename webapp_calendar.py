@@ -49,6 +49,8 @@ def html_calendar_delete_confirm(translate: {}, base_dir: str,
         return None
     actor = local_actor_url(http_prefix, nickname, domain_full)
     domain, _ = get_domain_from_actor(actor)
+    if not domain:
+        return None
     message_id = actor + '/statuses/' + post_id
 
     post_filename = locate_post(base_dir, nickname, domain, message_id)

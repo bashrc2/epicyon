@@ -137,8 +137,8 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
         if isinstance(obj_json['attributedTo'], str):
             attrib = obj_json['attributedTo']
             actor_nick = get_nickname_from_actor(attrib)
-            if actor_nick:
-                actor_domain, _ = get_domain_from_actor(attrib)
+            actor_domain, _ = get_domain_from_actor(attrib)
+            if actor_nick and actor_domain:
                 actor_handle = actor_nick + '@' + actor_domain
                 metadata += \
                     "    <meta name=\"DC.creator\" " + \
@@ -512,9 +512,10 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
             return reply_str
         block_domain, _ = \
             get_domain_from_actor(post_json_object['object']['replyTo'])
-        if not is_blocked(base_dir, nickname, domain,
-                          block_nickname, block_domain, {}):
-            reply_to_link = post_json_object['object']['replyTo']
+        if block_domain:
+            if not is_blocked(base_dir, nickname, domain,
+                              block_nickname, block_domain, {}):
+                reply_to_link = post_json_object['object']['replyTo']
 
     if post_json_object['object'].get('attributedTo'):
         if isinstance(post_json_object['object']['attributedTo'], str):
@@ -1306,7 +1307,7 @@ def _get_post_title_announce_html(base_dir: str,
         if len(announce_display_name) < 2 or \
            display_name_is_emoji(announce_display_name):
             announce_display_name = None
-    if not announce_display_name:
+    if not announce_display_name and announce_domain:
         announce_display_name = announce_nickname + '@' + announce_domain
 
     _log_post_timing(enable_timing_log, post_start_time, '13.3')
@@ -1986,6 +1987,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not post_actor_nickname:
             return ''
         post_actor_domain, post_actor_port = get_domain_from_actor(post_actor)
+        if not post_actor_domain:
+            return ''
         post_actor_domain_full = \
             get_full_domain(post_actor_domain, post_actor_port)
         post_actor_handle = post_actor_nickname + '@' + post_actor_domain_full
@@ -2762,6 +2765,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         if not by_str_nickname:
             return ''
         by_str_domain, by_str_port = get_domain_from_actor(by_str)
+        if not by_str_domain:
+            return ''
         by_str_domain = get_full_domain(by_str_domain, by_str_port)
         by_str_handle = by_str_nickname + '@' + by_str_domain
         if translate.get(by_text):

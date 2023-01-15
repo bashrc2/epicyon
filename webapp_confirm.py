@@ -51,6 +51,8 @@ def html_confirm_delete(server,
     if not nickname:
         return None
     domain, port = get_domain_from_actor(actor)
+    if not domain:
+        return None
     domain_full = get_full_domain(domain, port)
 
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -135,6 +137,8 @@ def html_confirm_remove_shared_item(translate: {},
     if not nickname:
         return None
     domain, port = get_domain_from_actor(actor)
+    if not domain:
+        return None
     domain_full = get_full_domain(domain, port)
     shares_file = \
         acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
@@ -224,7 +228,7 @@ def html_confirm_follow(translate: {}, base_dir: str,
         '  <img loading="lazy" decoding="async" ' + \
         'src="' + follow_profile_url + '"/></a>\n'
     follow_actor_nick = get_nickname_from_actor(follow_actor)
-    if follow_actor_nick:
+    if follow_actor_nick and follow_domain:
         follow_str += \
             '  <p class="followText">' + translate['Follow'] + ' ' + \
             follow_actor_nick + '@' + follow_domain + ' ?</p>\n'
@@ -274,7 +278,7 @@ def html_confirm_unfollow(translate: {}, base_dir: str,
         '  <img loading="lazy" decoding="async" src="' + \
         follow_profile_url + '"/></a>\n'
     follow_actor_nick = get_nickname_from_actor(follow_actor)
-    if follow_actor_nick:
+    if follow_actor_nick and follow_domain:
         follow_str += \
             '  <p class="followText">' + translate['Stop following'] + \
             ' ' + follow_actor_nick + '@' + follow_domain + ' ?</p>\n'
@@ -321,7 +325,7 @@ def html_confirm_unblock(translate: {}, base_dir: str,
         '  <img loading="lazy" decoding="async" src="' + \
         block_profile_url + '"/></a>\n'
     block_actor_nick = get_nickname_from_actor(block_actor)
-    if block_actor_nick:
+    if block_actor_nick and block_domain:
         block_str += \
             '  <p class="blockText">' + translate['Stop blocking'] + ' ' + \
             block_actor_nick + '@' + block_domain + ' ?</p>\n'
@@ -368,7 +372,7 @@ def html_confirm_block(translate: {}, base_dir: str,
         '  <img loading="lazy" decoding="async" src="' + \
         block_profile_url + '"/></a>\n'
     block_actor_nick = get_nickname_from_actor(block_actor)
-    if block_actor_nick:
+    if block_actor_nick and block_domain:
         block_str += \
             '  <p class="blockText">' + translate['Block'] + ' ' + \
             block_actor_nick + '@' + block_domain + ' ?</p>\n'
