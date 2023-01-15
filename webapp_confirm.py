@@ -18,6 +18,7 @@ from utils import get_config_param
 from utils import get_alt_path
 from utils import acct_dir
 from utils import get_account_timezone
+from webapp_utils import get_banner_file
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -350,12 +351,18 @@ def html_confirm_unblock(translate: {}, base_dir: str,
 def html_confirm_block(translate: {}, base_dir: str,
                        origin_path_str: str,
                        block_actor: str,
-                       block_profile_url: str) -> str:
+                       block_profile_url: str,
+                       nickname: str, domain: str, theme: str,
+                       default_timeline: str,
+                       access_keys: {}) -> str:
     """Asks to confirm blocking an actor
     """
     block_domain, _ = get_domain_from_actor(block_actor)
 
     set_custom_background(base_dir, 'block-background', 'follow-background')
+
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
 
     css_filename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
@@ -364,6 +371,20 @@ def html_confirm_block(translate: {}, base_dir: str,
     instance_title = get_config_param(base_dir, 'instanceTitle')
     block_str = html_header_with_external_style(css_filename,
                                                 instance_title, None)
+
+    block_str += \
+        '<header>\n' + \
+        '<a href="/users/' + nickname + '/' + \
+        default_timeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+        access_keys['menuProfile'] + '">\n'
+    block_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n'
+
     block_str += '<div class="block">\n'
     block_str += '  <div class="blockAvatar">\n'
     block_str += '  <center>\n'
