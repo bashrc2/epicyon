@@ -3589,11 +3589,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    base_dir,
                                    users_path,
                                    options_actor,
-                                   options_avatar_url,
-                                   chooser_nickname,
-                                   domain, self.server.theme_name,
-                                   self.server.default_timeline,
-                                   self.server.access_keys).encode('utf-8')
+                                   options_avatar_url).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
