@@ -1667,7 +1667,7 @@ def _get_footer_with_icons(show_icons: bool,
     footer_str += delete_str + mute_str + edit_str + buy_str
     if not is_news_post(post_json_object):
         footer_str += '        '
-        if content_license_url:
+        if content_license_url and not is_reminder(post_json_object):
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
         # show the date
@@ -2409,7 +2409,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             footer_str = ''
         else:
             footer_str = '<div class="' + container_class_icons + '">\n'
-        if content_license_url:
+        if content_license_url and not is_reminder(post_json_object):
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
         conv_link = '/users/' + nickname + '?convthread=' + \
