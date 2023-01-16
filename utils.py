@@ -4223,6 +4223,15 @@ def license_link_from_name(license: str) -> str:
         value = 'https://www.gnu.org/licenses/fdl-1.3.html'
     elif 'OPL' in value_upper or 'OPEN PUBLICATION LIC' in value_upper:
         value = 'https://opencontent.org/openpub'
+    elif 'PDDL' in value_upper or 'OPEN DATA COMMONS PUBLIC' in value_upper:
+        value = 'https://opendatacommons.org/licenses/pddl'
+    elif 'ODBL' in value_upper or 'OPEN DATA COMMONS OPEN' in value_upper:
+        value = 'https://opendatacommons.org/licenses/odbl'
+    elif 'ODC' in value_upper or 'OPEN DATA COMMONS ATTR' in value_upper:
+        value = 'https://opendatacommons.org/licenses/by'
+    elif 'OGL' in value_upper or 'OPEN GOVERNMENT LIC' in value_upper:
+        value = \
+            'https://www.nationalarchives.gov.uk/doc/open-government-licence'
     elif 'PDL' in value_upper or \
          'PUBLIC DOCUMENTATION LIC' in value_upper:
         value = 'http://www.openoffice.org/licenses/PDL.html'
