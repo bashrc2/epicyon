@@ -274,7 +274,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     event_class = 'calendar__day__event__public__rtl'
                 cal_item_class = 'calItemPublic'
             if event_time:
-                if event_end_time:
+                if event_end_time and start_time_str != end_time_str:
                     event_time = \
                         '<time datetime="' + start_time_str + '">' + \
                         event_time + '</time> - ' + \
