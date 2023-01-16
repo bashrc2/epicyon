@@ -1295,7 +1295,7 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 end_date_str = end_date + 'T12:00:00Z'
             else:
                 if event_time.endswith('Z'):
-                    end_date_str = end_date + 'T' + event_time + ':00Z'
+                    end_date_str = end_date + 'T' + event_time
                 else:
                     end_date_str = \
                         end_date + 'T' + event_time + ':00' + \
