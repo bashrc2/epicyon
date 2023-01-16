@@ -1291,7 +1291,15 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 end_date_str = end_date + 'T' + end_time + \
                     ':00' + strftime("%z", gmtime())
         else:
-            end_date_str = end_date + 'T12:00:00Z'
+            if not event_time:
+                end_date_str = end_date + 'T12:00:00Z'
+            else:
+                if event_time.endswith('Z'):
+                    end_date_str = end_date + 'T' + event_time + ':00Z'
+                else:
+                    end_date_str = \
+                        end_date + 'T' + event_time + ':00' + \
+                        strftime("%z", gmtime())
 
     # get the starting date and time
     event_date_str = None
