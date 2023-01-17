@@ -1090,6 +1090,11 @@ def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
 def _attach_post_license(post_json_object: {},
                          content_license_url: str) -> None:
     """Attaches a license to each post
+    Also see:
+    https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-c118.md
+    NOTE: at present (Jan 2023) there is no consensus about how to
+    represent license information on ActivityPub posts, so this might
+    need to change if such a consensus appears.
     """
     post_json_object['attachment'].append({
         "type": "PropertyValue",
