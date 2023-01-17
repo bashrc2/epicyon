@@ -274,16 +274,22 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     event_class = 'calendar__day__event__public__rtl'
                 cal_item_class = 'calItemPublic'
             if event_time:
-                if event_end_time and start_time_str != end_time_str:
-                    event_time = \
-                        '<time datetime="' + start_time_str + '">' + \
-                        event_time + '</time> - ' + \
-                        '<time datetime="' + end_time_str + '">' + \
-                        event_end_time + '</time>'
-                else:
-                    event_time = \
-                        '<time datetime="' + start_time_str + '">' + \
-                        event_time + '</time>'
+                event_time = \
+                    '<time datetime="' + start_time_str + '">' + \
+                    event_time + '</time>'
+                if event_time and event_end_time and \
+                   start_time_str != end_time_str:
+                    event_time_int_str = event_time.replace(':', '')
+                    event_end_time_int_str = event_end_time.replace(':', '')
+                    if event_time_int_str.isdigit() and \
+                       event_end_time_int_str.isdigit():
+                        if int(event_end_time_int_str) > \
+                           int(event_time_int_str):
+                            event_time = \
+                                '<time datetime="' + start_time_str + '">' + \
+                                event_time + '</time> - ' + \
+                                '<time datetime="' + end_time_str + '">' + \
+                                event_end_time + '</time>'
             if event_time and event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
