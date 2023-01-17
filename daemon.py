@@ -15768,11 +15768,11 @@ class PubServer(BaseHTTPRequestHandler):
                 # for news instances if not logged in then show the
                 # front page
                 divert_path = '/users/news'
-            # if debug:
-            print('DEBUG: divert_to_login_screen=' +
-                  str(divert_to_login_screen))
-            print('DEBUG: authorized=' + str(authorized))
-            print('DEBUG: path=' + path)
+            if debug:
+                print('DEBUG: divert_to_login_screen=' +
+                      str(divert_to_login_screen))
+                print('DEBUG: authorized=' + str(authorized))
+                print('DEBUG: path=' + path)
             if calling_domain.endswith('.onion') and onion_domain:
                 self._redirect_headers('http://' +
                                        onion_domain + divert_path,
