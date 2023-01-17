@@ -1799,7 +1799,9 @@ def _get_content_license(post_json_object: {}) -> str:
     for item in post_json_object['object']['attachment']:
         if not item.get('name'):
             continue
-        if item['name'] != 'license':
+        name_lower = item['name'].lower()
+        if name_lower != 'license' and \
+           name_lower != 'licence':
             continue
         if item.get('value'):
             value = item['value']
