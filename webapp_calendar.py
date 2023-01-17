@@ -173,6 +173,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
     if day_events:
         for event_post in day_events:
             event_time = None
+            event_time_markup = None
             event_end_time = None
             start_time_str = ''
             end_time_str = ''
