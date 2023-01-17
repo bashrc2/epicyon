@@ -1806,7 +1806,7 @@ def _get_content_license(post_json_object: {}) -> str:
             continue
         if item.get('value'):
             value = item['value']
-        if item.get('href'):
+        elif item.get('href'):
             value = item['href']
         else:
             continue
