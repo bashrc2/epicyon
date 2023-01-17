@@ -285,7 +285,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                        event_end_time_int_str.isdigit():
                         if int(event_end_time_int_str) > \
                            int(event_time_int_str):
-                            event_time = \
+                            event_time_markup = \
                                 '<time datetime="' + start_time_str + '">' + \
                                 event_time_markup + '</time> - ' + \
                                 '<time datetime="' + end_time_str + '">' + \
