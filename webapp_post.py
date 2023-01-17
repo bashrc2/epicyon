@@ -1799,11 +1799,14 @@ def _get_content_license(post_json_object: {}) -> str:
     for item in post_json_object['object']['attachment']:
         if not item.get('name'):
             continue
-        if not item.get('value'):
-            continue
         if item['name'] != 'license':
             continue
-        value = item['value']
+        if item.get('value'):
+            value = item['value']
+        if item.get('href'):
+            value = item['href']
+        else:
+            continue
         if '://' not in value:
             value = license_link_from_name(value)
         return value
