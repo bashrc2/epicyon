@@ -274,7 +274,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     event_class = 'calendar__day__event__public__rtl'
                 cal_item_class = 'calItemPublic'
             if event_time:
-                event_time = \
+                event_time_markup = \
                     '<time datetime="' + start_time_str + '">' + \
                     event_time + '</time>'
                 if event_time and event_end_time and \
@@ -287,13 +287,14 @@ def _html_calendar_day(person_cache: {}, translate: {},
                            int(event_time_int_str):
                             event_time = \
                                 '<time datetime="' + start_time_str + '">' + \
-                                event_time + '</time> - ' + \
+                                event_time_markup + '</time> - ' + \
                                 '<time datetime="' + end_time_str + '">' + \
                                 event_end_time + '</time>'
             if event_time and event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
-                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '<td class="calendar__day__time"><b>' + \
+                    event_time_markup + \
                     '</b></td><td class="' + event_class + '">' + \
                     '<span class="place">' + \
                     event_place + '</span><br>' + event_description + \
@@ -301,7 +302,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
             elif event_time and event_description and not event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
-                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '<td class="calendar__day__time"><b>' + \
+                    event_time_markup + \
                     '</b></td><td class="' + event_class + '">' + \
                     event_description + '</td>' + delete_button_str + '</tr>\n'
             elif not event_time and event_description and not event_place:
@@ -320,7 +322,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
             elif event_time and not event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
-                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '<td class="calendar__day__time"><b>' + \
+                    event_time_markup + \
                     '</b></td><td class="' + event_class + '">' + \
                     '<span class="place">' + \
                     event_place + '</span></td>' + \
