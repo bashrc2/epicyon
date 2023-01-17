@@ -1801,6 +1801,7 @@ def _get_content_license(post_json_object: {}) -> str:
             continue
         name_lower = item['name'].lower()
         if 'license' not in name_lower and \
+           'copyright' not in name_lower and \
            'licence' not in name_lower:
             continue
         if item.get('value'):
