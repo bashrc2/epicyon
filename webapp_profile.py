@@ -480,8 +480,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     if moved_to:
         new_nickname = get_nickname_from_actor(moved_to)
         new_domain, new_port = get_domain_from_actor(moved_to)
-        new_domain_full = get_full_domain(new_domain, new_port)
         if new_nickname and new_domain:
+            new_domain_full = get_full_domain(new_domain, new_port)
             html_str += \
                 '    <p>' + translate['New account'] + ': ' + \
                 '<a href="' + moved_to + '">@' + \
@@ -500,15 +500,18 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                     other_accounts_html += ' '
                 ctr += 1
                 alt_domain, _ = get_domain_from_actor(alt_actor)
-                other_accounts_html += \
-                    '<a href="' + alt_actor + \
-                    '" tabindex="1">' + alt_domain + '</a>'
+                if alt_domain:
+                    other_accounts_html += \
+                        '<a href="' + alt_actor + \
+                        '" tabindex="1">' + alt_domain + '</a>'
         elif isinstance(also_known_as, str):
             if also_known_as != actor:
                 ctr += 1
                 alt_domain, _ = get_domain_from_actor(also_known_as)
-                other_accounts_html += \
-                    '<a href="' + also_known_as + '">' + alt_domain + '</a>'
+                if alt_domain:
+                    other_accounts_html += \
+                        '<a href="' + also_known_as + '">' + \
+                        alt_domain + '</a>'
         other_accounts_html += '</p>\n'
         if ctr > 0:
             html_str += other_accounts_html
@@ -586,8 +589,8 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
     if moved_to:
         new_nickname = get_nickname_from_actor(moved_to)
         new_domain, new_port = get_domain_from_actor(moved_to)
-        new_domain_full = get_full_domain(new_domain, new_port)
         if new_nickname and new_domain:
+            new_domain_full = get_full_domain(new_domain, new_port)
             new_handle = new_nickname + '@' + new_domain_full
             html_str += '        <p>' + translate['New account'] + \
                 ': <a href="' + moved_to + '">@' + new_handle + '</a></p>\n'
@@ -604,15 +607,18 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
                     other_accounts_html += ' '
                 ctr += 1
                 alt_domain, _ = get_domain_from_actor(alt_actor)
-                other_accounts_html += \
-                    '<a href="' + alt_actor + \
-                    '" tabindex="1">' + alt_domain + '</a>'
+                if alt_domain:
+                    other_accounts_html += \
+                        '<a href="' + alt_actor + \
+                        '" tabindex="1">' + alt_domain + '</a>'
         elif isinstance(also_known_as, str):
             if also_known_as != actor:
                 ctr += 1
                 alt_domain, _ = get_domain_from_actor(also_known_as)
-                other_accounts_html += \
-                    '<a href="' + also_known_as + '">' + alt_domain + '</a>'
+                if alt_domain:
+                    other_accounts_html += \
+                        '<a href="' + also_known_as + '">' + \
+                        alt_domain + '</a>'
 
         other_accounts_html += '</p>\n'
         if ctr > 0:
@@ -2819,6 +2825,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
     if not follow_url_nickname:
         return ''
     follow_url_domain, follow_url_port = get_domain_from_actor(follow_url)
+    if not follow_url_domain:
+        return ''
     follow_url_domain_full = \
         get_full_domain(follow_url_domain, follow_url_port)
     title_str = '@' + follow_url_nickname + '@' + follow_url_domain_full

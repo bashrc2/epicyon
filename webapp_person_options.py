@@ -336,14 +336,18 @@ def html_person_options(default_timeline: str,
                     other_accounts_html += ' '
                 ctr += 1
                 alt_domain, _ = get_domain_from_actor(alt_actor)
+                if not alt_domain:
+                    continue
                 other_accounts_html += \
                     '<a href="' + alt_actor + '">' + alt_domain + '</a>'
         elif isinstance(also_known_as, str):
             if also_known_as != options_actor:
                 ctr += 1
                 alt_domain, _ = get_domain_from_actor(also_known_as)
-                other_accounts_html += \
-                    '<a href="' + also_known_as + '">' + alt_domain + '</a>'
+                if alt_domain:
+                    other_accounts_html += \
+                        '<a href="' + also_known_as + '">' + \
+                        alt_domain + '</a>'
         other_accounts_html += '</p>\n'
         if ctr > 0:
             options_str += other_accounts_html

@@ -760,8 +760,9 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
             if isinstance(item['object']['inReplyTo'], str):
                 post_domain, _ = \
                     get_domain_from_actor(item['object']['inReplyTo'])
-                if post_domain not in post_domains:
-                    post_domains.append(post_domain)
+                if post_domain:
+                    if post_domain not in post_domains:
+                        post_domains.append(post_domain)
 
         if item['object'].get('tag'):
             for tag_item in item['object']['tag']:
@@ -772,8 +773,9 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
                     if tag_item.get('href'):
                         post_domain, _ = \
                             get_domain_from_actor(tag_item['href'])
-                        if post_domain not in post_domains:
-                            post_domains.append(post_domain)
+                        if post_domain:
+                            if post_domain not in post_domains:
+                                post_domains.append(post_domain)
     return post_domains
 
 
@@ -818,6 +820,8 @@ def _get_posts_for_blocked_domains(base_dir: str,
             if isinstance(item['object']['inReplyTo'], str):
                 post_domain, _ = \
                     get_domain_from_actor(item['object']['inReplyTo'])
+                if not post_domain:
+                    continue
                 if is_blocked_domain(base_dir, post_domain):
                     if item['object'].get('url'):
                         url = item['object']['url']
@@ -837,6 +841,8 @@ def _get_posts_for_blocked_domains(base_dir: str,
                 if tag_type == 'mention' and tag_item.get('href'):
                     post_domain, _ = \
                         get_domain_from_actor(tag_item['href'])
+                    if not post_domain:
+                        continue
                     if is_blocked_domain(base_dir, post_domain):
                         if item['object'].get('url'):
                             url = item['object']['url']
@@ -1084,6 +1090,11 @@ def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
 def _attach_post_license(post_json_object: {},
                          content_license_url: str) -> None:
     """Attaches a license to each post
+    Also see:
+    https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-c118.md
+    NOTE: at present (Jan 2023) there is no consensus about how to
+    represent license information on ActivityPub posts, so this might
+    need to change if such a consensus appears.
     """
     post_json_object['attachment'].append({
         "type": "PropertyValue",
@@ -1285,7 +1296,15 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 end_date_str = end_date + 'T' + end_time + \
                     ':00' + strftime("%z", gmtime())
         else:
-            end_date_str = end_date + 'T12:00:00Z'
+            if not event_time:
+                end_date_str = end_date + 'T12:00:00Z'
+            else:
+                if event_time.endswith('Z'):
+                    end_date_str = end_date + 'T' + event_time
+                else:
+                    end_date_str = \
+                        end_date + 'T' + event_time + ':00' + \
+                        strftime("%z", gmtime())
 
     # get the starting date and time
     event_date_str = None

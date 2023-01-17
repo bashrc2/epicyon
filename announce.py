@@ -91,6 +91,9 @@ def outbox_announce(recent_posts_cache: {},
             print('WARN: no nickname found in ' + message_json['actor'])
             return False
         domain, _ = get_domain_from_actor(message_json['actor'])
+        if not domain:
+            print('WARN: no domain found in ' + message_json['actor'])
+            return False
         post_filename = locate_post(base_dir, nickname, domain,
                                     message_json['object'])
         if post_filename:
@@ -110,6 +113,9 @@ def outbox_announce(recent_posts_cache: {},
                 print('WARN: no nickname found in ' + message_json['actor'])
                 return False
             domain, _ = get_domain_from_actor(message_json['actor'])
+            if not domain:
+                print('WARN: no domain found in ' + message_json['actor'])
+                return False
             post_filename = locate_post(base_dir, nickname, domain,
                                         message_json['object']['object'])
             if post_filename:
@@ -187,8 +193,8 @@ def create_announce(session, base_dir: str, federation_list: [],
     group_account = False
     if has_users_path(object_url):
         announce_nickname = get_nickname_from_actor(object_url)
-        if announce_nickname:
-            announce_domain, announce_port = get_domain_from_actor(object_url)
+        announce_domain, announce_port = get_domain_from_actor(object_url)
+        if announce_nickname and announce_domain:
             if '/' + str(announce_nickname) + '/' in object_url:
                 announce_actor = \
                     object_url.split('/' + announce_nickname + '/')[0] + \

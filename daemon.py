@@ -679,29 +679,34 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.person_cache)
         reply_to_nickname = get_nickname_from_actor(in_reply_to)
         reply_to_domain, reply_to_port = get_domain_from_actor(in_reply_to)
-        reply_to_domain_full = get_full_domain(reply_to_domain, reply_to_port)
-        mentions_str = '@' + reply_to_nickname + '@' + reply_to_domain_full
+        message_json = None
+        if reply_to_nickname and reply_to_domain:
+            reply_to_domain_full = \
+                get_full_domain(reply_to_domain, reply_to_port)
+            mentions_str = '@' + reply_to_nickname + '@' + reply_to_domain_full
 
-        message_json = \
-            create_direct_message_post(self.server.base_dir, nickname,
-                                       self.server.domain, self.server.port,
-                                       self.server.http_prefix,
-                                       mentions_str + ' ' + answer,
-                                       False, False,
-                                       comments_enabled,
-                                       attach_image_filename,
-                                       media_type, image_description, city,
-                                       in_reply_to, in_reply_to_atom_uri,
-                                       subject, self.server.debug,
-                                       schedule_post,
-                                       event_date, event_time,
-                                       event_end_time,
-                                       location, self.server.system_language,
-                                       conversation_id,
-                                       self.server.low_bandwidth,
-                                       self.server.content_license_url,
-                                       languages_understood, False,
-                                       self.server.translate, buy_url)
+            message_json = \
+                create_direct_message_post(self.server.base_dir, nickname,
+                                           self.server.domain,
+                                           self.server.port,
+                                           self.server.http_prefix,
+                                           mentions_str + ' ' + answer,
+                                           False, False,
+                                           comments_enabled,
+                                           attach_image_filename,
+                                           media_type, image_description, city,
+                                           in_reply_to, in_reply_to_atom_uri,
+                                           subject, self.server.debug,
+                                           schedule_post,
+                                           event_date, event_time,
+                                           event_end_time,
+                                           location,
+                                           self.server.system_language,
+                                           conversation_id,
+                                           self.server.low_bandwidth,
+                                           self.server.content_license_url,
+                                           languages_understood, False,
+                                           self.server.translate, buy_url)
         if message_json:
             # NOTE: content and contentMap are not required, but we will keep
             # them in there so that the post does not get filtered out by
@@ -2082,6 +2087,8 @@ class PubServer(BaseHTTPRequestHandler):
                         for to_actor in message_json['object']['to']:
                             to_domain, to_port = \
                                 get_domain_from_actor(to_actor)
+                            if not to_domain:
+                                continue
                             to_domain_full = \
                                 get_full_domain(to_domain, to_port)
                             if self.server.domain_full != to_domain_full:
@@ -2095,14 +2102,16 @@ class PubServer(BaseHTTPRequestHandler):
                     local_actor = message_json['object']['attributedTo']
                     local_domain, local_port = \
                         get_domain_from_actor(local_actor)
-                    local_domain_full = \
-                        get_full_domain(local_domain, local_port)
-                    if self.server.domain_full != local_domain_full:
-                        print("REJECT: inbox local only post isn't local " +
-                              str(message_json))
-                        self._400()
-                        self.server.postreq_busy = False
-                        return 3
+                    if local_domain:
+                        local_domain_full = \
+                            get_full_domain(local_domain, local_port)
+                        if self.server.domain_full != local_domain_full:
+                            print("REJECT: " +
+                                  "inbox local only post isn't local " +
+                                  str(message_json))
+                            self._400()
+                            self.server.postreq_busy = False
+                            return 3
 
         # actor should look like a url
         if debug:
@@ -2130,6 +2139,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         message_domain, _ = \
             get_domain_from_actor(message_json['actor'])
+        if not message_domain:
+            print('INBOX: POST from unknown domain ' + message_json['actor'])
+            self._400()
+            self.server.postreq_busy = False
+            return 3
 
         self.server.blocked_cache_last_updated = \
             update_blocked_cache(self.server.base_dir,
@@ -2609,8 +2623,11 @@ class PubServer(BaseHTTPRequestHandler):
                             if search_nickname:
                                 search_domain, _ = \
                                     get_domain_from_actor(search_handle)
-                                search_handle = \
-                                    search_nickname + '@' + search_domain
+                                if search_domain:
+                                    search_handle = \
+                                        search_nickname + '@' + search_domain
+                                else:
+                                    search_handle = ''
                             else:
                                 search_handle = ''
                         if '@' not in search_handle:
@@ -2622,8 +2639,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 if search_nickname:
                                     search_domain, _ = \
                                         get_domain_from_actor(search_handle)
-                                    search_handle = \
-                                        search_nickname + '@' + search_domain
+                                    if search_domain:
+                                        search_handle = \
+                                            search_nickname + '@' + \
+                                            search_domain
+                                    else:
+                                        search_handle = ''
                                 else:
                                     search_handle = ''
                         if '@' not in search_handle:
@@ -2713,8 +2734,9 @@ class PubServer(BaseHTTPRequestHandler):
                         # https://domain
                         block_domain, block_port = \
                             get_domain_from_actor(moderation_domain)
-                        full_block_domain = \
-                            get_full_domain(block_domain, block_port)
+                        if block_domain:
+                            full_block_domain = \
+                                get_full_domain(block_domain, block_port)
                     if '@' in moderation_domain:
                         # nick@domain or *@domain
                         full_block_domain = \
@@ -2743,8 +2765,9 @@ class PubServer(BaseHTTPRequestHandler):
                         # https://domain
                         block_domain, block_port = \
                             get_domain_from_actor(moderation_domain)
-                        full_block_domain = \
-                            get_full_domain(block_domain, block_port)
+                        if block_domain:
+                            full_block_domain = \
+                                get_full_domain(block_domain, block_port)
                     if '@' in moderation_domain:
                         # nick@domain or *@domain
                         full_block_domain = moderation_domain.split('@')[1]
@@ -3144,6 +3167,16 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         options_domain, options_port = get_domain_from_actor(options_actor)
+        if not options_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
+                origin_path_str = 'http://' + onion_domain + users_path
+            elif (calling_domain.endswith('.i2p') and i2p_domain):
+                origin_path_str = 'http://' + i2p_domain + users_path
+            print('WARN: unable to find domain in ' + options_actor)
+            self._redirect_headers(origin_path_str, cookie, calling_domain)
+            self.server.postreq_busy = False
+            return
+
         options_domain_full = get_full_domain(options_domain, options_port)
         if chooser_nickname == options_nickname and \
            options_domain == domain and \
@@ -3942,13 +3975,13 @@ class PubServer(BaseHTTPRequestHandler):
             if '&' in following_actor:
                 following_actor = following_actor.split('&')[0]
             following_nickname = get_nickname_from_actor(following_actor)
-            if not following_nickname:
+            following_domain, following_port = \
+                get_domain_from_actor(following_actor)
+            if not following_nickname or not following_domain:
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
                 return
-            following_domain, following_port = \
-                get_domain_from_actor(following_actor)
             following_domain_full = \
                 get_full_domain(following_domain, following_port)
             if follower_nickname == following_nickname and \
@@ -4051,13 +4084,13 @@ class PubServer(BaseHTTPRequestHandler):
             if '&' in following_actor:
                 following_actor = following_actor.split('&')[0]
             following_nickname = get_nickname_from_actor(following_actor)
-            if not following_nickname:
+            following_domain, following_port = \
+                get_domain_from_actor(following_actor)
+            if not following_nickname or not following_domain:
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
                 return
-            following_domain, following_port = \
-                get_domain_from_actor(following_actor)
             if follower_nickname == following_nickname and \
                following_domain == domain and \
                following_port == port:
@@ -4128,19 +4161,19 @@ class PubServer(BaseHTTPRequestHandler):
             if '&' in blocking_actor:
                 blocking_actor = blocking_actor.split('&')[0]
             blocking_nickname = get_nickname_from_actor(blocking_actor)
-            if not blocking_nickname:
+            blocking_domain, blocking_port = \
+                get_domain_from_actor(blocking_actor)
+            if not blocking_nickname or not blocking_domain:
                 if calling_domain.endswith('.onion') and onion_domain:
                     origin_path_str = 'http://' + onion_domain + users_path
                 elif (calling_domain.endswith('.i2p') and i2p_domain):
                     origin_path_str = 'http://' + i2p_domain + users_path
-                print('WARN: unable to find blocked nickname in ' +
+                print('WARN: unable to find blocked nickname or domain in ' +
                       blocking_actor)
                 self._redirect_headers(origin_path_str,
                                        cookie, calling_domain)
                 self.server.postreq_busy = False
                 return
-            blocking_domain, blocking_port = \
-                get_domain_from_actor(blocking_actor)
             blocking_domain_full = \
                 get_full_domain(blocking_domain, blocking_port)
             if follower_nickname == blocking_nickname and \
@@ -4218,18 +4251,19 @@ class PubServer(BaseHTTPRequestHandler):
             if '&' in blocking_actor:
                 blocking_actor = blocking_actor.split('&')[0]
             blocking_nickname = get_nickname_from_actor(blocking_actor)
-            if not blocking_nickname:
+            blocking_domain, blocking_port = \
+                get_domain_from_actor(blocking_actor)
+            if not blocking_nickname or not blocking_domain:
                 if calling_domain.endswith('.onion') and onion_domain:
                     origin_path_str = 'http://' + onion_domain + users_path
                 elif (calling_domain.endswith('.i2p') and i2p_domain):
                     origin_path_str = 'http://' + i2p_domain + users_path
-                print('WARN: unable to find nickname in ' + blocking_actor)
+                print('WARN: unable to find nickname or domain in ' +
+                      blocking_actor)
                 self._redirect_headers(origin_path_str,
                                        cookie, calling_domain)
                 self.server.postreq_busy = False
                 return
-            blocking_domain, blocking_port = \
-                get_domain_from_actor(blocking_actor)
             blocking_domain_full = \
                 get_full_domain(blocking_domain, blocking_port)
             if blocker_nickname == blocking_nickname and \
@@ -4310,7 +4344,9 @@ class PubServer(BaseHTTPRequestHandler):
             if '&' in blocking_actor:
                 blocking_actor = blocking_actor.split('&')[0]
             blocking_nickname = get_nickname_from_actor(blocking_actor)
-            if not blocking_nickname:
+            blocking_domain, blocking_port = \
+                get_domain_from_actor(blocking_actor)
+            if not blocking_nickname or not blocking_domain:
                 if calling_domain.endswith('.onion') and onion_domain:
                     origin_path_str = 'http://' + onion_domain + users_path
                 elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -4320,8 +4356,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        cookie, calling_domain)
                 self.server.postreq_busy = False
                 return
-            blocking_domain, blocking_port = \
-                get_domain_from_actor(blocking_actor)
             blocking_domain_full = \
                 get_full_domain(blocking_domain, blocking_port)
             if blocker_nickname == blocking_nickname and \
@@ -4692,13 +4726,13 @@ class PubServer(BaseHTTPRequestHandler):
                     # get the actor
                     if not has_users_path(search_str):
                         search_nickname = get_nickname_from_actor(search_str)
-                        if not search_nickname:
+                        search_domain, search_port = \
+                            get_domain_from_actor(search_str)
+                        if not search_nickname or not search_domain:
                             self.send_response(400)
                             self.end_headers()
                             self.server.postreq_busy = False
                             return
-                        search_domain, search_port = \
-                            get_domain_from_actor(search_str)
                         search_domain_full = \
                             get_full_domain(search_domain, search_port)
                         actor = \
@@ -5155,9 +5189,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in item_id:
                     item_id = item_id.split('&')[0]
                 share_nickname = get_nickname_from_actor(share_actor)
-                if share_nickname:
-                    share_domain, _ = \
-                        get_domain_from_actor(share_actor)
+                share_domain, _ = \
+                    get_domain_from_actor(share_actor)
+                if share_nickname and share_domain:
                     remove_shared_item(base_dir,
                                        share_nickname, share_domain, item_id,
                                        'shares')
@@ -5227,9 +5261,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in item_id:
                     item_id = item_id.split('&')[0]
                 share_nickname = get_nickname_from_actor(share_actor)
-                if share_nickname:
-                    share_domain, _ = \
-                        get_domain_from_actor(share_actor)
+                share_domain, _ = \
+                    get_domain_from_actor(share_actor)
+                if share_nickname and share_domain:
                     remove_shared_item(base_dir,
                                        share_nickname, share_domain, item_id,
                                        'wanted')
@@ -9730,11 +9764,11 @@ class PubServer(BaseHTTPRequestHandler):
         following_handle = path.split('/followapprove=')[1]
         if '://' in following_handle:
             handle_nickname = get_nickname_from_actor(following_handle)
-            if not handle_nickname:
-                self._404()
-                return
             handle_domain, handle_port = \
                 get_domain_from_actor(following_handle)
+            if not handle_nickname or not handle_domain:
+                self._404()
+                return
             following_handle = \
                 handle_nickname + '@' + \
                 get_full_domain(handle_domain, handle_port)
@@ -9912,11 +9946,11 @@ class PubServer(BaseHTTPRequestHandler):
         following_handle = path.split('/followdeny=')[1]
         if '://' in following_handle:
             handle_nickname = get_nickname_from_actor(following_handle)
-            if not handle_nickname:
-                self._404()
-                return
             handle_domain, handle_port = \
                 get_domain_from_actor(following_handle)
+            if not handle_nickname or not handle_domain:
+                self._404()
+                return
             following_handle = \
                 handle_nickname + '@' + \
                 get_full_domain(handle_domain, handle_port)

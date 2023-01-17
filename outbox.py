@@ -275,6 +275,8 @@ def post_message_to_outbox(session, translate: {},
                 if isinstance(message_json['object']['to'], list):
                     for to_actor in message_json['object']['to']:
                         to_domain, to_port = get_domain_from_actor(to_actor)
+                        if not to_domain:
+                            continue
                         to_domain_full = get_full_domain(to_domain, to_port)
                         if domain_full != to_domain_full:
                             print("REJECT: local only post isn't local " +
@@ -283,11 +285,13 @@ def post_message_to_outbox(session, translate: {},
                 # check that the sender is local
                 local_actor = message_json['object']['attributedTo']
                 local_domain, local_port = get_domain_from_actor(local_actor)
-                local_domain_full = get_full_domain(local_domain, local_port)
-                if domain_full != local_domain_full:
-                    print("REJECT: local only post isn't local " +
-                          str(message_json))
-                    return False
+                if local_domain:
+                    local_domain_full = \
+                        get_full_domain(local_domain, local_port)
+                    if domain_full != local_domain_full:
+                        print("REJECT: local only post isn't local " +
+                              str(message_json))
+                        return False
 
         if is_quote_toot(message_json, ''):
             print('REJECT: POST quote toot ' + str(message_json))
@@ -357,11 +361,12 @@ def post_message_to_outbox(session, translate: {},
                     return False
 
         test_domain, test_port = get_domain_from_actor(message_json['actor'])
-        test_domain = get_full_domain(test_domain, test_port)
-        if is_blocked_domain(base_dir, test_domain):
-            if debug:
-                print('DEBUG: domain is blocked: ' + message_json['actor'])
-            return False
+        if test_domain:
+            test_domain = get_full_domain(test_domain, test_port)
+            if is_blocked_domain(base_dir, test_domain):
+                if debug:
+                    print('DEBUG: domain is blocked: ' + message_json['actor'])
+                return False
         # replace youtube, so that google gets less tracking data
         replace_you_tube(message_json, yt_replace_domain, system_language)
         # replace twitter, so that twitter posts can be shown without

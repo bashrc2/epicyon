@@ -113,12 +113,14 @@ def _reactionpost(recent_posts_cache: {},
             reaction_post_nickname = get_nickname_from_actor(object_url)
             reaction_post_domain, reaction_post_port = \
                 get_domain_from_actor(object_url)
-            if '/' + str(reaction_post_nickname) + '/' in object_url:
-                actor_reaction = \
-                    object_url.split('/' + reaction_post_nickname + '/')[0] + \
-                    '/' + reaction_post_nickname
-                group_account = \
-                    has_group_type(base_dir, actor_reaction, person_cache)
+            if reaction_post_domain:
+                if '/' + str(reaction_post_nickname) + '/' in object_url:
+                    actor_reaction = \
+                        object_url.split('/' +
+                                         reaction_post_nickname + '/')[0] + \
+                        '/' + reaction_post_nickname
+                    group_account = \
+                        has_group_type(base_dir, actor_reaction, person_cache)
 
     if reaction_post_nickname:
         post_filename = locate_post(base_dir, nickname, domain, object_url)
@@ -595,6 +597,8 @@ def html_emoji_reactions(post_json_object: {}, interactive: bool,
         if not emoji_nickname:
             return ''
         emoji_domain, _ = get_domain_from_actor(emoji_actor)
+        if not emoji_domain:
+            return ''
         emoji_handle = emoji_nickname + '@' + emoji_domain
         if emoji_actor == actor:
             if emoji_content not in reacted_to_by_this_actor:

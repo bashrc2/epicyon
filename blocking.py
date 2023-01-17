@@ -814,6 +814,9 @@ def outbox_block(base_dir: str, nickname: str, domain: str,
         return False
     domain_blocked, port_blocked = \
         get_domain_from_actor(message_json['object'])
+    if not domain_blocked:
+        print('WARN: unable to find domain in ' + message_json['object'])
+        return False
     domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
 
     add_block(base_dir, nickname, domain,
@@ -872,6 +875,10 @@ def outbox_undo_block(base_dir: str, nickname: str, domain: str,
         return
     domain_object = message_json['object']['object']
     domain_blocked, port_blocked = get_domain_from_actor(domain_object)
+    if not domain_blocked:
+        print('WARN: unable to find domain in ' +
+              message_json['object']['object'])
+        return
     domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
 
     remove_block(base_dir, nickname, domain,

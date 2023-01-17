@@ -1386,7 +1386,11 @@ def _desktop_show_follow_requests(follow_requests_json: {},
     print('')
     for item in follow_requests_json['orderedItems']:
         handle_nickname = get_nickname_from_actor(item)
+        if not handle_nickname:
+            continue
         handle_domain, handle_port = get_domain_from_actor(item)
+        if not handle_domain:
+            continue
         handle_domain_full = \
             get_full_domain(handle_domain, handle_port)
         print(indent + '  👤 ' +
@@ -1412,7 +1416,11 @@ def _desktop_show_following(following_json: {}, translate: {},
     print('')
     for item in following_json['orderedItems']:
         handle_nickname = get_nickname_from_actor(item)
+        if not handle_nickname:
+            continue
         handle_domain, handle_port = get_domain_from_actor(item)
+        if not handle_domain:
+            continue
         handle_domain_full = \
             get_full_domain(handle_domain, handle_port)
         print(indent + '  👤 ' +

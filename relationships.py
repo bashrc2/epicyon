@@ -208,6 +208,8 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
             actor_str = actor_str.replace('.json', '').replace('#', '/')
             nickname = get_nickname_from_actor(actor_str)
             domain, port = get_domain_from_actor(actor_str)
+            if not domain:
+                continue
             domain_full = get_full_domain(domain, port)
             handle = nickname + '@' + domain_full
             actors_dict[handle] = orig_str

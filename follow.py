@@ -191,6 +191,9 @@ def is_following_actor(base_dir: str,
         print('WARN: unable to find nickname in ' + actor)
         return False
     following_domain, following_port = get_domain_from_actor(actor)
+    if not following_domain:
+        print('WARN: unable to find domain in ' + actor)
+        return False
     following_handle = \
         get_full_domain(following_nickname + '@' + following_domain,
                         following_port)
@@ -1437,6 +1440,10 @@ def outbox_undo_follow(base_dir: str, message_json: {}, debug: bool) -> None:
         return
     domain_follower, port_follower = \
         get_domain_from_actor(message_json['object']['actor'])
+    if not domain_follower:
+        print('WARN: unable to find domain in ' +
+              message_json['object']['actor'])
+        return
     domain_follower_full = get_full_domain(domain_follower, port_follower)
 
     nickname_following = \
@@ -1447,6 +1454,10 @@ def outbox_undo_follow(base_dir: str, message_json: {}, debug: bool) -> None:
         return
     domain_following, port_following = \
         get_domain_from_actor(message_json['object']['object'])
+    if not domain_following:
+        print('WARN: unable to find domain in ' +
+              message_json['object']['object'])
+        return
     domain_following_full = get_full_domain(domain_following, port_following)
 
     group_account = \

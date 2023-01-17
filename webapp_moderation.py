@@ -119,6 +119,8 @@ def html_account_info(translate: {},
     if not search_nickname:
         return ''
     search_domain, search_port = get_domain_from_actor(search_handle)
+    if not search_domain:
+        return ''
 
     search_handle = search_nickname + '@' + search_domain
     search_actor = \
@@ -160,6 +162,8 @@ def html_account_info(translate: {},
         if not follower_nickname:
             return ''
         follower_domain, follower_port = get_domain_from_actor(follower_actor)
+        if not follower_domain:
+            return ''
         follower_domain_full = get_full_domain(follower_domain, follower_port)
         if is_blocked(base_dir, nickname, domain,
                       follower_nickname, follower_domain_full):
@@ -177,6 +181,8 @@ def html_account_info(translate: {},
             return ''
         following_domain, following_port = \
             get_domain_from_actor(following_actor)
+        if not following_domain:
+            return ''
         following_domain_full = \
             get_full_domain(following_domain, following_port)
         if is_blocked(base_dir, nickname, domain,
@@ -242,6 +248,8 @@ def html_account_info(translate: {},
             if not following_nickname:
                 return ''
             following_domain, following_port = get_domain_from_actor(actor)
+            if not following_domain:
+                return ''
             following_domain_full = \
                 get_full_domain(following_domain, following_port)
             info_form += '<a href="' + actor + '" ' + \
@@ -263,6 +271,8 @@ def html_account_info(translate: {},
             if not follower_nickname:
                 return ''
             follower_domain, follower_port = get_domain_from_actor(actor)
+            if not follower_domain:
+                return ''
             follower_domain_full = \
                 get_full_domain(follower_domain, follower_port)
             info_form += '<a href="' + actor + '" ' + \

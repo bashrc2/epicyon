@@ -674,12 +674,14 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                     post_json_object['object']['inReplyTo']
                 reply_domain, _ = \
                     get_domain_from_actor(in_reply_to)
-                if is_blocked_domain(base_dir, reply_domain, blocked_cache):
-                    if debug:
-                        print('WARN: post contains reply from ' +
-                              str(actor) +
-                              ' to a blocked domain: ' + reply_domain)
-                    return None
+                if reply_domain:
+                    if is_blocked_domain(base_dir, reply_domain,
+                                         blocked_cache):
+                        if debug:
+                            print('WARN: post contains reply from ' +
+                                  str(actor) +
+                                  ' to a blocked domain: ' + reply_domain)
+                        return None
 
                 reply_nickname = \
                     get_nickname_from_actor(in_reply_to)
@@ -974,6 +976,10 @@ def _receive_undo_follow(base_dir: str, message_json: {},
         return False
     domain_follower, port_follower = \
         get_domain_from_actor(message_json['object']['actor'])
+    if not domain_follower:
+        print('WARN: unable to find domain in ' +
+              message_json['object']['actor'])
+        return False
     domain_follower_full = get_full_domain(domain_follower, port_follower)
 
     nickname_following = \
@@ -984,6 +990,10 @@ def _receive_undo_follow(base_dir: str, message_json: {},
         return False
     domain_following, port_following = \
         get_domain_from_actor(message_json['object']['object'])
+    if not domain_following:
+        print('WARN: unable to find domain in ' +
+              message_json['object']['object'])
+        return False
     if onion_domain:
         if domain_following.endswith(onion_domain):
             domain_following = domain
@@ -1149,46 +1159,51 @@ def _person_receive_update(base_dir: str,
             print('actor updated for ' + person_json['id'])
 
     if person_json.get('movedTo'):
+        prev_domain_full = None
         prev_domain, prev_port = get_domain_from_actor(person_json['id'])
-        prev_domain_full = get_full_domain(prev_domain, prev_port)
+        if prev_domain:
+            prev_domain_full = get_full_domain(prev_domain, prev_port)
         prev_nickname = get_nickname_from_actor(person_json['id'])
+        new_domain = None
         new_domain, new_port = get_domain_from_actor(person_json['movedTo'])
-        new_domain_full = get_full_domain(new_domain, new_port)
+        if new_domain:
+            new_domain_full = get_full_domain(new_domain, new_port)
         new_nickname = get_nickname_from_actor(person_json['movedTo'])
 
-        new_actor = prev_nickname + '@' + prev_domain_full + ' ' + \
-            new_nickname + '@' + new_domain_full
-        refollow_str = ''
-        refollow_filename = base_dir + '/accounts/actors_moved.txt'
-        refollow_file_exists = False
-        if os.path.isfile(refollow_filename):
-            try:
-                with open(refollow_filename, 'r',
-                          encoding='utf-8') as fp_refollow:
-                    refollow_str = fp_refollow.read()
-                    refollow_file_exists = True
-            except OSError:
-                print('EX: unable to read ' + refollow_filename)
-        if new_actor not in refollow_str:
-            refollow_type = 'w+'
-            if refollow_file_exists:
-                refollow_type = 'a+'
-            try:
-                with open(refollow_filename, refollow_type,
-                          encoding='utf-8') as fp_refollow:
-                    fp_refollow.write(new_actor + '\n')
-            except OSError:
-                print('EX: unable to write to ' +
-                      refollow_filename)
-            prev_avatar_url = \
-                get_person_avatar_url(base_dir, person_json['id'],
-                                      person_cache)
-            if prev_avatar_url is None:
-                prev_avatar_url = ''
-            _notify_moved(base_dir, domain_full,
-                          prev_nickname + '@' + prev_domain_full,
-                          new_nickname + '@' + new_domain_full,
-                          person_json['id'], prev_avatar_url, http_prefix)
+        if prev_domain_full and new_domain:
+            new_actor = prev_nickname + '@' + prev_domain_full + ' ' + \
+                new_nickname + '@' + new_domain_full
+            refollow_str = ''
+            refollow_filename = base_dir + '/accounts/actors_moved.txt'
+            refollow_file_exists = False
+            if os.path.isfile(refollow_filename):
+                try:
+                    with open(refollow_filename, 'r',
+                              encoding='utf-8') as fp_refollow:
+                        refollow_str = fp_refollow.read()
+                        refollow_file_exists = True
+                except OSError:
+                    print('EX: unable to read ' + refollow_filename)
+            if new_actor not in refollow_str:
+                refollow_type = 'w+'
+                if refollow_file_exists:
+                    refollow_type = 'a+'
+                try:
+                    with open(refollow_filename, refollow_type,
+                              encoding='utf-8') as fp_refollow:
+                        fp_refollow.write(new_actor + '\n')
+                except OSError:
+                    print('EX: unable to write to ' +
+                          refollow_filename)
+                prev_avatar_url = \
+                    get_person_avatar_url(base_dir, person_json['id'],
+                                          person_cache)
+                if prev_avatar_url is None:
+                    prev_avatar_url = ''
+                _notify_moved(base_dir, domain_full,
+                              prev_nickname + '@' + prev_domain_full,
+                              new_nickname + '@' + new_domain_full,
+                              person_json['id'], prev_avatar_url, http_prefix)
 
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
@@ -1476,9 +1491,9 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
             if debug:
                 print('Request to update actor: ' + str(message_json))
             update_nickname = get_nickname_from_actor(message_json['actor'])
-            if update_nickname:
-                update_domain, update_port = \
-                    get_domain_from_actor(message_json['actor'])
+            update_domain, update_port = \
+                get_domain_from_actor(message_json['actor'])
+            if update_nickname and update_domain:
                 if _person_receive_update(base_dir,
                                           domain, port,
                                           update_nickname, update_domain,
@@ -2648,6 +2663,9 @@ def _receive_announce(recent_posts_cache: {},
         print('WARN: _receive_announce no actor_nickname')
         return False
     actor_domain, _ = get_domain_from_actor(message_json['actor'])
+    if not actor_domain:
+        print('WARN: _receive_announce no actor_domain')
+        return False
     if is_blocked(base_dir, nickname, domain, actor_nickname, actor_domain):
         print('Receive announce blocked for actor: ' +
               actor_nickname + '@' + actor_domain)
@@ -2666,6 +2684,9 @@ def _receive_announce(recent_posts_cache: {},
         print('WARN: _receive_announce no announced_actor_nickname')
         return False
     announced_actor_domain, _ = get_domain_from_actor(message_json['object'])
+    if not announced_actor_domain:
+        print('WARN: _receive_announce no announced_actor_domain')
+        return False
     if is_blocked(base_dir, nickname, domain,
                   announced_actor_nickname, announced_actor_domain):
         print('Receive announce object blocked for actor: ' +
@@ -3588,6 +3609,8 @@ def _inbox_update_calendar(base_dir: str, handle: str,
     if not actor_nickname:
         return
     actor_domain, _ = get_domain_from_actor(actor)
+    if not actor_domain:
+        return
     handle_nickname = handle.split('@')[0]
     handle_domain = handle.split('@')[1]
     if not receiving_calendar_events(base_dir,
@@ -4086,6 +4109,8 @@ def _low_frequency_post_notification(base_dir: str, http_prefix: str,
     if not from_nickname:
         return
     from_domain, from_port = get_domain_from_actor(attributed_to)
+    if not from_domain:
+        return
     from_domain_full = get_full_domain(from_domain, from_port)
     if notify_when_person_posts(base_dir, nickname, domain,
                                 from_nickname, from_domain_full):
@@ -4116,6 +4141,8 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
     if not from_nickname:
         return 0
     from_domain, from_port = get_domain_from_actor(attributed_to)
+    if not from_domain:
+        return 0
     from_domain_full = get_full_domain(from_domain, from_port)
     if receive_git_patch(base_dir, nickname, domain,
                          json_obj['type'], json_obj['summary'],
@@ -5144,6 +5171,11 @@ def _receive_follow_request(session, session_onion, session_i2p,
                   'users/profile/author/accounts/channel missing from actor')
         return False
     domain, temp_port = get_domain_from_actor(message_json['actor'])
+    if not domain:
+        if debug:
+            print('DEBUG: receive follow request actor without domain ' +
+                  message_json['actor'])
+        return False
     from_port = port
     domain_full = get_full_domain(domain, temp_port)
     if temp_port:
@@ -5167,6 +5199,11 @@ def _receive_follow_request(session, session_onion, session_i2p,
                   'not found within object')
         return False
     domain_to_follow, temp_port = get_domain_from_actor(message_json['object'])
+    if not domain_to_follow:
+        if debug:
+            print('DEBUG: receive follow request no domain found in object ' +
+                  message_json['object'])
+        return False
     # switch to the local domain rather than its onion or i2p version
     if onion_domain:
         if domain_to_follow.endswith(onion_domain):
@@ -5613,12 +5650,13 @@ def run_inbox_queue(server,
         if queue_json.get('actor'):
             if isinstance(queue_json['actor'], str):
                 sender_domain, _ = get_domain_from_actor(queue_json['actor'])
-                if sender_domain.endswith('.onion') and \
-                   session_onion and proxy_type != 'tor':
-                    curr_session = session_onion
-                elif (sender_domain.endswith('.i2p') and
-                      session_i2p and proxy_type != 'i2p'):
-                    curr_session = session_i2p
+                if sender_domain:
+                    if sender_domain.endswith('.onion') and \
+                       session_onion and proxy_type != 'tor':
+                        curr_session = session_onion
+                    elif (sender_domain.endswith('.i2p') and
+                          session_i2p and proxy_type != 'i2p'):
+                        curr_session = session_i2p
 
         if debug and queue_json.get('actor'):
             print('Obtaining public key for actor ' + queue_json['actor'])

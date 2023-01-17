@@ -49,6 +49,8 @@ def html_calendar_delete_confirm(translate: {}, base_dir: str,
         return None
     actor = local_actor_url(http_prefix, nickname, domain_full)
     domain, _ = get_domain_from_actor(actor)
+    if not domain:
+        return None
     message_id = actor + '/statuses/' + post_id
 
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -171,6 +173,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
     if day_events:
         for event_post in day_events:
             event_time = None
+            event_time_markup = None
             event_end_time = None
             start_time_str = ''
             end_time_str = ''
@@ -272,20 +275,27 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     event_class = 'calendar__day__event__public__rtl'
                 cal_item_class = 'calItemPublic'
             if event_time:
-                if event_end_time:
-                    event_time = \
-                        '<time datetime="' + start_time_str + '">' + \
-                        event_time + '</time> - ' + \
-                        '<time datetime="' + end_time_str + '">' + \
-                        event_end_time + '</time>'
-                else:
-                    event_time = \
-                        '<time datetime="' + start_time_str + '">' + \
-                        event_time + '</time>'
+                event_time_markup = \
+                    '<time datetime="' + start_time_str + '">' + \
+                    event_time + '</time>'
+                if event_time and event_end_time and \
+                   start_time_str != end_time_str:
+                    event_time_int_str = event_time.replace(':', '')
+                    event_end_time_int_str = event_end_time.replace(':', '')
+                    if event_time_int_str.isdigit() and \
+                       event_end_time_int_str.isdigit():
+                        if int(event_end_time_int_str) > \
+                           int(event_time_int_str):
+                            event_time_markup = \
+                                '<time datetime="' + start_time_str + '">' + \
+                                event_time_markup + '</time> - ' + \
+                                '<time datetime="' + end_time_str + '">' + \
+                                event_end_time + '</time>'
             if event_time and event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
-                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '<td class="calendar__day__time"><b>' + \
+                    event_time_markup + \
                     '</b></td><td class="' + event_class + '">' + \
                     '<span class="place">' + \
                     event_place + '</span><br>' + event_description + \
@@ -293,7 +303,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
             elif event_time and event_description and not event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
-                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '<td class="calendar__day__time"><b>' + \
+                    event_time_markup + \
                     '</b></td><td class="' + event_class + '">' + \
                     event_description + '</td>' + delete_button_str + '</tr>\n'
             elif not event_time and event_description and not event_place:
@@ -312,7 +323,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
             elif event_time and not event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
-                    '<td class="calendar__day__time"><b>' + event_time + \
+                    '<td class="calendar__day__time"><b>' + \
+                    event_time_markup + \
                     '</b></td><td class="' + event_class + '">' + \
                     '<span class="place">' + \
                     event_place + '</span></td>' + \
