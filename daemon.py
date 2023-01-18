@@ -12236,6 +12236,9 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         post_id = path.split('?convthread=')[1].strip()
         post_id = post_id.replace('--', '/')
+        if post_id.startswith('/users/'):
+            instance_url = self._get_instance_url(calling_domain)
+            post_id = instance_url + post_id
         nickname = path.split('/users/')[1]
         if '?convthread=' in nickname:
             nickname = nickname.split('?convthread=')[0]

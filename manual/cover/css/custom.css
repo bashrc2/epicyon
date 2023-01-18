@@ -35,7 +35,7 @@ body {
 }
 
 section {
-	width: 50%;
+	width: 100%;
 }
 
 img {
@@ -50,7 +50,7 @@ img {
 	align-items: center;
 	flex-wrap: wrap;
 	padding: 5% 10%;
-	background-color: #f89e9e;
+	background-color: darkgrey;
 }
 
 .front {
@@ -73,7 +73,7 @@ img {
 	background-image: url(../img/front.jpg);
 	background-repeat: no-repeat;
 	background-size: cover;
-	box-shadow: 15px 10px 15px #925656;
+	box-shadow: 15px 10px 15px lightgrey;
 }
 
 .sidebar {
@@ -141,6 +141,7 @@ img {
 
 .front .footer {
 	text-transform: uppercase;
+	color: black;
 	font-size: 8px;
 	margin: 30px;
 	font-weight: 900;
