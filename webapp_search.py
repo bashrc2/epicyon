@@ -1082,7 +1082,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                debug: bool, buy_sites: {}) -> str:
     """Show a page containing search results for a remote hashtag
     """
-    hashtag = hashtag_url.split('/')[-1]
+    hashtag = urllib.parse.unquote(hashtag_url.split('/')[-1])
 
     profile_str = 'https://www.w3.org/ns/activitystreams'
     as_header = {

@@ -18716,7 +18716,6 @@ class PubServer(BaseHTTPRequestHandler):
             if ';' in hashtag_url:
                 hashtag_url = hashtag_url.split(';')[0]
             hashtag_url = hashtag_url.replace('--', '/')
-            hashtag_url = urllib.parse.unquote_plus(hashtag_url)
 
             page_number = 1
             if ';page=' in self.path:
