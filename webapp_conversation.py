@@ -99,10 +99,7 @@ def html_conversation_view(post_id: str,
                                     minimize_all_images, None,
                                     buy_sites)
         if post_str:
-            # check for "HTTP/1.1 303 See Other Server"
-            if 'X-AP-Instance-ID' not in post_str:
-                print('DEBUG: post_str = ' + post_str)
-                conv_str += text_mode_separator + separator_str + post_str
+            conv_str += text_mode_separator + separator_str + post_str
 
     conv_str += text_mode_separator + html_footer()
     return conv_str
