@@ -302,6 +302,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             ':' + str(rand_min).zfill(2) + ':' + str(rand_sec).zfill(2)
         pub_date = pub_date.replace(':00:00', replace_time_str)
 
+    orig_pub_date = pub_date
     if pub_date.endswith('+:'):
         pub_date = pub_date.replace('+:', 'Z')
 
@@ -370,7 +371,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
         if not pub_date_str.endswith('+00:00'):
             pub_date_str += '+00:00'
     else:
-        print('WARN: unrecognized date format: ' + pub_date)
+        print('WARN: unrecognized date format: ' + orig_pub_date)
 
     return pub_date_str
 
