@@ -117,7 +117,13 @@ def sign_post_headers(date_str: str, private_key_pem: str,
     # strip the trailing linefeed
     signed_header_text = signed_header_text.rstrip('\n')
     # signed_header_text.encode('ascii') matches
-    header_digest = get_sha_256(signed_header_text.encode('ascii'))
+    try:
+        sig_header_encoded = signed_header_text.encode('ascii')
+    except UnicodeEncodeError:
+        sig_header_encoded = signed_header_text
+        print('WARN: sign_post_headers unable to ascii encode ' +
+              signed_header_text)
+    header_digest = get_sha_256(sig_header_encoded)
     # print('header_digest2: ' + str(header_digest))
 
     # Sign the digest

@@ -12285,7 +12285,6 @@ class PubServer(BaseHTTPRequestHandler):
                                 msglen, calling_domain)
             self._write(msg)
         self.server.getreq_busy = False
-        self._redirect_headers(post_id, None, calling_domain)
         return True
 
     def _show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
@@ -15768,11 +15767,11 @@ class PubServer(BaseHTTPRequestHandler):
                 # for news instances if not logged in then show the
                 # front page
                 divert_path = '/users/news'
-            # if debug:
-            print('DEBUG: divert_to_login_screen=' +
-                  str(divert_to_login_screen))
-            print('DEBUG: authorized=' + str(authorized))
-            print('DEBUG: path=' + path)
+            if debug:
+                print('DEBUG: divert_to_login_screen=' +
+                      str(divert_to_login_screen))
+                print('DEBUG: authorized=' + str(authorized))
+                print('DEBUG: path=' + path)
             if calling_domain.endswith('.onion') and onion_domain:
                 self._redirect_headers('http://' +
                                        onion_domain + divert_path,

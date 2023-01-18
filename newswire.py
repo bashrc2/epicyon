@@ -337,16 +337,17 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             continue
 
         # remove any fraction of a second
-        if '.' in pub_date:
-            ending = pub_date.split('.')[1]
+        pub_date2 = pub_date
+        if '.' in pub_date2:
+            ending = pub_date2.split('.')[1]
             timezone_str = ''
-            for ending_char in ending:
-                if not ending_char.isdigit():
-                    timezone_str += ending_char
-            if timezone_str:
-                pub_date = pub_date.split('.')[0] + timezone_str
+            if '+' in ending:
+                timezone_str = '+' + ending.split('+')[1]
+            elif '-' in ending:
+                timezone_str = '-' + ending.split('-')[1]
+            pub_date2 = pub_date2.split('.')[0] + timezone_str
         try:
-            published_date = datetime.strptime(pub_date, date_format)
+            published_date = datetime.strptime(pub_date2, date_format)
         except BaseException:
             continue
 
