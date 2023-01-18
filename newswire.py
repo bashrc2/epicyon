@@ -303,7 +303,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
         pub_date = pub_date.replace(':00:00', replace_time_str)
 
     if pub_date.endswith('+:'):
-        pub_date = pub_date.replace('+:', ' Z')
+        pub_date = pub_date.replace('+:', 'Z')
 
     formats = ("%a, %d %b %Y %H:%M:%S %z",
                "%a, %d %b %Y %H:%M:%S Z",
