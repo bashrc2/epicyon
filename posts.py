@@ -747,6 +747,9 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix, domain, debug)
+    if not user_feed:
+        return post_domains
+
     for item in user_feed:
         i += 1
         if i > max_posts:
