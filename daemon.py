@@ -12225,7 +12225,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   calling_domain: str, path: str,
                                   base_dir: str, http_prefix: str,
                                   domain: str, port: int,
-                                  debug: str, curr_session) -> bool:
+                                  debug: str, curr_session,
+                                  cookie: str) -> bool:
         """get conversation thread from the date link on a post
         """
         if not authorized:
@@ -12284,9 +12285,15 @@ class PubServer(BaseHTTPRequestHandler):
         if conv_str:
             msg = conv_str.encode('utf-8')
             msglen = len(msg)
-            self._login_headers('text/html',
-                                msglen, calling_domain)
+            self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
+            self.server.getreq_busy = False
+            return True
+        # redirect to the original site if there are no results
+        if '://' + self.server.domain_full + '/' in post_id:
+            self._redirect_headers(post_id, cookie, calling_domain)
+        else:
+            self._redirect_headers(post_id, None, calling_domain)
         self.server.getreq_busy = False
         return True
 
@@ -16964,7 +16971,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain,
                                           self.server.port,
                                           self.server.debug,
-                                          self.server.session):
+                                          self.server.session,
+                                          cookie):
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', '_show_conversation_thread',
                                 self.server.debug)
