@@ -1210,11 +1210,7 @@ def _announce_unattributed_html(translate: {},
     announces_str = 'announces'
     if translate.get(announces_str):
         announces_str = translate[announces_str]
-    post_obj = post_json_object['object']
-    if post_obj.get('url'):
-        post_id = post_obj['url']
-    else:
-        post_id = remove_id_ending(post_obj['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('/', '--')
     return '    <img loading="lazy" decoding="async" title="' + \
@@ -1235,11 +1231,7 @@ def _announce_with_display_name_html(translate: {},
     announces_str = 'announces'
     if translate.get(announces_str):
         announces_str = translate[announces_str]
-    post_obj = post_json_object['object']
-    if post_obj.get('url'):
-        post_id = post_obj['url']
-    else:
-        post_id = remove_id_ending(post_obj['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('/', '--')
     return '          <img loading="lazy" decoding="async" title="' + \
