@@ -2217,7 +2217,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 comments_enabled = False
 
     conversation_id = None
+    obj_dict_exists = False
     if isinstance(post_json_object['object'], dict):
+        obj_dict_exists = True
         if 'conversation' in post_json_object['object']:
             if post_json_object['object']['conversation']:
                 conversation_id = post_json_object['object']['conversation']
@@ -2404,13 +2406,17 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '15')
 
     published_link = message_id
+    # if a url exists then use it as the link
+    if obj_dict_exists:
+        if post_json_object['object'].get('url'):
+            published_link = post_json_object['object']['url']
     # blog posts should have no /statuses/ in their link
     post_is_blog = False
     if is_blog_post(post_json_object):
         post_is_blog = True
         # is this a post to the local domain?
-        if '://' + domain in message_id:
-            published_link = message_id.replace('/statuses/', '/')
+        if '://' + domain in published_link:
+            published_link = published_link.replace('/statuses/', '/')
     # if this is a local link then make it relative so that it works
     # on clearnet or onion address
     if domain + '/users/' in published_link or \
