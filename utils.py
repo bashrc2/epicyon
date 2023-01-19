@@ -1130,7 +1130,7 @@ def _is_dangerous_string_simple(content: str, allow_local_network_access: bool,
     return False
 
 
-def _html_tag_has_closing(tag_name: str, content: str) -> bool:
+def html_tag_has_closing(tag_name: str, content: str) -> bool:
     """Does the given tag have opening and closing labels?
     """
     content_lower = content.lower()
@@ -1148,9 +1148,11 @@ def _html_tag_has_closing(tag_name: str, content: str) -> bool:
             return False
         if tag_name == 'code':
             # check that lines are not too long
+            section = section.split(end_tag)[0]
             code_lines = section.split('\n')
             for line in code_lines:
                 if len(line) >= 60:
+                    print('<code> line too long')
                     return False
         ctr += 1
     return True
@@ -1166,7 +1168,7 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     if _is_dangerous_string_simple(content, allow_local_network_access,
                                    separators, invalid_strings):
         return True
-    if not _html_tag_has_closing('code', content):
+    if not html_tag_has_closing('code', content):
         return True
     invalid_strings = [
         'script', 'noscript', 'pre',

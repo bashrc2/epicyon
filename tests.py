@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import html_tag_has_closing
 from utils import remove_inverted_text
 from utils import remove_square_capitals
 from utils import standardize_text
@@ -7777,6 +7778,22 @@ def _test_replace_remote_tags() -> None:
     assert result == expected
 
 
+def _test_html_closing_tag() -> None:
+    print('html_closing_tag')
+    content = '<p><a href="https://wibbly.wobbly.world/@ooh" ' + \
+        'class="u-url mention">@ooh@wibbly.wobbly.world</a><span>Like, ' + \
+        'OMG!<br><br>Something with </span><code>some-widget</code><span> ' + \
+        'and something else </span>' + \
+        '<a href="https://www.wibble.com/totally/"><span>totally</span>' + \
+        '</a><span> on the razzle.<br><br>As for it </span>' + \
+        '<a href="https://hub.hub/hubbah"><span>WHATEVER</span></a>' + \
+        '<span> archaeopteryx.</span></p>'
+    assert html_tag_has_closing('code', content)
+
+    content = '<p><code>Some code</p>'
+    assert not html_tag_has_closing('code', content)
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7794,6 +7811,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_html_closing_tag()
     _test_replace_remote_tags()
     _test_replace_variable()
     _test_missing_theme_colors(base_dir)
