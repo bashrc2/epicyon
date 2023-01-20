@@ -1,6 +1,6 @@
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
-<img src="https://libreserver.org/epicyon/img/screenshot-timeline.webp" width="80%"/>
+<img src="https://gitlab.com/bashrc2/epicyon/-/blob/main/img/screenshot-timeline.webp" width="80%"/>
 
 Epicyon is a [fediverse](https://en.wikipedia.org/wiki/Fediverse) server suitable for self-hosting a small number of accounts on low power systems.
 
