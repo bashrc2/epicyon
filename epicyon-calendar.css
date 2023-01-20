@@ -107,6 +107,16 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
+.emoji {
+    float: none;
+    width: 50px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    border-radius: 0px;
+    vertical-align: middle;
+}
+
 .transparent {
     color: transparent;
     background: transparent;
