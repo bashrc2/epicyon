@@ -749,6 +749,16 @@ Timelines will look something like the following.
 
 ![Inbox viewed within a shell browser](manual-lynx-inbox.png)
 
+# Content licenses
+
+ActivityPub posts are really just content on a website and so are subject to copyright rules. Historically, the copyright status of posts was always left as ambiguous but in Epicyon for the avoidance of disputes it is made explicit. Setting the scope of a post, such as being to followers only, is not sufficient to indicate how that post is intended to be used.
+
+Content licensing is at the instance level, and set by the administrator. Log in as the administrator and then go to *instance settings*. From there you can set the content license, which should be the URL for the full license text.
+
+When subsequently creating posts a small copyright icon will appear, which then links back to the license.
+
+The choice of content license is for the instance administrator to decide, but it is recommended that [non-commercial creative commons licenses](https://creativecommons.org/licenses/by-nc/4.0/legalcode) may be enough to deter some of the worst abuses of [personally identifiable information](https://en.wikipedia.org/wiki/Personal_data) by BigTech companies.
+
 # Building fediverse communities
 The great thing about running a small instance is that you can do things in whatever manner you prefer. What follows is a few guidelines which may help.
 
