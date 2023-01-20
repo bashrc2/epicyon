@@ -41,6 +41,8 @@
          --font-size: 30px;
          --text-entry-foreground: #ccc;
          --text-entry-background: #111;
+         --quote-font-weight: normal;
+         --quote-font-size: 120%;
      }
 
      body, html {
@@ -67,6 +69,17 @@
      a:link {
          color: var(--main-link-color);
          font-weight: bold;
+     }
+
+     blockquote {
+         border-left: 10px;
+         margin: 1.5em 10px;
+         padding: 0.5em 10px;
+         font-weight: var(--quote-font-weight);
+         font-style: italic;
+         font-size: var(--quote-font-size);
+         quotes: "\201C""\201D""\2018""\2019";
+         color: lightblue;
      }
 
      .cwButton {
@@ -1222,12 +1235,13 @@
 	                  </ul>
                 </td>
                 <td>
-                    <img src="v1_4_0.webp" />
+                    <img src="v1_4_0.webp" alt="Epicyon logo of a running dog with paw prints in the background" />
                 </td>
             </tr>
         </table>
         <p class="intro">The present time is an interesting juncture in the history of the web. Either the <a href="https://www.w3.org/TR/social-web-protocols">social web</a> approach succeeds and ActivityPub and related protocols become widely supported, or perhaps some trendy new centralized microblog emerges and the social web falls dormant for another decade. The former seems more likely, but the path of technology is notoriously hard to predict because it depends upon so many factors, and companies are always trying to enclose and extract value from the digital commons in a non-reciprocating way. Another possible danger is that the largest fediverse instances might commercialize and combine to create a new monopolistic silo system, and then abandon support for open protocols following the familiar <i>bait and switch</i> method.</p>
-        <p class="intro">So it's really down to us to keep things small and decentralized. To scale out rather than up.</p>
+        <blockquote>"many e-citizens woke up their consciousnesses, becoming aware of what a centralized system used for the most popular applications (generally social network platforms) entails...Probably, those e-citizens moved to the fediverse, becoming fedizens." -- <a href="https://www.assodpo.it/2022/07/21/The-Fediverse-what-is-it-and-how-does-it-work">L’Associazione data Protection Officer</a></blockquote>
+        <p class="intro">So it's really down to us to keep things small and decentralized. To be the "fedizens" orgainzing from below, and scaling out rather than up.</p>
         <p class="intro">Epicyon can be downloaded as <a href="epicyon.tar.gz">a gzipped file</a>, or you can get the latest version from the <a href="https://gitlab.com/bashrc2/epicyon">git repo</a>. For installation instructions see <a href="index.html">the main page</a>. To upgrade an existing instance, make sure that you have the python3-cryptography package installed then do a git pull, chown and restart the daemon. <i>Upgrades to web systems do not need to be a huge drama</i>.</p>
     </body>
     <footer>
