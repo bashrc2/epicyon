@@ -530,11 +530,12 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                                     session, outbox_url, as_header,
                                     project_version, http_prefix,
                                     origin_domain, debug)
-        for item in user_feed:
-            result.append(item)
-            i += 1
-            if i == max_posts:
-                break
+        if user_feed:
+            for item in user_feed:
+                result.append(item)
+                i += 1
+                if i == max_posts:
+                    break
         pprint(result)
         return None
 
@@ -747,6 +748,9 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix, domain, debug)
+    if not user_feed:
+        return post_domains
+
     for item in user_feed:
         i += 1
         if i > max_posts:
@@ -810,6 +814,9 @@ def _get_posts_for_blocked_domains(base_dir: str,
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix, domain, debug)
+    if not user_feed:
+        return blocked_posts
+
     for item in user_feed:
         i += 1
         if i > max_posts:

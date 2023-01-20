@@ -784,8 +784,11 @@ def download_image_any_mime_type(session, url: str,
     mime_type = None
     content_type = None
     result = None
+    image_mime_types = \
+        'image/x-icon, image/png, image/webp, image/jpeg, image/gif, ' + \
+        'image/avif, image/heic, image/jxl, image/svg+xml'
     session_headers = {
-        'Accept': 'image/x-icon, image/png, image/webp, image/jpeg, image/gif'
+        'Accept': image_mime_types
     }
     try:
         result = session.get(url, headers=session_headers,

@@ -28,7 +28,7 @@
 
 *The fediverse* is a set of federated servers, typically using a communication protocol called [ActivityPub](https://www.w3.org/TR/activitypub) which was devised by the [social working group](https://www.w3.org/wiki/Socialwg) within the World Wide Web Consortium (W3C). At present it is mostly used for [microblogging](https://en.wikipedia.org/wiki/Microblogging), although ActivityPub is sufficiently general that it can also be used for a variety of other purposes.
 
-The word *fediverse* (federated universe) appears to have originated around 2012 as the first [identi.ca](https://en.wikipedia.org/wiki/Identi.ca) website was ending and the [pump.io](https://en.wikipedia.org/wiki/Pump.io) project was beginning. The ActivityPub protocol was initially called *ActivityPump*, due to the influence which pump.io had upon its creation. Fediverse servers are typically referred to as "instances", but they are really just websites which can speak with each other using the vocabulary of ActivityPub. Choosing an instance is the same as choosing a website that you trust to handle your data.
+The word *fediverse* (federated universe) appears to have originated around 2012 as the first [identi.ca](https://en.wikipedia.org/wiki/Identi.ca) website was ending and the [pump.io](https://en.wikipedia.org/wiki/Pump.io) project was beginning. The ActivityPub protocol was initially called *ActivityPump*, due to the influence which pump.io had upon its creation. Fediverse servers are typically referred to as "instances", but they are really just websites which can speak with each other using the vocabulary of ActivityPub. Choosing an instance is the same as choosing a website that you trust to handle your data. This is *the social web*.
 
 Servers such as [Mastodon](https://github.com/mastodon/mastodon) are well known, but these are aimed at large scale deployments on powerful hardware running within data centers, making use of content distribution networks (CDN) and due to their large number of dependencies requiring someone with a high level of systems administration skill to maintain. Epicyon is designed for the opposite situation where it is only intended to have a single user or a small number of users (less than ten) running from your home location or on a modest VPS and where maintenance is extremely trivial such that it's possible to keep an instance running for long durations with minimal intervention.
 
@@ -748,6 +748,16 @@ After logging in you will see a menu, which are shortcuts to different screens.
 Timelines will look something like the following.
 
 ![Inbox viewed within a shell browser](manual-lynx-inbox.png)
+
+# Content licenses
+
+ActivityPub posts are really just content on a website and so are subject to copyright rules. Historically, the copyright status of posts was always left as ambiguous but in Epicyon for the avoidance of disputes it is made explicit. Setting the scope of a post, such as being to followers only, is not sufficient to indicate how that post is intended to be used.
+
+Content licensing is at the instance level, and set by the administrator. Log in as the administrator and then go to *instance settings*. From there you can set the content license, which should be the URL for the full license text.
+
+When subsequently creating posts a small copyright icon will appear, which then links back to the license.
+
+The choice of content license is for the instance administrator to decide, but it is recommended that [non-commercial creative commons licenses](https://creativecommons.org/licenses/by-nc/4.0/legalcode) may be enough to deter some of the worst abuses of [personally identifiable information](https://en.wikipedia.org/wiki/Personal_data) by BigTech companies.
 
 # Building fediverse communities
 The great thing about running a small instance is that you can do things in whatever manner you prefer. What follows is a few guidelines which may help.
