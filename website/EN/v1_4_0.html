@@ -14,7 +14,7 @@
              "email": "bob@libreserver.org",
              "url": "https://epicyon.libreserver.org/users/bob"
          },
-         "applicationCategory" : ["server", "software", "bash", "debian", "linux", "self-hosting", "raspberry-pi"],
+         "applicationCategory" : ["server", "instance", "software", "activitypub", "fediverse", "self-hosting", "microblog"],
          "downloadUrl" : "https://libreserver.org/epicyon/epicyon.tar.gz"
      }
     </script>
@@ -43,6 +43,14 @@
          --text-entry-background: #111;
          --quote-font-weight: normal;
          --quote-font-size: 120%;
+     }
+
+     @font-face {
+         font-family: 'Rooters';
+         font-style: normal;
+         font-weight: normal;
+         font-display: block;
+         src: url('./fonts/Rooters.ttf') format('truetype');
      }
 
      body, html {
@@ -783,6 +791,12 @@
          color: white;
      }
 
+     .siteheadermain {
+         font-family: 'Rooters';
+         font-size: 50px;
+         color: white;
+     }
+
      .siteheader {
          font-size: 30px;
          color: white;
@@ -1194,14 +1208,13 @@
         <title>Epicyon ActivityPub server release version 1.4.0</title>
     </head>
     <body>
-        <div class="timeline-banner"></div>
         <center>
             <br>
-            <p class="siteheader">Epicyon release version 1.4.0</p>
+            <p class="siteheadermain">Epicyon release version 1.4.0</p>
             <p class="siteheader">"Standard Schnauzer"</p>
             <p class="subheader">Feb 2023</p>
         </center>
-        <p class="intro">The last year in the fediverse has been quite eventful, with a massive tidal wave of new users <a href="https://en.wikipedia.org/wiki/Acquisition_of_Twitter_by_Elon_Musk">fleeing the sinking ship of Twitter</a>. But so far as <a href="https://libreserver.org/epicyon">Epicyon</a> has been concerned it has been calm sailing. There have been no major features added over the last year, but as always there have been many small improvements and bug fixes. These include:</p>
+        <p class="intro">The last year in the fediverse has been quite eventful, with many new arrivals. But so far as <a href="https://libreserver.org/epicyon">Epicyon</a> has been concerned things have been chugging along smoothly. There have been no major features added over the last year, but as always there have been many small improvements and bug fixes. These include:</p>
         <table>
             <tr>
                 <td>
@@ -1221,6 +1234,7 @@
                         <li>Hashtag maps for crowdsourced geolocations</li>
 	                      <li>Option to expire old posts</li>
 	                      <li>Better emoji support</li>
+                        <li>More stable navigation between timeline pages</li>
 	                      <li>Included an updated version of the <a href="https://gitlab.com/bashrc2/epicyon/-/blob/main/specification/activitypub.md">ActivityPub specification</a></li>
 	                      <li>Unicode fonts no longer bypass filters</li>
 	                      <li>vCard support</li>
@@ -1239,10 +1253,11 @@
                 </td>
             </tr>
         </table>
-        <p class="intro">The present time is an interesting juncture in the history of the web. Either the <a href="https://www.w3.org/TR/social-web-protocols">social web</a> approach succeeds and ActivityPub and related protocols become widely supported, or perhaps some trendy new centralized microblog emerges and the social web falls dormant for another decade. The former seems more likely, but the path of technology is notoriously hard to predict because it depends upon so many factors, and companies are always trying to enclose and extract value from the digital commons in a non-reciprocating way. Another possible danger is that the largest fediverse instances might commercialize and combine to create a new monopolistic silo system, and then abandon support for open protocols following the familiar <i>bait and switch</i> method.</p>
-        <blockquote>"many e-citizens woke up their consciousnesses, becoming aware of what a centralized system used for the most popular applications (generally social network platforms) entails...Probably, those e-citizens moved to the fediverse, becoming fedizens." -- <a href="https://www.assodpo.it/2022/07/21/The-Fediverse-what-is-it-and-how-does-it-work">L’Associazione data Protection Officer</a></blockquote>
-        <p class="intro">So it's really down to us to keep things small and decentralized. To be the "fedizens" orgainzing from below, and scaling out rather than up.</p>
-        <p class="intro">Epicyon can be downloaded as <a href="epicyon.tar.gz">a gzipped file</a>, or you can get the latest version from the <a href="https://gitlab.com/bashrc2/epicyon">git repo</a>. For installation instructions see <a href="index.html">the main page</a>. To upgrade an existing instance, make sure that you have the python3-cryptography package installed then do a git pull, chown and restart the daemon. <i>Upgrades to web systems do not need to be a huge drama</i>.</p>
+        <p class="intro">The present time is an interesting juncture in the history of the web. The prospects for the <a href="https://www.w3.org/TR/social-web-protocols">social web</a> appear brighter than ever with increasing developer interest and support for the fediverse. If you are new to all of this then now is the time to get onboard. There are still many future challenges, but it seems that systems backed by open protocols are now beginning to seriously challenge the hegemony of the moribund commercial silos.</p>
+        <blockquote>‟many e-citizens woke up their consciousnesses, becoming aware of what a centralized system used for the most popular applications (generally social network platforms) entails...Probably, those e-citizens moved to the fediverse, becoming fedizens.” -- <a href="https://www.assodpo.it/2022/07/21/The-Fediverse-what-is-it-and-how-does-it-work">L’Associazione data Protection Officer</a></blockquote>
+        <p class="intro">So it's really down to us to keep things small and decentralized. To become the networked islands of organization in a chaotic world. Abide by the <a href="https://gitlab.com/bashrc2/epicyon/-/blob/main/principles_of_small_creation.md">Principles of Small Creation</a></p>
+        <center><img src="img/screenshot-timeline.webp" alt="Screenshot of the main timeline showing posts and left and right columns" /></center>
+        <p class="intro">Epicyon can be downloaded as <a href="epicyon.tar.gz">a gzipped file</a>, or you can get the latest version from the <a href="https://gitlab.com/bashrc2/epicyon">git repo</a>. For installation instructions see <a href="index.html">the main page</a>. To upgrade an existing instance, make sure that you have the python3-cryptography package installed then do a git pull, chown and restart the daemon.</p>
     </body>
     <footer>
         <p>By: Bob Mottram <a href="mailto:bob@libreserver.org">bob@libreserver.org</a></p>

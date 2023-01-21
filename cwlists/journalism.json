@@ -1,0 +1,11 @@
+{
+    "name": "Journalism instances",
+    "warning": "Journalism instance",
+    "description": "Articles may not be subject to editor approval or a journalistic code of conduct",
+    "words": [],
+    "domains": [
+	      "journa.host",
+        "bylines.social",
+        "newsie.social"
+    ]
+}
