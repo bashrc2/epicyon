@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __credits__ = ['Based on ' +
                'https://github.com/tsileo/little-boxes']
 __license__ = "AGPL3+"
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"

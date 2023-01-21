@@ -1,7 +1,7 @@
 __filename__ = "notifyOnPost.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
