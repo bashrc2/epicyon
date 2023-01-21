@@ -45,6 +45,14 @@
          --quote-font-size: 120%;
      }
 
+     @font-face {
+         font-family: 'Rooters';
+         font-style: normal;
+         font-weight: normal;
+         font-display: block;
+         src: url('./fonts/Rooters.ttf') format('truetype');
+     }
+
      body, html {
          background-color: var(--main-bg-color);
          color: var(--main-fg-color);
@@ -783,6 +791,12 @@
          color: white;
      }
 
+     .siteheadermain {
+         font-family: 'Rooters';
+         font-size: 50px;
+         color: white;
+     }
+
      .siteheader {
          font-size: 30px;
          color: white;
@@ -1194,10 +1208,9 @@
         <title>Epicyon ActivityPub server release version 1.4.0</title>
     </head>
     <body>
-        <div class="timeline-banner"></div>
         <center>
             <br>
-            <p class="siteheader">Epicyon release version 1.4.0</p>
+            <p class="siteheadermain">Epicyon release version 1.4.0</p>
             <p class="siteheader">"Standard Schnauzer"</p>
             <p class="subheader">Feb 2023</p>
         </center>
