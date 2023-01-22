@@ -774,6 +774,7 @@ def create_server_alice(path: str, domain: str, port: int,
         conversation_id = None
         translate = {}
         content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+        media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
         buy_url = ''
         create_public_post(path, nickname, domain, port, http_prefix,
                            "No wise fish would go anywhere without a porpoise",
@@ -789,6 +790,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Curiouser and curiouser!",
@@ -804,6 +806,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "In the gardens of memory, in the palace " +
@@ -820,6 +823,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_ALICE_RUNNING
@@ -938,6 +942,7 @@ def create_server_bob(path: str, domain: str, port: int,
         test_is_article = False
         conversation_id = None
         content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+        media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
         translate = {}
         buy_url = ''
         create_public_post(path, nickname, domain, port, http_prefix,
@@ -954,6 +959,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "One of the things I've realised is that " +
@@ -970,6 +976,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Quantum physics is a bit of a passion of mine",
@@ -985,6 +992,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_BOB_RUNNING
@@ -1235,6 +1243,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     http_prefix = 'http'
     proxy_type = None
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -1339,7 +1348,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
-                  content_license_url, translate, buy_url,
+                  content_license_url, media_license_url,
+                  translate, buy_url,
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
@@ -1568,6 +1578,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     proxy_type = None
     federation_list = []
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -1712,7 +1723,7 @@ def test_follow_between_servers(base_dir: str) -> None:
                   languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
-                  content_license_url, translate, buy_url,
+                  content_license_url, media_license_url, translate, buy_url,
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
@@ -1763,6 +1774,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     proxy_type = None
     federation_list = []
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -2080,7 +2092,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                   languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
-                  content_license_url, translate, buy_url, True,
+                  content_license_url, media_license_url,
+                  translate, buy_url, True,
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
@@ -2186,6 +2199,7 @@ def test_group_follow(base_dir: str) -> None:
     proxy_type = None
     federation_list = []
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -2511,7 +2525,7 @@ def test_group_follow(base_dir: str) -> None:
                   languages_understood,
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
-                  content_license_url, translate, buy_url,
+                  content_license_url, media_license_url, translate, buy_url,
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
@@ -2881,6 +2895,7 @@ def _test_create_person_account(base_dir: str):
     low_bandwidth = True
     translate = {}
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     content = \
         "If your \"independent organization\" is government funded...\n\n" + \
         "(yawn)\n\n...then it's not really independent.\n\n" + \
@@ -2899,6 +2914,7 @@ def _test_create_person_account(base_dir: str):
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
     assert test_post_json
     assert test_post_json.get('object')
@@ -2925,6 +2941,7 @@ def _test_create_person_account(base_dir: str):
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
     assert test_post_json
     assert test_post_json.get('object')
@@ -3005,6 +3022,7 @@ def test_client_to_server(base_dir: str):
     global TEST_SERVER_ALICE_RUNNING
     global TEST_SERVER_BOB_RUNNING
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     TEST_SERVER_ALICE_RUNNING = False
     TEST_SERVER_BOB_RUNNING = False
 
@@ -3138,6 +3156,7 @@ def test_client_to_server(base_dir: str):
                              cached_webfingers, person_cache, is_article,
                              system_language, languages_understood,
                              low_bandwidth, content_license_url,
+                             media_license_url,
                              event_date, event_time, event_end_time, location,
                              translate, buy_url, True, None, None,
                              conversation_id, None)
@@ -4738,6 +4757,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     translate = {}
     buy_url = ''
     reply = \
@@ -4752,6 +4772,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
     # print(str(reply))
     expected_str = \
@@ -5689,6 +5710,7 @@ def _test_links_within_post(base_dir: str) -> None:
     conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     translate = {}
     buy_url = ''
 
@@ -5704,6 +5726,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
 
     expected_str = \
@@ -5748,6 +5771,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
     assert post_json_object['object']['content'] == content
     assert post_json_object['object']['contentMap'][system_language] == content
@@ -6799,6 +6823,7 @@ def _test_can_replyto(base_dir: str) -> None:
     conversation_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     translate = {}
     buy_url = ''
 
@@ -6814,6 +6839,7 @@ def _test_can_replyto(base_dir: str) -> None:
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
                            low_bandwidth, content_license_url,
+                           media_license_url,
                            languages_understood, translate, buy_url)
     # set the date on the post
     curr_date_str = "2021-09-08T20:45:00Z"

@@ -705,6 +705,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            conversation_id,
                                            self.server.low_bandwidth,
                                            self.server.content_license_url,
+                                           self.server.content_license_url,
                                            languages_understood, False,
                                            self.server.translate, buy_url)
         if message_json:
@@ -20795,6 +20796,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.domain_full,
                                              self.server.person_cache)
 
+                media_license_url = self.server.content_license_url
+                if fields.get('mediaLicense'):
+                    media_license_url = fields['mediaLicense']
                 message_json = \
                     create_public_post(self.server.base_dir,
                                        nickname,
@@ -20817,6 +20821,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        conversation_id,
                                        self.server.low_bandwidth,
                                        self.server.content_license_url,
+                                       media_license_url,
                                        languages_understood,
                                        self.server.translate, buy_url)
                 if message_json:
@@ -20936,6 +20941,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              nickname,
                                              self.server.domain_full,
                                              self.server.person_cache)
+                media_license_url = self.server.content_license_url
+                if fields.get('mediaLicense'):
+                    media_license_url = fields['mediaLicense']
                 message_json = \
                     create_blog_post(self.server.base_dir, nickname,
                                      self.server.domain, self.server.port,
@@ -20957,6 +20965,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      conversation_id,
                                      self.server.low_bandwidth,
                                      self.server.content_license_url,
+                                     media_license_url,
                                      languages_understood,
                                      self.server.translate, buy_url)
                 if message_json:
@@ -21101,7 +21110,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              nickname,
                                              self.server.domain_full,
                                              self.server.person_cache)
-
+                media_license_url = self.server.content_license_url
+                if fields.get('mediaLicense'):
+                    media_license_url = fields['mediaLicense']
                 message_json = \
                     create_unlisted_post(self.server.base_dir,
                                          nickname,
@@ -21125,6 +21136,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          conversation_id,
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
+                                         media_license_url,
                                          languages_understood,
                                          self.server.translate, buy_url)
                 if message_json:
@@ -21211,6 +21223,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              nickname,
                                              self.server.domain_full,
                                              self.server.person_cache)
+                media_license_url = self.server.content_license_url
+                if fields.get('mediaLicense'):
+                    media_license_url = fields['mediaLicense']
                 message_json = \
                     create_followers_only_post(self.server.base_dir,
                                                nickname,
@@ -21236,6 +21251,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                conversation_id,
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
+                                               media_license_url,
                                                languages_understood,
                                                self.server.translate,
                                                buy_url)
@@ -21331,6 +21347,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('replychatmsg'):
                         reply_is_chat = fields['replychatmsg']
 
+                    media_license_url = content_license_url
+                    if fields.get('mediaLicense'):
+                        media_license_url = fields['mediaLicense']
                     message_json = \
                         create_direct_message_post(self.server.base_dir,
                                                    nickname,
@@ -21359,6 +21378,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    conversation_id,
                                                    self.server.low_bandwidth,
                                                    content_license_url,
+                                                   media_license_url,
                                                    languages_understood,
                                                    reply_is_chat,
                                                    self.server.translate,
@@ -21453,6 +21473,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              nickname,
                                              self.server.domain_full,
                                              self.server.person_cache)
+                media_license_url = self.server.content_license_url
+                if fields.get('mediaLicense'):
+                    media_license_url = fields['mediaLicense']
                 message_json = \
                     create_direct_message_post(self.server.base_dir,
                                                nickname,
@@ -21477,6 +21500,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                conversation_id,
                                                self.server.low_bandwidth,
                                                self.server.content_license_url,
+                                               media_license_url,
                                                languages_understood,
                                                False, self.server.translate,
                                                buy_url)
@@ -21559,6 +21583,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              nickname,
                                              self.server.domain_full,
                                              self.server.person_cache)
+                media_license_url = self.server.content_license_url
+                if fields.get('mediaLicense'):
+                    media_license_url = fields['mediaLicense']
                 message_json = \
                     create_report_post(self.server.base_dir,
                                        nickname,
@@ -21573,6 +21600,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['languagesDropdown'],
                                        self.server.low_bandwidth,
                                        self.server.content_license_url,
+                                       media_license_url,
                                        languages_understood,
                                        self.server.translate)
                 if message_json:
@@ -21609,6 +21637,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              nickname,
                                              self.server.domain_full,
                                              self.server.person_cache)
+                media_license_url = self.server.content_license_url
+                if fields.get('mediaLicense'):
+                    media_license_url = fields['mediaLicense']
                 message_json = \
                     create_question_post(self.server.base_dir,
                                          nickname,
@@ -21626,6 +21657,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['languagesDropdown'],
                                          self.server.low_bandwidth,
                                          self.server.content_license_url,
+                                         media_license_url,
                                          languages_understood,
                                          self.server.translate)
                 if message_json:

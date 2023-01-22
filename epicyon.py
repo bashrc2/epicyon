@@ -157,6 +157,10 @@ def _command_options() -> None:
                         'licenses/by-nc/4.0',
                         help='Url of the license used for the ' +
                         'instance content')
+    parser.add_argument('--media_license_url', type=str,
+                        default='https://creativecommons.org/' +
+                        'licenses/by-nc/4.0',
+                        help='Url of the license used for attached media')
     parser.add_argument('--import_emoji', type=str,
                         default='',
                         help='Import emoji dict from the given filename')
@@ -1704,6 +1708,7 @@ def _command_options() -> None:
                              argb.language, languages_understood,
                              argb.low_bandwidth,
                              argb.content_license_url,
+                             argb.media_license_url,
                              argb.eventDate, argb.eventTime, argb.eventEndTime,
                              argb.eventLocation, translate, argb.buyUrl,
                              argb.debug,
@@ -3393,6 +3398,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
+                           argb.media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Zoiks!!!",
@@ -3407,6 +3413,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
+                           argb.media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Hey scoob we need like a hundred more #milkshakes",
@@ -3421,6 +3428,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
+                           argb.media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Getting kinda spooky around here",
@@ -3435,6 +3443,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
+                           argb.media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "And they would have gotten away with it too" +
@@ -3450,6 +3459,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
+                           argb.media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "man these centralized sites are like the worst!",
@@ -3464,6 +3474,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
+                           argb.media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "another mystery solved #test",
@@ -3478,6 +3489,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
+                           argb.media_license_url,
                            languages_understood, translate, buy_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "let's go bowling",
@@ -3492,6 +3504,7 @@ def _command_options() -> None:
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
+                           argb.media_license_url,
                            languages_understood, translate, buy_url)
         domain_full = domain + ':' + str(port)
         clear_follows(base_dir, nickname, domain)
