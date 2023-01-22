@@ -21043,6 +21043,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.base_dir,
                                                     nickname,
                                                     self.server.domain)
+                            license_url = self.server.content_license_url
+                            if fields.get('mediaLicense'):
+                                license_url = fields['mediaLicense']
                             post_json_object['object'] = \
                                 attach_media(self.server.base_dir,
                                              self.server.http_prefix,
@@ -21055,7 +21058,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              img_description,
                                              city,
                                              self.server.low_bandwidth,
-                                             self.server.content_license_url)
+                                             license_url)
 
                         replace_you_tube(post_json_object,
                                          self.server.yt_replace_domain,
