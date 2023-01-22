@@ -599,6 +599,12 @@ def attach_media(base_dir: str, http_prefix: str,
         'type': 'Document',
         'url': http_prefix + '://' + domain + '/' + media_path
     }
+    if content_license_url:
+        attachment_json['@context'] = [
+            'https://www.w3.org/ns/activitystreams',
+            {'schema': 'https://schema.org#'}
+        ]
+        attachment_json['schema:license'] = content_license_url
     if media_type.startswith('image/'):
         attachment_json['blurhash'] = _get_blur_hash()
         # find the dimensions of the image and add them as metadata
