@@ -1108,6 +1108,7 @@ def _attach_post_license(post_json_object: {},
         "name": "license",
         "value": content_license_url
     })
+    post_json_object['schema:license'] = content_license_url
 
 
 def _attach_buy_link(post_json_object: {},
