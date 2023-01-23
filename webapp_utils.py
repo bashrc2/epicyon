@@ -1284,11 +1284,30 @@ def get_post_attachments_as_html(base_dir: str,
                     gallery_str += '<div class="gallery">\n'
                     if not is_muted:
                         gallery_str += '  <a href="' + image_url + '">\n'
+                        if media_license or media_creator:
+                            gallery_str += '  <figure>\n'
                         gallery_str += \
                             '    <img loading="lazy" ' + \
                             'decoding="async" src="' + \
                             image_url + '" alt="" title="">\n'
                         gallery_str += '  </a>\n'
+                        license_str = ''
+                        if media_license:
+                            if '://' in media_license:
+                                license_str += \
+                                    '<a href="' + media_license + \
+                                    '" target="_blank" ' + \
+                                    'rel="nofollow noopener noreferrer">©</a>'
+                            else:
+                                license_str += media_license
+                        if media_creator:
+                            if license_str:
+                                license_str += ' '
+                            license_str += media_creator
+                        if media_license or media_creator:
+                            gallery_str += \
+                                '   ' + license_str + \
+                                '</figcaption></figure>\n'
                     if post_json_object['object'].get('url'):
                         image_post_url = post_json_object['object']['url']
                     else:
