@@ -20799,6 +20799,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_license_url = self.server.content_license_url
                 if fields.get('mediaLicense'):
                     media_license_url = fields['mediaLicense']
+                    if '://' not in media_license_url:
+                        media_license_url = \
+                            license_link_from_name(media_license_url)
                 message_json = \
                     create_public_post(self.server.base_dir,
                                        nickname,
@@ -20944,6 +20947,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_license_url = self.server.content_license_url
                 if fields.get('mediaLicense'):
                     media_license_url = fields['mediaLicense']
+                    if '://' not in media_license_url:
+                        media_license_url = \
+                            license_link_from_name(media_license_url)
                 message_json = \
                     create_blog_post(self.server.base_dir, nickname,
                                      self.server.domain, self.server.port,
@@ -21055,6 +21061,9 @@ class PubServer(BaseHTTPRequestHandler):
                             license_url = self.server.content_license_url
                             if fields.get('mediaLicense'):
                                 license_url = fields['mediaLicense']
+                                if '://' not in license_url:
+                                    license_url = \
+                                        license_link_from_name(license_url)
                             post_json_object['object'] = \
                                 attach_media(self.server.base_dir,
                                              self.server.http_prefix,
@@ -21113,6 +21122,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_license_url = self.server.content_license_url
                 if fields.get('mediaLicense'):
                     media_license_url = fields['mediaLicense']
+                    if '://' not in media_license_url:
+                        media_license_url = \
+                            license_link_from_name(media_license_url)
                 message_json = \
                     create_unlisted_post(self.server.base_dir,
                                          nickname,
@@ -21226,6 +21238,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_license_url = self.server.content_license_url
                 if fields.get('mediaLicense'):
                     media_license_url = fields['mediaLicense']
+                    if '://' not in media_license_url:
+                        media_license_url = \
+                            license_link_from_name(media_license_url)
                 message_json = \
                     create_followers_only_post(self.server.base_dir,
                                                nickname,
@@ -21350,6 +21365,9 @@ class PubServer(BaseHTTPRequestHandler):
                     media_license_url = content_license_url
                     if fields.get('mediaLicense'):
                         media_license_url = fields['mediaLicense']
+                        if '://' not in media_license_url:
+                            media_license_url = \
+                                license_link_from_name(media_license_url)
                     message_json = \
                         create_direct_message_post(self.server.base_dir,
                                                    nickname,
@@ -21476,6 +21494,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_license_url = self.server.content_license_url
                 if fields.get('mediaLicense'):
                     media_license_url = fields['mediaLicense']
+                    if '://' not in media_license_url:
+                        media_license_url = \
+                            license_link_from_name(media_license_url)
                 message_json = \
                     create_direct_message_post(self.server.base_dir,
                                                nickname,
@@ -21586,6 +21607,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_license_url = self.server.content_license_url
                 if fields.get('mediaLicense'):
                     media_license_url = fields['mediaLicense']
+                    if '://' not in media_license_url:
+                        media_license_url = \
+                            license_link_from_name(media_license_url)
                 message_json = \
                     create_report_post(self.server.base_dir,
                                        nickname,
@@ -21640,6 +21664,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_license_url = self.server.content_license_url
                 if fields.get('mediaLicense'):
                     media_license_url = fields['mediaLicense']
+                    if '://' not in media_license_url:
+                        media_license_url = \
+                            license_link_from_name(media_license_url)
                 message_json = \
                     create_question_post(self.server.base_dir,
                                          nickname,
