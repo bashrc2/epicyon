@@ -1233,6 +1233,12 @@ def get_post_attachments_as_html(base_dir: str,
     for attach in post_json_object['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
+        media_license = ''
+        if attach.get('schema:license'):
+            media_license = attach['schema:license']
+        media_creator = ''
+        if attach.get('schema:creator'):
+            media_creator = attach['schema:creator']
 
         media_type = attach['mediaType']
         image_description = ''
@@ -1337,11 +1343,24 @@ def get_post_attachments_as_html(base_dir: str,
                         '<div id="' + post_id + '">\n'
 
                 attachment_str += '<a href="' + image_url + '" tabindex="10">'
+                if media_license or media_creator:
+                    attachment_str += '<figure>'
                 attachment_str += \
                     '<img loading="lazy" decoding="async" ' + \
                     'src="' + image_url + \
                     '" alt="' + image_description + '" title="' + \
                     image_description + '" class="attachment"></a>\n'
+                if media_license or media_creator:
+                    attachment_str += '<figcaption>'
+                license_str = ''
+                if media_license:
+                    license_str += '<a href="' + media_license + '">©</a>'
+                if media_creator:
+                    if license_str:
+                        license_str += ' '
+                    license_str += media_creator
+                if media_license or media_creator:
+                    attachment_str += license_str + '</figcaption></figure>'
 
                 if minimize_images:
                     attachment_str += '</div></details>\n'
