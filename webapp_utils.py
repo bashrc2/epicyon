@@ -1362,7 +1362,13 @@ def get_post_attachments_as_html(base_dir: str,
                     attachment_str += '<figcaption>'
                 license_str = ''
                 if media_license:
-                    license_str += '<a href="' + media_license + '">©</a>'
+                    if '://' in media_license:
+                        license_str += \
+                            '<a href="' + media_license + \
+                            '" target="_blank" ' + \
+                            'rel="nofollow noopener noreferrer">©</a>'
+                    else:
+                        license_str += media_license
                 if media_creator:
                     if license_str:
                         license_str += ' '
