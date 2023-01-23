@@ -30,6 +30,7 @@ from utils import get_image_extensions
 from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol
+from filters import is_filtered
 from cache import store_person_in_cache
 from content import add_html_tags
 from content import replace_emoji_from_tags
@@ -1212,7 +1213,8 @@ def get_post_attachments_as_html(base_dir: str,
                                  bookmark_str: str, delete_str: str,
                                  mute_str: str,
                                  content: str,
-                                 minimize_all_images: bool) -> (str, str):
+                                 minimize_all_images: bool,
+                                 system_language: str) -> (str, str):
     """Returns a string representing any attachments
     """
     attachment_str = ''
@@ -1235,10 +1237,16 @@ def get_post_attachments_as_html(base_dir: str,
             continue
         media_license = ''
         if attach.get('schema:license'):
-            media_license = attach['schema:license']
+            if not is_filtered(base_dir, nickname, domain,
+                               attach['schema:license'],
+                               system_language):
+                media_license = attach['schema:license']
         media_creator = ''
         if attach.get('schema:creator'):
-            media_creator = attach['schema:creator']
+            if not is_filtered(base_dir, nickname, domain,
+                               attach['schema:creator'],
+                               system_language):
+                media_creator = attach['schema:creator']
 
         media_type = attach['mediaType']
         image_description = ''

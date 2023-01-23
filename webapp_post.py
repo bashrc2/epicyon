@@ -2387,7 +2387,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      reply_str, announce_str, like_str,
                                      bookmark_str, delete_str, mute_str,
                                      content_str,
-                                     minimize_all_images)
+                                     minimize_all_images,
+                                     system_language)
 
     published_str = \
         _get_published_date_str(post_json_object, show_published_date_only,
