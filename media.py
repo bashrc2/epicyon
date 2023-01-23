@@ -554,7 +554,8 @@ def attach_media(base_dir: str, http_prefix: str,
                  post_json: {}, image_filename: str,
                  media_type: str, description: str,
                  city: str, low_bandwidth: bool,
-                 content_license_url: str) -> {}:
+                 content_license_url: str,
+                 creator: str) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -599,12 +600,15 @@ def attach_media(base_dir: str, http_prefix: str,
         'type': 'Document',
         'url': http_prefix + '://' + domain + '/' + media_path
     }
-    if content_license_url:
+    if content_license_url or creator:
         attachment_json['@context'] = [
             'https://www.w3.org/ns/activitystreams',
             {'schema': 'https://schema.org#'}
         ]
+    if content_license_url:
         attachment_json['schema:license'] = content_license_url
+    if creator:
+        attachment_json['schema:creator'] = creator
     if media_type.startswith('image/'):
         attachment_json['blurhash'] = _get_blur_hash()
         # find the dimensions of the image and add them as metadata
