@@ -16702,7 +16702,10 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _check_bad_path(self):
-        if '..' in self.path or '%2e%2e' in self.path or '%2E%2E' in self.path:
+        path_lower = self.path.lower()
+        if '..' in path_lower or \
+           '%2e%2e' in path_lower or \
+           '%252e%252e' in path_lower:
             print('WARN: bad path ' + self.path)
             self._400()
             return True
