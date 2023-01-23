@@ -1795,7 +1795,15 @@ def _get_content_license(post_json_object: {}) -> str:
     """Returns the content license for the given post
     """
     if not post_json_object['object'].get('attachment'):
-        return None
+        if not post_json_object['object'].get('schema:license'):
+            return None
+
+    if post_json_object['object'].get('schema:license'):
+        value = post_json_object['object']['schema:license']
+        if '://' not in value:
+            value = license_link_from_name(value)
+        return value
+
     for item in post_json_object['object']['attachment']:
         if not item.get('name'):
             continue
