@@ -480,6 +480,7 @@ def _desktop_reply_to_post(session, post_id: str,
                            espeak, conversation_id: str,
                            low_bandwidth: bool,
                            content_license_url: str,
+                           media_license_url: str, media_creator: str,
                            signing_priv_key_pem: str,
                            translate: {}) -> None:
     """Use the desktop client to send a reply to the most recent post
@@ -540,6 +541,7 @@ def _desktop_reply_to_post(session, post_id: str,
                             cached_webfingers, person_cache, is_article,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
+                            media_license_url, media_creator,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, debug, post_id, post_id,
                             conversation_id, subject) == 0:
@@ -558,6 +560,7 @@ def _desktop_new_post(session,
                       languages_understood: [],
                       espeak, low_bandwidth: bool,
                       content_license_url: str,
+                      media_license_url: str, media_creator: str,
                       signing_priv_key_pem: str,
                       translate: {}) -> None:
     """Use the desktop client to create a new post
@@ -615,6 +618,7 @@ def _desktop_new_post(session,
                             cached_webfingers, person_cache, is_article,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
+                            media_license_url, media_creator,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, debug, None, None,
                             conversation_id, subject) == 0:
@@ -1224,6 +1228,7 @@ def _desktop_new_dm(session, to_handle: str,
                     languages_understood: [],
                     espeak, low_bandwidth: bool,
                     content_license_url: str,
+                    media_license_url: str, media_creator: str,
                     signing_priv_key_pem: str,
                     translate: {}) -> None:
     """Use the desktop client to create a new direct message
@@ -1249,6 +1254,7 @@ def _desktop_new_dm(session, to_handle: str,
                              languages_understood,
                              espeak, low_bandwidth,
                              content_license_url,
+                             media_license_url, media_creator,
                              signing_priv_key_pem, translate)
 
 
@@ -1261,6 +1267,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                          languages_understood: [],
                          espeak, low_bandwidth: bool,
                          content_license_url: str,
+                         media_license_url: str, media_creator: str,
                          signing_priv_key_pem: str,
                          translate: {}) -> None:
     """Use the desktop client to create a new direct message
@@ -1361,6 +1368,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                             cached_webfingers, person_cache, is_article,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
+                            media_license_url, media_creator,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, debug, None, None,
                             conversation_id, subject) == 0:
@@ -1447,6 +1455,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     signing_priv_key_pem = None
 
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    media_creator = ''
 
     blocked_cache = {}
     languages_understood = []
@@ -1853,6 +1863,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                    espeak, conversation_id,
                                                    low_bandwidth,
                                                    content_license_url,
+                                                   media_license_url,
+                                                   media_creator,
                                                    signing_priv_key_pem,
                                                    translate)
                 refresh_timeline = True
@@ -1891,6 +1903,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                         languages_understood,
                                         espeak, low_bandwidth,
                                         content_license_url,
+                                        media_license_url, media_creator,
                                         signing_priv_key_pem, translate)
                         refresh_timeline = True
                 else:
@@ -1904,6 +1917,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       languages_understood,
                                       espeak, low_bandwidth,
                                       content_license_url,
+                                      media_license_url, media_creator,
                                       signing_priv_key_pem, translate)
                     refresh_timeline = True
                 print('')

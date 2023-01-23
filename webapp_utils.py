@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from utils import dangerous_markup
 from utils import acct_handle_dir
 from utils import remove_id_ending
 from utils import get_attachment_property_value
@@ -30,6 +31,7 @@ from utils import get_image_extensions
 from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol
+from filters import is_filtered
 from cache import store_person_in_cache
 from content import add_html_tags
 from content import replace_emoji_from_tags
@@ -1212,7 +1214,8 @@ def get_post_attachments_as_html(base_dir: str,
                                  bookmark_str: str, delete_str: str,
                                  mute_str: str,
                                  content: str,
-                                 minimize_all_images: bool) -> (str, str):
+                                 minimize_all_images: bool,
+                                 system_language: str) -> (str, str):
     """Returns a string representing any attachments
     """
     attachment_str = ''
@@ -1233,6 +1236,25 @@ def get_post_attachments_as_html(base_dir: str,
     for attach in post_json_object['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
+        media_license = ''
+        if attach.get('schema:license'):
+            if not dangerous_markup(attach['schema:license'], False):
+                if not is_filtered(base_dir, nickname, domain,
+                                   attach['schema:license'],
+                                   system_language):
+                    if '://' not in attach['schema:license']:
+                        if len(attach['schema:license']) < 60:
+                            media_license = attach['schema:license']
+                    else:
+                        media_license = attach['schema:license']
+        media_creator = ''
+        if attach.get('schema:creator'):
+            if len(attach['schema:creator']) < 60:
+                if not dangerous_markup(attach['schema:creator'], False):
+                    if not is_filtered(base_dir, nickname, domain,
+                                       attach['schema:creator'],
+                                       system_language):
+                        media_creator = attach['schema:creator']
 
         media_type = attach['mediaType']
         image_description = ''
@@ -1270,11 +1292,30 @@ def get_post_attachments_as_html(base_dir: str,
                     gallery_str += '<div class="gallery">\n'
                     if not is_muted:
                         gallery_str += '  <a href="' + image_url + '">\n'
+                        if media_license or media_creator:
+                            gallery_str += '  <figure>\n'
                         gallery_str += \
                             '    <img loading="lazy" ' + \
                             'decoding="async" src="' + \
                             image_url + '" alt="" title="">\n'
                         gallery_str += '  </a>\n'
+                        license_str = ''
+                        if media_license:
+                            if '://' in media_license:
+                                license_str += \
+                                    '<a href="' + media_license + \
+                                    '" target="_blank" ' + \
+                                    'rel="nofollow noopener noreferrer">©</a>'
+                            else:
+                                license_str += media_license
+                        if media_creator:
+                            if license_str:
+                                license_str += ' '
+                            license_str += media_creator
+                        if media_license or media_creator:
+                            gallery_str += \
+                                '   ' + license_str + \
+                                '</figcaption></figure>\n'
                     if post_json_object['object'].get('url'):
                         image_post_url = post_json_object['object']['url']
                     else:
@@ -1337,11 +1378,30 @@ def get_post_attachments_as_html(base_dir: str,
                         '<div id="' + post_id + '">\n'
 
                 attachment_str += '<a href="' + image_url + '" tabindex="10">'
+                if media_license or media_creator:
+                    attachment_str += '<figure>'
                 attachment_str += \
                     '<img loading="lazy" decoding="async" ' + \
                     'src="' + image_url + \
                     '" alt="' + image_description + '" title="' + \
                     image_description + '" class="attachment"></a>\n'
+                if media_license or media_creator:
+                    attachment_str += '<figcaption>'
+                license_str = ''
+                if media_license:
+                    if '://' in media_license:
+                        license_str += \
+                            '<a href="' + media_license + \
+                            '" target="_blank" ' + \
+                            'rel="nofollow noopener noreferrer">©</a>'
+                    else:
+                        license_str += media_license
+                if media_creator:
+                    if license_str:
+                        license_str += ' '
+                    license_str += media_creator
+                if media_license or media_creator:
+                    attachment_str += license_str + '</figcaption></figure>'
 
                 if minimize_images:
                     attachment_str += '</div></details>\n'

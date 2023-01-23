@@ -280,7 +280,8 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                                      like_str, bookmark_str,
                                      delete_str, mute_str,
                                      json_content,
-                                     minimize_all_images)
+                                     minimize_all_images,
+                                     system_language)
     if attachment_str:
         blog_str += '<br><center>' + attachment_str + '</center>'
     if json_content:

@@ -3780,8 +3780,8 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    subject, debug, schedule_post,
                                    event_date, event_time, event_end_time,
                                    location, system_language, conversation_id,
-                                   low_bandwidth,
-                                   content_license_url,
+                                   low_bandwidth, content_license_url,
+                                   content_license_url, '',
                                    languages_understood, bounce_is_chat,
                                    translate, buy_url)
     if not post_json_object:
