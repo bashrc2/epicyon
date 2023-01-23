@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from utils import dangerous_markup
 from utils import acct_handle_dir
 from utils import remove_id_ending
 from utils import get_attachment_property_value
@@ -1237,21 +1238,23 @@ def get_post_attachments_as_html(base_dir: str,
             continue
         media_license = ''
         if attach.get('schema:license'):
-            if not is_filtered(base_dir, nickname, domain,
-                               attach['schema:license'],
-                               system_language):
-                if '://' not in attach['schema:license']:
-                    if len(attach['schema:license']) < 60:
+            if not dangerous_markup(attach['schema:license'], False):
+                if not is_filtered(base_dir, nickname, domain,
+                                   attach['schema:license'],
+                                   system_language):
+                    if '://' not in attach['schema:license']:
+                        if len(attach['schema:license']) < 60:
+                            media_license = attach['schema:license']
+                    else:
                         media_license = attach['schema:license']
-                else:
-                    media_license = attach['schema:license']
         media_creator = ''
         if attach.get('schema:creator'):
-            if not is_filtered(base_dir, nickname, domain,
-                               attach['schema:creator'],
-                               system_language):
-                if len(attach['schema:creator']) < 60:
-                    media_creator = attach['schema:creator']
+            if len(attach['schema:creator']) < 60:
+                if not dangerous_markup(attach['schema:creator'], False):
+                    if not is_filtered(base_dir, nickname, domain,
+                                       attach['schema:creator'],
+                                       system_language):
+                        media_creator = attach['schema:creator']
 
         media_type = attach['mediaType']
         image_description = ''
