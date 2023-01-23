@@ -489,6 +489,13 @@ def html_new_post(edit_post_params: {},
         '    <textarea id="imageDescription" name="imageDescription" ' + \
         'style="height:' + str(image_description_height) + \
         'px" spellcheck="true" autocomplete="on"></textarea>\n'
+    media_creator_str = translate['Media creator']
+    new_post_image_section += \
+        edit_text_field(media_creator_str, 'mediaCreator', '', '')
+    media_license_str = translate['Media license']
+    new_post_image_section += \
+        edit_text_field(media_license_str, 'mediaLicense',
+                        '', 'CC-BY-NC')
     new_post_image_section += end_edit_section()
 
     new_post_emoji_section = ''
