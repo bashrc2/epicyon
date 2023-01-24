@@ -1292,7 +1292,7 @@ def get_post_attachments_as_html(base_dir: str,
                     gallery_str += '<div class="gallery">\n'
                     if not is_muted:
                         gallery_str += '  <a href="' + image_url + '">\n'
-                        if media_license or media_creator:
+                        if media_license and media_creator:
                             gallery_str += '  <figure>\n'
                         gallery_str += \
                             '    <img loading="lazy" ' + \
@@ -1300,7 +1300,7 @@ def get_post_attachments_as_html(base_dir: str,
                             image_url + '" alt="" title="">\n'
                         gallery_str += '  </a>\n'
                         license_str = ''
-                        if media_license:
+                        if media_license and media_creator:
                             if '://' in media_license:
                                 license_str += \
                                     '<a href="' + media_license + \
@@ -1308,11 +1308,7 @@ def get_post_attachments_as_html(base_dir: str,
                                     'rel="nofollow noopener noreferrer">©</a>'
                             else:
                                 license_str += media_license
-                        if media_creator:
-                            if license_str:
-                                license_str += ' '
-                            license_str += media_creator
-                        if media_license or media_creator:
+                            license_str += ' ' + media_creator
                             gallery_str += \
                                 '   ' + license_str + \
                                 '</figcaption></figure>\n'
@@ -1378,17 +1374,16 @@ def get_post_attachments_as_html(base_dir: str,
                         '<div id="' + post_id + '">\n'
 
                 attachment_str += '<a href="' + image_url + '" tabindex="10">'
-                if media_license or media_creator:
+                if media_license and media_creator:
                     attachment_str += '<figure>'
                 attachment_str += \
                     '<img loading="lazy" decoding="async" ' + \
                     'src="' + image_url + \
                     '" alt="' + image_description + '" title="' + \
                     image_description + '" class="attachment"></a>\n'
-                if media_license or media_creator:
+                if media_license and media_creator:
+                    license_str = ''
                     attachment_str += '<figcaption>'
-                license_str = ''
-                if media_license:
                     if '://' in media_license:
                         license_str += \
                             '<a href="' + media_license + \
@@ -1396,11 +1391,7 @@ def get_post_attachments_as_html(base_dir: str,
                             'rel="nofollow noopener noreferrer">©</a>'
                     else:
                         license_str += media_license
-                if media_creator:
-                    if license_str:
-                        license_str += ' '
-                    license_str += media_creator
-                if media_license or media_creator:
+                    license_str += ' ' + media_creator
                     attachment_str += license_str + '</figcaption></figure>'
 
                 if minimize_images:
