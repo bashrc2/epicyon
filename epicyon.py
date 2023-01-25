@@ -722,7 +722,7 @@ def _command_options() -> None:
                         default=None,
                         help='Remove a filter on a particular word or phrase')
     parser.add_argument('--domainmax', dest='domain_max_posts_per_day',
-                        type=int, default=8640,
+                        type=int, default=16000,
                         help='Maximum number of received posts ' +
                         'from a domain per day')
     parser.add_argument('--accountmax', dest='account_max_posts_per_day',
