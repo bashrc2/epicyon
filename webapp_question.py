@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+import urllib.parse
 from question import is_question
 from utils import remove_id_ending
 from utils import acct_dir
@@ -52,9 +53,10 @@ def insert_question(base_dir: str, translate: {},
                 continue
             if not choice.get('name'):
                 continue
+            quoted_name = urllib.parse.quote_plus(choice['name'])
             content += \
                 '<input type="radio" name="answer" value="' + \
-                choice['name'].replace('"', '\\"') + '" tabindex="10"> ' + \
+                quoted_name + '" tabindex="10"> ' + \
                 choice['name'] + '<br><br>\n'
         content += \
             '<input type="submit" value="' + \
