@@ -54,7 +54,7 @@ def insert_question(base_dir: str, translate: {},
                 continue
             content += \
                 '<input type="radio" name="answer" value="' + \
-                choice['name'].replace('"', '\"') + '" tabindex="10"> ' + \
+                choice['name'].replace('"', '\\"') + '" tabindex="10"> ' + \
                 choice['name'] + '<br><br>\n'
         content += \
             '<input type="submit" value="' + \
