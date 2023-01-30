@@ -11,6 +11,9 @@ __module_group__ = "Timeline"
 import os
 from conversation import download_conversation_posts
 from utils import get_config_param
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from blocking import is_blocked
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_post_separator
 from webapp_utils import html_footer
@@ -42,7 +45,8 @@ def html_conversation_view(post_id: str,
                            timezone: str, bold_reading: bool,
                            dogwhistles: {}, access_keys: {},
                            min_images_for_accounts: [],
-                           debug: bool, buy_sites: {}) -> str:
+                           debug: bool, buy_sites: {},
+                           blocked_cache: []) -> str:
     """Show a page containing a conversation thread
     """
     conv_posts = \
@@ -69,7 +73,16 @@ def html_conversation_view(post_id: str,
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     for post_json_object in conv_posts:
-        show_individual_post_icons = False
+        show_individual_post_icons = True
+        from_actor = post_json_object['object']['attributedTo']
+        from_nickname = get_nickname_from_actor(from_actor)
+        from_domain, _ = get_domain_from_actor(from_actor)
+        # don't show icons on posts from blocked accounts/instances
+        if from_nickname and from_domain:
+            if is_blocked(base_dir, nickname, domain,
+                          from_nickname, from_domain,
+                          blocked_cache):
+                show_individual_post_icons = False
         allow_deletion = False
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
