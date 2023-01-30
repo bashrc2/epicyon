@@ -63,7 +63,7 @@ def html_conversation_view(post_id: str,
         html_header_with_external_style(css_filename, instance_title, None)
 
     separator_str = html_post_separator(base_dir, None)
-    text_modoe_separator = '<div class="transparent"><hr></div>\n'
+    text_mode_separator = '<div class="transparent"><hr></div>\n'
 
     minimize_all_images = False
     if nickname in min_images_for_accounts:
