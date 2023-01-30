@@ -63,13 +63,13 @@ def html_conversation_view(post_id: str,
         html_header_with_external_style(css_filename, instance_title, None)
 
     separator_str = html_post_separator(base_dir, None)
-    text_mode_separator = '<div class="transparent"><hr></div>\n'
+    text_modoe_separator = '<div class="transparent"><hr></div>\n'
 
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     for post_json_object in conv_posts:
-        show_individual_post_icons = False
+        show_individual_post_icons = True
         allow_deletion = False
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
