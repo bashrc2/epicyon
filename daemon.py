@@ -12282,7 +12282,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.access_keys,
                                    self.server.min_images_for_accounts,
                                    self.server.debug,
-                                   self.server.buy_sites)
+                                   self.server.buy_sites,
+                                   self.server.blocked_cache)
         if conv_str:
             msg = conv_str.encode('utf-8')
             msglen = len(msg)
