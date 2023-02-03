@@ -3180,6 +3180,7 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                     return False
     if invalid_ciphertext(message_json['object']['content']):
         print('REJECT: malformed ciphertext in content ' +
+              message_json['object']['id'] + ' ' +
               message_json['object']['content'])
         return False
     if debug:
