@@ -2693,7 +2693,7 @@ def _receive_announce(recent_posts_cache: {},
               announced_actor_nickname + '@' + announced_actor_domain)
         return False
 
-    # is this post in the outbox of the person?
+    # is this post in the inbox or outbox of the account?
     post_filename = locate_post(base_dir, nickname, domain,
                                 message_json['object'])
     if not post_filename:
