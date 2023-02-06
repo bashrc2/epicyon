@@ -362,7 +362,7 @@ def _save_individual_post_as_html_to_cache(base_dir: str,
         with open(cached_post_filename, 'w+', encoding='utf-8') as fp_cache:
             fp_cache.write(post_html)
             return True
-    except Exception as ex:
+    except OSError as ex:
         print('ERROR: saving post to cache, ' + str(ex))
     return False
 
@@ -2133,9 +2133,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                        translate, post_json_object['actor'],
                                        theme_name, system_language,
                                        box_name)
-                        with open(announce_filename + '.tts', 'w+',
-                                  encoding='utf-8') as ttsfile:
-                            ttsfile.write('\n')
+                        try:
+                            with open(announce_filename + '.tts', 'w+',
+                                      encoding='utf-8') as ttsfile:
+                                ttsfile.write('\n')
+                        except OSError:
+                            print('EX: unable to write tts ' +
+                                  announce_filename + '.tts')
 
         is_announced = True
 

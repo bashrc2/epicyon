@@ -2701,6 +2701,7 @@ def _receive_announce(recent_posts_cache: {},
             print('DEBUG: announce post not found in inbox or outbox')
             print(message_json['object'])
         return True
+    # add actor to the list of announcers for a post
     update_announce_collection(recent_posts_cache, base_dir, post_filename,
                                message_json['actor'], nickname, domain, debug)
     if debug:
