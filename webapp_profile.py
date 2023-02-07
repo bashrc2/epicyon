@@ -477,7 +477,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             '        <b>' + occupation_name + '</b><br>\n'
 
     html_str += \
-        '        <h1>' + remove_html(display_name) + '\n</h1>\n' + \
+        '        <h1>' + display_name + '\n</h1>\n' + \
         occupation_str
 
     html_str += \
@@ -701,15 +701,17 @@ def html_profile(signing_priv_key_pem: str,
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
+    display_name = remove_html(profile_json['name'])
     display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
-                                  profile_json['name'], True, translate)
+                                  display_name, True, translate)
     domain_full = get_full_domain(domain, port)
+    profile_description = profile_json['summary']
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
-                                  profile_json['summary'], False, translate)
+                                  profile_description, False, translate)
     if profile_description:
         profile_description = standardize_text(profile_description)
     posts_button = 'button'
