@@ -362,7 +362,7 @@ def _save_individual_post_as_html_to_cache(base_dir: str,
         with open(cached_post_filename, 'w+', encoding='utf-8') as fp_cache:
             fp_cache.write(post_html)
             return True
-    except Exception as ex:
+    except OSError as ex:
         print('ERROR: saving post to cache, ' + str(ex))
     return False
 
@@ -916,7 +916,9 @@ def _get_like_icon_html(nickname: str, domain_full: str,
     return like_str
 
 
-def _get_bookmark_icon_html(nickname: str, domain_full: str,
+def _get_bookmark_icon_html(base_dir: str,
+                            nickname: str, domain: str,
+                            domain_full: str,
                             post_json_object: {},
                             is_moderation_post: bool,
                             translate: {},
@@ -924,12 +926,16 @@ def _get_bookmark_icon_html(nickname: str, domain_full: str,
                             post_start_time, box_name: str,
                             page_number_param: str,
                             timeline_post_bookmark: str,
-                            first_post_id: str) -> str:
+                            first_post_id: str,
+                            post_url: str) -> str:
     """Returns html for bookmark icon/button
     """
     bookmark_str = ''
 
     if is_moderation_post:
+        return bookmark_str
+
+    if not locate_post(base_dir, nickname, domain, post_url):
         return bookmark_str
 
     bookmark_icon = 'bookmark_inactive.png'
@@ -2133,9 +2139,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                        translate, post_json_object['actor'],
                                        theme_name, system_language,
                                        box_name)
-                        with open(announce_filename + '.tts', 'w+',
-                                  encoding='utf-8') as ttsfile:
-                            ttsfile.write('\n')
+                        try:
+                            with open(announce_filename + '.tts', 'w+',
+                                      encoding='utf-8') as ttsfile:
+                                ttsfile.write('\n')
+                        except OSError:
+                            print('EX: unable to write tts ' +
+                                  announce_filename + '.tts')
 
         is_announced = True
 
@@ -2295,15 +2305,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '12.5')
 
     bookmark_str = \
-        _get_bookmark_icon_html(nickname, domain_full,
-                                post_json_object,
-                                is_moderation_post,
-                                translate,
+        _get_bookmark_icon_html(base_dir, nickname, domain,
+                                domain_full, post_json_object,
+                                is_moderation_post, translate,
                                 enable_timing_log,
                                 post_start_time, box_name,
                                 page_number_param,
                                 timeline_post_bookmark,
-                                first_post_id)
+                                first_post_id, message_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '12.9')
 
@@ -2652,8 +2661,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                          translate)
                 if map_str:
                     map_str = '<center>\n' + map_str + '</center>\n'
-        if map_str and post_json_object['object'].get('attributedTo'):
+        attrib = None
+        if post_json_object['object'].get('attributedTo'):
             attrib = post_json_object['object']['attributedTo']
+        if map_str and attrib:
             # is this being sent by the author?
             if '://' + domain_full + '/users/' + nickname in attrib:
                 location_domain = location_str
