@@ -431,10 +431,6 @@ Attachments can use a variety of formats.
 Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
 
 ## Events
-*"There is nothing in this world that does not have a decisive moment"*
-
--- Henri Cartier-Bresson
-
 You can specify a date, time and location for the post. If a date is set then the post will appear as an event on the calendar of recipients. This makes it easy for people to organize events without needing to explicitly manage calendars.
 ![New post event](manual-date-time.png)
 
@@ -469,6 +465,10 @@ At the bottom of the timeline there will usually be an arrow icon to go to the n
 ![Keyboard shortcuts screen](manual-shortcuts.png)
 
 # Calendar
+*"There is nothing in this world that does not have a decisive moment"*
+
+-- Henri Cartier-Bresson
+
 The calendar is not yet a standardized feature of the fediverse as a whole, but has existed in Friendica and Zot instances for a long time. Being able to attach a date and time to a post and then have it appear on your calendar and perhaps also the calendars of your followers is quite useful for organizing things with minimum effort. Until such time as federated calendar functionality becomes more standardized this may only work between Epicyon instances.
 
 Calendar events are really just ordinary posts with a date, time and perhaps also a location attached to them. Posts with *Public* scope which have a date and time will appear on the calendars of your followers, unless they have opted out of receiving calendar events from you.
