@@ -226,6 +226,10 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     display_name = search_nickname
     if profile_json.get('name'):
         display_name = profile_json['name']
+    display_name = \
+        add_emoji_to_display_name(session, base_dir, http_prefix,
+                                  nickname, domain,
+                                  display_name, True, translate)
 
     locked_account = get_locked_account(profile_json)
     if locked_account:
@@ -246,6 +250,10 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     profile_description = ''
     if profile_json.get('summary'):
         profile_description = profile_json['summary']
+    profile_description = \
+        add_emoji_to_display_name(session, base_dir, http_prefix,
+                                  nickname, domain,
+                                  profile_description, True, translate)
     outbox_url = None
     if not profile_json.get('outbox'):
         if debug:
