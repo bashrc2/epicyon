@@ -226,6 +226,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     display_name = search_nickname
     if profile_json.get('name'):
         display_name = profile_json['name']
+    display_name = remove_html(display_name)
     display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
@@ -585,7 +586,7 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
         display_name = search_nickname
     html_str += \
         '        <h1>\n' + \
-        '          ' + remove_html(display_name) + '\n' + \
+        '          ' + display_name + '\n' + \
         '        </h1>\n' + \
         '    <p><b>@' + search_nickname + '@' + search_domain_full + \
         '</b><br>\n'
