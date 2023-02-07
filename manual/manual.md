@@ -431,6 +431,10 @@ Attachments can use a variety of formats.
 Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
 
 ## Events
+*"There is nothing in this world that does not have a decisive moment"*
+
+-- Henri Cartier-Bresson
+
 You can specify a date, time and location for the post. If a date is set then the post will appear as an event on the calendar of recipients. This makes it easy for people to organize events without needing to explicitly manage calendars.
 ![New post event](manual-date-time.png)
 
