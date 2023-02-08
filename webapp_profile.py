@@ -705,7 +705,7 @@ def html_profile(signing_priv_key_pem: str,
     display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
-                                  display_name, True, translate)
+                                  display_name, False, translate)
     domain_full = get_full_domain(domain, port)
     profile_description = profile_json['summary']
     profile_description = \
