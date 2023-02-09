@@ -564,13 +564,17 @@ def post_contains_public(post_json_object: {}) -> bool:
         return contains_public
 
     for to_address in post_json_object['object']['to']:
-        if to_address.endswith('#Public'):
+        if to_address.endswith('#Public') or \
+           to_address == 'as:Public' or \
+           to_address == 'Public':
             contains_public = True
             break
         if not contains_public:
             if post_json_object['object'].get('cc'):
                 for to_address2 in post_json_object['object']['cc']:
-                    if to_address2.endswith('#Public'):
+                    if to_address2.endswith('#Public') or \
+                       to_address2 == 'as:Public' or \
+                       to_address2 == 'Public':
                         contains_public = True
                         break
     return contains_public

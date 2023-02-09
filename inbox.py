@@ -822,7 +822,9 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, to_list: [],
                           handle + ' does not exist')
         else:
             if debug:
-                if recipient.endswith('#Public'):
+                if recipient.endswith('#Public') or \
+                   recipient == 'as:Public' or \
+                   recipient == 'Public':
                     print('DEBUG: #Public recipient is too non-specific. ' +
                           recipient + ' ' + domain_match)
                 else:
