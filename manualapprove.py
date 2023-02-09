@@ -293,7 +293,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                             followers_file.seek(0, 0)
                             followers_file.write(approve_handle_full + '\n' +
                                                  content)
-                except Exception as ex:
+                except OSError as ex:
                     print('WARN: Manual follow accept. ' +
                           'Failed to write entry to followers file ' + str(ex))
             else:
