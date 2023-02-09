@@ -1383,14 +1383,27 @@ def _reply_to_yourself_html(translate: {}) -> str:
     return title_str
 
 
+def _replying_to_with_scope(post_json_object: {}, translate: {}) -> str:
+    """Returns the replying to string
+    """
+    replying_to_str = 'replying to'
+    if is_followers_post(post_json_object):
+        replying_to_str = 'replying to followers'
+    elif is_public_post(post_json_object):
+        replying_to_str = 'publicly replying to'
+    elif is_unlisted_post(post_json_object):
+        replying_to_str = 'replying unlisted'
+    if translate.get(replying_to_str):
+        replying_to_str = translate[replying_to_str]
+    return replying_to_str
+
+
 def _reply_to_unknown_html(translate: {},
                            post_json_object: {},
                            nickname: str) -> str:
     """Returns the html title for a reply to an unknown handle
     """
-    replying_to_str = 'replying to'
-    if translate.get(replying_to_str):
-        replying_to_str = translate[replying_to_str]
+    replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = post_json_object['object']['inReplyTo']
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('/', '--')
@@ -1420,9 +1433,7 @@ def _reply_with_unknown_path_html(translate: {},
     """Returns html title for a reply with an unknown path
     eg. does not contain /statuses/
     """
-    replying_to_str = 'replying to'
-    if translate.get(replying_to_str):
-        replying_to_str = translate[replying_to_str]
+    replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = post_json_object['object']['inReplyTo']
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('/', '--')
@@ -1438,12 +1449,11 @@ def _reply_with_unknown_path_html(translate: {},
 
 def _get_reply_html(translate: {},
                     in_reply_to: str, reply_display_name: str,
-                    nickname: str) -> str:
+                    nickname: str,
+                    post_json_object: {}) -> str:
     """Returns html title for a reply
     """
-    replying_to_str = 'replying to'
-    if translate.get(replying_to_str):
-        replying_to_str = translate[replying_to_str]
+    replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_link = '/users/' + nickname + '?convthread=' + \
         in_reply_to.replace('/', '--')
     return '        ' + \
@@ -1551,7 +1561,8 @@ def _get_post_title_reply_html(base_dir: str,
         _log_post_timing(enable_timing_log, post_start_time, '13.6')
 
     title_str += \
-        _get_reply_html(translate, in_reply_to, reply_display_name, nickname)
+        _get_reply_html(translate, in_reply_to, reply_display_name,
+                        nickname, post_json_object)
 
     if mitm:
         title_str += _mitm_warning_html(translate)
