@@ -2184,6 +2184,23 @@ def individual_post_as_html(signing_priv_key_pem: str,
         actor_nickname = 'dev'
     actor_domain, _ = get_domain_from_actor(post_actor)
 
+    # scope icon before display name
+    if is_followers_post(post_json_object):
+        title_str += \
+            '        <img loading="lazy" decoding="async" src="/' + \
+            'icons/scope_followers.png" class="DMicon" title="' + \
+            translate['Followers'] + '"/>\n'
+    elif is_unlisted_post(post_json_object):
+        title_str += \
+            '        <img loading="lazy" decoding="async" src="/' + \
+            'icons/scope_unlisted.png" class="DMicon" title="' + \
+            translate['Unlisted'] + '"/>\n'
+    elif is_reminder(post_json_object):
+        title_str += \
+            '        <img loading="lazy" decoding="async" src="/' + \
+            'icons/scope_reminder.png" class="DMicon" title="' + \
+            translate['Reminder'] + '"/>\n'
+
     display_name = get_display_name(base_dir, post_actor, person_cache)
     if display_name:
         if len(display_name) < 2 or \
