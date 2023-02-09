@@ -1062,7 +1062,7 @@ def load_individual_post_as_html_from_cache(base_dir: str,
             with open(cached_post_filename, 'r', encoding='utf-8') as file:
                 post_html = file.read()
                 break
-        except Exception as ex:
+        except OSError as ex:
             print('ERROR: load_individual_post_as_html_from_cache ' +
                   str(tries) + ' ' + str(ex))
             # no sleep

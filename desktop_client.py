@@ -182,7 +182,7 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
                 if post_id not in content:
                     read_file.seek(0, 0)
                     read_file.write(post_id + content)
-        except Exception as ex:
+        except OSError as ex:
             print('EX: Failed to mark post as read' + str(ex))
     else:
         with open(read_posts_filename, 'w+', encoding='utf-8') as read_file:

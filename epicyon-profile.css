@@ -758,6 +758,15 @@ a:focus {
     vertical-align: middle;
 }
 
+.container img.postScopeIcon {
+    float: none;
+    width: 30px;
+    margin: 0 0;
+    padding: 0 0;
+    border-radius: 0;
+    vertical-align: -6px;
+}
+
 .container.darker {
     background-color: var(--main-bg-color-reply);
 }
