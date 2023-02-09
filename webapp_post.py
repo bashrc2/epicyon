@@ -2188,17 +2188,17 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if is_followers_post(post_json_object):
         title_str += \
             '        <img loading="lazy" decoding="async" src="/' + \
-            'icons/scope_followers.png" class="DMicon" title="' + \
+            'icons/scope_followers.png" class="postScopeIcon" title="' + \
             translate['Followers'] + '"/>\n'
     elif is_unlisted_post(post_json_object):
         title_str += \
             '        <img loading="lazy" decoding="async" src="/' + \
-            'icons/scope_unlisted.png" class="DMicon" title="' + \
+            'icons/scope_unlisted.png" class="postScopeIcon" title="' + \
             translate['Unlisted'] + '"/>\n'
     elif is_reminder(post_json_object):
         title_str += \
             '        <img loading="lazy" decoding="async" src="/' + \
-            'icons/scope_reminder.png" class="DMicon" title="' + \
+            'icons/scope_reminder.png" class="postScopeIcon" title="' + \
             translate['Reminder'] + '"/>\n'
 
     display_name = get_display_name(base_dir, post_actor, person_cache)
