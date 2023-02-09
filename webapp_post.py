@@ -353,6 +353,8 @@ def _save_individual_post_as_html_to_cache(base_dir: str,
         get_cached_post_directory(base_dir, nickname, domain)
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
+    if not cached_post_filename:
+        return False
 
     # create the cache directory if needed
     if not os.path.isdir(html_post_cache_dir):
