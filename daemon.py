@@ -6422,16 +6422,6 @@ class PubServer(BaseHTTPRequestHandler):
                        actor_skills_ctr:
                         actor_changed = True
 
-                    if fields.get('importBlocks'):
-                        blocks_str = fields['importBlocks']
-                        while blocks_str.startswith('\n'):
-                            blocks_str = blocks_str[1:]
-                        blocks_lines = blocks_str.split('\n')
-                        if import_blocking_file(base_dir, nickname, domain,
-                                         blocks_lines):
-                            print('blocks imported for ' + nickname)
-                        else:
-                            print('blocks not imported for ' + nickname)
                     # change password
                     if fields.get('password') and \
                        fields.get('passwordconfirm'):
@@ -7830,6 +7820,17 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         add_account_blocks(base_dir,
                                            nickname, domain, '')
+                    # import blocks from csv file
+                    if fields.get('importBlocks'):
+                        blocks_str = fields['importBlocks']
+                        while blocks_str.startswith('\n'):
+                            blocks_str = blocks_str[1:]
+                        blocks_lines = blocks_str.split('\n')
+                        if import_blocking_file(base_dir, nickname, domain,
+                                                blocks_lines):
+                            print('blocks imported for ' + nickname)
+                        else:
+                            print('blocks not imported for ' + nickname)
 
                     # Save DM allowed instances list.
                     # The allow list for incoming DMs,
