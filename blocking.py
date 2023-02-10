@@ -1597,7 +1597,7 @@ def export_blocks(base_dir: str, nickname: str, domain: str) -> str:
     blocks_str = blocks_header
     for blocked_domain in blocking_lines:
         blocked_domain = blocked_domain.strip()
-        if blocked_domain.startwith('#'):
+        if blocked_domain.startswith('#'):
             continue
         reason_str = ''
         for reason_line in blocking_reasons:
