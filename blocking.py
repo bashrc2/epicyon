@@ -1602,7 +1602,7 @@ def export_blocks(base_dir: str, nickname: str, domain: str) -> str:
         reason_str = ''
         for reason_line in blocking_reasons:
             if reason_line.startswith(blocked_domain + ' '):
-                reason_str = reason_line.split(' ')[1]
+                reason_str = reason_line.split(' ', 1)[1]
                 break
         blocks_str += \
             blocked_domain + ',suspend,false,false,"' + \
