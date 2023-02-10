@@ -1539,8 +1539,8 @@ def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
     graphics_str += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
-    graphics_str += '      <input type="file" id="import_theme" '
-    graphics_str += 'name="import_theme" '
+    graphics_str += '      <input type="file" id="importTheme" '
+    graphics_str += 'name="importTheme" '
     graphics_str += 'accept="' + THEME_FORMATS + '">\n'
     graphics_str += \
         '      <label class="labels">' + \

@@ -6177,7 +6177,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'instanceLogo',
                 'left_col_image', 'right_col_image',
                 'importFollows',
-                'import_theme'
+                'importTheme'
             )
             profile_media_types_uploaded = {}
             for m_type in profile_media_types:
@@ -6210,7 +6210,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if m_type == 'instanceLogo':
                     filename_base = \
                         base_dir + '/accounts/login.temp'
-                elif m_type == 'import_theme':
+                elif m_type == 'importTheme':
                     if not os.path.isdir(base_dir + '/imports'):
                         os.mkdir(base_dir + '/imports')
                     filename_base = \
@@ -6249,7 +6249,7 @@ class PubServer(BaseHTTPRequestHandler):
                               nickname)
                     continue
 
-                if m_type == 'import_theme':
+                if m_type == 'importTheme':
                     if nickname == admin_nickname or \
                        is_artist(base_dir, nickname):
                         if import_theme(base_dir, filename):
@@ -7846,6 +7846,24 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: unable to write imported follows ' +
                                   filename_base)
+
+                    if fields.get('importTheme'):
+                        if not os.path.isdir(base_dir + '/imports'):
+                            os.mkdir(base_dir + '/imports')
+                        filename_base = \
+                            base_dir + '/imports/newtheme.zip'
+                        if os.path.isfile(filename_base):
+                            try:
+                                os.remove(filename_base)
+                            except OSError:
+                                print('EX: _profile_edit unable to delete ' +
+                                      filename_base)
+                        if nickname == admin_nickname or \
+                           is_artist(base_dir, nickname):
+                            if import_theme(base_dir, filename_base):
+                                print(nickname + ' uploaded a theme')
+                        else:
+                            print('Only admin or artist can import a theme')
 
                     # Save DM allowed instances list.
                     # The allow list for incoming DMs,
