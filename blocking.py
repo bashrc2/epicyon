@@ -1530,11 +1530,22 @@ def import_blocks(base_dir: str, nickname: str, domain: str,
             # already blocked
             continue
         append_blocks.append(blocked_domain_name)
-        blocked_comment = block_fields[comment_field_index].strip()
-        if blocked_comment:
-            if blocked_comment not in existing_reasons:
+        blocked_comment = ''
+        if '"' in line_str:
+            quote_section = line_str.split('"')
+            if len(quote_section) > 1:
+                blocked_comment = quote_section[1]
                 append_reasons.append(blocked_domain_name + ' ' +
                                       blocked_comment)
+        if not blocked_comment:
+            if len(block_fields) > comment_field_index:
+                blocked_comment = block_fields[comment_field_index].strip()
+                if blocked_comment:
+                    if blocked_comment.startswith('"'):
+                        blocked_comment = blocked_comment.replace('"', '')
+                    if blocked_comment not in existing_reasons:
+                        append_reasons.append(blocked_domain_name + ' ' +
+                                              blocked_comment)
     if not append_blocks:
         return True
 
