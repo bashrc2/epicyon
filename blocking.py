@@ -1558,3 +1558,53 @@ def import_blocks(base_dir: str, nickname: str, domain: str,
               blocking_reasons_filename)
 
     return True
+
+
+def export_blocks(base_dir: str, nickname: str, domain: str) -> str:
+    """exports account level blocks in a csv format
+    """
+    account_directory = acct_dir(base_dir, nickname, domain)
+    blocking_filename = \
+        account_directory + '/blocking.txt'
+    blocking_reasons_filename = \
+        account_directory + '/blocking_reasons.txt'
+
+    blocks_header = \
+        '#domain,#severity,#reject_media,#reject_reports,' + \
+        '#public_comment,#obfuscate\n'
+
+    if not os.path.isfile(blocking_filename):
+        return blocks_header
+
+    blocking_lines = []
+    if os.path.isfile(blocking_filename):
+        try:
+            with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
+                blocking_lines = fp_block.read().splitlines()
+        except OSError:
+            print('EX: export_blocks failed to read ' + blocking_filename)
+
+    blocking_reasons = []
+    if os.path.isfile(blocking_reasons_filename):
+        try:
+            with open(blocking_reasons_filename, 'r',
+                      encoding='utf-8') as fp_block:
+                blocking_reasons = fp_block.read().splitlines()
+        except OSError:
+            print('EX: export_blocks failed to read ' +
+                  blocking_reasons_filename)
+
+    blocks_str = blocks_header
+    for blocked_domain in blocking_lines:
+        blocked_domain = blocked_domain.strip()
+        if blocked_domain.startwith('#'):
+            continue
+        reason_str = ''
+        for reason_line in blocking_reasons:
+            if reason_line.startswith(blocked_domain + ' '):
+                reason_str = reason_line.split(' ')[1]
+                break
+        blocks_str += \
+            blocked_domain + ',suspend,false,false,"' + \
+            reason_str + '",false\n'
+    return blocks_str

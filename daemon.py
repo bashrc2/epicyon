@@ -148,6 +148,7 @@ from media import attach_media
 from media import path_is_video
 from media import path_is_audio
 from blocking import import_blocks
+from blocking import export_blocks
 from blocking import add_account_blocks
 from blocking import get_cw_list_variable
 from blocking import load_cw_lists
@@ -6341,6 +6342,14 @@ class PubServer(BaseHTTPRequestHandler):
                                        cookie, calling_domain)
                 self.server.postreq_busy = False
                 return
+            elif 'name="submitExportBlocks"' in post_bytes_str:
+                print('submitExportBlocks')
+                blocks_download_path = actor_str + '/exports/blocks.csv'
+                print('submitExportBlocks path=' + blocks_download_path)
+                self._redirect_headers(blocks_download_path,
+                                       cookie, calling_domain)
+                self.server.postreq_busy = False
+                return
 
             # extract all of the text fields into a dict
             fields = \
@@ -8386,6 +8395,25 @@ class PubServer(BaseHTTPRequestHandler):
                                        export_binary, None,
                                        domain_full, False, None)
                 self._write(export_binary)
+        self._404()
+
+    def _get_exported_blocks(self, path: str, base_dir: str,
+                             domain: str,
+                             calling_domain: str) -> None:
+        """Returns an exported blocks csv file
+        """
+        filename = path.split('/exports/', 1)[1]
+        filename = base_dir + '/exports/' + filename
+        nickname = get_nickname_from_actor(path)
+        if nickname:
+            blocks_str = export_blocks(base_dir, nickname, domain)
+            if blocks_str:
+                msg = blocks_str.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('text/csv',
+                                  msglen, None, calling_domain, False)
+                self._write(msg)
+                return
         self._404()
 
     def _get_fonts(self, calling_domain: str, path: str,
@@ -17318,9 +17346,15 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         if authorized and '/exports/' in self.path:
-            self._get_exported_theme(self.path,
-                                     self.server.base_dir,
-                                     self.server.domain_full)
+            if 'blocks.csv' in self.path:
+                self._get_exported_blocks(self.path,
+                                          self.server.base_dir,
+                                          self.server.domain,
+                                          calling_domain)
+            else:
+                self._get_exported_theme(self.path,
+                                         self.server.base_dir,
+                                         self.server.domain_full)
             return
 
         # get fonts
