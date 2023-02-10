@@ -2281,8 +2281,8 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
     edit_profile_form += \
         '<p><label class="labels">' + \
         translate['Import Follows'] + '</label>\n'
-    edit_profile_form += '<input type="file" id="import_follows" '
-    edit_profile_form += 'name="import_follows" '
+    edit_profile_form += '<input type="file" id="importFollows" '
+    edit_profile_form += 'name="importFollows" '
     edit_profile_form += 'accept=".csv"></p>\n'
 
     edit_profile_form += \

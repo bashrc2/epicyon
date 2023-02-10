@@ -6176,7 +6176,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'banner', 'search_banner',
                 'instanceLogo',
                 'left_col_image', 'right_col_image',
-                'import_follows',
+                'importFollows',
                 'import_theme'
             )
             profile_media_types_uploaded = {}
@@ -6221,7 +6221,7 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: _profile_edit unable to delete ' +
                                   filename_base)
-                elif m_type == 'import_follows':
+                elif m_type == 'importFollows':
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
                         '/import_following.csv'
@@ -6241,7 +6241,7 @@ class PubServer(BaseHTTPRequestHandler):
                           ' media, zip, csv or font filename in POST')
                     continue
 
-                if m_type == 'import_follows':
+                if m_type == 'importFollows':
                     if os.path.isfile(filename_base):
                         print(nickname + ' imported follows csv')
                     else:
@@ -7831,6 +7831,21 @@ class PubServer(BaseHTTPRequestHandler):
                             print('blocks imported for ' + nickname)
                         else:
                             print('blocks not imported for ' + nickname)
+
+                    if fields.get('importFollows'):
+                        filename_base = \
+                            acct_dir(base_dir, nickname, domain) + \
+                            '/import_following.csv'
+                        follows_str = fields['importFollows']
+                        while follows_str.startswith('\n'):
+                            follows_str = follows_str[1:]
+                        try:
+                            with open(filename_base, 'w+',
+                                      encoding='utf-8') as fp_foll:
+                                fp_foll.write(follows_str)
+                        except OSError:
+                            print('EX: unable to write imported follows ' +
+                                  filename_base)
 
                     # Save DM allowed instances list.
                     # The allow list for incoming DMs,
