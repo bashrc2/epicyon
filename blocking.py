@@ -1462,17 +1462,10 @@ def get_cw_list_variable(list_name: str) -> str:
     return 'list' + list_name.replace(' ', '').replace("'", '')
 
 
-def import_blocks(base_dir: str, nickname: str, domain: str,
-                  filename: str) -> bool:
+def import_blocking_file(base_dir: str, nickname: str, domain: str,
+                         lines: []) -> bool:
     """Imports blocked domains for a given account
     """
-    lines = []
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_blocks:
-            lines = fp_blocks.read().splitlines()
-    except OSError:
-        print('EX: unable to import blocked instances from file ' +
-              filename)
     if not lines:
         return False
     if len(lines) < 2:
@@ -1571,7 +1564,7 @@ def import_blocks(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def export_blocks(base_dir: str, nickname: str, domain: str) -> str:
+def export_blocking_file(base_dir: str, nickname: str, domain: str) -> str:
     """exports account level blocks in a csv format
     """
     account_directory = acct_dir(base_dir, nickname, domain)

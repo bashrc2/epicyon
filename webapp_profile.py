@@ -2048,8 +2048,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     edit_profile_form += \
         '      <label class="labels">' + \
         translate['Import Blocks'] + '</label>\n'
-    edit_profile_form += '      <input type="file" id="import_blocks" '
-    edit_profile_form += 'name="import_blocks" '
+    edit_profile_form += '      <input type="file" id="importBlocks" '
+    edit_profile_form += 'name="importBlocks" '
     edit_profile_form += 'accept="' + BLOCKFILE_FORMATS + '">\n'
     edit_profile_form += \
         '      <label class="labels">' + \

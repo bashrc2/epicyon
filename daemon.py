@@ -147,8 +147,8 @@ from media import replace_twitter
 from media import attach_media
 from media import path_is_video
 from media import path_is_audio
-from blocking import import_blocks
-from blocking import export_blocks
+from blocking import import_blocking_file
+from blocking import export_blocking_file
 from blocking import add_account_blocks
 from blocking import get_cw_list_variable
 from blocking import load_cw_lists
@@ -6177,7 +6177,6 @@ class PubServer(BaseHTTPRequestHandler):
                 'instanceLogo',
                 'left_col_image', 'right_col_image',
                 'import_follows',
-                'import_blocks',
                 'import_theme'
             )
             profile_media_types_uploaded = {}
@@ -6226,10 +6225,6 @@ class PubServer(BaseHTTPRequestHandler):
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
                         '/import_following.csv'
-                elif m_type == 'import_blocks':
-                    filename_base = \
-                        acct_dir(base_dir, nickname, domain) + \
-                        '/import_blocks.csv'
                 else:
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
@@ -6252,25 +6247,6 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         print('WARN: failed to import follows from csv for ' +
                               nickname)
-                    continue
-
-                if m_type == 'import_blocks':
-                    if os.path.isfile(filename_base):
-                        blocks_import_succeeded = False
-                        if import_blocks(base_dir, nickname, domain,
-                                         filename):
-                            print(nickname + ' imported blocks csv')
-                            blocks_import_succeeded = True
-                        try:
-                            os.remove(filename_base)
-                        except OSError:
-                            print('EX: ' +
-                                  'unable to remove imported blocks file ' +
-                                  filename_base)
-                        if blocks_import_succeeded:
-                            continue
-                    print('WARN: failed to import blocks from csv for ' +
-                          nickname)
                     continue
 
                 if m_type == 'import_theme':
@@ -6446,6 +6422,16 @@ class PubServer(BaseHTTPRequestHandler):
                        actor_skills_ctr:
                         actor_changed = True
 
+                    if fields.get('importBlocks'):
+                        blocks_str = fields['importBlocks']
+                        while blocks_str.startswith('\n'):
+                            blocks_str = blocks_str[1:]
+                        blocks_lines = blocks_str.split('\n')
+                        if import_blocking_file(base_dir, nickname, domain,
+                                         blocks_lines):
+                            print('blocks imported for ' + nickname)
+                        else:
+                            print('blocks not imported for ' + nickname)
                     # change password
                     if fields.get('password') and \
                        fields.get('passwordconfirm'):
@@ -8409,7 +8395,7 @@ class PubServer(BaseHTTPRequestHandler):
         filename = base_dir + '/exports/' + filename
         nickname = get_nickname_from_actor(path)
         if nickname:
-            blocks_str = export_blocks(base_dir, nickname, domain)
+            blocks_str = export_blocking_file(base_dir, nickname, domain)
             if blocks_str:
                 msg = blocks_str.encode('utf-8')
                 msglen = len(msg)
