@@ -92,6 +92,7 @@ from roles import is_devops
 from session import site_is_verified
 
 THEME_FORMATS = '.zip, .gz'
+BLOCKFILE_FORMATS = '.csv'
 
 
 def _valid_profile_preview_post(post_json_object: {},
@@ -1538,8 +1539,8 @@ def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
     graphics_str += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
-    graphics_str += '      <input type="file" id="import_theme" '
-    graphics_str += 'name="submitImportTheme" '
+    graphics_str += '      <input type="file" id="importTheme" '
+    graphics_str += 'name="importTheme" '
     graphics_str += 'accept="' + THEME_FORMATS + '">\n'
     graphics_str += \
         '      <label class="labels">' + \
@@ -2043,6 +2044,20 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_text_area(translate['Blocked accounts'], None, 'blocked',
                        blocked_str, 200, '', False)
 
+    # import and export blocks
+    edit_profile_form += \
+        '      <label class="labels">' + \
+        translate['Import Blocks'] + '</label>\n'
+    edit_profile_form += '      <input type="file" id="importBlocks" '
+    edit_profile_form += 'name="importBlocks" '
+    edit_profile_form += 'accept="' + BLOCKFILE_FORMATS + '">\n'
+    edit_profile_form += \
+        '      <label class="labels">' + \
+        translate['Export Blocks'] + '</label><br>\n'
+    edit_profile_form += \
+        '      <button type="submit" class="button" ' + \
+        'name="submitExportBlocks">➤</button><br>\n'
+
     idx = 'Direct messages are always allowed from these instances.'
     edit_profile_form += \
         edit_text_area(translate['Direct Message permitted instances'], None,
@@ -2266,8 +2281,8 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
     edit_profile_form += \
         '<p><label class="labels">' + \
         translate['Import Follows'] + '</label>\n'
-    edit_profile_form += '<input type="file" id="import_follows" '
-    edit_profile_form += 'name="submitImportFollows" '
+    edit_profile_form += '<input type="file" id="importFollows" '
+    edit_profile_form += 'name="importFollows" '
     edit_profile_form += 'accept=".csv"></p>\n'
 
     edit_profile_form += \

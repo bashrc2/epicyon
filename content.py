@@ -1705,7 +1705,8 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
     fields_with_semicolon_allowed = (
         'message', 'bio', 'autoCW', 'password', 'passwordconfirm',
         'instanceDescription', 'instanceDescriptionShort',
-        'subject', 'location', 'imageDescription'
+        'subject', 'location', 'imageDescription', 'importBlocks',
+        'importFollows', 'importTheme'
     )
     if debug:
         if 'password' not in message_fields:

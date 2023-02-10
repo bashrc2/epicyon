@@ -617,5 +617,7 @@
     "Buy link": "구매 링크",
     "Buy links are allowed from the following domains": "다음 도메인에서 구매 링크가 허용됩니다.",
     "Media license": "미디어 라이센스",
-    "Media creator": "미디어 크리에이터"
+    "Media creator": "미디어 크리에이터",
+    "Import Blocks": "차단된 인스턴스 가져오기",
+    "Export Blocks": "차단된 인스턴스 내보내기"
 }

@@ -617,5 +617,7 @@
     "Buy link": "Enllaç de compra",
     "Buy links are allowed from the following domains": "Els enllaços de compra es permeten des dels dominis següents",
     "Media license": "Llicència de mitjans",
-    "Media creator": "Creador de mitjans"
+    "Media creator": "Creador de mitjans",
+    "Import Blocks": "Importa instàncies bloquejades",
+    "Export Blocks": "Exporta instàncies bloquejades"
 }

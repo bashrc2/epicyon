@@ -617,5 +617,7 @@
     "Buy link": "Купить ссылку",
     "Buy links are allowed from the following domains": "Ссылки на покупку разрешены со следующих доменов",
     "Media license": "Медиа лицензия",
-    "Media creator": "Создатель медиа"
+    "Media creator": "Создатель медиа",
+    "Import Blocks": "Импорт заблокированных экземпляров",
+    "Export Blocks": "Экспорт заблокированных экземпляров"
 }

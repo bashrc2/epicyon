@@ -333,8 +333,8 @@ def html_theme_designer(base_dir: str,
     export_import_str += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
-    export_import_str += '      <input type="file" id="import_theme" '
-    export_import_str += 'name="submitImportTheme" '
+    export_import_str += '      <input type="file" id="importTheme" '
+    export_import_str += 'name="importTheme" '
     export_import_str += 'accept="' + theme_formats + '">\n'
     export_import_str += \
         '      <label class="labels">' + \

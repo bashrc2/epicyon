@@ -617,5 +617,7 @@
     "Buy link": "رابط شراء",
     "Buy links are allowed from the following domains": "روابط الشراء مسموح بها من المجالات التالية",
     "Media license": "رخصة وسائل الإعلام",
-    "Media creator": "صانع الوسائط"
+    "Media creator": "صانع الوسائط",
+    "Import Blocks": "استيراد مثيلات محظورة",
+    "Export Blocks": "تصدير المثيلات المحظورة"
 }
