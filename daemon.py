@@ -6255,7 +6255,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(filename_base):
                         blocks_import_succeeded = False
                         if import_blocks(base_dir, nickname, domain,
-                                         filename_base):
+                                         filename):
                             print(nickname + ' imported blocks csv')
                             blocks_import_succeeded = True
                         try:
