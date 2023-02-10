@@ -6165,6 +6165,9 @@ class PubServer(BaseHTTPRequestHandler):
             if b'--LYNX' in post_bytes:
                 boundary = '--LYNX'
 
+        if debug:
+            print('post_bytes: ' + str(post_bytes))
+
         if boundary:
             # get the various avatar, banner and background images
             actor_changed = True
