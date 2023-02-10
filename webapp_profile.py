@@ -1540,7 +1540,7 @@ def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
     graphics_str += '      <input type="file" id="import_theme" '
-    graphics_str += 'name="submitImportTheme" '
+    graphics_str += 'name="import_theme" '
     graphics_str += 'accept="' + THEME_FORMATS + '">\n'
     graphics_str += \
         '      <label class="labels">' + \
@@ -2049,7 +2049,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         '      <label class="labels">' + \
         translate['Import Blocks'] + '</label>\n'
     edit_profile_form += '      <input type="file" id="import_blocks" '
-    edit_profile_form += 'name="submitImportBlocks" '
+    edit_profile_form += 'name="import_blocks" '
     edit_profile_form += 'accept="' + BLOCKFILE_FORMATS + '">\n'
     edit_profile_form += \
         '      <label class="labels">' + \
@@ -2282,7 +2282,7 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
         '<p><label class="labels">' + \
         translate['Import Follows'] + '</label>\n'
     edit_profile_form += '<input type="file" id="import_follows" '
-    edit_profile_form += 'name="submitImportFollows" '
+    edit_profile_form += 'name="import_follows" '
     edit_profile_form += 'accept=".csv"></p>\n'
 
     edit_profile_form += \

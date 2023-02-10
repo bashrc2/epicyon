@@ -6173,9 +6173,9 @@ class PubServer(BaseHTTPRequestHandler):
                 'banner', 'search_banner',
                 'instanceLogo',
                 'left_col_image', 'right_col_image',
-                'submitImportFollows',
-                'submitImportBlocks',
-                'submitImportTheme'
+                'import_follows',
+                'import_blocks',
+                'import_theme'
             )
             profile_media_types_uploaded = {}
             for m_type in profile_media_types:
@@ -6208,7 +6208,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if m_type == 'instanceLogo':
                     filename_base = \
                         base_dir + '/accounts/login.temp'
-                elif m_type == 'submitImportTheme':
+                elif m_type == 'import_theme':
                     if not os.path.isdir(base_dir + '/imports'):
                         os.mkdir(base_dir + '/imports')
                     filename_base = \
@@ -6219,11 +6219,11 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: _profile_edit unable to delete ' +
                                   filename_base)
-                elif m_type == 'submitImportFollows':
+                elif m_type == 'import_follows':
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
                         '/import_following.csv'
-                elif m_type == 'submitImportBlocks':
+                elif m_type == 'import_blocks':
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
                         '/import_blocks.csv'
@@ -6243,7 +6243,7 @@ class PubServer(BaseHTTPRequestHandler):
                           ' media, zip, csv or font filename in POST')
                     continue
 
-                if m_type == 'submitImportFollows':
+                if m_type == 'import_follows':
                     if os.path.isfile(filename_base):
                         print(nickname + ' imported follows csv')
                     else:
@@ -6251,7 +6251,7 @@ class PubServer(BaseHTTPRequestHandler):
                               nickname)
                     continue
 
-                if m_type == 'submitImportBlocks':
+                if m_type == 'import_blocks':
                     if os.path.isfile(filename_base):
                         blocks_import_succeeded = False
                         if import_blocks(base_dir, nickname, domain,
@@ -6270,7 +6270,7 @@ class PubServer(BaseHTTPRequestHandler):
                           nickname)
                     continue
 
-                if m_type == 'submitImportTheme':
+                if m_type == 'import_theme':
                     if nickname == admin_nickname or \
                        is_artist(base_dir, nickname):
                         if import_theme(base_dir, filename):
