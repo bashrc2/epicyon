@@ -617,5 +617,7 @@
     "Buy link": "Bağlantı satın al",
     "Buy links are allowed from the following domains": "Aşağıdaki alanlardan satın alma bağlantılarına izin verilir",
     "Media license": "Medya lisansı",
-    "Media creator": "Medya yaratıcısı"
+    "Media creator": "Medya yaratıcısı",
+    "Import Blocks": "Engellenen Örnekleri İçe Aktar",
+    "Export Blocks": "Engellenen Örnekleri Dışa Aktar"
 }

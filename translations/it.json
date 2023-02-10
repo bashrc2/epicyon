@@ -617,5 +617,7 @@
     "Buy link": "Link per l'acquisto",
     "Buy links are allowed from the following domains": "I link di acquisto sono consentiti dai seguenti domini",
     "Media license": "Licenza multimediale",
-    "Media creator": "Creatore multimediale"
+    "Media creator": "Creatore multimediale",
+    "Import Blocks": "Importa istanze bloccate",
+    "Export Blocks": "Esporta istanze bloccate"
 }

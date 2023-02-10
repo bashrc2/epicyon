@@ -92,6 +92,7 @@ from roles import is_devops
 from session import site_is_verified
 
 THEME_FORMATS = '.zip, .gz'
+BLOCKFILE_FORMATS = '.csv'
 
 
 def _valid_profile_preview_post(post_json_object: {},
@@ -2042,6 +2043,20 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     edit_profile_form += \
         edit_text_area(translate['Blocked accounts'], None, 'blocked',
                        blocked_str, 200, '', False)
+
+    # import and export blocks
+    edit_profile_form += \
+        '      <label class="labels">' + \
+        translate['Import Blocks'] + '</label>\n'
+    edit_profile_form += '      <input type="file" id="import_blocks" '
+    edit_profile_form += 'name="submitImportBlocks" '
+    edit_profile_form += 'accept="' + BLOCKFILE_FORMATS + '">\n'
+    edit_profile_form += \
+        '      <label class="labels">' + \
+        translate['Export Blocks'] + '</label><br>\n'
+    edit_profile_form += \
+        '      <button type="submit" class="button" ' + \
+        'name="submitExportBlocks">➤</button><br>\n'
 
     idx = 'Direct messages are always allowed from these instances.'
     edit_profile_form += \

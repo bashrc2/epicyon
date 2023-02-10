@@ -147,6 +147,7 @@ from media import replace_twitter
 from media import attach_media
 from media import path_is_video
 from media import path_is_audio
+from blocking import import_blocks
 from blocking import add_account_blocks
 from blocking import get_cw_list_variable
 from blocking import load_cw_lists
@@ -6172,6 +6173,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'instanceLogo',
                 'left_col_image', 'right_col_image',
                 'submitImportFollows',
+                'submitImportBlocks',
                 'submitImportTheme'
             )
             profile_media_types_uploaded = {}
@@ -6220,6 +6222,10 @@ class PubServer(BaseHTTPRequestHandler):
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
                         '/import_following.csv'
+                elif m_type == 'submitImportBlocks':
+                    filename_base = \
+                        acct_dir(base_dir, nickname, domain) + \
+                        '/import_blocks.csv'
                 else:
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
@@ -6242,6 +6248,25 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         print('WARN: failed to import follows from csv for ' +
                               nickname)
+                    continue
+
+                if m_type == 'submitImportBlocks':
+                    if os.path.isfile(filename_base):
+                        blocks_import_succeeded = False
+                        if import_blocks(base_dir, nickname, domain,
+                                         filename_base):
+                            print(nickname + ' imported blocks csv')
+                            blocks_import_succeeded = True
+                        try:
+                            os.remove(filename_base)
+                        except OSError:
+                            print('EX: ' +
+                                  'unable to remove imported blocks file ' +
+                                  filename_base)
+                        if blocks_import_succeeded:
+                            continue
+                    print('WARN: failed to import blocks from csv for ' +
+                          nickname)
                     continue
 
                 if m_type == 'submitImportTheme':

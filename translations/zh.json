@@ -617,5 +617,7 @@
     "Buy link": "购买链接",
     "Buy links are allowed from the following domains": "允许来自以下域的购买链接",
     "Media license": "媒体许可证",
-    "Media creator": "媒体创作者"
+    "Media creator": "媒体创作者",
+    "Import Blocks": "导入被阻止的实例",
+    "Export Blocks": "导出被阻止的实例"
 }

@@ -617,5 +617,7 @@
     "Buy link": "koop link",
     "Buy links are allowed from the following domains": "Kooplinks zijn toegestaan vanaf de volgende domeinen",
     "Media license": "Media licentie",
-    "Media creator": "Media-maker"
+    "Media creator": "Media-maker",
+    "Import Blocks": "Importeer geblokkeerde instanties",
+    "Export Blocks": "Exporteer geblokkeerde instanties"
 }
