@@ -2773,10 +2773,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not show_public_only and store_to_cache and \
        box_name != 'tlmedia' and box_name != 'tlbookmarks' and \
        box_name != 'bookmarks':
+        cached_json = post_json_object
+        if announce_json_object:
+            cached_json = announce_json_object
         _save_individual_post_as_html_to_cache(base_dir, nickname, domain,
-                                               post_json_object, post_html)
+                                               cached_json, post_html)
         update_recent_posts_cache(recent_posts_cache, max_recent_posts,
-                                  post_json_object, post_html)
+                                  cached_json, post_html)
 
     _log_post_timing(enable_timing_log, post_start_time, '19')
 
