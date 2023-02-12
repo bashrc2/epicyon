@@ -135,17 +135,19 @@ def _valid_profile_preview_post(post_json_object: {},
         post_json_object = new_post_json_object
     if not post_json_object.get('actor'):
         return False, None
+    # convert actor back to id
     if isinstance(post_json_object['actor'], dict):
         if post_json_object['actor'].get('id'):
             post_json_object['actor'] = post_json_object['actor']['id']
-    if not is_announced_feed_item:
-        if has_object_dict(post_json_object):
-            if post_json_object['object'].get('attributedTo'):
-                if isinstance(post_json_object['object']['attributedTo'],
-                              dict):
-                    if post_json_object['object']['attributedTo'].get('id'):
-                        post_json_object['object']['attributedTo'] = \
-                            post_json_object['object']['attributedTo']['id']
+    if has_object_dict(post_json_object):
+        # convert actor back to id
+        if post_json_object['object'].get('attributedTo'):
+            if isinstance(post_json_object['object']['attributedTo'],
+                          dict):
+                if post_json_object['object']['attributedTo'].get('id'):
+                    post_json_object['object']['attributedTo'] = \
+                        post_json_object['object']['attributedTo']['id']
+        if not is_announced_feed_item:
             if post_json_object['actor'] != person_url and \
                post_json_object['object']['type'] != 'Page':
                 return False, None
