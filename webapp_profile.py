@@ -412,6 +412,9 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             show_item, post_json_object = \
                 _valid_profile_preview_post(item, person_url)
             if not show_item:
+                if debug:
+                    print('DEBUG: item not valid in profile posts: ' +
+                          str(item))
                 continue
 
             profile_str += \
