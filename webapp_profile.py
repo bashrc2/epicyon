@@ -140,7 +140,7 @@ def _valid_profile_preview_post(post_json_object: {},
         if post_json_object['actor'].get('id'):
             post_json_object['actor'] = post_json_object['actor']['id']
     if has_object_dict(post_json_object):
-        # convert actor back to id
+        # convert attributedTo actor back to id
         if post_json_object['object'].get('attributedTo'):
             if isinstance(post_json_object['object']['attributedTo'],
                           dict):
