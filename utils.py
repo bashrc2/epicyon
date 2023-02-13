@@ -4178,7 +4178,6 @@ def is_quote_toot(post_json_object: str, content: str) -> bool:
     """
     # Pleroma/Misskey implementations
     if post_json_object['object'].get('quoteUri') or \
-       post_json_object['object'].get('quoteUrl') or \
        post_json_object['object'].get('_misskey_quote'):
         return True
     # More correct ActivityPub implementation - adding a Link tag
