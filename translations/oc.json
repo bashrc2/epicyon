@@ -190,6 +190,9 @@
     "Ask a question": "Ask a question",
     "Possible answers": "Possible answers",
     "replying to": "replying to",
+    "publicly replying to": "publicly replying to",
+    "replying to followers": "replying to followers",
+    "replying unlisted": "replying unlisted",
     "replying to themselves": "replying to themselves",
     "announces": "announces",
     "Previous month": "Previous month",
@@ -610,5 +613,7 @@
     "Buy link": "Buy link",
     "Buy links are allowed from the following domains": "Buy links are allowed from the following domains",
     "Media license": "Media license",
-    "Media creator": "Media creator"
+    "Media creator": "Media creator",
+    "Import Blocks": "Import Blocks",
+    "Export Blocks": "Export Blocks"
 }

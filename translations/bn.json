@@ -194,6 +194,9 @@
     "Ask a question": "প্রশ্ন জিজ্ঞাসা কর",
     "Possible answers": "সম্ভাব্য উত্তর",
     "replying to": "এর জবাব",
+    "publicly replying to": "প্রকাশ্যে উত্তর দিচ্ছেন",
+    "replying to followers": "অনুগামীদের উত্তর",
+    "replying unlisted": "অতালিকাভুক্ত উত্তর",
     "replying to themselves": "নিজেদের জবাব দিচ্ছে",
     "announces": "ঘোষণা করে",
     "Previous month": "পূর্ববর্তী মাস",
@@ -614,5 +617,7 @@
     "Buy link": "সংযোগ কেনা",
     "Buy links are allowed from the following domains": "নিম্নলিখিত ডোমেনগুলি থেকে লিঙ্কগুলি কেনার অনুমতি দেওয়া হয়েছে",
     "Media license": "মিডিয়া লাইসেন্স",
-    "Media creator": "মিডিয়া নির্মাতা"
+    "Media creator": "মিডিয়া নির্মাতা",
+    "Import Blocks": "অবরুদ্ধ দৃষ্টান্ত আমদানি করুন",
+    "Export Blocks": "অবরুদ্ধ দৃষ্টান্ত রপ্তানি করুন"
 }

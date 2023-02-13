@@ -194,6 +194,9 @@
     "Ask a question": "प्रश्न पूछें",
     "Possible answers": "संभावित उत्तर",
     "replying to": "करने के लिए जवाब दे",
+    "publicly replying to": "सार्वजनिक रूप से जवाब दे रहा है",
+    "replying to followers": "अनुयायियों को जवाब देना",
+    "replying unlisted": "असूचीबद्ध उत्तर दे रहा है",
     "replying to themselves": "खुद को जवाब दे",
     "announces": "की घोषणा",
     "Previous month": "पिछ्ला महिना",
@@ -614,5 +617,7 @@
     "Buy link": "लिंक खरीदें",
     "Buy links are allowed from the following domains": "निम्नलिखित डोमेन से खरीदें लिंक की अनुमति है",
     "Media license": "मीडिया लाइसेंस",
-    "Media creator": "मीडिया निर्माता"
+    "Media creator": "मीडिया निर्माता",
+    "Import Blocks": "अवरोधित उदाहरण आयात करें",
+    "Export Blocks": "निर्यात अवरुद्ध उदाहरण"
 }

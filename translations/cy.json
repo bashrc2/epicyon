@@ -194,6 +194,9 @@
     "Ask a question": "Gofyn cwestiwn",
     "Possible answers": "Atebion posib",
     "replying to": "ateb i",
+    "publicly replying to": "yn ateb yn gyhoeddus",
+    "replying to followers": "ateb i ddilynwyr",
+    "replying unlisted": "ateb heb ei restru",
     "replying to themselves": "ateb iddynt eu hunain",
     "announces": "yn cyhoeddi",
     "Previous month": "Y mis blaenorol",
@@ -614,5 +617,7 @@
     "Buy link": "Prynu dolen",
     "Buy links are allowed from the following domains": "Caniateir dolenni prynu o'r parthau canlynol",
     "Media license": "Trwydded cyfryngau",
-    "Media creator": "Crëwr cyfryngau"
+    "Media creator": "Crëwr cyfryngau",
+    "Import Blocks": "Mewnforio Achosion wedi'u Rhwystro",
+    "Export Blocks": "Allforio Achosion wedi'u Rhwystro"
 }

@@ -194,6 +194,9 @@
     "Ask a question": "Задайте вопрос",
     "Possible answers": "Возможные ответы",
     "replying to": "отвечая на",
+    "publicly replying to": "публично отвечая на",
+    "replying to followers": "отвечаю подписчикам",
+    "replying unlisted": "ответ не в списке",
     "replying to themselves": "отвечая на себя",
     "announces": "анонсов",
     "Previous month": "Предыдущий месяц",
@@ -614,5 +617,7 @@
     "Buy link": "Купить ссылку",
     "Buy links are allowed from the following domains": "Ссылки на покупку разрешены со следующих доменов",
     "Media license": "Медиа лицензия",
-    "Media creator": "Создатель медиа"
+    "Media creator": "Создатель медиа",
+    "Import Blocks": "Импорт заблокированных экземпляров",
+    "Export Blocks": "Экспорт заблокированных экземпляров"
 }

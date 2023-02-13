@@ -194,6 +194,9 @@
     "Ask a question": "질문하기",
     "Possible answers": "가능한 답변",
     "replying to": "답장",
+    "publicly replying to": "공개적으로 답장",
+    "replying to followers": "팔로워에게 회신",
+    "replying unlisted": "목록에 없는 회신",
     "replying to themselves": "스스로에게 답장",
     "announces": "발표하다",
     "Previous month": "지난달",
@@ -614,5 +617,7 @@
     "Buy link": "구매 링크",
     "Buy links are allowed from the following domains": "다음 도메인에서 구매 링크가 허용됩니다.",
     "Media license": "미디어 라이센스",
-    "Media creator": "미디어 크리에이터"
+    "Media creator": "미디어 크리에이터",
+    "Import Blocks": "차단된 인스턴스 가져오기",
+    "Export Blocks": "차단된 인스턴스 내보내기"
 }

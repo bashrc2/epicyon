@@ -194,6 +194,9 @@
     "Ask a question": "Bir soru sor",
     "Possible answers": "Olası cevaplar",
     "replying to": "yanıtlamak",
+    "publicly replying to": "herkese açık olarak yanıtlama",
+    "replying to followers": "takipçilere cevap verme",
+    "replying unlisted": "liste dışı yanıtlama",
     "replying to themselves": "kendilerine cevap vermek",
     "announces": "duyurur",
     "Previous month": "Geçtiğimiz ay",
@@ -614,5 +617,7 @@
     "Buy link": "Bağlantı satın al",
     "Buy links are allowed from the following domains": "Aşağıdaki alanlardan satın alma bağlantılarına izin verilir",
     "Media license": "Medya lisansı",
-    "Media creator": "Medya yaratıcısı"
+    "Media creator": "Medya yaratıcısı",
+    "Import Blocks": "Engellenen Örnekleri İçe Aktar",
+    "Export Blocks": "Engellenen Örnekleri Dışa Aktar"
 }
