@@ -364,9 +364,6 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             person_url + '">\n'
         if not is_following_actor(base_dir, nickname, domain, person_url):
             if is_moderator(base_dir, nickname):
-                search_handle = search_nickname + '@' + search_domain_full
-                profile_str += '      <input type="hidden" ' + \
-                    'name="moderationAction" value="' + search_handle + '">\n'
                 profile_str += \
                     '      <button type="submit" class="button" ' + \
                     'name="submitInfo" ' + \
