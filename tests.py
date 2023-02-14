@@ -5995,7 +5995,17 @@ def _test_extract_text_fields_from_post():
         '116202748023898664511855843036\r\nContent-Disposition: ' + \
         'form-data; name="attachpic"; filename=""\r\nContent-Type: ' + \
         'application/octet-stream\r\n\r\n\r\n----------------------' + \
-        '-------116202748023898664511855843036--\r\n'
+        '-------116202748023898664511855843036--\r\n' + \
+        'Content-Disposition: form-data; name="importBlocks"; ' + \
+        'filename="wildebeest_suspend.csv"\r\nContent-Type: ' + \
+        'text/csv\r\n\r\n#domain,#severity,#reject_media,#reject_reports,' + \
+        '#public_comment,#obfuscate\nbgp.social,suspend,false,false,' + \
+        '"Wildebeest",false\ncesko.social,suspend,false,false,' + \
+        '"Wildebeest",false\ncloudflare.social,suspend,false,false,' + \
+        '"Wildebeest",false\ndogfood.social,suspend,false,false,' + \
+        '"Wildebeest",false\ndomo.cafe,suspend,false,false,"Wildebeest",' + \
+        'false\nemaw.social,suspend,false,false\n\r\n ' + \
+        '-----------------------------116202748023898664511855843036--\r\n'
     debug = False
     fields = extract_text_fields_in_post(None, boundary, debug, form_data)
     assert fields['submitPost'] == 'Submit'
@@ -6006,6 +6016,9 @@ def _test_extract_text_fields_from_post():
     assert fields['location'] == ''
     assert fields['imageDescription'] == ''
     assert fields['message'] == 'This is a ; test'
+    if not fields['importBlocks'][1:].startswith('#domain,#severity,'):
+        print(fields['importBlocks'])
+    assert fields['importBlocks'][1:].startswith('#domain,#severity,')
 
 
 def _test_speaker_replace_link():

@@ -1460,3 +1460,155 @@ def get_cw_list_variable(list_name: str) -> str:
     """Returns the variable associated with a CW list
     """
     return 'list' + list_name.replace(' ', '').replace("'", '')
+
+
+def import_blocking_file(base_dir: str, nickname: str, domain: str,
+                         lines: []) -> bool:
+    """Imports blocked domains for a given account
+    """
+    if not lines:
+        return False
+    if len(lines) < 2:
+        return False
+    if not lines[0].startswith('#domain,#') or \
+       'comment' not in lines[0]:
+        return False
+    fieldnames = lines[0].split(',')
+    comment_field_index = 0
+    for field_str in fieldnames:
+        if 'comment' in field_str:
+            break
+        comment_field_index += 1
+    if comment_field_index >= len(fieldnames):
+        return False
+
+    account_directory = acct_dir(base_dir, nickname, domain)
+    blocking_filename = \
+        account_directory + '/blocking.txt'
+    blocking_reasons_filename = \
+        account_directory + '/blocking_reasons.txt'
+
+    existing_lines = []
+    if os.path.isfile(blocking_filename):
+        try:
+            with open(blocking_filename, 'r', encoding='utf-8') as fp_blocks:
+                existing_lines = fp_blocks.read().splitlines()
+        except OSError:
+            print('EX: ' +
+                  'unable to import existing blocked instances from file ' +
+                  blocking_filename)
+    existing_reasons = []
+    if os.path.isfile(blocking_reasons_filename):
+        try:
+            with open(blocking_reasons_filename,
+                      'r', encoding='utf-8') as fp_blocks:
+                existing_reasons = fp_blocks.read().splitlines()
+        except OSError:
+            print('EX: ' +
+                  'unable to import existing ' +
+                  'blocked instance reasons from file ' +
+                  blocking_reasons_filename)
+
+    append_blocks = []
+    append_reasons = []
+    for line_str in lines:
+        if line_str.startswith('#'):
+            continue
+        block_fields = line_str.split(',')
+        blocked_domain_name = block_fields[0].strip()
+        if ' ' in blocked_domain_name or \
+           '.' not in blocked_domain_name:
+            continue
+        if blocked_domain_name in existing_lines:
+            # already blocked
+            continue
+        append_blocks.append(blocked_domain_name)
+        blocked_comment = ''
+        if '"' in line_str:
+            quote_section = line_str.split('"')
+            if len(quote_section) > 1:
+                blocked_comment = quote_section[1]
+                append_reasons.append(blocked_domain_name + ' ' +
+                                      blocked_comment)
+        if not blocked_comment:
+            if len(block_fields) > comment_field_index:
+                blocked_comment = block_fields[comment_field_index].strip()
+                if blocked_comment:
+                    if blocked_comment.startswith('"'):
+                        blocked_comment = blocked_comment.replace('"', '')
+                    if blocked_comment not in existing_reasons:
+                        append_reasons.append(blocked_domain_name + ' ' +
+                                              blocked_comment)
+    if not append_blocks:
+        return True
+
+    try:
+        with open(blocking_filename, 'a+', encoding='utf-8') as fp_blocks:
+            for new_block in append_blocks:
+                fp_blocks.write(new_block + '\n')
+    except OSError:
+        print('EX: ' +
+              'unable to append imported blocks to ' +
+              blocking_filename)
+
+    try:
+        with open(blocking_reasons_filename, 'a+',
+                  encoding='utf-8') as fp_blocks:
+            for new_reason in append_reasons:
+                fp_blocks.write(new_reason + '\n')
+    except OSError:
+        print('EX: ' +
+              'unable to append imported block reasons to ' +
+              blocking_reasons_filename)
+
+    return True
+
+
+def export_blocking_file(base_dir: str, nickname: str, domain: str) -> str:
+    """exports account level blocks in a csv format
+    """
+    account_directory = acct_dir(base_dir, nickname, domain)
+    blocking_filename = \
+        account_directory + '/blocking.txt'
+    blocking_reasons_filename = \
+        account_directory + '/blocking_reasons.txt'
+
+    blocks_header = \
+        '#domain,#severity,#reject_media,#reject_reports,' + \
+        '#public_comment,#obfuscate\n'
+
+    if not os.path.isfile(blocking_filename):
+        return blocks_header
+
+    blocking_lines = []
+    if os.path.isfile(blocking_filename):
+        try:
+            with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
+                blocking_lines = fp_block.read().splitlines()
+        except OSError:
+            print('EX: export_blocks failed to read ' + blocking_filename)
+
+    blocking_reasons = []
+    if os.path.isfile(blocking_reasons_filename):
+        try:
+            with open(blocking_reasons_filename, 'r',
+                      encoding='utf-8') as fp_block:
+                blocking_reasons = fp_block.read().splitlines()
+        except OSError:
+            print('EX: export_blocks failed to read ' +
+                  blocking_reasons_filename)
+
+    blocks_str = blocks_header
+    for blocked_domain in blocking_lines:
+        blocked_domain = blocked_domain.strip()
+        if blocked_domain.startswith('#'):
+            continue
+        reason_str = ''
+        for reason_line in blocking_reasons:
+            if reason_line.startswith(blocked_domain + ' '):
+                reason_str = reason_line.split(' ', 1)[1]
+                break
+        blocks_str += \
+            blocked_domain + ',suspend,false,false,"' + \
+            reason_str + '",false\n'
+    return blocks_str

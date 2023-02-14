@@ -194,6 +194,9 @@
     "Ask a question": "问一个问题",
     "Possible answers": "可能的答案",
     "replying to": "回覆",
+    "publicly replying to": "公开回复",
+    "replying to followers": "回复关注者",
+    "replying unlisted": "回复不公开",
     "replying to themselves": "回覆自己",
     "announces": "宣布",
     "Previous month": "前一个月",
@@ -614,5 +617,7 @@
     "Buy link": "购买链接",
     "Buy links are allowed from the following domains": "允许来自以下域的购买链接",
     "Media license": "媒体许可证",
-    "Media creator": "媒体创作者"
+    "Media creator": "媒体创作者",
+    "Import Blocks": "导入被阻止的实例",
+    "Export Blocks": "导出被阻止的实例"
 }

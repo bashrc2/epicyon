@@ -194,6 +194,9 @@
     "Ask a question": "Poser une question",
     "Possible answers": "Des réponses possibles",
     "replying to": "répondre à",
+    "publicly replying to": "répondre publiquement à",
+    "replying to followers": "répondre aux abonnés",
+    "replying unlisted": "réponse non répertoriée",
     "replying to themselves": "se répondre à eux-mêmes",
     "announces": "annonce",
     "Previous month": "Le mois précédent",
@@ -614,5 +617,7 @@
     "Buy link": "Acheter un lien",
     "Buy links are allowed from the following domains": "Les liens d'achat sont autorisés à partir des domaines suivants",
     "Media license": "Licence média",
-    "Media creator": "Créateur de médias"
+    "Media creator": "Créateur de médias",
+    "Import Blocks": "Importer des instances bloquées",
+    "Export Blocks": "Exporter les instances bloquées"
 }

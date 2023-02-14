@@ -92,6 +92,7 @@ from roles import is_devops
 from session import site_is_verified
 
 THEME_FORMATS = '.zip, .gz'
+BLOCKFILE_FORMATS = '.csv'
 
 
 def _valid_profile_preview_post(post_json_object: {},
@@ -226,6 +227,11 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     display_name = search_nickname
     if profile_json.get('name'):
         display_name = profile_json['name']
+    display_name = remove_html(display_name)
+    display_name = \
+        add_emoji_to_display_name(session, base_dir, http_prefix,
+                                  nickname, domain,
+                                  display_name, False, translate)
 
     locked_account = get_locked_account(profile_json)
     if locked_account:
@@ -246,6 +252,10 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     profile_description = ''
     if profile_json.get('summary'):
         profile_description = profile_json['summary']
+    profile_description = \
+        add_emoji_to_display_name(session, base_dir, http_prefix,
+                                  nickname, domain,
+                                  profile_description, False, translate)
     outbox_url = None
     if not profile_json.get('outbox'):
         if debug:
@@ -468,7 +478,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             '        <b>' + occupation_name + '</b><br>\n'
 
     html_str += \
-        '        <h1>' + remove_html(display_name) + '\n</h1>\n' + \
+        '        <h1>' + display_name + '\n</h1>\n' + \
         occupation_str
 
     html_str += \
@@ -577,7 +587,7 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
         display_name = search_nickname
     html_str += \
         '        <h1>\n' + \
-        '          ' + remove_html(display_name) + '\n' + \
+        '          ' + display_name + '\n' + \
         '        </h1>\n' + \
         '    <p><b>@' + search_nickname + '@' + search_domain_full + \
         '</b><br>\n'
@@ -692,15 +702,17 @@ def html_profile(signing_priv_key_pem: str,
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
+    display_name = remove_html(profile_json['name'])
     display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
-                                  profile_json['name'], True, translate)
+                                  display_name, False, translate)
     domain_full = get_full_domain(domain, port)
+    profile_description = profile_json['summary']
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
-                                  profile_json['summary'], False, translate)
+                                  profile_description, False, translate)
     if profile_description:
         profile_description = standardize_text(profile_description)
     posts_button = 'button'
@@ -1527,8 +1539,8 @@ def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
     graphics_str += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
-    graphics_str += '      <input type="file" id="import_theme" '
-    graphics_str += 'name="submitImportTheme" '
+    graphics_str += '      <input type="file" id="importTheme" '
+    graphics_str += 'name="importTheme" '
     graphics_str += 'accept="' + THEME_FORMATS + '">\n'
     graphics_str += \
         '      <label class="labels">' + \
@@ -2032,6 +2044,20 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_text_area(translate['Blocked accounts'], None, 'blocked',
                        blocked_str, 200, '', False)
 
+    # import and export blocks
+    edit_profile_form += \
+        '      <label class="labels">' + \
+        translate['Import Blocks'] + '</label>\n'
+    edit_profile_form += '      <input type="file" id="importBlocks" '
+    edit_profile_form += 'name="importBlocks" '
+    edit_profile_form += 'accept="' + BLOCKFILE_FORMATS + '">\n'
+    edit_profile_form += \
+        '      <label class="labels">' + \
+        translate['Export Blocks'] + '</label><br>\n'
+    edit_profile_form += \
+        '      <button type="submit" class="button" ' + \
+        'name="submitExportBlocks">➤</button><br>\n'
+
     idx = 'Direct messages are always allowed from these instances.'
     edit_profile_form += \
         edit_text_area(translate['Direct Message permitted instances'], None,
@@ -2255,8 +2281,8 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
     edit_profile_form += \
         '<p><label class="labels">' + \
         translate['Import Follows'] + '</label>\n'
-    edit_profile_form += '<input type="file" id="import_follows" '
-    edit_profile_form += 'name="submitImportFollows" '
+    edit_profile_form += '<input type="file" id="importFollows" '
+    edit_profile_form += 'name="importFollows" '
     edit_profile_form += 'accept=".csv"></p>\n'
 
     edit_profile_form += \

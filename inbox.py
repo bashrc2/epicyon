@@ -822,7 +822,9 @@ def _inbox_post_recipients_add(base_dir: str, http_prefix: str, to_list: [],
                           handle + ' does not exist')
         else:
             if debug:
-                if recipient.endswith('#Public'):
+                if recipient.endswith('#Public') or \
+                   recipient == 'as:Public' or \
+                   recipient == 'Public':
                     print('DEBUG: #Public recipient is too non-specific. ' +
                           recipient + ' ' + domain_match)
                 else:
@@ -2693,7 +2695,7 @@ def _receive_announce(recent_posts_cache: {},
               announced_actor_nickname + '@' + announced_actor_domain)
         return False
 
-    # is this post in the outbox of the person?
+    # is this post in the inbox or outbox of the account?
     post_filename = locate_post(base_dir, nickname, domain,
                                 message_json['object'])
     if not post_filename:
@@ -2701,6 +2703,7 @@ def _receive_announce(recent_posts_cache: {},
             print('DEBUG: announce post not found in inbox or outbox')
             print(message_json['object'])
         return True
+    # add actor to the list of announcers for a post
     update_announce_collection(recent_posts_cache, base_dir, post_filename,
                                message_json['actor'], nickname, domain, debug)
     if debug:
@@ -3179,7 +3182,9 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                           'allow comments: ' + original_post_id)
                     return False
     if invalid_ciphertext(message_json['object']['content']):
-        print('REJECT: malformed ciphertext in content')
+        print('REJECT: malformed ciphertext in content ' +
+              message_json['object']['id'] + ' ' +
+              message_json['object']['content'])
         return False
     if debug:
         print('ACCEPT: post content is valid')

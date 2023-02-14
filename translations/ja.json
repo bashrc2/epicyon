@@ -194,6 +194,9 @@
     "Ask a question": "質問する",
     "Possible answers": "可能な答え",
     "replying to": "に返信する",
+    "publicly replying to": "公に返信する",
+    "replying to followers": "フォロワーへの返信",
+    "replying unlisted": "リストにない返信",
     "replying to themselves": "自分に返信する",
     "announces": "発表する",
     "Previous month": "前月",
@@ -614,5 +617,7 @@
     "Buy link": "購入リンク",
     "Buy links are allowed from the following domains": "次のドメインからの購入リンクが許可されています",
     "Media license": "メディアライセンス",
-    "Media creator": "メディアクリエーター"
+    "Media creator": "メディアクリエーター",
+    "Import Blocks": "ブロックされたインスタンスのインポート",
+    "Export Blocks": "ブロックされたインスタンスのエクスポート"
 }

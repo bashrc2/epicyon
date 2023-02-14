@@ -194,6 +194,9 @@
     "Ask a question": "Ceist a chur",
     "Possible answers": "Freagraí féideartha",
     "replying to": "ag freagairt",
+    "publicly replying to": "ag freagairt go poiblí ar",
+    "replying to followers": "ag freagairt do leantóirí",
+    "replying unlisted": "freagra neamhliostaithe",
     "replying to themselves": "ag freagairt dóibh féin",
     "announces": "fógraíonn",
     "Previous month": "An mhí roimhe seo",
@@ -614,5 +617,7 @@
     "Buy link": "Ceannaigh nasc",
     "Buy links are allowed from the following domains": "Ceadaítear naisc cheannaigh ó na fearainn seo a leanas",
     "Media license": "Ceadúnas meáin",
-    "Media creator": "Cruthaitheoir meáin"
+    "Media creator": "Cruthaitheoir meáin",
+    "Import Blocks": "Iompórtáil Cásanna Blocáilte",
+    "Export Blocks": "Easpórtáil Cásanna Blocáilte"
 }

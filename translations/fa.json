@@ -194,6 +194,9 @@
     "Ask a question": "یه سوال بپرس",
     "Possible answers": "پاسخ های ممکن",
     "replying to": "در حال پاسخ دادن به",
+    "publicly replying to": "علنی پاسخ دادن به",
+    "replying to followers": "پاسخ به دنبال کنندگان",
+    "replying unlisted": "در حال پاسخ به فهرست نشده",
     "replying to themselves": "به خودشان پاسخ می دهند",
     "announces": "اعلام می کند",
     "Previous month": "ماه گذشته",
@@ -614,5 +617,7 @@
     "Buy link": "لینک خرید",
     "Buy links are allowed from the following domains": "لینک خرید از دامنه های زیر مجاز است",
     "Media license": "مجوز رسانه",
-    "Media creator": "سازنده رسانه"
+    "Media creator": "سازنده رسانه",
+    "Import Blocks": "وارد کردن موارد مسدود شده",
+    "Export Blocks": "نمونه های مسدود شده را صادر کنید"
 }

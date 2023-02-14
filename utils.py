@@ -2096,7 +2096,9 @@ def is_dm(post_json_object: {}) -> bool:
         if not post_json_object['object'].get(field_name):
             continue
         for to_address in post_json_object['object'][field_name]:
-            if to_address.endswith('#Public'):
+            if to_address.endswith('#Public') or \
+               to_address == 'as:Public' or \
+               to_address == 'Public':
                 return False
             if to_address.endswith('followers'):
                 return False
@@ -2428,7 +2430,9 @@ def is_public_post(post_json_object: {}) -> bool:
     if not post_json_object['object'].get('to'):
         return False
     for recipient in post_json_object['object']['to']:
-        if recipient.endswith('#Public'):
+        if recipient.endswith('#Public') or \
+           recipient == 'as:Public' or \
+           recipient == 'Public':
             return True
     return False
 
@@ -2471,7 +2475,9 @@ def is_unlisted_post(post_json_object: {}) -> bool:
     if not has_followers:
         return False
     for recipient in post_json_object['object']['cc']:
-        if recipient.endswith('#Public'):
+        if recipient.endswith('#Public') or \
+           recipient == 'as:Public' or \
+           recipient == 'Public':
             return True
     return False
 

@@ -1178,6 +1178,14 @@ h3 {
         font-size: var(--font-size);
         color: var(--title-color);
     }
+    .container img.postScopeIcon {
+        float: none;
+        width: 30px;
+        margin: 0 0;
+        padding: 0 0;
+        border-radius: 0;
+        vertical-align: -6px;
+    }
     figcaption img.emojiheader {
         float: none;
         width: 25px;
@@ -2000,6 +2008,14 @@ h3 {
         font-size: var(--font-size-mobile);
         color: var(--title-color);
     }
+    .container img.postScopeIcon {
+        float: none;
+        width: 50px;
+        margin: 0 0;
+        padding: 0 0;
+        border-radius: 0;
+        vertical-align: -6px;
+    }
     blockquote {
         font-size: var(--quote-font-size-mobile);
     }
@@ -2811,6 +2827,14 @@ h3 {
         font-family:   var(--header-font);
         font-size: var(--font-size-tiny);
         color: var(--title-color);
+    }
+    .container img.postScopeIcon {
+        float: none;
+        width: 50px;
+        margin: 0 0;
+        padding: 0 0;
+        border-radius: 0;
+        vertical-align: -6px;
     }
     blockquote {
         font-size: var(--quote-font-size-tiny);

@@ -194,6 +194,9 @@
     "Ask a question": "Een vraag stellen",
     "Possible answers": "Mogelijke antwoorden",
     "replying to": "reageren op",
+    "publicly replying to": "openbaar beantwoorden",
+    "replying to followers": "reageren op volgers",
+    "replying unlisted": "niet vermeld reageren",
     "replying to themselves": "zichzelf beantwoorden",
     "announces": "kondigt aan",
     "Previous month": "Vorige maand",
@@ -614,5 +617,7 @@
     "Buy link": "koop link",
     "Buy links are allowed from the following domains": "Kooplinks zijn toegestaan vanaf de volgende domeinen",
     "Media license": "Media licentie",
-    "Media creator": "Media-maker"
+    "Media creator": "Media-maker",
+    "Import Blocks": "Importeer geblokkeerde instanties",
+    "Export Blocks": "Exporteer geblokkeerde instanties"
 }

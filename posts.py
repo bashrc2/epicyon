@@ -456,7 +456,9 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
             if this_item.get('to'):
                 is_public = False
                 for recipient in this_item['to']:
-                    if recipient.endswith('#Public'):
+                    if recipient.endswith('#Public') or \
+                       recipient == 'as:Public' or \
+                       recipient == 'Public':
                         is_public = True
                         break
                 if not is_public:
@@ -465,7 +467,9 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
             if item.get('to'):
                 is_public = False
                 for recipient in item['to']:
-                    if recipient.endswith('#Public'):
+                    if recipient.endswith('#Public') or \
+                       recipient == 'as:Public' or \
+                       recipient == 'Public':
                         is_public = True
                         break
                 if not is_public:
@@ -1402,7 +1406,12 @@ def _create_post_mentions(cc_url: str, new_post: {},
         to_cc = new_post['object']['cc']
         if len(to_recipients) != 1:
             return
-        if to_recipients[0].endswith('#Public') and \
+        to_public_recipient = False
+        if to_recipients[0].endswith('#Public') or \
+           to_recipients[0] == 'as:Public' or \
+           to_recipients[0] == 'Public':
+            to_public_recipient = True
+        if to_public_recipient and \
            cc_url.endswith('/followers'):
             for tag in tags:
                 if tag['type'] != 'Mention':
@@ -1582,7 +1591,9 @@ def _create_post_base(base_dir: str,
 
     is_public = False
     for recipient in to_recipients:
-        if recipient.endswith('#Public'):
+        if recipient.endswith('#Public') or \
+           recipient == 'as:Public' or \
+           recipient == 'Public':
             is_public = True
             break
 
@@ -2834,7 +2845,9 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
         if len(post_json_object['to']) == 0:
             return
         if not post_json_object['to'][0].endswith('#Public'):
-            return
+            if not post_json_object['to'][0] == 'as:Public':
+                if not post_json_object['to'][0] == 'Public':
+                    return
         if post_json_object.get('cc'):
             return
         post_json_object['cc'] = post_json_object['actor'] + '/followers'
@@ -2846,7 +2859,9 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
         if len(post_json_object['object']['to']) == 0:
             return
         if not post_json_object['object']['to'][0].endswith('#Public'):
-            return
+            if not post_json_object['object']['to'][0] == 'as:Public':
+                if not post_json_object['object']['to'][0] == 'Public':
+                    return
         if post_json_object['object'].get('cc'):
             return
         post_json_object['object']['cc'] = \
@@ -3222,7 +3237,9 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                     continue
                 if '/' not in address:
                     continue
-                if address.endswith('#Public'):
+                if address.endswith('#Public') or \
+                   address == 'as:Public' or \
+                   address == 'Public':
                     continue
                 if address.endswith('/followers'):
                     continue
@@ -3231,7 +3248,9 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
             address = recipients_object[rtype]
             if address:
                 if '/' in address:
-                    if address.endswith('#Public'):
+                    if address.endswith('#Public') or \
+                       address == 'as:Public' or \
+                       address == 'Public':
                         continue
                     if address.endswith('/followers'):
                         continue
@@ -3900,7 +3919,8 @@ def _add_post_string_to_timeline(post_str: str, boxname: str,
          ('"Create"' in post_str or '"Update"' in post_str))):
 
         if boxname == 'dm':
-            if '#Public' in post_str or '/followers' in post_str:
+            if '#Public' in post_str or \
+               '/followers' in post_str:
                 return False
         elif boxname == 'tlreplies':
             if box_actor not in post_str:

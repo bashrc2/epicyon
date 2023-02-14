@@ -147,6 +147,8 @@ from media import replace_twitter
 from media import attach_media
 from media import path_is_video
 from media import path_is_audio
+from blocking import import_blocking_file
+from blocking import export_blocking_file
 from blocking import add_account_blocks
 from blocking import get_cw_list_variable
 from blocking import load_cw_lists
@@ -6163,6 +6165,9 @@ class PubServer(BaseHTTPRequestHandler):
             if b'--LYNX' in post_bytes:
                 boundary = '--LYNX'
 
+        if debug:
+            print('post_bytes: ' + str(post_bytes))
+
         if boundary:
             # get the various avatar, banner and background images
             actor_changed = True
@@ -6171,8 +6176,8 @@ class PubServer(BaseHTTPRequestHandler):
                 'banner', 'search_banner',
                 'instanceLogo',
                 'left_col_image', 'right_col_image',
-                'submitImportFollows',
-                'submitImportTheme'
+                'importFollows',
+                'importTheme'
             )
             profile_media_types_uploaded = {}
             for m_type in profile_media_types:
@@ -6205,7 +6210,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if m_type == 'instanceLogo':
                     filename_base = \
                         base_dir + '/accounts/login.temp'
-                elif m_type == 'submitImportTheme':
+                elif m_type == 'importTheme':
                     if not os.path.isdir(base_dir + '/imports'):
                         os.mkdir(base_dir + '/imports')
                     filename_base = \
@@ -6216,7 +6221,7 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: _profile_edit unable to delete ' +
                                   filename_base)
-                elif m_type == 'submitImportFollows':
+                elif m_type == 'importFollows':
                     filename_base = \
                         acct_dir(base_dir, nickname, domain) + \
                         '/import_following.csv'
@@ -6236,7 +6241,7 @@ class PubServer(BaseHTTPRequestHandler):
                           ' media, zip, csv or font filename in POST')
                     continue
 
-                if m_type == 'submitImportFollows':
+                if m_type == 'importFollows':
                     if os.path.isfile(filename_base):
                         print(nickname + ' imported follows csv')
                     else:
@@ -6244,7 +6249,7 @@ class PubServer(BaseHTTPRequestHandler):
                               nickname)
                     continue
 
-                if m_type == 'submitImportTheme':
+                if m_type == 'importTheme':
                     if nickname == admin_nickname or \
                        is_artist(base_dir, nickname):
                         if import_theme(base_dir, filename):
@@ -6313,6 +6318,14 @@ class PubServer(BaseHTTPRequestHandler):
                         '/exports/' + self.server.theme_name + '.zip'
                 print('submitExportTheme path=' + theme_download_path)
                 self._redirect_headers(theme_download_path,
+                                       cookie, calling_domain)
+                self.server.postreq_busy = False
+                return
+            elif 'name="submitExportBlocks"' in post_bytes_str:
+                print('submitExportBlocks')
+                blocks_download_path = actor_str + '/exports/blocks.csv'
+                print('submitExportBlocks path=' + blocks_download_path)
+                self._redirect_headers(blocks_download_path,
                                        cookie, calling_domain)
                 self.server.postreq_busy = False
                 return
@@ -7807,6 +7820,50 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         add_account_blocks(base_dir,
                                            nickname, domain, '')
+                    # import blocks from csv file
+                    if fields.get('importBlocks'):
+                        blocks_str = fields['importBlocks']
+                        while blocks_str.startswith('\n'):
+                            blocks_str = blocks_str[1:]
+                        blocks_lines = blocks_str.split('\n')
+                        if import_blocking_file(base_dir, nickname, domain,
+                                                blocks_lines):
+                            print('blocks imported for ' + nickname)
+                        else:
+                            print('blocks not imported for ' + nickname)
+
+                    if fields.get('importFollows'):
+                        filename_base = \
+                            acct_dir(base_dir, nickname, domain) + \
+                            '/import_following.csv'
+                        follows_str = fields['importFollows']
+                        while follows_str.startswith('\n'):
+                            follows_str = follows_str[1:]
+                        try:
+                            with open(filename_base, 'w+',
+                                      encoding='utf-8') as fp_foll:
+                                fp_foll.write(follows_str)
+                        except OSError:
+                            print('EX: unable to write imported follows ' +
+                                  filename_base)
+
+                    if fields.get('importTheme'):
+                        if not os.path.isdir(base_dir + '/imports'):
+                            os.mkdir(base_dir + '/imports')
+                        filename_base = \
+                            base_dir + '/imports/newtheme.zip'
+                        if os.path.isfile(filename_base):
+                            try:
+                                os.remove(filename_base)
+                            except OSError:
+                                print('EX: _profile_edit unable to delete ' +
+                                      filename_base)
+                        if nickname == admin_nickname or \
+                           is_artist(base_dir, nickname):
+                            if import_theme(base_dir, filename_base):
+                                print(nickname + ' uploaded a theme')
+                        else:
+                            print('Only admin or artist can import a theme')
 
                     # Save DM allowed instances list.
                     # The allow list for incoming DMs,
@@ -8361,6 +8418,25 @@ class PubServer(BaseHTTPRequestHandler):
                                        export_binary, None,
                                        domain_full, False, None)
                 self._write(export_binary)
+        self._404()
+
+    def _get_exported_blocks(self, path: str, base_dir: str,
+                             domain: str,
+                             calling_domain: str) -> None:
+        """Returns an exported blocks csv file
+        """
+        filename = path.split('/exports/', 1)[1]
+        filename = base_dir + '/exports/' + filename
+        nickname = get_nickname_from_actor(path)
+        if nickname:
+            blocks_str = export_blocking_file(base_dir, nickname, domain)
+            if blocks_str:
+                msg = blocks_str.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('text/csv',
+                                  msglen, None, calling_domain, False)
+                self._write(msg)
+                return
         self._404()
 
     def _get_fonts(self, calling_domain: str, path: str,
@@ -17293,9 +17369,15 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         if authorized and '/exports/' in self.path:
-            self._get_exported_theme(self.path,
-                                     self.server.base_dir,
-                                     self.server.domain_full)
+            if 'blocks.csv' in self.path:
+                self._get_exported_blocks(self.path,
+                                          self.server.base_dir,
+                                          self.server.domain,
+                                          calling_domain)
+            else:
+                self._get_exported_theme(self.path,
+                                         self.server.base_dir,
+                                         self.server.domain_full)
             return
 
         # get fonts
