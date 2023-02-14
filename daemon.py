@@ -4080,6 +4080,35 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.postreq_busy = False
             return
 
+        if '&submitInfo=' in follow_confirm_params:
+            following_actor = \
+                urllib.parse.unquote_plus(follow_confirm_params)
+            following_actor = following_actor.split('actor=')[1]
+            if '&' in following_actor:
+                following_actor = following_actor.split('&')[0]
+            if is_moderator(base_dir, follower_nickname):
+                msg = \
+                    html_account_info(self.server.translate,
+                                      base_dir, http_prefix,
+                                      follower_nickname,
+                                      self.server.domain,
+                                      self.server.port,
+                                      following_actor,
+                                      self.server.debug,
+                                      self.server.system_language,
+                                      self.server.signing_priv_key_pem)
+                if msg:
+                    msg = msg.encode('utf-8')
+                    msglen = len(msg)
+                    self._login_headers('text/html',
+                                        msglen, calling_domain)
+                    self._write(msg)
+                    self.server.postreq_busy = False
+                    return
+            self._redirect_headers(following_actor, cookie, calling_domain)
+            self.server.postreq_busy = False
+            return
+
         if '&submitYes=' in follow_confirm_params:
             following_actor = \
                 urllib.parse.unquote_plus(follow_confirm_params)
