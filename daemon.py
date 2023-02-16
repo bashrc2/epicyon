@@ -16424,7 +16424,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not can_reply_to(base_dir, nickname, domain,
                                     in_reply_to_url, reply_interval_hours):
                     print('Reply outside of time window ' + in_reply_to_url +
-                          str(reply_interval_hours) + ' hours')
+                          ' ' + str(reply_interval_hours) + ' hours')
                     self._403()
                     return True
                 if self.server.debug:
