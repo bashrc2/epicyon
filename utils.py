@@ -1754,7 +1754,8 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
     if not post_json_object:
         post_filename = locate_post(base_dir, nickname, domain, post_url)
         if not post_filename:
-            return False
+            # the post is not stored locally
+            return True
         post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
