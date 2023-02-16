@@ -97,7 +97,8 @@ def html_account_info(translate: {},
                       base_dir: str, http_prefix: str,
                       nickname: str, domain: str, port: int,
                       search_handle: str, debug: bool,
-                      system_language: str, signing_priv_key_pem: str) -> str:
+                      system_language: str, signing_priv_key_pem: str,
+                      back_url: str) -> str:
     """Shows which domains a search handle interacts with.
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
@@ -125,8 +126,10 @@ def html_account_info(translate: {},
     search_handle = search_nickname + '@' + search_domain
     search_actor = \
         local_actor_url(http_prefix, search_nickname, search_domain)
+    if not back_url:
+        back_url = '/users/' + nickname + '/moderation'
     info_form += \
-        '<center><h1><a href="/users/' + nickname + '/moderation">' + \
+        '<center><h1><a href="' + back_url + '">' + \
         translate['Account Information'] + ':</a> <a href="' + search_actor + \
         '">' + search_handle + '</a></h1><br>\n'
 
