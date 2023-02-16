@@ -371,6 +371,10 @@ A *counselor* is someone tasked with resolving disputes between users of the ins
 Devops are permitted to perform some routine administration functions, such as monitoring instance performance graphs.
 
 # Following
+*"I am not a beginning. I am not an end. I am a link in a chain."*
+
+-- Keith Haring
+
 On the main timeline screen at the top right of the centre column there is a search icon which looks like a magnifying glass. By convention within the fediverse the search function is also the way to look up and follow other people. Enter the handle (@name@domain) or URL of the profile page for the person that you want to follow and select *search*. If the account is found then its details will appear and you can choose to follow or not.
 
 ![Following people via search](manual-search-following.jpg)
