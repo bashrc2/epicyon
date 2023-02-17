@@ -23,6 +23,8 @@ from utils import remove_domain_port
 from utils import get_user_paths
 from utils import get_group_paths
 from utils import local_actor_url
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
 
 
 def _parse_handle(handle: str) -> (str, str, bool):
@@ -298,21 +300,54 @@ def webfinger_lookup(path: str, base_dir: str,
                      domain: str, onion_domain: str, i2p_domain: str,
                      port: int, debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
+    GET /.well-known/webfinger?resource=acct:user@domain
     """
     if not path.startswith('/.well-known/webfinger?'):
         return None
     handle = None
     res_type = 'acct'
-    if 'resource=' + res_type + ':' in path:
+    if 'resource=' + res_type + ':http' in path:
+        # GET /.well-known/webfinger?resource=acct:https://domain/users/nick
+        actor = path.split('resource=' + res_type + ':')[1]
+        actor = urllib.parse.unquote(actor.strip())
+        wf_nickname = get_nickname_from_actor(actor)
+        wf_domain, port = get_domain_from_actor(actor)
+        if wf_nickname and wf_domain:
+            handle = wf_nickname + '@' + wf_domain
+            if debug:
+                print('DEBUG: WEBFINGER handle ' + handle)
+    elif 'resource=' + res_type + ':' in path:
+        # GET /.well-known/webfinger?resource=acct:nick@domain
         handle = path.split('resource=' + res_type + ':')[1].strip()
         handle = urllib.parse.unquote(handle)
         if debug:
             print('DEBUG: WEBFINGER handle ' + handle)
+    elif 'resource=' + res_type + '%3Ahttp' in path:
+        # GET /.well-known/webfinger?resource=acct%3Ahttps://domain/users/nick
+        actor = path.split('resource=' + res_type + '%3A')[1]
+        actor = urllib.parse.unquote(actor.strip())
+        wf_nickname = get_nickname_from_actor(actor)
+        wf_domain, port = get_domain_from_actor(actor)
+        if wf_nickname and wf_domain:
+            handle = wf_nickname + '@' + wf_domain
+            if debug:
+                print('DEBUG: WEBFINGER handle ' + handle)
     elif 'resource=' + res_type + '%3A' in path:
+        # GET /.well-known/webfinger?resource=acct%3Anick@domain
         handle = path.split('resource=' + res_type + '%3A')[1]
         handle = urllib.parse.unquote(handle.strip())
         if debug:
             print('DEBUG: WEBFINGER handle ' + handle)
+    elif 'resource=http' in path:
+        # GET /.well-known/webfinger?resource=https://domain/users/nick
+        actor = path.split('resource=')[1]
+        actor = urllib.parse.unquote(actor.strip())
+        wf_nickname = get_nickname_from_actor(actor)
+        wf_domain, port = get_domain_from_actor(actor)
+        if wf_nickname and wf_domain:
+            handle = wf_nickname + '@' + wf_domain
+            if debug:
+                print('DEBUG: WEBFINGER handle ' + handle)
     if not handle:
         if debug:
             print('DEBUG: WEBFINGER handle missing')
