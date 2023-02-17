@@ -298,6 +298,7 @@ def webfinger_lookup(path: str, base_dir: str,
                      domain: str, onion_domain: str, i2p_domain: str,
                      port: int, debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
+    GET /.well-known/webfinger?resource=acct:user@domain
     """
     if not path.startswith('/.well-known/webfinger?'):
         return None
