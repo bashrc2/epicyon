@@ -135,8 +135,19 @@ def _valid_profile_preview_post(post_json_object: {},
         post_json_object = new_post_json_object
     if not post_json_object.get('actor'):
         return False, None
-    if not is_announced_feed_item:
-        if has_object_dict(post_json_object):
+    # convert actor back to id
+    if isinstance(post_json_object['actor'], dict):
+        if post_json_object['actor'].get('id'):
+            post_json_object['actor'] = post_json_object['actor']['id']
+    if has_object_dict(post_json_object):
+        # convert attributedTo actor back to id
+        if post_json_object['object'].get('attributedTo'):
+            if isinstance(post_json_object['object']['attributedTo'],
+                          dict):
+                if post_json_object['object']['attributedTo'].get('id'):
+                    post_json_object['object']['attributedTo'] = \
+                        post_json_object['object']['attributedTo']['id']
+        if not is_announced_feed_item:
             if post_json_object['actor'] != person_url and \
                post_json_object['object']['type'] != 'Page':
                 return False, None
@@ -352,6 +363,12 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             '      <input type="hidden" name="actor" value="' + \
             person_url + '">\n'
         if not is_following_actor(base_dir, nickname, domain, person_url):
+            if is_moderator(base_dir, nickname):
+                profile_str += \
+                    '      <button type="submit" class="button" ' + \
+                    'name="submitInfo" ' + \
+                    'accesskey="' + access_keys['infoButton'] + '">' + \
+                    translate['Info'] + '</button>\n'
             profile_str += \
                 '      <button type="submit" class="button" ' + \
                 'name="submitYes" ' + \
@@ -401,6 +418,9 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             show_item, post_json_object = \
                 _valid_profile_preview_post(item, person_url)
             if not show_item:
+                if debug:
+                    print('DEBUG: item not valid in profile posts: ' +
+                          str(item))
                 continue
 
             profile_str += \

@@ -2671,7 +2671,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               search_handle,
                                               self.server.debug,
                                               self.server.system_language,
-                                              self.server.signing_priv_key_pem)
+                                              self.server.signing_priv_key_pem,
+                                              None)
                     else:
                         msg = \
                             html_moderation_info(self.server.translate,
@@ -3778,7 +3779,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       options_actor,
                                       self.server.debug,
                                       self.server.system_language,
-                                      signing_priv_key_pem)
+                                      signing_priv_key_pem,
+                                      None)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -4076,6 +4078,36 @@ class PubServer(BaseHTTPRequestHandler):
             following_actor = following_actor.split('actor=')[1]
             if '&' in following_actor:
                 following_actor = following_actor.split('&')[0]
+            self._redirect_headers(following_actor, cookie, calling_domain)
+            self.server.postreq_busy = False
+            return
+
+        if '&submitInfo=' in follow_confirm_params:
+            following_actor = \
+                urllib.parse.unquote_plus(follow_confirm_params)
+            following_actor = following_actor.split('actor=')[1]
+            if '&' in following_actor:
+                following_actor = following_actor.split('&')[0]
+            if is_moderator(base_dir, follower_nickname):
+                msg = \
+                    html_account_info(self.server.translate,
+                                      base_dir, http_prefix,
+                                      follower_nickname,
+                                      self.server.domain,
+                                      self.server.port,
+                                      following_actor,
+                                      self.server.debug,
+                                      self.server.system_language,
+                                      self.server.signing_priv_key_pem,
+                                      users_path)
+                if msg:
+                    msg = msg.encode('utf-8')
+                    msglen = len(msg)
+                    self._login_headers('text/html',
+                                        msglen, calling_domain)
+                    self._write(msg)
+                    self.server.postreq_busy = False
+                    return
             self._redirect_headers(following_actor, cookie, calling_domain)
             self.server.postreq_busy = False
             return
@@ -16392,7 +16424,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not can_reply_to(base_dir, nickname, domain,
                                     in_reply_to_url, reply_interval_hours):
                     print('Reply outside of time window ' + in_reply_to_url +
-                          str(reply_interval_hours) + ' hours')
+                          ' ' + str(reply_interval_hours) + ' hours')
                     self._403()
                     return True
                 if self.server.debug:
@@ -20122,7 +20154,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   search_handle,
                                   self.server.debug,
                                   self.server.system_language,
-                                  self.server.signing_priv_key_pem)
+                                  self.server.signing_priv_key_pem,
+                                  None)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -20159,7 +20192,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   search_handle,
                                   self.server.debug,
                                   self.server.system_language,
-                                  self.server.signing_priv_key_pem)
+                                  self.server.signing_priv_key_pem,
+                                  None)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
