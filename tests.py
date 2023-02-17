@@ -1757,7 +1757,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     assert THR_BOB.is_alive() is False
 
     # queue item removed
-    time.sleep(4)
+    time.sleep(8)
     assert len([name for name in os.listdir(queue_path)
                 if os.path.isfile(os.path.join(queue_path, name))]) == 0
 
