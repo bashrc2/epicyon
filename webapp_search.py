@@ -518,7 +518,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
                 print('EX: html_search unable to save cached hashtag swarm ' +
                       cached_hashtag_swarm_filename)
 
-    follow_str += '  <p class="hashtagswarm">' + swarm_str + '</p>\n'
+    follow_str += '  <p class="hashtagswarm">' + swarm_str + '</p><br>\n'
     follow_str += '  </center>\n'
     follow_str += '  </div>\n'
     follow_str += '</div>\n'
