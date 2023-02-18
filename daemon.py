@@ -8960,6 +8960,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('EX: unable to read media binary ' +
                               media_filename)
                     if media_transcript:
+                        media_transcript = media_transcript.encode('utf-8')
                         self._set_headers_etag(media_filename, media_file_type,
                                                media_transcript, None,
                                                None, True,
