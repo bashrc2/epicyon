@@ -530,6 +530,7 @@ def _desktop_reply_to_post(session, post_id: str,
     event_end_time = None
     location = None
     buy_url = ''
+    video_transcript = None
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -537,8 +538,9 @@ def _desktop_reply_to_post(session, post_id: str,
                             to_nickname, to_domain, to_port, cc_url,
                             http_prefix, reply_message,
                             comments_enabled, attach, media_type,
-                            attached_image_description, city,
-                            cached_webfingers, person_cache, is_article,
+                            attached_image_description, video_transcript,
+                            city, cached_webfingers,
+                            person_cache, is_article,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             media_license_url, media_creator,
@@ -607,6 +609,7 @@ def _desktop_new_post(session,
     event_end_time = None
     location = None
     buy_url = ''
+    video_transcript = None
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -614,7 +617,7 @@ def _desktop_new_post(session,
                             None, '#Public', port, cc_url,
                             http_prefix, new_message,
                             comments_enabled, attach, media_type,
-                            attached_image_description, city,
+                            attached_image_description, video_transcript, city,
                             cached_webfingers, person_cache, is_article,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
@@ -1355,6 +1358,7 @@ def _desktop_new_dm_base(session, to_handle: str,
     event_end_time = None
     location = None
     buy_url = ''
+    video_transcript = None
 
     say_str = 'Sending'
     _say_command(say_str, say_str, screenreader, system_language, espeak)
@@ -1364,7 +1368,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                             to_nickname, to_domain, to_port, cc_url,
                             http_prefix, new_message,
                             comments_enabled, attach, media_type,
-                            attached_image_description, city,
+                            attached_image_description, video_transcript, city,
                             cached_webfingers, person_cache, is_article,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,

@@ -1697,6 +1697,7 @@ def _command_options() -> None:
         if argb.languages_understood:
             languages_understood = [argb.languages_understood]
         translate = {}
+        video_transcript = None
 
         print('Sending post to ' + argb.sendto)
         send_post_via_server(signing_priv_key_pem, __version__,
@@ -1705,7 +1706,8 @@ def _command_options() -> None:
                              to_nickname, to_domain, to_port, cc_url,
                              http_prefix, send_message,
                              argb.commentsEnabled, attach, media_type,
-                             attached_image_description, city,
+                             attached_image_description,
+                             video_transcript, city,
                              cached_webfingers, person_cache, is_article,
                              argb.language, languages_understood,
                              argb.low_bandwidth,
@@ -3386,6 +3388,7 @@ def _command_options() -> None:
         languages_understood = [argb.language]
         translate = {}
         buy_url = ''
+        test_video_transcript = ''
 
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "like this is totally just a #test man",
@@ -3393,7 +3396,8 @@ def _command_options() -> None:
                            test_c2s,
                            test_comments_enabled,
                            test_attach_image_filename,
-                           test_media_type, test_image_description, test_city,
+                           test_media_type, test_image_description,
+                           test_video_transcript, test_city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -3408,7 +3412,8 @@ def _command_options() -> None:
                            test_c2s,
                            test_comments_enabled,
                            test_attach_image_filename,
-                           test_media_type, test_image_description, test_city,
+                           test_media_type, test_image_description,
+                           test_video_transcript, test_city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -3423,7 +3428,8 @@ def _command_options() -> None:
                            test_c2s,
                            test_comments_enabled,
                            test_attach_image_filename,
-                           test_media_type, test_image_description, test_city,
+                           test_media_type, test_image_description,
+                           test_video_transcript, test_city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -3438,7 +3444,8 @@ def _command_options() -> None:
                            test_c2s,
                            test_comments_enabled,
                            test_attach_image_filename,
-                           test_media_type, test_image_description, test_city,
+                           test_media_type, test_image_description,
+                           test_video_transcript, test_city,
                            'someone', test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -3454,7 +3461,8 @@ def _command_options() -> None:
                            test_c2s,
                            test_comments_enabled,
                            'img/logo.png', 'image/png',
-                           'Description of image', test_city,
+                           'Description of image',
+                           test_video_transcript, test_city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -3469,7 +3477,8 @@ def _command_options() -> None:
                            test_c2s,
                            test_comments_enabled,
                            test_attach_image_filename,
-                           test_media_type, test_image_description, test_city,
+                           test_media_type, test_image_description,
+                           test_video_transcript, test_city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -3484,7 +3493,8 @@ def _command_options() -> None:
                            test_c2s,
                            test_comments_enabled,
                            test_attach_image_filename,
-                           test_media_type, test_image_description, test_city,
+                           test_media_type, test_image_description,
+                           test_video_transcript, test_city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -3499,7 +3509,8 @@ def _command_options() -> None:
                            test_c2s,
                            test_comments_enabled,
                            test_attach_image_filename,
-                           test_media_type, test_image_description, test_city,
+                           test_media_type, test_image_description,
+                           test_video_transcript, test_city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,

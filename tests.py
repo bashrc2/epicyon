@@ -777,6 +777,7 @@ def create_server_alice(path: str, domain: str, port: int,
         media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
         media_creator = 'Mr Blobby'
         buy_url = ''
+        test_video_transcript = ''
         create_public_post(path, nickname, domain, port, http_prefix,
                            "No wise fish would go anywhere without a porpoise",
                            test_save_to_file,
@@ -784,8 +785,9 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_comments_enabled,
                            test_attach_image_filename,
                            test_media_type,
-                           test_image_description, test_city,
-                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_image_description, test_video_transcript,
+                           test_city, test_in_reply_to,
+                           test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
@@ -800,8 +802,9 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_comments_enabled,
                            test_attach_image_filename,
                            test_media_type,
-                           test_image_description, test_city,
-                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_image_description, test_video_transcript,
+                           test_city, test_in_reply_to,
+                           test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
@@ -817,8 +820,9 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_comments_enabled,
                            test_attach_image_filename,
                            test_media_type,
-                           test_image_description, test_city,
-                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_image_description, test_video_transcript,
+                           test_city, test_in_reply_to,
+                           test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
@@ -947,6 +951,7 @@ def create_server_bob(path: str, domain: str, port: int,
         media_creator = 'Hamster'
         translate = {}
         buy_url = ''
+        test_video_transcript = ''
         create_public_post(path, nickname, domain, port, http_prefix,
                            "It's your life, live it your way.",
                            test_save_to_file,
@@ -954,8 +959,9 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_comments_enabled,
                            test_attach_image_filename,
                            test_media_type,
-                           test_image_description, test_city,
-                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_image_description, test_video_transcript,
+                           test_city, test_in_reply_to,
+                           test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
@@ -971,8 +977,9 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_comments_enabled,
                            test_attach_image_filename,
                            test_media_type,
-                           test_image_description, test_city,
-                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_image_description, test_video_transcript,
+                           test_city, test_in_reply_to,
+                           test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
@@ -987,8 +994,9 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_comments_enabled,
                            test_attach_image_filename,
                            test_media_type,
-                           test_image_description, test_city,
-                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_image_description, test_video_transcript,
+                           test_city, test_in_reply_to,
+                           test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
@@ -1327,6 +1335,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     assert test_image_height
     media_type = get_attachment_media_type(attached_image_filename)
     attached_image_description = 'Logo'
+    video_transcript = None
     is_article = False
     city = 'London, England'
     # nothing in Alice's outbox
@@ -1345,7 +1354,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   'यह एक परीक्षण है #sillyquestion',
                   save_to_file, client_to_server, True,
                   attached_image_filename, media_type,
-                  attached_image_description, city, federation_list,
+                  attached_image_description, video_transcript,
+                  city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
                   languages_understood,
@@ -1715,13 +1725,14 @@ def test_follow_between_servers(base_dir: str) -> None:
     signing_priv_key_pem = None
     translate = {}
     buy_url = ''
+    video_transcript = None
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'bob', bob_domain, bob_port, cc_url,
                   http_prefix, 'Alice message', save_to_file,
                   client_to_server, True,
-                  None, None, None, city, federation_list,
+                  None, None, None, video_transcript, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
                   languages_understood,
@@ -2086,13 +2097,14 @@ def test_shared_items_federation(base_dir: str) -> None:
     signing_priv_key_pem = None
     translate = {}
     buy_url = ''
+    video_transcript = None
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'bob', bob_domain, bob_port, cc_url,
                   http_prefix, 'Alice message', save_to_file,
                   client_to_server, True,
-                  None, None, None, city, federation_list,
+                  None, None, None, video_transcript, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
                   languages_understood,
@@ -2520,13 +2532,14 @@ def test_group_follow(base_dir: str) -> None:
 
     translate = {}
     buy_url = ''
+    video_transcript = None
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'testgroup', testgroup_domain, testgroupPort, cc_url,
                   http_prefix, "Alice group message",
                   save_to_file, client_to_server, True,
-                  None, None, None, city, federation_list,
+                  None, None, None, video_transcript, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
                   languages_understood,
@@ -2916,7 +2929,7 @@ def _test_create_person_account(base_dir: str):
                            content, save_to_file,
                            client_to_server,
                            comments_enabled, attach_image_filename, media_type,
-                           'Not suitable for Vogons', 'London, England',
+                           'Not suitable for Vogons', '', 'London, England',
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -2943,7 +2956,7 @@ def _test_create_person_account(base_dir: str):
                            content, save_to_file,
                            client_to_server,
                            comments_enabled, attach_image_filename, media_type,
-                           'Not suitable for Vogons', 'London, England',
+                           'Not suitable for Vogons', '', 'London, England',
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -3155,6 +3168,7 @@ def test_client_to_server(base_dir: str):
     location = "Kinshasa"
     translate = {}
     buy_url = ''
+    video_transcript = None
     send_result = \
         send_post_via_server(signing_priv_key_pem, __version__,
                              alice_dir, session_alice, 'alice', password,
@@ -3162,7 +3176,8 @@ def test_client_to_server(base_dir: str):
                              'bob', bob_domain, bob_port, None,
                              http_prefix, 'Sent from my ActivityPub client',
                              True, attached_image_filename, media_type,
-                             attached_image_description, city,
+                             attached_image_description,
+                             video_transcript, city,
                              cached_webfingers, person_cache, is_article,
                              system_language, languages_understood,
                              low_bandwidth, content_license_url,
@@ -4771,12 +4786,14 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     media_creator = 'Skeletor'
     translate = {}
     buy_url = ''
+    video_transcript = ''
     reply = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
                            client_to_server, comments_enabled,
                            attach_image_filename, media_type,
-                           image_description, city, test_in_reply_to,
+                           image_description, video_transcript,
+                           city, test_in_reply_to,
                            test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -5725,13 +5742,14 @@ def _test_links_within_post(base_dir: str) -> None:
     media_creator = 'Dr No'
     translate = {}
     buy_url = ''
+    video_transcript = ''
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
                            client_to_server, comments_enabled,
                            attach_image_filename, media_type,
-                           image_description, city,
+                           image_description, video_transcript, city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -5776,7 +5794,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            False,
                            False, True,
                            None, None,
-                           False, None,
+                           '', '', None,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -6852,13 +6870,14 @@ def _test_can_replyto(base_dir: str) -> None:
     media_creator = 'The Penguin'
     translate = {}
     buy_url = ''
+    video_transcript = ''
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
                            client_to_server, comments_enabled,
                            attach_image_filename, media_type,
-                           image_description, city,
+                           image_description, video_transcript, city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,

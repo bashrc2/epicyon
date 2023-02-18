@@ -3763,6 +3763,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     attach_image_filename = None
     media_type = None
     image_description = ''
+    video_transcript = None
     city = 'London, England'
     in_reply_to = remove_id_ending(sender_post_id)
     in_reply_to_atom_uri = None
@@ -3780,7 +3781,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    save_to_file, client_to_server,
                                    comments_enabled,
                                    attach_image_filename, media_type,
-                                   image_description, city,
+                                   image_description, video_transcript, city,
                                    in_reply_to, in_reply_to_atom_uri,
                                    subject, debug, schedule_post,
                                    event_date, event_time, event_end_time,

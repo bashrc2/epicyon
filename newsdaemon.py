@@ -635,6 +635,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         attach_image_filename = None
         media_type = None
         image_description = None
+        video_transcript = None
         city = 'London, England'
         conversation_id = None
         languages_understood = [system_language]
@@ -644,8 +645,8 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 rss_description,
                                 save_to_file,
                                 attach_image_filename, media_type,
-                                image_description, city,
-                                rss_title, system_language,
+                                image_description, video_transcript,
+                                city, rss_title, system_language,
                                 conversation_id, low_bandwidth,
                                 content_license_url,
                                 media_license_url, media_creator,

@@ -347,6 +347,7 @@ def html_new_post(edit_post_params: {},
     show_public_on_dropdown = True
     message_box_height = 400
     image_description_height = 150
+    transcript_height = 1000
 
     # filename of the banner shown at the top
     banner_file, _ = \
@@ -496,6 +497,13 @@ def html_new_post(edit_post_params: {},
     new_post_image_section += \
         edit_text_field(media_license_str, 'mediaLicense',
                         '', 'CC-BY-NC')
+    new_post_image_section += \
+        '    <label class="labels">' + \
+        translate['Transcript'] + ' (WebVTT)</label>\n'
+    new_post_image_section += \
+        '    <textarea id="videoTranscript" name="videoTranscript" ' + \
+        'style="height:' + str(transcript_height) + \
+        'px" spellcheck="true" autocomplete="on"></textarea>\n'
     new_post_image_section += end_edit_section()
 
     new_post_emoji_section = ''

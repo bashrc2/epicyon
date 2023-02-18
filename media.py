@@ -553,9 +553,11 @@ def attach_media(base_dir: str, http_prefix: str,
                  nickname: str, domain: str, port: int,
                  post_json: {}, image_filename: str,
                  media_type: str, description: str,
+                 video_transcript: str,
                  city: str, low_bandwidth: bool,
                  content_license_url: str,
-                 creator: str) -> {}:
+                 creator: str,
+                 system_language: str) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -619,6 +621,14 @@ def attach_media(base_dir: str, http_prefix: str,
             attachment_json['height'] = attach_image_height
 
     post_json['attachment'] = [attachment_json]
+    if video_transcript and 'video' in media_type:
+        video_transcript_json = {
+            'mediaType': 'text/vtt',
+            'name': system_language,
+            'type': 'Document',
+            'url': http_prefix + '://' + domain + '/' + media_path
+        }
+        post_json['attachment'].append(video_transcript_json)
 
     if base_dir:
         if media_type.startswith('image/'):

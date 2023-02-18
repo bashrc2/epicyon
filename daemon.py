@@ -660,6 +660,7 @@ class PubServer(BaseHTTPRequestHandler):
         attach_image_filename = None
         media_type = None
         image_description = None
+        video_transcript = None
         in_reply_to = message_id
         in_reply_to_atom_uri = message_id
         subject = None
@@ -696,7 +697,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            False, False,
                                            comments_enabled,
                                            attach_image_filename,
-                                           media_type, image_description, city,
+                                           media_type, image_description,
+                                           video_transcript, city,
                                            in_reply_to, in_reply_to_atom_uri,
                                            subject, self.server.debug,
                                            schedule_post,
@@ -20860,6 +20862,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             if not fields.get('imageDescription'):
                 fields['imageDescription'] = None
+            if not fields.get('videoTranscript'):
+                fields['videoTranscript'] = None
             if not fields.get('subject'):
                 fields['subject'] = None
             if not fields.get('replyTo'):
@@ -20950,6 +20954,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_creator = ''
                 if fields.get('mediaCreator'):
                     media_creator = fields['mediaCreator']
+                video_transcript = ''
+                if fields.get('videoTranscript'):
+                    video_transcript = fields['videoTranscript']
                 message_json = \
                     create_public_post(self.server.base_dir,
                                        nickname,
@@ -20960,6 +20967,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, False, comments_enabled,
                                        filename, attachment_media_type,
                                        fields['imageDescription'],
+                                       video_transcript,
                                        city,
                                        fields['replyTo'], fields['replyTo'],
                                        fields['subject'],
@@ -21062,6 +21070,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['message'],
                                        filename, attachment_media_type,
                                        fields['imageDescription'],
+                                       video_transcript,
                                        self.server.theme_name)
                     if message_json:
                         message_json = message_json.encode('utf-8')
@@ -21101,6 +21110,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_creator = ''
                 if fields.get('mediaCreator'):
                     media_creator = fields['mediaCreator']
+                video_transcript = ''
+                if fields.get('videoTranscript'):
+                    video_transcript = fields['videoTranscript']
                 message_json = \
                     create_blog_post(self.server.base_dir, nickname,
                                      self.server.domain, self.server.port,
@@ -21110,6 +21122,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      client_to_server, comments_enabled,
                                      filename, attachment_media_type,
                                      fields['imageDescription'],
+                                     video_transcript,
                                      city,
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'],
@@ -21203,6 +21216,9 @@ class PubServer(BaseHTTPRequestHandler):
                         img_description = ''
                         if fields.get('imageDescription'):
                             img_description = fields['imageDescription']
+                        video_transcript = ''
+                        if fields.get('videoTranscript'):
+                            video_transcript = fields['videoTranscript']
 
                         if filename:
                             city = get_spoofed_city(self.server.city,
@@ -21228,9 +21244,11 @@ class PubServer(BaseHTTPRequestHandler):
                                              filename,
                                              attachment_media_type,
                                              img_description,
+                                             video_transcript,
                                              city,
                                              self.server.low_bandwidth,
-                                             license_url, creator)
+                                             license_url, creator,
+                                             fields['languagesDropdown'])
 
                         replace_you_tube(post_json_object,
                                          self.server.yt_replace_domain,
@@ -21282,6 +21300,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_creator = ''
                 if fields.get('mediaCreator'):
                     media_creator = fields['mediaCreator']
+                video_transcript = ''
+                if fields.get('videoTranscript'):
+                    video_transcript = fields['videoTranscript']
                 message_json = \
                     create_unlisted_post(self.server.base_dir,
                                          nickname,
@@ -21292,6 +21313,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          client_to_server, comments_enabled,
                                          filename, attachment_media_type,
                                          fields['imageDescription'],
+                                         video_transcript,
                                          city,
                                          fields['replyTo'],
                                          fields['replyTo'],
@@ -21401,6 +21423,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_creator = ''
                 if fields.get('mediaCreator'):
                     media_creator = fields['mediaCreator']
+                video_transcript = ''
+                if fields.get('videoTranscript'):
+                    video_transcript = fields['videoTranscript']
                 message_json = \
                     create_followers_only_post(self.server.base_dir,
                                                nickname,
@@ -21413,6 +21438,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                comments_enabled,
                                                filename, attachment_media_type,
                                                fields['imageDescription'],
+                                               video_transcript,
                                                city,
                                                fields['replyTo'],
                                                fields['replyTo'],
@@ -21532,6 +21558,9 @@ class PubServer(BaseHTTPRequestHandler):
                     media_creator = ''
                     if fields.get('mediaCreator'):
                         media_creator = fields['mediaCreator']
+                    video_transcript = ''
+                    if fields.get('videoTranscript'):
+                        video_transcript = fields['videoTranscript']
                     message_json = \
                         create_direct_message_post(self.server.base_dir,
                                                    nickname,
@@ -21546,6 +21575,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    filename,
                                                    attachment_media_type,
                                                    fields['imageDescription'],
+                                                   video_transcript,
                                                    city,
                                                    fields['replyTo'],
                                                    fields['replyTo'],
@@ -21665,6 +21695,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_creator = ''
                 if fields.get('mediaCreator'):
                     media_creator = fields['mediaCreator']
+                video_transcript = ''
+                if fields.get('videoTranscript'):
+                    video_transcript = fields['videoTranscript']
                 message_json = \
                     create_direct_message_post(self.server.base_dir,
                                                nickname,
@@ -21677,6 +21710,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                comments_enabled,
                                                filename, attachment_media_type,
                                                fields['imageDescription'],
+                                               video_transcript,
                                                city,
                                                None, None,
                                                fields['subject'],
@@ -21782,6 +21816,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_creator = ''
                 if fields.get('mediaCreator'):
                     media_creator = fields['mediaCreator']
+                video_transcript = ''
+                if fields.get('videoTranscript'):
+                    video_transcript = fields['videoTranscript']
                 message_json = \
                     create_report_post(self.server.base_dir,
                                        nickname,
@@ -21791,6 +21828,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, False, True,
                                        filename, attachment_media_type,
                                        fields['imageDescription'],
+                                       video_transcript,
                                        city,
                                        self.server.debug, fields['subject'],
                                        fields['languagesDropdown'],
@@ -21842,6 +21880,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_creator = ''
                 if fields.get('mediaCreator'):
                     media_creator = fields['mediaCreator']
+                video_transcript = ''
+                if fields.get('videoTranscript'):
+                    video_transcript = fields['videoTranscript']
                 message_json = \
                     create_question_post(self.server.base_dir,
                                          nickname,
@@ -21853,6 +21894,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          comments_enabled,
                                          filename, attachment_media_type,
                                          fields['imageDescription'],
+                                         video_transcript,
                                          city,
                                          fields['subject'],
                                          int_duration_days,
