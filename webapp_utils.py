@@ -1237,6 +1237,27 @@ def get_post_attachments_as_html(base_dir: str,
     if post_json_object['object'].get('id'):
         post_id = post_json_object['object']['id']
         post_id = remove_id_ending(post_id).replace('/', '--')
+
+    # obtain transcripts
+    transcripts = {}
+    for attach in post_json_object['object']['attachment']:
+        if not attach.get('mediaType'):
+            continue
+        if attach['mediaType'] != 'text/vtt':
+            continue
+        name = None
+        if attach.get('name'):
+            name = attach['name']
+        elif attach.get('hreflang'):
+            name = attach['hreflang']
+        url = None
+        if attach.get('url'):
+            url = attach['url']
+        elif attach.get('href'):
+            url = attach['href']
+        if name and url:
+            transcripts[name] = url
+
     for attach in post_json_object['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
@@ -1423,8 +1444,15 @@ def get_post_attachments_as_html(base_dir: str,
                             '" alt="' + image_description + \
                             '" title="' + image_description + \
                             '" class="attachment" type="video/' + \
-                            extension + '">'
-                        idx = 'Your browser does not support the video tag.'
+                            extension + '">\n'
+                        if transcripts:
+                            for transcript_name, transcript_url in \
+                              transcripts.items():
+                                gallery_str += \
+                                    '<track src=”' + transcript_url + \
+                                    '” label=”' + transcript_name + \
+                                    '” kind=”captions” >\n'
+                        idx = 'Your browser does not support the video tag.\n'
                         gallery_str += translate[idx]
                         gallery_str += '    </video>\n'
                         gallery_str += '    </figure>\n'
@@ -1458,13 +1486,20 @@ def get_post_attachments_as_html(base_dir: str,
                     '    <video id="video" controls ' + \
                     'preload="metadata" tabindex="10">\n'
                 attachment_str += \
-                    '<source src="' + attach['url'] + '" alt="' + \
+                    '      <source src="' + attach['url'] + '" alt="' + \
                     image_description + '" title="' + image_description + \
                     '" class="attachment" type="video/' + \
-                    extension + '">'
+                    extension + '">\n'
+                if transcripts:
+                    for transcript_name, transcript_url in \
+                      transcripts.items():
+                        attachment_str += \
+                            '      <track src=”' + transcript_url + \
+                            '” label=”' + transcript_name + \
+                            '” kind=”captions” >\n'
                 attachment_str += \
                     translate['Your browser does not support the video tag.']
-                attachment_str += '</video></figure></center>'
+                attachment_str += '\n    </video></figure></center>'
                 attachment_ctr += 1
         elif _is_audio_mime_type(media_type):
             extension = '.mp3'
