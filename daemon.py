@@ -8955,7 +8955,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(media_filename, 'r',
                                   encoding='utf-8') as fp_vtt:
                             media_transcript = fp_vtt.read()
-                            media_file_type = 'text/vtt'
+                            media_file_type = 'text/vtt; charset=utf-8'
                     except OSError:
                         print('EX: unable to read media binary ' +
                               media_filename)
