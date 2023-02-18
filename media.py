@@ -549,6 +549,19 @@ def _update_etag(media_filename: str) -> None:
               str(media_filename) + '.etag')
 
 
+def _store_video_transcript(video_transcript: str,
+                            media_filename: str) -> bool:
+    """Stores a video transcript
+    """
+    try:
+        with open(media_filename + '.vtt', 'w+', encoding='utf-8') as fp_vtt:
+            fp_vtt.write(video_transcript)
+        return True
+    except OSError:
+        print('EX: unable to save video transcript ' + media_filename + '.vtt')
+    return False
+
+
 def attach_media(base_dir: str, http_prefix: str,
                  nickname: str, domain: str, port: int,
                  post_json: {}, image_filename: str,
@@ -622,13 +635,14 @@ def attach_media(base_dir: str, http_prefix: str,
 
     post_json['attachment'] = [attachment_json]
     if video_transcript and 'video' in media_type:
-        video_transcript_json = {
-            'mediaType': 'text/vtt',
-            'name': system_language,
-            'type': 'Document',
-            'url': http_prefix + '://' + domain + '/' + media_path
-        }
-        post_json['attachment'].append(video_transcript_json)
+        if _store_video_transcript(video_transcript, media_filename):
+            video_transcript_json = {
+                'mediaType': 'text/vtt',
+                'name': system_language,
+                'type': 'Document',
+                'url': http_prefix + '://' + domain + '/' + media_path
+             }
+            post_json['attachment'].append(video_transcript_json)
 
     if base_dir:
         if media_type.startswith('image/'):

@@ -1787,6 +1787,8 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
 
 def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
                        post_json: {}):
+    """Removes media files for an attachment
+    """
     if not post_json.get('attachment'):
         return
     if not post_json['attachment'][0].get('url'):
@@ -1802,6 +1804,12 @@ def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
         except OSError:
             print('EX: _remove_attachment unable to delete media file ' +
                   str(media_filename))
+    if os.path.isfile(media_filename + '.vtt'):
+        try:
+            os.remove(media_filename + '.vtt')
+        except OSError:
+            print('EX: _remove_attachment unable to delete media transcript ' +
+                  str(media_filename) + '.vtt')
     etag_filename = media_filename + '.etag'
     if os.path.isfile(etag_filename):
         try:
