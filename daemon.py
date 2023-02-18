@@ -146,6 +146,7 @@ from media import replace_you_tube
 from media import replace_twitter
 from media import attach_media
 from media import path_is_video
+from media import path_is_transcript
 from media import path_is_audio
 from blocking import import_blocking_file
 from blocking import export_blocking_file
@@ -8931,6 +8932,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if is_image_file(path) or \
            path_is_video(path) or \
+           path_is_transcript(path) or \
            path_is_audio(path):
             media_str = path.split('/media/')[1]
             media_filename = base_dir + '/media/' + media_str
@@ -8946,6 +8948,30 @@ class PubServer(BaseHTTPRequestHandler):
                 last_modified_time = datetime.datetime.fromtimestamp(media_tm)
                 last_modified_time_str = \
                     last_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+                if media_filename.endswith('.vtt'):
+                    media_transcript = None
+                    try:
+                        with open(media_filename, 'r',
+                                  encoding='utf-8') as fp_vtt:
+                            media_transcript = fp_vtt.read()
+                            media_file_type = 'text/vtt'
+                    except OSError:
+                        print('EX: unable to read media binary ' +
+                              media_filename)
+                    if media_transcript:
+                        self._set_headers_etag(media_filename, media_file_type,
+                                               media_transcript, None,
+                                               None, True,
+                                               last_modified_time_str)
+                        self._write(media_transcript)
+                        fitness_performance(getreq_start_time,
+                                            self.server.fitness,
+                                            '_GET', '_show_media',
+                                            self.server.debug)
+                        return
+                    self._404()
+                    return
 
                 media_binary = None
                 try:

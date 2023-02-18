@@ -640,7 +640,7 @@ def attach_media(base_dir: str, http_prefix: str,
                 'mediaType': 'text/vtt',
                 'name': system_language,
                 'type': 'Document',
-                'url': http_prefix + '://' + domain + '/' + media_path
+                'url': http_prefix + '://' + domain + '/' + media_path + '.vtt'
              }
             post_json['attachment'].append(video_transcript_json)
 
@@ -693,6 +693,14 @@ def path_is_video(path: str) -> bool:
     """
     if path.endswith('.ogv') or \
        path.endswith('.mp4'):
+        return True
+    return False
+
+
+def path_is_transcript(path: str) -> bool:
+    """Is the given path a video transcript WebVTT file?
+    """
+    if path.endswith('.vtt'):
         return True
     return False
 
