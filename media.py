@@ -553,6 +553,14 @@ def _store_video_transcript(video_transcript: str,
                             media_filename: str) -> bool:
     """Stores a video transcript
     """
+    video_transcript = video_transcript.strip()
+    if not video_transcript.startswith('WEBVTT') or \
+       '-->' not in video_transcript or \
+       ':' not in video_transcript or \
+       '- ' not in video_transcript:
+        print('WARN: does not look like a video transcript ' +
+              video_transcript)
+        return False
     try:
         with open(media_filename + '.vtt', 'w+', encoding='utf-8') as fp_vtt:
             fp_vtt.write(video_transcript)
@@ -633,6 +641,7 @@ def attach_media(base_dir: str, http_prefix: str,
             attachment_json['width'] = attach_image_width
             attachment_json['height'] = attach_image_height
 
+    # create video transcript
     post_json['attachment'] = [attachment_json]
     if video_transcript and 'video' in media_type:
         if _store_video_transcript(video_transcript, media_filename):
