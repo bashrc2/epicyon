@@ -54,6 +54,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import remove_style_within_html
 from utils import html_tag_has_closing
 from utils import remove_inverted_text
 from utils import remove_square_capitals
@@ -7865,6 +7866,22 @@ def _test_html_closing_tag() -> None:
     assert not html_tag_has_closing('code', content)
 
 
+def _test_remove_style() -> None:
+    print('remove_style')
+    html_str = '<p>this is a test</p>'
+    result = remove_style_within_html(html_str)
+    assert result == html_str
+
+    html_str = \
+        '<span style="font-size: 200%" class="mfm _mfm_x2_">something</span>'
+    result = remove_style_within_html(html_str)
+    expected = \
+        '<span class="mfm _mfm_x2_">something</span>'
+    if result != expected:
+        print(expected + '\n\n' + result)
+    assert result == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7882,6 +7899,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_remove_style()
     _test_html_closing_tag()
     _test_replace_remote_tags()
     _test_replace_variable()

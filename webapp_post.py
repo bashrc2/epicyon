@@ -25,6 +25,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import remove_style_within_html
 from utils import license_link_from_name
 from utils import dont_speak_hashtags
 from utils import remove_eol
@@ -2423,6 +2424,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
         languages_understood = get_actor_languages_list(actor_json)
     content_str = get_content_from_post(post_json_object, system_language,
                                         languages_understood)
+
+    # remove any css styling within the post itself
+    content_str = remove_style_within_html(content_str)
+
     content_language = \
         get_language_from_post(post_json_object, system_language,
                                languages_understood)

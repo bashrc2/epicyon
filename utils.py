@@ -655,6 +655,26 @@ def remove_html(content: str) -> str:
     return result
 
 
+def remove_style_within_html(content: str) -> str:
+    """Removes style="something" within html post content.
+    Used to ensure that styles
+    """
+    if '<' not in content:
+        return content
+    if ' style="' not in content:
+        return content
+    sections = content.split(' style="')
+    result = ''
+    ctr = 0
+    for section_text in sections:
+        if ctr > 0:
+            result += section_text.split('"', 1)[1]
+        else:
+            result = section_text
+        ctr = 1
+    return result
+
+
 def first_paragraph_from_string(content: str) -> str:
     """Get the first paragraph from a blog post
     to be used as a summary in the newswire feed
