@@ -1248,7 +1248,13 @@ def get_post_attachments_as_html(base_dir: str,
         name = None
         if attach.get('name'):
             name = attach['name']
-        elif attach.get('hreflang'):
+        if attach.get('nameMap'):
+            for name_lang, name_value in attach['nameMap'].items():
+                if not isinstance(name_value, str):
+                    continue
+                if name_lang.startswith(system_language):
+                    name = name_value
+        if not name and attach.get('hreflang'):
             name = attach['hreflang']
         url = None
         if attach.get('url'):
