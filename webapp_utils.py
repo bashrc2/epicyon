@@ -1458,8 +1458,8 @@ def get_post_attachments_as_html(base_dir: str,
                                     '<track src=”' + transcript_url + \
                                     '” label=”' + transcript_name + \
                                     '” kind=”captions” >\n'
-                        idx = 'Your browser does not support the video tag.\n'
-                        gallery_str += translate[idx]
+                        idx = 'Your browser does not support the video tag.'
+                        gallery_str += translate[idx] + '\n'
                         gallery_str += '    </video>\n'
                         gallery_str += '    </figure>\n'
                         gallery_str += '  </a>\n'
