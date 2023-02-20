@@ -18963,7 +18963,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                hashtag, cookie, calling_domain)
                     else:
                         self._redirect_headers(self.server.http_prefix +
-                                               '://' + self.server.domain_full +
+                                               '://' +
+                                               self.server.domain_full +
                                                '/users/' + nickname +
                                                '/tags/' + hashtag,
                                                cookie, calling_domain)
