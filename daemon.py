@@ -18940,7 +18940,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 self.server.getreq_busy = False
                 return
-            self._404()
+            else:
+                # redirect to the hashtag url
+                self._redirect_headers(hashtag_url, None, calling_domain)
             self.server.getreq_busy = False
             return
 

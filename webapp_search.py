@@ -1103,6 +1103,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             print('No orderedItems in hashtag collection ' + str(hashtag_json))
     else:
         print('WARN: no hashtags returned for url ' + hashtag_url)
+    if not lines:
+        return ''
 
     separator_str = html_post_separator(base_dir, None)
 
