@@ -954,12 +954,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = nickname.split('#/publicKey')[0]
         else:
             return None
-        if calling_domain.endswith('.onion'):
-            actor = 'http://' + onion_domain + '/users/' + nickname
-        elif calling_domain.endswith('.i2p'):
-            actor = 'http://' + i2p_domain + '/users/' + nickname
-        else:
-            actor = http_prefix + '://' + domain + '/users/' + nickname
+        actor = self._get_instance_url(calling_domain) + '/users/' + nickname
         actor_json = get_person_from_cache(base_dir, actor, person_cache)
         if not actor_json:
             actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
@@ -1008,14 +1003,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _logout_redirect(self, redirect: str, cookie: str,
                          calling_domain: str) -> None:
         if '://' not in redirect:
-            if calling_domain.endswith('.onion') and self.server.onion_domain:
-                redirect = 'http://' + self.server.onion_domain + redirect
-            elif calling_domain.endswith('.i2p') and self.server.i2p_domain:
-                redirect = 'http://' + self.server.i2p_domain + redirect
-            else:
-                redirect = \
-                    self.server.http_prefix + '://' + \
-                    self.server.domain_full + redirect
+            redirect = self._get_instance_url(calling_domain) + redirect
             print('WARN: redirect was not an absolute url, changed to ' +
                   redirect)
 
@@ -1139,14 +1127,7 @@ class PubServer(BaseHTTPRequestHandler):
                           calling_domain: str,
                           code: int = 303) -> None:
         if '://' not in redirect:
-            if calling_domain.endswith('.onion') and self.server.onion_domain:
-                redirect = 'http://' + self.server.onion_domain + redirect
-            elif calling_domain.endswith('.i2p') and self.server.i2p_domain:
-                redirect = 'http://' + self.server.i2p_domain + redirect
-            else:
-                redirect = \
-                    self.server.http_prefix + '://' + \
-                    self.server.domain_full + redirect
+            redirect = self._get_instance_url(calling_domain) + redirect
             print('WARN: redirect was not an absolute url, changed to ' +
                   redirect)
 
@@ -2391,36 +2372,18 @@ class PubServer(BaseHTTPRequestHandler):
             if register:
                 if not valid_password(login_password):
                     self.server.postreq_busy = False
-                    if calling_domain.endswith('.onion') and onion_domain:
-                        self._redirect_headers('http://' + onion_domain +
-                                               '/login', cookie,
-                                               calling_domain)
-                    elif (calling_domain.endswith('.i2p') and i2p_domain):
-                        self._redirect_headers('http://' + i2p_domain +
-                                               '/login', cookie,
-                                               calling_domain)
-                    else:
-                        self._redirect_headers(http_prefix + '://' +
-                                               domain_full + '/login',
-                                               cookie, calling_domain)
+                    login_url = \
+                        self._get_instance_url(calling_domain) + '/login'
+                    self._redirect_headers(login_url, cookie, calling_domain)
                     return
 
                 if not register_account(base_dir, http_prefix, domain, port,
                                         login_nickname, login_password,
                                         self.server.manual_follower_approval):
                     self.server.postreq_busy = False
-                    if calling_domain.endswith('.onion') and onion_domain:
-                        self._redirect_headers('http://' + onion_domain +
-                                               '/login', cookie,
-                                               calling_domain)
-                    elif (calling_domain.endswith('.i2p') and i2p_domain):
-                        self._redirect_headers('http://' + i2p_domain +
-                                               '/login', cookie,
-                                               calling_domain)
-                    else:
-                        self._redirect_headers(http_prefix + '://' +
-                                               domain_full + '/login',
-                                               cookie, calling_domain)
+                    login_url = \
+                        self._get_instance_url(calling_domain) + '/login'
+                    self._redirect_headers(login_url, cookie, calling_domain)
                     return
             auth_header = \
                 create_basic_auth_header(login_nickname, login_password)
@@ -2510,26 +2473,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.tokens_lookup[index] = login_nickname
                 cookie_str = 'SET:epicyon=' + \
                     self.server.tokens[login_nickname] + '; SameSite=Strict'
-                if calling_domain.endswith('.onion') and onion_domain:
-                    self._redirect_headers('http://' +
-                                           onion_domain +
-                                           '/users/' +
-                                           login_nickname + '/' +
-                                           self.server.default_timeline,
-                                           cookie_str, calling_domain)
-                elif (calling_domain.endswith('.i2p') and i2p_domain):
-                    self._redirect_headers('http://' +
-                                           i2p_domain +
-                                           '/users/' +
-                                           login_nickname + '/' +
-                                           self.server.default_timeline,
-                                           cookie_str, calling_domain)
-                else:
-                    self._redirect_headers(http_prefix + '://' +
-                                           domain_full + '/users/' +
-                                           login_nickname + '/' +
-                                           self.server.default_timeline,
-                                           cookie_str, calling_domain)
+                tl_url = self._get_instance_url(calling_domain) + '/users/' + \
+                    login_nickname + '/' + self.server.default_timeline
+                self._redirect_headers(tl_url, cookie_str, calling_domain)
                 self.server.postreq_busy = False
                 return
         else:
@@ -8914,15 +8860,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, calling_domain)
             return
 
-        if calling_domain.endswith('.onion') and onion_domain:
-            origin_path_str_absolute = \
-                'http://' + onion_domain + origin_path_str
-        elif calling_domain.endswith('.i2p') and i2p_domain:
-            origin_path_str_absolute = \
-                'http://' + i2p_domain + origin_path_str
-        else:
-            origin_path_str_absolute = \
-                http_prefix + '://' + domain_full + origin_path_str
+        origin_path_str_absolute = \
+            self._get_instance_url(calling_domain) + origin_path_str
         self._redirect_headers(origin_path_str_absolute, cookie,
                                calling_domain)
 
@@ -15756,12 +15695,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return False
         accept_str = self.headers['Accept']
-        if onion_domain and calling_domain.endswith('.onion'):
-            actor_domain_url = 'http://' + onion_domain
-        elif i2p_domain and calling_domain.endswith('.i2p'):
-            actor_domain_url = 'http://' + i2p_domain
-        else:
-            actor_domain_url = http_prefix + '://' + domain_full
+        actor_domain_url = self._get_instance_url(calling_domain)
         actor_url = actor_domain_url + '/users/Actor'
         remove_fields = (
             'icon', 'image', 'tts', 'shares',
@@ -15921,18 +15855,8 @@ class PubServer(BaseHTTPRequestHandler):
                       str(divert_to_login_screen))
                 print('DEBUG: authorized=' + str(authorized))
                 print('DEBUG: path=' + path)
-            if calling_domain.endswith('.onion') and onion_domain:
-                self._redirect_headers('http://' +
-                                       onion_domain + divert_path,
-                                       None, calling_domain)
-            elif calling_domain.endswith('.i2p') and i2p_domain:
-                self._redirect_headers('http://' +
-                                       i2p_domain + divert_path,
-                                       None, calling_domain)
-            else:
-                self._redirect_headers(http_prefix + '://' +
-                                       domain_full +
-                                       divert_path, None, calling_domain)
+            redirect_url = self._get_instance_url(calling_domain) + divert_path
+            self._redirect_headers(redirect_url, None, calling_domain)
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
                                 '_GET', '_redirect_to_login_screen',
@@ -16966,24 +16890,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self._logout_headers('text/html', msglen, calling_domain)
                 self._write(msg)
             else:
-                if calling_domain.endswith('.onion') and \
-                   self.server.onion_domain:
-                    self._logout_redirect('http://' +
-                                          self.server.onion_domain +
-                                          '/users/news', None,
-                                          calling_domain)
-                elif (calling_domain.endswith('.i2p') and
-                      self.server.i2p_domain):
-                    self._logout_redirect('http://' +
-                                          self.server.i2p_domain +
-                                          '/users/news', None,
-                                          calling_domain)
-                else:
-                    self._logout_redirect(self.server.http_prefix +
-                                          '://' +
-                                          self.server.domain_full +
-                                          '/users/news',
-                                          None, calling_domain)
+                news_url = \
+                    self._get_instance_url(calling_domain) + '/users/news'
+                self._logout_redirect(news_url, None, calling_domain)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'logout',
                                 self.server.debug)
@@ -18763,24 +18672,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/' and \
            not authorized and \
            self.server.news_instance:
-            if calling_domain.endswith('.onion') and \
-               self.server.onion_domain:
-                self._logout_redirect('http://' +
-                                      self.server.onion_domain +
-                                      '/users/news', None,
-                                      calling_domain)
-            elif (calling_domain.endswith('.i2p') and
-                  self.server.i2p_domain):
-                self._logout_redirect('http://' +
-                                      self.server.i2p_domain +
-                                      '/users/news', None,
-                                      calling_domain)
-            else:
-                self._logout_redirect(self.server.http_prefix +
-                                      '://' +
-                                      self.server.domain_full +
-                                      '/users/news',
-                                      None, calling_domain)
+            news_url = self._get_instance_url(calling_domain) + '/users/news'
+            self._logout_redirect(news_url, None, calling_domain)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'news front page shown',
                                 self.server.debug)
@@ -18947,27 +18840,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(tags_filename):
                     # redirect to the local hashtag screen
                     self.server.getreq_busy = False
-                    if calling_domain.endswith('.onion') and \
-                       self.server.onion_domain:
-                        self._redirect_headers('http://' +
-                                               self.server.onion_domain +
-                                               '/users/' +
-                                               nickname + '/tags/' +
-                                               hashtag, cookie, calling_domain)
-                    elif (calling_domain.endswith('.i2p') and
-                          self.server.i2p_domain):
-                        self._redirect_headers('http://' +
-                                               self.server.i2p_domain +
-                                               '/users/' +
-                                               nickname + '/tags/' +
-                                               hashtag, cookie, calling_domain)
-                    else:
-                        self._redirect_headers(self.server.http_prefix +
-                                               '://' +
-                                               self.server.domain_full +
-                                               '/users/' + nickname +
-                                               '/tags/' + hashtag,
-                                               cookie, calling_domain)
+                    ht_url = self._get_instance_url(calling_domain) + \
+                        '/users/' + nickname + '/tags/' + hashtag
+                    self._redirect_headers(ht_url, cookie, calling_domain)
                 else:
                     # redirect to the upstream hashtag url
                     self.server.getreq_busy = False
