@@ -1118,11 +1118,11 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             item_ctr = 0
             new_lines = []
             for line in lines:
-                section = line.split(' ')
-                if len(section) < 4:
+                section = line.split('  ')
+                if len(section) < 3:
                     continue
                 if curr_page == page_number:
-                    new_lines.append(section[3].replace('#', '/'))
+                    new_lines.append(section[2].replace('#', '/'))
                 item_ctr += 1
                 if item_ctr >= posts_per_page:
                     item_ctr = 0
