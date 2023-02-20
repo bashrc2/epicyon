@@ -18947,9 +18947,26 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(tags_filename):
                     # redirect to the local hashtag screen
                     self.server.getreq_busy = False
-                    redirect_url = \
-                        '/users/' + nickname + '/tags/' + hashtag + '?page=1'
-                    self._redirect_headers(redirect_url, cookie, calling_domain)
+                    if calling_domain.endswith('.onion') and \
+                       self.server.onion_domain:
+                        self._redirect_headers('http://' +
+                                               self.server.onion_domain +
+                                               '/users/' +
+                                               nickname + '/tags/' +
+                                               hashtag, cookie, calling_domain)
+                    elif (calling_domain.endswith('.i2p') and
+                          self.server.i2p_domain):
+                        self._redirect_headers('http://' +
+                                               self.server.i2p_domain +
+                                               '/users/' +
+                                               nickname + '/tags/' +
+                                               hashtag, cookie, calling_domain)
+                    else:
+                        self._redirect_headers(self.server.http_prefix +
+                                               '://' + self.server.domain_full +
+                                               '/users/' + nickname +
+                                               '/tags/' + hashtag,
+                                               cookie, calling_domain)
                 else:
                     # redirect to the upstream hashtag url
                     self.server.getreq_busy = False
