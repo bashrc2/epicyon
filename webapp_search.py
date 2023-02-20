@@ -1104,6 +1104,31 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     else:
         print('WARN: no hashtags returned for url ' + hashtag_url)
     if not lines:
+        # look for local hashtags
+        tags_filename = base_dir + '/tags/' + hashtag + '.txt'
+        if not os.path.isfile(tags_filename):
+            return ''
+        try:
+            with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
+                lines = fp_tags.read().splitlines()
+        except OSError:
+            print('EX: unable to read hashtag file ' + tags_filename)
+        if lines:
+            curr_page = 1
+            item_ctr = 0
+            new_lines = []
+            for line in lines:
+                section = line.split(' ')
+                if len(section) < 3:
+                    continue
+                if curr_page == page_number:
+                    new_lines.append(section[2].replace('#', '/'))
+                item_ctr += 1
+                if item_ctr >= posts_per_page:
+                    item_ctr = 0
+                    curr_page += 1
+            lines = new_lines
+    if not lines:
         return ''
 
     separator_str = html_post_separator(base_dir, None)
