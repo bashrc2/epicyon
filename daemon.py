@@ -18941,9 +18941,17 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.getreq_busy = False
                 return
             else:
-                # redirect to the hashtag url
-                self._redirect_headers(hashtag_url, None, calling_domain)
-            self.server.getreq_busy = False
+                hashtag = urllib.parse.unquote(hashtag_url.split('/')[-1])
+                tags_filename = \
+                    self.server.base_dir + '/tags/' + hashtag + '.txt'
+                if os.path.isfile(tags_filename):
+                    # redirect to the local hashtag screen
+                    self.server.getreq_busy = False
+                    self._redirect_headers(hashtag_url, cookie, calling_domain)
+                else:
+                    # redirect to the upstream hashtag url
+                    self.server.getreq_busy = False
+                    self._redirect_headers(hashtag_url, None, calling_domain)
             return
 
         # hashtag search
