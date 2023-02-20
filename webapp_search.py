@@ -1130,6 +1130,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             lines = new_lines
     if not lines:
         return ''
+    print('DEBUG: hashtag lines: ' + str(lines))
 
     separator_str = html_post_separator(base_dir, None)
 
