@@ -5351,6 +5351,11 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
+        if announced_json.get('error'):
+            print('Attempt to download announce returned an error ' +
+                  post_json_object['object'] + ' ' +
+                  str(announced_json))
+            return None
         if not announced_json.get('id'):
             print('WARN: announced post does not have an id ' +
                   str(announced_json))
