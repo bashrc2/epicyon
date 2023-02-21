@@ -5346,7 +5346,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
 
         if not isinstance(announced_json, dict):
             print('WARN: announced post json is not a dict - ' +
-                  post_json_object['object'])
+                  post_json_object['object'] + ' ' +
+                  str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
