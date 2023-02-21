@@ -315,12 +315,12 @@ def _verify_recent_signature(signed_date_str: str) -> bool:
     time_diff_sec = (curr_date - signed_date).seconds
     # 12 hours tollerance
     if time_diff_sec > 43200:
-        print('WARN: Header signed too long ago: ' + signed_date_str)
-        print(str(time_diff_sec / (60 * 60)) + ' hours')
+        print('WARN: Header signed too long ago: ' + signed_date_str + ' ' +
+              str(time_diff_sec / (60 * 60)) + ' hours')
         return False
     if time_diff_sec < 0:
-        print('WARN: Header signed in the future! ' + signed_date_str)
-        print(str(time_diff_sec / (60 * 60)) + ' hours')
+        print('WARN: Header signed in the future! ' + signed_date_str + ' ' +
+              str(time_diff_sec / (60 * 60)) + ' hours')
         return False
     return True
 
