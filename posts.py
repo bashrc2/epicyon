@@ -5984,7 +5984,7 @@ def seconds_between_published(published1: str, published2: str) -> int:
         print('EX: seconds_between_published unable to parse date 2 ' +
               str(published2))
         return -1
-    return (published2_time - published1_time).seconds
+    return (published2_time - published1_time).total_seconds()
 
 
 def edited_post_filename(base_dir: str, nickname: str, domain: str,
