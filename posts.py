@@ -5352,7 +5352,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              recent_posts_cache)
             return None
         if announced_json.get('error'):
-            print('Attempt to download announce returned an error ' +
+            print('WARN: ' +
+                  'Attempt to download announce returned an error ' +
                   post_json_object['object'] + ' ' +
                   str(announced_json))
             return None
