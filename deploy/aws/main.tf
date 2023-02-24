@@ -1,10 +1,3 @@
-locals {
-  user_data_vars = {
-    domain = var.domain
-    email  = var.email
-  }
-}
-
 resource "aws_vpc" "epicyon_vpc" {
   cidr_block       = var.vpc_cidr_block
 
@@ -91,11 +84,19 @@ resource "aws_instance" "epicyon_web" {
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.epicyon_subnet.id
   vpc_security_group_ids      = [aws_security_group.epicyon_sg.id]
-  user_data                   = base64encode(templatefile("${path.module}/templates/startup.sh", local.user_data_vars))
   key_name                    = var.key_name
   tags = {
     Name = "epicyon_web"
   }
+}
+
+resource "aws_route53_record" "epicyon_route53" {
+  zone_id = var.zone_id
+  name    = var.domain
+  type    = "A"
+  ttl     = 300
+  records = [aws_instance.epicyon_web.public_ip]
+  depends_on = [aws_instance.epicyon_web]
 }
 
 resource "aws_iam_role" "epicyon_iam_role" {
@@ -133,4 +134,30 @@ resource "aws_eip" "epicyon" {
 resource "aws_eip_association" "epicyon" {
   instance_id   = aws_instance.epicyon_web.id
   allocation_id = aws_eip.elastic.id
+}
+
+resource "null_resource" "null_resource_epicyon" {
+  depends_on=[aws_route53_record.epicyon_route53]
+  triggers = {
+    id = timestamp()
+  }
+   connection {
+    agent       = false
+    type        = "ssh"
+    host        = [aws_instance.epicyon_web.public_ip]
+    private_key = file(var.private_key)
+    user        = "ubuntu"
+  }
+  provisioner "file" {
+    source      = "./templates/startup.sh"
+    destination = "~/startup.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x ~/startup.sh",
+      "export domain=${var.epicyon_domain}",
+      "export email=${var.email}",
+      "bash ~/startup.sh"
+    ]
+  }
 }
