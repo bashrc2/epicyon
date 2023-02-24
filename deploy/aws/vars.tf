@@ -32,3 +32,15 @@ variable "email" {
   type    = string
   default = ""
 }
+
+variable "private_key" {
+  default = ""
+}
+
+variable "epicyon_domain" {
+  default = ""
+}
+
+variable "email" {
+  default = ""
+}
