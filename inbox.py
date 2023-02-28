@@ -122,6 +122,7 @@ from webapp_post import individual_post_as_html
 from question import question_update_votes
 from question import is_vote
 from question import is_question
+from question import dangerous_question
 from media import replace_you_tube
 from media import replace_twitter
 from git import is_git_patch
@@ -1219,7 +1220,8 @@ def _person_receive_update(base_dir: str,
 def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
                                 base_dir: str,
                                 nickname: str, domain: str,
-                                system_language: str) -> bool:
+                                system_language: str,
+                                allow_local_network_access: bool) -> bool:
     """Updating a question as new votes arrive
     """
     # message url of the question
@@ -1242,6 +1244,8 @@ def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
         return False
     if is_question_filtered(base_dir, nickname, domain,
                             system_language, post_json_object):
+        return False
+    if dangerous_question(post_json_object, allow_local_network_access):
         return False
     # does the actor match?
     if post_json_object['actor'] != message_json['actor']:
@@ -1460,7 +1464,8 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
     if message_json['object']['type'] == 'Question':
         if _receive_update_to_question(recent_posts_cache, message_json,
                                        base_dir, nickname, domain,
-                                       system_language):
+                                       system_language,
+                                       allow_local_network_access):
             if debug:
                 print('DEBUG: Question update was received')
             return True
@@ -3122,6 +3127,9 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         if is_question_filtered(base_dir, nickname, domain,
                                 system_language, message_json):
             print('REJECT: incoming question options filter')
+            return False
+        if dangerous_question(message_json, allow_local_network_access):
+            print('REJECT: incoming question markup filter')
             return False
 
     content_str = get_base_content_from_post(message_json, system_language)

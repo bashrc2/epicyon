@@ -13,6 +13,7 @@ from utils import load_json
 from utils import save_json
 from utils import has_object_dict
 from utils import text_in_file
+from utils import dangerous_markup
 
 
 def is_vote(base_dir: str, nickname: str, domain: str,
@@ -208,3 +209,18 @@ def is_question(post_json_object: {}) -> bool:
     if not isinstance(post_json_object['object']['oneOf'], list):
         return False
     return True
+
+
+def dangerous_question(question_json: {},
+                       allow_local_network_access: bool) -> bool:
+    """does the given question contain dangerous markup?
+    """
+    if question_json.get('oneOf'):
+        question_options = question_json['oneOf']
+    else:
+        question_options = question_json['object']['oneOf']
+    for option in question_options:
+        if option.get('name'):
+            if dangerous_markup(option['name'], allow_local_network_access):
+                return True
+    return False
