@@ -5397,16 +5397,33 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if announced_json['type'] != 'Note' and \
-           announced_json['type'] != 'Page' and \
-           announced_json['type'] != 'Article':
-            print('WARN: announced post is not Note/Page/Article ' +
+        if announced_json['type'] not in ('Note', 'Page',
+                                          'Question', 'Article'):
+            print('WARN: announced post is not Note/Page/Article/Question ' +
                   str(announced_json))
-            # You can only announce Note or Article types
+            # You can only announce Note, Page, Article or Question types
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
+        if announced_json['type'] == 'Question':
+            if not announced_json.get('endTime') or \
+               not announced_json.get('oneOf'):
+                # announced Question should have an end time
+                # and options list
+                print('WARN: announced Question should have endTime ' +
+                      str(announced_json))
+                _reject_announce(announce_filename,
+                                 base_dir, nickname, domain, post_id,
+                                 recent_posts_cache)
+                return None
+            if not isinstance(announced_json['oneOf'], list):
+                print('WARN: announced Question oneOf should be a list ' +
+                      str(announced_json))
+                _reject_announce(announce_filename,
+                                 base_dir, nickname, domain, post_id,
+                                 recent_posts_cache)
+                return None
         if 'content' not in announced_json:
             print('WARN: announced post does not have content ' +
                   str(announced_json))
@@ -5461,7 +5478,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                 summary_str + ' ' + content_str + ' ' + media_descriptions
         if is_filtered(base_dir, nickname, domain, content_all,
                        system_language):
-            print('WARN: announced post has been filtered ' +
+            print('REJECT: announced post has been filtered ' +
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
