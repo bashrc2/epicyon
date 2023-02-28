@@ -100,6 +100,7 @@ from blocking import allowed_announce
 from blocking import is_blocked_domain
 from blocking import broch_modeLapses
 from filters import is_filtered
+from filters import is_question_filtered
 from utils import update_announce_collection
 from utils import undo_announce_collection_entry
 from utils import dangerous_markup
@@ -120,6 +121,7 @@ from posts import send_to_followers_thread
 from webapp_post import individual_post_as_html
 from question import question_update_votes
 from question import is_vote
+from question import is_question
 from media import replace_you_tube
 from media import replace_twitter
 from git import is_git_patch
@@ -1216,30 +1218,34 @@ def _person_receive_update(base_dir: str,
 
 def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
                                 base_dir: str,
-                                nickname: str, domain: str) -> None:
+                                nickname: str, domain: str,
+                                system_language: str) -> bool:
     """Updating a question as new votes arrive
     """
     # message url of the question
     if not message_json.get('id'):
-        return
+        return False
     if not has_actor(message_json, False):
-        return
+        return False
     message_id = remove_id_ending(message_json['id'])
     if '#' in message_id:
         message_id = message_id.split('#', 1)[0]
     # find the question post
     post_filename = locate_post(base_dir, nickname, domain, message_id)
     if not post_filename:
-        return
+        return False
     # load the json for the question
     post_json_object = load_json(post_filename, 1)
     if not post_json_object:
-        return
+        return False
     if not post_json_object.get('actor'):
-        return
+        return False
+    if is_question_filtered(base_dir, nickname, domain,
+                            system_language, post_json_object):
+        return False
     # does the actor match?
     if post_json_object['actor'] != message_json['actor']:
-        return
+        return False
     save_json(message_json, post_filename)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
@@ -1254,6 +1260,7 @@ def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
                       cached_post_filename)
     # remove from memory cache
     remove_post_from_cache(message_json, recent_posts_cache)
+    return True
 
 
 def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
@@ -1281,7 +1288,6 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     """
     if not has_object_dict(message_json):
         return False
-    # message url of the question
     if not message_json['object'].get('id'):
         return False
     if not message_json.get('actor'):
@@ -1452,11 +1458,12 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
         return False
 
     if message_json['object']['type'] == 'Question':
-        _receive_update_to_question(recent_posts_cache, message_json,
-                                    base_dir, nickname, domain)
-        if debug:
-            print('DEBUG: Question update was received')
-        return True
+        if _receive_update_to_question(recent_posts_cache, message_json,
+                                       base_dir, nickname, domain,
+                                       system_language):
+            if debug:
+                print('DEBUG: Question update was received')
+            return True
     elif message_json['object']['type'] == 'Note':
         if message_json['object'].get('id'):
             domain_full = get_full_domain(domain, port)
@@ -3110,6 +3117,12 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                     summary,
                     message_json['object']['content']):
         return True
+
+    if is_question(message_json):
+        if is_question_filtered(base_dir, nickname, domain,
+                                system_language, message_json):
+            print('REJECT: incoming question options filter')
+            return False
 
     content_str = get_base_content_from_post(message_json, system_language)
     if dangerous_markup(content_str, allow_local_network_access):

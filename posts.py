@@ -95,6 +95,7 @@ from blocking import is_blocked_hashtag
 from blocking import is_blocked
 from blocking import is_blocked_domain
 from filters import is_filtered
+from filters import is_question_filtered
 from git import convert_post_to_patch
 from linked_data_sig import generate_json_signature
 from petnames import resolve_petnames
@@ -5420,6 +5421,13 @@ def download_announce(session, base_dir: str, http_prefix: str,
             if not isinstance(announced_json['oneOf'], list):
                 print('WARN: announced Question oneOf should be a list ' +
                       str(announced_json))
+                _reject_announce(announce_filename,
+                                 base_dir, nickname, domain, post_id,
+                                 recent_posts_cache)
+                return None
+            if is_question_filtered(base_dir, nickname, domain,
+                                    system_language, announced_json):
+                print('REJECT: announced question was filtered')
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache)

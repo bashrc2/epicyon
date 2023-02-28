@@ -203,3 +203,19 @@ def is_filtered(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
     return _is_filtered_base(account_filters_filename, content,
                              system_language)
+
+
+def is_question_filtered(base_dir: str, nickname: str, domain: str,
+                         system_language: str, question_json: {}) -> bool:
+    """is the given question filtered based on its options?
+    """
+    if question_json.get('oneOf'):
+        question_options = question_json['oneOf']
+    else:
+        question_options = question_json['object']['oneOf']
+    for option in question_options:
+        if option.get('name'):
+            if is_filtered(base_dir, nickname, domain, option['name'],
+                           system_language):
+                return True
+    return False
