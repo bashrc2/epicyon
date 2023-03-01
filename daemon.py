@@ -12306,8 +12306,6 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie: str) -> bool:
         """get conversation thread from the date link on a post
         """
-        if not authorized:
-            return False
         if not path.startswith('/users/'):
             return False
         if '?convthread=' not in path:
