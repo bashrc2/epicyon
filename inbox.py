@@ -641,16 +641,29 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     post_nickname = None
     post_domain = None
     actor = None
-    if post_json_object.get('actor'):
-        if not isinstance(post_json_object['actor'], str):
+    obj_dict_exists = False
+
+    # who is sending the post?
+    sending_actor = None
+    if has_object_dict(post_json_object):
+        obj_dict_exists = True
+        if post_json_object['object'].get('attributedTo'):
+            sending_actor = post_json_object['object']['attributedTo']
+    if not sending_actor:
+        if post_json_object.get('actor'):
+            sending_actor = post_json_object['actor']
+
+    # check that the sender is valid
+    if sending_actor:
+        if not isinstance(sending_actor, str):
             return None
-        actor = post_json_object['actor']
-        post_nickname = get_nickname_from_actor(post_json_object['actor'])
+        actor = sending_actor
+        post_nickname = get_nickname_from_actor(sending_actor)
         if not post_nickname:
-            print('No post Nickname in actor ' + post_json_object['actor'])
+            print('No post Nickname in actor ' + sending_actor)
             return None
         post_domain, post_port = \
-            get_domain_from_actor(post_json_object['actor'])
+            get_domain_from_actor(sending_actor)
         if not post_domain:
             if debug:
                 pprint(post_json_object)
@@ -663,14 +676,16 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             return None
         post_domain = get_full_domain(post_domain, post_port)
 
+    # get the content of the post
     content_str = \
         get_base_content_from_post(post_json_object, system_language)
 
-    if has_object_dict(post_json_object):
+    if obj_dict_exists:
         if is_quote_toot(post_json_object, content_str):
             print('REJECT: inbox quote toot ' + str(post_json_object))
             return None
 
+        # is this a reply to a blocked domain or account?
         if post_json_object['object'].get('inReplyTo'):
             if isinstance(post_json_object['object']['inReplyTo'], str):
                 in_reply_to = \
