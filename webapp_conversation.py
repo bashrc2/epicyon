@@ -13,6 +13,7 @@ from conversation import download_conversation_posts
 from utils import get_config_param
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
+from utils import is_public_post
 from blocking import is_blocked
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_post_separator
@@ -20,7 +21,7 @@ from webapp_utils import html_footer
 from webapp_post import individual_post_as_html
 
 
-def html_conversation_view(post_id: str,
+def html_conversation_view(authorized: bool, post_id: str,
                            translate: {}, base_dir: str,
                            http_prefix: str,
                            nickname: str, domain: str,
@@ -50,7 +51,8 @@ def html_conversation_view(post_id: str,
     """Show a page containing a conversation thread
     """
     conv_posts = \
-        download_conversation_posts(session, http_prefix, base_dir,
+        download_conversation_posts(authorized,
+                                    session, http_prefix, base_dir,
                                     nickname, domain,
                                     post_id, debug)
 
@@ -74,6 +76,11 @@ def html_conversation_view(post_id: str,
         minimize_all_images = True
     for post_json_object in conv_posts:
         show_individual_post_icons = True
+        # if not authorized then only show public posts
+        if not authorized:
+            show_individual_post_icons = False
+            if not is_public_post(post_json_object):
+                continue
         from_actor = post_json_object['object']['attributedTo']
         from_nickname = get_nickname_from_actor(from_actor)
         from_domain, _ = get_domain_from_actor(from_actor)

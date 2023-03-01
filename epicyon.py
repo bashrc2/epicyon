@@ -1181,7 +1181,7 @@ def _command_options() -> None:
         if not nickname:
             print('Please specify a nickname with the --nickname option')
             sys.exit()
-        conv_json = download_conversation_posts(session, http_prefix,
+        conv_json = download_conversation_posts(True, session, http_prefix,
                                                 base_dir, nickname, domain,
                                                 post_id, argb.debug)
         if conv_json:

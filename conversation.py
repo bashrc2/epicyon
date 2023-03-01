@@ -109,7 +109,8 @@ def unmute_conversation(base_dir: str, nickname: str, domain: str,
               conversation_filename + '.muted')
 
 
-def download_conversation_posts(session, http_prefix: str, base_dir: str,
+def download_conversation_posts(authorized: bool, session,
+                                http_prefix: str, base_dir: str,
                                 nickname: str, domain: str,
                                 post_id: str, debug: bool) -> []:
     """Downloads all posts for a conversation and returns a list of the
@@ -126,13 +127,15 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
     post_id = remove_id_ending(post_id)
     post_filename = \
         locate_post(base_dir, nickname, domain, post_id)
+    post_json_object = None
     if post_filename:
         post_json_object = load_json(post_filename)
     else:
-        post_json_object = \
-            get_json(signing_priv_key_pem, session, post_id,
-                     as_header, None, debug, __version__,
-                     http_prefix, domain)
+        if authorized:
+            post_json_object = \
+                get_json(signing_priv_key_pem, session, post_id,
+                         as_header, None, debug, __version__,
+                         http_prefix, domain)
     if debug:
         if not post_json_object:
             print(post_id + ' returned no json')
@@ -181,6 +184,9 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
         harmless_markup(post_json_object)
 
         conversation_view = [post_json_object] + conversation_view
+        if not authorized:
+            # only show a single post to non-authorized viewers
+            break
         if not post_json_object['object'].get('inReplyTo'):
             if debug:
                 print(post_id + ' is not a reply')
@@ -189,13 +195,15 @@ def download_conversation_posts(session, http_prefix: str, base_dir: str,
         post_id = remove_id_ending(post_id)
         post_filename = \
             locate_post(base_dir, nickname, domain, post_id)
+        post_json_object = None
         if post_filename:
             post_json_object = load_json(post_filename)
         else:
-            post_json_object = \
-                get_json(signing_priv_key_pem, session, post_id,
-                         as_header, None, debug, __version__,
-                         http_prefix, domain)
+            if authorized:
+                post_json_object = \
+                    get_json(signing_priv_key_pem, session, post_id,
+                             as_header, None, debug, __version__,
+                             http_prefix, domain)
         if debug:
             if not post_json_object:
                 print(post_id + ' returned no json')

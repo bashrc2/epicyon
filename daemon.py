@@ -12330,7 +12330,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.bold_reading.get(nickname):
             bold_reading = True
         conv_str = \
-            html_conversation_view(post_id, self.server.translate,
+            html_conversation_view(authorized,
+                                   post_id, self.server.translate,
                                    base_dir,
                                    http_prefix,
                                    nickname,
