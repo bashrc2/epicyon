@@ -4447,8 +4447,8 @@ class PubServer(BaseHTTPRequestHandler):
                 urllib.parse.unquote_plus(search_str.strip())
             search_str = search_str.strip()
             # hashtags can be combined case
-            if not search_str.startswith('#'):
-                search_str = search_str.lower()
+            #if not search_str.startswith('#'):
+            #    search_str = search_str.lower()
             print('search_str: ' + search_str)
             if search_for_emoji:
                 search_str = ':' + search_str + ':'
