@@ -2705,6 +2705,12 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname = nickname.split(' ')[0]
                         add_global_block(base_dir, nickname,
                                          full_block_domain, moderation_reason)
+                        blocked_cache_last_updated = \
+                            self.server.blocked_cache_last_updated
+                        self.server.blocked_cache_last_updated = \
+                            update_blocked_cache(self.server.base_dir,
+                                                 self.server.blocked_cache,
+                                                 blocked_cache_last_updated, 0)
                 if moderation_button == 'unblock':
                     full_block_domain = None
                     if ' ' in moderation_text:
@@ -2734,6 +2740,12 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname = nickname.split(' ')[0]
                         remove_global_block(base_dir, nickname,
                                             full_block_domain)
+                        blocked_cache_last_updated = \
+                            self.server.blocked_cache_last_updated
+                        self.server.blocked_cache_last_updated = \
+                            update_blocked_cache(self.server.base_dir,
+                                                 self.server.blocked_cache,
+                                                 blocked_cache_last_updated, 0)
                 if moderation_button == 'remove':
                     if '/statuses/' not in moderation_text:
                         remove_account(base_dir, nickname, domain, port)
@@ -4176,6 +4188,12 @@ class PubServer(BaseHTTPRequestHandler):
                     remove_global_block(base_dir,
                                         blocking_nickname,
                                         blocking_domain_full)
+                    blocked_cache_last_updated = \
+                        self.server.blocked_cache_last_updated
+                    self.server.blocked_cache_last_updated = \
+                        update_blocked_cache(self.server.base_dir,
+                                             self.server.blocked_cache,
+                                             blocked_cache_last_updated, 0)
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -4358,6 +4376,12 @@ class PubServer(BaseHTTPRequestHandler):
                     remove_global_block(base_dir,
                                         blocking_nickname,
                                         blocking_domain_full)
+                    blocked_cache_last_updated = \
+                        self.server.blocked_cache_last_updated
+                    self.server.blocked_cache_last_updated = \
+                        update_blocked_cache(self.server.base_dir,
+                                             self.server.blocked_cache,
+                                             blocked_cache_last_updated, 0)
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -20077,6 +20101,10 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in block_domain:
                 block_domain = block_domain.split('?')[0]
             add_global_block(self.server.base_dir, '*', block_domain, None)
+            self.server.blocked_cache_last_updated = \
+                update_blocked_cache(self.server.base_dir,
+                                     self.server.blocked_cache,
+                                     self.server.blocked_cache_last_updated, 0)
             msg = \
                 html_account_info(self.server.translate,
                                   self.server.base_dir,
@@ -20115,6 +20143,10 @@ class PubServer(BaseHTTPRequestHandler):
             block_domain = block_domain.split('?handle=')[0]
             block_domain = urllib.parse.unquote_plus(block_domain.strip())
             remove_global_block(self.server.base_dir, '*', block_domain)
+            self.server.blocked_cache_last_updated = \
+                update_blocked_cache(self.server.base_dir,
+                                     self.server.blocked_cache,
+                                     self.server.blocked_cache_last_updated, 0)
             msg = \
                 html_account_info(self.server.translate,
                                   self.server.base_dir,
@@ -23631,8 +23663,7 @@ def run_daemon(max_hashtags: int,
     httpd.blocked_cache_update_secs = 120
     httpd.blocked_cache_last_updated = \
         update_blocked_cache(base_dir, httpd.blocked_cache,
-                             httpd.blocked_cache_last_updated,
-                             httpd.blocked_cache_update_secs)
+                             httpd.blocked_cache_last_updated, 0)
 
     # get the list of custom emoji, for use by the mastodon api
     httpd.custom_emoji = \
