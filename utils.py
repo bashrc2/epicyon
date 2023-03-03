@@ -4324,6 +4324,8 @@ def harmless_markup(post_json_object: {}) -> None:
         if post_json_object['object'].get(map_name):
             map_dict = post_json_object['object'][map_name].items()
             for lang, content in map_dict:
+                if not isinstance(content, str):
+                    continue
                 if dangerous_markup(content, False):
                     content = remove_html(content)
                     post_json_object['object'][map_name][lang] = \
