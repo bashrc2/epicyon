@@ -7926,7 +7926,9 @@ def _test_convert_markdown() -> None:
         "content": content_str,
         "contentMap": {
             "en": content_str,
-            "bogus": { "decoy": "text" },
+            "bogus": {
+                "decoy": "text"
+            },
             "de": content_str
         },
         "mediaType": "text/markdown"
