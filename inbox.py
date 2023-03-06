@@ -108,6 +108,7 @@ from utils import is_dm
 from utils import is_reply
 from utils import has_actor
 from httpsig import message_content_digest
+from posts import convert_post_content_to_html
 from posts import edited_post_filename
 from posts import save_post_to_box
 from posts import is_create_inside_announce
@@ -1484,6 +1485,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     if not post_filename:
         print('EDITPOST: ' + message_id + ' has already expired')
         return False
+    convert_post_content_to_html(message_json)
     if not _valid_post_content(base_dir, nickname, domain,
                                message_json, max_mentions, max_emoji,
                                allow_local_network_access, debug,
@@ -4569,6 +4571,7 @@ def _inbox_after_initial(server, inbox_start_time,
 
     json_obj = None
     domain_full = get_full_domain(domain, port)
+    convert_post_content_to_html(post_json_object)
     if _valid_post_content(base_dir, nickname, domain,
                            post_json_object, max_mentions, max_emoji,
                            allow_local_network_access, debug,

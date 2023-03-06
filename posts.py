@@ -103,6 +103,31 @@ from video import convert_video_to_note
 from context import get_individual_post_context
 from maps import geocoords_from_map_link
 from keys import get_person_key
+from markdown import markdown_to_html
+
+
+def convert_post_content_to_html(message_json: {}) -> None:
+    """Convert post content to html
+    """
+    obj_json = message_json
+    if has_object_dict(message_json):
+        obj_json = message_json['object']
+    if not obj_json.get('mediaType'):
+        return
+    if not obj_json.get('content'):
+        return
+    if obj_json['mediaType'] == 'text/markdown':
+        content_str = obj_json['content']
+        obj_json['content'] = markdown_to_html(content_str)
+        obj_json['mediaType'] = 'text/html'
+        if obj_json.get('contentMap'):
+            langs_dict = obj_json['contentMap']
+            if isinstance(langs_dict, dict):
+                for lang, content_str in langs_dict.items():
+                    if not isinstance(content_str, str):
+                        continue
+                    obj_json['contentMap'][lang] = \
+                        markdown_to_html(content_str)
 
 
 def is_moderator(base_dir: str, nickname: str) -> bool:
@@ -5463,6 +5488,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                                         person_cache):
             return None
         # Check the content of the announce
+        convert_post_content_to_html(announced_json)
         content_str = announced_json['content']
         using_content_map = False
         if 'contentMap' in announced_json:
