@@ -7941,8 +7941,6 @@ def _test_convert_markdown() -> None:
 
 
 def run_all_tests():
-    _test_convert_markdown()
-    return
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
