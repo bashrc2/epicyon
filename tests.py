@@ -36,6 +36,7 @@ from threads import thread_with_trace
 from daemon import run_daemon
 from session import create_session
 from session import get_json
+from posts import convert_post_content_to_html
 from posts import get_actor_from_in_reply_to
 from posts import regenerate_index_for_box
 from posts import remove_post_interactions
@@ -7882,7 +7883,66 @@ def _test_remove_style() -> None:
     assert result == expected
 
 
+def _test_convert_markdown() -> None:
+    print('convert_markdown')
+    content_str = "<p>Ooh, it's content!</p>"
+    expected_content_str = content_str
+    message_json = {
+        "content": content_str,
+        "mediaType": "text/html"
+    }
+    convert_post_content_to_html(message_json)
+    if message_json['content'] != expected_content_str:
+        print("Result: " + message_json['content'])
+    assert message_json['content'] == expected_content_str
+
+    content_str = "<p>Ooh, it's **content!**</p>"
+    expected_content_str = "<p>Ooh, it's <b>content!</b></p>"
+    message_json = {
+        "content": content_str,
+        "mediaType": "text/markdown"
+    }
+    convert_post_content_to_html(message_json)
+    if message_json['content'] != expected_content_str:
+        print("Result: " + message_json['content'])
+    assert message_json['content'] == expected_content_str
+    assert message_json['mediaType'] == 'text/html'
+
+    content_str = "<p>Ooh, it's *content!*</p>"
+    expected_content_str = "<p>Ooh, it's <i>content!</i></p>"
+    message_json = {
+        "content": content_str,
+        "mediaType": "text/markdown"
+    }
+    convert_post_content_to_html(message_json)
+    if message_json['content'] != expected_content_str:
+        print("Result: " + message_json['content'])
+    assert message_json['content'] == expected_content_str
+    assert message_json['mediaType'] == 'text/html'
+
+    content_str = "Ooh, it's _content!_"
+    expected_content_str = "Ooh, it's <u>content!</u>"
+    message_json = {
+        "content": content_str,
+        "contentMap": {
+            "en": content_str,
+            "bogus": { "decoy": "text" },
+            "de": content_str
+        },
+        "mediaType": "text/markdown"
+    }
+    convert_post_content_to_html(message_json)
+    if message_json['content'] != expected_content_str:
+        print("Result: " + message_json['content'])
+    assert message_json['content'] == expected_content_str
+    assert message_json['contentMap']["en"] == expected_content_str
+    assert message_json['contentMap']["de"] == expected_content_str
+    assert message_json['mediaType'] == 'text/html'
+
+
 def run_all_tests():
+    _test_convert_markdown()
+    return
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
@@ -7899,6 +7959,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_convert_markdown()
     _test_remove_style()
     _test_html_closing_tag()
     _test_replace_remote_tags()
