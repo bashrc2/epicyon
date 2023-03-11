@@ -1357,6 +1357,10 @@ def get_post_attachments_as_html(base_dir: str,
                         gallery_str += \
                             '<label class="transparent">---</label><br>'
                     gallery_str += '  <div class="mediaicons">\n'
+                    # don't show the announce icon if there is no image
+                    # description
+                    if not image_description:
+                        announce_str = ''
                     gallery_str += \
                         '    ' + reply_str + announce_str + like_str + \
                         bookmark_str + delete_str + mute_str + '\n'
