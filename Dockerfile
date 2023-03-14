@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 ENV DOMAIN=localhost
 RUN apt-get update && \
     apt-get -y install \
