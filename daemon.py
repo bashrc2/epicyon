@@ -2164,6 +2164,11 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.postreq_busy = False
             return 2
 
+        # follower synchronization requests
+        if self.headers.get('Collection-Synchronization'):
+            print('Collection-Synchronization: ' +
+                  str(self.headers['Collection-Synchronization']))
+
         # Convert the headers needed for signature verification to dict
         headers_dict = {}
         headers_dict['host'] = self.headers['host']
