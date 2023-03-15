@@ -16901,6 +16901,13 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', '_security_txt[calling_domain]',
                             self.server.debug)
 
+        if self.path.startswith('/users/') and \
+           self.path.endswith('/followers_synchronization'):
+            print('DEBUG: followers synchronization request ' +
+                  self.path + ' ' + calling_domain)
+            self._404()
+            return
+
         if self.path == '/logout':
             if not self.server.news_instance:
                 msg = \
