@@ -119,6 +119,7 @@ from inbox import run_inbox_queue_watchdog
 from inbox import save_post_to_inbox_queue
 from inbox import populate_replies
 from inbox import receive_edit_to_post
+from follow import get_followers_for_domain
 from follow import follower_approval_active
 from follow import is_following_actor
 from follow import get_following_feed
@@ -876,6 +877,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _secure_mode(self, curr_session, proxy_type: str,
                      force: bool = False) -> bool:
         """http authentication of GET requests for json
+        aka authorized fetch
         """
         if not self.server.secure_mode and not force:
             return True
@@ -16901,11 +16903,63 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', '_security_txt[calling_domain]',
                             self.server.debug)
 
+        # followers synchronization
         if self.path.startswith('/users/') and \
            self.path.endswith('/followers_synchronization'):
-            print('DEBUG: followers synchronization request ' +
-                  self.path + ' ' + calling_domain)
+            if self.server.followers_synchronization:
+                # only do one request at a time
+                self._503()
+                return
+            self.server.followers_synchronization = True
+            if self.server.debug:
+                print('DEBUG: followers synchronization request ' +
+                      self.path + ' ' + calling_domain)
+            # check authorized fetch
+            if self._secure_mode(curr_session, proxy_type):
+                nickname = get_nickname_from_actor(self.path)
+                sync_list = \
+                    get_followers_for_domain(self.server.base_dir,
+                                             nickname, self.server.domain,
+                                             calling_domain)
+                id_str = self.server.http_prefix + '://' + \
+                    self.server.domain_full + \
+                    self.path.replace('/followers_synchronization',
+                                      '/followers?domain=' + calling_domain)
+                sync_json = {
+                    '@context': 'https://www.w3.org/ns/activitystreams',
+                    'id': id_str,
+                    'orderedItems': sync_list,
+                    'type': 'OrderedCollection'
+                }
+                msg_str = json.dumps(sync_json, ensure_ascii=False)
+                msg_str = self._convert_domains(calling_domain, referer_domain,
+                                                msg_str)
+                msg = msg_str.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('application/json', msglen,
+                                  None, calling_domain, False)
+                self._write(msg)
+                self.server.followers_synchronization = False
+                return
+            else:
+                # request was not signed
+                result_json = {
+                    "error": "Request not signed"
+                }
+                msg_str = json.dumps(result_json, ensure_ascii=False)
+                msg = msg_str.encode('utf-8')
+                msglen = len(msg)
+                accept_str = self.headers['Accept']
+                if 'json' in accept_str:
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
+                    self._set_headers(protocol_str, msglen,
+                                      None, calling_domain, False)
+                    self._write(msg)
+                    self.server.followers_synchronization = False
+                    return
             self._404()
+            self.server.followers_synchronization = False
             return
 
         if self.path == '/logout':
@@ -23332,6 +23386,9 @@ def run_daemon(max_hashtags: int,
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)
+
+    # lock for followers synchronization
+    httpd.followers_synchronization = False
 
     # permitted sites from which the buy button may be displayed
     httpd.buy_sites = load_buy_sites(base_dir)

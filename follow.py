@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
+from utils import get_user_paths
 from utils import acct_handle_dir
 from utils import has_object_string_object
 from utils import has_object_string_type
@@ -1358,6 +1359,50 @@ def deny_follow_request_via_server(session,
         print('DEBUG: c2s GET deny follow request request success')
 
     return deny_html
+
+
+def get_followers_for_domain(base_dir: str,
+                             nickname: str, domain: str,
+                             search_domain: str) -> []:
+    """Returns the followers for a given domain
+    this is used for followers synchronization
+    """
+    followers_filename = \
+        acct_dir(base_dir, nickname, domain) + '/followers.txt'
+    if not os.path.isfile(followers_filename):
+        return []
+    lines = []
+    try:
+        with open(followers_filename, 'r', encoding='utf-8') as fp_foll:
+            lines = fp_foll.read().splitlines()
+    except OSError:
+        print('EX: get_followers_for_domain unable to read followers ' +
+              followers_filename)
+    result = []
+    for line_str in lines:
+        if search_domain not in line_str:
+            continue
+        if line_str.endswith('@' + search_domain):
+            nick = line_str.split('@')[0]
+            paths_list = get_user_paths()
+            found = False
+            for prefix in ('https', 'http'):
+                if found:
+                    break
+                for possible_path in paths_list:
+                    url = prefix + '://' + search_domain + \
+                        possible_path + nick
+                    filename = base_dir + '/cache/actors/' + \
+                        url.replace('/', '#') + '.json'
+                    if not os.path.isfile(filename):
+                        continue
+                    if url not in result:
+                        result.append(url)
+                    found = True
+                    break
+        elif '://' + search_domain in line_str:
+            result.append(line_str)
+    return result
 
 
 def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:
