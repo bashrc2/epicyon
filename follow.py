@@ -28,7 +28,6 @@ from posts import get_person_box
 from utils import load_json
 from utils import save_json
 from utils import is_account_dir
-from utils import get_user_paths
 from utils import acct_dir
 from utils import has_group_type
 from utils import local_actor_url
@@ -1361,9 +1360,9 @@ def deny_follow_request_via_server(session,
     return deny_html
 
 
-def get_followers_for_domain(base_dir: str,
-                             nickname: str, domain: str,
-                             search_domain: str) -> []:
+def _get_followers_for_domain(base_dir: str,
+                              nickname: str, domain: str,
+                              search_domain: str) -> []:
     """Returns the followers for a given domain
     this is used for followers synchronization
     """
@@ -1403,6 +1402,28 @@ def get_followers_for_domain(base_dir: str,
         elif '://' + search_domain in line_str:
             result.append(line_str)
     return result
+
+
+def get_followers_sync_json(base_dir: str,
+                            nickname: str, domain: str,
+                            http_prefix: str, domain_full: str,
+                            search_domain: str) -> {}:
+    """Returns a response for followers synchronization
+    See https://github.com/mastodon/mastodon/pull/14510
+    """
+    sync_list = \
+        _get_followers_for_domain(base_dir,
+                                  nickname, domain,
+                                  search_domain)
+    id_str = http_prefix + '://' + domain_full + \
+        '/users/' + nickname + '/followers?domain=' + search_domain
+    sync_json = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': id_str,
+        'orderedItems': sync_list,
+        'type': 'OrderedCollection'
+    }
+    return sync_json
 
 
 def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:

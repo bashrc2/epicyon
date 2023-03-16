@@ -119,7 +119,7 @@ from inbox import run_inbox_queue_watchdog
 from inbox import save_post_to_inbox_queue
 from inbox import populate_replies
 from inbox import receive_edit_to_post
-from follow import get_followers_for_domain
+from follow import get_followers_sync_json
 from follow import follower_approval_active
 from follow import is_following_actor
 from follow import get_following_feed
@@ -16917,20 +16917,12 @@ class PubServer(BaseHTTPRequestHandler):
             # check authorized fetch
             if self._secure_mode(curr_session, proxy_type):
                 nickname = get_nickname_from_actor(self.path)
-                sync_list = \
-                    get_followers_for_domain(self.server.base_dir,
-                                             nickname, self.server.domain,
-                                             calling_domain)
-                id_str = self.server.http_prefix + '://' + \
-                    self.server.domain_full + \
-                    self.path.replace('/followers_synchronization',
-                                      '/followers?domain=' + calling_domain)
-                sync_json = {
-                    '@context': 'https://www.w3.org/ns/activitystreams',
-                    'id': id_str,
-                    'orderedItems': sync_list,
-                    'type': 'OrderedCollection'
-                }
+                sync_json = \
+                    get_followers_sync_json(self.server.base_dir,
+                                            nickname, self.server.domain,
+                                            self.server.http_prefix,
+                                            self.server.domain_full,
+                                            calling_domain)
                 msg_str = json.dumps(sync_json, ensure_ascii=False)
                 msg_str = self._convert_domains(calling_domain, referer_domain,
                                                 msg_str)
