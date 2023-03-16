@@ -1412,6 +1412,7 @@ def get_followers_sync_json(base_dir: str,
                             search_domain: str) -> {}:
     """Returns a response for followers synchronization
     See https://github.com/mastodon/mastodon/pull/14510
+    https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
     """
     sync_list = \
         _get_followers_for_domain(base_dir,
@@ -1431,6 +1432,7 @@ def get_followers_sync_json(base_dir: str,
 def get_followers_sync_hash(sync_json: {}) -> str:
     """Returns a hash used within the Collection-Synchronization http header
     See https://github.com/mastodon/mastodon/pull/14510
+    https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
     """
     if not sync_json:
         return None
