@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
+from hashlib import sha256
 from utils import get_user_paths
 from utils import acct_handle_dir
 from utils import has_object_string_object
@@ -1401,6 +1402,7 @@ def _get_followers_for_domain(base_dir: str,
                     break
         elif '://' + search_domain in line_str:
             result.append(line_str)
+    result.sort()
     return result
 
 
@@ -1424,6 +1426,24 @@ def get_followers_sync_json(base_dir: str,
         'type': 'OrderedCollection'
     }
     return sync_json
+
+
+def get_followers_sync_hash(sync_json: {}) -> str:
+    """Returns a hash used within the Collection-Synchronization http header
+    See https://github.com/mastodon/mastodon/pull/14510
+    """
+    if not sync_json:
+        return None
+    sync_hash = None
+    for actor in sync_json['orderedItems']:
+        actor_hash = sha256(actor.encode('utf-8'))
+        if sync_hash:
+            sync_hash = sync_hash ^ actor_hash
+        else:
+            sync_hash = actor_hash
+    if sync_hash:
+        sync_hash = sync_hash.hexdigest()
+    return sync_hash
 
 
 def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:

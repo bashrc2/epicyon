@@ -120,6 +120,7 @@ from inbox import save_post_to_inbox_queue
 from inbox import populate_replies
 from inbox import receive_edit_to_post
 from follow import get_followers_sync_json
+from follow import get_followers_sync_hash
 from follow import follower_approval_active
 from follow import is_following_actor
 from follow import get_following_feed
@@ -16917,12 +16918,24 @@ class PubServer(BaseHTTPRequestHandler):
             # check authorized fetch
             if self._secure_mode(curr_session, proxy_type):
                 nickname = get_nickname_from_actor(self.path)
-                sync_json = \
-                    get_followers_sync_json(self.server.base_dir,
-                                            nickname, self.server.domain,
-                                            self.server.http_prefix,
-                                            self.server.domain_full,
-                                            calling_domain)
+                foll_sync_key = nickname + ':' + calling_domain
+                sync_dict = self.server.followers_sync_cache
+                if sync_dict.get(foll_sync_key):
+                    sync_hash = sync_dict[foll_sync_key]['hash']
+                    sync_json = sync_dict[foll_sync_key]['response']
+                else:
+                    sync_json = \
+                        get_followers_sync_json(self.server.base_dir,
+                                                nickname, self.server.domain,
+                                                self.server.http_prefix,
+                                                self.server.domain_full,
+                                                calling_domain)
+                    sync_hash = get_followers_sync_hash(sync_json)
+                    if sync_hash:
+                        self.server.followers_sync_cache[foll_sync_key] = {
+                            "hash": sync_hash,
+                            "response": sync_json
+                        }
                 msg_str = json.dumps(sync_json, ensure_ascii=False)
                 msg_str = self._convert_domains(calling_domain, referer_domain,
                                                 msg_str)
@@ -23381,6 +23394,9 @@ def run_daemon(max_hashtags: int,
 
     # lock for followers synchronization
     httpd.followers_synchronization = False
+
+    # cache containing followers synchronization hashes and json
+    httpd.followers_sync_cache = {}
 
     # permitted sites from which the buy button may be displayed
     httpd.buy_sites = load_buy_sites(base_dir)
