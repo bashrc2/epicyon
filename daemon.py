@@ -119,8 +119,7 @@ from inbox import run_inbox_queue_watchdog
 from inbox import save_post_to_inbox_queue
 from inbox import populate_replies
 from inbox import receive_edit_to_post
-from follow import get_followers_sync_json
-from follow import get_followers_sync_hash
+from follow import update_followers_sync_cache
 from follow import follower_approval_active
 from follow import is_following_actor
 from follow import get_following_feed
@@ -16905,6 +16904,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         # followers synchronization
+        # See https://github.com/mastodon/mastodon/pull/14510
+        # https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
         if self.path.startswith('/users/') and \
            self.path.endswith('/followers_synchronization'):
             if self.server.followers_synchronization:
@@ -16918,24 +16919,15 @@ class PubServer(BaseHTTPRequestHandler):
             # check authorized fetch
             if self._secure_mode(curr_session, proxy_type):
                 nickname = get_nickname_from_actor(self.path)
-                foll_sync_key = nickname + ':' + calling_domain
-                sync_dict = self.server.followers_sync_cache
-                if sync_dict.get(foll_sync_key):
-                    sync_hash = sync_dict[foll_sync_key]['hash']
-                    sync_json = sync_dict[foll_sync_key]['response']
-                else:
-                    sync_json = \
-                        get_followers_sync_json(self.server.base_dir,
-                                                nickname, self.server.domain,
+                sync_cache = self.server.followers_sync_cache
+                sync_json, _ = \
+                    update_followers_sync_cache(self.server.base_dir,
+                                                nickname,
+                                                self.server.domain,
                                                 self.server.http_prefix,
                                                 self.server.domain_full,
-                                                calling_domain)
-                    sync_hash = get_followers_sync_hash(sync_json)
-                    if sync_hash:
-                        self.server.followers_sync_cache[foll_sync_key] = {
-                            "hash": sync_hash,
-                            "response": sync_json
-                        }
+                                                calling_domain,
+                                                sync_cache)
                 msg_str = json.dumps(sync_json, ensure_ascii=False)
                 msg_str = self._convert_domains(calling_domain, referer_domain,
                                                 msg_str)

@@ -1372,12 +1372,16 @@ def _get_followers_for_domain(base_dir: str,
     if not os.path.isfile(followers_filename):
         return []
     lines = []
+    foll_text = ''
     try:
         with open(followers_filename, 'r', encoding='utf-8') as fp_foll:
-            lines = fp_foll.read().splitlines()
+            foll_text = fp_foll.read()
     except OSError:
         print('EX: get_followers_for_domain unable to read followers ' +
               followers_filename)
+    if search_domain not in foll_text:
+        return []
+    lines = foll_text.splitlines()
     result = []
     for line_str in lines:
         if search_domain not in line_str:
@@ -1406,10 +1410,10 @@ def _get_followers_for_domain(base_dir: str,
     return result
 
 
-def get_followers_sync_json(base_dir: str,
-                            nickname: str, domain: str,
-                            http_prefix: str, domain_full: str,
-                            search_domain: str) -> {}:
+def _get_followers_sync_json(base_dir: str,
+                             nickname: str, domain: str,
+                             http_prefix: str, domain_full: str,
+                             search_domain: str) -> {}:
     """Returns a response for followers synchronization
     See https://github.com/mastodon/mastodon/pull/14510
     https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
@@ -1429,7 +1433,7 @@ def get_followers_sync_json(base_dir: str,
     return sync_json
 
 
-def get_followers_sync_hash(sync_json: {}) -> str:
+def _get_followers_sync_hash(sync_json: {}) -> str:
     """Returns a hash used within the Collection-Synchronization http header
     See https://github.com/mastodon/mastodon/pull/14510
     https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
@@ -1446,6 +1450,35 @@ def get_followers_sync_hash(sync_json: {}) -> str:
     if sync_hash:
         sync_hash = sync_hash.hexdigest()
     return sync_hash
+
+
+def update_followers_sync_cache(base_dir: str,
+                                nickname: str, domain: str,
+                                http_prefix: str, domain_full: str,
+                                calling_domain: str,
+                                sync_cache: {}) -> ({}, str):
+    """Updates the followers synchronization cache
+    See https://github.com/mastodon/mastodon/pull/14510
+    https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
+    """
+    foll_sync_key = nickname + ':' + calling_domain
+    if sync_cache.get(foll_sync_key):
+        sync_hash = sync_cache[foll_sync_key]['hash']
+        sync_json = sync_cache[foll_sync_key]['response']
+    else:
+        sync_json = \
+            _get_followers_sync_json(base_dir,
+                                     nickname, domain,
+                                     http_prefix,
+                                     domain_full,
+                                     calling_domain)
+        sync_hash = _get_followers_sync_hash(sync_json)
+        if sync_hash:
+            sync_cache[foll_sync_key] = {
+                "hash": sync_hash,
+                "response": sync_json
+            }
+    return sync_json, sync_hash
 
 
 def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:
