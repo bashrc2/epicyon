@@ -104,6 +104,7 @@ from context import get_individual_post_context
 from maps import geocoords_from_map_link
 from keys import get_person_key
 from markdown import markdown_to_html
+from followerSync import update_followers_sync_cache
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -2913,7 +2914,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                      shared_items_token: str, group_account: bool,
                      signing_priv_key_pem: str,
                      source_id: int, curr_domain: str,
-                     onion_domain: str, i2p_domain: str) -> int:
+                     onion_domain: str, i2p_domain: str,
+                     extra_headers: {}) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -3089,6 +3091,10 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     elif debug:
         print('Not sending shared items federation token')
 
+    # add any extra headers
+    for header_title, header_text in extra_headers.items():
+        signature_header_json[header_title] = header_text
+
     # Keep the number of threads being used small
     while len(send_threads) > 1000:
         print('WARN: Maximum threads reached - killing send thread')
@@ -3213,7 +3219,8 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                              shared_items_federated_domains: [],
                              shared_item_federation_tokens: {},
                              signing_priv_key_pem: str,
-                             proxy_type: str) -> None:
+                             proxy_type: str,
+                             followers_sync_cache: {}) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -3297,6 +3304,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
     if debug:
         print('DEBUG: Sending individually addressed posts: ' +
               str(recipients))
+    domain_full = get_full_domain(domain, port)
     # randomize the recipients list order, so that we are not favoring
     # any particular account in terms of delivery time
     random.shuffle(recipients)
@@ -3309,10 +3317,9 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
         to_domain, to_port = get_domain_from_actor(address)
         if not to_domain:
             continue
+        to_domain_full = get_full_domain(to_domain, to_port)
         # Don't send profile/actor updates to yourself
         if is_profile_update:
-            domain_full = get_full_domain(domain, port)
-            to_domain_full = get_full_domain(to_domain, to_port)
             if nickname == to_nickname and \
                domain_full == to_domain_full:
                 if debug:
@@ -3352,6 +3359,25 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                 curr_proxy_type = 'i2p'
                 session_type = 'i2p'
 
+        extra_headers = {}
+        # followers synchronization header
+        # See https://github.com/mastodon/mastodon/pull/14510
+        # https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
+        sending_actor = \
+            from_http_prefix + '://' + from_domain_full + '/users/' + nickname
+        _, followers_sync_hash = \
+            update_followers_sync_cache(base_dir,
+                                        nickname, domain,
+                                        http_prefix, domain_full,
+                                        to_domain_full,
+                                        followers_sync_cache)
+        if followers_sync_hash:
+            collection_sync_str = \
+                'collectionId="' + sending_actor + '/followers", ' + \
+                'url="' + sending_actor + '/followers_synchronization", ' + \
+                'digest="' + followers_sync_hash + '"'
+            extra_headers["Collection-Synchronization"] = collection_sync_str
+
         if debug:
             to_domain_full = get_full_domain(to_domain, to_port)
             print('DEBUG: Post sending s2s: ' +
@@ -3388,7 +3414,8 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                          person_cache, debug, project_version,
                          shared_items_token, group_account,
                          signing_priv_key_pem, 34436782,
-                         domain, onion_domain, i2p_domain)
+                         domain, onion_domain, i2p_domain,
+                         extra_headers)
 
 
 def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
@@ -3403,7 +3430,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                    shared_items_federated_domains: [],
                                    shared_item_federation_tokens: {},
                                    signing_priv_key_pem: str,
-                                   proxy_type: str):
+                                   proxy_type: str,
+                                   followers_sync_cache: {}):
     """Returns a thread used to send a post to named addresses
     """
     print('THREAD: _send_to_named_addresses')
@@ -3420,7 +3448,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                 shared_items_federated_domains,
                                 shared_item_federation_tokens,
                                 signing_priv_key_pem,
-                                proxy_type), daemon=True)
+                                proxy_type,
+                                followers_sync_cache), daemon=True)
     if not begin_thread(send_thread, 'send_to_named_addresses_thread'):
         print('WARN: socket error while starting ' +
               'thread to send to named addresses.')
@@ -3484,6 +3513,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
         return
     print('Post is addressed to followers')
 
+    extra_headers = {}
     grouped = group_followers_by_domain(base_dir, nickname, domain)
     if not grouped:
         if debug:
@@ -3642,7 +3672,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
                              person_cache, debug, project_version,
                              shared_items_token, group_account,
                              signing_priv_key_pem, 639342,
-                             domain, onion_domain, i2p_domain)
+                             domain, onion_domain, i2p_domain,
+                             extra_headers)
         else:
             # randomize the order of handles, so that we are not
             # favoring any particular account in terms of its delivery time
@@ -3675,7 +3706,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
                                  person_cache, debug, project_version,
                                  shared_items_token, group_account,
                                  signing_priv_key_pem, 634219,
-                                 domain, onion_domain, i2p_domain)
+                                 domain, onion_domain, i2p_domain,
+                                 extra_headers)
 
         time.sleep(4)
 

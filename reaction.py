@@ -137,6 +137,7 @@ def _reactionpost(recent_posts_cache: {},
                                    nickname, domain, debug, None,
                                    emoji_content)
 
+        extra_headers = {}
         send_signed_json(new_reaction_json, session, base_dir,
                          nickname, domain, port,
                          reaction_post_nickname,
@@ -146,7 +147,8 @@ def _reactionpost(recent_posts_cache: {},
                          person_cache,
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 7165392,
-                         curr_domain, onion_domain, i2p_domain)
+                         curr_domain, onion_domain, i2p_domain,
+                         extra_headers)
 
     return new_reaction_json
 

@@ -136,7 +136,7 @@ def _create_like(recent_posts_cache: {},
                                 base_dir, post_filename, object_url,
                                 new_like_json['actor'],
                                 nickname, domain, debug, None)
-
+        extra_headers = {}
         send_signed_json(new_like_json, session, base_dir,
                          nickname, domain, port,
                          liked_post_nickname, liked_post_domain,
@@ -146,7 +146,8 @@ def _create_like(recent_posts_cache: {},
                          person_cache,
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 7367374,
-                         curr_domain, onion_domain, i2p_domain)
+                         curr_domain, onion_domain, i2p_domain,
+                         extra_headers)
 
     return new_like_json
 

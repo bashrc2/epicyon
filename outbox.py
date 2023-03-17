@@ -780,6 +780,7 @@ def post_message_to_outbox(session, translate: {},
                                        shared_items_federated_domains,
                                        shared_item_federation_tokens,
                                        signing_priv_key_pem,
-                                       proxy_type)
+                                       proxy_type,
+                                       server.followers_sync_cache)
     followers_threads.append(named_addresses_thread)
     return True

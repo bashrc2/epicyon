@@ -203,6 +203,7 @@ def create_announce(session, base_dir: str, federation_list: [],
                     group_account = True
 
     if announce_nickname and announce_domain:
+        extra_headers = {}
         send_signed_json(new_announce, session, base_dir,
                          nickname, domain, port,
                          announce_nickname, announce_domain,
@@ -212,7 +213,8 @@ def create_announce(session, base_dir: str, federation_list: [],
                          person_cache,
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 639633,
-                         curr_domain, onion_domain, i2p_domain)
+                         curr_domain, onion_domain, i2p_domain,
+                         extra_headers)
 
     return new_announce
 

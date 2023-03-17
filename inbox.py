@@ -3831,6 +3831,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sending_handle)
         return False
+    extra_headers = {}
     # bounce DM goes back to the sender
     print('Sending bounce DM to ' + sending_handle)
     send_signed_json(post_json_object, session, base_dir,
@@ -3840,7 +3841,8 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                      send_threads, post_log, cached_webfingers,
                      person_cache, debug, __version__, None, group_account,
                      signing_priv_key_pem, 7238634,
-                     curr_domain, onion_domain, i2p_domain)
+                     curr_domain, onion_domain, i2p_domain,
+                     extra_headers)
     return True
 
 

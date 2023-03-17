@@ -119,7 +119,7 @@ from inbox import run_inbox_queue_watchdog
 from inbox import save_post_to_inbox_queue
 from inbox import populate_replies
 from inbox import receive_edit_to_post
-from follow import update_followers_sync_cache
+from followerSync import update_followers_sync_cache
 from follow import follower_approval_active
 from follow import is_following_actor
 from follow import get_following_feed
