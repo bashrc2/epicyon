@@ -3377,7 +3377,8 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                 'url="' + sending_actor + '/followers_synchronization", ' + \
                 'digest="' + followers_sync_hash + '"'
             extra_headers["Collection-Synchronization"] = collection_sync_str
-            print('DEBUG: extra_headers, ' + str(extra_headers))
+            if debug:
+                print('DEBUG: extra_headers, ' + str(extra_headers))
 
         if debug:
             to_domain_full = get_full_domain(to_domain, to_port)
