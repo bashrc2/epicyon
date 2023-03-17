@@ -202,6 +202,7 @@ from happening import dav_day_via_server
 from webapp_theme_designer import color_contrast
 from maps import get_map_links_from_post_content
 from maps import geocoords_from_map_link
+from followerSync import get_followers_sync_hash
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -7942,6 +7943,23 @@ def _test_convert_markdown() -> None:
     assert message_json['mediaType'] == 'text/html'
 
 
+def _test_xor_hashes():
+    print('xor_hashes')
+    sync_json = {
+        "orderedItems": [
+            'https://somedomain/users/somenick',
+            'https://anotherdomain/users/anothernick'
+        ]
+    }
+    result = get_followers_sync_hash(sync_json)
+    expected = \
+        '316f8dfdf471920a9cdc17da48feead398378e927dee3372d938c524aa7d8917'
+    if result != expected:
+        print('expected: ' + expected)
+        print('result:   ' + result)
+    assert result == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -7959,6 +7977,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_xor_hashes()
     _test_convert_markdown()
     _test_remove_style()
     _test_html_closing_tag()

@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+import hashlib
 from hashlib import sha256
 from utils import acct_dir
 from utils import get_user_paths
@@ -85,7 +86,7 @@ def _get_followers_sync_json(base_dir: str,
     return sync_json
 
 
-def _get_followers_sync_hash(sync_json: {}) -> str:
+def get_followers_sync_hash(sync_json: {}) -> str:
     """Returns a hash used within the Collection-Synchronization http header
     See https://github.com/mastodon/mastodon/pull/14510
     https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
@@ -94,14 +95,19 @@ def _get_followers_sync_hash(sync_json: {}) -> str:
         return None
     sync_hash = None
     for actor in sync_json['orderedItems']:
-        actor_hash = sha256(actor.encode('utf-8'))
+        curr_sync_hash = sha256(actor.encode('utf-8'))
+        sync_hash_hex = curr_sync_hash.hexdigest()
+        sync_hash_int = int(sync_hash_hex, 16)
         if sync_hash:
-            sync_hash = sync_hash ^ actor_hash
+            sync_hash = sync_hash ^ sync_hash_int
         else:
-            sync_hash = actor_hash
-    if sync_hash:
-        sync_hash = sync_hash.hexdigest()
-    return sync_hash
+            sync_hash = sync_hash_int
+    if sync_hash is None:
+        return None
+    sync_hash_int = sync_hash
+    sync_hash = hashlib.sha256()
+    sync_hash_bytes = sync_hash_int.to_bytes(32, 'big')
+    return sync_hash_bytes.hex()
 
 
 def update_followers_sync_cache(base_dir: str,
@@ -124,7 +130,7 @@ def update_followers_sync_cache(base_dir: str,
                                      http_prefix,
                                      domain_full,
                                      calling_domain)
-        sync_hash = _get_followers_sync_hash(sync_json)
+        sync_hash = get_followers_sync_hash(sync_json)
         if sync_hash:
             sync_cache[foll_sync_key] = {
                 "hash": sync_hash,
