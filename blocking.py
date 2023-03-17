@@ -720,6 +720,11 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
     """
     account_dir = acct_dir(base_dir, nickname, domain)
     blocking_filename = account_dir + '/noannounce.txt'
+
+    # if the noannounce.txt file doesn't yet exist
+    if not os.path.isfile(blocking_filename):
+        return
+
     handle = following_nickname + '@' + following_domain
     if text_in_file(handle + '\n', blocking_filename, False):
         file_text = ''
@@ -756,6 +761,19 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
     account_dir = acct_dir(base_dir, nickname, domain)
     blocking_filename = account_dir + '/noannounce.txt'
     handle = following_nickname + '@' + following_domain
+
+    # if the noannounce.txt file doesn't yet exist
+    if not os.path.isfile(blocking_filename):
+        file_text = handle + '\n'
+        try:
+            with open(blocking_filename, 'w+',
+                      encoding='utf-8') as fp_noannounce:
+                fp_noannounce.write(file_text)
+        except OSError:
+            print('EX: unable to write initial noannounce: ' +
+                  blocking_filename + ' ' + handle)
+        return
+
     file_text = ''
     if not text_in_file(handle + '\n', blocking_filename, False):
         try:
