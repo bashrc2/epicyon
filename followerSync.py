@@ -14,6 +14,18 @@ from utils import acct_dir
 from utils import get_user_paths
 
 
+def remove_followers_sync(followers_sync_cache: {},
+                          nickname: str,
+                          follower_domain: str) -> None:
+    """Remove an entry within the followers synchronization cache,
+    so that it will subsequently be regenerated
+    """
+    foll_sync_key = nickname + ':' + follower_domain
+    if not followers_sync_cache.get(foll_sync_key):
+        return
+    del followers_sync_cache[foll_sync_key]
+
+
 def _get_followers_for_domain(base_dir: str,
                               nickname: str, domain: str,
                               search_domain: str) -> []:

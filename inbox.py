@@ -5203,7 +5203,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                             max_followers: int,
                             this_domain: str, onion_domain: str,
                             i2p_domain: str, signing_priv_key_pem: str,
-                            unit_test: bool, system_language: str) -> bool:
+                            unit_test: bool, system_language: str,
+                            followers_sync_cache: {}) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not message_json['type'].startswith('Follow'):
@@ -5468,7 +5469,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     cached_webfingers, person_cache,
                                     debug, project_version, True,
                                     signing_priv_key_pem,
-                                    this_domain, onion_domain, i2p_domain)
+                                    this_domain, onion_domain, i2p_domain,
+                                    followers_sync_cache)
 
 
 def run_inbox_queue(server,
@@ -5897,7 +5899,8 @@ def run_inbox_queue(server,
                                    max_followers, domain,
                                    onion_domain, i2p_domain,
                                    signing_priv_key_pem, unit_test,
-                                   system_language):
+                                   system_language,
+                                   server.followers_sync_cache):
             if os.path.isfile(queue_filename):
                 try:
                     os.remove(queue_filename)

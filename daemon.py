@@ -9900,6 +9900,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             signing_priv_key_pem = \
                 self.server.signing_priv_key_pem
+            followers_sync_cache = \
+                self.server.followers_sync_cache
             manual_approve_follow_request_thread(self.server.session,
                                                  self.server.session_onion,
                                                  self.server.session_i2p,
@@ -9917,7 +9919,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  debug,
                                                  self.server.project_version,
                                                  signing_priv_key_pem,
-                                                 proxy_type)
+                                                 proxy_type,
+                                                 followers_sync_cache)
         origin_path_str_absolute = \
             http_prefix + '://' + domain_full + origin_path_str
         if calling_domain.endswith('.onion') and onion_domain:
@@ -10077,7 +10080,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.person_cache,
                                               debug,
                                               self.server.project_version,
-                                              self.server.signing_priv_key_pem)
+                                              self.server.signing_priv_key_pem,
+                                              self.server.followers_sync_cache)
         origin_path_str_absolute = \
             http_prefix + '://' + domain_full + origin_path_str
         if calling_domain.endswith('.onion') and onion_domain:
@@ -16904,7 +16908,7 @@ class PubServer(BaseHTTPRequestHandler):
                             '_GET', '_security_txt[calling_domain]',
                             self.server.debug)
 
-        # followers synchronization
+        # followers synchronization request
         # See https://github.com/mastodon/mastodon/pull/14510
         # https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
         if self.path.startswith('/users/') and \

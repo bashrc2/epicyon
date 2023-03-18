@@ -39,6 +39,7 @@ from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from session import get_json
 from session import post_json
+from followerSync import remove_followers_sync
 
 
 def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
@@ -747,7 +748,8 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                              remove_follow_activity: bool,
                              signing_priv_key_pem: str,
                              curr_domain: str,
-                             onion_domain: str, i2p_domain: str):
+                             onion_domain: str, i2p_domain: str,
+                             followers_sync_cache: {}):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
@@ -789,6 +791,10 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                 group_account = True
 
     extra_headers = {}
+    domain_full = get_full_domain(domain, from_port)
+    remove_followers_sync(followers_sync_cache,
+                          nickname_to_follow,
+                          domain_full)
     return send_signed_json(accept_json, session, base_dir,
                             nickname_to_follow, domain_to_follow, port,
                             nickname, domain, from_port,
@@ -811,7 +817,8 @@ def followed_account_rejects(session, session_onion, session_i2p,
                              send_threads: [], post_log: [],
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
-                             signing_priv_key_pem: str):
+                             signing_priv_key_pem: str,
+                             followers_sync_cache: {}):
     """The person receiving a follow request rejects the new follower
     and sends back a Reject activity
     """
@@ -865,6 +872,10 @@ def followed_account_rejects(session, session_onion, session_i2p,
     elif domain.endswith('.i2p') and session_i2p:
         curr_session = session_i2p
     extra_headers = {}
+    domain_full = get_full_domain(domain, from_port)
+    remove_followers_sync(followers_sync_cache,
+                          nickname_to_follow,
+                          domain_full)
     # send the reject activity
     return send_signed_json(reject_json, curr_session, base_dir,
                             nickname_to_follow, domain_to_follow, port,

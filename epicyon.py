@@ -1544,6 +1544,7 @@ def _command_options() -> None:
             i2p_domain = argb.i2p_domain
         if i2p_domain:
             session_i2p = create_session('i2p')
+        followers_sync_cache = {}
         manual_approve_follow_request(session, session_onion, session_i2p,
                                       onion_domain, i2p_domain,
                                       base_dir, http_prefix,
@@ -1553,7 +1554,8 @@ def _command_options() -> None:
                                       send_threads, post_log,
                                       cached_webfingers, person_cache,
                                       debug, __version__,
-                                      signing_priv_key_pem, proxy_type)
+                                      signing_priv_key_pem, proxy_type,
+                                      followers_sync_cache)
         sys.exit()
 
     if argb.deny:
@@ -1585,6 +1587,7 @@ def _command_options() -> None:
             i2p_domain = argb.i2p_domain
         if i2p_domain:
             session_i2p = create_session('i2p')
+        followers_sync_cache = {}
         manual_deny_follow_request(session, session_onion, session_i2p,
                                    onion_domain, i2p_domain,
                                    base_dir, http_prefix,
@@ -1594,7 +1597,8 @@ def _command_options() -> None:
                                    send_threads, post_log,
                                    cached_webfingers, person_cache,
                                    debug, __version__,
-                                   signing_priv_key_pem)
+                                   signing_priv_key_pem,
+                                   followers_sync_cache)
         sys.exit()
 
     if argb.followerspending:
