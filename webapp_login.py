@@ -24,8 +24,8 @@ from theme import get_text_mode_logo
 
 
 def html_get_login_credentials(login_params: str,
-                               last_login_time: int,
-                               domain: str) -> (str, str, bool):
+                               last_login_time: int, domain: str,
+                               registrations_open: bool) -> (str, str, bool):
     """Receives login credentials via HTTPServer POST
     """
     if not login_params.startswith('username='):
@@ -53,7 +53,7 @@ def html_get_login_credentials(login_params: str,
                 nickname = nickname.split('@')[0]
         elif arg.split('=', 1)[0] == 'password':
             password = arg.split('=', 1)[1]
-        elif arg.split('=', 1)[0] == 'register':
+        elif registrations_open and arg.split('=', 1)[0] == 'register':
             register = True
     return nickname, password, register
 

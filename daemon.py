@@ -2328,7 +2328,8 @@ class PubServer(BaseHTTPRequestHandler):
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
-                           ua_str: str, debug: bool) -> None:
+                           ua_str: str, debug: bool,
+                           registrations_open: bool) -> None:
         """POST to login screen, containing credentials
         """
         # ensure that there is a minimum delay between failed login
@@ -2368,7 +2369,8 @@ class PubServer(BaseHTTPRequestHandler):
         login_nickname, login_password, register = \
             html_get_login_credentials(login_params,
                                        self.server.last_login_time,
-                                       domain)
+                                       domain,
+                                       registrations_open)
         if login_nickname and login_password:
             if is_system_account(login_nickname):
                 print('Invalid username login: ' + login_nickname +
@@ -22429,7 +22431,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.port,
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
-                                    ua_str, self.server.debug)
+                                    ua_str, self.server.debug,
+                                    self.server.registration)
             self.server.postreq_busy = False
             return
 
