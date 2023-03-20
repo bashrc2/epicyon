@@ -195,8 +195,8 @@ from shares import update_shared_item_federation_token
 from shares import merge_shared_item_tokens
 from shares import send_share_via_server
 from shares import get_shared_items_catalog_via_server
-from blocking import load_cw_lists
-from blocking import add_cw_from_lists
+from cwlists import add_cw_from_lists
+from cwlists import load_cw_lists
 from happening import dav_month_via_server
 from happening import dav_day_via_server
 from webapp_theme_designer import color_contrast
@@ -2622,7 +2622,10 @@ def test_group_follow(base_dir: str) -> None:
                 if os.path.isfile(os.path.join(queue_path, name))]) == 0
 
     os.chdir(base_dir)
-    shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
+    try:
+        shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
+    except OSError:
+        print('Unable to remove directory ' + base_dir + '/.tests')
     print('Testing following of a group is complete')
 
 
@@ -6952,6 +6955,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
     print('test_add_CW_from_lists')
     translate = {}
     system_language = "en"
+    languages_understood = ["en"]
     cw_lists = load_cw_lists(base_dir, True)
     assert cw_lists
 
@@ -6963,7 +6967,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
         }
     }
     add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press',
-                      system_language)
+                      system_language, languages_understood)
     assert post_json_object['object']['sensitive'] is False
     assert post_json_object['object']['summary'] is None
 
@@ -6977,7 +6981,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
         }
     }
     add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press',
-                      system_language)
+                      system_language, languages_understood)
     assert post_json_object['object']['sensitive'] is True
     assert post_json_object['object']['summary'] == "Murdoch Press"
 
@@ -6989,7 +6993,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
         }
     }
     add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press',
-                      system_language)
+                      system_language, languages_understood)
     assert post_json_object['object']['sensitive'] is True
     assert post_json_object['object']['summary'] == \
         "Murdoch Press / Existing CW"

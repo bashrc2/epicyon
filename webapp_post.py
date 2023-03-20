@@ -101,8 +101,8 @@ from devices import e2e_edecrypt_message_from_device
 from webfinger import webfinger_handle
 from speaker import update_speaker
 from languages import auto_translate_post
+from cwlists import add_cw_from_lists
 from blocking import is_blocked
-from blocking import add_cw_from_lists
 from reaction import html_emoji_reactions
 from maps import html_open_street_map
 from maps import set_map_preferences_coords
@@ -2494,7 +2494,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     # add any content warning from the cwlists directory
     add_cw_from_lists(post_json_object, cw_lists, translate, lists_enabled,
-                      system_language)
+                      system_language, languages_understood)
 
     post_is_sensitive = False
     if post_json_object['object'].get('sensitive'):

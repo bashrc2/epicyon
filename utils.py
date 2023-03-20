@@ -201,7 +201,9 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     this_post_json = post_json_object
     if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
-    if not this_post_json.get(content_type):
+    map_dict = content_type + 'Map'
+    if not this_post_json.get(content_type) and \
+       not this_post_json.get(map_dict):
         return ''
     content = ''
     map_dict = content_type + 'Map'

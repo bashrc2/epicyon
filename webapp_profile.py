@@ -84,8 +84,8 @@ from blog import get_blog_address
 from webapp_post import individual_post_as_html
 from webapp_timeline import html_individual_share
 from webapp_timeline import page_number_buttons
+from cwlists import get_cw_list_variable
 from blocking import get_account_blocks
-from blocking import get_cw_list_variable
 from blocking import is_blocked
 from content import bold_reading_string
 from roles import is_devops

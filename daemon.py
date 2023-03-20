@@ -149,11 +149,11 @@ from media import attach_media
 from media import path_is_video
 from media import path_is_transcript
 from media import path_is_audio
+from cwlists import get_cw_list_variable
+from cwlists import load_cw_lists
 from blocking import import_blocking_file
 from blocking import export_blocking_file
 from blocking import add_account_blocks
-from blocking import get_cw_list_variable
-from blocking import load_cw_lists
 from blocking import update_blocked_cache
 from blocking import mute_post
 from blocking import unmute_post
