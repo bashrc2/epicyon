@@ -1961,13 +1961,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
     edits_post_url = \
         remove_id_ending(message_id.strip()).replace('/', '#') + '.edits'
     account_dir = acct_dir(base_dir, nickname, domain) + '/'
-    edits_filename = account_dir + box_name + '/' + edits_post_url
-    edits_str = ''
-    if os.path.isfile(edits_filename):
-        edits_json = load_json(edits_filename, 0, 1)
-        if edits_json:
-            edits_str = create_edits_html(edits_json, post_json_object,
-                                          translate, timezone, system_language)
 
     message_id_str = ''
     if message_id:
@@ -2422,6 +2415,16 @@ def individual_post_as_html(signing_priv_key_pem: str,
     languages_understood = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)
+
+    edits_filename = account_dir + box_name + '/' + edits_post_url
+    edits_str = ''
+    if os.path.isfile(edits_filename):
+        edits_json = load_json(edits_filename, 0, 1)
+        if edits_json:
+            edits_str = create_edits_html(edits_json, post_json_object,
+                                          translate, timezone, system_language,
+                                          languages_understood)
+
     content_str = get_content_from_post(post_json_object, system_language,
                                         languages_understood)
 

@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import get_content_from_post
 from utils import get_full_domain
 from utils import get_user_paths
 from utils import convert_published_to_local_timezone
@@ -2000,7 +2001,8 @@ def content_diff(content: str, prev_content: str) -> str:
 
 def create_edits_html(edits_json: {}, post_json_object: {},
                       translate: {}, timezone: str,
-                      system_language: str) -> str:
+                      system_language: str,
+                      languages_understood: []) -> str:
     """ Creates html showing historical edits made to a post
     """
     if not edits_json:
@@ -2015,33 +2017,18 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         edit_dates_list.append(modified)
     edit_dates_list.sort(reverse=True)
     edits_str = ''
-    content = None
-    if 'contentMap' in post_json_object['object']:
-        if post_json_object['object']['contentMap'].get(system_language):
-            content = \
-                post_json_object['object']['contentMap'][system_language]
-    if content is None:
-        if 'content' in post_json_object['object']:
-            content = post_json_object['object']['content']
-    if content is None:
+    content = get_content_from_post(post_json_object, system_language,
+                                    languages_understood)
+    if not content:
         return ''
     content = remove_html(content)
     for modified in edit_dates_list:
         prev_json = edits_json[modified]
         if not has_object_dict(prev_json):
             continue
-        prev_content = None
-        if 'content' not in prev_json['object']:
-            if 'contentMap' not in prev_json['object']:
-                continue
-        if 'contentMap' in prev_json['object']:
-            if prev_json['object']['contentMap'].get(system_language):
-                prev_content = \
-                    prev_json['object']['contentMap'][system_language]
-        if prev_content is None:
-            if 'content' in prev_json['object']:
-                prev_content = prev_json['object']['content']
-        if prev_content is None:
+        prev_content = get_content_from_post(prev_json, system_language,
+                                             languages_understood)
+        if not prev_content:
             continue
         prev_content = remove_html(prev_content)
         if content == prev_content:

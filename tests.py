@@ -7446,6 +7446,7 @@ def _test_diff_content() -> None:
     assert result == expected
 
     system_language = "en"
+    languages_understood = ["en"]
     translate = {
         "SHOW EDITS": "SHOW EDITS"
     }
@@ -7483,7 +7484,7 @@ def _test_diff_content() -> None:
     }
     html_str = \
         create_edits_html(edits_json, post_json_object, translate,
-                          timezone, system_language)
+                          timezone, system_language, languages_understood)
     assert html_str
     expected = \
         '<details><summary class="cw" tabindex="10">SHOW EDITS</summary>' + \
