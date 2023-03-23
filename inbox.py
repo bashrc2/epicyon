@@ -977,28 +977,36 @@ def _receive_undo_follow(base_dir: str, message_json: {},
                          onion_domain: str, i2p_domain: str) -> bool:
     if not message_json['object'].get('actor'):
         if debug:
-            print('DEBUG: follow request has no actor within object')
+            print('DEBUG: undo follow request has no actor within object')
         return False
     if not has_users_path(message_json['object']['actor']):
         if debug:
-            print('DEBUG: "users" or "profile" missing ' +
+            print('DEBUG: undo follow request "users" or "profile" missing ' +
                   'from actor within object')
         return False
     if message_json['object']['actor'] != message_json['actor']:
         if debug:
-            print('DEBUG: actors do not match')
+            print('DEBUG: undo follow request actors do not match')
+        return False
+    if not message_json['object'].get('object'):
+        if debug:
+            print('DEBUG: undo follow request has no object within object')
+        return False
+    if not isinstance(message_json['object']['object'], str):
+        if debug:
+            print('DEBUG: undo follow request object is not a string')
         return False
 
     nickname_follower = \
         get_nickname_from_actor(message_json['object']['actor'])
     if not nickname_follower:
-        print('WARN: unable to find nickname in ' +
+        print('WARN: undo follow request unable to find nickname in ' +
               message_json['object']['actor'])
         return False
     domain_follower, port_follower = \
         get_domain_from_actor(message_json['object']['actor'])
     if not domain_follower:
-        print('WARN: unable to find domain in ' +
+        print('WARN: undo follow request unable to find domain in ' +
               message_json['object']['actor'])
         return False
     domain_follower_full = get_full_domain(domain_follower, port_follower)
@@ -1006,13 +1014,13 @@ def _receive_undo_follow(base_dir: str, message_json: {},
     nickname_following = \
         get_nickname_from_actor(message_json['object']['object'])
     if not nickname_following:
-        print('WARN: unable to find nickname in ' +
+        print('WARN: undo follow request unable to find nickname in ' +
               message_json['object']['object'])
         return False
     domain_following, port_following = \
         get_domain_from_actor(message_json['object']['object'])
     if not domain_following:
-        print('WARN: unable to find domain in ' +
+        print('WARN: undo follow request unable to find domain in ' +
               message_json['object']['object'])
         return False
     if onion_domain:
