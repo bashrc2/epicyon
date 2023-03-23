@@ -110,7 +110,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
     """Should a GET or POST be blocked based upon its user agent?
     """
     if not agent_str:
-        return False, blocked_cache_last_updated
+        return True, blocked_cache_last_updated
 
     agent_str_lower = agent_str.lower()
     for ua_block in default_user_agent_blocks:
