@@ -5213,18 +5213,18 @@ def _receive_follow_request(session, session_onion, session_i2p,
             return False
     print('Receiving follow request')
     if not has_actor(message_json, debug):
-        return False
+        return True
     if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: ' +
                   'users/profile/author/accounts/channel missing from actor')
-        return False
+        return True
     domain, temp_port = get_domain_from_actor(message_json['actor'])
     if not domain:
         if debug:
             print('DEBUG: receive follow request actor without domain ' +
                   message_json['actor'])
-        return False
+        return True
     from_port = port
     domain_full = get_full_domain(domain, temp_port)
     if temp_port:
@@ -5232,7 +5232,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
     if not domain_permitted(domain, federation_list):
         if debug:
             print('DEBUG: follower from domain not permitted - ' + domain)
-        return False
+        return True
     nickname = get_nickname_from_actor(message_json['actor'])
     if not nickname:
         # single user instance
@@ -5246,13 +5246,13 @@ def _receive_follow_request(session, session_onion, session_i2p,
         if debug:
             print('DEBUG: users/profile/author/channel/accounts ' +
                   'not found within object')
-        return False
+        return True
     domain_to_follow, temp_port = get_domain_from_actor(message_json['object'])
     if not domain_to_follow:
         if debug:
             print('DEBUG: receive follow request no domain found in object ' +
                   message_json['object'])
-        return False
+        return True
     # switch to the local domain rather than its onion or i2p version
     if onion_domain:
         if domain_to_follow.endswith(onion_domain):
@@ -5335,7 +5335,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                signing_priv_key_pem, debug, unit_test,
                                system_language):
         print('REJECT spam follow request ' + approve_handle)
-        return False
+        return True
 
     # what is the followers policy?
     if not is_already_follower and \
@@ -5347,19 +5347,19 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                      nickname_to_follow, domain_to_follow,
                                      'onion') > 5:
                 print('Too many follow requests from onion addresses')
-                return False
+                return True
         elif domain.endswith('.i2p'):
             if no_of_follow_requests(base_dir,
                                      nickname_to_follow, domain_to_follow,
                                      'i2p') > 5:
                 print('Too many follow requests from i2p addresses')
-                return False
+                return True
         else:
             if no_of_follow_requests(base_dir,
                                      nickname_to_follow, domain_to_follow,
                                      '') > 10:
                 print('Too many follow requests')
-                return False
+                return True
 
         # Get the actor for the follower and add it to the cache.
         # Getting their public key has the same result
@@ -5379,7 +5379,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
             has_group_type(base_dir, message_json['actor'], person_cache)
         if group_account and is_group_account(base_dir, nickname, domain):
             print('Group cannot follow a group')
-            return False
+            return True
 
         print('Storing follow request for approval')
         return store_follow_request(base_dir,
@@ -5433,7 +5433,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                     if group_account and \
                        is_group_account(base_dir, nickname, domain):
                         print('Group cannot follow a group')
-                        return False
+                        return True
                     try:
                         with open(followers_filename, 'r+',
                                   encoding='utf-8') as followers_file:
