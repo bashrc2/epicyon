@@ -988,14 +988,6 @@ def _receive_undo_follow(base_dir: str, message_json: {},
         if debug:
             print('DEBUG: undo follow request actors do not match')
         return False
-    if not message_json['object'].get('object'):
-        if debug:
-            print('DEBUG: undo follow request has no object within object')
-        return False
-    if not isinstance(message_json['object']['object'], str):
-        if debug:
-            print('DEBUG: undo follow request object is not a string')
-        return False
 
     nickname_follower = \
         get_nickname_from_actor(message_json['object']['actor'])
