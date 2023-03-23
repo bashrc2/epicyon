@@ -1061,8 +1061,9 @@ def _receive_undo(base_dir: str, message_json: {}, debug: bool,
         return False
     if message_json['object']['type'] == 'Follow' or \
        message_json['object']['type'] == 'Join':
-        return _receive_undo_follow(base_dir, message_json,
-                                    debug, domain, onion_domain, i2p_domain)
+        _receive_undo_follow(base_dir, message_json,
+                             debug, domain, onion_domain, i2p_domain)
+        return True
     return False
 
 
