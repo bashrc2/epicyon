@@ -946,4 +946,7 @@ def path_contains_blog_link(base_dir: str,
 def get_blog_address(actor_json: {}) -> str:
     """Returns blog address for the given actor
     """
-    return get_actor_property_url(actor_json, 'Blog')
+    result = get_actor_property_url(actor_json, 'Blog')
+    if not result:
+        result = get_actor_property_url(actor_json, 'My Blog')
+    return result
