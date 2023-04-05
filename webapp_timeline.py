@@ -39,6 +39,7 @@ from webapp_column_right import get_right_column_content
 from webapp_headerbuttons import header_buttons_timeline
 from posts import is_moderator
 from announce import is_self_announce
+from question import is_vote
 
 
 def _log_timeline_timing(enable_timing_log: bool, timeline_start_time,
@@ -580,6 +581,12 @@ def html_timeline(default_timeline: str,
             except OSError:
                 print('EX: html_timeline unable to delete ' + new_report_file)
 
+    # show polls/votes?
+    show_vote_posts = True
+    show_vote_file = account_dir + '/.noVotes'
+    if os.path.isfile(show_vote_file):
+        show_vote_posts = False
+
     separator_str = ''
     if box_name != 'tlmedia':
         separator_str = html_post_separator(base_dir, None)
@@ -981,7 +988,10 @@ def html_timeline(default_timeline: str,
                     continue
                 if is_self_announce(item):
                     continue
-
+                # if this is a vote post then should it be shown?
+                if not show_vote_posts:
+                    if is_vote(base_dir, nickname, domain, item, False):
+                        continue
                 # is the post in the memory cache of recent ones?
                 curr_tl_str = None
                 if box_name != 'tlmedia' and recent_posts_cache.get('html'):
