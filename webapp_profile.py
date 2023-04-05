@@ -2774,8 +2774,7 @@ def html_edit_profile(server, translate: {},
 
     # whether to show votes
     show_vote_posts = True
-    show_vote_file = account_dir + '/.noVotes'
-    if os.path.isfile(show_vote_file):
+    if os.path.isfile(account_dir + '/.noVotes'):
         show_vote_posts = False
 
     # Option checkboxes

@@ -7580,7 +7580,7 @@ class PubServer(BaseHTTPRequestHandler):
                             save_reverse_timeline(base_dir,
                                                   self.server.reverse_sequence)
 
-                    # show vote posts checkbox
+                    # show poll/vote/question posts checkbox
                     show_vote_posts = True
                     if fields.get('showVotes'):
                         show_vote_posts = False
