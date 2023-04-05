@@ -2354,7 +2354,8 @@ def _html_edit_profile_options(is_admin: bool,
                                translate: {}, bold_reading: bool,
                                nickname: str,
                                min_images_for_accounts: [],
-                               reverse_sequence: []) -> str:
+                               reverse_sequence: [],
+                               show_vote_posts: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2407,6 +2408,10 @@ def _html_edit_profile_options(is_admin: bool,
         bold_reading_string(translate['Reverse timelines'])
     edit_profile_form += \
         edit_check_box(reverse_str, 'reverseTimelines', reverse)
+    show_vote_posts_str = \
+        bold_reading_string(translate['Show vote posts'])
+    edit_profile_form += \
+        edit_check_box(show_vote_posts_str, 'showVotes', show_vote_posts)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -2767,6 +2772,12 @@ def html_edit_profile(server, translate: {},
                                 blog_address, actor_json, translate,
                                 nickname, domain, max_recent_posts)
 
+    # whether to show votes
+    show_vote_posts = True
+    show_vote_file = account_dir + '/.noVotes'
+    if os.path.isfile(show_vote_file):
+        show_vote_posts = False
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -2777,7 +2788,7 @@ def html_edit_profile(server, translate: {},
                                    hide_like_button, hide_reaction_button,
                                    translate, bold_reading,
                                    nickname, min_images_for_accounts,
-                                   reverse_sequence)
+                                   reverse_sequence, show_vote_posts)
 
     # Contact information
     edit_profile_form += \
