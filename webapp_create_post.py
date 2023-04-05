@@ -55,7 +55,8 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
                              dropdown_reminder_suffix: str,
                              dropdown_report_suffix: str,
                              no_drop_down: bool,
-                             access_keys: {}) -> str:
+                             access_keys: {},
+                             account_dir: str) -> str:
     """Returns the html for a drop down list of new post types
     """
     drop_down_content = '<nav><div class="newPostDropdown">\n'
@@ -150,6 +151,10 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
             'icons/scope_wanted.png"/><b>' + \
             translate['Wanted'] + '</b><br>' + \
             translate['Describe something wanted'] + '</a></li>\n'
+
+    # whether to show votes
+    show_vote_file = account_dir + '/.noVotes'
+    if not os.path.isfile(show_vote_file):
         drop_down_content += \
             '<li><a href="' + path_base + \
             '/newquestion"><img loading="lazy" decoding="async" ' + \
@@ -935,6 +940,7 @@ def html_new_post(edit_post_params: {},
 
     drop_down_content = ''
     if not report_url and not share_description:
+        account_dir = acct_dir(base_dir, nickname, domain)
         drop_down_content = \
             _html_new_post_drop_down(scope_icon, scope_description,
                                      reply_str,
@@ -949,7 +955,8 @@ def html_new_post(edit_post_params: {},
                                      dropdown_dm_suffix,
                                      dropdown_reminder_suffix,
                                      dropdown_report_suffix,
-                                     no_drop_down, access_keys)
+                                     no_drop_down, access_keys,
+                                     account_dir)
     else:
         if not share_description:
             # reporting a post to moderator
