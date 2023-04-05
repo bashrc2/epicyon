@@ -2925,6 +2925,12 @@ def _receive_announce(recent_posts_cache: {},
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
+
+    show_vote_posts = True
+    show_vote_file = acct_dir(base_dir, nickname, domain) + '/.noVotes'
+    if os.path.isfile(show_vote_file):
+        show_vote_posts = False
+
     announce_html = \
         individual_post_as_html(signing_priv_key_pem, True,
                                 recent_posts_cache, max_recent_posts,
@@ -2968,7 +2974,8 @@ def _receive_announce(recent_posts_cache: {},
                                          system_language,
                                          domain_full, person_cache,
                                          signing_priv_key_pem,
-                                         blocked_cache, bold_reading)
+                                         blocked_cache, bold_reading,
+                                         show_vote_posts)
     if not post_json_object:
         print('WARN: unable to download announce: ' + str(message_json))
         not_in_onion = True
@@ -4690,6 +4697,11 @@ def _inbox_after_initial(server, inbox_start_time,
                                 debug)
             inbox_start_time = time.time()
 
+            show_vote_posts = True
+            show_vote_file = acct_dir(base_dir, nickname, domain) + '/.noVotes'
+            if os.path.isfile(show_vote_file):
+                show_vote_posts = False
+
             if is_image_media(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
                               yt_replace_domain,
@@ -4697,7 +4709,7 @@ def _inbox_after_initial(server, inbox_start_time,
                               allow_local_network_access,
                               recent_posts_cache, debug, system_language,
                               domain_full, person_cache, signing_priv_key_pem,
-                              bold_reading):
+                              bold_reading, show_vote_posts):
                 # media index will be updated
                 update_index_list.append('tlmedia')
             fitness_performance(inbox_start_time, server.fitness,

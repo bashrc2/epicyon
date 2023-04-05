@@ -529,6 +529,12 @@ def post_message_to_outbox(session, translate: {},
 
             # should this also go to the media timeline?
             if box_name_index == 'inbox':
+                show_vote_posts = True
+                show_vote_file = \
+                    acct_dir(base_dir, post_to_nickname, domain) + '/.noVotes'
+                if os.path.isfile(show_vote_file):
+                    show_vote_posts = False
+
                 if is_image_media(session, base_dir, http_prefix,
                                   post_to_nickname, domain,
                                   message_json,
@@ -539,7 +545,8 @@ def post_message_to_outbox(session, translate: {},
                                   system_language,
                                   domain_full, person_cache,
                                   signing_priv_key_pem,
-                                  bold_reading):
+                                  bold_reading,
+                                  show_vote_posts):
                     inbox_update_index('tlmedia', base_dir,
                                        post_to_nickname + '@' + domain,
                                        saved_filename, debug)

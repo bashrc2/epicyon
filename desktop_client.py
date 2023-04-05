@@ -774,6 +774,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
     _say_command(say_str, say_str2, screenreader, system_language, espeak)
     print('')
 
+    show_vote_posts = False
+
     if post_json_object['type'] == 'Announce':
         actor = post_json_object['actor']
         name_str = get_nickname_from_actor(actor)
@@ -794,7 +796,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blocked_cache, bold_reading)
+                              blocked_cache, bold_reading,
+                              show_vote_posts)
         if post_json_object2:
             if has_object_dict(post_json_object2):
                 if post_json_object2['object'].get('attributedTo') and \
@@ -2585,6 +2588,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         allow_local_network_access = False
                         yt_replace_domain = None
                         twitter_replacement_domain = None
+                        show_vote_posts = False
                         post_json_object2 = \
                             download_announce(session, base_dir,
                                               http_prefix,
@@ -2599,7 +2603,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               domain_full, person_cache,
                                               signing_priv_key_pem,
                                               blocked_cache,
-                                              bold_reading)
+                                              bold_reading,
+                                              show_vote_posts)
                         if post_json_object2:
                             post_json_object = post_json_object2
                 if post_json_object:

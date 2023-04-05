@@ -105,6 +105,7 @@ from maps import geocoords_from_map_link
 from keys import get_person_key
 from markdown import markdown_to_html
 from followerSync import update_followers_sync_cache
+from question import is_vote
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -3928,7 +3929,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                    system_language: str,
                    domain_full: str, person_cache: {},
                    signing_priv_key_pem: str,
-                   bold_reading: bool) -> bool:
+                   bold_reading: bool,
+                   show_vote_posts: bool) -> bool:
     """Returns true if the given post has attached image media
     """
     if post_json_object['type'] == 'Announce':
@@ -3944,7 +3946,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blocked_cache, bold_reading)
+                              blocked_cache, bold_reading,
+                              show_vote_posts)
         if post_json_announce:
             post_json_object = post_json_announce
     if post_json_object['type'] != 'Create':
@@ -5310,7 +5313,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       system_language: str,
                       domain_full: str, person_cache: {},
                       signing_priv_key_pem: str,
-                      blocked_cache: {}, bold_reading: bool) -> {}:
+                      blocked_cache: {}, bold_reading: bool,
+                      show_vote_posts: bool) -> {}:
     """Download the post referenced by an announce
     """
     if not post_json_object.get('object'):
@@ -5596,7 +5600,11 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              recent_posts_cache)
             return None
 
-        # labelAccusatoryPost(post_json_object, translate)
+        # if poll/vote/question is not to be shown
+        if not show_vote_posts:
+            if is_vote(base_dir, nickname, domain, announced_json, debug):
+                return None
+
         # set the id to the original status
         announced_json['id'] = post_json_object['object']
         announced_json['object']['id'] = post_json_object['object']
