@@ -7581,9 +7581,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.reverse_sequence)
 
                     # show poll/vote/question posts checkbox
-                    show_vote_posts = True
+                    show_vote_posts = False
                     if fields.get('showVotes'):
-                        show_vote_posts = False
                         if fields['showVotes'] == 'on':
                             show_vote_posts = True
                     account_dir = acct_dir(self.server.base_dir,
