@@ -7580,6 +7580,32 @@ class PubServer(BaseHTTPRequestHandler):
                             save_reverse_timeline(base_dir,
                                                   self.server.reverse_sequence)
 
+                    # show vote posts checkbox
+                    show_vote_posts = True
+                    if fields.get('showVotes'):
+                        show_vote_posts = False
+                        if fields['showVotes'] == 'on':
+                            show_vote_posts = True
+                    account_dir = acct_dir(self.server.base_dir,
+                                           nickname, self.server.domain)
+                    show_vote_file = account_dir + '/.noVotes'
+                    if os.path.isfile(show_vote_file):
+                        if show_vote_posts:
+                            try:
+                                os.remove(show_vote_file)
+                            except OSError:
+                                print('EX: unable to remove noVotes file ' +
+                                      show_vote_file)
+                    else:
+                        if not show_vote_posts:
+                            try:
+                                with open(show_vote_file, 'w+',
+                                          encoding='utf-8') as fp_votes:
+                                    fp_votes.write('\n')
+                            except OSError:
+                                print('EX: unable to write noVotes file ' +
+                                      show_vote_file)
+
                     # notify about new Likes
                     if on_final_welcome_screen:
                         # default setting from welcome screen
