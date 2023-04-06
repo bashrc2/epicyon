@@ -105,7 +105,7 @@ from maps import geocoords_from_map_link
 from keys import get_person_key
 from markdown import markdown_to_html
 from followerSync import update_followers_sync_cache
-from question import is_vote
+from question import is_question
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -5602,7 +5602,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
 
         # if poll/vote/question is not to be shown
         if not show_vote_posts:
-            if is_vote(base_dir, nickname, domain, announced_json, debug):
+            if is_question(announced_json):
                 return None
 
         # set the id to the original status

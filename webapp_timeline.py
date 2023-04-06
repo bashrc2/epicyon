@@ -39,7 +39,8 @@ from webapp_column_right import get_right_column_content
 from webapp_headerbuttons import header_buttons_timeline
 from posts import is_moderator
 from announce import is_self_announce
-from question import is_vote
+from question import is_html_question
+from question import is_question
 
 
 def _log_timeline_timing(enable_timing_log: bool, timeline_start_time,
@@ -988,9 +989,9 @@ def html_timeline(default_timeline: str,
                     continue
                 if is_self_announce(item):
                     continue
-                # if this is a vote post then should it be shown?
+                # is this a poll/vote/question?
                 if not show_vote_posts:
-                    if is_vote(base_dir, nickname, domain, item, False):
+                    if is_question(item):
                         continue
                 # is the post in the memory cache of recent ones?
                 curr_tl_str = None
@@ -1054,6 +1055,10 @@ def html_timeline(default_timeline: str,
 
                 if curr_tl_str:
                     if curr_tl_str not in tl_items_str:
+                        # is this a poll/vote/question?
+                        if not show_vote_posts:
+                            if is_html_question(curr_tl_str):
+                                continue
                         last_item_str = text_mode_separator + curr_tl_str
                         last_post_id = \
                             remove_id_ending(item['id']).replace('/', '#')

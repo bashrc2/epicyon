@@ -192,6 +192,14 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
     return question_json, question_post_filename
 
 
+def is_html_question(html_str: str) -> bool:
+    """ is the given html string a Question?
+    """
+    if 'input type="radio" name="answer"' in html_str:
+        return True
+    return False
+
+
 def is_question(post_json_object: {}) -> bool:
     """ is the given post a question?
     """
