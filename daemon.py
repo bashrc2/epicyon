@@ -22961,6 +22961,12 @@ class PubServer(BaseHTTPRequestHandler):
                             '_POST', 'check path',
                             self.server.debug)
 
+        if self.headers['Content-length'] is None or \
+           self.headers['Content-type'] is None:
+            self._400()
+            self.server.postreq_busy = False
+            return
+
         is_media_content = False
         if self.headers['Content-type'].startswith('image/') or \
            self.headers['Content-type'].startswith('video/') or \
