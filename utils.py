@@ -1401,7 +1401,7 @@ def get_user_paths() -> []:
     """
     return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
             '/c/', '/video-channels/', '/author/', '/activitypub/',
-            '/actors/')
+            '/actors/', '/snac/')
 
 
 def get_group_paths() -> []:
@@ -2342,7 +2342,7 @@ def _get_reserved_words() -> str:
             'actor', 'Actor', 'instance.actor',
             'reply', 'replies', 'question', 'like',
             'likes', 'users', 'statuses', 'tags', 'author',
-            'accounts', 'headers',
+            'accounts', 'headers', 'snac',
             'channels', 'profile', 'u', 'c',
             'updates', 'repeat', 'announce',
             'shares', 'fonts', 'icons', 'avatars',
