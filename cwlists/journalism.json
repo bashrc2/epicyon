@@ -6,6 +6,11 @@
     "domains": [
 	      "journa.host",
         "bylines.social",
-        "newsie.social"
+        "newsie.social",
+        "press.coop",
+        "federated.press",
+        "journodon.com",
+        "mastodonmedia.xyz",
+        "onemanandhisblog.com"
     ]
 }
