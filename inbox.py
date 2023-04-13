@@ -5526,6 +5526,8 @@ def run_inbox_queue(server,
     if session:
         session_last_update = curr_session_time
 
+    session_restart_interval_secs = random.randrange(18000, 20000)
+
     # is this is a clearnet instance then optionally start sessions
     # for onion and i2p domains
     session_onion = None
@@ -5676,8 +5678,6 @@ def run_inbox_queue(server,
                             'INBOX', '_inbox_quota_exceeded', debug)
         inbox_start_time = time.time()
 
-        session_restart_interval_secs = 17935
-
         # recreate the session periodically
         time_diff = curr_time - session_last_update
         if not session or time_diff > session_restart_interval_secs:
@@ -5701,7 +5701,7 @@ def run_inbox_queue(server,
         if i2p_domain:
             time_diff = curr_time - session_last_update_i2p
             if not session_i2p or time_diff > session_restart_interval_secs:
-                print('Regenerating inbox queue i2p session at 6hr interval')
+                print('Regenerating inbox queue i2p session at 5hr interval')
                 session_i2p = create_session('i2p')
                 if session_i2p:
                     session_last_update_i2p = curr_time
