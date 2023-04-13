@@ -5676,9 +5676,12 @@ def run_inbox_queue(server,
                             'INBOX', '_inbox_quota_exceeded', debug)
         inbox_start_time = time.time()
 
+        session_restart_interval_secs = 17935
+
         # recreate the session periodically
-        if not session or curr_time - session_last_update > 21600:
-            print('Regenerating inbox queue session at 6hr interval')
+        time_diff = curr_time - session_last_update
+        if not session or time_diff > session_restart_interval_secs:
+            print('Regenerating inbox queue session at 5hr interval')
             session = create_session(proxy_type)
             if session:
                 session_last_update = curr_time
@@ -5686,9 +5689,9 @@ def run_inbox_queue(server,
                 print('WARN: inbox session not created')
                 continue
         if onion_domain:
-            if not session_onion or \
-               curr_time - session_last_update_onion > 21600:
-                print('Regenerating inbox queue onion session at 6hr interval')
+            time_diff = curr_time - session_last_update_onion
+            if not session_onion or time_diff > session_restart_interval_secs:
+                print('Regenerating inbox queue onion session at 5hr interval')
                 session_onion = create_session('tor')
                 if session_onion:
                     session_last_update_onion = curr_time
@@ -5696,7 +5699,8 @@ def run_inbox_queue(server,
                     print('WARN: inbox onion session not created')
                     continue
         if i2p_domain:
-            if not session_i2p or curr_time - session_last_update_i2p > 21600:
+            time_diff = curr_time - session_last_update_i2p
+            if not session_i2p or time_diff > session_restart_interval_secs:
                 print('Regenerating inbox queue i2p session at 6hr interval')
                 session_i2p = create_session('i2p')
                 if session_i2p:
