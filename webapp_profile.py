@@ -2396,20 +2396,17 @@ def _html_edit_profile_options(is_admin: bool,
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
-    minimize_all_images_str = \
-        bold_reading_string(translate['Minimize all images'])
+    minimize_all_images_str = translate['Minimize all images']
     edit_profile_form += \
         edit_check_box(minimize_all_images_str, 'minimizeAllImages',
                        minimize_all_images)
     reverse = False
     if nickname in reverse_sequence:
         reverse = True
-    reverse_str = \
-        bold_reading_string(translate['Reverse timelines'])
+    reverse_str = translate['Reverse timelines']
     edit_profile_form += \
         edit_check_box(reverse_str, 'reverseTimelines', reverse)
-    show_vote_posts_str = \
-        bold_reading_string(translate['Show vote posts'])
+    show_vote_posts_str = translate['Show vote posts']
     edit_profile_form += \
         edit_check_box(show_vote_posts_str, 'showVotes', show_vote_posts)
 
