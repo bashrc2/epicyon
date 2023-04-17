@@ -16833,6 +16833,8 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def do_GET(self):
+        if self.server.starting_daemon:
+            return
         if self._check_bad_path():
             return
 
@@ -20626,30 +20628,40 @@ class PubServer(BaseHTTPRequestHandler):
         self._200()
 
     def do_PROPFIND(self):
+        if self.server.starting_daemon:
+            return
         if self._check_bad_path():
             return
 
         self._dav_handler('propfind', self.server.debug)
 
     def do_PUT(self):
+        if self.server.starting_daemon:
+            return
         if self._check_bad_path():
             return
 
         self._dav_handler('put', self.server.debug)
 
     def do_REPORT(self):
+        if self.server.starting_daemon:
+            return
         if self._check_bad_path():
             return
 
         self._dav_handler('report', self.server.debug)
 
     def do_DELETE(self):
+        if self.server.starting_daemon:
+            return
         if self._check_bad_path():
             return
 
         self._dav_handler('delete', self.server.debug)
 
     def do_HEAD(self):
+        if self.server.starting_daemon:
+            return
         if self._check_bad_path():
             return
 
@@ -22323,6 +22335,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
 
     def do_POST(self):
+        if self.server.starting_daemon:
+            return
         if self._check_bad_path():
             return
 
@@ -23420,6 +23434,8 @@ def run_daemon(max_hashtags: int,
         print('server_address: ' + str(server_address))
         return False
 
+    httpd.starting_daemon = True
+
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)
 
@@ -24039,4 +24055,5 @@ def run_daemon(max_hashtags: int,
     else:
         print('Running ActivityPub server on ' +
               domain + ' port ' + str(proxy_port))
+    httpd.starting_daemon = False
     httpd.serve_forever()
