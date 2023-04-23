@@ -2231,6 +2231,11 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
            '://' not in item['href'] or \
            ' ' in item['href']:
             continue
+        if item.get('rel'):
+            if item['rel'] in ('payment', 'donate', 'donation',
+                               'buy', 'purchase'):
+                links[site.title()] = item['href']
+                continue
         if buy_sites:
             # limited to an allowlist of buying sites
             for site, buy_domain in buy_sites.items():
