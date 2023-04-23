@@ -210,7 +210,10 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
                       'contains single user instance actor ' +
                       str(source_id) + ' ' + str(link))
         else:
-            url = link['href'].replace('/@', '/users/')
+            if '/@/' not in link['href']:
+                url = link['href'].replace('/@', '/users/')
+            else:
+                url = link['href']
             if not contains_invalid_actor_url_chars(url):
                 return url
         url = link['href']
@@ -1407,14 +1410,18 @@ def _consolidate_actors_list(actors_list: []) -> None:
     possible_duplicate_actors = []
     for cc_actor in actors_list:
         if '/@' in cc_actor:
-            if cc_actor not in possible_duplicate_actors:
-                possible_duplicate_actors.append(cc_actor)
+            if '/@/' not in cc_actor:
+                if cc_actor not in possible_duplicate_actors:
+                    possible_duplicate_actors.append(cc_actor)
     if possible_duplicate_actors:
         u_paths = get_user_paths()
         remove_actors = []
         for cc_actor in possible_duplicate_actors:
             for usr_path in u_paths:
-                cc_actor_full = cc_actor.replace('/@', usr_path)
+                if '/@/' not in cc_actor:
+                    cc_actor_full = cc_actor.replace('/@', usr_path)
+                else:
+                    cc_actor_full = cc_actor
                 if cc_actor_full in actors_list:
                     if cc_actor not in remove_actors:
                         remove_actors.append(cc_actor)
@@ -2051,8 +2058,9 @@ def create_blog_post(base_dir: str,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url)
-    blog_json['object']['url'] = \
-        blog_json['object']['url'].replace('/@', '/users/')
+    if '/@/' not in blog_json['object']['url']:
+        blog_json['object']['url'] = \
+            blog_json['object']['url'].replace('/@', '/users/')
     _append_citations_to_blog_post(base_dir, nickname, domain, blog_json)
 
     return blog_json

@@ -1468,7 +1468,8 @@ class PubServer(BaseHTTPRequestHandler):
            'application/vcard+xml' not in accept_str:
             return False
         if path.startswith('/@'):
-            path = path.replace('/@', '/users/', 1)
+            if '/@/' not in path:
+                path = path.replace('/@', '/users/', 1)
         if not path.startswith('/users/'):
             self._400()
             return True
@@ -2579,7 +2580,8 @@ class PubServer(BaseHTTPRequestHandler):
                             urllib.parse.unquote_plus(mod_text.strip())
                     search_handle = moderation_text
                     if search_handle:
-                        if '/@' in search_handle:
+                        if '/@' in search_handle and \
+                           '/@/' not in search_handle:
                             search_nickname = \
                                 get_nickname_from_actor(search_handle)
                             if search_nickname:

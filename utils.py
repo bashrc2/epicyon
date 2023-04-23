@@ -1373,15 +1373,16 @@ def get_nickname_from_actor(actor: str) -> str:
             if '/' not in nick_str:
                 return nick_str
             return nick_str.split('/')[0]
-    if '/@' in actor:
-        # https://domain/@nick
-        nick_str = actor.split('/@')[1]
-        if '/' in nick_str:
-            nick_str = nick_str.split('/')[0]
-        return nick_str
-    if '@' in actor:
-        nick_str = actor.split('@')[0]
-        return nick_str
+    if '/@/' not in actor:
+        if '/@' in actor:
+            # https://domain/@nick
+            nick_str = actor.split('/@')[1]
+            if '/' in nick_str:
+                nick_str = nick_str.split('/')[0]
+            return nick_str
+        if '@' in actor:
+            nick_str = actor.split('@')[0]
+            return nick_str
     if '://' in actor:
         domain = actor.split('://')[1]
         if '/' in domain:
@@ -1401,7 +1402,7 @@ def get_user_paths() -> []:
     """
     return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
             '/c/', '/video-channels/', '/author/', '/activitypub/',
-            '/actors/', '/snac/')
+            '/actors/', '/snac/', '/@/', '/~/')
 
 
 def get_group_paths() -> []:
@@ -1425,11 +1426,11 @@ def get_domain_from_actor(actor: str) -> (str, int):
             for prefix in prefixes:
                 domain = domain.replace(prefix, '')
             break
-    if '/@' in actor:
+    if '/@' in actor and '/@/' not in actor:
         domain = actor.split('/@')[0]
         for prefix in prefixes:
             domain = domain.replace(prefix, '')
-    elif '@' in actor:
+    elif '@' in actor and '/@/' not in actor:
         domain = actor.split('@')[1].strip()
     else:
         domain = actor
@@ -3709,7 +3710,8 @@ def replace_users_with_at(actor: str) -> str:
     u_paths = get_user_paths()
     for path in u_paths:
         if path in actor:
-            actor = actor.replace(path, '/@')
+            if '/@/' not in actor:
+                actor = actor.replace(path, '/@')
             break
     return actor
 

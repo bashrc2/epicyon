@@ -39,7 +39,7 @@ def _parse_handle(handle: str) -> (str, str, bool):
         handle_str = handle_str.replace(prefix, '')
 
     # try domain/@nick
-    if '/@' in handle:
+    if '/@' in handle and '/@/' not in handle:
         domain, nickname = handle_str.split('/@')
         return nickname, domain, False
 

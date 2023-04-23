@@ -953,7 +953,8 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
     if path.startswith('/users/'):
         nickname = path.replace('/users/', '', 1)
     if path.startswith('/@'):
-        nickname = path.replace('/@', '', 1)
+        if '/@/' not in path:
+            nickname = path.replace('/@', '', 1)
     if not nickname:
         return None
     if not is_shared_inbox and not valid_nickname(domain, nickname):
@@ -1026,7 +1027,8 @@ def person_box_json(recent_posts_cache: {},
     if path.startswith('/users/'):
         nickname = path.replace('/users/', '', 1).replace('/' + boxname, '')
     if path.startswith('/@'):
-        nickname = path.replace('/@', '', 1).replace('/' + boxname, '')
+        if '/@/' not in path:
+            nickname = path.replace('/@', '', 1).replace('/' + boxname, '')
     if not nickname:
         return None
     if not valid_nickname(domain, nickname):
@@ -1553,7 +1555,8 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         prefixes = get_protocol_prefixes()
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
-        handle = handle.replace('/@', detected_users_path)
+        if '/@/' not in handle:
+            handle = handle.replace('/@', detected_users_path)
         paths = get_user_paths()
         user_path_found = False
         for user_path in paths:

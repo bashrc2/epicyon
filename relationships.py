@@ -107,7 +107,8 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
         nickname = \
             path.replace('/users/', '', 1).replace('/moved', '')
     if path.startswith('/@'):
-        nickname = path.replace('/@', '', 1).replace('/moved', '')
+        if '/@/' not in path:
+            nickname = path.replace('/@', '', 1).replace('/moved', '')
     if not nickname:
         return None
     if not valid_nickname(domain, nickname):
@@ -385,7 +386,8 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
         nickname = \
             path.replace('/users/', '', 1).replace('/inactive', '')
     if path.startswith('/@'):
-        nickname = path.replace('/@', '', 1).replace('/inactive', '')
+        if '/@/' not in path:
+            nickname = path.replace('/@', '', 1).replace('/inactive', '')
     if not nickname:
         return None
     if not valid_nickname(domain, nickname):

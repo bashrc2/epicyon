@@ -845,16 +845,18 @@ def _command_options() -> None:
             origin_domain = argb.domain
         if debug:
             print('origin_domain: ' + str(origin_domain))
-        if '@' not in argb.posts:
-            if '/users/' in argb.posts:
-                posts_nickname = get_nickname_from_actor(argb.posts)
-                posts_domain, posts_port = get_domain_from_actor(argb.posts)
-                argb.posts = \
-                    get_full_domain(posts_nickname + '@' + posts_domain,
-                                    posts_port)
-            else:
-                print('Syntax: --posts nickname@domain')
+        if '@' not in argb.posts or '/@/' in argb.posts:
+            posts_nickname = get_nickname_from_actor(argb.posts)
+            if not posts_nickname:
+                print('No nickname found ' + argb.posts)
                 sys.exit()
+            posts_domain, posts_port = get_domain_from_actor(argb.posts)
+            if not posts_domain:
+                print('No domain found ' + argb.posts)
+                sys.exit()
+            argb.posts = \
+                get_full_domain(posts_nickname + '@' + posts_domain,
+                                posts_port)
         if not argb.http:
             argb.port = 443
         nickname = argb.posts.split('@')[0]
@@ -1103,6 +1105,18 @@ def _command_options() -> None:
             origin_domain = argb.domain
         if debug:
             print('origin_domain: ' + str(origin_domain))
+        if '@' not in argb.postsraw or '/@/' in argb.postsraw:
+            posts_nickname = get_nickname_from_actor(argb.postsraw)
+            if not posts_nickname:
+                print('No nickname found ' + argb.postsraw)
+                sys.exit()
+            posts_domain, posts_port = get_domain_from_actor(argb.postsraw)
+            if not posts_domain:
+                print('No domain found ' + argb.postsraw)
+                sys.exit()
+            argb.postsraw = \
+                get_full_domain(posts_nickname + '@' + posts_domain,
+                                posts_port)
         if '@' not in argb.postsraw:
             print('Syntax: --postsraw nickname@domain')
             sys.exit()

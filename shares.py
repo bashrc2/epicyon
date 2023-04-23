@@ -484,8 +484,9 @@ def get_shares_feed_for_person(base_dir: str,
         nickname = \
             path.replace('/users/', '', 1).replace('/' + shares_file_type, '')
     if path.startswith('/@'):
-        nickname = \
-            path.replace('/@', '', 1).replace('/' + shares_file_type, '')
+        if '/@/' not in path:
+            nickname = \
+                path.replace('/@', '', 1).replace('/' + shares_file_type, '')
     if not nickname:
         return None
     if not valid_nickname(domain, nickname):
