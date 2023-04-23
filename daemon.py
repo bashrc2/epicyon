@@ -2594,7 +2594,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     search_handle = ''
                             else:
                                 search_handle = ''
-                        if '@' not in search_handle:
+                        if '@' not in search_handle or \
+                           '/@/' in search_handle:
                             if search_handle.startswith('http') or \
                                search_handle.startswith('ipfs') or \
                                search_handle.startswith('ipns'):
