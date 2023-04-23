@@ -2233,10 +2233,11 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
            ' ' in item['href']:
             continue
         if item.get('rel'):
-            if item['rel'] in ('payment', 'donate', 'donation',
-                               'buy', 'purchase'):
-                links[item_name] = item['href']
-                continue
+            if isinstance(item['rel'], str):
+                if item['rel'] in ('payment', 'donate', 'donation',
+                                   'buy', 'purchase'):
+                    links[item_name] = item['href']
+                    continue
         if buy_sites:
             # limited to an allowlist of buying sites
             for site, buy_domain in buy_sites.items():
