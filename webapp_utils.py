@@ -2234,7 +2234,7 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
         if item.get('rel'):
             if item['rel'] in ('payment', 'donate', 'donation',
                                'buy', 'purchase'):
-                links[site.title()] = item['href']
+                links[item_name] = item['href']
                 continue
         if buy_sites:
             # limited to an allowlist of buying sites
