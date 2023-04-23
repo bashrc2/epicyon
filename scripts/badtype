@@ -1,2 +1,2 @@
 #!/bin/bash
-journalctl -u epicyon -r | grep "WARN: type from\|is not a string"
+journalctl -u epicyon -r | grep "WARN: type from\|is not a string\|should be a string"
