@@ -3740,10 +3740,10 @@ def has_object_string_type(post_json_object: {}, debug: bool) -> bool:
     if post_json_object['object'].get('type'):
         if isinstance(post_json_object['object']['type'], str):
             return True
-        if debug:
-            if post_json_object.get('type'):
-                print('DEBUG: ' + post_json_object['type'] +
-                      ' type within object is not a string')
+        if post_json_object.get('type'):
+            print('DEBUG: ' + post_json_object['type'] +
+                  ' type within object is not a string ' +
+                  str(post_json_object))
     if debug:
         print('No type field within object ' + post_json_object['id'])
     return False
