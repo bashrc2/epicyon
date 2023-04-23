@@ -1162,6 +1162,7 @@ def _attach_buy_link(post_json_object: {},
         "type": "Link",
         "name": buy_str,
         "href": buy_url,
+        "rel": "payment",
         "mediaType": "text/html"
     })
 
