@@ -2196,6 +2196,7 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
         if translate.get(buy_str):
             buy_str = translate[buy_str]
         buy_strings += buy_str.lower()
+    buy_strings += ('Paypal', 'Stripe', 'Cashapp', 'Venmo')
     for item in post_json_object['object']['attachment']:
         if not isinstance(item, dict):
             continue
