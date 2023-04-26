@@ -4220,6 +4220,16 @@ def is_quote_toot(post_json_object: str, content: str) -> bool:
             for item in post_json_object['object']['tag']:
                 if not isinstance(item, dict):
                     continue
+                if item.get('rel'):
+                    if isinstance(item['rel'], list):
+                        for rel_str in item['rel']:
+                            if not isinstance(rel_str, str):
+                                continue
+                            if '_misskey_quote' in rel_str:
+                                return True
+                    elif isinstance(item['rel'], str):
+                        if '_misskey_quote' in item['rel']:
+                            return True
                 if not item.get('type'):
                     continue
                 if not item.get('mediaType'):
