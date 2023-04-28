@@ -1171,6 +1171,7 @@ def html_tag_has_closing(tag_name: str, content: str) -> bool:
         if tag_name == 'code':
             # check that lines are not too long
             section = section.split(end_tag)[0]
+            section = section.replace('<br>', '\n')
             code_lines = section.split('\n')
             for line in code_lines:
                 if len(line) >= 60:
