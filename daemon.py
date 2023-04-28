@@ -710,7 +710,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.system_language,
                                            conversation_id,
                                            self.server.low_bandwidth,
-                                           self.server.content_license_url,
+                                           self.server.dm_license_url,
                                            self.server.content_license_url, '',
                                            languages_understood, False,
                                            self.server.translate, buy_url)
@@ -21619,6 +21619,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('replychatmsg'):
                         reply_is_chat = fields['replychatmsg']
 
+                    dm_license_url = self.server.dm_license_url
                     media_license_url = content_license_url
                     if fields.get('mediaLicense'):
                         media_license_url = fields['mediaLicense']
@@ -21659,7 +21660,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    fields['languagesDropdown'],
                                                    conversation_id,
                                                    self.server.low_bandwidth,
-                                                   content_license_url,
+                                                   dm_license_url,
                                                    media_license_url,
                                                    media_creator,
                                                    languages_understood,
@@ -21792,7 +21793,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                fields['languagesDropdown'],
                                                conversation_id,
                                                self.server.low_bandwidth,
-                                               self.server.content_license_url,
+                                               self.server.dm_license_url,
                                                media_license_url,
                                                media_creator,
                                                languages_understood,
@@ -23500,6 +23501,7 @@ def run_daemon(max_hashtags: int,
     if not content_license_url:
         content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     httpd.content_license_url = content_license_url
+    httpd.dm_license_url = ''
 
     # fitness metrics
     fitness_filename = base_dir + '/accounts/fitness.json'

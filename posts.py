@@ -1138,6 +1138,8 @@ def _attach_post_license(post_json_object: {},
     represent license information on ActivityPub posts, so this might
     need to change if such a consensus appears.
     """
+    if not content_license_url:
+        return
     post_json_object['attachment'].append({
         "type": "PropertyValue",
         "name": "license",
