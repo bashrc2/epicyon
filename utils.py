@@ -1168,14 +1168,14 @@ def html_tag_has_closing(tag_name: str, content: str) -> bool:
         # check that an ending tag exists
         if end_tag not in section:
             return False
-        if tag_name == 'code':
+        if tag_name in ('code', 'pre'):
             # check that lines are not too long
             section = section.split(end_tag)[0]
             section = section.replace('<br>', '\n')
             code_lines = section.split('\n')
             for line in code_lines:
                 if len(line) >= 60:
-                    print('<code> line too long')
+                    print('<code> or <pre> line too long')
                     return False
         ctr += 1
     return True
@@ -1193,12 +1193,12 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
         return True
     if not html_tag_has_closing('code', content):
         return True
+    if not html_tag_has_closing('pre', content):
+        return True
     invalid_strings = [
-        'script', 'noscript', 'pre',
-        'canvas', 'style', 'abbr', 'input',
-        'frame', 'iframe', 'html', 'body',
-        'hr', 'allow-popups', 'allow-scripts',
-        'amp-', '?php'
+        'script', 'noscript', 'canvas', 'style', 'abbr', 'input',
+        'frame', 'iframe', 'html', 'body', 'hr', 'allow-popups',
+        'allow-scripts', 'amp-', '?php'
     ]
     return _is_dangerous_string_tag(content, allow_local_network_access,
                                     separators, invalid_strings)
