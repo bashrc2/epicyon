@@ -1191,10 +1191,9 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     if _is_dangerous_string_simple(content, allow_local_network_access,
                                    separators, invalid_strings):
         return True
-    if not html_tag_has_closing('code', content):
-        return True
-    if not html_tag_has_closing('pre', content):
-        return True
+    for closing_tag in ('code', 'pre'):
+        if not html_tag_has_closing(closing_tag, content):
+            return True
     invalid_strings = [
         'script', 'noscript', 'canvas', 'style', 'abbr', 'input',
         'frame', 'iframe', 'html', 'body', 'hr', 'allow-popups',
