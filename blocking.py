@@ -646,7 +646,7 @@ def is_blocked_nickname(base_dir: str, nickname: str,
 def is_blocked(base_dir: str, nickname: str, domain: str,
                block_nickname: str, block_domain: str,
                blocked_cache: [] = None) -> bool:
-    """Is the given nickname blocked?
+    """Is the given account blocked?
     """
     if is_evil(block_domain):
         return True
@@ -694,6 +694,8 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
     # account level block list
     blocking_filename = account_dir + '/blocking.txt'
     if os.path.isfile(blocking_filename):
+        if text_in_file(block_nickname + '@*' + '\n', blocking_filename):
+            return True
         if text_in_file('*@' + block_domain + '\n', blocking_filename):
             return True
         if block_handle:
