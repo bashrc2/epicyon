@@ -694,8 +694,9 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
     # account level block list
     blocking_filename = account_dir + '/blocking.txt'
     if os.path.isfile(blocking_filename):
-        if text_in_file(block_nickname + '@*' + '\n', blocking_filename):
-            return True
+        if block_nickname:
+            if text_in_file(block_nickname + '@*\n', blocking_filename):
+                return True
         if text_in_file('*@' + block_domain + '\n', blocking_filename):
             return True
         if block_handle:
