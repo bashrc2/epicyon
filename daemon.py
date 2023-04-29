@@ -2151,7 +2151,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.postreq_busy = False
             return 3
 
-        message_nickname, _ = \
+        message_nickname = \
             get_nickname_from_actor(message_json['actor'])
         if not message_nickname:
             print('INBOX: POST from unknown nickname ' + message_json['actor'])
