@@ -97,6 +97,7 @@ from bookmarks import update_bookmarks_collection
 from bookmarks import undo_bookmarks_collection_entry
 from blocking import is_blocked
 from blocking import allowed_announce
+from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from blocking import broch_modeLapses
 from filters import is_filtered
@@ -705,6 +706,14 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                 reply_nickname = \
                     get_nickname_from_actor(in_reply_to)
                 if reply_nickname and reply_domain:
+                    if is_blocked_nickname(base_dir, reply_domain,
+                                           blocked_cache):
+                        if debug:
+                            print('WARN: post contains reply from ' +
+                                  str(actor) +
+                                  ' to a blocked nickname: ' +
+                                  reply_nickname + '@' + reply_domain)
+                        return None
                     if is_blocked(base_dir, nickname, domain,
                                   reply_nickname, reply_domain,
                                   blocked_cache):
@@ -2858,6 +2867,10 @@ def _receive_announce(recent_posts_cache: {},
     actor_domain, _ = get_domain_from_actor(message_json['actor'])
     if not actor_domain:
         print('WARN: _receive_announce no actor_domain')
+        return False
+    if is_blocked_nickname(base_dir, actor_nickname):
+        if debug:
+            print('DEBUG: announced nickname is blocked')
         return False
     if is_blocked(base_dir, nickname, domain, actor_nickname, actor_domain):
         print('Receive announce blocked for actor: ' +
