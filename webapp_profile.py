@@ -315,6 +315,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     also_known_as = None
     if profile_json.get('alsoKnownAs'):
         also_known_as = profile_json['alsoKnownAs']
+    elif profile_json.get('sameAs'):
+        also_known_as = profile_json['sameAs']
 
     joined_date = None
     if profile_json.get('published'):
