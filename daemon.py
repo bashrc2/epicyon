@@ -164,6 +164,7 @@ from blocking import remove_block
 from blocking import add_global_block
 from blocking import remove_global_block
 from blocking import is_blocked_hashtag
+from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from blocking import get_domain_blocklist
 from blocking import allowed_announce_add
@@ -2146,6 +2147,22 @@ class PubServer(BaseHTTPRequestHandler):
         if is_blocked_domain(self.server.base_dir, message_domain,
                              self.server.blocked_cache):
             print('INBOX: POST from blocked domain ' + message_domain)
+            self._400()
+            self.server.postreq_busy = False
+            return 3
+
+        message_nickname, _ = \
+            get_nickname_from_actor(message_json['actor'])
+        if not message_nickname:
+            print('INBOX: POST from unknown nickname ' + message_json['actor'])
+            self._400()
+            self.server.postreq_busy = False
+            return 3
+        if debug:
+            print('INBOX: checking for blocked nickname ' + message_nickname)
+        if is_blocked_nickname(self.server.base_dir, message_nickname,
+                               self.server.blocked_cache):
+            print('INBOX: POST from blocked nickname ' + message_nickname)
             self._400()
             self.server.postreq_busy = False
             return 3

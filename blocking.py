@@ -574,10 +574,11 @@ def is_blocked_domain(base_dir: str, domain: str,
 
     short_domain = _get_short_domain(domain)
 
+    search_str = '*@' + domain
     if not broch_mode_is_active(base_dir):
         if blocked_cache:
             for blocked_str in blocked_cache:
-                if blocked_str == '*@' + domain:
+                if blocked_str == search_str:
                     return True
                 if short_domain:
                     if blocked_str == '*@' + short_domain:
@@ -586,14 +587,18 @@ def is_blocked_domain(base_dir: str, domain: str,
             # instance block list
             global_blocking_filename = base_dir + '/accounts/blocking.txt'
             if os.path.isfile(global_blocking_filename):
+                search_str += '\n'
+                search_str_short = None
+                if short_domain:
+                    search_str_short = '*@' + short_domain + '\n'
                 try:
                     with open(global_blocking_filename, 'r',
                               encoding='utf-8') as fp_blocked:
                         blocked_str = fp_blocked.read()
-                        if '*@' + domain + '\n' in blocked_str:
+                        if search_str in blocked_str:
                             return True
                         if short_domain:
-                            if '*@' + short_domain + '\n' in blocked_str:
+                            if search_str_short in blocked_str:
                                 return True
                 except OSError as ex:
                     print('EX: unable to read ' + global_blocking_filename +
@@ -607,6 +612,33 @@ def is_blocked_domain(base_dir: str, domain: str,
         else:
             if not text_in_file(short_domain, allow_filename):
                 return True
+
+    return False
+
+
+def is_blocked_nickname(base_dir: str, nickname: str,
+                        blocked_cache: [] = None) -> bool:
+    """Is the given nickname blocked?
+    """
+    search_str = nickname + '@*'
+    if blocked_cache:
+        for blocked_str in blocked_cache:
+            if blocked_str == search_str:
+                return True
+    else:
+        # instance-wide block list
+        global_blocking_filename = base_dir + '/accounts/blocking.txt'
+        if os.path.isfile(global_blocking_filename):
+            search_str += '\n'
+            try:
+                with open(global_blocking_filename, 'r',
+                          encoding='utf-8') as fp_blocked:
+                    blocked_str = fp_blocked.read()
+                    if search_str in blocked_str:
+                        return True
+            except OSError as ex:
+                print('EX: unable to read ' + global_blocking_filename +
+                      ' ' + str(ex))
 
     return False
 
