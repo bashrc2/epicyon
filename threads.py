@@ -55,7 +55,8 @@ class thread_with_trace(threading.Thread):
             self.__run_backup()
             self.run = self.__run_backup
         except Exception as ex:
-            print('ERROR: threads.py/__run failed - ' + str(ex))
+            print('ERROR: threads.py/__run failed - ' + str(ex) +
+                  ', ' + str(self.__run_backup))
 
     def globaltrace(self, frame, event, arg):
         """Trace the thread
