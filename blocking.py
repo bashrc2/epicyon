@@ -726,8 +726,12 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
     # cached announce blocks
     if announce_blocked_cache:
         for blocked_str in announce_blocked_cache:
-            if '*@' + domain in blocked_str:
-                return False
+            if block_nickname:
+                if block_nickname + '@*' in blocked_str:
+                    return False
+            if block_domain:
+                if '*@' + block_domain in blocked_str:
+                    return False
             if block_handle:
                 if blocked_str == block_handle:
                     return False
@@ -736,9 +740,14 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
     global_announce_blocks_filename = \
         base_dir + '/accounts/noannounce.txt'
     if os.path.isfile(global_announce_blocks_filename):
-        if text_in_file('*@' + block_domain,
-                        global_announce_blocks_filename, False):
-            return False
+        if block_nickname:
+            if text_in_file(block_nickname + '@*',
+                            global_announce_blocks_filename, False):
+                return False
+        if block_domain:
+            if text_in_file('*@' + block_domain,
+                            global_announce_blocks_filename, False):
+                return False
         if block_handle:
             block_str = block_handle + '\n'
             if text_in_file(block_str,
@@ -749,8 +758,14 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
     account_dir = acct_dir(base_dir, nickname, domain)
     blocking_filename = account_dir + '/noannounce.txt'
     if os.path.isfile(blocking_filename):
-        if text_in_file('*@' + block_domain + '\n', blocking_filename, False):
-            return False
+        if block_nickname:
+            if text_in_file(block_nickname + '@*\n',
+                            blocking_filename, False):
+                return False
+        if block_domain:
+            if text_in_file('*@' + block_domain + '\n',
+                            blocking_filename, False):
+                return False
         if block_handle:
             if text_in_file(block_handle + '\n', blocking_filename, False):
                 return False
