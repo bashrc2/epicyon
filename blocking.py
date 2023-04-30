@@ -659,6 +659,9 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
         # instance level block list
         if blocked_cache:
             for blocked_str in blocked_cache:
+                if block_nickname:
+                    if block_nickname + '@*' in blocked_str:
+                        return True
                 if '*@' + domain in blocked_str:
                     return True
                 if block_handle:
@@ -667,6 +670,10 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
         else:
             global_blocks_filename = base_dir + '/accounts/blocking.txt'
             if os.path.isfile(global_blocks_filename):
+                if block_nickname:
+                    if text_in_file(block_nickname + '@*\n',
+                                    global_blocks_filename):
+                        return True
                 if text_in_file('*@' + block_domain, global_blocks_filename):
                     return True
                 if block_handle:
