@@ -662,8 +662,9 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                 if block_nickname:
                     if block_nickname + '@*' in blocked_str:
                         return True
-                if '*@' + domain in blocked_str:
-                    return True
+                if block_domain:
+                    if '*@' + block_domain in blocked_str:
+                        return True
                 if block_handle:
                     if blocked_str == block_handle:
                         return True
@@ -684,7 +685,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
         # instance allow list
         allow_filename = base_dir + '/accounts/allowedinstances.txt'
         short_domain = _get_short_domain(block_domain)
-        if not short_domain:
+        if not short_domain and block_domain:
             if not text_in_file(block_domain + '\n', allow_filename):
                 return True
         else:
@@ -694,7 +695,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
     # account level allow list
     account_dir = acct_dir(base_dir, nickname, domain)
     allow_filename = account_dir + '/allowedinstances.txt'
-    if os.path.isfile(allow_filename):
+    if block_domain and os.path.isfile(allow_filename):
         if not text_in_file(block_domain + '\n', allow_filename):
             return True
 
@@ -704,8 +705,9 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
         if block_nickname:
             if text_in_file(block_nickname + '@*\n', blocking_filename):
                 return True
-        if text_in_file('*@' + block_domain + '\n', blocking_filename):
-            return True
+        if block_domain:
+            if text_in_file('*@' + block_domain + '\n', blocking_filename):
+                return True
         if block_handle:
             if text_in_file(block_handle + '\n', blocking_filename):
                 return True
