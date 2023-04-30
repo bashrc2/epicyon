@@ -6144,6 +6144,10 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
         return '', None
     if lastpost_json['type'] != post_json_object['type']:
         return '', None
+    if lastpost_json.get('object'):
+        return '', None
+    if not isinstance(lastpost_json['object'], dict):
+        return '', None
     if not lastpost_json['object'].get('type'):
         return '', None
     if lastpost_json['object']['type'] != post_json_object['object']['type']:
