@@ -262,9 +262,11 @@ def _store_last_post_id(base_dir: str, nickname: str, domain: str,
         post_id = remove_id_ending(post_json_object['id'])
     if not actor:
         return
-    lastpost_dir = acct_dir(base_dir, nickname, domain) + '/lastpost'
+    account_dir = acct_dir(base_dir, nickname, domain)
+    lastpost_dir = account_dir + '/lastpost'
     if not os.path.isdir(lastpost_dir):
-        os.mkdir(lastpost_dir)
+        if os.path.isdir(account_dir):
+            os.mkdir(lastpost_dir)
     actor_filename = lastpost_dir + '/' + actor.replace('/', '#')
     try:
         with open(actor_filename, 'w+', encoding='utf-8') as fp_actor:

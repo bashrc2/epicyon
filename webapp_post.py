@@ -891,9 +891,12 @@ def _get_like_icon_html(nickname: str, domain_full: str,
             '/users/' + nickname + '?likers=' + likers_post_id
 
         # show the number of likes next to icon
+        show_liked_str = 'Show who liked this post'
+        if translate.get(show_liked_str):
+            show_liked_str = translate[show_liked_str]
         like_str += '<label class="likesCount">'
         like_str += '<a href="' + likers_screen_link + '" ' + \
-            'title="' + translate['Show who liked this post'] + \
+            'title="' + show_liked_str + \
             '" tabindex="10">'
         like_str += like_count_str.replace('(', '').replace(')', '').strip()
         like_str += '</a></label>\n'
