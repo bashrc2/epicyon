@@ -63,6 +63,8 @@ from donate import get_website
 from donate import set_website
 from donate import get_gemini_link
 from donate import set_gemini_link
+from person import get_featured_hashtags
+from person import set_featured_hashtags
 from person import clear_person_qrcodes
 from person import add_alternate_domains
 from person import add_actor_update_timestamp
@@ -7101,6 +7103,21 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if occupation_name:
                             set_occupation_name(actor_json, '')
+                            actor_changed = True
+
+                    # featured hashtags on edit profile screen
+                    featured_hashtags = get_featured_hashtags(actor_json)
+                    if fields.get('featuredHashtags'):
+                        fields['featuredHashtags'] = \
+                            remove_html(fields['featuredHashtags'])
+                        if featured_hashtags != \
+                           fields['featuredHashtags']:
+                            set_featured_hashtags(actor_json,
+                                                  fields['featuredHashtags'])
+                            actor_changed = True
+                    else:
+                        if featured_hashtags:
+                            set_featured_hashtags(actor_json, '')
                             actor_changed = True
 
                     # Other accounts (alsoKnownAs)

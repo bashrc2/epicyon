@@ -10,7 +10,6 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
-from utils import valid_hash_tag
 from utils import remove_id_ending
 from utils import standardize_text
 from utils import get_display_name
@@ -37,6 +36,7 @@ from utils import remove_eol
 from languages import get_actor_languages
 from skills import get_skills
 from theme import get_themes_list
+from person import get_featured_hashtags
 from person import person_box_json
 from person import get_actor_json
 from person import get_person_avatar_url
@@ -2576,45 +2576,6 @@ def _html_edit_profile_top_banner(base_dir: str,
     return edit_profile_form
 
 
-def _get_featured_hashtags(actor_json: {}) -> str:
-    """returns a string containing featured hashtags
-    """
-    result = ''
-    if not actor_json.get('tag'):
-        return result
-    if not isinstance(actor_json['tag'], list):
-        return result
-    for tag_dict in actor_json['tag']:
-        if not tag_dict.get('type'):
-            continue
-        if not isinstance(tag_dict['type'], str):
-            continue
-        if not tag_dict['type'].endswith('Hashtag'):
-            continue
-        if not tag_dict.get('name'):
-            continue
-        if not isinstance(tag_dict['name'], str):
-            continue
-        if not tag_dict.get('href'):
-            continue
-        if not isinstance(tag_dict['href'], str):
-            continue
-        tag_name = tag_dict['name']
-        if not tag_name:
-            continue
-        if tag_name.startswith('#'):
-            tag_name = tag_name[1:]
-        if not tag_name:
-            continue
-        tag_url = tag_dict['href']
-        if '://' not in tag_url or '.' not in tag_url:
-            continue
-        if not valid_hash_tag(tag_name):
-            continue
-        result += '#' + tag_name + ' '
-    return result.strip()
-
-
 def html_edit_profile(server, translate: {},
                       base_dir: str, path: str,
                       domain: str, port: int,
@@ -2668,7 +2629,7 @@ def html_edit_profile(server, translate: {},
     if actor_json:
         if actor_json.get('movedTo'):
             moved_to = actor_json['movedTo']
-        featured_hashtags = _get_featured_hashtags(actor_json)
+        featured_hashtags = get_featured_hashtags(actor_json)
         donate_url = get_donation_url(actor_json)
         website_url = get_website(actor_json, translate)
         gemini_link = get_gemini_link(actor_json, translate)

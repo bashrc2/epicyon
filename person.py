@@ -38,6 +38,7 @@ from roles import set_role
 from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import valid_hash_tag
 from utils import acct_handle_dir
 from utils import safe_system_string
 from utils import get_attachment_property_value
@@ -1904,3 +1905,80 @@ def valid_sending_actor(session, base_dir: str,
     store_person_in_cache(base_dir, sending_actor, actor_json,
                           person_cache, False)
     return True
+
+
+def get_featured_hashtags(actor_json: {}) -> str:
+    """returns a string containing featured hashtags
+    """
+    result = ''
+    if not actor_json.get('tag'):
+        return result
+    if not isinstance(actor_json['tag'], list):
+        return result
+    for tag_dict in actor_json['tag']:
+        if not tag_dict.get('type'):
+            continue
+        if not isinstance(tag_dict['type'], str):
+            continue
+        if not tag_dict['type'].endswith('Hashtag'):
+            continue
+        if not tag_dict.get('name'):
+            continue
+        if not isinstance(tag_dict['name'], str):
+            continue
+        if not tag_dict.get('href'):
+            continue
+        if not isinstance(tag_dict['href'], str):
+            continue
+        tag_name = tag_dict['name']
+        if not tag_name:
+            continue
+        if tag_name.startswith('#'):
+            tag_name = tag_name[1:]
+        if not tag_name:
+            continue
+        tag_url = tag_dict['href']
+        if '://' not in tag_url or '.' not in tag_url:
+            continue
+        if not valid_hash_tag(tag_name):
+            continue
+        result += '#' + tag_name + ' '
+    return result.strip()
+
+
+def set_featured_hashtags(actor_json: {}, hashtags: str) -> None:
+    """sets featured hashtags
+    """
+    separator_str = ' '
+    separators = (' ', ',')
+    for separator_str in separators:
+        if separator_str in hashtags:
+            break
+    tag_list = hashtags.split(separator_str)
+    result = []
+    tags_used = []
+    for tag_str in tag_list:
+        if not tag_str:
+            continue
+        if not tag_str.startswith('#'):
+            tag_str = '#' + tag_str
+        if tag_str in tags_used:
+            continue
+        url = \
+            actor_json['id'] + '/tags/' + tag_str.replace('#', '')
+        result.append({
+            "name": tag_str,
+            "type": "Hashtag",
+            "href": url
+        })
+        tags_used.append(tag_str)
+    # add any non-hashtags to the result
+    if actor_json.get('tag'):
+        for tag_dict in actor_json['tag']:
+            if not tag_dict.get('type'):
+                continue
+            if not isinstance(tag_dict['type'], str):
+                continue
+            if tag_dict['type'] != 'Hashtag':
+                result.append(tag_dict)
+    actor_json['tag'] = result
