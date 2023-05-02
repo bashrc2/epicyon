@@ -7088,7 +7088,7 @@ class PubServer(BaseHTTPRequestHandler):
                             del actor_json['movedTo']
                             actor_changed = True
 
-                    # Other accounts (alsoKnownAs)
+                    # occupation on edit profile screen
                     occupation_name = get_occupation_name(actor_json)
                     if fields.get('occupationName'):
                         fields['occupationName'] = \
