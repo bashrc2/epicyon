@@ -30,6 +30,7 @@ def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
             filters_file.write(words + '\n')
     except OSError:
         print('EX: unable to append filters ' + filters_filename)
+        return False
     return True
 
 
@@ -50,6 +51,7 @@ def add_global_filter(base_dir: str, words: str) -> bool:
             filters_file.write(words + '\n')
     except OSError:
         print('EX: unable to append filters ' + filters_filename)
+        return False
     return True
 
 
@@ -73,6 +75,7 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
     except OSError as ex:
         print('EX: unable to remove filter ' +
               filters_filename + ' ' + str(ex))
+        return False
     if os.path.isfile(new_filters_filename):
         os.rename(new_filters_filename, filters_filename)
         return True
@@ -98,6 +101,7 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
     except OSError as ex:
         print('EX: unable to remove global filter ' +
               filters_filename + ' ' + str(ex))
+        return False
     if os.path.isfile(new_filters_filename):
         os.rename(new_filters_filename, filters_filename)
         return True
