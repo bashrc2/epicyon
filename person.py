@@ -1950,13 +1950,19 @@ def set_featured_hashtags(actor_json: {}, hashtags: str) -> None:
     """sets featured hashtags
     """
     separator_str = ' '
-    separators = (' ', ',')
+    separators = (',', ' ')
     for separator_str in separators:
         if separator_str in hashtags:
             break
     tag_list = hashtags.split(separator_str)
     result = []
     tags_used = []
+    actor_id = actor_json['id']
+    actor_domain = actor_id.split('://')[1]
+    if '/' in actor_domain:
+        actor_domain = actor_domain.split('/')[0]
+    actor_url = \
+        actor_id.split('://')[0] + '://' + actor_domain
     for tag_str in tag_list:
         if not tag_str:
             continue
@@ -1964,8 +1970,7 @@ def set_featured_hashtags(actor_json: {}, hashtags: str) -> None:
             tag_str = '#' + tag_str
         if tag_str in tags_used:
             continue
-        url = \
-            actor_json['id'] + '/tags/' + tag_str.replace('#', '')
+        url = actor_url + '/tags/' + tag_str.replace('#', '')
         result.append({
             "name": tag_str,
             "type": "Hashtag",
