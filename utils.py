@@ -1402,7 +1402,7 @@ def get_user_paths() -> []:
     """
     return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
             '/c/', '/video-channels/', '/author/', '/activitypub/',
-            '/actors/', '/snac/', '/@/', '/~/', '/notes/')
+            '/actors/', '/snac/', '/@/', '/~/')
 
 
 def get_group_paths() -> []:
