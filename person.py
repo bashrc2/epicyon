@@ -1938,7 +1938,7 @@ def get_featured_hashtags(actor_json: {}) -> str:
         if not tag_name:
             continue
         tag_url = tag_dict['href']
-        if '://' not in tag_url or '.' not in tag_url:
+        if '://' not in tag_url:
             continue
         if not valid_hash_tag(tag_name):
             continue
