@@ -1946,7 +1946,8 @@ def get_featured_hashtags(actor_json: {}) -> str:
     return result.strip()
 
 
-def set_featured_hashtags(actor_json: {}, hashtags: str) -> None:
+def set_featured_hashtags(actor_json: {}, hashtags: str,
+                          append: bool = False) -> None:
     """sets featured hashtags
     """
     separator_str = ' '
@@ -1986,4 +1987,7 @@ def set_featured_hashtags(actor_json: {}, hashtags: str) -> None:
                 continue
             if tag_dict['type'] != 'Hashtag':
                 result.append(tag_dict)
-    actor_json['tag'] = result
+    if not append:
+        actor_json['tag'] = result
+    else:
+        actor_json['tag'] += result

@@ -7155,6 +7155,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actor_changed = True
 
                     # change user bio
+                    featured_tags = get_featured_hashtags(actor_json) + ' '
                     actor_json['tag'] = []
                     if fields.get('bio'):
                         if fields['bio'] != actor_json['summary']:
@@ -7172,6 +7173,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.translate)
                                 if actor_tags:
                                     for _, tag in actor_tags.items():
+                                        if tag['name'] + ' ' in featured_tags:
+                                            continue
                                         actor_json['tag'].append(tag)
                                 actor_changed = True
                             else:
@@ -7180,6 +7183,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if check_name_and_bio:
                             redirect_path = 'previewAvatar'
+                    set_featured_hashtags(actor_json, featured_tags, True)
 
                     admin_nickname = \
                         get_config_param(base_dir, 'admin')
