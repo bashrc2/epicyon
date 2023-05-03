@@ -1950,7 +1950,8 @@ def get_featured_hashtags(actor_json: {}) -> str:
     return result.strip()
 
 
-def get_featured_hashtags_as_html(actor_json: {}) -> str:
+def get_featured_hashtags_as_html(actor_json: {},
+                                  profile_description: str) -> str:
     """returns a html string containing featured hashtags
     """
     result = ''
@@ -1980,6 +1981,10 @@ def get_featured_hashtags_as_html(actor_json: {}) -> str:
         if tag_name.startswith('#'):
             tag_name = tag_name[1:]
         if not tag_name:
+            continue
+        if '/tags/' + tag_name + '"' in profile_description:
+            continue
+        if ' #' + tag_name in profile_description:
             continue
         tag_url = tag_dict['href']
         if '://' not in tag_url:
