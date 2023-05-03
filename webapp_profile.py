@@ -269,7 +269,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_description, False, translate)
-    profile_description += get_featured_hashtags_as_html(profile_json)
+    profile_description = \
+        profile_description + get_featured_hashtags_as_html(profile_json)
     outbox_url = None
     if not profile_json.get('outbox'):
         if debug:
@@ -738,9 +739,10 @@ def html_profile(signing_priv_key_pem: str,
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_description, False, translate)
+    profile_description = \
+        profile_description + get_featured_hashtags_as_html(profile_json)
     if profile_description:
         profile_description = standardize_text(profile_description)
-    profile_description += get_featured_hashtags_as_html(profile_json)
     posts_button = 'button'
     following_button = 'button'
     moved_button = 'button'
