@@ -269,8 +269,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_description, False, translate)
-    profile_description = \
-        profile_description + get_featured_hashtags_as_html(profile_json)
+    featured_hashtags = get_featured_hashtags_as_html(profile_json)
     outbox_url = None
     if not profile_json.get('outbox'):
         if debug:
@@ -334,6 +333,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                          translate,
                                          display_name, follows_you,
                                          profile_description_short,
+                                         featured_hashtags,
                                          avatar_url, image_url,
                                          moved_to, profile_json['id'],
                                          also_known_as, access_keys,
@@ -470,6 +470,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         default_timeline: str,
                         display_name: str,
                         profile_description_short: str,
+                        featured_hashtags: str,
                         login_button: str, avatar_url: str,
                         theme: str, moved_to: str,
                         also_known_as: [],
@@ -551,13 +552,16 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         other_accounts_html += '</p>\n'
         if ctr > 0:
             html_str += other_accounts_html
+    if featured_hashtags:
+        featured_hashtags += '\n'
     html_str += \
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '" tabindex="1">' + \
         '<img class="qrcode" alt="' + translate['QR Code'] + \
         '" src="/icons/qrcode.png" /></a></p>\n' + \
-        '        <p>' + profile_description_short + '</p>\n' + login_button
+        '        <p>' + profile_description_short + '</p>\n' + \
+        featured_hashtags + login_button
     if pinned_content:
         html_str += pinned_content.replace('<p>', '<p>📎', 1)
 
@@ -582,6 +586,7 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
                                      display_name: str,
                                      follows_you: bool,
                                      profile_description_short: str,
+                                     featured_hashtags: str,
                                      avatar_url: str, image_url: str,
                                      moved_to: str, actor: str,
                                      also_known_as: [],
@@ -660,8 +665,11 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
         if ctr > 0:
             html_str += other_accounts_html
 
+    if featured_hashtags:
+        featured_hashtags += '\n'
     html_str += \
         '        <p>' + profile_description_short + '</p>\n' + \
+        featured_hashtags + \
         '      </figcaption>\n' + \
         '    </figure>\n\n'
     return html_str
@@ -739,10 +747,9 @@ def html_profile(signing_priv_key_pem: str,
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_description, False, translate)
-    profile_description = \
-        profile_description + get_featured_hashtags_as_html(profile_json)
     if profile_description:
         profile_description = standardize_text(profile_description)
+    featured_hashtags = get_featured_hashtags_as_html(profile_json)
     posts_button = 'button'
     following_button = 'button'
     moved_button = 'button'
@@ -1039,6 +1046,7 @@ def html_profile(signing_priv_key_pem: str,
                             domain, domain_full, translate,
                             default_timeline, display_name,
                             profile_description_short,
+                            featured_hashtags,
                             login_button, avatar_url, theme,
                             moved_to, also_known_as,
                             pinned_content, access_keys,
