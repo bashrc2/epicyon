@@ -5579,7 +5579,6 @@ def _test_functions():
         'create_server_alice',
         'create_server_bob',
         'create_server_eve',
-        'e2e_eremove_device',
         'setOrganizationScheme',
         'fill_headers',
         '_nothing',

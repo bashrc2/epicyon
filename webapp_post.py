@@ -97,7 +97,6 @@ from webapp_utils import html_footer
 from webapp_utils import get_broken_link_substitute
 from webapp_media import add_embedded_elements
 from webapp_question import insert_question
-from devices import e2e_edecrypt_message_from_device
 from webfinger import webfinger_handle
 from speaker import update_speaker
 from languages import auto_translate_post
@@ -2528,14 +2527,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
             system_language: ''
         }
 
-    displaying_ciphertext = False
-    if post_json_object['object'].get('cipherText'):
-        displaying_ciphertext = True
-        post_json_object['object']['content'] = \
-            e2e_edecrypt_message_from_device(post_json_object['object'])
-        post_json_object['object']['contentMap'][system_language] = \
-            post_json_object['object']['content']
-
     domain_full = get_full_domain(domain, port)
     if not content_str:
         content_str = get_content_from_post(post_json_object, system_language,
@@ -2623,7 +2614,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 content_str.replace('\t', '').replace('\r', '')
             # Add bold text
             if bold_reading and \
-               not displaying_ciphertext and \
                not post_is_blog:
                 content_str = bold_reading_string(content_str)
 

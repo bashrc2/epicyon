@@ -409,9 +409,6 @@ from followingCalendar import add_person_to_calendar
 from followingCalendar import remove_person_from_calendar
 from notifyOnPost import add_notify_on_post
 from notifyOnPost import remove_notify_on_post
-from devices import e2e_edevices_collection
-from devices import e2e_evalid_device
-from devices import e2e_eadd_device
 from newswire import get_rs_sfrom_dict
 from newswire import rss2header
 from newswire import rss2footer
@@ -17877,37 +17874,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         curr_session):
                     return
 
-        # list of registered devices for e2ee
-        # see https://github.com/tootsuite/mastodon/pull/13820
-        if authorized and users_in_path:
-            if self.path.endswith('/collections/devices'):
-                nickname = self.path.split('/users/')
-                if '/' in nickname:
-                    nickname = nickname.split('/')[0]
-                dev_json = e2e_edevices_collection(self.server.base_dir,
-                                                   nickname,
-                                                   self.server.domain,
-                                                   self.server.domain_full,
-                                                   self.server.http_prefix)
-                msg_str = json.dumps(dev_json, ensure_ascii=False)
-                msg_str = self._convert_domains(calling_domain,
-                                                referer_domain,
-                                                msg_str)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                accept_str = self.headers['Accept']
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                self._set_headers(protocol_str, msglen,
-                                  None, calling_domain, False)
-                self._write(msg)
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', 'registered devices',
-                                    self.server.debug)
-                return
-
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', 'registered devices done',
+                            '_GET', '_show_blog_page',
                             self.server.debug)
 
         if html_getreq and users_in_path:
@@ -22211,170 +22179,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                curr_session, proxy_type)
         return page_number
 
-    def _crypto_ap_iread_handle(self):
-        """Reads handle
-        """
-        message_bytes = None
-        max_device_id_length = 2048
-        length = int(self.headers['Content-length'])
-        if length >= max_device_id_length:
-            print('WARN: handle post to crypto API is too long ' +
-                  str(length) + ' bytes')
-            return {}
-        try:
-            message_bytes = self.rfile.read(length)
-        except SocketError as ex:
-            if ex.errno == errno.ECONNRESET:
-                print('WARN: handle POST message_bytes ' +
-                      'connection reset by peer')
-            else:
-                print('WARN: handle POST message_bytes socket error')
-            return {}
-        except ValueError as ex:
-            print('EX: handle POST message_bytes rfile.read failed ' +
-                  str(ex))
-            return {}
-
-        len_message = len(message_bytes)
-        if len_message > 2048:
-            print('WARN: handle post to crypto API is too long ' +
-                  str(len_message) + ' bytes')
-            return {}
-
-        handle = message_bytes.decode("utf-8")
-        if not handle:
-            return None
-        if '@' not in handle:
-            return None
-        if '[' in handle:
-            return json.loads(message_bytes)
-        if handle.startswith('@'):
-            handle = handle[1:]
-        if '@' not in handle:
-            return None
-        return handle.strip()
-
-    def _crypto_ap_iread_json(self) -> {}:
-        """Obtains json from POST to the crypto API
-        """
-        message_bytes = None
-        max_crypto_message_length = 10240
-        length = int(self.headers['Content-length'])
-        if length >= max_crypto_message_length:
-            print('WARN: post to crypto API is too long ' +
-                  str(length) + ' bytes')
-            return {}
-        try:
-            message_bytes = self.rfile.read(length)
-        except SocketError as ex:
-            if ex.errno == errno.ECONNRESET:
-                print('WARN: POST message_bytes ' +
-                      'connection reset by peer')
-            else:
-                print('WARN: POST message_bytes socket error')
-            return {}
-        except ValueError as ex:
-            print('EX: POST message_bytes rfile.read failed, ' + str(ex))
-            return {}
-
-        len_message = len(message_bytes)
-        if len_message > 10240:
-            print('WARN: post to crypto API is too long ' +
-                  str(len_message) + ' bytes')
-            return {}
-
-        return json.loads(message_bytes)
-
-    def _crypto_api_query(self, calling_domain: str,
-                          referer_domain: str) -> bool:
-        handle = self._crypto_ap_iread_handle()
-        if not handle:
-            return False
-        if isinstance(handle, str):
-            person_dir = acct_handle_dir(self.server.base_dir, handle)
-            if not os.path.isdir(person_dir + '/devices'):
-                return False
-            devices_list = []
-            for _, _, files in os.walk(person_dir + '/devices'):
-                for fname in files:
-                    device_filename = \
-                        os.path.join(person_dir + '/devices', fname)
-                    if not os.path.isfile(device_filename):
-                        continue
-                    content_json = load_json(device_filename)
-                    if content_json:
-                        devices_list.append(content_json)
-                break
-            # return the list of devices for this handle
-            msg_str = \
-                json.dumps(devices_list, ensure_ascii=False)
-            msg_str = self._convert_domains(calling_domain,
-                                            referer_domain,
-                                            msg_str)
-            msg = msg_str.encode('utf-8')
-            msglen = len(msg)
-            accept_str = self.headers['Accept']
-            protocol_str = \
-                get_json_content_from_accept(accept_str)
-            self._set_headers(protocol_str, msglen,
-                              None, calling_domain, False)
-            self._write(msg)
-            return True
-        return False
-
-    def _crypto_api(self, path: str, authorized: bool,
-                    calling_domain: str, referer_domain: str) -> None:
-        """POST or GET with the crypto API
-        """
-        if authorized and path.startswith('/api/v1/crypto/keys/upload'):
-            # register a device to an authorized account
-            if not self.authorized_nickname:
-                self._400()
-                return
-            device_keys = self._crypto_ap_iread_json()
-            if not device_keys:
-                self._400()
-                return
-            if isinstance(device_keys, dict):
-                if not e2e_evalid_device(device_keys):
-                    self._400()
-                    return
-                fingerprint_key = \
-                    device_keys['fingerprint_key']['publicKeyBase64']
-                e2e_eadd_device(self.server.base_dir,
-                                self.authorized_nickname,
-                                self.server.domain,
-                                device_keys['deviceId'],
-                                device_keys['name'],
-                                device_keys['claim'],
-                                fingerprint_key,
-                                device_keys['identityKey']['publicKeyBase64'],
-                                device_keys['fingerprint_key']['type'],
-                                device_keys['identityKey']['type'])
-                self._200()
-                return
-            self._400()
-        elif path.startswith('/api/v1/crypto/keys/query'):
-            # given a handle (nickname@domain) return a list of the devices
-            # registered to that handle
-            if not self._crypto_api_query(calling_domain, referer_domain):
-                self._400()
-        elif path.startswith('/api/v1/crypto/keys/claim'):
-            # TODO
-            self._200()
-        elif authorized and path.startswith('/api/v1/crypto/delivery'):
-            # TODO
-            self._200()
-        elif (authorized and
-              path.startswith('/api/v1/crypto/encrypted_messages/clear')):
-            # TODO
-            self._200()
-        elif path.startswith('/api/v1/crypto/encrypted_messages'):
-            # TODO
-            self._200()
-        else:
-            self._400()
-
     def do_POST(self):
         if self.server.starting_daemon:
             return
@@ -22486,12 +22290,6 @@ class PubServer(BaseHTTPRequestHandler):
         if not authorized and self.server.debug:
             print('POST Not authorized')
             print(str(self.headers))
-
-        if self.path.startswith('/api/v1/crypto/'):
-            self._crypto_api(self.path, authorized,
-                             calling_domain, calling_domain)
-            self.server.postreq_busy = False
-            return
 
         # if this is a POST to the outbox then check authentication
         self.outbox_authenticated = False
