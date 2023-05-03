@@ -1402,7 +1402,7 @@ def get_user_paths() -> []:
     """
     return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
             '/c/', '/video-channels/', '/author/', '/activitypub/',
-            '/actors/', '/snac/', '/@/', '/~/')
+            '/actors/', '/snac/', '/@/', '/~/', '/notes/')
 
 
 def get_group_paths() -> []:
@@ -2354,7 +2354,8 @@ def _get_reserved_words() -> str:
             'searchemoji', 'catalog', 'conversationId',
             'mention', 'http', 'https', 'ipfs', 'ipns',
             'ontologies', 'data', 'postedit', 'moved',
-            'inactive', 'activitypub', 'actors')
+            'inactive', 'activitypub', 'actors',
+            'notes')
 
 
 def get_nickname_validation_pattern() -> str:
