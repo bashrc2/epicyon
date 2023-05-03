@@ -15634,7 +15634,6 @@ class PubServer(BaseHTTPRequestHandler):
                                       domain_full: str):
         """Returns the featured tags collections in
         actor/collections/featuredTags
-        TODO add ability to set a featured tags
         """
         post_context = get_individual_post_context()
         featured_tags_collection = {
