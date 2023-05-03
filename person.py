@@ -1946,6 +1946,51 @@ def get_featured_hashtags(actor_json: {}) -> str:
     return result.strip()
 
 
+def get_featured_hashtags_as_html(actor_json: {}) -> str:
+    """returns a html string containing featured hashtags
+    """
+    result = ''
+    if not actor_json.get('tag'):
+        return result
+    if not isinstance(actor_json['tag'], list):
+        return result
+    for tag_dict in actor_json['tag']:
+        if not tag_dict.get('type'):
+            continue
+        if not isinstance(tag_dict['type'], str):
+            continue
+        if not tag_dict['type'].endswith('Hashtag'):
+            continue
+        if not tag_dict.get('name'):
+            continue
+        if not isinstance(tag_dict['name'], str):
+            continue
+        if not tag_dict.get('href'):
+            continue
+        if not isinstance(tag_dict['href'], str):
+            continue
+        tag_name = tag_dict['name']
+        if not tag_name:
+            continue
+        if tag_name.startswith('#'):
+            tag_name = tag_name[1:]
+        if not tag_name:
+            continue
+        tag_url = tag_dict['href']
+        if '://' not in tag_url:
+            continue
+        if not valid_hash_tag(tag_name):
+            continue
+        result += \
+            '<a href="' + tag_dict['href'] + '" ' + \
+            'class="mention hashtag" rel="tag" ' + \
+            'tabindex="10">#' + tag_name + '</a> '
+    result = result.strip()
+    if result:
+        result = '<p>' + result + '</p>'
+    return result
+
+
 def set_featured_hashtags(actor_json: {}, hashtags: str,
                           append: bool = False) -> None:
     """sets featured hashtags
