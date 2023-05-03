@@ -1915,6 +1915,7 @@ def get_featured_hashtags(actor_json: {}) -> str:
         return result
     if not isinstance(actor_json['tag'], list):
         return result
+    ctr = 0
     for tag_dict in actor_json['tag']:
         if not tag_dict.get('type'):
             continue
@@ -1943,6 +1944,9 @@ def get_featured_hashtags(actor_json: {}) -> str:
         if not valid_hash_tag(tag_name):
             continue
         result += '#' + tag_name + ' '
+        ctr += 1
+        if ctr >= 10:
+            break
     return result.strip()
 
 
@@ -1954,6 +1958,7 @@ def get_featured_hashtags_as_html(actor_json: {}) -> str:
         return result
     if not isinstance(actor_json['tag'], list):
         return result
+    ctr = 0
     for tag_dict in actor_json['tag']:
         if not tag_dict.get('type'):
             continue
@@ -1985,6 +1990,9 @@ def get_featured_hashtags_as_html(actor_json: {}) -> str:
             '<a href="' + tag_dict['href'] + '" ' + \
             'class="mention hashtag" rel="tag" ' + \
             'tabindex="10">#' + tag_name + '</a> '
+        ctr += 1
+        if ctr >= 10:
+            break
     result = result.strip()
     if result:
         result = '<p>' + result + '</p>'
@@ -2023,6 +2031,8 @@ def set_featured_hashtags(actor_json: {}, hashtags: str,
             "href": url
         })
         tags_used.append(tag_str)
+        if len(result) >= 10:
+            break
     # add any non-hashtags to the result
     if actor_json.get('tag'):
         for tag_dict in actor_json['tag']:
