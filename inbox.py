@@ -1436,7 +1436,8 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         content_all = summary + ' ' + content_str + ' ' + media_descriptions
     if is_filtered(base_dir, nickname, domain, content_all,
                    system_language):
-        print('REJECT: content filtered')
+        if message_json.get('id'):
+            print('REJECT: content filtered ' + str(message_json['id']))
         return False
     if message_json['object'].get('inReplyTo'):
         if isinstance(message_json['object']['inReplyTo'], str):
