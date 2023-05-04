@@ -5501,7 +5501,9 @@ def download_announce(session, base_dir: str, http_prefix: str,
                 return None
             if is_question_filtered(base_dir, nickname, domain,
                                     system_language, announced_json):
-                print('REJECT: announced question was filtered')
+                if announced_json.get('id'):
+                    print('REJECT: announced question was filtered ' +
+                          str(announced_json['id']))
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache)
@@ -5526,7 +5528,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                 announced_json['published'].split('.')[0] + 'Z'
         if not valid_post_date(announced_json['published'], 90, debug):
             print('WARN: announced post is not recently published ' +
-                  str(announced_json))
+                  str(announced_json['published']))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
@@ -5561,8 +5563,9 @@ def download_announce(session, base_dir: str, http_prefix: str,
                 summary_str + ' ' + content_str + ' ' + media_descriptions
         if is_filtered(base_dir, nickname, domain, content_all,
                        system_language):
-            print('REJECT: announced post has been filtered ' +
-                  str(announced_json))
+            if announced_json.get('id'):
+                print('REJECT: announced post has been filtered ' +
+                      str(announced_json['id']))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)

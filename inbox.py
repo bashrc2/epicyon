@@ -686,7 +686,9 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
 
     if obj_dict_exists:
         if is_quote_toot(post_json_object, content_str):
-            print('REJECT: inbox quote toot ' + str(post_json_object))
+            if post_json_object.get('id'):
+                print('REJECT: inbox quote toot' +
+                      str(post_json_object['id']))
             return None
 
         # is this a reply to a blocked domain or account?
