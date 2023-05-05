@@ -824,7 +824,7 @@ def remove_id_ending(id_str: str) -> str:
         id_str = id_str.split('#Create')[0]
     elif id_str.endswith('#delete'):
         id_str = id_str.split('#delete')[0]
-    elif id_str.endswith('#update'):
+    elif '#update' in id_str:
         id_str = id_str.split('#update')[0]
     return id_str
 
