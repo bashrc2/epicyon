@@ -348,6 +348,25 @@ def webfinger_lookup(path: str, base_dir: str,
             handle = wf_nickname + '@' + wf_domain
             if debug:
                 print('DEBUG: WEBFINGER handle ' + handle)
+    elif res_type + '=' in path:
+        possible_handle = path.split(res_type + '=')[1]
+        if '@' in possible_handle:
+            if possible_handle.startswith('@'):
+                possible_handle = possible_handle[1:]
+            if '@' in possible_handle:
+                possible_handle = possible_handle.strip()
+                wf_nickname = possible_handle.split('@')[0]
+                wf_domain = possible_handle.split('@')[1]
+                if wf_nickname and wf_domain:
+                    handle = wf_nickname + '@' + wf_domain
+        elif '%3A' in possible_handle or '/' in possible_handle:
+            actor = urllib.parse.unquote(possible_handle.strip())
+            wf_nickname = get_nickname_from_actor(actor)
+            wf_domain, port = get_domain_from_actor(actor)
+            if wf_nickname and wf_domain:
+                handle = wf_nickname + '@' + wf_domain
+                if debug:
+                    print('DEBUG: WEBFINGER handle ' + handle)
     if not handle:
         if debug:
             print('DEBUG: WEBFINGER handle missing')
