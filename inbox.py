@@ -1382,8 +1382,9 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     if dangerous_markup(content_str, allow_local_network_access):
         if message_json['object'].get('id'):
             print('REJECT ARBITRARY HTML: ' + message_json['object']['id'])
-        print('REJECT ARBITRARY HTML: bad string in post - ' +
-              content_str)
+        if debug:
+            print('REJECT ARBITRARY HTML: bad string in post - ' +
+                  content_str)
         return False
 
     # check (rough) number of mentions
@@ -1391,20 +1392,23 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     if mentions_est > max_mentions:
         if message_json['object'].get('id'):
             print('REJECT HELLTHREAD: ' + message_json['object']['id'])
-        print('REJECT HELLTHREAD: Too many mentions in post - ' +
-              content_str)
+        if debug:
+            print('REJECT HELLTHREAD: Too many mentions in post - ' +
+                  content_str)
         return False
     if _estimate_number_of_emoji(content_str) > max_emoji:
         if message_json['object'].get('id'):
             print('REJECT EMOJI OVERLOAD: ' + message_json['object']['id'])
-        print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
-              content_str)
+        if debug:
+            print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
+                  content_str)
         return False
     if _estimate_number_of_hashtags(content_str) > max_hashtags:
         if message_json['object'].get('id'):
             print('REJECT HASHTAG OVERLOAD: ' + message_json['object']['id'])
-        print('REJECT HASHTAG OVERLOAD: Too many hashtags in post - ' +
-              content_str)
+        if debug:
+            print('REJECT HASHTAG OVERLOAD: Too many hashtags in post - ' +
+                  content_str)
         return False
     # check number of tags
     if message_json['object'].get('tag'):
