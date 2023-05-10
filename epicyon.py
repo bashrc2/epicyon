@@ -890,6 +890,8 @@ def _command_options() -> None:
             origin_domain = argb.domain
         if debug:
             print('origin_domain: ' + str(origin_domain))
+        if argb.moved.startswith('@'):
+            argb.moved = argb.moved[1:]
         if '@' not in argb.moved:
             if '/users/' in argb.moved:
                 moved_nickname = get_nickname_from_actor(argb.moved)
@@ -923,6 +925,8 @@ def _command_options() -> None:
         sys.exit()
 
     if argb.postDomains:
+        if argb.postDomains.startswith('@'):
+            argb.postDomains = argb.postDomains[1:]
         if '@' not in argb.postDomains:
             if '/users/' in argb.postDomains:
                 posts_nickname = get_nickname_from_actor(argb.postDomains)
@@ -978,6 +982,8 @@ def _command_options() -> None:
     if argb.postDomainsBlocked:
         # Domains which were referenced in public posts by a
         # given handle but which are globally blocked on this instance
+        if argb.postDomainsBlocked.startswith('@'):
+            argb.postDomainsBlocked = argb.postDomainsBlocked[1:]
         if '@' not in argb.postDomainsBlocked:
             if '/users/' in argb.postDomainsBlocked:
                 posts_nickname = \
@@ -1028,6 +1034,8 @@ def _command_options() -> None:
     if argb.check_domains:
         # Domains which were referenced in public posts by a
         # given handle but which are globally blocked on this instance
+        if argb.check_domains.startswith('@'):
+            argb.check_domains = argb.check_domains[1:]
         if '@' not in argb.check_domains:
             if '/users/' in argb.check_domains:
                 posts_nickname = get_nickname_from_actor(argb.posts)
@@ -2352,6 +2360,8 @@ def _command_options() -> None:
                 sys.exit()
         argb.password = remove_eol(argb.password)
 
+        if argb.follow.startswith('@'):
+            argb.follow = argb.follow[1:]
         follow_nickname = get_nickname_from_actor(argb.follow)
         if not follow_nickname:
             print('Unable to find nickname in ' + argb.follow)
@@ -2400,6 +2410,8 @@ def _command_options() -> None:
                 sys.exit()
         argb.password = remove_eol(argb.password)
 
+        if argb.unfollow.startswith('@'):
+            argb.unfollow = argb.unfollow[1:]
         follow_nickname = get_nickname_from_actor(argb.unfollow)
         if not follow_nickname:
             print('WARN: unable to find nickname in ' + argb.unfollow)
