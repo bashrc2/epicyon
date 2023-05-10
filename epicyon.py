@@ -845,6 +845,8 @@ def _command_options() -> None:
             origin_domain = argb.domain
         if debug:
             print('origin_domain: ' + str(origin_domain))
+        if argb.posts.startswith('@'):
+            argb.posts = argb.posts[1:]
         if '@' not in argb.posts or '/@/' in argb.posts:
             posts_nickname = get_nickname_from_actor(argb.posts)
             if not posts_nickname:
@@ -1105,6 +1107,8 @@ def _command_options() -> None:
             origin_domain = argb.domain
         if debug:
             print('origin_domain: ' + str(origin_domain))
+        if argb.postsraw.startswith('@'):
+            argb.postsraw = argb.postsraw[1:]
         if '@' not in argb.postsraw or '/@/' in argb.postsraw:
             posts_nickname = get_nickname_from_actor(argb.postsraw)
             if not posts_nickname:
@@ -2600,6 +2604,8 @@ def _command_options() -> None:
                 print('Obtained instance actor signing key')
             else:
                 print('Did not obtain instance actor key for ' + domain)
+        if argb.actor.startswith('@'):
+            argb.actor = argb.actor[1:]
         get_actor_json(domain, argb.actor, argb.http, argb.gnunet,
                        argb.ipfs, argb.ipns,
                        debug, False, signing_priv_key_pem, None)
