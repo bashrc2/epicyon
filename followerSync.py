@@ -69,6 +69,14 @@ def _get_followers_for_domain(base_dir: str,
                         result.append(url)
                     found = True
                     break
+                if not found:
+                    url = prefix + '://' + search_domain + '/' + nick
+                    filename = base_dir + '/cache/actors/' + \
+                        url.replace('/', '#') + '.json'
+                    if os.path.isfile(filename):
+                        if url not in result:
+                            result.append(url)
+                        found = True
         elif '://' + search_domain in line_str:
             result.append(line_str)
     result.sort()

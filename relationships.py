@@ -337,6 +337,14 @@ def _get_inactive_accounts(base_dir: str, nickname: str, domain: str,
                         result.append(handle)
                         found = True
                         break
+                if not found:
+                    actor = \
+                        http_prefix + follower_domain + '/' + \
+                        follower_nickname
+                    if is_dormant(base_dir, nickname, domain, actor,
+                                  dormant_months):
+                        result.append(handle)
+                        found = True
                 if found:
                     break
         elif '://' in handle:

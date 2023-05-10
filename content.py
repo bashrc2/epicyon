@@ -879,6 +879,10 @@ def _mention_to_url(base_dir: str, http_prefix: str,
         if os.path.isfile(possible_cache_entry):
             return http_prefix + '://' + \
                 domain + users_path.replace('#', '/') + nickname
+    possible_cache_entry = \
+        cache_path_start + '#' + nickname + '.json'
+    if os.path.isfile(possible_cache_entry):
+        return http_prefix + '://' + domain + '/' + nickname
     return http_prefix + '://' + domain + '/users/' + nickname
 
 

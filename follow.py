@@ -131,6 +131,11 @@ def _remove_from_follow_base(base_dir: str,
                 actor_found = True
                 break
         if not actor_found:
+            accept_deny_actor = \
+                '://' + accept_deny_domain + '/' + accept_deny_nickname
+            if text_in_file(accept_deny_actor, approve_follows_filename):
+                actor_found = True
+        if not actor_found:
             return
     try:
         with open(approve_follows_filename + '.new', 'w+',
@@ -292,6 +297,10 @@ def is_follower_of_person(base_dir: str, nickname: str, domain: str,
             if url in followers_str:
                 already_following = True
                 break
+        if not already_following:
+            url = '://' + follower_domain + '/' + follower_nickname
+            if url in followers_str:
+                already_following = True
 
     return already_following
 
@@ -679,6 +688,10 @@ def store_follow_request(base_dir: str,
                 if url in followers_str:
                     already_following = True
                     break
+            if not already_following:
+                url = '://' + domain_full + '/' + nickname
+                if url in followers_str:
+                    already_following = True
 
         if already_following:
             if debug:

@@ -1146,6 +1146,10 @@ def _person_receive_update(base_dir: str,
             users_str_found = True
             break
     if not users_str_found:
+        actor = update_domain_full + '/' + update_nickname
+        if actor in person_json['id']:
+            users_str_found = True
+    if not users_str_found:
         if debug:
             print('actor: ' + actor)
             print('id: ' + person_json['id'])
