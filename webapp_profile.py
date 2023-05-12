@@ -517,7 +517,14 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         actor_proxied = ''
     else:
         actor_proxied = remove_html(actor_proxied)
-        if '/' in actor_proxied:
+        if '://' in actor_proxied:
+            proxy_str = 'Proxy'
+            if translate.get(proxy_str):
+                proxy_str = translate[proxy_str]
+            actor_proxied = '<a href="' + actor_proxied + \
+                '" target="_blank" rel="nofollow noopener noreferrer">' + \
+                proxy_str + '</a>'
+        elif '/' in actor_proxied:
             actor_proxied = actor_proxied.split('/')[-1]
         actor_proxied = ' [' + actor_proxied + ']'
 
@@ -631,13 +638,22 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
             avatar_url + '" ' + 'alt="" class="title"></a>\n'
     if not display_name:
         display_name = search_nickname
+
     if not actor_proxied:
         actor_proxied = ''
     else:
         actor_proxied = remove_html(actor_proxied)
-        if '/' in actor_proxied:
+        if '://' in actor_proxied:
+            proxy_str = 'Proxy'
+            if translate.get(proxy_str):
+                proxy_str = translate[proxy_str]
+            actor_proxied = '<a href="' + actor_proxied + \
+                '" target="_blank" rel="nofollow noopener noreferrer">' + \
+                proxy_str + '</a>'
+        elif '/' in actor_proxied:
             actor_proxied = actor_proxied.split('/')[-1]
         actor_proxied = ' [' + actor_proxied + ']'
+
     html_str += \
         '        <h1>\n' + \
         '          ' + display_name + '\n' + \
