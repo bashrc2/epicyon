@@ -4345,3 +4345,18 @@ def harmless_markup(post_json_object: {}) -> None:
                     content = remove_html(content)
                     post_json_object['object'][map_name][lang] = \
                         content
+
+
+def actor_proxy_type(actor: {}) -> str:
+    """Returns a string indicating the proxy for an actor
+    or None if not proxied
+    """
+    if not actor.get('proxyOf'):
+        return None
+    if not isinstance(actor['proxyOf'], list):
+        return None
+    for proxy_dict in actor['proxyOf']:
+        if proxy_dict.get('protocol'):
+            if isinstance(proxy_dict['protocol'], str):
+                return proxy_dict['protocol']
+    return None

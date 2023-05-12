@@ -12225,7 +12225,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled,
                                      self.server.content_license_url,
                                      timezone, bold_reading,
-                                     self.server.buy_sites)
+                                     self.server.buy_sites, None)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12352,7 +12352,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.lists_enabled,
                                                  content_license_url,
                                                  timezone, bold_reading,
-                                                 self.server.buy_sites)
+                                                 self.server.buy_sites,
+                                                 None)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -15000,7 +15001,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled,
                                      self.server.content_license_url,
                                      timezone, bold_reading,
-                                     self.server.buy_sites)
+                                     self.server.buy_sites,
+                                     None)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -15143,7 +15145,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled,
                                      content_license_url,
                                      timezone, bold_reading,
-                                     self.server.buy_sites).encode('utf-8')
+                                     self.server.buy_sites,
+                                     None).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15280,7 +15283,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled,
                                      content_license_url,
                                      timezone, bold_reading,
-                                     self.server.buy_sites).encode('utf-8')
+                                     self.server.buy_sites,
+                                     None).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15421,7 +15425,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled,
                                      content_license_url,
                                      timezone, bold_reading,
-                                     self.server.buy_sites).encode('utf-8')
+                                     self.server.buy_sites,
+                                     None).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15563,7 +15568,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled,
                                      content_license_url,
                                      timezone, bold_reading,
-                                     self.server.buy_sites).encode('utf-8')
+                                     self.server.buy_sites,
+                                     None).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
                                       cookie, calling_domain, False)
@@ -15730,7 +15736,8 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.lists_enabled,
                              self.server.content_license_url,
                              timezone, bold_reading,
-                             self.server.buy_sites).encode('utf-8')
+                             self.server.buy_sites,
+                             None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)

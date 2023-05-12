@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import actor_proxy_type
 from utils import remove_id_ending
 from utils import standardize_text
 from utils import get_display_name
@@ -327,6 +328,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         if 'T' in profile_json['published']:
             joined_date = profile_json['published']
 
+    actor_proxied = actor_proxy_type(profile_json)
+
     profile_str = \
         _get_profile_header_after_search(nickname, default_timeline,
                                          search_nickname,
@@ -338,7 +341,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                          avatar_url, image_url,
                                          moved_to, profile_json['id'],
                                          also_known_as, access_keys,
-                                         joined_date)
+                                         joined_date, actor_proxied)
 
     domain_full = get_full_domain(domain, port)
 
@@ -478,7 +481,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         pinned_content: str,
                         access_keys: {},
                         joined_date: str,
-                        occupation_name: str) -> str:
+                        occupation_name: str,
+                        actor_proxied: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -509,8 +513,17 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         '        <h1>' + display_name + '\n</h1>\n' + \
         occupation_str
 
+    if not actor_proxied:
+        actor_proxied = ''
+    else:
+        actor_proxied = remove_html(actor_proxied)
+        if '/' in actor_proxied:
+            actor_proxied = actor_proxied.split('/')[-1]
+        actor_proxied = ' [' + actor_proxied + ']'
+
     html_str += \
-        '    <p><b>@' + nickname + '@' + domain_full + '</b><br>\n'
+        '    <p><b>@' + nickname + '@' + domain_full + \
+        actor_proxied + '</b><br>\n'
     if joined_date:
         html_str += \
             '    <p>' + translate['Joined'] + ' ' + \
@@ -592,7 +605,8 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
                                      moved_to: str, actor: str,
                                      also_known_as: [],
                                      access_keys: {},
-                                     joined_date: str) -> str:
+                                     joined_date: str,
+                                     actor_proxied: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -617,12 +631,19 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
             avatar_url + '" ' + 'alt="" class="title"></a>\n'
     if not display_name:
         display_name = search_nickname
+    if not actor_proxied:
+        actor_proxied = ''
+    else:
+        actor_proxied = remove_html(actor_proxied)
+        if '/' in actor_proxied:
+            actor_proxied = actor_proxied.split('/')[-1]
+        actor_proxied = ' [' + actor_proxied + ']'
     html_str += \
         '        <h1>\n' + \
         '          ' + display_name + '\n' + \
         '        </h1>\n' + \
         '    <p><b>@' + search_nickname + '@' + search_domain_full + \
-        '</b><br>\n'
+        actor_proxied + '</b><br>\n'
     if joined_date:
         html_str += '        <p>' + translate['Joined'] + ' ' + \
             joined_date.split('T')[0] + '</p>\n'
@@ -700,7 +721,8 @@ def html_profile(signing_priv_key_pem: str,
                  cw_lists: {}, lists_enabled: str,
                  content_license_url: str,
                  timezone: str, bold_reading: bool,
-                 buy_sites: {}) -> str:
+                 buy_sites: {},
+                 actor_proxied: str) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1052,7 +1074,8 @@ def html_profile(signing_priv_key_pem: str,
                             login_button, avatar_url, theme,
                             moved_to, also_known_as,
                             pinned_content, access_keys,
-                            joined_date, occupation_name)
+                            joined_date, occupation_name,
+                            actor_proxied)
 
     # keyboard navigation
     user_path_str = '/users/' + nickname
