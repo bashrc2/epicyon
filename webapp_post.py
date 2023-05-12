@@ -2186,19 +2186,19 @@ def individual_post_as_html(signing_priv_key_pem: str,
         actor_nickname = 'dev'
     actor_domain, _ = get_domain_from_actor(post_actor)
 
-    actor_proxied = ap_proxy_type(post_json_object['object'])
-    if actor_proxied:
-        actor_proxied = remove_html(actor_proxied)
-        if '://' in actor_proxied:
+    post_proxied = ap_proxy_type(post_json_object['object'])
+    if post_proxied:
+        post_proxied = remove_html(post_proxied)
+        if '://' in post_proxied:
             proxy_str = 'Proxy'
             if translate.get(proxy_str):
                 proxy_str = translate[proxy_str]
-            actor_proxied = '<a href="' + actor_proxied + \
+            post_proxied = '<a href="' + post_proxied + \
                 '" target="_blank" rel="nofollow noopener noreferrer">' + \
                 proxy_str + '</a>'
-        elif '/' in actor_proxied:
-            actor_proxied = actor_proxied.split('/')[-1]
-        title_str += '[' + actor_proxied + '] '
+        elif '/' in post_proxied:
+            post_proxied = post_proxied.split('/')[-1]
+        title_str += '[' + post_proxied + '] '
 
     # scope icon before display name
     if is_followers_post(post_json_object):
