@@ -188,7 +188,8 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
     new_donate = {
         "name": donate_name,
         "type": "PropertyValue",
-        "value": donate_value
+        "value": donate_value,
+        "rel": "payment"
     }
     actor_json['attachment'].append(new_donate)
 
