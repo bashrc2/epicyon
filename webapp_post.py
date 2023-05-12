@@ -2186,6 +2186,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
         actor_nickname = 'dev'
     actor_domain, _ = get_domain_from_actor(post_actor)
 
+    # indicate if the post has been proxied from a different protocol
+    # (eg. diaspora/nostr)
     post_proxied = ap_proxy_type(post_json_object['object'])
     if post_proxied:
         post_proxied = remove_html(post_proxied)
