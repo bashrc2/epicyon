@@ -25,6 +25,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import ap_proxy_type
 from utils import remove_style_within_html
 from utils import license_link_from_name
 from utils import dont_speak_hashtags
@@ -2184,6 +2185,20 @@ def individual_post_as_html(signing_priv_key_pem: str,
         # single user instance
         actor_nickname = 'dev'
     actor_domain, _ = get_domain_from_actor(post_actor)
+
+    actor_proxied = ap_proxy_type(post_json_object['object'])
+    if actor_proxied:
+        actor_proxied = remove_html(actor_proxied)
+        if '://' in actor_proxied:
+            proxy_str = 'Proxy'
+            if translate.get(proxy_str):
+                proxy_str = translate[proxy_str]
+            actor_proxied = '<a href="' + actor_proxied + \
+                '" target="_blank" rel="nofollow noopener noreferrer">' + \
+                proxy_str + '</a>'
+        elif '/' in actor_proxied:
+            actor_proxied = actor_proxied.split('/')[-1]
+        title_str += '[' + actor_proxied + '] '
 
     # scope icon before display name
     if is_followers_post(post_json_object):
