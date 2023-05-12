@@ -4350,6 +4350,7 @@ def harmless_markup(post_json_object: {}) -> None:
 def ap_proxy_type(json_object: {}) -> str:
     """Returns a string indicating the proxy for an activitypub post
     or None if not proxied
+    See https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-fffd.md
     """
     if not json_object.get('proxyOf'):
         return None
