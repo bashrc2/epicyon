@@ -4347,15 +4347,15 @@ def harmless_markup(post_json_object: {}) -> None:
                         content
 
 
-def actor_proxy_type(actor: {}) -> str:
-    """Returns a string indicating the proxy for an actor
+def ap_proxy_type(json_object: {}) -> str:
+    """Returns a string indicating the proxy for an activitypub post
     or None if not proxied
     """
-    if not actor.get('proxyOf'):
+    if not json_object.get('proxyOf'):
         return None
-    if not isinstance(actor['proxyOf'], list):
+    if not isinstance(json_object['proxyOf'], list):
         return None
-    for proxy_dict in actor['proxyOf']:
+    for proxy_dict in json_object['proxyOf']:
         if proxy_dict.get('protocol'):
             if isinstance(proxy_dict['protocol'], str):
                 return proxy_dict['protocol']

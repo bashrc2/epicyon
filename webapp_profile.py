@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
-from utils import actor_proxy_type
+from utils import ap_proxy_type
 from utils import remove_id_ending
 from utils import standardize_text
 from utils import get_display_name
@@ -328,7 +328,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         if 'T' in profile_json['published']:
             joined_date = profile_json['published']
 
-    actor_proxied = actor_proxy_type(profile_json)
+    actor_proxied = ap_proxy_type(profile_json)
 
     profile_str = \
         _get_profile_header_after_search(nickname, default_timeline,
