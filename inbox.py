@@ -1209,7 +1209,8 @@ def _person_receive_update(base_dir: str,
             new_domain_full = get_full_domain(new_domain, new_port)
         new_nickname = get_nickname_from_actor(person_json['movedTo'])
 
-        if prev_domain_full and new_domain:
+        if prev_nickname and prev_domain_full and new_domain and \
+           new_nickname and new_domain_full:
             new_actor = prev_nickname + '@' + prev_domain_full + ' ' + \
                 new_nickname + '@' + new_domain_full
             refollow_str = ''
