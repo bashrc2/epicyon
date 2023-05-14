@@ -2280,7 +2280,6 @@ h3 {
         text-align: center;
     }
     .container img {
-        float: left;
         max-width: 400px;
         width: 15%;
         padding: 0px 7px;
@@ -3100,7 +3099,6 @@ h3 {
         text-align: center;
     }
     .container img {
-        float: left;
         max-width: 400px;
         width: 15%;
         padding: 0px 7px;
