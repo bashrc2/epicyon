@@ -773,9 +773,10 @@ a:focus {
 
 .container img.attachment {
     width: auto;
-    margin-left: -2%;
-    margin-right: 2%;
+    margin-left: auto;
+    margin-right: auto;
     padding-bottom: 3%;
+    display: block;
 }
 
 .container img.right {
