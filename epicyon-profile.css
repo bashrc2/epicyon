@@ -2010,9 +2010,11 @@ h3 {
     }
     .container img.attachment {
 	width: 125%;
+	max-width: 145%;
 	margin-left: -2%;
 	margin-right: 2%;
 	padding-bottom: 3%;
+	padding-left: 0%;
     }
     .container img.postScopeIcon {
         float: none;
@@ -2835,9 +2837,11 @@ h3 {
     }
     .container img.attachment {
 	width: 125%;
+	max-width: 145%;
 	margin-left: -2%;
 	margin-right: 2%;
 	padding-bottom: 3%;
+	padding-left: 0%;
     }
     .container img.postScopeIcon {
         float: none;
