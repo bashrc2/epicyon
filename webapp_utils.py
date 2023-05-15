@@ -1414,6 +1414,8 @@ def get_post_attachments_as_html(base_dir: str,
                 attachment_str += \
                     '<img loading="lazy" decoding="async" ' + \
                     'src="' + image_url + \
+                    '" style="margin:0;display:block;' + \
+                    'width:100%;height:100%;object-fit:cover;' + \
                     '" alt="' + image_description + '" title="' + \
                     image_description + '" class="attachment"></a>\n'
                 if media_license and media_creator:
