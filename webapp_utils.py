@@ -1411,11 +1411,15 @@ def get_post_attachments_as_html(base_dir: str,
                 attachment_str += '<a href="' + image_url + '" tabindex="10">'
                 if media_license and media_creator:
                     attachment_str += '<figure>'
+                img_attachment_style = \
+                    'min-height:100%;min-width:100%;' + \
+                    'height:auto;width:auto;position:absolute;' + \
+                    'top:-100%;bottom:-100%;left:-100%;right:-100%;' + \
+                    'margin:auto;'
                 attachment_str += \
                     '<img loading="lazy" decoding="async" ' + \
                     'src="' + image_url + \
-                    '" style="margin:0;display:block;' + \
-                    'width:100%;height:100%;object-fit:cover;' + \
+                    '" style="' + img_attachment_style + \
                     '" alt="' + image_description + '" title="' + \
                     image_description + '" class="attachment"></a>\n'
                 if media_license and media_creator:
