@@ -2008,6 +2008,12 @@ h3 {
         font-size: var(--font-size-mobile);
         color: var(--title-color);
     }
+    .container img.attachment {
+	width: 125%;
+	margin-left: -2%;
+	margin-right: 2%;
+	padding-bottom: 3%;
+    }
     .container img.postScopeIcon {
         float: none;
         width: 50px;
@@ -2826,6 +2832,12 @@ h3 {
         font-family:   var(--header-font);
         font-size: var(--font-size-tiny);
         color: var(--title-color);
+    }
+    .container img.attachment {
+	width: 125%;
+	margin-left: -2%;
+	margin-right: 2%;
+	padding-bottom: 3%;
     }
     .container img.postScopeIcon {
         float: none;
