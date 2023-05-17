@@ -1297,12 +1297,13 @@ def get_post_attachments_as_html(base_dir: str,
                                        system_language):
                         media_creator = attach['schema:creator']
         elif attach.get('attribution'):
-            if len(attach['attribution']) < 120:
-                if not dangerous_markup(attach['attribution'], False):
-                    if not is_filtered(base_dir, nickname, domain,
-                                       attach['attribution'],
-                                       system_language):
-                        media_creator = attach['attribution']
+            if isinstance(attach['attribution'], list):
+                if len(attach['attribution']) > 0:
+                    attrib_str = attach['attribution'][0]
+                    if not dangerous_markup(attrib_str, False):
+                        if not is_filtered(base_dir, nickname, domain,
+                                           attrib_str, system_language):
+                            media_creator = attrib_str
 
         media_type = attach['mediaType']
         image_description = ''

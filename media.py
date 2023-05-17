@@ -633,7 +633,7 @@ def attach_media(base_dir: str, http_prefix: str,
         attachment_json['license'] = content_license_url
     if creator:
         attachment_json['schema:creator'] = creator
-        attachment_json['attribution'] = creator
+        attachment_json['attribution'] = [creator]
     if media_type.startswith('image/'):
         attachment_json['blurhash'] = _get_blur_hash()
         # find the dimensions of the image and add them as metadata
