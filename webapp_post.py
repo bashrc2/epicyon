@@ -1819,10 +1819,17 @@ def _get_content_license(post_json_object: {}) -> str:
     """
     if not post_json_object['object'].get('attachment'):
         if not post_json_object['object'].get('schema:license'):
-            return None
+            if not post_json_object['object'].get('license'):
+                return None
 
     if post_json_object['object'].get('schema:license'):
         value = post_json_object['object']['schema:license']
+        if '://' not in value:
+            value = license_link_from_name(value)
+        return value
+
+    if post_json_object['object'].get('license'):
+        value = post_json_object['object']['license']
         if '://' not in value:
             value = license_link_from_name(value)
         return value

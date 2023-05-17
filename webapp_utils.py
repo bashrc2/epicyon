@@ -1278,14 +1278,31 @@ def get_post_attachments_as_html(base_dir: str,
                             media_license = attach['schema:license']
                     else:
                         media_license = attach['schema:license']
+        elif attach.get('license'):
+            if not dangerous_markup(attach['license'], False):
+                if not is_filtered(base_dir, nickname, domain,
+                                   attach['license'],
+                                   system_language):
+                    if '://' not in attach['license']:
+                        if len(attach['license']) < 60:
+                            media_license = attach['license']
+                    else:
+                        media_license = attach['license']
         media_creator = ''
         if attach.get('schema:creator'):
-            if len(attach['schema:creator']) < 60:
+            if len(attach['schema:creator']) < 120:
                 if not dangerous_markup(attach['schema:creator'], False):
                     if not is_filtered(base_dir, nickname, domain,
                                        attach['schema:creator'],
                                        system_language):
                         media_creator = attach['schema:creator']
+        elif attach.get('attribution'):
+            if len(attach['attribution']) < 120:
+                if not dangerous_markup(attach['attribution'], False):
+                    if not is_filtered(base_dir, nickname, domain,
+                                       attach['attribution'],
+                                       system_language):
+                        media_creator = attach['attribution']
 
         media_type = attach['mediaType']
         image_description = ''
