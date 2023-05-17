@@ -166,15 +166,21 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
         if curr_page == page_number:
             line2_lower = handle.lower()
             line2 = remove_eol(line2_lower)
-            nick = line2.split('@')[0]
-            dom = line2.split('@')[1]
-            if not nick.startswith('!'):
-                # person actor
-                url = local_actor_url(http_prefix, nick, dom)
+            url = None
+            if '@' in line2:
+                nick = line2.split('@')[0]
+                dom = line2.split('@')[1]
+                if not nick.startswith('!'):
+                    # person actor
+                    url = local_actor_url(http_prefix, nick, dom)
+                else:
+                    # group actor
+                    url = http_prefix + '://' + dom + '/c/' + nick
             else:
-                # group actor
-                url = http_prefix + '://' + dom + '/c/' + nick
-            following['orderedItems'].append(url)
+                if '://' in line2:
+                    url = remove_eol(handle)
+            if url:
+                following['orderedItems'].append(url)
         if page_ctr >= follows_per_page:
             page_ctr = 0
             curr_page += 1
@@ -453,15 +459,21 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
         if curr_page == page_number:
             line2_lower = handle.lower()
             line2 = remove_eol(line2_lower)
-            nick = line2.split('@')[0]
-            dom = line2.split('@')[1]
-            if not nick.startswith('!'):
-                # person actor
-                url = local_actor_url(http_prefix, nick, dom)
+            url = None
+            if '@' in line2:
+                nick = line2.split('@')[0]
+                dom = line2.split('@')[1]
+                if not nick.startswith('!'):
+                    # person actor
+                    url = local_actor_url(http_prefix, nick, dom)
+                else:
+                    # group actor
+                    url = http_prefix + '://' + dom + '/c/' + nick
             else:
-                # group actor
-                url = http_prefix + '://' + dom + '/c/' + nick
-            following['orderedItems'].append(url)
+                if '://' in line2:
+                    url = remove_eol(handle)
+            if url:
+                following['orderedItems'].append(url)
         if page_ctr >= follows_per_page:
             page_ctr = 0
             curr_page += 1
