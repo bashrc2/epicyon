@@ -1240,7 +1240,8 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                     'partOf': id_str,
                     'items': []
                 }
-            }
+            },
+            "crawlable": False
         }
     }
     if attach_image_filename:
@@ -1312,7 +1313,8 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                 'partOf': id_str,
                 'items': []
             }
-        }
+        },
+        "crawlable": False
     }
     if attach_image_filename:
         new_post = \
