@@ -874,14 +874,14 @@ def remove_avatar_from_cache(base_dir: str, actor_str: str) -> None:
 def save_json(json_object: {}, filename: str) -> bool:
     """Saves json to a file
     """
-    tries = 0
-    while tries < 5:
+    tries = 1
+    while tries <= 5:
         try:
             with open(filename, 'w+', encoding='utf-8') as json_file:
                 json_file.write(json.dumps(json_object))
                 return True
         except OSError:
-            print('EX: save_json ' + str(tries))
+            print('EX: save_json ' + str(tries) + ' ' + str(filename))
             time.sleep(1)
             tries += 1
     return False
@@ -893,15 +893,16 @@ def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
     if '/Actor@' in filename:
         filename = filename.replace('/Actor@', '/inbox@')
     json_object = None
-    tries = 0
-    while tries < max_tries:
+    tries = 1
+    while tries <= max_tries:
         try:
             with open(filename, 'r', encoding='utf-8') as json_file:
                 data = json_file.read()
                 json_object = json.loads(data)
                 break
         except BaseException:
-            print('EX: load_json exception ' + str(filename))
+            print('EX: load_json exception ' +
+                  str(tries) + ' ' + str(filename))
             if delay_sec > 0:
                 time.sleep(delay_sec)
             tries += 1
