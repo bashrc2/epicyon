@@ -192,6 +192,38 @@ def has_object_dict(post_json_object: {}) -> bool:
     return False
 
 
+def remove_markup_tag(html: str, tag: str) -> str:
+    """Remove the given tag from the given html markup
+    """
+    if '<' + tag not in html:
+        return html
+
+    section = html.split('<' + tag)
+    result = ''
+    for text in section:
+        if not result:
+            if html.startswith('<' + tag) and '>' in text:
+                result = text.split('>', 1)[1]
+            else:
+                result = text
+            continue
+        result += text.split('>', 1)[1]
+
+    html = result
+    section = html.split('</' + tag)
+    result = ''
+    for text in section:
+        if not result:
+            if html.startswith('</' + tag) and '>' in text:
+                result = text.split('>', 1)[1]
+            else:
+                result = text
+            continue
+        result += text.split('>', 1)[1]
+
+    return result
+
+
 def get_content_from_post(post_json_object: {}, system_language: str,
                           languages_understood: [],
                           content_type: str = "content") -> str:
@@ -213,6 +245,7 @@ def get_content_from_post(post_json_object: {}, system_language: str,
                 sys_lang = this_post_json[map_dict][system_language]
                 if isinstance(sys_lang, str):
                     content = this_post_json[map_dict][system_language]
+                    content = remove_markup_tag(content, 'pre')
                     return standardize_text(content)
             else:
                 # is there a contentMap/summaryMap entry for one of
@@ -220,10 +253,12 @@ def get_content_from_post(post_json_object: {}, system_language: str,
                 for lang in languages_understood:
                     if this_post_json[map_dict].get(lang):
                         content = this_post_json[map_dict][lang]
+                        content = remove_markup_tag(content, 'pre')
                         return standardize_text(content)
     else:
         if isinstance(this_post_json[content_type], str):
             content = this_post_json[content_type]
+            content = remove_markup_tag(content, 'pre')
     return standardize_text(content)
 
 
@@ -1182,7 +1217,8 @@ def html_tag_has_closing(tag_name: str, content: str) -> bool:
     return True
 
 
-def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
+def dangerous_markup(content: str, allow_local_network_access: bool,
+                     allow_tags: []) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
@@ -1198,8 +1234,11 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     invalid_strings = [
         'script', 'noscript', 'canvas', 'style', 'abbr', 'input',
         'frame', 'iframe', 'html', 'body', 'hr', 'allow-popups',
-        'allow-scripts', 'amp-', '?php'
+        'allow-scripts', 'amp-', '?php', 'pre'
     ]
+    for allowed in allow_tags:
+        if allowed in invalid_strings:
+            invalid_strings.remove(allowed)
     return _is_dangerous_string_tag(content, allow_local_network_access,
                                     separators, invalid_strings)
 
@@ -1236,7 +1275,7 @@ def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
                 if actor_json.get('name'):
                     name_found = actor_json['name']
     if name_found:
-        if dangerous_markup(name_found, False):
+        if dangerous_markup(name_found, False, []):
             name_found = "*ADVERSARY*"
     return standardize_text(name_found)
 
@@ -4333,19 +4372,25 @@ def harmless_markup(post_json_object: {}) -> None:
     for field_name in ('content', 'summary'):
         if post_json_object['object'].get(field_name):
             if dangerous_markup(post_json_object['object'][field_name],
-                                False):
+                                False, ['pre']):
                 post_json_object['object'][field_name] = \
                     remove_html(post_json_object['object'][field_name])
+            post_json_object['object'][field_name] = \
+                remove_markup_tag(post_json_object['object'][field_name],
+                                  'pre')
         map_name = field_name + 'Map'
         if post_json_object['object'].get(map_name):
             map_dict = post_json_object['object'][map_name].items()
             for lang, content in map_dict:
                 if not isinstance(content, str):
                     continue
-                if dangerous_markup(content, False):
+                if dangerous_markup(content, False, ['pre']):
                     content = remove_html(content)
                     post_json_object['object'][map_name][lang] = \
                         content
+                content = post_json_object['object'][map_name][lang]
+                post_json_object['object'][map_name][lang] = \
+                    remove_markup_tag(content, 'pre')
 
 
 def ap_proxy_type(json_object: {}) -> str:

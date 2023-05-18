@@ -5544,7 +5544,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('editedAbout'):
                     about_str = fields['editedAbout']
                     if not dangerous_markup(about_str,
-                                            allow_local_network_access):
+                                            allow_local_network_access, []):
                         try:
                             with open(about_filename, 'w+',
                                       encoding='utf-8') as aboutfile:
@@ -5563,7 +5563,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('editedTOS'):
                     tos_str = fields['editedTOS']
                     if not dangerous_markup(tos_str,
-                                            allow_local_network_access):
+                                            allow_local_network_access, []):
                         try:
                             with open(tos_filename, 'w+',
                                       encoding='utf-8') as tosfile:

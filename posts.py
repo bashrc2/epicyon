@@ -413,7 +413,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     display_name = None
     if person_json.get('name'):
         display_name = person_json['name']
-        if dangerous_markup(person_json['name'], False):
+        if dangerous_markup(person_json['name'], False, []):
             display_name = '*ADVERSARY*'
         elif is_filtered(base_dir,
                          nickname, domain,
@@ -5549,7 +5549,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
             if announced_json['contentMap'].get(system_language):
                 content_str = announced_json['contentMap'][system_language]
                 using_content_map = True
-        if dangerous_markup(content_str, allow_local_network_access):
+        if dangerous_markup(content_str, allow_local_network_access, []):
             print('WARN: announced post contains dangerous markup ' +
                   str(announced_json))
             _reject_announce(announce_filename,

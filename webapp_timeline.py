@@ -92,7 +92,7 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
             instance_title = 'Epicyon'
         with open(help_filename, 'r', encoding='utf-8') as help_file:
             help_text = help_file.read()
-            if dangerous_markup(help_text, False):
+            if dangerous_markup(help_text, False, []):
                 return ''
             help_text = help_text.replace('INSTANCE', instance_title)
             return '<div class="container">\n' + \

@@ -303,7 +303,7 @@ def post_message_to_outbox(session, translate: {},
                                 system_language, translate,
                                 'nowplaying', 'NowPlaying')
 
-            if dangerous_markup(content_str, allow_local_network_access):
+            if dangerous_markup(content_str, allow_local_network_access, []):
                 print('POST to outbox contains dangerous markup: ' +
                       str(message_json))
                 return False

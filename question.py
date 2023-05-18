@@ -229,6 +229,7 @@ def dangerous_question(question_json: {},
         question_options = question_json['object']['oneOf']
     for option in question_options:
         if option.get('name'):
-            if dangerous_markup(option['name'], allow_local_network_access):
+            if dangerous_markup(option['name'],
+                                allow_local_network_access, []):
                 return True
     return False

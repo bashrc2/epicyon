@@ -267,7 +267,7 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
 
     # an attacker can include html inside of the css
     # file as a comment and this may then be run from the html
-    if dangerous_markup(content, allow_local_network_access):
+    if dangerous_markup(content, allow_local_network_access, []):
         return True
     return False
 

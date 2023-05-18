@@ -601,8 +601,8 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
 
         rss_title = _remove_control_characters(item[0])
         url = item[1]
-        if dangerous_markup(url, allow_local_network_access) or \
-           dangerous_markup(rss_title, allow_local_network_access):
+        if dangerous_markup(url, allow_local_network_access, []) or \
+           dangerous_markup(rss_title, allow_local_network_access, []):
             continue
         rss_description = ''
 

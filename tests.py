@@ -55,6 +55,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import remove_markup_tag
 from utils import remove_style_within_html
 from utils import html_tag_has_closing
 from utils import remove_inverted_text
@@ -4189,75 +4190,75 @@ def _test_danger_markup():
     print('test_dangerous_markup')
     allow_local_network_access = False
     content = '<p>This is a valid message</p>'
-    assert not dangerous_markup(content, allow_local_network_access)
+    assert not dangerous_markup(content, allow_local_network_access, [])
 
     content = 'This is a valid message without markup'
-    assert not dangerous_markup(content, allow_local_network_access)
+    assert not dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script>document.getElementById("concentrated")' + \
         '.innerHTML = "evil";</script></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '&lt;script&gt;document.getElementById("concentrated")' + \
         '.innerHTML = "evil";&lt;/script&gt;</p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This html contains more than you expected... ' + \
         '<script language="javascript">document.getElementById("abc")' + \
         '.innerHTML = "def";</script></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This html contains more than you expected... ' + \
         '<?php $server_output = curl_exec($ch); ?></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script src="https://evilsite/payload.js" /></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This is a valid-looking message. But it contains ' + \
         'spyware. <amp-analytics type="gtag" ' + \
         'data-credentials="include"></amp-analytics></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This is a valid-looking message. But it contains ' + \
         '<a href="something.googleapis.com/anotherthing">spyware.</a></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This message embeds an evil frame.' + \
         '<iframe src="somesite"></iframe></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This message tries to obfuscate an evil frame.' + \
         '<  iframe     src = "somesite"></    iframe  ></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This message is not necessarily evil, but annoying.' + \
         '<hr><br><br><br><br><br><br><br><hr><hr></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/index.html">valid link.</a></p>'
-    assert not dangerous_markup(content, allow_local_network_access)
+    assert not dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/iframe.html">' + \
         'valid link having invalid but harmless name.</a></p>'
-    assert not dangerous_markup(content, allow_local_network_access)
+    assert not dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This message which <a href="127.0.0.1:8736">' + \
         'tries to access the local network</a></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>This message which <a href="http://192.168.5.10:7235">' + \
         'tries to access the local network</a></p>'
-    assert dangerous_markup(content, allow_local_network_access)
+    assert dangerous_markup(content, allow_local_network_access, [])
 
     content = '<p>127.0.0.1 This message which does not access ' + \
         'the local network</a></p>'
-    assert not dangerous_markup(content, allow_local_network_access)
+    assert not dangerous_markup(content, allow_local_network_access, [])
 
 
 def _run_html_replace_quote_marks():
@@ -7983,6 +7984,35 @@ def _test_featured_tags() -> None:
     assert result == featured_tags
 
 
+def _test_remove_tag() -> None:
+    print('remove_tag')
+    test_html = 'This is a test'
+    result = remove_markup_tag(test_html, 'pre')
+    assert result == test_html
+
+    test_html = '<pre>This is a test</pre>'
+    result = remove_markup_tag(test_html, 'pre')
+    if result != 'This is a test':
+        print('expected: This is a test')
+        print('result: ' + result)
+    assert result == 'This is a test'
+
+    test_html = 'Previous <pre>this is a test</pre>'
+    result = remove_markup_tag(test_html, 'pre')
+    if result != 'Previous this is a test':
+        print('expected: Previous this is a test')
+        print('result: ' + result)
+    assert result == 'Previous this is a test'
+
+    test_html = '<pre>This is a test</pre><br>' + \
+        'something<br><pre>again</pre>'
+    result = remove_markup_tag(test_html, 'pre')
+    if result != 'This is a test<br>something<br>again':
+        print('expected: This is a test<br>something<br>again')
+        print('result: ' + result)
+    assert result == 'This is a test<br>something<br>again'
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -8000,6 +8030,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_remove_tag()
     _test_featured_tags()
     _test_xor_hashes()
     _test_convert_markdown()

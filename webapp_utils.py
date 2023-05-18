@@ -1269,7 +1269,7 @@ def get_post_attachments_as_html(base_dir: str,
             continue
         media_license = ''
         if attach.get('schema:license'):
-            if not dangerous_markup(attach['schema:license'], False):
+            if not dangerous_markup(attach['schema:license'], False, []):
                 if not is_filtered(base_dir, nickname, domain,
                                    attach['schema:license'],
                                    system_language):
@@ -1279,7 +1279,7 @@ def get_post_attachments_as_html(base_dir: str,
                     else:
                         media_license = attach['schema:license']
         elif attach.get('license'):
-            if not dangerous_markup(attach['license'], False):
+            if not dangerous_markup(attach['license'], False, []):
                 if not is_filtered(base_dir, nickname, domain,
                                    attach['license'],
                                    system_language):
@@ -1291,7 +1291,7 @@ def get_post_attachments_as_html(base_dir: str,
         media_creator = ''
         if attach.get('schema:creator'):
             if len(attach['schema:creator']) < 120:
-                if not dangerous_markup(attach['schema:creator'], False):
+                if not dangerous_markup(attach['schema:creator'], False, []):
                     if not is_filtered(base_dir, nickname, domain,
                                        attach['schema:creator'],
                                        system_language):
@@ -1300,7 +1300,7 @@ def get_post_attachments_as_html(base_dir: str,
             if isinstance(attach['attribution'], list):
                 if len(attach['attribution']) > 0:
                     attrib_str = attach['attribution'][0]
-                    if not dangerous_markup(attrib_str, False):
+                    if not dangerous_markup(attrib_str, False, []):
                         if not is_filtered(base_dir, nickname, domain,
                                            attrib_str, system_language):
                             media_creator = attrib_str
