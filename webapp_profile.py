@@ -529,24 +529,20 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             actor_proxied = actor_proxied.split('/')[-1]
         actor_proxied = ' [' + actor_proxied + ']'
 
-    html_str += \
-        '    <p><b>@' + nickname + '@' + domain_full + \
-        actor_proxied + '</b><br>\n'
-    has_blog = account_has_blog(base_dir, nickname, domain)
     acct_blog_str = ''
+    has_blog = account_has_blog(base_dir, nickname, domain)
     if has_blog:
         acct_blog_str = \
-            '<a href="/blog/' + nickname + '" title="' + \
+            ' <a href="/blog/' + nickname + '" title="' + \
             translate['Blog'] + '">📖</a>'
+
+    html_str += \
+        '    <p><b>@' + nickname + '@' + domain_full + \
+        actor_proxied + acct_blog_str + '</b><br>\n'
     if joined_date:
-        html_str += '    <p>'
-        if has_blog:
-            html_str += acct_blog_str + ' '
         html_str += \
-            translate['Joined'] + ' ' + \
+            '    <p>' + translate['Joined'] + ' ' + \
             joined_date.split('T')[0] + '<br>\n'
-    elif has_blog:
-        html_str += '    <p>' + acct_blog_str + '<br>\n'
     if moved_to:
         new_nickname = get_nickname_from_actor(moved_to)
         new_domain, new_port = get_domain_from_actor(moved_to)
