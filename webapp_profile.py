@@ -514,6 +514,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         '        <h1>' + display_name + '\n</h1>\n' + \
         occupation_str
 
+    # show if the actor is proxied
     if not actor_proxied:
         actor_proxied = ''
     else:
@@ -529,6 +530,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             actor_proxied = actor_proxied.split('/')[-1]
         actor_proxied = ' [' + actor_proxied + ']'
 
+    # show blog icon if this account has a blog
     acct_blog_str = ''
     has_blog = account_has_blog(base_dir, nickname, domain)
     if has_blog:
