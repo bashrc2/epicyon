@@ -84,6 +84,7 @@ from webapp_utils import edit_text_area
 from webapp_utils import begin_edit_section
 from webapp_utils import end_edit_section
 from blog import get_blog_address
+from blog import account_has_blog
 from webapp_post import individual_post_as_html
 from webapp_timeline import html_individual_share
 from webapp_timeline import page_number_buttons
@@ -531,10 +532,21 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     html_str += \
         '    <p><b>@' + nickname + '@' + domain_full + \
         actor_proxied + '</b><br>\n'
+    has_blog = account_has_blog(base_dir, nickname, domain)
+    acct_blog_str = ''
+    if has_blog:
+        acct_blog_str = \
+            '<a href="/blog/' + nickname + '" title="' + \
+            translate['Blog'] + '">📖</a>'
     if joined_date:
+        html_str += '    <p>'
+        if has_blog:
+            html_str += acct_blog_str + ' '
         html_str += \
-            '    <p>' + translate['Joined'] + ' ' + \
+            translate['Joined'] + ' ' + \
             joined_date.split('T')[0] + '<br>\n'
+    elif has_blog:
+        html_str += '    <p>' + acct_blog_str + '<br>\n'
     if moved_to:
         new_nickname = get_nickname_from_actor(moved_to)
         new_domain, new_port = get_domain_from_actor(moved_to)
