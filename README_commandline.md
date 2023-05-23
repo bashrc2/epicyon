@@ -12,6 +12,12 @@ python3 epicyon.py --addaccount nickname@domain --password [yourpassword]
 
 You can also leave out the **--password** option and then enter it manually, which has the advantage of passwords not being logged within command history.
 
+To set the nickname for the admin account:
+
+``` bash
+python3 epicyon.py --setadmin nickname
+```
+
 To remove an account (be careful!):
 
 ``` bash

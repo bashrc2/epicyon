@@ -134,6 +134,9 @@ def _command_options() -> None:
     opt = {}
     search_date = datetime.datetime.now()
     parser = argparse.ArgumentParser(description='ActivityPub Server')
+    parser.add_argument('--setadmin', type=str,
+                        default=None,
+                        help='Sets the admin nickname')
     parser.add_argument('--eventDate', type=str,
                         default=None,
                         help='Date for an event when sending a c2s post' +
@@ -819,6 +822,10 @@ def _command_options() -> None:
     base_dir = argb.base_dir
     if base_dir.endswith('/'):
         print("--path option should not end with '/'")
+        sys.exit()
+
+    if argb.setadmin:
+        set_config_param(base_dir, 'admin', argb.setadmin)
         sys.exit()
 
     if argb.import_emoji:
