@@ -2909,6 +2909,8 @@ def _command_options() -> None:
                       ' was removed')
             else:
                 print('Group ' + nickname + '@' + domain + ' was removed')
+        print('Account for ' + nickname + '@' + domain +
+              ' not removed')
         sys.exit()
 
     if argb.activate:
