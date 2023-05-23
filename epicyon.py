@@ -2909,7 +2909,7 @@ def _command_options() -> None:
                       ' was removed')
             else:
                 print('Group ' + nickname + '@' + domain + ' was removed')
-            sys.exit()
+        sys.exit()
 
     if argb.activate:
         if '@' in argb.activate:
