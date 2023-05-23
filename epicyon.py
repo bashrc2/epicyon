@@ -2882,11 +2882,10 @@ def _command_options() -> None:
         argb.rmaccount = argb.deactivate
 
     if argb.rmaccount:
+        admin_domain = get_config_param(base_dir, 'domain')
         admin_nickname = get_config_param(base_dir, 'admin')
-        print('admin_nickname: ' + str(admin_nickname))
-        print('argb.rmaccount: ' + str(argb.rmaccount))
-        if admin_nickname:
-            if admin_nickname == argb.rmaccount:
+        if admin_nickname and admin_domain:
+            if admin_nickname + '@' + admin_domain == argb.rmaccount:
                 print(argb.rmaccount + ' is the admin account')
                 sys.exit()
         if '@' in argb.rmaccount:
