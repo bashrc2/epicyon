@@ -2883,6 +2883,8 @@ def _command_options() -> None:
 
     if argb.rmaccount:
         admin_nickname = get_config_param(base_dir, 'admin')
+        print('admin_nickname: ' + str(admin_nickname))
+        print('argb.rmaccount: ' + str(argb.rmaccount))
         if admin_nickname:
             if admin_nickname == argb.rmaccount:
                 print(argb.rmaccount + ' is the admin account')
