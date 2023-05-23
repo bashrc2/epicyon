@@ -6497,11 +6497,11 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 actor_json['name'] = nickname
                                 if check_name_and_bio:
-                                    redirect_path = 'previewAvatar'
+                                    redirect_path = '/welcome_profile'
                             actor_changed = True
                     else:
                         if check_name_and_bio:
-                            redirect_path = 'previewAvatar'
+                            redirect_path = '/welcome_profile'
 
                     # change the theme from edit profile screen
                     if nickname == admin_nickname or \
@@ -7176,10 +7176,10 @@ class PubServer(BaseHTTPRequestHandler):
                                 actor_changed = True
                             else:
                                 if check_name_and_bio:
-                                    redirect_path = 'previewAvatar'
+                                    redirect_path = '/welcome_profile'
                     else:
                         if check_name_and_bio:
-                            redirect_path = 'previewAvatar'
+                            redirect_path = '/welcome_profile'
                     set_featured_hashtags(actor_json, featured_tags, True)
 
                     admin_nickname = \
