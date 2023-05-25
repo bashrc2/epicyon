@@ -1241,10 +1241,10 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
         if not filename.endswith(".txt"):
             continue
         try:
-            tag_filename = os.path.join(directory, filename)
+            tag_filename = os.path.join(base_dir + '/tags/', filename)
         except OSError:
             print('EX: _remove_tags_for_nickname unable to join ' +
-                  str(directory) + ' ' + str(filename))
+                  base_dir + '/tags/ ' + str(filename))
             continue
         if not os.path.isfile(tag_filename):
             continue
