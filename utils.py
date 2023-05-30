@@ -1221,6 +1221,8 @@ def dangerous_markup(content: str, allow_local_network_access: bool,
                      allow_tags: []) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
+    if '.svg' in content.lower():
+        return True
     separators = [['<', '>'], ['&lt;', '&gt;']]
     invalid_strings = [
         'ampproject', 'googleapis', '_exec(', ' id=', ' name='
