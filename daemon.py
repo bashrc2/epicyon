@@ -4305,15 +4305,9 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('Adding block by ' + blocker_nickname +
                       ' of ' + blocking_actor)
-                if add_block(base_dir, blocker_nickname,
-                             domain,
-                             blocking_nickname,
-                             blocking_domain_full):
-                    # send block activity
-                    self._send_block(http_prefix,
-                                     blocker_nickname, domain_full,
-                                     blocking_nickname, blocking_domain_full,
-                                     curr_session, proxy_type)
+                add_block(base_dir, blocker_nickname,
+                          domain, blocking_nickname,
+                          blocking_domain_full)
                 remove_follower(base_dir, blocker_nickname,
                                 domain,
                                 blocking_nickname,
@@ -16791,35 +16785,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers(protocol_str, msglen,
                           None, calling_domain, False)
         self._write(msg)
-
-    def _send_block(self, http_prefix: str,
-                    blocker_nickname: str, blocker_domain_full: str,
-                    blocking_nickname: str, blocking_domain_full: str,
-                    curr_session, proxy_type: str) -> bool:
-        if blocker_domain_full == blocking_domain_full:
-            if blocker_nickname == blocking_nickname:
-                # don't block self
-                return False
-        block_actor = \
-            local_actor_url(http_prefix, blocker_nickname, blocker_domain_full)
-        to_url = 'https://www.w3.org/ns/activitystreams#Public'
-        cc_url = block_actor + '/followers'
-
-        blocked_url = \
-            http_prefix + '://' + blocking_domain_full + \
-            '/@' + blocking_nickname
-        block_json = {
-            "@context": "https://www.w3.org/ns/activitystreams",
-            'type': 'Block',
-            'actor': block_actor,
-            'object': blocked_url,
-            'to': [to_url],
-            'cc': [cc_url]
-        }
-        self._post_to_outbox(block_json, self.server.project_version,
-                             blocker_nickname,
-                             curr_session, proxy_type)
-        return True
 
     def _get_referer_domain(self, ua_str: str) -> str:
         """Returns the referer domain
