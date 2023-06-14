@@ -810,7 +810,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return False
         if accept_str.startswith('*') or 'text/html' in accept_str:
             if self.headers.get('User-Agent'):
-                if text_mode_browser(self.headers['User-Agent']):
+                ua_str = self.headers['User-Agent']
+                if text_mode_browser(ua_str) or 'NetSurf/' in ua_str:
                     return True
             if 'text/html' not in accept_str:
                 return False
