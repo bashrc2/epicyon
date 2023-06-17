@@ -481,6 +481,11 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'url': person_url
     }
 
+    # extra fields used only by groups
+    if group_account:
+        new_person['postingRestrictedToMods'] = False
+        new_person['moderators'] = person_id + '/moderators'
+
     if nickname == 'inbox':
         # fields not needed by the shared inbox
         del new_person['outbox']
