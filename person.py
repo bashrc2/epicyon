@@ -784,6 +784,14 @@ def person_upgrade_actor(base_dir: str, person_json: {},
     if not person_json:
         person_json = load_json(filename)
 
+    # add extra group fields
+    if person_json.get('type') and person_json.get('id'):
+        if person_json['type'] == 'Group':
+            person_json['postingRestrictedToMods'] = False
+            person_id = person_json['id']
+            person_json['moderators'] = person_id + '/moderators'
+            update_actor = True
+
     # add a speaker endpoint
     if not person_json.get('tts'):
         person_json['tts'] = person_json['id'] + '/speaker'
