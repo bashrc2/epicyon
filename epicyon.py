@@ -2674,7 +2674,10 @@ def _command_options() -> None:
             elif '/c/' in argb.followers:
                 nickname = argb.followers.split('/c/')[1]
                 nickname = remove_eol(nickname)
-                domain = argb.followers.split('/c/')[0]
+            elif '/m/' in argb.followers:
+                nickname = argb.followers.split('/m/')[1]
+                nickname = remove_eol(nickname)
+                domain = argb.followers.split('/m/')[0]
         else:
             # format: @nick@domain
             if '@' not in argb.followers:
@@ -2759,6 +2762,7 @@ def _command_options() -> None:
             person_url = person_url.replace('/author/', '/actor/')
             person_url = person_url.replace('/u/', '/actor/')
             person_url = person_url.replace('/c/', '/actor/')
+            person_url = person_url.replace('/m/', '/actor/')
         if not person_url:
             # try single user instance
             person_url = http_prefix + '://' + domain

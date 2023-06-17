@@ -251,7 +251,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                url.endswith('/about'):
                 # ignore various peertube endpoints
                 continue
-            if '/c/' in url:
+            if '/c/' in url or '/m/' in url:
                 # don't try to embed peertube channel page
                 continue
             if '?sort=' in url:

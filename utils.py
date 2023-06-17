@@ -1443,15 +1443,15 @@ def get_user_paths() -> []:
     e.g. /users/nickname, /channel/nickname
     """
     return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
-            '/c/', '/video-channels/', '/author/', '/activitypub/',
-            '/actors/', '/snac/', '/@/', '/~/')
+            '/c/', '/m/', '/video-channels/', '/author/',
+            '/activitypub/', '/actors/', '/snac/', '/@/', '/~/')
 
 
 def get_group_paths() -> []:
     """Returns possible group paths
     e.g. https://lemmy/c/groupname
     """
-    return ['/c/', '/video-channels/']
+    return ['/c/', '/video-channels/', '/m/']
 
 
 def get_domain_from_actor(actor: str) -> (str, int):
