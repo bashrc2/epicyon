@@ -215,7 +215,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 'video.nerdcave.site',
                 'kolektiva.media',
                 'peertube.social',
-                'videos.lescommuns.org'
+                'videos.lescommuns.org',
+                'neat.tube'
             )
         for site in peertube_sites:
             site = site.strip()
