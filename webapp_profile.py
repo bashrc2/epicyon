@@ -441,6 +441,9 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                         get_json(signing_priv_key_pem, session, item['object'],
                                  as_header2, None, debug, __version__,
                                  http_prefix, from_domain)
+                    if debug:
+                        print('DEBUG: resolved public feed announce ' +
+                              str(item))
                     if not item:
                         continue
             show_item, post_json_object = \
