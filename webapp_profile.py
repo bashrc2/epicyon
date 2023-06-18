@@ -431,9 +431,9 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                 if str(item['type']) == 'Announce' and \
                    isinstance(item['object'], str):
                     # resolve the announce
-                    profile_str = 'https://www.w3.org/ns/activitystreams'
+                    profile_str2 = 'https://www.w3.org/ns/activitystreams'
                     as_header2_str = 'application/ld+json; profile="' + \
-                        profile_str + '"'
+                        profile_str2 + '"'
                     as_header2 = {
                         'Accept': as_header2_str
                     }
