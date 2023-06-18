@@ -613,7 +613,7 @@ def post_json_string(session, post_json_str: str,
         if not quiet:
             print('EX: error during post_json_string ' + str(ex))
         return None, None, 0
-    if post_result.status_code < 200 or post_result.status_code > 202:
+    if post_result.status_code < 200 or post_result.status_code > 204:
         if post_result.status_code >= 400 and \
            post_result.status_code <= 405 and \
            post_result.status_code != 404:
