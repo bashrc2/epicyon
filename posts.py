@@ -446,10 +446,8 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
         if debug:
             print('No type')
         return False
-    if item['type'] != 'Create' and \
-       item['type'] != 'Announce' and \
-       item['type'] != 'Page' and \
-       item['type'] != 'Note':
+    allowed_post_types = ('Create', 'Announce', 'Page', 'Note')
+    if item['type'] not in allowed_post_types:
         if debug:
             print('Not a Create/Note/Announce type')
         return False
@@ -457,12 +455,12 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
         if isinstance(item['object'], dict):
             if not item['object'].get('published'):
                 if debug:
-                    print('No published attribute')
+                    print('No published attribute 1')
                 return False
         elif isinstance(item['object'], str):
             if not item.get('published'):
                 if debug:
-                    print('No published attribute')
+                    print('No published attribute 2')
                 return False
         else:
             if debug:
