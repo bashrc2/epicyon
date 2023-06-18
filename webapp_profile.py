@@ -119,6 +119,7 @@ def _valid_profile_preview_post(post_json_object: {},
     if post_json_object['type'] != 'Create' and \
        post_json_object['type'] != 'Announce':
         if post_json_object['type'] != 'Note' and \
+           post_json_object['type'] != 'Video' and \
            post_json_object['type'] != 'Page':
             return False, None
         if not post_json_object.get('to'):
