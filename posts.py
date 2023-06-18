@@ -458,7 +458,8 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
                     print('No published attribute 1')
                 return False
         elif isinstance(item['object'], str):
-            if not item.get('published'):
+            if item['type'] != 'Announce' and \
+               not item.get('published'):
                 if debug:
                     print('No published attribute 2')
                 return False
@@ -469,7 +470,7 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
     elif item['type'] == 'Note' or item['type'] == 'Page':
         if not item.get('published'):
             if debug:
-                print('No published attribute')
+                print('No published attribute 3')
             return False
     if not person_posts.get(item['id']):
         this_item = item
@@ -593,8 +594,22 @@ def _get_posts(session, outbox_url: str, max_posts: int,
         this_item_type = item['type']
         if this_item_type not in ('Note', 'Page'):
             this_item = item['object']
+            if isinstance(this_item, str):
+                if '://' in this_item:
+                    profile_str = 'https://www.w3.org/ns/activitystreams'
+                    as_header2_str = 'application/ld+json; profile="' + \
+                        profile_str + '"'
+                    as_header2 = {
+                        'Accept': as_header2_str
+                    }
+                    this_item = \
+                        get_json(signing_priv_key_pem, session, this_item,
+                                 as_header2, None, debug, __version__,
+                                 http_prefix, origin_domain)
+                    if not this_item:
+                        continue
 
-        content = get_base_content_from_post(item, system_language)
+        content = get_base_content_from_post(this_item, system_language)
         content = content.replace('&apos;', "'")
 
         mentions = []
@@ -681,7 +696,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                 print(_clean_html(content) + '\n')
             else:
                 pprint(item)
-                person_posts[item['id']] = {
+                person_posts[this_item['id']] = {
                     "sensitive": sensitive,
                     "inreplyto": in_reply_to,
                     "summary": summary,
