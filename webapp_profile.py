@@ -94,6 +94,7 @@ from blocking import is_blocked
 from content import bold_reading_string
 from roles import is_devops
 from session import site_is_verified
+from session import get_json
 
 THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
@@ -426,6 +427,22 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             minimize_all_images = True
         i = 0
         for item in user_feed:
+            if item.get('type') and item.get('object'):
+                if str(item['type']) == 'Announce' and \
+                   isinstance(item['object'], str):
+                    # resolve the announce
+                    profile_str = 'https://www.w3.org/ns/activitystreams'
+                    as_header2_str = 'application/ld+json; profile="' + \
+                        profile_str + '"'
+                    as_header2 = {
+                        'Accept': as_header2_str
+                    }
+                    item = \
+                        get_json(signing_priv_key_pem, session, item['object'],
+                                 as_header2, None, debug, __version__,
+                                 http_prefix, from_domain)
+                    if not item:
+                        continue
             show_item, post_json_object = \
                 _valid_profile_preview_post(item, person_url)
             if not show_item:
