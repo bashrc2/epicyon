@@ -2877,7 +2877,7 @@ def html_edit_profile(server, translate: {},
     # only show replies from followers
     show_replies_followers = False
     if os.path.isfile(account_dir + '/.repliesFromFollowersOnly'):
-        show_replies_followers = False
+        show_replies_followers = True
 
     # Option checkboxes
     edit_profile_form += \
