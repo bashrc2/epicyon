@@ -623,5 +623,6 @@
     "Transcript": "成績証明書",
     "Show vote posts": "投票投稿を表示",
     "Featured hashtags": "注目のハッシュタグ",
-    "Proxy": "プロキシー"
+    "Proxy": "プロキシー",
+    "Only allow replies from followers": "フォロワーからの返信のみを許可する"
 }

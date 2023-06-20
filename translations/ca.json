@@ -623,5 +623,6 @@
     "Transcript": "Transcripció",
     "Show vote posts": "Mostra les publicacions de vot",
     "Featured hashtags": "Hashtags destacats",
-    "Proxy": "Proxy"
+    "Proxy": "Proxy",
+    "Only allow replies from followers": "Només permet respostes dels seguidors"
 }

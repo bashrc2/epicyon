@@ -7638,6 +7638,34 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: unable to write noVotes file ' +
                                       show_vote_file)
 
+                    # show replies only from followers checkbox
+                    show_replies_followers = False
+                    if fields.get('repliesFromFollowersOnly'):
+                        if fields['repliesFromFollowersOnly'] == 'on':
+                            show_replies_followers = True
+                    account_dir = acct_dir(self.server.base_dir,
+                                           nickname, self.server.domain)
+                    show_replies_followers_file = \
+                        account_dir + '/.repliesFromFollowersOnly'
+                    if os.path.isfile(show_replies_followers_file):
+                        if not show_replies_followers:
+                            try:
+                                os.remove(show_replies_followers_file)
+                            except OSError:
+                                print('EX: unable to remove ' +
+                                      'repliesFromFollowersOnly file ' +
+                                      show_replies_followers_file)
+                    else:
+                        if show_replies_followers:
+                            try:
+                                with open(show_replies_followers_file, 'w+',
+                                          encoding='utf-8') as fp_replies:
+                                    fp_replies.write('\n')
+                            except OSError:
+                                print('EX: unable to write ' +
+                                      'repliesFromFollowersOnly file ' +
+                                      show_replies_followers_file)
+
                     # notify about new Likes
                     if on_final_welcome_screen:
                         # default setting from welcome screen

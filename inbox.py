@@ -621,6 +621,32 @@ def inbox_permitted_message(domain: str, message_json: {},
     return True
 
 
+def _deny_non_follower(base_dir: str, nickname: str, domain: str,
+                       reply_nickname: str, reply_domain: str,
+                       sending_actor: str):
+    """Returns true if replying to an account which is not a follower.
+    This only applies if 'Only replies from followers' is selected on
+    the edit profile secreen
+    """
+    # Is this a reply to something written from this account?
+    if reply_nickname != nickname or reply_domain != domain:
+        return False
+
+    # has this account specified to only receive replies from followers?
+    account_dir = acct_dir(base_dir, nickname, domain)
+    if not os.path.isfile(account_dir + '/.repliesFromFollowersOnly'):
+        return False
+
+    # is the sending actor a follower?
+    follower_nickname = get_nickname_from_actor(sending_actor)
+    follower_domain, _ = get_domain_from_actor(sending_actor)
+    if not is_follower_of_person(base_dir, nickname, domain,
+                                 follower_nickname, follower_domain):
+        return True
+
+    return False
+
+
 def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                              nickname: str, domain: str,
                              post_json_object: {},
@@ -726,6 +752,15 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                                   str(actor) +
                                   ' to a blocked account: ' +
                                   reply_nickname + '@' + reply_domain)
+                        return None
+                    if _deny_non_follower(base_dir, nickname, domain,
+                                          reply_nickname, reply_domain,
+                                          actor):
+                        if debug:
+                            print('WARN: post contains reply from ' +
+                                  str(actor) +
+                                  ' who is not a follower of ' +
+                                  nickname + '@' + domain)
                         return None
 
     # filter on the content of the post

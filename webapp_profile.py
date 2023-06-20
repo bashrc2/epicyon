@@ -2443,7 +2443,8 @@ def _html_edit_profile_options(is_admin: bool,
                                nickname: str,
                                min_images_for_accounts: [],
                                reverse_sequence: [],
-                               show_vote_posts: bool) -> str:
+                               show_vote_posts: bool,
+                               show_replies_followers: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2497,6 +2498,10 @@ def _html_edit_profile_options(is_admin: bool,
     show_vote_posts_str = translate['Show vote posts']
     edit_profile_form += \
         edit_check_box(show_vote_posts_str, 'showVotes', show_vote_posts)
+    show_replies_followers_str = translate['Only allow replies from followers']
+    edit_profile_form += \
+        edit_check_box(show_replies_followers_str, 'repliesFromFollowersOnly',
+                       show_replies_followers)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -2869,6 +2874,11 @@ def html_edit_profile(server, translate: {},
     if os.path.isfile(account_dir + '/.noVotes'):
         show_vote_posts = False
 
+    # only show replies from followers
+    show_replies_followers = False
+    if os.path.isfile(account_dir + '/.repliesFromFollowersOnly'):
+        show_replies_followers = False
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -2879,7 +2889,8 @@ def html_edit_profile(server, translate: {},
                                    hide_like_button, hide_reaction_button,
                                    translate, bold_reading,
                                    nickname, min_images_for_accounts,
-                                   reverse_sequence, show_vote_posts)
+                                   reverse_sequence, show_vote_posts,
+                                   show_replies_followers)
 
     # Contact information
     edit_profile_form += \

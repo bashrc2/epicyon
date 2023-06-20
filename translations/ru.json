@@ -623,5 +623,6 @@
     "Transcript": "Стенограмма",
     "Show vote posts": "Показать сообщения для голосования",
     "Featured hashtags": "Избранные хэштеги",
-    "Proxy": "Прокси"
+    "Proxy": "Прокси",
+    "Only allow replies from followers": "Разрешить ответы только от подписчиков"
 }

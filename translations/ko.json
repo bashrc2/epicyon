@@ -623,5 +623,6 @@
     "Transcript": "성적 증명서",
     "Show vote posts": "투표 게시물 표시",
     "Featured hashtags": "추천 해시태그",
-    "Proxy": "대리"
+    "Proxy": "대리",
+    "Only allow replies from followers": "팔로어의 답글만 허용"
 }

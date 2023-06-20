@@ -623,5 +623,6 @@
     "Transcript": "Стенограма",
     "Show vote posts": "Показати повідомлення про голосування",
     "Featured hashtags": "Рекомендовані хештеги",
-    "Proxy": "Проксі"
+    "Proxy": "Проксі",
+    "Only allow replies from followers": "Дозволити відповіді лише від підписників"
 }
