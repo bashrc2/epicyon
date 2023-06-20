@@ -423,6 +423,9 @@ A *shared item* post describes a physical object or service which may be shared 
 ### Wanted
 A *wanted item* is a physical object or service which you want. These posts will be visible to other people on your instance and also to people on specific named instances if that has been set up by the administrator.
 
+## Subject or Content Warning
+Content warnings are not "censorship" or "hiding important things". It's like the subject line of an email: the reader knows what's coming so they may choose when to see it. In a timeline which is strictly chronological, content warnings can also help you to skip over posts which obviously are not going to be of interest to you, rather than depending on a fallible or gameable algorithm to select what is relevant.
+
 ## Attachments
 Attachments can use a variety of formats.
 
