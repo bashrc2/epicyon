@@ -36,8 +36,9 @@ def meta_data_node_info(base_dir: str,
                         terms_of_service_url: str,
                         registration: bool, version: str,
                         show_accounts: bool) -> {}:
-    """ /nodeinfo/2.0 endpoint
+    """ /nodeinfo/2.1 endpoint
     Also see https://socialhub.activitypub.rocks/t/
+    https://github.com/jhass/nodeinfo/blob/main/schemas/2.1/example.json
     fep-f1d5-nodeinfo-in-fediverse-software/1190/4
 
     Note that there are security considerations with this. If an adversary
