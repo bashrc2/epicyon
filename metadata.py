@@ -66,6 +66,7 @@ def meta_data_node_info(base_dir: str,
         'software': {
             'name': 'epicyon',
             'repository': 'https://gitlab.com/bashrc2/epicyon',
+            'homepage': 'https://gitlab.com/bashrc2/epicyon',
             'version': version
         },
         'documents': {
@@ -80,8 +81,11 @@ def meta_data_node_info(base_dir: str,
                 'total': active_accounts
             }
         },
-        'metadata': {},
-        'version': '2.0'
+        'metadata': {
+            'chat_enabled': False,
+            'postFormats': ['text/plain', 'text/html', 'text/markdown']
+        },
+        'version': '2.1'
     }
     return nodeinfo
 

@@ -1521,7 +1521,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/nodeinfo/1.0'):
             self._400()
             return True
-        if not self.path.startswith('/nodeinfo/2.0'):
+        if not self.path.startswith('/nodeinfo/2.'):
             return False
         if not referer_domain:
             if not debug and not self.server.unit_test:
