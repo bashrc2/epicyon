@@ -626,7 +626,7 @@ def _deny_non_follower(base_dir: str, nickname: str, domain: str,
                        sending_actor: str):
     """Returns true if replying to an account which is not a follower.
     This only applies if 'Only replies from followers' is selected on
-    the edit profile secreen
+    the edit profile screen
     """
     # Is this a reply to something written from this account?
     if reply_nickname != nickname or reply_domain != domain:
