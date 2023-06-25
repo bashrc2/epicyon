@@ -65,6 +65,7 @@ def meta_data_node_info(base_dir: str,
         },
         'software': {
             'name': 'epicyon',
+            'repository': 'https://gitlab.com/bashrc2/epicyon',
             'version': version
         },
         'documents': {
