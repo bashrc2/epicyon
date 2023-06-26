@@ -7655,8 +7655,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('repliesFromFollowersOnly'):
                         if fields['repliesFromFollowersOnly'] == 'on':
                             show_replies_followers = True
-                    account_dir = acct_dir(self.server.base_dir,
-                                           nickname, self.server.domain)
                     show_replies_followers_file = \
                         account_dir + '/.repliesFromFollowersOnly'
                     if os.path.isfile(show_replies_followers_file):
@@ -7683,8 +7681,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('repliesFromMutualsOnly'):
                         if fields['repliesFromMutualsOnly'] == 'on':
                             show_replies_mutuals = True
-                    account_dir = acct_dir(self.server.base_dir,
-                                           nickname, self.server.domain)
                     show_replies_mutuals_file = \
                         account_dir + '/.repliesFromMutualsOnly'
                     if os.path.isfile(show_replies_mutuals_file):
