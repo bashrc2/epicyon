@@ -2053,21 +2053,33 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.postreq_busy = False
                     return 3
             # check that the summary does not contain links
-            if message_json['object'].get('summary'):
-                if len(message_json['object']['summary']) > 1024:
-                    print('INBOX: summary is too long ' +
-                          message_json['actor'] + ' ' +
-                          message_json['object']['summary'])
-                    self._400()
-                    self.server.postreq_busy = False
-                    return 3
-                if '://' in message_json['object']['summary']:
-                    print('INBOX: summary should not contain links ' +
-                          message_json['actor'] + ' ' +
-                          message_json['object']['summary'])
-                    self._400()
-                    self.server.postreq_busy = False
-                    return 3
+            if message_json['object'].get('type') and \
+               message_json['object'].get('summary'):
+                if message_json['object']['type'] != 'Person' and \
+                   message_json['object']['type'] != 'Application' and \
+                   message_json['object']['type'] != 'Group':
+                    if len(message_json['object']['summary']) > 1024:
+                        print('INBOX: summary is too long ' +
+                              message_json['actor'] + ' ' +
+                              message_json['object']['summary'])
+                        self._400()
+                        self.server.postreq_busy = False
+                        return 3
+                    if '://' in message_json['object']['summary']:
+                        print('INBOX: summary should not contain links ' +
+                              message_json['actor'] + ' ' +
+                              message_json['object']['summary'])
+                        self._400()
+                        self.server.postreq_busy = False
+                        return 3
+                else:
+                    if len(message_json['object']['summary']) > 4096:
+                        print('INBOX: person summary is too long ' +
+                              message_json['actor'] + ' ' +
+                              message_json['object']['summary'])
+                        self._400()
+                        self.server.postreq_busy = False
+                        return 3
             # if this is a local only post, is it really local?
             if 'localOnly' in message_json['object'] and \
                message_json['object'].get('to') and \
