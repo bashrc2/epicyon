@@ -624,5 +624,6 @@
     "Show vote posts": "Mostrar publicaciones de votos",
     "Featured hashtags": "Hashtags destacados",
     "Proxy": "Apoderada",
-    "Only allow replies from followers": "Permitir solo respuestas de seguidores"
+    "Only allow replies from followers": "Permitir solo respuestas de seguidores",
+    "Only allow replies from mutuals": "Permitir solo respuestas de mutuas"
 }

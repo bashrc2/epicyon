@@ -7678,6 +7678,34 @@ class PubServer(BaseHTTPRequestHandler):
                                       'repliesFromFollowersOnly file ' +
                                       show_replies_followers_file)
 
+                    # show replies only from mutuals checkbox
+                    show_replies_mutuals = False
+                    if fields.get('repliesFromMutualsOnly'):
+                        if fields['repliesFromMutualsOnly'] == 'on':
+                            show_replies_mutuals = True
+                    account_dir = acct_dir(self.server.base_dir,
+                                           nickname, self.server.domain)
+                    show_replies_mutuals_file = \
+                        account_dir + '/.repliesFromMutualsOnly'
+                    if os.path.isfile(show_replies_mutuals_file):
+                        if not show_replies_mutuals:
+                            try:
+                                os.remove(show_replies_mutuals_file)
+                            except OSError:
+                                print('EX: unable to remove ' +
+                                      'repliesFromMutualsOnly file ' +
+                                      show_replies_mutuals_file)
+                    else:
+                        if show_replies_mutuals:
+                            try:
+                                with open(show_replies_mutuals_file, 'w+',
+                                          encoding='utf-8') as fp_replies:
+                                    fp_replies.write('\n')
+                            except OSError:
+                                print('EX: unable to write ' +
+                                      'repliesFromMutualsOnly file ' +
+                                      show_replies_mutuals_file)
+
                     # notify about new Likes
                     if on_final_welcome_screen:
                         # default setting from welcome screen

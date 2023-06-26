@@ -624,5 +624,6 @@
     "Show vote posts": "Показати повідомлення про голосування",
     "Featured hashtags": "Рекомендовані хештеги",
     "Proxy": "Проксі",
-    "Only allow replies from followers": "Дозволити відповіді лише від підписників"
+    "Only allow replies from followers": "Дозволити відповіді лише від підписників",
+    "Only allow replies from mutuals": "Дозволити відповіді лише від взаємних клієнтів"
 }

@@ -624,9 +624,10 @@ def inbox_permitted_message(domain: str, message_json: {},
 def _deny_non_follower(base_dir: str, nickname: str, domain: str,
                        reply_nickname: str, reply_domain: str,
                        sending_actor: str):
-    """Returns true if replying to an account which is not a follower.
-    This only applies if 'Only replies from followers' is selected on
-    the edit profile screen
+    """Returns true if replying to an account which is not a follower
+    or mutual.
+    This only applies if 'Only replies from followers' or
+    'Only replies from mutuals' is selected on the edit profile screen
     """
     # Is this a reply to something written from this account?
     if reply_nickname != nickname or reply_domain != domain:
@@ -635,7 +636,8 @@ def _deny_non_follower(base_dir: str, nickname: str, domain: str,
     # has this account specified to only receive replies from followers?
     account_dir = acct_dir(base_dir, nickname, domain)
     if not os.path.isfile(account_dir + '/.repliesFromFollowersOnly'):
-        return False
+        if not os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
+            return False
 
     # is the sending actor a follower?
     follower_nickname = get_nickname_from_actor(sending_actor)
@@ -643,6 +645,10 @@ def _deny_non_follower(base_dir: str, nickname: str, domain: str,
     if not is_follower_of_person(base_dir, nickname, domain,
                                  follower_nickname, follower_domain):
         return True
+    elif os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
+        if not is_following_actor(base_dir, nickname, domain,
+                                  sending_actor):
+            return True
 
     return False
 

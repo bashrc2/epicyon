@@ -624,5 +624,6 @@
     "Show vote posts": "Pokaż posty z głosowaniem",
     "Featured hashtags": "Polecane hashtagi",
     "Proxy": "Pełnomocnik",
-    "Only allow replies from followers": "Zezwalaj tylko na odpowiedzi od obserwujących"
+    "Only allow replies from followers": "Zezwalaj tylko na odpowiedzi od obserwujących",
+    "Only allow replies from mutuals": "Zezwalaj tylko na odpowiedzi od towarzystw wzajemnych"
 }

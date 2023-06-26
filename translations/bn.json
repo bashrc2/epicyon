@@ -624,5 +624,6 @@
     "Show vote posts": "ভোট পোস্ট দেখান",
     "Featured hashtags": "বৈশিষ্ট্যযুক্ত হ্যাশট্যাগ",
     "Proxy": "প্রক্সি",
-    "Only allow replies from followers": "শুধুমাত্র অনুসরণকারীদের কাছ থেকে উত্তরের অনুমতি দিন"
+    "Only allow replies from followers": "শুধুমাত্র অনুসরণকারীদের কাছ থেকে উত্তরের অনুমতি দিন",
+    "Only allow replies from mutuals": "শুধুমাত্র মিউচুয়াল থেকে উত্তরের অনুমতি দিন"
 }

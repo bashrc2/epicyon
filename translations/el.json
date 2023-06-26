@@ -624,5 +624,6 @@
     "Show vote posts": "Εμφάνιση ψηφοφοριακών αναρτήσεων",
     "Featured hashtags": "Επιλεγμένα hashtag",
     "Proxy": "Πληρεξούσιο",
-    "Only allow replies from followers": "Επιτρέπονται μόνο οι απαντήσεις από τους ακόλουθους"
+    "Only allow replies from followers": "Επιτρέπονται μόνο οι απαντήσεις από τους ακόλουθους",
+    "Only allow replies from mutuals": "Επιτρέπονται μόνο απαντήσεις από αμοιβαία μέλη"
 }
