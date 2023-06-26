@@ -2671,6 +2671,10 @@ def _command_options() -> None:
                 nickname = argb.followers.split('/u/')[1]
                 nickname = remove_eol(nickname)
                 domain = argb.followers.split('/u/')[0]
+            elif '/fediverse/blog/' in argb.followers:
+                nickname = argb.followers.split('/fediverse/blog/')[1]
+                nickname = remove_eol(nickname)
+                domain = argb.followers.split('/fediverse/blog/')[0]
             elif '/c/' in argb.followers:
                 nickname = argb.followers.split('/c/')[1]
                 nickname = remove_eol(nickname)
@@ -2761,6 +2765,7 @@ def _command_options() -> None:
             person_url = person_url.replace('/profile/', '/actor/')
             person_url = person_url.replace('/author/', '/actor/')
             person_url = person_url.replace('/u/', '/actor/')
+            person_url = person_url.replace('/fediverse/blog/', '/actor/')
             person_url = person_url.replace('/c/', '/actor/')
             person_url = person_url.replace('/m/', '/actor/')
         if not person_url:
