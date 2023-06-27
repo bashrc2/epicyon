@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from utils import get_media_extensions
 from utils import dangerous_markup
 from utils import acct_handle_dir
 from utils import remove_id_ending
@@ -554,6 +555,94 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
         result_json[published] = item
         ctr += 1
     return result_json, last_page
+
+
+def get_shares_collection(actor: str, page_number: int, items_per_page: int,
+                          base_dir: str, domain: str, nickname: str,
+                          max_shares_per_account: int,
+                          shared_items_federated_domains: [],
+                          shares_file_type: str) -> {}:
+    """Returns an ActivityStreams collection of Offer activities
+    https://www.w3.org/TR/activitystreams-vocabulary/#dfn-offer
+    """
+    shares_collection = []
+    shares_json, _ = \
+        shares_timeline_json(actor, page_number, items_per_page,
+                             base_dir, domain, nickname,
+                             max_shares_per_account,
+                             shared_items_federated_domains, shares_file_type)
+
+    if shares_file_type == 'shares':
+        share_type = 'Offer'
+    else:
+        share_type = 'Want'
+
+    for _, shared_item in shares_json.items():
+        if not shared_item.get('shareId'):
+            continue
+        if not shared_item.get('itemType'):
+            continue
+        share_id = shared_item['shareId'].replace('___', '://')
+        share_id = share_id.replace('--', '/')
+        offer_item = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "summary": shared_item['summary'],
+            "type": share_type,
+            "actor": shared_item['actor'],
+            "id": share_id,
+            "published": shared_item['published'],
+            "object": {
+                "id": share_id,
+                "type": shared_item['itemType'].title(),
+                "name": shared_item['displayName'],
+                "published": shared_item['published'],
+                "attachment": []
+            }
+        }
+        if shared_item['category']:
+            offer_item['object']['attachment'].append({
+                "type": "PropertyValue",
+                "name": "category",
+                "value": shared_item['category']
+            })
+        if shared_item['location']:
+            offer_item['object']['attachment'].append({
+                "@context": "https://www.w3.org/ns/activitystreams",
+                "type": "Place",
+                "name": shared_item['location'].title()
+            })
+        if shared_item['imageUrl']:
+            if '://' in shared_item['imageUrl']:
+                file_extension = None
+                accepted_types = get_media_extensions()
+                for mtype in accepted_types:
+                    if shared_item['imageUrl'].endswith('.' + mtype):
+                        if mtype == 'jpg':
+                            mtype = 'jpeg'
+                        if mtype == 'mp3':
+                            mtype = 'mpeg'
+                        file_extension = mtype
+                if file_extension:
+                    media_type = 'image/' + file_extension
+                    offer_item['object']['attachment'].append({
+                        'mediaType': media_type,
+                        'name': shared_item['displayName'],
+                        'type': 'Document',
+                        'url': shared_item['imageUrl']
+                    })
+        if shared_item['itemPrice'] and shared_item['itemCurrency']:
+            offer_item['object']['attachment'].append({
+                "type": "PropertyValue",
+                "name": "price",
+                "value": shared_item['itemPrice']
+            })
+            offer_item['object']['attachment'].append({
+                "type": "PropertyValue",
+                "name": "currency",
+                "value": shared_item['itemCurrency']
+            })
+        shares_collection.append(offer_item)
+    return shares_collection
 
 
 def post_contains_public(post_json_object: {}) -> bool:

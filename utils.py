@@ -2398,7 +2398,7 @@ def _get_reserved_words() -> str:
             'mention', 'http', 'https', 'ipfs', 'ipns',
             'ontologies', 'data', 'postedit', 'moved',
             'inactive', 'activitypub', 'actors',
-            'notes')
+            'notes', 'offers', 'wanted')
 
 
 def get_nickname_validation_pattern() -> str:

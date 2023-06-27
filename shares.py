@@ -1032,6 +1032,41 @@ def get_shared_items_catalog_via_server(session, nickname: str, password: str,
     return catalog_json
 
 
+def get_offers_via_server(session, nickname: str, password: str,
+                          domain: str, port: int,
+                          http_prefix: str, debug: bool,
+                          signing_priv_key_pem: str) -> {}:
+    """Returns the offers collection for shared items via c2s
+    """
+    if not session:
+        print('WARN: No session for get_offers_via_server')
+        return 6
+
+    auth_header = create_basic_auth_header(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': auth_header,
+        'Accept': 'application/json'
+    }
+    domain_full = get_full_domain(domain, port)
+    url = local_actor_url(http_prefix, nickname, domain_full) + '/offers'
+    if debug:
+        print('Offers collection request to: ' + url)
+    offers_json = get_json(signing_priv_key_pem, session, url, headers, None,
+                           debug, __version__, http_prefix, None)
+    if not offers_json:
+        if debug:
+            print('DEBUG: GET offers collection failed for c2s to ' + url)
+#        return 5
+
+    if debug:
+        print('DEBUG: c2s GET offers collection success')
+
+    return offers_json
+
+
 def outbox_share_upload(base_dir: str, http_prefix: str,
                         nickname: str, domain: str, port: int,
                         message_json: {}, debug: bool, city: str,
