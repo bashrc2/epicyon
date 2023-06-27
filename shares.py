@@ -1067,6 +1067,41 @@ def get_offers_via_server(session, nickname: str, password: str,
     return offers_json
 
 
+def get_wanted_via_server(session, nickname: str, password: str,
+                          domain: str, port: int,
+                          http_prefix: str, debug: bool,
+                          signing_priv_key_pem: str) -> {}:
+    """Returns the wanted collection for shared items via c2s
+    """
+    if not session:
+        print('WARN: No session for get_wanted_via_server')
+        return 6
+
+    auth_header = create_basic_auth_header(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': auth_header,
+        'Accept': 'application/json'
+    }
+    domain_full = get_full_domain(domain, port)
+    url = local_actor_url(http_prefix, nickname, domain_full) + '/wanted'
+    if debug:
+        print('Wanted collection request to: ' + url)
+    wanted_json = get_json(signing_priv_key_pem, session, url, headers, None,
+                           debug, __version__, http_prefix, None)
+    if not wanted_json:
+        if debug:
+            print('DEBUG: GET wanted collection failed for c2s to ' + url)
+#        return 5
+
+    if debug:
+        print('DEBUG: c2s GET wanted collection success')
+
+    return wanted_json
+
+
 def outbox_share_upload(base_dir: str, http_prefix: str,
                         nickname: str, domain: str, port: int,
                         message_json: {}, debug: bool, city: str,

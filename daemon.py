@@ -17313,6 +17313,88 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
             return
 
+        # wanted items collection for this instance
+        # this is only accessible to instance members or to
+        # other instances which present an authorization token
+        if self.path.startswith('/users/') and '/wanted' in self.path:
+            wanted_collection_authorized = authorized
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            page_number = 1
+            if '?page=' in self.path:
+                page_number_str = self.path.split('?page=')[1]
+                if ';' in page_number_str:
+                    page_number_str = page_number_str.split(';')[0]
+                if page_number_str.isdigit():
+                    page_number = int(page_number_str)
+            if not wanted_collection_authorized:
+                if self.server.debug:
+                    print('Wanted collection access is not authorized. ' +
+                          'Checking Authorization header')
+                # Check the authorization token
+                if self.headers.get('Origin') and \
+                   self.headers.get('Authorization'):
+                    permitted_domains = \
+                        self.server.shared_items_federated_domains
+                    shared_item_tokens = \
+                        self.server.shared_item_federation_tokens
+                    if authorize_shared_items(permitted_domains,
+                                              self.server.base_dir,
+                                              self.headers['Origin'],
+                                              calling_domain,
+                                              self.headers['Authorization'],
+                                              self.server.debug,
+                                              shared_item_tokens):
+                        wanted_collection_authorized = True
+                    elif self.server.debug:
+                        print('Authorization token refused for ' +
+                              'wanted collection federation')
+            # show wanted collection for federation
+            if self._has_accept(calling_domain) and \
+               wanted_collection_authorized:
+                if self.server.debug:
+                    print('Preparing wanted collection')
+
+                domain_full = self.server.domain_full
+                http_prefix = self.server.http_prefix
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                if self.server.debug:
+                    print('Wanted collection for account: ' + nickname)
+                base_dir = self.server.base_dir
+                wanted_items_per_page = 12
+                max_shares_per_account = wanted_items_per_page
+                shared_items_federated_domains = \
+                    self.server.shared_items_federated_domains
+                actor = \
+                    local_actor_url(http_prefix, nickname, domain_full) + \
+                    '/wanted'
+                wanted_json = \
+                    get_shares_collection(actor, page_number,
+                                          wanted_items_per_page, base_dir,
+                                          self.server.domain, nickname,
+                                          max_shares_per_account,
+                                          shared_items_federated_domains,
+                                          'wanted')
+                msg_str = json.dumps(wanted_json,
+                                     ensure_ascii=False)
+                msg_str = self._convert_domains(calling_domain,
+                                                referer_domain,
+                                                msg_str)
+                msg = msg_str.encode('utf-8')
+                msglen = len(msg)
+                accept_str = self.headers['Accept']
+                protocol_str = \
+                    get_json_content_from_accept(accept_str)
+                self._set_headers(protocol_str, msglen,
+                                  None, calling_domain, False)
+                self._write(msg)
+                return
+            self._400()
+            return
+
         # shared items catalog for this instance
         # this is only accessible to instance members or to
         # other instances which present an authorization token

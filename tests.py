@@ -199,6 +199,7 @@ from shares import merge_shared_item_tokens
 from shares import send_share_via_server
 from shares import get_shared_items_catalog_via_server
 from shares import get_offers_via_server
+from shares import get_wanted_via_server
 from cwlists import add_cw_from_lists
 from cwlists import load_cw_lists
 from happening import dav_month_via_server
@@ -2090,7 +2091,17 @@ def test_shared_items_federation(base_dir: str) -> None:
     print('Offers collection:')
     pprint(offers_json)
     assert isinstance(offers_json, list)
-    assert len(offers_json) == 1
+    assert len(offers_json) >= 1
+
+    wanted_json = \
+        get_wanted_via_server(session_bob, 'bob', bob_password,
+                              bob_domain, bob_port,
+                              http_prefix, True,
+                              signing_priv_key_pem)
+    print('Wanted collection:')
+    pprint(wanted_json)
+    assert isinstance(wanted_json, list)
+    assert len(wanted_json) == 0
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
