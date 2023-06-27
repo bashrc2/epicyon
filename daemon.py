@@ -17269,6 +17269,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Authorization token refused for ' +
                               'offers collection federation')
             # show offers collection for federation
+            offers_json = []
             if self._has_accept(calling_domain) and \
                offers_collection_authorized:
                 if self.server.debug:
@@ -17296,21 +17297,19 @@ class PubServer(BaseHTTPRequestHandler):
                                           max_shares_per_account,
                                           shared_items_federated_domains,
                                           'shares')
-                msg_str = json.dumps(offers_json,
-                                     ensure_ascii=False)
-                msg_str = self._convert_domains(calling_domain,
-                                                referer_domain,
-                                                msg_str)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                accept_str = self.headers['Accept']
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                self._set_headers(protocol_str, msglen,
-                                  None, calling_domain, False)
-                self._write(msg)
-                return
-            self._400()
+            msg_str = json.dumps(offers_json,
+                                 ensure_ascii=False)
+            msg_str = self._convert_domains(calling_domain,
+                                            referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            accept_str = self.headers['Accept']
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
+            self._set_headers(protocol_str, msglen,
+                              None, calling_domain, False)
+            self._write(msg)
             return
 
         # wanted items collection for this instance
@@ -17351,6 +17350,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Authorization token refused for ' +
                               'wanted collection federation')
             # show wanted collection for federation
+            wanted_json = []
             if self._has_accept(calling_domain) and \
                wanted_collection_authorized:
                 if self.server.debug:
@@ -17378,21 +17378,19 @@ class PubServer(BaseHTTPRequestHandler):
                                           max_shares_per_account,
                                           shared_items_federated_domains,
                                           'wanted')
-                msg_str = json.dumps(wanted_json,
-                                     ensure_ascii=False)
-                msg_str = self._convert_domains(calling_domain,
-                                                referer_domain,
-                                                msg_str)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                accept_str = self.headers['Accept']
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                self._set_headers(protocol_str, msglen,
-                                  None, calling_domain, False)
-                self._write(msg)
-                return
-            self._400()
+            msg_str = json.dumps(wanted_json,
+                                 ensure_ascii=False)
+            msg_str = self._convert_domains(calling_domain,
+                                            referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            accept_str = self.headers['Accept']
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
+            self._set_headers(protocol_str, msglen,
+                              None, calling_domain, False)
+            self._write(msg)
             return
 
         # shared items catalog for this instance
