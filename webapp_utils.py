@@ -453,7 +453,7 @@ def scheduled_posts_exist(base_dir: str, nickname: str, domain: str) -> bool:
     return False
 
 
-def shares_timeline_json(actor: str, pageNumber: int, items_per_page: int,
+def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                          base_dir: str, domain: str, nickname: str,
                          max_shares_per_account: int,
                          shared_items_federated_domains: [],
@@ -535,7 +535,7 @@ def shares_timeline_json(actor: str, pageNumber: int, items_per_page: int,
     # sort the shared items in descending order of publication date
     shares_json = OrderedDict(sorted(all_shares_json.items(), reverse=True))
     last_page = False
-    start_index = items_per_page * pageNumber
+    start_index = items_per_page * page_number
     max_index = len(shares_json.items())
     if max_index < items_per_page:
         last_page = True
