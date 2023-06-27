@@ -434,6 +434,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'endpoints': {
             'id': person_id + '/endpoints',
             'sharedInbox': http_prefix + '://' + domain + '/inbox',
+            'offers': person_id + '/offers',
+            'wanted': person_id + '/wanted'
         },
         'featured': person_id + '/collections/featured',
         'featuredTags': person_id + '/collections/tags',
@@ -801,6 +803,14 @@ def person_upgrade_actor(base_dir: str, person_json: {},
         _, published = get_status_number()
         person_json['published'] = published
         update_actor = True
+
+    if person_json.get('endpoints'):
+        if not person_json['endpoints'].get('offers'):
+            person_json['endpoints']['offers'] = person_json['id'] + '/offers'
+            update_actor = True
+        if not person_json['endpoints'].get('wanted'):
+            person_json['endpoints']['wanted'] = person_json['id'] + '/wanted'
+            update_actor = True
 
     if person_json.get('shares'):
         if person_json['shares'].endswith('/shares'):
