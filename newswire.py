@@ -988,6 +988,11 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
             description = atom_item.split('<summary>')[1]
             description = remove_html(description.split('</summary>')[0])
             description = unescaped_text(description)
+        elif '<content' in atom_item and '</content>' in atom_item:
+            description = atom_item.split('<content', 1)[1]
+            description = description.split('>', 1)[1]
+            description = remove_html(description.split('</content>')[0])
+            description = unescaped_text(description)
         else:
             if '<media:description>' in atom_item and \
                '</media:description>' in atom_item:
@@ -1210,6 +1215,12 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
         elif '<summary>' in atom_item and '</summary>' in atom_item:
             description = atom_item.split('<summary>')[1]
             description = description.split('</summary>')[0]
+            description = unescaped_text(description)
+            description = remove_html(description)
+        elif '<content' in atom_item and '</content>' in atom_item:
+            description = atom_item.split('<content', 1)[1]
+            description = description.split('>', 1)[1]
+            description = description.split('</content>')[0]
             description = unescaped_text(description)
             description = remove_html(description)
 
