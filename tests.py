@@ -4722,6 +4722,10 @@ def _test_parse_newswire_feed_date():
 
     unique_string_identifier = 'some string abcd'
 
+    pub_date = "Fri, 16 Jun 2023 18:54:23 +0000"
+    published_date = parse_feed_date(pub_date, unique_string_identifier)
+    assert published_date == "2023-06-16 18:54:23+00:00"
+
     pub_date = "2020-12-14T00:08:06+00:00"
     published_date = parse_feed_date(pub_date, unique_string_identifier)
     assert published_date == "2020-12-14 00:08:06+00:00"
