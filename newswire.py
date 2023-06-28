@@ -778,7 +778,8 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
         description = ''
         if '<description>' in rss_item and '</description>' in rss_item:
             description = rss_item.split('<description>')[1]
-            description = unescaped_text(description.split('</description>')[0])
+            description = description.split('</description>')[0]
+            description = unescaped_text(description)
             description = remove_html(description)
         else:
             if '<media:description>' in rss_item and \
@@ -888,7 +889,8 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
         description = ''
         if '<description>' in rss_item and '</description>' in rss_item:
             description = rss_item.split('<description>')[1]
-            description = unescaped_text(description.split('</description>')[0])
+            description = description.split('</description>')[0]
+            description = unescaped_text(description)
             description = remove_html(description)
         else:
             if '<media:description>' in rss_item and \
