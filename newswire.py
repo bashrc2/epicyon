@@ -778,8 +778,8 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
         description = ''
         if '<description>' in rss_item and '</description>' in rss_item:
             description = rss_item.split('<description>')[1]
-            description = remove_html(description.split('</description>')[0])
-            description = unescaped_text(description)
+            description = unescaped_text(description.split('</description>')[0])
+            description = remove_html(description)
         else:
             if '<media:description>' in rss_item and \
                '</media:description>' in rss_item:
@@ -888,8 +888,8 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
         description = ''
         if '<description>' in rss_item and '</description>' in rss_item:
             description = rss_item.split('<description>')[1]
-            description = remove_html(description.split('</description>')[0])
-            description = unescaped_text(description)
+            description = unescaped_text(description.split('</description>')[0])
+            description = remove_html(description)
         else:
             if '<media:description>' in rss_item and \
                '</media:description>' in rss_item:
@@ -986,13 +986,13 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
         description = ''
         if '<summary>' in atom_item and '</summary>' in atom_item:
             description = atom_item.split('<summary>')[1]
-            description = remove_html(description.split('</summary>')[0])
-            description = unescaped_text(description)
+            description = unescaped_text(description.split('</summary>')[0])
+            description = remove_html(description)
         elif '<content' in atom_item and '</content>' in atom_item:
             description = atom_item.split('<content', 1)[1]
             description = description.split('>', 1)[1]
-            description = remove_html(description.split('</content>')[0])
-            description = unescaped_text(description)
+            description = unescaped_text(description.split('</content>')[0])
+            description = remove_html(description)
         else:
             if '<media:description>' in atom_item and \
                '</media:description>' in atom_item:
