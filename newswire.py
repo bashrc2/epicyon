@@ -45,6 +45,7 @@ from blocking import is_blocked_domain
 from blocking import is_blocked_hashtag
 from filters import is_filtered
 from session import download_image_any_mime_type
+from content import remove_script
 
 
 def _remove_cdata(text: str) -> str:
@@ -773,6 +774,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
         title = rss_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         title = unescaped_text(title)
+        title = remove_script(title, None, None, None)
         title = remove_html(title)
 
         description = ''
@@ -780,6 +782,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             description = rss_item.split('<description>')[1]
             description = description.split('</description>')[0]
             description = unescaped_text(description)
+            description = remove_script(description, None, None, None)
             description = remove_html(description)
         else:
             if '<media:description>' in rss_item and \
@@ -787,6 +790,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = rss_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = unescaped_text(description)
+                description = remove_script(description, None, None, None)
                 description = remove_html(description)
 
         proxy_type = None
@@ -885,12 +889,14 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
         title = rss_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         title = unescaped_text(title)
+        title = remove_script(title, None, None, None)
         title = remove_html(title)
         description = ''
         if '<description>' in rss_item and '</description>' in rss_item:
             description = rss_item.split('<description>')[1]
             description = description.split('</description>')[0]
             description = unescaped_text(description)
+            description = remove_script(description, None, None, None)
             description = remove_html(description)
         else:
             if '<media:description>' in rss_item and \
@@ -898,6 +904,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = rss_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = unescaped_text(description)
+                description = remove_script(description, None, None, None)
                 description = remove_html(description)
 
         proxy_type = None
@@ -984,16 +991,19 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
         title = atom_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         title = unescaped_text(title)
+        title = remove_script(title, None, None, None)
         title = remove_html(title)
         description = ''
         if '<summary>' in atom_item and '</summary>' in atom_item:
             description = atom_item.split('<summary>')[1]
             description = unescaped_text(description.split('</summary>')[0])
+            description = remove_script(description, None, None, None)
             description = remove_html(description)
         elif '<content' in atom_item and '</content>' in atom_item:
             description = atom_item.split('<content', 1)[1]
             description = description.split('>', 1)[1]
             description = unescaped_text(description.split('</content>')[0])
+            description = remove_script(description, None, None, None)
             description = remove_html(description)
         else:
             if '<media:description>' in atom_item and \
@@ -1001,6 +1011,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = atom_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = unescaped_text(description)
+                description = remove_script(description, None, None, None)
                 description = remove_html(description)
 
         proxy_type = None
@@ -1206,6 +1217,7 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
             continue
         title = atom_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
+        title = remove_script(title, None, None, None)
         title = unescaped_text(title)
         description = ''
         if '<media:description>' in atom_item and \
@@ -1213,17 +1225,20 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
             description = atom_item.split('<media:description>')[1]
             description = description.split('</media:description>')[0]
             description = unescaped_text(description)
+            description = remove_script(description, None, None, None)
             description = remove_html(description)
         elif '<summary>' in atom_item and '</summary>' in atom_item:
             description = atom_item.split('<summary>')[1]
             description = description.split('</summary>')[0]
             description = unescaped_text(description)
+            description = remove_script(description, None, None, None)
             description = remove_html(description)
         elif '<content' in atom_item and '</content>' in atom_item:
             description = atom_item.split('<content', 1)[1]
             description = description.split('>', 1)[1]
             description = description.split('</content>')[0]
             description = unescaped_text(description)
+            description = remove_script(description, None, None, None)
             description = remove_html(description)
 
         link, _ = get_link_from_rss_item(atom_item, None, None)
