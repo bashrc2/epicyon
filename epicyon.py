@@ -114,6 +114,7 @@ from happening import dav_month_via_server
 from happening import dav_day_via_server
 from content import import_emoji
 from relationships import get_moved_accounts
+from blocking import get_blocks_via_server
 
 
 def str2bool(value_str) -> bool:
@@ -412,6 +413,12 @@ def _command_options() -> None:
                         type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Get the following list. Use nickname and " +
+                        "domain options to specify the account")
+    parser.add_argument("--blocked",
+                        dest='blocked',
+                        type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Get the blocked collection. Use nickname and " +
                         "domain options to specify the account")
     parser.add_argument("--followersList",
                         dest='followersList',
@@ -2482,6 +2489,40 @@ def _command_options() -> None:
                                      debug, __version__, signing_priv_key_pem)
         if following_json:
             pprint(following_json)
+        sys.exit()
+
+    if argb.blocked:
+        # blocked collection
+        if not argb.nickname:
+            print('Please specify the nickname for the account ' +
+                  'with --nickname')
+            sys.exit()
+        if not argb.password:
+            argb.password = getpass.getpass('Password: ')
+            if not argb.password:
+                print('Specify a password with the --password option')
+                sys.exit()
+        argb.password = remove_eol(argb.password)
+
+        session = create_session(proxy_type)
+        person_cache = {}
+        cached_webfingers = {}
+        blocked_http_prefix = http_prefix
+        if not domain:
+            domain = get_config_param(base_dir, 'domain')
+        signing_priv_key_pem = None
+        if argb.secure_mode:
+            signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+
+        blocked_json = \
+            get_blocks_via_server(session,
+                                  argb.nickname, argb.password,
+                                  domain, port,
+                                  blocked_http_prefix, argb.pageNumber,
+                                  debug, __version__,
+                                  signing_priv_key_pem)
+        if blocked_json:
+            pprint(blocked_json)
         sys.exit()
 
     if argb.followersList:

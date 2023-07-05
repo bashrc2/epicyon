@@ -37,6 +37,8 @@ from utils import has_actor
 from utils import text_in_file
 from conversation import mute_conversation
 from conversation import unmute_conversation
+from auth import create_basic_auth_header
+from session import get_json
 
 
 def get_global_block_reason(search_text: str,
@@ -1640,3 +1642,39 @@ def export_blocking_file(base_dir: str, nickname: str, domain: str) -> str:
             blocked_domain + ',suspend,false,false,"' + \
             reason_str + '",false\n'
     return blocks_str
+
+
+def get_blocks_via_server(session, nickname: str, password: str,
+                          domain: str, port: int,
+                          http_prefix: str, debug: bool,
+                          signing_priv_key_pem: str) -> {}:
+    """Returns the blocked collection for shared items via c2s
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/c648/fep-c648.md
+    """
+    if not session:
+        print('WARN: No session for get_blocks_via_server')
+        return 6
+
+    auth_header = create_basic_auth_header(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': auth_header,
+        'Accept': 'application/json'
+    }
+    domain_full = get_full_domain(domain, port)
+    url = local_actor_url(http_prefix, nickname, domain_full) + '/blocked'
+    if debug:
+        print('Blocked collection request to: ' + url)
+    blocked_json = get_json(signing_priv_key_pem, session, url, headers, None,
+                            debug, __version__, http_prefix, None)
+    if not blocked_json:
+        if debug:
+            print('DEBUG: GET blocked collection failed for c2s to ' + url)
+#        return 5
+
+    if debug:
+        print('DEBUG: c2s GET blocked collection success')
+
+    return blocked_json
