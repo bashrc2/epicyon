@@ -153,6 +153,15 @@ python3 epicyon.py --nickname [yournick] --domain [yourdomain] --box [inbox|outb
 
 You could use this to make your own c2s client, or create your own notification system.
 
+
+## Getting the JSON for your blocked items
+
+You can retrieve your current blocklist with:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [yourdomain] --page [number] --password [yourpassword] --blocked
+```
+
 ## Listing referenced domains
 
 To list the domains referenced in public posts:
