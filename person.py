@@ -805,6 +805,9 @@ def person_upgrade_actor(base_dir: str, person_json: {},
         update_actor = True
 
     if person_json.get('endpoints'):
+        if not person_json['endpoints'].get('blocked'):
+            person_json['endpoints']['blocked'] = person_json['id'] + '/blocked'
+            update_actor = True
         if not person_json['endpoints'].get('offers'):
             person_json['endpoints']['offers'] = person_json['id'] + '/offers'
             update_actor = True
