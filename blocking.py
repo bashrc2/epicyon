@@ -1646,7 +1646,8 @@ def export_blocking_file(base_dir: str, nickname: str, domain: str) -> str:
 
 def get_blocks_via_server(session, nickname: str, password: str,
                           domain: str, port: int,
-                          http_prefix: str, debug: bool,
+                          http_prefix: str, page_number: int, debug: bool,
+                          version: str,
                           signing_priv_key_pem: str) -> {}:
     """Returns the blocked collection for shared items via c2s
     https://codeberg.org/fediverse/fep/src/branch/main/fep/c648/fep-c648.md
@@ -1664,11 +1665,12 @@ def get_blocks_via_server(session, nickname: str, password: str,
         'Accept': 'application/json'
     }
     domain_full = get_full_domain(domain, port)
-    url = local_actor_url(http_prefix, nickname, domain_full) + '/blocked'
+    url = local_actor_url(http_prefix, nickname, domain_full) + \
+        '/blocked?page=' + str(page_number)
     if debug:
         print('Blocked collection request to: ' + url)
     blocked_json = get_json(signing_priv_key_pem, session, url, headers, None,
-                            debug, __version__, http_prefix, None)
+                            debug, version, http_prefix, None)
     if not blocked_json:
         if debug:
             print('DEBUG: GET blocked collection failed for c2s to ' + url)
