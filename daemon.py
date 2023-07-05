@@ -17323,21 +17323,29 @@ class PubServer(BaseHTTPRequestHandler):
                 if page_number_str.isdigit():
                     page_number = int(page_number_str)
             # show blocked collection for the nickname
-            blocked_json = []
+            actor = \
+                local_actor_url(self.server.http_prefix,
+                                nickname, self.server.domain_full)
+            actor += '/blocked'
+            blocked_json = {
+                "@context": [
+                    "https://www.w3.org/ns/activitystreams",
+                    "https://purl.archive.org/socialweb/blocked"
+                ],
+                "id": actor,
+                "type": "OrderedCollection",
+                "name": nickname + "'s Blocked Collection",
+                "orderedItems": []
+            }
             if self._has_accept(calling_domain) and \
                blocked_collection_authorized:
                 if self.server.debug:
                     print('Preparing blocked collection')
 
-                domain_full = self.server.domain_full
-                http_prefix = self.server.http_prefix
                 if self.server.debug:
                     print('Blocked collection for account: ' + nickname)
                 base_dir = self.server.base_dir
                 blocked_items_per_page = 12
-                actor = \
-                    local_actor_url(http_prefix, nickname, domain_full) + \
-                    '/blocked'
                 blocked_json = \
                     blocked_timeline_json(actor, page_number,
                                           blocked_items_per_page, base_dir,
