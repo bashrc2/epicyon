@@ -642,7 +642,18 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                 "value": shared_item['itemCurrency']
             })
         shares_collection.append(offer_item)
-    return shares_collection
+
+    result_json = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams"
+        ],
+        "id": actor + '?page=' + str(page_number),
+        "type": "OrderedCollection",
+        "name": nickname + "'s Shared Items",
+        "orderedItems": shares_collection
+    }
+
+    return result_json
 
 
 def post_contains_public(post_json_object: {}) -> bool:

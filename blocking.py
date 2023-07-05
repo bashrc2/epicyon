@@ -121,13 +121,16 @@ def blocked_timeline_json(actor: str, page_number: int, items_per_page: int,
     start_index = (page_number - 1) * items_per_page
     if start_index >= len(blocked_list):
         start_index = 0
+    last_page_number = (len(blocked_list) / items_per_page) + 1
 
     result_json = {
         "@context": [
             "https://www.w3.org/ns/activitystreams",
             "https://purl.archive.org/socialweb/blocked"
         ],
-        "id": actor,
+        "id": actor + '?page=' + str(page_number),
+        "first": actor + '?page=1',
+        "last": actor + '?page=' + str(last_page_number),
         "type": "OrderedCollection",
         "name": nickname + "'s Blocked Collection",
         "orderedItems": []
