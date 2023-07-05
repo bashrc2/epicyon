@@ -153,6 +153,7 @@ from media import path_is_transcript
 from media import path_is_audio
 from cwlists import get_cw_list_variable
 from cwlists import load_cw_lists
+from blocking import blocked_timeline_json
 from blocking import import_blocking_file
 from blocking import export_blocking_file
 from blocking import add_account_blocks
@@ -17277,9 +17278,6 @@ class PubServer(BaseHTTPRequestHandler):
 
                 domain_full = self.server.domain_full
                 http_prefix = self.server.http_prefix
-                nickname = self.path.split('/users/')[1]
-                if '/' in nickname:
-                    nickname = nickname.split('/')[0]
                 if self.server.debug:
                     print('Offers collection for account: ' + nickname)
                 base_dir = self.server.base_dir
@@ -17298,6 +17296,53 @@ class PubServer(BaseHTTPRequestHandler):
                                           shared_items_federated_domains,
                                           'shares')
             msg_str = json.dumps(offers_json,
+                                 ensure_ascii=False)
+            msg_str = self._convert_domains(calling_domain,
+                                            referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            accept_str = self.headers['Accept']
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
+            self._set_headers(protocol_str, msglen,
+                              None, calling_domain, False)
+            self._write(msg)
+            return
+
+        if self.path.startswith('/users/') and '/blocked' in self.path:
+            blocked_collection_authorized = authorized
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            page_number = 1
+            if '?page=' in self.path:
+                page_number_str = self.path.split('?page=')[1]
+                if ';' in page_number_str:
+                    page_number_str = page_number_str.split(';')[0]
+                if page_number_str.isdigit():
+                    page_number = int(page_number_str)
+            # show blocked collection for the nickname
+            blocked_json = []
+            if self._has_accept(calling_domain) and \
+               blocked_collection_authorized:
+                if self.server.debug:
+                    print('Preparing blocked collection')
+
+                domain_full = self.server.domain_full
+                http_prefix = self.server.http_prefix
+                if self.server.debug:
+                    print('Blocked collection for account: ' + nickname)
+                base_dir = self.server.base_dir
+                blocked_items_per_page = 12
+                actor = \
+                    local_actor_url(http_prefix, nickname, domain_full) + \
+                    '/blocked'
+                blocked_json = \
+                    blocked_timeline_json(actor, page_number,
+                                          blocked_items_per_page, base_dir,
+                                          nickname, self.server.domain)
+            msg_str = json.dumps(blocked_json,
                                  ensure_ascii=False)
             msg_str = self._convert_domains(calling_domain,
                                             referer_domain,

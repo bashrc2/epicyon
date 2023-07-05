@@ -105,6 +105,60 @@ def get_account_blocks(base_dir: str,
     return blocked_accounts_textarea
 
 
+def blocked_timeline_json(actor: str, page_number: int, items_per_page: int,
+                          base_dir: str,
+                          nickname: str, domain: str) -> {}:
+    """Returns blocked collection for an account
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/c648/fep-c648.md
+    """
+    blocked_accounts_textarea = \
+        get_account_blocks(base_dir, nickname, domain)
+    blocked_list = []
+    if blocked_accounts_textarea:
+        blocked_list = blocked_accounts_textarea.split('\n')
+    start_index = (page_number - 1) * items_per_page
+    if start_index >= len(blocked_list):
+        start_index = 0
+
+    result_json = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            "https://purl.archive.org/socialweb/blocked"
+        ],
+        "id": actor,
+        "type": "OrderedCollection",
+        "name": nickname + "'s Blocked Collection",
+        "orderedItems": []
+    }
+
+    index = start_index
+    for _ in range(items_per_page):
+        if index >= len(blocked_list):
+            break
+        block_handle = blocked_list[index]
+        block_reason = ''
+        if ' - ' in block_handle:
+            block_reason = block_handle.split(' - ')[1]
+            block_handle = block_handle.split(' - ')[0]
+        block_type = "Person"
+        if block_handle.startswith('*@'):
+            block_type = "Application"
+            block_handle = block_handle.split('*@', 1)[1]
+        block_json = {
+            "type": "Block",
+            "id": actor + '/' + str(index),
+            "object": {
+                "type": block_type,
+                "id": block_handle
+            }
+        }
+        if block_reason:
+            block_json["object"]["name"] = block_reason
+        result_json["orderedItems"].append(block_json)
+        index += 1
+    return result_json
+
+
 def add_account_blocks(base_dir: str,
                        nickname: str, domain: str,
                        blocked_accounts_textarea: str) -> bool:
