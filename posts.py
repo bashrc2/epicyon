@@ -513,6 +513,8 @@ def is_create_inside_announce(item: {}) -> bool:
     """
     if not isinstance(item, dict):
         return False
+    if not item.get('type'):
+        return False
     if item['type'] != 'Announce':
         return False
     if not item.get('object'):
