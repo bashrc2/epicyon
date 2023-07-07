@@ -108,11 +108,11 @@ def _valid_profile_preview_post(post_json_object: {},
     if not isinstance(post_json_object, dict):
         return False, None
     is_announced_feed_item = False
-    if not post_json_object.get('type'):
-        return False, None
     if is_create_inside_announce(post_json_object):
         is_announced_feed_item = True
         post_json_object = post_json_object['object']
+    if not post_json_object.get('type'):
+        return False, None
     if post_json_object['type'] == 'Create':
         if not has_object_dict(post_json_object):
             return False, None
