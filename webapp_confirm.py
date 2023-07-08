@@ -390,8 +390,8 @@ def html_confirm_block(translate: {}, base_dir: str,
         '      <b><label class="labels">' + \
         translate['Reason'] + '</label></b><br>\n' + \
         '      <textarea id="message" ' + \
-        'name="blockReason" style="height:200px" spellcheck="false">' + \
-        '</textarea>\n'
+        'name="blockReason" style="width:90%;height:200px" ' + \
+        'spellcheck="true"></textarea>\n'
     block_str += '  </form>\n'
     block_str += '</center>\n'
     block_str += '</div>\n'
