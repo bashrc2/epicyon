@@ -388,7 +388,7 @@ def html_confirm_block(translate: {}, base_dir: str,
         translate['No'] + '</button></a><br>\n'
     block_str += \
         '      <b><label class="labels">' + \
-        translate['Reason'] + '</label></b>\n' + \
+        translate['Reason'] + '</label></b><br>\n' + \
         '      <textarea id="message" ' + \
         'name="blockReason" style="height:200px" spellcheck="false">' + \
         '</textarea>\n'

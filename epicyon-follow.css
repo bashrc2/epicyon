@@ -224,6 +224,15 @@ input[type=text] {
         user-select: all;
 	white-space: nowrap;
     }
+    .message {
+        margin-left: 0%;
+        margin-right: 0%;
+        width: 90%;
+        hyphens: auto;
+        text-wrap: pretty;
+        text-align: justify;
+        direction: ltr;
+    }
     .hashtagswarm img {
         width: 5%;
         min-width: 5%;
@@ -278,6 +287,15 @@ input[type=text] {
         -ms-user-select: all;
         user-select: all;
 	white-space: nowrap;
+    }
+    .message {
+        margin-left: 0%;
+        margin-right: 0%;
+        width: 100%;
+        hyphens: auto;
+        text-wrap: pretty;
+        text-align: justify;
+        direction: ltr;
     }
     .hashtagswarm img {
         width: 10%;
@@ -336,6 +354,15 @@ input[type=text] {
         -ms-user-select: all;
         user-select: all;
 	white-space: nowrap;
+    }
+    .message {
+        margin-left: 0%;
+        margin-right: 0%;
+        width: 100%;
+        hyphens: auto;
+        text-wrap: pretty;
+        text-align: justify;
+        direction: ltr;
     }
     .hashtagswarm img {
         width: 10%;
