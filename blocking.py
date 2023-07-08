@@ -327,8 +327,73 @@ def add_global_block(base_dir: str,
     return True
 
 
+def _add_block_reason(base_dir: str,
+                      nickname: str, domain: str,
+                      block_nickname: str, block_domain: str,
+                      reason: str) -> bool:
+    """Store a block reason
+    """
+    if not reason:
+        return False
+
+    domain = remove_domain_port(domain)
+    blocking_reasons_filename = \
+        acct_dir(base_dir, nickname, domain) + '/blocking.txt'
+
+    if not block_nickname.startswith('#'):
+        # is the handle already blocked?
+        block_id = block_nickname + '@' + block_domain
+    else:
+        block_id = block_nickname
+
+    reason = reason.replace('\n', '').strip()
+    reason_line = block_id + ' ' + reason + '\n'
+
+    if os.path.isfile(blocking_reasons_filename):
+        if not text_in_file(block_id,
+                            blocking_reasons_filename):
+            try:
+                with open(blocking_reasons_filename, 'a+',
+                          encoding='utf-8') as reas_file:
+                    reas_file.write(reason_line)
+            except OSError:
+                print('EX: unable to add blocking reason 2 ' +
+                      block_id)
+        else:
+            reasons_str = ''
+            try:
+                with open(blocking_reasons_filename, 'r',
+                          encoding='utf-8') as reas_file:
+                    reasons_str = reas_file.read()
+            except OSError:
+                print('EX: unable to read blocking reasons 2')
+            reasons_lines = reasons_str.split('\n')
+            new_reasons_str = ''
+            for line in reasons_lines:
+                if not line.startswith(block_id + ' '):
+                    new_reasons_str += line + '\n'
+                    continue
+                new_reasons_str += reason_line
+            try:
+                with open(blocking_reasons_filename, 'w+',
+                          encoding='utf-8') as reas_file:
+                    reas_file.write(new_reasons_str)
+            except OSError:
+                print('EX: unable to save blocking reasons 2' +
+                      blocking_reasons_filename)
+    else:
+        try:
+            with open(blocking_reasons_filename, 'w+',
+                      encoding='utf-8') as reas_file:
+                reas_file.write(reason_line)
+        except OSError:
+            print('EX: unable to save blocking reason 2 ' +
+                  block_id + ' ' + blocking_reasons_filename)
+
+
 def add_block(base_dir: str, nickname: str, domain: str,
-              block_nickname: str, block_domain: str) -> bool:
+              block_nickname: str, block_domain: str,
+              reason: str) -> bool:
     """Block the given account
     """
     if block_domain.startswith(domain) and nickname == block_nickname:
@@ -398,6 +463,11 @@ def add_block(base_dir: str, nickname: str, domain: str,
     except OSError:
         print('EX: unable to append block handle ' + block_handle)
         return False
+
+    if reason:
+        _add_block_reason(base_dir, nickname, domain,
+                          block_nickname, block_domain, reason)
+
     return True
 
 
@@ -956,7 +1026,7 @@ def outbox_block(base_dir: str, nickname: str, domain: str,
     domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
 
     add_block(base_dir, nickname, domain,
-              nickname_blocked, domain_blocked_full)
+              nickname_blocked, domain_blocked_full, '')
 
     if debug:
         print('DEBUG: post blocked via c2s - ' + post_filename)

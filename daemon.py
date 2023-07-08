@@ -4291,9 +4291,12 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if '&submitYes=' in block_confirm_params:
-            blocking_actor = \
+            blocking_confirm_str = \
                 urllib.parse.unquote_plus(block_confirm_params)
-            blocking_actor = blocking_actor.split('actor=')[1]
+            block_reason = blocking_confirm_str.split('blockReason=')[1]
+            if '&' in block_reason:
+                block_reason = block_reason.split('&')[0]
+            blocking_actor = blocking_confirm_str.split('actor=')[1]
             if '&' in blocking_actor:
                 blocking_actor = blocking_actor.split('&')[0]
             blocking_nickname = get_nickname_from_actor(blocking_actor)
@@ -4322,7 +4325,7 @@ class PubServer(BaseHTTPRequestHandler):
                       ' of ' + blocking_actor)
                 add_block(base_dir, blocker_nickname,
                           domain, blocking_nickname,
-                          blocking_domain_full)
+                          blocking_domain_full, block_reason)
                 remove_follower(base_dir, blocker_nickname,
                                 domain,
                                 blocking_nickname,
