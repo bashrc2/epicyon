@@ -25,7 +25,8 @@ def get_xmpp_address(actor_json: {}) -> str:
         if not name_value:
             continue
         if not (name_value.startswith('xmpp') or
-                name_value.startswith('jabber')):
+                name_value.startswith('jabber') or
+                name_value == 'chat'):
             continue
         if not property_value.get('type'):
             continue
@@ -33,12 +34,16 @@ def get_xmpp_address(actor_json: {}) -> str:
             get_attachment_property_value(property_value)
         if not prop_value_name:
             continue
-        if not property_value['type'].endswith('PropertyValue'):
+        if not property_value['type'].endswith('PropertyValue') and \
+           not property_value['type'] == 'Link':
             continue
         if '@' not in property_value[prop_value_name]:
             continue
         if '"' in property_value[prop_value_name]:
             continue
+        if property_value[prop_value_name].startswith('xmpp://'):
+            property_value[prop_value_name] = \
+                property_value[prop_value_name].split('xmpp://', 1)[1]
         return property_value[prop_value_name]
     return ''
 
@@ -72,8 +77,16 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
         if not property_value.get('type'):
             continue
         if not (name_value.lower().startswith('xmpp') or
-                name_value.lower().startswith('jabber')):
+                name_value.lower().startswith('jabber') or
+                name_value == 'chat'):
             continue
+        if name_value == 'chat':
+            if not property_value.get('href'):
+                continue
+            if not isinstance(property_value['href'], str):
+                continue
+            if not property_value['href'].startswith('xmpp://'):
+                continue
         property_found = property_value
         break
     if property_found:
@@ -93,9 +106,11 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
             continue
         name_value = name_value.lower()
         if not (name_value.startswith('xmpp') or
-                name_value.startswith('jabber')):
+                name_value.startswith('jabber') or
+                name_value == 'chat'):
             continue
-        if not property_value['type'].endswith('PropertyValue'):
+        if not property_value['type'].endswith('PropertyValue') and \
+           not property_value['type'] == 'Link':
             continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
@@ -104,9 +119,14 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
         property_value[prop_value_name] = xmpp_address
         return
 
+    if not xmpp_address.startswith('xmpp://'):
+        xmpp_address = 'xmpp://' + xmpp_address
+
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/1970/fep-1970.md
     new_xmpp_address = {
-        "name": "XMPP",
-        "type": "PropertyValue",
-        "value": xmpp_address
+        "type": "Link",
+        "name": "Chat",
+        "rel": "discussion",
+        "href": xmpp_address
     }
     actor_json['attachment'].append(new_xmpp_address)

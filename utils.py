@@ -4065,6 +4065,9 @@ def get_attachment_property_value(property_value: {}) -> (str, str):
     elif property_value.get('https://schema.org#value'):
         prop_value_name = 'https://schema.org#value'
         prop_value = property_value[prop_value_name]
+    elif property_value.get('href'):
+        prop_value_name = 'href'
+        prop_value = property_value[prop_value_name]
     return prop_value_name, prop_value
 
 
