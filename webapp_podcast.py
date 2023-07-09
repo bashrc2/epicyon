@@ -434,8 +434,8 @@ def html_podcast_episode(translate: {},
             donate_url = podcast_properties['funding']['url']
             podcast_str += \
                 '<p><span itemprop="funding"><a href="' + donate_url + \
-                '"><button class="donateButton">' + translate['Donate'] + \
-                '</button></a></span></p>\n'
+                '" rel="donation"><button class="donateButton">' + \
+                translate['Donate'] + '</button></a></span></p>\n'
 
     if podcast_properties['categories']:
         tags_str = ''

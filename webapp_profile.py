@@ -882,7 +882,8 @@ def html_profile(signing_priv_key_pem: str,
         donate_section += '  <center>\n'
         if donate_url and not is_system_account(nickname):
             donate_section += \
-                '    <p><a href="' + donate_url + '" tabindex="1">' + \
+                '    <p><a href="' + donate_url + \
+                '" tabindex="1" rel="donation">' + \
                 '<button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
         if website_url:
