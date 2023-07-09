@@ -1875,7 +1875,7 @@ def _get_copyright_footer(content_license_url: str,
     copyright_str = \
         '        ' + \
         '<a class="imageAnchor" href="' + content_license_url + \
-        '" title="' + description + '" tabindex="10">' + \
+        '" title="' + description + '" tabindex="10" rel="license">' + \
         '<img loading="lazy" decoding="async" title="' + \
         description + '" alt="' + description + \
         ' |" src="/icons/' + icon_filename + '"/></a>\n'
