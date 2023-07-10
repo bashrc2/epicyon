@@ -627,5 +627,6 @@
     "Only allow replies from followers": "Només permet respostes dels seguidors",
     "Only allow replies from mutuals": "Només permet respostes de mútues",
     "Reason": "Raó",
-    "Chat": "Xatejar"
+    "Chat": "Xatejar",
+    "Chat link": "Enllaç de xat"
 }

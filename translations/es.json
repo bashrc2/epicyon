@@ -627,5 +627,6 @@
     "Only allow replies from followers": "Permitir solo respuestas de seguidores",
     "Only allow replies from mutuals": "Permitir solo respuestas de mutuas",
     "Reason": "Razón",
-    "Chat": "Charlar"
+    "Chat": "Charlar",
+    "Chat link": "Enlace de chat"
 }

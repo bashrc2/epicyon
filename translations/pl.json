@@ -627,5 +627,6 @@
     "Only allow replies from followers": "Zezwalaj tylko na odpowiedzi od obserwujących",
     "Only allow replies from mutuals": "Zezwalaj tylko na odpowiedzi od towarzystw wzajemnych",
     "Reason": "Powód",
-    "Chat": "Czat"
+    "Chat": "Czat",
+    "Chat link": "Link do czatu"
 }

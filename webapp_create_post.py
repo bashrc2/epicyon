@@ -798,6 +798,9 @@ def html_new_post(edit_post_params: {},
             buy_link_str = translate['Buy link']
             replies_section += edit_text_field(buy_link_str, 'buyUrl',
                                                default_buy_site, 'https://...')
+            chat_link_str = '💬 ' + translate['Chat link']
+            replies_section += edit_text_field(chat_link_str, 'chatUrl',
+                                               '', 'https://...')
             replies_section += '</div>\n'
 
             date_and_location = \

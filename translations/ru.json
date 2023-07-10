@@ -627,5 +627,6 @@
     "Only allow replies from followers": "Разрешить ответы только от подписчиков",
     "Only allow replies from mutuals": "Разрешить ответы только от взаимных",
     "Reason": "Причина",
-    "Chat": "Чат"
+    "Chat": "Чат",
+    "Chat link": "Ссылка на чат"
 }

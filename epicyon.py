@@ -153,6 +153,9 @@ def _command_options() -> None:
     parser.add_argument('--eventLocation', type=str,
                         default=None,
                         help='Location for an event when sending a c2s post')
+    parser.add_argument('--chatUrl', type=str,
+                        default=None,
+                        help='Chat link attachment on a post')
     parser.add_argument('--buyUrl', type=str,
                         default=None,
                         help='Link for buying something')
@@ -1759,7 +1762,7 @@ def _command_options() -> None:
                              argb.media_license_url, argb.media_creator,
                              argb.eventDate, argb.eventTime, argb.eventEndTime,
                              argb.eventLocation, translate, argb.buyUrl,
-                             argb.debug,
+                             argb.chatUrl, argb.debug,
                              reply_to, reply_to, argb.conversationId, subject)
         for _ in range(10):
             # TODO detect send success/fail
@@ -3489,6 +3492,7 @@ def _command_options() -> None:
         languages_understood = [argb.language]
         translate = {}
         buy_url = ''
+        chat_url = ''
         test_video_transcript = ''
 
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -3506,7 +3510,7 @@ def _command_options() -> None:
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url)
+                           languages_understood, translate, buy_url, chat_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Zoiks!!!",
                            test_save_to_file,
@@ -3522,7 +3526,7 @@ def _command_options() -> None:
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url)
+                           languages_understood, translate, buy_url, chat_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Hey scoob we need like a hundred more #milkshakes",
                            test_save_to_file,
@@ -3538,7 +3542,7 @@ def _command_options() -> None:
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url)
+                           languages_understood, translate, buy_url, chat_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Getting kinda spooky around here",
                            test_save_to_file,
@@ -3554,7 +3558,7 @@ def _command_options() -> None:
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url)
+                           languages_understood, translate, buy_url, chat_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "And they would have gotten away with it too" +
                            "if it wasn't for those pesky hackers",
@@ -3571,7 +3575,7 @@ def _command_options() -> None:
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url)
+                           languages_understood, translate, buy_url, chat_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "man these centralized sites are like the worst!",
                            test_save_to_file,
@@ -3587,7 +3591,7 @@ def _command_options() -> None:
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url)
+                           languages_understood, translate, buy_url, chat_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "another mystery solved #test",
                            test_save_to_file,
@@ -3603,7 +3607,7 @@ def _command_options() -> None:
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url)
+                           languages_understood, translate, buy_url, chat_url)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "let's go bowling",
                            test_save_to_file,
@@ -3619,7 +3623,7 @@ def _command_options() -> None:
                            test_is_article, argb.language, conversation_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url)
+                           languages_understood, translate, buy_url, chat_url)
         domain_full = domain + ':' + str(port)
         clear_follows(base_dir, nickname, domain)
         follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,

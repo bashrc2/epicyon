@@ -627,5 +627,6 @@
     "Only allow replies from followers": "Autoriser uniquement les réponses des abonnés",
     "Only allow replies from mutuals": "Autoriser uniquement les réponses des mutuelles",
     "Reason": "Raison",
-    "Chat": "Discuter"
+    "Chat": "Discuter",
+    "Chat link": "Lien de discussion"
 }
