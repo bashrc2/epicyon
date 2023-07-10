@@ -1357,10 +1357,18 @@ def get_post_attachments_as_html(base_dir: str,
            '://' not in attach['href'] or \
            '.' not in attach['href']:
             continue
+        # get the domain for the chat link
+        chat_domain_str = ''
+        chat_domain, _ = get_domain_from_actor(attach['href'])
+        if chat_domain:
+            chat_domain_str = ' (' + chat_domain + ')'
+            # avoid displaying very long domains
+            if len(chat_domain_str) > 50:
+                chat_domain_str = ''
         attachment_str += \
             '<p><a href="' + attach['href'] + \
             '" target="_blank" rel="nofollow noopener noreferrer">' + \
-            '💬 ' + translate['Chat'] + '</a></p>'
+            '💬 ' + translate['Chat'] + chat_domain_str + '</a></p>'
 
     # obtain transcripts
     transcripts = {}
