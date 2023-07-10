@@ -137,6 +137,34 @@ def get_webfinger_from_cache(handle: str, cached_webfingers: {}) -> {}:
     return None
 
 
+def get_actor_public_key_from_id(person_json: {}, key_id: str) -> (str, str):
+    """Returns the public key referenced by the given id
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/521a/fep-521a.md
+    """
+    pub_key = None
+    pub_key_id = None
+    if person_json.get('publicKey'):
+        if person_json['publicKey'].get('publicKeyPem'):
+            pub_key = person_json['publicKey']['publicKeyPem']
+            if person_json['publicKey'].get('id'):
+                pub_key_id = person_json['publicKey']['id']
+    elif person_json.get('authentication'):
+        if isinstance(person_json['authentication'], list):
+            for key_dict in person_json['authentication']:
+                if not key_dict.get('id') or \
+                   not key_dict.get('publicKeyMultibase'):
+                    continue
+                if key_id is None or key_dict['id'] == key_id:
+                    pub_key = key_dict['publicKeyMultibase']
+                    pub_key_id = key_dict['id']
+                    break
+    if not pub_key and person_json.get('publicKeyPem'):
+        pub_key = person_json['publicKeyPem']
+        if person_json.get('id'):
+            pub_key_id = person_json['id']
+    return pub_key, pub_key_id
+
+
 def get_person_pub_key(base_dir: str, session, person_url: str,
                        person_cache: {}, debug: bool,
                        project_version: str, http_prefix: str,
@@ -145,6 +173,7 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
                        signing_priv_key_pem: str) -> str:
     """Get the public key for an actor
     """
+    original_person_url = person_url
     if not person_url:
         return None
     if '#/publicKey' in person_url:
@@ -185,14 +214,7 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
                      project_version, http_prefix, person_domain)
         if not person_json:
             return None
-    pub_key = None
-    if person_json.get('publicKey'):
-        if person_json['publicKey'].get('publicKeyPem'):
-            pub_key = person_json['publicKey']['publicKeyPem']
-    else:
-        if person_json.get('publicKeyPem'):
-            pub_key = person_json['publicKeyPem']
-
+    pub_key, _ = get_actor_public_key_from_id(person_json, original_person_url)
     if not pub_key:
         if debug:
             print('DEBUG: Public key not found for ' + person_url)

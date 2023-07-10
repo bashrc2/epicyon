@@ -34,6 +34,7 @@ from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol
 from filters import is_filtered
+from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache
 from content import add_html_tags
 from content import replace_emoji_from_tags
@@ -422,16 +423,17 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
         if person_json:
             if not person_json.get('id'):
                 return None
-            if not person_json.get('publicKey'):
-                return None
-            if not person_json['publicKey'].get('publicKeyPem'):
+            pub_key, _ = get_actor_public_key_from_id(person_json, None)
+            if not pub_key:
                 return None
             if person_json['id'] != actor:
                 return None
             if not person_cache.get(actor):
                 return None
-            if person_cache[actor]['actor']['publicKey']['publicKeyPem'] != \
-               person_json['publicKey']['publicKeyPem']:
+            cache_key, _ = \
+                get_actor_public_key_from_id(person_cache[actor]['actor'],
+                                             None)
+            if cache_key != pub_key:
                 print("ERROR: " +
                       "public keys don't match when downloading actor for " +
                       actor)

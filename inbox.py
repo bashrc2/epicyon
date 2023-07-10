@@ -90,6 +90,7 @@ from follow import no_of_follow_requests
 from follow import get_no_of_followers
 from follow import follow_approval_required
 from pprint import pprint
+from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache
 from cache import get_person_pub_key
 from acceptreject import receive_accept_reject
@@ -1201,13 +1202,11 @@ def _person_receive_update(base_dir: str,
             print('DEBUG: You can only receive actor updates ' +
                   'for domains other than your own')
         return False
-    if not person_json.get('publicKey'):
+    person_pub_key, _ = \
+        get_actor_public_key_from_id(person_json, None)
+    if not person_pub_key:
         if debug:
             print('DEBUG: actor update does not contain a public key')
-        return False
-    if not person_json['publicKey'].get('publicKeyPem'):
-        if debug:
-            print('DEBUG: actor update does not contain a public key Pem')
         return False
     actor_filename = base_dir + '/cache/actors/' + \
         person_json['id'].replace('/', '#') + '.json'
@@ -1215,8 +1214,9 @@ def _person_receive_update(base_dir: str,
     # If they don't then this may be a nefarious attempt to hack an account
     idx = person_json['id']
     if person_cache.get(idx):
-        if person_cache[idx]['actor']['publicKey']['publicKeyPem'] != \
-           person_json['publicKey']['publicKeyPem']:
+        cache_pub_key, _ = \
+            get_actor_public_key_from_id(person_cache[idx]['actor'], None)
+        if cache_pub_key != person_pub_key:
             if debug:
                 print('WARN: Public key does not match when updating actor')
             return False
@@ -1224,26 +1224,27 @@ def _person_receive_update(base_dir: str,
         if os.path.isfile(actor_filename):
             existing_person_json = load_json(actor_filename)
             if existing_person_json:
-                if existing_person_json['publicKey']['publicKeyPem'] != \
-                   person_json['publicKey']['publicKeyPem']:
+                existing_pub_key, _ = \
+                    get_actor_public_key_from_id(existing_person_json, None)
+                if existing_pub_key != person_pub_key:
                     if debug:
                         print('WARN: Public key does not match ' +
                               'cached actor when updating')
                     return False
     # save to cache in memory
-    store_person_in_cache(base_dir, person_json['id'], person_json,
+    store_person_in_cache(base_dir, idx, person_json,
                           person_cache, True)
     # save to cache on file
     if save_json(person_json, actor_filename):
         if debug:
-            print('actor updated for ' + person_json['id'])
+            print('actor updated for ' + idx)
 
     if person_json.get('movedTo'):
         prev_domain_full = None
-        prev_domain, prev_port = get_domain_from_actor(person_json['id'])
+        prev_domain, prev_port = get_domain_from_actor(idx)
         if prev_domain:
             prev_domain_full = get_full_domain(prev_domain, prev_port)
-        prev_nickname = get_nickname_from_actor(person_json['id'])
+        prev_nickname = get_nickname_from_actor(idx)
         new_domain = None
         new_domain, new_port = get_domain_from_actor(person_json['movedTo'])
         if new_domain:

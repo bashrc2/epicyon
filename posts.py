@@ -19,6 +19,7 @@ from time import gmtime, strftime
 from collections import OrderedDict
 from threads import thread_with_trace
 from threads import begin_thread
+from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache
 from cache import get_person_from_cache
 from cache import expire_person_cache
@@ -392,13 +393,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     person_id = None
     if person_json.get('id'):
         person_id = person_json['id']
-    pub_key_id = None
-    pub_key = None
-    if person_json.get('publicKey'):
-        if person_json['publicKey'].get('id'):
-            pub_key_id = person_json['publicKey']['id']
-        if person_json['publicKey'].get('publicKeyPem'):
-            pub_key = person_json['publicKey']['publicKeyPem']
+    pub_key, pub_key_id = get_actor_public_key_from_id(person_json, None)
     shared_inbox = None
     if person_json.get('sharedInbox'):
         shared_inbox = person_json['sharedInbox']

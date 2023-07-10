@@ -378,6 +378,7 @@ from content import add_html_tags
 from content import extract_media_in_form_post
 from content import save_media_in_form_post
 from content import extract_text_fields_in_post
+from cache import get_actor_public_key_from_id
 from cache import check_for_changed_actor
 from cache import store_person_in_cache
 from cache import get_person_from_cache
@@ -972,9 +973,14 @@ class PubServer(BaseHTTPRequestHandler):
                 return None
             store_person_in_cache(base_dir, actor, actor_json,
                                   person_cache, False)
-        if not actor_json.get('publicKey'):
+        if not actor_json.get('publicKey') and \
+           not actor_json.get('authentication'):
             return None
-        return actor_json['publicKey']
+        original_person_url = \
+            self._get_instance_url(calling_domain) + path
+        pub_key, _ = \
+            get_actor_public_key_from_id(actor_json, original_person_url)
+        return pub_key
 
     def _login_headers(self, file_format: str, length: int,
                        calling_domain: str) -> None:
