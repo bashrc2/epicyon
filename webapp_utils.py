@@ -1332,11 +1332,36 @@ def get_post_attachments_as_html(base_dir: str,
 
     attachment_ctr = 0
     attachment_str = ''
+    chat_link_str = ''
     media_style_added = False
     post_id = None
     if post_json_object['object'].get('id'):
         post_id = post_json_object['object']['id']
         post_id = remove_id_ending(post_id).replace('/', '--')
+
+    # chat links
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/1970/fep-1970.md
+    for attach in post_json_object['object']['attachment']:
+        if not attach.get('type') or \
+           not attach.get('name') or \
+           not attach.get('href') or \
+           not attach.get('rel'):
+            continue
+        if not isinstance(attach['type'], str) or \
+           not isinstance(attach['name'], str) or \
+           not isinstance(attach['href'], str) or \
+           not isinstance(attach['rel'], str):
+            continue
+        if attach['type'] != 'Link' or \
+           attach['name'] != 'Chat' or \
+           attach['rel'] != 'discussion' or \
+           '://' not in attach['href'] or \
+           '.' not in attach['href']:
+            continue
+        chat_link_str += \
+            '<p><a href="' + attach['href'] + \
+            '" target="_blank" rel="nofollow noopener noreferrer">' + \
+            '💬 ' + translate['Chat'] + '</a></p>'
 
     # obtain transcripts
     transcripts = {}
@@ -1698,7 +1723,7 @@ def get_post_attachments_as_html(base_dir: str,
                 attachment_ctr += 1
     if media_style_added:
         attachment_str += '</div><br>'
-    return attachment_str, gallery_str
+    return attachment_str + chat_link_str, gallery_str
 
 
 def html_post_separator(base_dir: str, column: str) -> str:

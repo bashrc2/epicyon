@@ -626,5 +626,6 @@
     "Proxy": "대리",
     "Only allow replies from followers": "팔로어의 답글만 허용",
     "Only allow replies from mutuals": "상호 간의 답장만 허용",
-    "Reason": "이유"
+    "Reason": "이유",
+    "Chat": "채팅"
 }

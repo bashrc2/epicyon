@@ -622,5 +622,6 @@
     "Proxy": "Proxy",
     "Only allow replies from followers": "Only allow replies from followers",
     "Only allow replies from mutuals": "Only allow replies from mutuals",
-    "Reason": "Reason"
+    "Reason": "Reason",
+    "Chat": "Chat"
 }
