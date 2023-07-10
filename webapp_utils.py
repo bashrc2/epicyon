@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from utils import local_network_host
 from utils import get_media_extensions
 from utils import dangerous_markup
 from utils import acct_handle_dir
@@ -1361,6 +1362,9 @@ def get_post_attachments_as_html(base_dir: str,
         chat_domain_str = ''
         chat_domain, _ = get_domain_from_actor(attach['href'])
         if chat_domain:
+            if local_network_host(chat_domain):
+                print('REJECT: local network chat link ' + attach['href'])
+                continue
             chat_domain_str = ' (' + chat_domain + ')'
             # avoid displaying very long domains
             if len(chat_domain_str) > 50:
