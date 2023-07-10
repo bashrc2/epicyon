@@ -3641,7 +3641,7 @@ def _command_options() -> None:
         set_config_param(base_dir, 'admin', nickname)
 
     # set a lower bound to the maximum mentions
-    # so that it can't be accidentally set to zero and disable replies
+    # so that it can't be accidentally set to zxoero and disable replies
     argb.max_mentions = max(argb.max_mentions, 4)
 
     registration = get_config_param(base_dir, 'registration')
