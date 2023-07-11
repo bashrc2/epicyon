@@ -9864,7 +9864,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     minimize_all_images, None,
                                     self.server.buy_sites)
 
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            self._get_instance_url(calling_domain) + \
+            '/users/' + self.post_to_nickname
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
@@ -9990,7 +9992,9 @@ class PubServer(BaseHTTPRequestHandler):
                              self.post_to_nickname,
                              curr_session, proxy_type)
 
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            self._get_instance_url(calling_domain) + \
+            '/users/' + self.post_to_nickname
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
@@ -10443,7 +10447,9 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for liked post ' +
                   like_url)
 
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            self._get_instance_url(calling_domain) + \
+            '/users/' + self.post_to_nickname
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -10644,7 +10650,9 @@ class PubServer(BaseHTTPRequestHandler):
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            self._get_instance_url(calling_domain) + \
+            '/users/' + self.post_to_nickname
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -10880,7 +10888,9 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for emoji reaction post ' +
                   reaction_url)
 
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            self._get_instance_url(calling_domain) + \
+            '/users/' + self.post_to_nickname
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -11101,7 +11111,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: Unreaction post not found: ' +
                       reaction_post_filename)
 
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            self._get_instance_url(calling_domain) + \
+            '/users/' + self.post_to_nickname
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -11372,7 +11384,9 @@ class PubServer(BaseHTTPRequestHandler):
         # self._post_to_outbox(bookmark_json,
         # self.server.project_version, None,
         # curr_session, proxy_type)
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            self._get_instance_url(calling_domain) + \
+            '/users/' + self.post_to_nickname
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -11539,7 +11553,9 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Unbookmarked post not found: ' +
                       bookmark_filename)
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            self._get_instance_url(calling_domain) + \
+            '/users/' + self.post_to_nickname
 
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
