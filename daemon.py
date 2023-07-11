@@ -378,6 +378,7 @@ from content import add_html_tags
 from content import extract_media_in_form_post
 from content import save_media_in_form_post
 from content import extract_text_fields_in_post
+from cache import clear_actor_cache
 from cache import get_actor_public_key_from_id
 from cache import check_for_changed_actor
 from cache import store_person_in_cache
@@ -2697,6 +2698,8 @@ class PubServer(BaseHTTPRequestHandler):
                     moderation_button = 'filter'
                 elif moderation_str.startswith('submitUnfilter'):
                     moderation_button = 'unfilter'
+                elif moderation_str.startswith('submitClearCache'):
+                    moderation_button = 'clearcache'
                 elif moderation_str.startswith('submitSuspend'):
                     moderation_button = 'suspend'
                 elif moderation_str.startswith('submitUnsuspend'):
@@ -2723,6 +2726,10 @@ class PubServer(BaseHTTPRequestHandler):
                     add_global_filter(base_dir, moderation_text)
                 if moderation_button == 'unfilter':
                     remove_global_filter(base_dir, moderation_text)
+                if moderation_button == 'clearcache':
+                    clear_actor_cache(base_dir,
+                                      self.server.person_cache,
+                                      moderation_text)
                 if moderation_button == 'block':
                     full_block_domain = None
                     moderation_text = moderation_text.strip()

@@ -32,6 +32,31 @@ def _remove_person_from_cache(base_dir: str, person_url: str,
         del person_cache[person_url]
 
 
+def clear_actor_cache(base_dir: str, person_cache: {},
+                      clear_domain: str) -> None:
+    """Clears the actor cache for the given domain
+    This is useful if you know that a given instance has rotated their
+    signing keys after a security incident
+    """
+    if not clear_domain:
+        return
+    if '.' not in clear_domain:
+        return
+
+    actor_cache_dir = base_dir + '/cache/actors'
+    for subdir, _, files in os.walk(actor_cache_dir):
+        for fname in files:
+            filename = os.path.join(subdir, fname)
+            if not filename.endswith('.json'):
+                continue
+            if clear_domain not in fname:
+                continue
+            person_url = fname.replace('#', '/').replace('.json', '')
+            _remove_person_from_cache(base_dir, person_url,
+                                      person_cache)
+        break
+
+
 def check_for_changed_actor(session, base_dir: str,
                             http_prefix: str, domain_full: str,
                             person_url: str, avatar_url: str, person_cache: {},

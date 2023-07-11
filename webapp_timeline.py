@@ -294,6 +294,13 @@ def _html_timeline_moderation_buttons(moderator: bool, box_name: str,
             'alt="' + \
             translate['Unfilter words'] + ' | " ' + \
             'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
+        tl_str += \
+            '    <input type="submit" title="' + \
+            translate['Clear Cache'] + '" ' + \
+            'alt="' + \
+            translate['Clear Cache'] + ' | " ' + \
+            'name="submitClearCache" value="' + \
+            translate['Clear Cache'] + '">\n'
 
         tl_str += '</div>\n</form>\n'
     return tl_str

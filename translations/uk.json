@@ -628,5 +628,6 @@
     "Only allow replies from mutuals": "Дозволити відповіді лише від взаємних клієнтів",
     "Reason": "Причина",
     "Chat": "Чат",
-    "Chat link": "Посилання на чат"
+    "Chat link": "Посилання на чат",
+    "Clear Cache": "Очистити кеш"
 }

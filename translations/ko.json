@@ -628,5 +628,6 @@
     "Only allow replies from mutuals": "상호 간의 답장만 허용",
     "Reason": "이유",
     "Chat": "채팅",
-    "Chat link": "채팅 링크"
+    "Chat link": "채팅 링크",
+    "Clear Cache": "캐시 지우기"
 }

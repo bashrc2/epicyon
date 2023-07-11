@@ -628,5 +628,6 @@
     "Only allow replies from mutuals": "السماح فقط بالردود من المتبادلين",
     "Reason": "سبب",
     "Chat": "محادثة",
-    "Chat link": "رابط الدردشة"
+    "Chat link": "رابط الدردشة",
+    "Clear Cache": "مسح ذاكرة التخزين المؤقت"
 }

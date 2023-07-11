@@ -628,5 +628,6 @@
     "Only allow replies from mutuals": "Erlauben Sie nur Antworten von Gegenseitigkeitsgesellschaften",
     "Reason": "Grund",
     "Chat": "Plaudern",
-    "Chat link": "Chat-Link"
+    "Chat link": "Chat-Link",
+    "Clear Cache": "Cache leeren"
 }

@@ -628,5 +628,6 @@
     "Only allow replies from mutuals": "相互からの返信のみを許可する",
     "Reason": "理由",
     "Chat": "チャット",
-    "Chat link": "チャットリンク"
+    "Chat link": "チャットリンク",
+    "Clear Cache": "キャッシュの消去"
 }

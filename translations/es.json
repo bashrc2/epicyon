@@ -628,5 +628,6 @@
     "Only allow replies from mutuals": "Permitir solo respuestas de mutuas",
     "Reason": "Razón",
     "Chat": "Charlar",
-    "Chat link": "Enlace de chat"
+    "Chat link": "Enlace de chat",
+    "Clear Cache": "Limpiar cache"
 }
