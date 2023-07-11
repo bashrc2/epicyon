@@ -912,7 +912,7 @@ input[type=submit] {
     cursor: pointer;
     font-size: var(--font-size-header);
     font-family: 'Arial, Helvetica, sans-serif';
-    width: 10ch;
+    width: 12ch;
     float: right;
 }
 
@@ -1806,7 +1806,7 @@ h3 {
         cursor: pointer;
         font-size: var(--font-size);
         font-family: 'Arial, Helvetica, sans-serif';
-        width: 10ch;
+        width: 12ch;
         float: right;
     }
     .question {
@@ -2635,7 +2635,7 @@ h3 {
         cursor: pointer;
         font-size: var(--font-size3);
         font-family: 'Arial, Helvetica, sans-serif';
-        width: 10ch;
+        width: 12ch;
         float: right;
     }
     .question {
@@ -3462,7 +3462,7 @@ h3 {
         cursor: pointer;
         font-size: var(--font-size4);
         font-family: 'Arial, Helvetica, sans-serif';
-        width: 10ch;
+        width: 12ch;
         float: right;
     }
     .question {
