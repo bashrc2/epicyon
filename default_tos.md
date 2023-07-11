@@ -36,7 +36,7 @@ The administrator of this instance does not agree to participate in human subjec
 ### Commercial Use
 Commercial use of original content on this instance is strictly forbidden without the prior written permission of individual account holders. The instance administrator does not hold copyright on any original content posted by account holders. Publication or federation of content does not imply permission for commercial use.
 
-Commercial use includes the harvesting of data to create products which are then sold, such as statistics, business reports or machine learning models.
+Commercial use includes the harvesting of data to create products or subscription based services which are then sold, such as statistics, business reports or machine learning models.
 
 ### Copyrights
 Epicyon is licensed under [GNU AGPL version 3](https://www.gnu.org/licenses/agpl-3.0-standalone.html)
