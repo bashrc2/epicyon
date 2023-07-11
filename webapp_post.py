@@ -817,7 +817,7 @@ def _get_announce_icon_html(is_announced: bool,
 
     first_post_str = ''
     if first_post_id:
-        first_post_str = '?firstpost=' + first_post_id
+        first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
     announce_link_str = '?' + \
         announce_link + '=' + announce_post_id + page_number_param
@@ -903,7 +903,7 @@ def _get_like_icon_html(nickname: str, domain_full: str,
 
     first_post_str = ''
     if first_post_id:
-        first_post_str = '?firstpost=' + first_post_id
+        first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
     like_str += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
@@ -964,7 +964,7 @@ def _get_bookmark_icon_html(base_dir: str,
 
     first_post_str = ''
     if first_post_id:
-        first_post_str = '?firstpost=' + first_post_id
+        first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
     bookmark_str = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
@@ -1010,7 +1010,7 @@ def _get_reaction_icon_html(nickname: str, post_json_object: {},
 
     first_post_str = ''
     if first_post_id:
-        first_post_str = '?firstpost=' + first_post_id
+        first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
     reaction_str = \
         '        <a class="imageAnchor" href="/users/' + nickname + \
@@ -1048,7 +1048,7 @@ def _get_mute_icon_html(is_muted: bool,
 
     first_post_str = ''
     if first_post_id:
-        first_post_str = '?firstpost=' + first_post_id
+        first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
     if not is_muted:
         mute_this_post_str = 'Mute this post'
@@ -1107,7 +1107,8 @@ def _get_delete_icon_html(nickname: str, domain_full: str,
 
                 first_post_str = ''
                 if first_post_id:
-                    first_post_str = '?firstpost=' + first_post_id
+                    first_post_str = \
+                        '?firstpost=' + first_post_id.replace('#', '/')
 
                 delete_str = \
                     '        <a class="imageAnchor" href="/users/' + \
