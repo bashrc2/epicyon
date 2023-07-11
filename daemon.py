@@ -122,6 +122,7 @@ from inbox import save_post_to_inbox_queue
 from inbox import populate_replies
 from inbox import receive_edit_to_post
 from followerSync import update_followers_sync_cache
+from follow import pending_followers_timeline_json
 from follow import follower_approval_active
 from follow import is_following_actor
 from follow import get_following_feed
@@ -17369,6 +17370,60 @@ class PubServer(BaseHTTPRequestHandler):
                                           blocked_items_per_page, base_dir,
                                           nickname, self.server.domain)
             msg_str = json.dumps(blocked_json,
+                                 ensure_ascii=False)
+            msg_str = self._convert_domains(calling_domain,
+                                            referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            accept_str = self.headers['Accept']
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
+            self._set_headers(protocol_str, msglen,
+                              None, calling_domain, False)
+            self._write(msg)
+            return
+
+        if self.path.startswith('/users/') and \
+           '/pendingFollowers' in self.path:
+            pending_collection_authorized = authorized
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            page_number = 1
+            if '?page=' in self.path:
+                page_number_str = self.path.split('?page=')[1]
+                if ';' in page_number_str:
+                    page_number_str = page_number_str.split(';')[0]
+                if page_number_str.isdigit():
+                    page_number = int(page_number_str)
+            # show pending followers collection for the nickname
+            actor = \
+                local_actor_url(self.server.http_prefix,
+                                nickname, self.server.domain_full)
+            actor += '/pendingFollowers'
+            pending_json = {
+                "@context": [
+                    "https://www.w3.org/ns/activitystreams"
+                ],
+                "id": actor,
+                "type": "OrderedCollection",
+                "name": nickname + "'s Pending Followers",
+                "orderedItems": []
+            }
+            if self._has_accept(calling_domain) and \
+               pending_collection_authorized:
+                if self.server.debug:
+                    print('Preparing pending followers collection')
+
+                if self.server.debug:
+                    print('Pending followers collection for account: ' +
+                          nickname)
+                base_dir = self.server.base_dir
+                pending_json = \
+                    pending_followers_timeline_json(actor, base_dir, nickname,
+                                                    self.server.domain)
+            msg_str = json.dumps(pending_json,
                                  ensure_ascii=False)
             msg_str = self._convert_domains(calling_domain,
                                             referer_domain,

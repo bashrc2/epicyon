@@ -1555,3 +1555,35 @@ def remove_follower(base_dir: str,
         print('EX: remove_follower unable to write followers ' +
               followers_filename)
     return True
+
+
+def pending_followers_timeline_json(actor: str, base_dir: str,
+                                    nickname: str, domain: str) -> {}:
+    """Returns pending followers collection for an account
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/4ccd/fep-4ccd.md
+    """
+    result_json = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams"
+        ],
+        "id": actor,
+        "type": "OrderedCollection",
+        "name": nickname + "'s Pending Followers",
+        "orderedItems": []
+    }
+
+    follow_requests_filename = \
+        acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
+    if os.path.isfile(follow_requests_filename):
+        with open(follow_requests_filename, 'r',
+                  encoding='utf-8') as req_file:
+            for follower_handle in req_file:
+                if len(follower_handle) == 0:
+                    continue
+                follower_handle = remove_eol(follower_handle)
+                foll_json = {
+                    "type": "Follow",
+                    "actor": follower_handle
+                }
+                result_json['orderedItems'].append(foll_json)
+    return result_json
