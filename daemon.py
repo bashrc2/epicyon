@@ -10455,6 +10455,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number) + first_post_id + \
             timeline_bookmark
+        print('DEBUG: Like actor_path_str = ' + actor_path_str)
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_like_button',
                             self.server.debug)
