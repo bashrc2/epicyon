@@ -616,6 +616,9 @@ Most fediverse posts have *Public* scope, and various web crawlers routinely try
 
 If you are the administrator of the instance then to see the currently active web search crawlers edit your profile and select **Filtering and blocking**, then **Known Web Search Bots**. The most common ones will appear at the top. To enable particular ones add their name to **Web Search Bots Allowed** (one per line).
 
+### Clearing the Actor Cache
+If you know that an instance has had a security incident and has rotated their signing keys then you can clear the cache for that instance so that their public keys will be refreshed. Enter the domain name for the instance and then select **Clear Cache** button.
+
 ## Account level moderation
 ### Filtering
 From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify filtered words or phrases. Be sure to select **Publish** to finalize your settings.
