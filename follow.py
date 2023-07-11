@@ -1581,9 +1581,20 @@ def pending_followers_timeline_json(actor: str, base_dir: str,
                 if len(follower_handle) == 0:
                     continue
                 follower_handle = remove_eol(follower_handle)
-                foll_json = {
-                    "type": "Follow",
-                    "actor": follower_handle
-                }
-                result_json['orderedItems'].append(foll_json)
+                foll_domain, _ = get_domain_from_actor(follower_handle)
+                if not foll_domain:
+                    continue
+                foll_nickname = get_nickname_from_actor(follower_handle)
+                if not foll_nickname:
+                    continue
+                follow_activity_filename = \
+                    acct_dir(base_dir, nickname, domain) + \
+                    '/requests/' + \
+                    foll_nickname + '@' + foll_domain + '.follow'
+                if not os.path.isfile(follow_activity_filename):
+                    continue
+                follow_json = load_json(follow_activity_filename)
+                if not follow_json:
+                    continue
+                result_json['orderedItems'].append(follow_json)
     return result_json
