@@ -1042,6 +1042,8 @@ def _receive_undo_follow(base_dir: str, message_json: {},
         }
     }
     """
+    if not message_json['object'].get('object'):
+        return False
     if not message_json['object'].get('actor'):
         if debug:
             print('DEBUG: undo follow request has no actor within object')
@@ -1071,8 +1073,19 @@ def _receive_undo_follow(base_dir: str, message_json: {},
         return False
     domain_follower_full = get_full_domain(domain_follower, port_follower)
 
+    following_actor = None
+    if isinstance(message_json['object']['object'], str):
+        following_actor = message_json['object']['object']
+    elif isinstance(message_json['object']['object'], dict):
+        if message_json['object']['object'].get('id'):
+            if isinstance(message_json['object']['object']['id'], str):
+                following_actor = message_json['object']['object']['id']
+    if not following_actor:
+        print('WARN: undo follow without following actor')
+        return False
+
     nickname_following = \
-        get_nickname_from_actor(message_json['object']['object'])
+        get_nickname_from_actor(following_actor)
     if not nickname_following:
         print('WARN: undo follow request unable to find nickname in ' +
               message_json['object']['object'])
@@ -1124,8 +1137,6 @@ def _receive_undo(base_dir: str, message_json: {}, debug: bool,
             print('DEBUG: "users" or "profile" missing from actor')
         return False
     if not has_object_string_type(message_json, debug):
-        return False
-    if not has_object_string_object(message_json, debug):
         return False
     if message_json['object']['type'] == 'Follow' or \
        message_json['object']['type'] == 'Join':
