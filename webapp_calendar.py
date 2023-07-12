@@ -10,6 +10,7 @@ __module_group__ = "Calendar"
 import os
 from datetime import datetime
 from datetime import date
+from utils import remove_html
 from utils import get_display_name
 from utils import get_config_param
 from utils import get_nickname_from_actor
@@ -224,7 +225,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                         event_description = evnt['name'].strip()
                 elif evnt['type'] == 'Place':
                     if evnt.get('name'):
-                        event_place = evnt['name']
+                        event_place = remove_html(evnt['name'])
                         if '://' in event_place:
                             bounding_box_degrees = 0.001
                             event_map = \

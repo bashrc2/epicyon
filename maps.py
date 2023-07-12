@@ -30,7 +30,8 @@ def get_location_from_tags(tags: []) -> str:
             continue
         if not isinstance(tag_item['name'], str):
             continue
-        return tag_item['name'].replace('\n', ' ')
+        location_str = tag_item['name'].replace('\n', ' ')
+        return remove_html(location_str)
     return None
 
 

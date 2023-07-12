@@ -404,7 +404,7 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
                     event_description = evnt['name'].strip()
             elif evnt['type'] == 'Place':
                 if evnt.get('name'):
-                    event_place = evnt['name']
+                    event_place = remove_html(evnt['name'])
 
         print('icalendar: ' + str(post_id) + ' ' +
               str(event_start) + ' ' + str(event_description) + ' ' +
