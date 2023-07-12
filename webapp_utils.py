@@ -2393,19 +2393,19 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
             if isinstance(item['rel'], str):
                 if item['rel'] in ('payment', 'pay', 'donate', 'donation',
                                    'buy', 'purchase'):
-                    links[item_name] = item['href']
+                    links[item_name] = remove_html(item['href'])
                     continue
         if buy_sites:
             # limited to an allowlist of buying sites
             for site, buy_domain in buy_sites.items():
                 if buy_domain in item['href']:
-                    links[site.title()] = item['href']
+                    links[site.title()] = remove_html(item['href'])
                     continue
         else:
             # The name only needs to indicate that this is a buy link
             for buy_str in buy_strings:
                 if buy_str in item_name.lower():
-                    links[item_name] = item['href']
+                    links[item_name] = remove_html(item['href'])
                     continue
     return links
 
