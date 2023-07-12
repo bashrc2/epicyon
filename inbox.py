@@ -1088,13 +1088,13 @@ def _receive_undo_follow(base_dir: str, message_json: {},
         get_nickname_from_actor(following_actor)
     if not nickname_following:
         print('WARN: undo follow request unable to find nickname in ' +
-              message_json['object']['object'])
+              following_actor)
         return False
     domain_following, port_following = \
-        get_domain_from_actor(message_json['object']['object'])
+        get_domain_from_actor(following_actor)
     if not domain_following:
         print('WARN: undo follow request unable to find domain in ' +
-              message_json['object']['object'])
+              following_actor)
         return False
     if onion_domain:
         if domain_following.endswith(onion_domain):
