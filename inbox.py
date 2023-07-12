@@ -1030,31 +1030,44 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
 def _receive_undo_follow(base_dir: str, message_json: {},
                          debug: bool, domain: str,
                          onion_domain: str, i2p_domain: str) -> bool:
+    """
+    Receives an undo follow
+    {
+        "type": "Undo",
+        "actor": "https://some.instance/@someone",
+        "object": {
+            "type": "Follow",
+            "actor": "https://some.instance/@someone",
+            "object": "https://social.example/@somenickname"
+        }
+    }
+    """
     if not message_json['object'].get('actor'):
         if debug:
             print('DEBUG: undo follow request has no actor within object')
         return False
-    if not has_users_path(message_json['object']['actor']):
+    actor = message_json['object']['actor']
+    if not has_users_path(actor):
         if debug:
             print('DEBUG: undo follow request "users" or "profile" missing ' +
                   'from actor within object')
         return False
-    if message_json['object']['actor'] != message_json['actor']:
+    if actor != message_json['actor']:
         if debug:
             print('DEBUG: undo follow request actors do not match')
         return False
 
     nickname_follower = \
-        get_nickname_from_actor(message_json['object']['actor'])
+        get_nickname_from_actor(actor)
     if not nickname_follower:
         print('WARN: undo follow request unable to find nickname in ' +
-              message_json['object']['actor'])
+              actor)
         return False
     domain_follower, port_follower = \
-        get_domain_from_actor(message_json['object']['actor'])
+        get_domain_from_actor(actor)
     if not domain_follower:
         print('WARN: undo follow request unable to find domain in ' +
-              message_json['object']['actor'])
+              actor)
         return False
     domain_follower_full = get_full_domain(domain_follower, port_follower)
 
@@ -1079,7 +1092,7 @@ def _receive_undo_follow(base_dir: str, message_json: {},
     domain_following_full = get_full_domain(domain_following, port_following)
 
     group_account = \
-        has_group_type(base_dir, message_json['object']['actor'], None)
+        has_group_type(base_dir, actor, None)
     if unfollower_of_account(base_dir,
                              nickname_following, domain_following_full,
                              nickname_follower, domain_follower_full,
