@@ -30,6 +30,7 @@ from utils import has_actor
 from utils import has_object_string_type
 from utils import text_in_file
 from utils import remove_eol
+from utils import remove_html
 from posts import get_person_box
 from session import post_json
 
@@ -599,6 +600,7 @@ def outbox_bookmark(recent_posts_cache: {},
         print('DEBUG: c2s bookmark Add request arrived in outbox')
 
     message_url = remove_id_ending(message_json['object']['url'])
+    message_url = remove_html(message_url)
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, message_url)
     if not post_filename:
@@ -656,6 +658,7 @@ def outbox_undo_bookmark(recent_posts_cache: {},
         print('DEBUG: c2s unbookmark Remove request arrived in outbox')
 
     message_url = remove_id_ending(message_json['object']['url'])
+    message_url = remove_html(message_url)
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, message_url)
     if not post_filename:

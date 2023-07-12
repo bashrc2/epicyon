@@ -216,10 +216,10 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
             else:
                 url = link['href']
             if not contains_invalid_actor_url_chars(url):
-                return url
+                return remove_html(url)
         url = link['href']
         if not contains_invalid_actor_url_chars(url):
-            return url
+            return remove_html(url)
     return None
 
 
@@ -404,7 +404,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     avatar_url = None
     if person_json.get('icon'):
         if person_json['icon'].get('url'):
-            avatar_url = person_json['icon']['url']
+            avatar_url = remove_html(person_json['icon']['url'])
     display_name = None
     if person_json.get('name'):
         display_name = person_json['name']
@@ -628,7 +628,8 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                                 if url_permitted(tag_item['icon']['url'],
                                                  federation_list):
                                     emoji_name = tag_item['name']
-                                    emoji_icon = tag_item['icon']['url']
+                                    emoji_icon = \
+                                        remove_html(tag_item['icon']['url'])
                                     emoji[emoji_name] = emoji_icon
                                 else:
                                     if debug:
@@ -675,10 +676,11 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                     for attach in this_item['attachment']:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
-                            if url_permitted(attach['url'],
+                            attach_url = remove_html(attach['url'])
+                            if url_permitted(attach_url,
                                              federation_list):
                                 attachment.append([attach['name'],
-                                                   attach['url']])
+                                                   attach_url])
                             else:
                                 if debug:
                                     print('url not permitted ' +
@@ -820,8 +822,9 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
                 tag_type = tag_item['type'].lower()
                 if tag_type == 'mention':
                     if tag_item.get('href'):
+                        tag_url = remove_html(tag_item['href'])
                         post_domain, _ = \
-                            get_domain_from_actor(tag_item['href'])
+                            get_domain_from_actor(tag_url)
                         if post_domain:
                             if post_domain not in post_domains:
                                 post_domains.append(post_domain)
@@ -879,6 +882,7 @@ def _get_posts_for_blocked_domains(base_dir: str,
                         url = item['object']['url']
                     else:
                         url = item['object']['id']
+                    url = remove_html(url)
                     if not blocked_posts.get(post_domain):
                         blocked_posts[post_domain] = [url]
                     else:
@@ -891,8 +895,9 @@ def _get_posts_for_blocked_domains(base_dir: str,
                     continue
                 tag_type = tag_item['type'].lower()
                 if tag_type == 'mention' and tag_item.get('href'):
+                    tag_url = remove_html(tag_item['href'])
                     post_domain, _ = \
-                        get_domain_from_actor(tag_item['href'])
+                        get_domain_from_actor(tag_url)
                     if not post_domain:
                         continue
                     if is_blocked_domain(base_dir, post_domain):
@@ -900,6 +905,7 @@ def _get_posts_for_blocked_domains(base_dir: str,
                             url = item['object']['url']
                         else:
                             url = item['object']['id']
+                        url = remove_html(url)
                         if not blocked_posts.get(post_domain):
                             blocked_posts[post_domain] = [url]
                         else:
@@ -1496,7 +1502,8 @@ def _create_post_mentions(cc_url: str, new_post: {},
                 if tag['type'] != 'Mention':
                     continue
                 if tag['href'] not in to_cc:
-                    new_post['object']['cc'].append(tag['href'])
+                    tag_url = remove_html(tag['href'])
+                    new_post['object']['cc'].append(tag_url)
 
         _consolidate_actors_list(new_post['object']['cc'])
         new_post['cc'] = new_post['object']['cc']
@@ -2099,9 +2106,9 @@ def create_blog_post(base_dir: str,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url)
-    if '/@/' not in blog_json['object']['url']:
-        blog_json['object']['url'] = \
-            blog_json['object']['url'].replace('/@', '/users/')
+    obj_url = remove_html(blog_json['object']['url'])
+    if '/@/' not in obj_url:
+        blog_json['object']['url'] = obj_url.replace('/@', '/users/')
     _append_citations_to_blog_post(base_dir, nickname, domain, blog_json)
 
     return blog_json

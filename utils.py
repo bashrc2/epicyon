@@ -1862,6 +1862,7 @@ def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
     attachment_url = post_json['attachment'][0]['url']
     if not attachment_url:
         return
+    attachment_url = remove_html(attachment_url)
     media_filename = base_dir + '/' + \
         attachment_url.replace(http_prefix + '://' + domain + '/', '')
     if os.path.isfile(media_filename):

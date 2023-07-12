@@ -149,8 +149,9 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
                     "    <meta content=\"@" + actor_handle + \
                     "\" property=\"og:title\" />\n"
     if obj_json.get('url'):
+        obj_url = remove_html(obj_json['url'])
         metadata += \
-            "    <meta content=\"" + obj_json['url'] + \
+            "    <meta content=\"" + obj_url + \
             "\" property=\"og:url\" />\n"
     if obj_json.get('published'):
         metadata += "    <meta name=\"DC.date\" " + \
@@ -204,8 +205,9 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"og:description\">\n"
+            attach_url = remove_html(attach_json['url'])
             metadata += \
-                "    <meta content=\"" + attach_json['url'] + \
+                "    <meta content=\"" + attach_url + \
                 "\" property=\"og:image\" />\n"
             metadata += \
                 "    <meta content=\"" + attach_json['mediaType'] + \
@@ -1188,9 +1190,11 @@ def _get_blog_citations_html(box_name: str,
             continue
         if not tag_json.get('url'):
             continue
+        citation_url = remove_html(tag_json['url'])
+        citation_name = remove_html(tag_json['name'])
         citations_str += \
-            '<li><a href="' + tag_json['url'] + '" tabindex="10">' + \
-            '<cite>' + tag_json['name'] + '</cite></a></li>\n'
+            '<li><a href="' + citation_url + '" tabindex="10">' + \
+            '<cite>' + citation_name + '</cite></a></li>\n'
 
     if citations_str:
         translated_citations_str = 'Citations'
@@ -1844,9 +1848,9 @@ def _get_content_license(post_json_object: {}) -> str:
            'licence' not in name_lower:
             continue
         if item.get('value'):
-            value = item['value']
+            value = remove_html(item['value'])
         elif item.get('href'):
-            value = item['href']
+            value = remove_html(item['href'])
         else:
             continue
         if '://' not in value:

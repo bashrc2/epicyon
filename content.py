@@ -445,7 +445,8 @@ def replace_emoji_from_tags(session, base_dir: str,
             continue
         if tag_item['name'] not in content:
             continue
-        icon_name = tag_item['icon']['url'].split('/')[-1]
+        tag_url = remove_html(tag_item['icon']['url'])
+        icon_name = tag_url.split('/')[-1]
         if icon_name:
             if len(icon_name) > 1:
                 if icon_name[0].isdigit():
@@ -472,14 +473,12 @@ def replace_emoji_from_tags(session, base_dir: str,
                                           'no conversion of ' +
                                           str(icon_name) + ' to chr ' +
                                           tag_item['name'] + ' ' +
-                                          tag_item['icon']['url'])
+                                          tag_url)
                             if not replaced:
                                 _save_custom_emoji(session, base_dir,
                                                    tag_item['name'],
-                                                   tag_item['icon']['url'],
-                                                   debug)
-                                _update_common_emoji(base_dir,
-                                                     icon_name)
+                                                   tag_url, debug)
+                                _update_common_emoji(base_dir, icon_name)
                             else:
                                 _update_common_emoji(base_dir,
                                                      "0x" + icon_name)
@@ -501,12 +500,11 @@ def replace_emoji_from_tags(session, base_dir: str,
                                               'no conversion of ' +
                                               str(icode) + ' to chr ' +
                                               tag_item['name'] + ' ' +
-                                              tag_item['icon']['url'])
+                                              tag_url)
                                 if not replaced:
                                     _save_custom_emoji(session, base_dir,
                                                        tag_item['name'],
-                                                       tag_item['icon']['url'],
-                                                       debug)
+                                                       tag_url, debug)
                                     _update_common_emoji(base_dir,
                                                          icon_name)
                                 else:
@@ -529,7 +527,8 @@ def replace_emoji_from_tags(session, base_dir: str,
             emoji_tag_name = tag_item['name'].replace(':', '')
         else:
             emoji_tag_name = ''
-        emoji_html = "<img src=\"" + tag_item['icon']['url'] + "\" alt=\"" + \
+        tag_url = remove_html(tag_item['icon']['url'])
+        emoji_html = "<img src=\"" + tag_url + "\" alt=\"" + \
             emoji_tag_name + \
             "\" align=\"middle\" class=\"" + html_class + "\"/>"
         content = content.replace(tag_item['name'], emoji_html)

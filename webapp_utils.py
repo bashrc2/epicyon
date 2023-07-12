@@ -627,11 +627,12 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                         file_extension = mtype
                 if file_extension:
                     media_type = 'image/' + file_extension
+                    shared_item_url = remove_html(shared_item['imageUrl'])
                     offer_item['object']['attachment'].append({
                         'mediaType': media_type,
                         'name': shared_item['displayName'],
                         'type': 'Document',
-                        'url': shared_item['imageUrl']
+                        'url': shared_item_url
                     })
         if shared_item['itemPrice'] and shared_item['itemCurrency']:
             offer_item['object']['attachment'].append({
@@ -939,11 +940,12 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
     domain_full = actor_json['id'].split('://')[1].split('/')[0]
     handle = actor_json['preferredUsername'] + '@' + domain_full
 
+    icon_url = remove_html(actor_json['icon']['url'])
     person_markup = \
         '      "about": {\n' + \
         '        "@type" : "Person",\n' + \
         '        "name": "' + name_str + '",\n' + \
-        '        "image": "' + actor_json['icon']['url'] + '",\n' + \
+        '        "image": "' + icon_url + '",\n' + \
         '        "description": "' + description + '",\n' + \
         city_markup + skills_markup + \
         '        "url": "' + actor_json['id'] + '"\n' + \
@@ -967,18 +969,19 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         '        "name": "' + name_str + '"\n' + \
         '      },\n' + \
         '      "name": "' + name_str + '",\n' + \
-        '      "image": "' + actor_json['icon']['url'] + '",\n' + \
+        '      "image": "' + icon_url + '",\n' + \
         '      "description": "' + description + '",\n' + \
         '      "license": "' + content_license_url + '"\n' + \
         '    }\n' + \
         '    </script>\n'
 
     description = remove_html(description)
+    actor2_url = remove_html(actor_json['url'])
     og_metadata = \
         "    <meta content=\"profile\" property=\"og:type\" />\n" + \
         "    <meta content=\"" + description + \
         "\" name='description'>\n" + \
-        "    <meta content=\"" + actor_json['url'] + \
+        "    <meta content=\"" + actor2_url + \
         "\" property=\"og:url\" />\n" + \
         "    <meta content=\"" + domain_full + \
         "\" property=\"og:site_name\" />\n" + \
@@ -986,7 +989,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         ")\" property=\"og:title\" />\n" + \
         "    <meta content=\"" + description + \
         "\" property=\"og:description\" />\n" + \
-        "    <meta content=\"" + actor_json['icon']['url'] + \
+        "    <meta content=\"" + icon_url + \
         "\" property=\"og:image\" />\n" + \
         "    <meta content=\"400\" property=\"og:image:width\" />\n" + \
         "    <meta content=\"400\" property=\"og:image:height\" />\n" + \
@@ -1362,7 +1365,8 @@ def get_post_attachments_as_html(base_dir: str,
             continue
         # get the domain for the chat link
         chat_domain_str = ''
-        chat_domain, _ = get_domain_from_actor(attach['href'])
+        attach_url = remove_html(attach['href'])
+        chat_domain, _ = get_domain_from_actor(attach_url)
         if chat_domain:
             if local_network_host(chat_domain):
                 print('REJECT: local network chat link ' + attach['href'])
@@ -1505,6 +1509,7 @@ def get_post_attachments_as_html(base_dir: str,
                         image_post_url = post_json_object['object']['url']
                     else:
                         image_post_url = post_json_object['object']['id']
+                    image_post_url = remove_html(image_post_url)
                     if image_description and not is_muted:
                         gallery_str += \
                             '  <a href="' + image_post_url + \
@@ -1632,6 +1637,7 @@ def get_post_attachments_as_html(base_dir: str,
                         video_post_url = post_json_object['object']['url']
                     else:
                         video_post_url = post_json_object['object']['id']
+                    video_post_url = remove_html(video_post_url)
                     if image_description and not is_muted:
                         gallery_str += \
                             '  <a href="' + video_post_url + \
@@ -1709,6 +1715,7 @@ def get_post_attachments_as_html(base_dir: str,
                         audio_post_url = post_json_object['object']['url']
                     else:
                         audio_post_url = post_json_object['object']['id']
+                    audio_post_url = remove_html(audio_post_url)
                     if image_description and not is_muted:
                         gallery_str += \
                             '  <a href="' + audio_post_url + \

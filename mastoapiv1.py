@@ -11,6 +11,7 @@ import os
 from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
+from utils import remove_html
 from metadata import meta_data_instance
 
 
@@ -62,6 +63,8 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
     account_json = load_json(account_filename)
     if not account_json:
         return {}
+    avatar_url = remove_html(account_json['icon']['url'])
+    image_url = remove_html(account_json['image']['url'])
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),
         "username": nickname,
@@ -74,10 +77,10 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
         "statuses_count": 0,
         "note": account_json['summary'],
         "url": account_json['id'],
-        "avatar": account_json['icon']['url'],
-        "avatar_static": account_json['icon']['url'],
-        "header": account_json['image']['url'],
-        "header_static": account_json['image']['url']
+        "avatar": avatar_url,
+        "avatar_static": avatar_url,
+        "header": image_url,
+        "header_static": image_url
     }
     return masto_account_json
 

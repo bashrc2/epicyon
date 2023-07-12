@@ -187,7 +187,7 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
             continue
         if attach['url'].endswith('.svg') or \
            'svg' in attach['mediaType']:
-            url = attach['url']
+            url = remove_html(attach['url'])
             if not url_permitted(url, federation_list):
                 continue
             # if this is a local image then it has already been
@@ -1175,8 +1175,9 @@ def _person_receive_update(base_dir: str,
                            debug: bool, http_prefix: str) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
+    person_url = remove_html(person_json['url'])
     if debug:
-        print('Receiving actor update for ' + person_json['url'] +
+        print('Receiving actor update for ' + person_url +
               ' ' + str(person_json))
     domain_full = get_full_domain(domain, port)
     update_domain_full = get_full_domain(update_domain, update_port)
@@ -2581,7 +2582,8 @@ def _receive_bookmark(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
 
-    message_url = remove_id_ending(message_json['object']['url'])
+    message_url2 = remove_html(message_json['object']['url'])
+    message_url = remove_id_ending(message_url2)
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, message_url)
     if not post_filename:
@@ -2591,7 +2593,7 @@ def _receive_bookmark(recent_posts_cache: {},
         return True
 
     update_bookmarks_collection(recent_posts_cache, base_dir, post_filename,
-                                message_json['object']['url'],
+                                message_url2,
                                 message_json['actor'], domain, debug)
     # regenerate the html
     bookmarked_post_json = load_json(post_filename, 0, 1)
@@ -2707,7 +2709,8 @@ def _receive_undo_bookmark(recent_posts_cache: {},
         print('DEBUG: c2s inbox Remove bookmark ' +
               'request arrived in outbox')
 
-    message_url = remove_id_ending(message_json['object']['url'])
+    message_url2 = remove_html(message_json['object']['url'])
+    message_url = remove_id_ending(message_url2)
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, message_url)
     if not post_filename:

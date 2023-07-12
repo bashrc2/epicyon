@@ -1789,7 +1789,7 @@ def get_person_avatar_url(base_dir: str, person_url: str,
     if person_json.get('icon'):
         if person_json['icon'].get('url'):
             if '.svg' not in person_json['icon']['url'].lower():
-                return person_json['icon']['url']
+                return remove_html(person_json['icon']['url'])
     return None
 
 
@@ -1971,7 +1971,7 @@ def get_featured_hashtags(actor_json: {}) -> str:
             tag_name = tag_name[1:]
         if not tag_name:
             continue
-        tag_url = tag_dict['href']
+        tag_url = remove_html(tag_dict['href'])
         if '://' not in tag_url:
             continue
         if not valid_hash_tag(tag_name):
@@ -2019,13 +2019,13 @@ def get_featured_hashtags_as_html(actor_json: {},
             continue
         if ' #' + tag_name in profile_description:
             continue
-        tag_url = tag_dict['href']
+        tag_url = remove_html(tag_dict['href'])
         if '://' not in tag_url:
             continue
         if not valid_hash_tag(tag_name):
             continue
         result += \
-            '<a href="' + tag_dict['href'] + '" ' + \
+            '<a href="' + tag_url + '" ' + \
             'class="mention hashtag" rel="tag" ' + \
             'tabindex="10">#' + tag_name + '</a> '
         ctr += 1

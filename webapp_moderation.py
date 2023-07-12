@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
+from utils import remove_html
 from utils import is_artist
 from utils import is_account_dir
 from utils import get_full_domain
@@ -387,7 +388,7 @@ def html_moderation_info(translate: {}, base_dir: str,
         ext = ''
         if actor_json.get('icon'):
             if actor_json['icon'].get('url'):
-                avatar_url = actor_json['icon']['url']
+                avatar_url = remove_html(actor_json['icon']['url'])
                 if '.' in avatar_url:
                     ext = '.' + avatar_url.split('.')[-1]
         acct_url = \

@@ -6419,7 +6419,7 @@ class PubServer(BaseHTTPRequestHandler):
                     for m_type, last_part in uploads:
                         rep_str = '/' + last_part
                         if m_type == 'avatar':
-                            actor_url = actor_json['icon']['url']
+                            actor_url = remove_html(actor_json['icon']['url'])
                             last_part_of_url = actor_url.split('/')[-1]
                             srch_str = '/' + last_part_of_url
                             actor_url = actor_url.replace(srch_str, rep_str)
@@ -6432,15 +6432,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 actor_json['icon']['mediaType'] = \
                                     'image/' + img_ext
                         elif m_type == 'image':
-                            last_part_of_url = \
-                                actor_json['image']['url'].split('/')[-1]
+                            im_url = \
+                                remove_html(actor_json['image']['url'])
+                            last_part_of_url = im_url.split('/')[-1]
                             srch_str = '/' + last_part_of_url
                             actor_json['image']['url'] = \
-                                actor_json['image']['url'].replace(srch_str,
-                                                                   rep_str)
-                            if '.' in actor_json['image']['url']:
-                                img_ext = \
-                                    actor_json['image']['url'].split('.')[-1]
+                                im_url.replace(srch_str, rep_str)
+                            if '.' in im_url:
+                                img_ext = im_url.split('.')[-1]
                                 if img_ext == 'jpg':
                                     img_ext = 'jpeg'
                                 actor_json['image']['mediaType'] = \

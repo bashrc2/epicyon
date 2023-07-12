@@ -38,7 +38,7 @@ def _html_podcast_chapters(link_url: str,
     if not isinstance(podcast_properties[key], dict):
         return ''
     if podcast_properties[key].get('url'):
-        chapters_url = podcast_properties[key]['url']
+        chapters_url = remove_html(podcast_properties[key]['url'])
     elif podcast_properties[key].get('uri'):
         chapters_url = podcast_properties[key]['uri']
     else:
@@ -79,7 +79,7 @@ def _html_podcast_chapters(link_url: str,
                 chapter_title = chapter['title']
                 chapter_url = ''
                 if chapter.get('url'):
-                    chapter_url = chapter['url']
+                    chapter_url = remove_html(chapter['url'])
                     chapter_title = \
                         '<a href="' + chapter_url + '">' + \
                         chapter['title'] + '<\a>'
@@ -121,7 +121,7 @@ def _html_podcast_transcripts(podcast_properties: {}, translate: {}) -> str:
     for _ in podcast_properties[key]:
         transcript_url = None
         if podcast_properties[key].get('url'):
-            transcript_url = podcast_properties[key]['url']
+            transcript_url = remove_html(podcast_properties[key]['url'])
         elif podcast_properties[key].get('uri'):
             transcript_url = podcast_properties[key]['uri']
         if not transcript_url:
@@ -154,7 +154,7 @@ def _html_podcast_social_interactions(podcast_properties: {},
     if podcast_properties[key].get('uri'):
         episode_post_url = podcast_properties[key]['uri']
     elif podcast_properties[key].get('url'):
-        episode_post_url = podcast_properties[key]['url']
+        episode_post_url = remove_html(podcast_properties[key]['url'])
     elif podcast_properties[key].get('text'):
         episode_post_url = podcast_properties[key]['text']
     else:
@@ -218,7 +218,7 @@ def _html_podcast_performers(podcast_properties: {}) -> str:
 
         performer_url = ''
         if performer.get('href'):
-            performer_url = performer['href']
+            performer_url = remove_html(performer['href'])
 
         performer_img = ''
         if performer.get('img'):
@@ -431,7 +431,7 @@ def html_podcast_episode(translate: {},
     # donate button
     if podcast_properties.get('funding'):
         if podcast_properties['funding'].get('url'):
-            donate_url = podcast_properties['funding']['url']
+            donate_url = remove_html(podcast_properties['funding']['url'])
             podcast_str += \
                 '<p><span itemprop="funding"><a href="' + donate_url + \
                 '" rel="donation"><button class="donateButton">' + \

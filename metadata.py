@@ -12,6 +12,7 @@ from utils import is_account_dir
 from utils import load_json
 from utils import no_of_accounts
 from utils import no_of_active_accounts_monthly
+from utils import remove_html
 
 
 def _get_status_count(base_dir: str) -> int:
@@ -152,6 +153,8 @@ def meta_data_instance(show_accounts: bool,
     if admin_actor.get('published'):
         created_at = admin_actor['published']
 
+    icon_url = remove_html(admin_actor['icon']['url'])
+    image_url = remove_html(admin_actor['image']['url'])
     instance = {
         'approval_required': False,
         'invites_enabled': False,
@@ -159,10 +162,10 @@ def meta_data_instance(show_accounts: bool,
         'contact_account': {
             'acct': admin_actor['preferredUsername'],
             'created_at': created_at,
-            'avatar': admin_actor['icon']['url'],
-            'avatar_static': admin_actor['icon']['url'],
-            'header': admin_actor['image']['url'],
-            'header_static': admin_actor['image']['url'],
+            'avatar': icon_url,
+            'avatar_static': icon_url,
+            'header': image_url,
+            'header_static': image_url,
             'bot': is_bot,
             'discoverable': True,
             'group': is_group,

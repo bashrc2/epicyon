@@ -742,7 +742,8 @@ def _show_replies_on_post(post_json_object: {}, max_replies: int) -> None:
     print('')
     ctr = 0
     for item in object_replies['items']:
-        print('  ↰ ' + str(item['url']))
+        item_url = remove_html(item['url'])
+        print('  ↰ ' + str(item_url))
         ctr += 1
         if ctr >= max_replies:
             break

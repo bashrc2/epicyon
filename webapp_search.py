@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import remove_html
 from utils import harmless_markup
 from utils import remove_id_ending
 from utils import has_object_dict
@@ -567,10 +568,11 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
                         skill_level_str = '0' + skill_level_str
                     if skill_level < 10:
                         skill_level_str = '0' + skill_level_str
+                    icon_url = remove_html(actor_json['icon']['url'])
                     index_str = \
                         skill_level_str + ';' + actor + ';' + \
                         actor_json['name'] + \
-                        ';' + actor_json['icon']['url']
+                        ';' + icon_url
                     if index_str not in results:
                         results.append(index_str)
         break
@@ -606,10 +608,11 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
                                 skill_level_str = '0' + skill_level_str
                             if skill_level < 10:
                                 skill_level_str = '0' + skill_level_str
+                            icon_url = remove_html(actor_json['icon']['url'])
                             index_str = \
                                 skill_level_str + ';' + actor + ';' + \
                                 actor_json['name'] + \
-                                ';' + actor_json['icon']['url']
+                                ';' + icon_url
                             if index_str not in results:
                                 results.append(index_str)
             break
@@ -1369,8 +1372,9 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
                     for attach in post_json_object['object']['attachment']:
                         if not attach.get('url'):
                             continue
+                        attach_url = remove_html(attach['url'])
                         hashtag_feed += \
-                            '         <link>' + attach['url'] + '</link>'
+                            '         <link>' + attach_url + '</link>'
                 hashtag_feed += '     </item>'
         index += 1
         if index >= max_feed_length:

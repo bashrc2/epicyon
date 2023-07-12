@@ -311,9 +311,11 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                 continue
             if not tag_json.get('url'):
                 continue
+            citation_url = remove_html(tag_json['url'])
+            citation_name = remove_html(tag_json['name'])
             citations_str += \
-                '<li><a href="' + tag_json['url'] + '">' + \
-                '<cite>' + tag_json['name'] + '</cite></a></li>\n'
+                '<li><a href="' + citation_url + '">' + \
+                '<cite>' + citation_name + '</cite></a></li>\n'
         if citations_str:
             citations_str = '<p><b>' + translate['Citations'] + \
                 ':</b></p>' + \
@@ -475,7 +477,7 @@ def html_blog_post(session, authorized: bool,
     title = post_json_object['object']['summary']
     url = ''
     if post_json_object['object'].get('url'):
-        url = post_json_object['object']['url']
+        url = remove_html(post_json_object['object']['url'])
     snippet = _get_snippet_from_blog_content(post_json_object,
                                              system_language)
     blog_str = html_header_with_blog_markup(css_filename, instance_title,

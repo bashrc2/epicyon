@@ -15,6 +15,7 @@ from utils import acct_dir
 from utils import load_json
 from utils import save_json
 from utils import locate_post
+from utils import remove_html
 
 
 def get_location_from_tags(tags: []) -> str:
@@ -340,7 +341,7 @@ def get_map_preferences_url(base_dir: str, nickname: str, domain: str) -> str:
     if os.path.isfile(maps_filename):
         maps_json = load_json(maps_filename)
         if maps_json.get('url'):
-            return maps_json['url']
+            return remove_html(maps_json['url'])
     return None
 
 

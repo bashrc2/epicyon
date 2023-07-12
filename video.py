@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
+from utils import remove_html
 from utils import get_full_domain
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -110,15 +111,15 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
         if not media_link.get('href'):
             continue
         if media_link['mediaType'] == 'application/x-bittorrent':
-            media_torrent = media_link['href']
+            media_torrent = remove_html(media_link['href'])
         if media_link['href'].startswith('magnet:'):
-            media_magnet = media_link['href']
+            media_magnet = remove_html(media_link['href'])
         if media_link['mediaType'] != 'video/mp4' and \
            media_link['mediaType'] != 'video/ogv':
             continue
         if not media_url:
             media_type = media_link['mediaType']
-            media_url = media_link['href']
+            media_url = remove_html(media_link['href'])
 
     if not media_url:
         return None
@@ -138,7 +139,8 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
             content += '<a href="' + media_magnet + '">🧲</a>'
         content += '</p>'
 
-    new_post_id = remove_id_ending(post_json_object['id'])
+    new_post_id2 = remove_html(post_json_object['id'])
+    new_post_id = remove_id_ending(new_post_id2)
     new_post = {
         '@context': post_json_object['@context'],
         'id': new_post_id + '/activity',

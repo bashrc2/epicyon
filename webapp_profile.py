@@ -238,7 +238,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     avatar_url = ''
     if profile_json.get('icon'):
         if profile_json['icon'].get('url'):
-            avatar_url = profile_json['icon']['url']
+            avatar_url = remove_html(profile_json['icon']['url'])
     if not avatar_url:
         avatar_url = get_person_avatar_url(base_dir, person_url, person_cache)
     display_name = search_nickname
@@ -286,7 +286,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     # profileBackgroundImage = ''
     # if profile_json.get('image'):
     #     if profile_json['image'].get('url'):
-    #         profileBackgroundImage = profile_json['image']['url']
+    #         profileBackgroundImage = \
+    #             remove_html(profile_json['image']['url'])
 
     # url to return to
     back_url = path
@@ -318,7 +319,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     image_url = ''
     if profile_json.get('image'):
         if profile_json['image'].get('url'):
-            image_url = profile_json['image']['url']
+            image_url = remove_html(profile_json['image']['url'])
 
     also_known_as = None
     if profile_json.get('alsoKnownAs'):
@@ -1096,7 +1097,7 @@ def html_profile(signing_priv_key_pem: str,
     if profile_json.get('hasOccupation'):
         occupation_name = get_occupation_name(profile_json)
 
-    avatar_url = profile_json['icon']['url']
+    avatar_url = remove_html(profile_json['icon']['url'])
     # use alternate path for local avatars to avoid any caching issues
     if '://' + domain_full + '/system/accounts/avatars/' in avatar_url:
         avatar_url = \

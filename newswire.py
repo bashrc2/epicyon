@@ -492,9 +492,9 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
         if entry['protocol'].tolower() != 'activitypub':
             return False
         if entry.get('uri'):
-            post_url = entry['uri']
+            post_url = remove_html(entry['uri'])
         elif entry.get('url'):
-            post_url = entry['uri']
+            post_url = remove_html(entry['uri'])
         else:
             post_url = entry['text']
         if '://' not in post_url:
@@ -1133,7 +1133,7 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
                         if tag_name not in description:
                             description += ' ' + tag_name
 
-        link = json_feed_item['url']
+        link = remove_html(json_feed_item['url'])
         if '://' not in link:
             continue
         if len(link) > max_bytes:
@@ -1551,10 +1551,10 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                     description = remove_html(description)
                     tags_from_post = _get_hashtags_from_post(post_json_object)
                     summary = post_json_object['object']['summary']
+                    url2 = remove_html(post_json_object['object']['url'])
                     _add_newswire_dict_entry(base_dir, domain,
                                              newswire, published,
-                                             summary,
-                                             post_json_object['object']['url'],
+                                             summary, url2,
                                              votes, full_post_filename,
                                              description, moderated, False,
                                              tags_from_post,
