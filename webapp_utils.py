@@ -1371,8 +1371,9 @@ def get_post_attachments_as_html(base_dir: str,
             # avoid displaying very long domains
             if len(chat_domain_str) > 50:
                 chat_domain_str = ''
+        chat_url = remove_html(attach['href'])
         attachment_str += \
-            '<p><a href="' + attach['href'] + \
+            '<p><a href="' + chat_url + \
             '" target="_blank" rel="nofollow noopener noreferrer">' + \
             '💬 ' + translate['Chat'] + chat_domain_str + '</a></p>'
 
@@ -1400,7 +1401,7 @@ def get_post_attachments_as_html(base_dir: str,
         elif attach.get('href'):
             url = attach['href']
         if name and url:
-            transcripts[name] = url
+            transcripts[name] = remove_html(url)
 
     for attach in post_json_object['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
@@ -1449,7 +1450,7 @@ def get_post_attachments_as_html(base_dir: str,
             image_description = attach['name'].replace('"', "'")
             image_description = remove_html(image_description)
         if _is_image_mime_type(media_type):
-            image_url = attach['url']
+            image_url = remove_html(attach['url'])
 
             # display svg images if they have first been rendered harmless
             svg_harmless = True
@@ -1468,7 +1469,7 @@ def get_post_attachments_as_html(base_dir: str,
                         if os.path.isfile(cached_svg_filename):
                             svg_harmless = True
 
-            if _is_attached_image(attach['url']) and svg_harmless:
+            if _is_attached_image(image_url) and svg_harmless:
                 if not attachment_str:
                     attachment_str += '<div class="media">\n'
                     media_style_added = True
@@ -1488,6 +1489,7 @@ def get_post_attachments_as_html(base_dir: str,
                         gallery_str += '  </a>\n'
                         license_str = ''
                         if media_license and media_creator:
+                            media_license = remove_html(media_license)
                             if '://' in media_license:
                                 license_str += \
                                     '<a href="' + media_license + \
@@ -1576,6 +1578,7 @@ def get_post_attachments_as_html(base_dir: str,
                 if media_license and media_creator:
                     license_str = ''
                     attachment_str += '<figcaption>'
+                    media_license = remove_html(media_license)
                     if '://' in media_license:
                         license_str += \
                             '<a href="' + media_license + \
@@ -1591,15 +1594,16 @@ def get_post_attachments_as_html(base_dir: str,
 
                 attachment_ctr += 1
         elif _is_video_mime_type(media_type):
-            if _is_attached_video(attach['url']):
-                extension = attach['url'].split('.')[-1]
+            video_url = remove_html(attach['url'])
+            if _is_attached_video(video_url):
+                extension = video_url.split('.')[-1]
                 if attachment_ctr > 0:
                     attachment_str += '<br>'
                 if box_name == 'tlmedia':
                     gallery_str += '<div class="gallery">\n'
                     if not is_muted:
                         gallery_str += \
-                            '  <a href="' + attach['url'] + \
+                            '  <a href="' + video_url + \
                             '" tabindex="10">\n'
                         gallery_str += \
                             '    <figure id="videoContainer" ' + \
@@ -1607,7 +1611,7 @@ def get_post_attachments_as_html(base_dir: str,
                             '    <video id="video" controls ' + \
                             'preload="metadata" tabindex="10">\n'
                         gallery_str += \
-                            '      <source src="' + attach['url'] + \
+                            '      <source src="' + video_url + \
                             '" alt="' + image_description + \
                             '" title="' + image_description + \
                             '" class="attachment" type="video/' + \
@@ -1653,7 +1657,7 @@ def get_post_attachments_as_html(base_dir: str,
                     '    <video id="video" controls ' + \
                     'preload="metadata" tabindex="10">\n'
                 attachment_str += \
-                    '      <source src="' + attach['url'] + '" alt="' + \
+                    '      <source src="' + video_url + '" alt="' + \
                     image_description + '" title="' + image_description + \
                     '" class="attachment" type="video/' + \
                     extension + '">\n'
@@ -1670,28 +1674,29 @@ def get_post_attachments_as_html(base_dir: str,
                 attachment_ctr += 1
         elif _is_audio_mime_type(media_type):
             extension = '.mp3'
-            if attach['url'].endswith('.ogg'):
+            audio_url = remove_html(attach['url'])
+            if audio_url.endswith('.ogg'):
                 extension = '.ogg'
-            elif attach['url'].endswith('.wav'):
+            elif audio_url.endswith('.wav'):
                 extension = '.wav'
-            elif attach['url'].endswith('.opus'):
+            elif audio_url.endswith('.opus'):
                 extension = '.opus'
-            elif attach['url'].endswith('.spx'):
+            elif audio_url.endswith('.spx'):
                 extension = '.spx'
-            elif attach['url'].endswith('.flac'):
+            elif audio_url.endswith('.flac'):
                 extension = '.flac'
-            if attach['url'].endswith(extension):
+            if audio_url.endswith(extension):
                 if attachment_ctr > 0:
                     attachment_str += '<br>'
                 if box_name == 'tlmedia':
                     gallery_str += '<div class="gallery">\n'
                     if not is_muted:
                         gallery_str += \
-                            '  <a href="' + attach['url'] + \
+                            '  <a href="' + audio_url + \
                             '" tabindex="10">\n'
                         gallery_str += '    <audio controls tabindex="10">\n'
                         gallery_str += \
-                            '      <source src="' + attach['url'] + \
+                            '      <source src="' + audio_url + \
                             '" alt="' + image_description + \
                             '" title="' + image_description + \
                             '" class="attachment" type="audio/' + \
@@ -1726,7 +1731,7 @@ def get_post_attachments_as_html(base_dir: str,
 
                 attachment_str += '<center>\n<audio controls tabindex="10">\n'
                 attachment_str += \
-                    '<source src="' + attach['url'] + '" alt="' + \
+                    '<source src="' + audio_url + '" alt="' + \
                     image_description + '" title="' + image_description + \
                     '" class="attachment" type="audio/' + \
                     extension.replace('.', '') + '">'
