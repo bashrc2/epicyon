@@ -9,6 +9,7 @@ __module_group__ = "Profile Metadata"
 
 
 from utils import get_attachment_property_value
+from utils import remove_html
 
 
 def get_enigma_pub_key(actor_json: {}) -> str:
@@ -34,7 +35,7 @@ def get_enigma_pub_key(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        return property_value[prop_value_name]
+        return remove_html(property_value[prop_value_name])
     return ''
 
 

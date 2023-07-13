@@ -8958,7 +8958,7 @@ class PubServer(BaseHTTPRequestHandler):
                 pgp_pub_key = get_pgp_pub_key(actor_json)
                 pgp_fingerprint = get_pgp_fingerprint(actor_json)
                 if actor_json.get('alsoKnownAs'):
-                    also_known_as = actor_json['alsoKnownAs']
+                    also_known_as = remove_html(actor_json['alsoKnownAs'])
 
             access_keys = self.server.access_keys
             nickname = 'instance'

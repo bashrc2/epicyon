@@ -61,7 +61,7 @@ def get_email_address(actor_json: {}) -> str:
             continue
         if '.' not in property_value[prop_value_name]:
             continue
-        return property_value[prop_value_name]
+        return remove_html(property_value[prop_value_name])
     return ''
 
 
@@ -90,7 +90,7 @@ def get_pgp_pub_key(actor_json: {}) -> str:
             continue
         if not contains_pgp_public_key(property_value[prop_value_name]):
             continue
-        return property_value[prop_value_name]
+        return remove_html(property_value[prop_value_name])
     return ''
 
 
@@ -119,7 +119,7 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
             continue
         if len(property_value[prop_value_name]) < 10:
             continue
-        return property_value[prop_value_name]
+        return remove_html(property_value[prop_value_name])
     return ''
 
 

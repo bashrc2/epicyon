@@ -951,7 +951,7 @@ def get_blog_address(actor_json: {}) -> str:
     result = get_actor_property_url(actor_json, 'Blog')
     if not result:
         result = get_actor_property_url(actor_json, 'My Blog')
-    return result
+    return remove_html(result)
 
 
 def account_has_blog(base_dir: str, nickname: str, domain: str) -> bool:

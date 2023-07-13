@@ -9,6 +9,7 @@ __module_group__ = "Profile Metadata"
 
 
 from utils import get_attachment_property_value
+from utils import remove_html
 
 
 def get_xmpp_address(actor_json: {}) -> str:
@@ -44,7 +45,7 @@ def get_xmpp_address(actor_json: {}) -> str:
         if property_value[prop_value_name].startswith('xmpp://'):
             property_value[prop_value_name] = \
                 property_value[prop_value_name].split('xmpp://', 1)[1]
-        return property_value[prop_value_name]
+        return remove_html(property_value[prop_value_name])
     return ''
 
 

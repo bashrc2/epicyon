@@ -9,6 +9,7 @@ __module_group__ = "Profile Metadata"
 
 import re
 from utils import get_attachment_property_value
+from utils import remove_html
 
 
 def get_cwtch_address(actor_json: {}) -> str:
@@ -46,7 +47,7 @@ def get_cwtch_address(actor_json: {}) -> str:
             continue
         if '.' in property_value[prop_value_name]:
             continue
-        return property_value[prop_value_name]
+        return remove_html(property_value[prop_value_name])
     return ''
 
 

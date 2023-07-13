@@ -9,6 +9,7 @@ __module_group__ = "Profile Metadata"
 
 
 from utils import get_attachment_property_value
+from utils import remove_html
 
 
 def _get_donation_types() -> []:
@@ -54,7 +55,7 @@ def get_donation_url(actor_json: {}) -> str:
         donate_url = property_value[prop_value_name].split('<a href="')[1]
         if '"' in donate_url:
             donate_url = donate_url.split('"')[0]
-            return donate_url
+            return remove_html(donate_url)
     return ''
 
 
@@ -83,7 +84,7 @@ def get_website(actor_json: {}, translate: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        return property_value[prop_value_name]
+        return remove_html(property_value[prop_value_name])
     return ''
 
 
@@ -111,7 +112,7 @@ def get_gemini_link(actor_json: {}, translate: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        return property_value[prop_value_name]
+        return remove_html(property_value[prop_value_name])
     return ''
 
 
