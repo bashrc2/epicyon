@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import dangerous_markup
 from utils import ap_proxy_type
 from utils import remove_id_ending
 from utils import standardize_text
@@ -258,6 +259,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         moved_to = profile_json['movedTo']
         if '"' in moved_to:
             moved_to = moved_to.split('"')[1]
+        moved_to = remove_html(moved_to)
         display_name += ' ⌂'
 
     follows_you = \
@@ -268,7 +270,9 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
 
     profile_description = ''
     if profile_json.get('summary'):
-        profile_description = profile_json['summary']
+        if not dangerous_markup(profile_json['summary'],
+                                False, []):
+            profile_description = profile_json['summary']
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
@@ -323,14 +327,14 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
 
     also_known_as = None
     if profile_json.get('alsoKnownAs'):
-        also_known_as = profile_json['alsoKnownAs']
+        also_known_as = remove_html(profile_json['alsoKnownAs'])
     elif profile_json.get('sameAs'):
-        also_known_as = profile_json['sameAs']
+        also_known_as = remove_html(profile_json['sameAs'])
 
     joined_date = None
     if profile_json.get('published'):
         if 'T' in profile_json['published']:
-            joined_date = profile_json['published']
+            joined_date = remove_html(profile_json['published'])
 
     actor_proxied = ap_proxy_type(profile_json)
 

@@ -53,7 +53,8 @@ def get_donation_url(actor_json: {}) -> str:
             continue
         donate_url = property_value[prop_value_name].split('<a href="')[1]
         if '"' in donate_url:
-            return donate_url.split('"')[0]
+            donate_url = donate_url.split('"')[0]
+            return donate_url
     return ''
 
 
