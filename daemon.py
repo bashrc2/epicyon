@@ -3838,7 +3838,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # person options screen, unsnooze button
         # See html_person_options
-        if '&submitUnSnooze=' in options_confirm_params:
+        if '&submitUnsnooze=' in options_confirm_params:
             users_path = path.split('/personoptions')[0]
             this_actor = http_prefix + '://' + domain_full + users_path
             if debug:
