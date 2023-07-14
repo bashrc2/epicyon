@@ -1513,7 +1513,7 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
         content = None
         with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
             content = snoozed_file.read().replace(replace_str, '')
-        if content:
+        if content is not None:
             try:
                 with open(snoozed_filename, 'w+',
                           encoding='utf-8') as snoozfile:
