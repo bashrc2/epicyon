@@ -244,20 +244,25 @@ def get_content_from_post(post_json_object: {}, system_language: str,
             if this_post_json[map_dict].get(system_language):
                 sys_lang = this_post_json[map_dict][system_language]
                 if isinstance(sys_lang, str):
-                    content = this_post_json[map_dict][system_language]
+                    content = sys_lang
                     content = remove_markup_tag(content, 'pre')
+                    content = content.replace('&amp;', '&')
                     return standardize_text(content)
             else:
                 # is there a contentMap/summaryMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
                     if this_post_json[map_dict].get(lang):
-                        content = this_post_json[map_dict][lang]
-                        content = remove_markup_tag(content, 'pre')
-                        return standardize_text(content)
+                        map_lang = this_post_json[map_dict][lang]
+                        if isinstance(map_lang, str):
+                            content = map_lang
+                            content = remove_markup_tag(content, 'pre')
+                            content = content.replace('&amp;', '&')
+                            return standardize_text(content)
     else:
         if isinstance(this_post_json[content_type], str):
             content = this_post_json[content_type]
+            content = content.replace('&amp;', '&')
             content = remove_markup_tag(content, 'pre')
     return standardize_text(content)
 
