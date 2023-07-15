@@ -2018,7 +2018,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not message_json.get(check_field):
                 continue
             if not isinstance(message_json[check_field], list):
-                print('INBOX: To and Cc fields should be strings ' +
+                print('INBOX: To and Cc fields should be lists ' +
                       check_field + ' ' + str(message_json[check_field]))
                 self._400()
                 self.server.postreq_busy = False
