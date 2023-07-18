@@ -9508,7 +9508,7 @@ class PubServer(BaseHTTPRequestHandler):
             hashtag = hashtag.split('?page=')[0]
         hashtag = urllib.parse.unquote_plus(hashtag)
         if is_blocked_hashtag(base_dir, hashtag):
-            print('BLOCK: hashtag #' + hashtag)
+            print('BLOCK: blocked hashtag #' + hashtag)
             msg = html_hashtag_blocked(base_dir,
                                        self.server.translate).encode('utf-8')
             msglen = len(msg)
@@ -23333,7 +23333,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.block_military.get(nickname):
                 if contains_military_domain(decoded_message_bytes):
                     self._400()
-                    print('BLOCK: military domain blocked')
+                    print('BLOCK: blocked military domain')
                     self.server.postreq_busy = False
                     return
 
