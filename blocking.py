@@ -1753,3 +1753,51 @@ def get_blocks_via_server(session, nickname: str, password: str,
         print('DEBUG: c2s GET blocked collection success')
 
     return blocked_json
+
+
+def load_blocked_military(base_dir: str) -> {}:
+    """Loads a list of nicknames for accounts which block military instances
+    """
+    block_military_filename = base_dir + '/accounts/block_military.txt'
+    nicknames_list = []
+    if os.path.isfile(block_military_filename):
+        try:
+            with open(block_military_filename, 'r',
+                      encoding='utf-8') as fp_mil:
+                nicknames_list = fp_mil.read()
+        except OSError:
+            print('EX: error while reading block military file')
+    if not nicknames_list:
+        return {}
+    nicknames_list = nicknames_list.split('\n')
+    nicknames_dict = {}
+    for nickname in nicknames_list:
+        nicknames_dict[nickname] = True
+    return nicknames_dict
+
+
+def save_blocked_military(base_dir: str, block_military: {}) -> None:
+    """Saves a list of nicknames for accounts which block military instances
+    """
+    nicknames_str = ''
+    for nickname, _ in block_military.items():
+        nicknames_str += nickname + '\n'
+
+    block_military_filename = base_dir + '/accounts/block_military.txt'
+    try:
+        with open(block_military_filename, 'w+',
+                  encoding='utf-8') as fp_mil:
+            fp_mil.write(nicknames_str)
+    except OSError:
+        print('EX: error while saving block military file')
+
+
+def contains_military_domain(message_str: str) -> bool:
+    """Returns true if the given string contains a military domain
+    """
+    mil_domains = ('army', 'navy', 'airforce')
+    for tld in mil_domains:
+        if '.' + tld + '"' in message_str or \
+           '.' + tld + '/' in message_str:
+            return True
+    return False

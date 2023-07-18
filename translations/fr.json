@@ -629,5 +629,6 @@
     "Reason": "Raison",
     "Chat": "Discuter",
     "Chat link": "Lien de discussion",
-    "Clear Cache": "Vider le cache"
+    "Clear Cache": "Vider le cache",
+    "Block military instances": "Bloquer les instances militaires"
 }

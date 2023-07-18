@@ -629,5 +629,6 @@
     "Reason": "سبب",
     "Chat": "محادثة",
     "Chat link": "رابط الدردشة",
-    "Clear Cache": "مسح ذاكرة التخزين المؤقت"
+    "Clear Cache": "مسح ذاكرة التخزين المؤقت",
+    "Block military instances": "منع الحالات العسكرية"
 }

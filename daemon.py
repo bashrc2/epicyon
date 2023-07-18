@@ -154,6 +154,9 @@ from media import path_is_transcript
 from media import path_is_audio
 from cwlists import get_cw_list_variable
 from cwlists import load_cw_lists
+from blocking import contains_military_domain
+from blocking import load_blocked_military
+from blocking import save_blocked_military
 from blocking import blocked_timeline_json
 from blocking import import_blocking_file
 from blocking import export_blocking_file
@@ -7721,6 +7724,22 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: unable to write ' +
                                       'repliesFromMutualsOnly file ' +
                                       show_replies_mutuals_file)
+
+                    # block military instances
+                    block_mil_instances = False
+                    if fields.get('blockMilitary'):
+                        if fields['blockMilitary'] == 'on':
+                            block_mil_instances = True
+                    if block_mil_instances:
+                        if not self.server.block_military.get(nickname):
+                            self.server.block_military[nickname] = True
+                            save_blocked_military(self.server.base_dir,
+                                                  self.server.block_military)
+                    else:
+                        if self.server.block_military.get(nickname):
+                            del self.server.block_military[nickname]
+                            save_blocked_military(self.server.base_dir,
+                                                  self.server.block_military)
 
                     # notify about new Likes
                     if on_final_welcome_screen:
@@ -16741,7 +16760,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.min_images_for_accounts,
                                     self.server.max_recent_posts,
                                     self.server.reverse_sequence,
-                                    self.server.buy_sites)
+                                    self.server.buy_sites,
+                                    self.server.block_military)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -23298,10 +23318,22 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.postreq_busy = False
                 return
 
-        if contains_invalid_chars(message_bytes.decode("utf-8")):
+        decoded_message_bytes = message_bytes.decode("utf-8")
+        if contains_invalid_chars(decoded_message_bytes):
             self._400()
             self.server.postreq_busy = False
             return
+
+        if users_in_path:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if self.server.block_military.get(nickname):
+                if contains_military_domain(decoded_message_bytes):
+                    self._400()
+                    print('BLOCK: military domain blocked')
+                    self.server.postreq_busy = False
+                    return
 
         # convert the raw bytes to json
         message_json = json.loads(message_bytes)
@@ -23622,6 +23654,9 @@ def run_daemon(max_hashtags: int,
         return False
 
     httpd.starting_daemon = True
+
+    # load a list of nicknames for accounts blocking military instances
+    httpd.block_military = load_blocked_military(base_dir)
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)

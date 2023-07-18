@@ -2017,7 +2017,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                                  crawlers_allowed: str,
                                  translate: {}, reply_interval_hours: int,
                                  cw_lists: {}, lists_enabled: str,
-                                 buy_sites: {}) -> str:
+                                 buy_sites: {}, block_military: {}) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filter_str = ''
@@ -2231,6 +2231,15 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             edit_text_area(translate[buy_domains_str], None,
                            'buySitesStr', buy_domains_list_str,
                            200, '', False)
+
+        idx = 'Block military instances'
+        if translate.get(idx):
+            name = translate[idx]
+        block_mil = False
+        if block_military.get(nickname):
+            block_mil = block_military[nickname]
+        edit_profile_form += \
+            edit_check_box(idx, 'blockMilitary', block_mil)
 
         cw_lists_str = ''
         for name, _ in cw_lists.items():
@@ -2692,7 +2701,8 @@ def html_edit_profile(server, translate: {},
                       min_images_for_accounts: [],
                       max_recent_posts: int,
                       reverse_sequence: [],
-                      buy_sites: {}) -> str:
+                      buy_sites: {},
+                      block_military: {}) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2952,7 +2962,8 @@ def html_edit_profile(server, translate: {},
         _html_edit_profile_filtering(base_dir, nickname, domain,
                                      user_agents_blocked, crawlers_allowed,
                                      translate, reply_interval_hours,
-                                     cw_lists, lists_enabled, buy_sites)
+                                     cw_lists, lists_enabled, buy_sites,
+                                     block_military)
 
     # git projects section
     edit_profile_form += \
