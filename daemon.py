@@ -17006,7 +17006,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.blocked_cache,
                                    self.server.blocked_cache_update_secs,
                                    self.server.crawlers_allowed,
-                                   self.server.known_bots)
+                                   self.server.known_bots,
+                                   self.path, self.server.block_military)
             if block:
                 self._400()
                 return
@@ -22606,7 +22607,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.blocked_cache,
                                self.server.blocked_cache_update_secs,
                                self.server.crawlers_allowed,
-                               self.server.known_bots)
+                               self.server.known_bots,
+                               self.path, self.server.block_military)
         if block:
             self._400()
             self.server.postreq_busy = False

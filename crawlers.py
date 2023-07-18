@@ -12,6 +12,7 @@ import time
 from utils import save_json
 from utils import user_agent_domain
 from utils import remove_eol
+from blocking import get_mil_domains_list
 from blocking import update_blocked_cache
 from blocking import is_blocked_domain
 
@@ -106,7 +107,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                        blocked_cache: [],
                        blocked_cache_update_secs: int,
                        crawlers_allowed: [],
-                       known_bots: []):
+                       known_bots: [], path: str,
+                       block_military: {}):
     """Should a GET or POST be blocked based upon its user agent?
     """
     if not agent_str:
@@ -115,7 +117,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
     agent_str_lower = agent_str.lower()
     for ua_block in default_user_agent_blocks:
         if ua_block in agent_str_lower:
-            print('Blocked User agent 1: ' + ua_block)
+            print('BLOCK: Blocked User agent 1: ' + ua_block)
             return True, blocked_cache_last_updated
 
     agent_domain = None
@@ -144,7 +146,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             for crawler in crawlers_allowed:
                 if crawler.lower() in agent_str_lower:
                     return False, blocked_cache_last_updated
-            print('Blocked Crawler: ' + agent_str)
+            print('BLOCK: Blocked Crawler: ' + agent_str)
             return True, blocked_cache_last_updated
         # get domain name from User-Agent
         agent_domain = user_agent_domain(agent_str, debug)
@@ -177,5 +179,23 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             is_blocked_domain(base_dir, agent_domain, blocked_cache)
         # if self.server.debug:
         if blocked_ua:
-            print('Blocked User agent 2: ' + agent_domain)
+            print('BLOCK: Blocked User agent 2: ' + agent_domain)
+
+    # optionally block military domains on a per account basis
+    if not blocked_ua and block_military:
+        if '/users/' in path:
+            # which accounts is this?
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            # does this account block military domains?
+            if block_military.get(nickname):
+                mil_domains = get_mil_domains_list()
+                for tld in mil_domains:
+                    if agent_domain.endswith('.' + tld):
+                        blocked_ua = True
+                        print('BLOCK: Blocked military user agent: ' +
+                              agent_domain)
+                        break
+
     return blocked_ua, blocked_cache_last_updated

@@ -1792,10 +1792,16 @@ def save_blocked_military(base_dir: str, block_military: {}) -> None:
         print('EX: error while saving block military file')
 
 
+def get_mil_domains_list() -> []:
+    """returns a list of military top level domains
+    """
+    return ('army', 'navy', 'airforce', 'mil')
+
+
 def contains_military_domain(message_str: str) -> bool:
     """Returns true if the given string contains a military domain
     """
-    mil_domains = ('army', 'navy', 'airforce')
+    mil_domains = get_mil_domains_list()
     for tld in mil_domains:
         if '.' + tld + '"' in message_str or \
            '.' + tld + '/' in message_str:
