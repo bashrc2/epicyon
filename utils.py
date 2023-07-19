@@ -89,7 +89,11 @@ def standardize_text(text: str) -> str:
         [120224, 'A'],
         [120328, 'A'],
         [120380, 'A'],
-        [120432, 'A']
+        [120432, 'A'],
+        [127344, 'A'],
+        [127312, 'A'],
+        [127280, 'A'],
+        [127248, 'A']
     )
     for char_range in char_ranges:
         range_start = char_range[0]
