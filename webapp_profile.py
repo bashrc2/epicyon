@@ -273,6 +273,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         if not dangerous_markup(profile_json['summary'],
                                 False, []):
             profile_description = profile_json['summary']
+        else:
+            profile_description = remove_html(profile_json['summary'])
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
@@ -817,7 +819,10 @@ def html_profile(signing_priv_key_pem: str,
                                   nickname, domain,
                                   display_name, False, translate)
     domain_full = get_full_domain(domain, port)
-    profile_description = profile_json['summary']
+    if not dangerous_markup(profile_json['summary'], False, []):
+        profile_description = profile_json['summary']
+    else:
+        profile_description = remove_html(profile_json['summary'])
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
