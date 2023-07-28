@@ -302,11 +302,11 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
 
     profile_description_short = profile_description
     if '\n' in profile_description:
-        if len(profile_description.split('\n')) > 2:
+        if len(profile_description.split('\n')) > 4:
             profile_description_short = ''
     else:
         if '<br>' in profile_description:
-            if len(profile_description.split('<br>')) > 2:
+            if len(profile_description.split('<br>')) > 4:
                 profile_description_short = ''
     # keep the profile description short
     if len(profile_description_short) > 2048:
