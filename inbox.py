@@ -1189,6 +1189,7 @@ def _notify_moved(base_dir: str, domain_full: str,
             except OSError:
                 print('EX: ERROR: unable to save moved notification ' +
                       moved_file)
+        break
 
 
 def _person_receive_update(base_dir: str,

@@ -368,6 +368,7 @@ def load_default_post_languages(base_dir: str) -> {}:
             except OSError:
                 print('EX: Unable to read default post language ' +
                       default_post_language_filename)
+        break
     return result
 
 
