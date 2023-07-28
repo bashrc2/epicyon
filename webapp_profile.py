@@ -101,6 +101,23 @@ THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
 
 
+def _get_profile_short_description(profile_description: str) -> str:
+    """Returns a short version of the profile description
+    """
+    profile_description_short = profile_description
+    if '\n' in profile_description:
+        if len(profile_description.split('\n')) > 6:
+            profile_description_short = ''
+    else:
+        if '<br>' in profile_description:
+            if len(profile_description.split('<br>')) > 6:
+                profile_description_short = ''
+    # keep the profile description short
+    if len(profile_description_short) > 2048:
+        profile_description_short = profile_description_short[:2048]
+    return profile_description_short
+
+
 def _valid_profile_preview_post(post_json_object: {},
                                 person_url: str) -> (bool, {}):
     """Returns true if the given post should appear on a person/group profile
@@ -300,17 +317,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     if not back_url.endswith('/inbox'):
         back_url += '/inbox'
 
-    profile_description_short = profile_description
-    if '\n' in profile_description:
-        if len(profile_description.split('\n')) > 4:
-            profile_description_short = ''
-    else:
-        if '<br>' in profile_description:
-            if len(profile_description.split('<br>')) > 4:
-                profile_description_short = ''
-    # keep the profile description short
-    if len(profile_description_short) > 2048:
-        profile_description_short = ''
+    profile_description_short = \
+        _get_profile_short_description(profile_description)
     # remove formatting from profile description used on title
     avatar_description = ''
     if profile_json.get('summary'):
@@ -1069,18 +1077,8 @@ def html_profile(signing_priv_key_pem: str,
                                 translate['Deny'] + '</button></a>'
                             follow_approvals_section += '</div>'
 
-    profile_description_short = profile_description
-    if '\n' in profile_description:
-        if len(profile_description.split('\n')) > 4:
-            profile_description_short = ''
-    else:
-        if '<br>' in profile_description:
-            if len(profile_description.split('<br>')) > 4:
-                profile_description_short = ''
-                profile_description = profile_description.replace('<br>', '\n')
-    # keep the profile description short
-    if len(profile_description_short) > 2048:
-        profile_description_short = ''
+    profile_description_short = \
+        _get_profile_short_description(profile_description)
     # remove formatting from profile description used on title
     avatar_description = ''
     if profile_json.get('summary'):
