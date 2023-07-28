@@ -1071,11 +1071,11 @@ def html_profile(signing_priv_key_pem: str,
 
     profile_description_short = profile_description
     if '\n' in profile_description:
-        if len(profile_description.split('\n')) > 2:
+        if len(profile_description.split('\n')) > 4:
             profile_description_short = ''
     else:
         if '<br>' in profile_description:
-            if len(profile_description.split('<br>')) > 2:
+            if len(profile_description.split('<br>')) > 4:
                 profile_description_short = ''
                 profile_description = profile_description.replace('<br>', '\n')
     # keep the profile description short
