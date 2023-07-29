@@ -109,6 +109,7 @@ from maps import set_map_preferences_coords
 from maps import set_map_preferences_url
 from maps import geocoords_from_map_link
 from maps import get_location_from_tags
+from session import get_json
 
 
 def _html_post_metadata_open_graph(domain: str, post_json_object: {},
@@ -1495,7 +1496,9 @@ def _get_post_title_reply_html(base_dir: str,
                                message_id_str: str,
                                container_class_icons: str,
                                container_class: str,
-                               mitm: bool) -> (str, str, str, str):
+                               mitm: bool,
+                               signing_priv_key_pem: str,
+                               session, debug: bool) -> (str, str, str, str):
     """Returns the reply title of a post containing names of participants
     x replies to y
     """
@@ -1518,6 +1521,7 @@ def _get_post_title_reply_html(base_dir: str,
                 container_class_icons, container_class)
 
     # has a reply
+    reply_actor = None
     if '/statuses/' not in obj_json['inReplyTo']:
         post_domain = obj_json['inReplyTo']
         prefixes = get_protocol_prefixes()
@@ -1525,7 +1529,24 @@ def _get_post_title_reply_html(base_dir: str,
             post_domain = post_domain.replace(prefix, '')
         if '/' in post_domain:
             post_domain = post_domain.split('/', 1)[0]
-        if post_domain:
+        # resolve inReplyTo to obtain attributedTo
+        profile_str = 'https://www.w3.org/ns/activitystreams'
+        headers = {
+            'Accept': 'application/ld+json; profile="' + profile_str + '"'
+        }
+        reply_post_json = \
+            get_json(signing_priv_key_pem,
+                     session, obj_json['inReplyTo'],
+                     headers, None, debug,
+                     __version__, http_prefix, domain)
+        if reply_post_json:
+            obj_json = reply_post_json
+            if has_object_dict(reply_post_json):
+                obj_json = reply_post_json['object']
+            if obj_json.get('attributedTo'):
+                if isinstance(obj_json['attributedTo'], str):
+                    reply_actor = obj_json['attributedTo']
+        if post_domain and not reply_actor:
             title_str += \
                 _reply_with_unknown_path_html(translate,
                                               post_json_object, post_domain,
@@ -1534,7 +1555,8 @@ def _get_post_title_reply_html(base_dir: str,
                 container_class_icons, container_class)
 
     in_reply_to = obj_json['inReplyTo']
-    reply_actor = in_reply_to.split('/statuses/')[0]
+    if not reply_actor:
+        reply_actor = in_reply_to.split('/statuses/')[0]
     reply_nickname = get_nickname_from_actor(reply_actor)
     if not reply_nickname:
         title_str += \
@@ -1622,7 +1644,10 @@ def _get_post_title_html(base_dir: str,
                          message_id_str: str,
                          container_class_icons: str,
                          container_class: str,
-                         mitm: bool) -> (str, str, str, str):
+                         mitm: bool,
+                         signing_priv_key_pem: str,
+                         session,
+                         debug: bool) -> (str, str, str, str):
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
@@ -1669,7 +1694,9 @@ def _get_post_title_html(base_dir: str,
                                       page_number,
                                       message_id_str,
                                       container_class_icons,
-                                      container_class, mitm)
+                                      container_class, mitm,
+                                      signing_priv_key_pem,
+                                      session, debug)
 
 
 def _get_footer_with_icons(show_icons: bool,
@@ -2440,7 +2467,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                              page_number,
                                              message_id_str,
                                              container_class_icons,
-                                             container_class, mitm)
+                                             container_class, mitm,
+                                             signing_priv_key_pem,
+                                             session, False)
     title_str += title_str2
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
