@@ -1551,8 +1551,8 @@ def _get_post_title_reply_html(base_dir: str,
                 _reply_with_unknown_path_html(translate,
                                               post_json_object, post_domain,
                                               nickname)
-        return (title_str, reply_avatar_image_in_post,
-                container_class_icons, container_class)
+            return (title_str, reply_avatar_image_in_post,
+                    container_class_icons, container_class)
 
     in_reply_to = obj_json['inReplyTo']
     if not reply_actor:
