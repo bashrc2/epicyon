@@ -1548,6 +1548,12 @@ def _get_post_title_reply_html(base_dir: str,
             if obj_json.get('attributedTo'):
                 if isinstance(obj_json['attributedTo'], str):
                     reply_actor = obj_json['attributedTo']
+            elif obj_json != reply_post_json:
+                obj_json = reply_post_json
+                if obj_json.get('attributedTo'):
+                    if isinstance(obj_json['attributedTo'], str):
+                        reply_actor = obj_json['attributedTo']
+
         if post_domain and not reply_actor:
             title_str += \
                 _reply_with_unknown_path_html(translate,
