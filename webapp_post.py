@@ -1524,6 +1524,7 @@ def _get_post_title_reply_html(base_dir: str,
 
     # has a reply
     reply_actor = None
+    in_reply_to = None
     if '/statuses/' not in obj_json['inReplyTo']:
         post_domain = obj_json['inReplyTo']
         prefixes = get_protocol_prefixes()
@@ -1564,7 +1565,6 @@ def _get_post_title_reply_html(base_dir: str,
             return (title_str, reply_avatar_image_in_post,
                     container_class_icons, container_class)
 
-    in_reply_to = None
     if obj_json.get('inReplyTo'):
         if isinstance(obj_json['inReplyTo'], str):
             in_reply_to = obj_json['inReplyTo']
