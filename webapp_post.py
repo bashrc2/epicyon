@@ -1463,6 +1463,8 @@ def _get_reply_html(translate: {},
                     post_json_object: {}) -> str:
     """Returns html title for a reply
     """
+    if not in_reply_to:
+        return ''
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_link = '/users/' + nickname + '?convthread=' + \
         in_reply_to.replace('/', '--')
@@ -1591,9 +1593,13 @@ def _get_post_title_reply_html(base_dir: str,
                                       reply_display_name, False, translate)
         _log_post_timing(enable_timing_log, post_start_time, '13.6')
 
-    title_str += \
-        _get_reply_html(translate, in_reply_to, reply_display_name,
-                        nickname, post_json_object)
+    if not in_reply_to:
+        title_str += _reply_to_unknown_html(translate, post_json_object,
+                                            nickname)
+    else:
+        title_str += \
+            _get_reply_html(translate, in_reply_to, reply_display_name,
+                            nickname, post_json_object)
 
     if mitm:
         title_str += _mitm_warning_html(translate)
