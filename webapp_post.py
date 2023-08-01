@@ -1543,19 +1543,20 @@ def _get_post_title_reply_html(base_dir: str,
                      headers, None, debug,
                      __version__, http_prefix, domain)
         if reply_post_json:
-            obj_json = reply_post_json
-            if has_object_dict(reply_post_json):
-                obj_json = reply_post_json['object']
-            if obj_json.get('attributedTo'):
-                if isinstance(obj_json['attributedTo'], str):
-                    reply_actor = obj_json['attributedTo']
-                    in_reply_to = reply_actor
-            elif obj_json != reply_post_json:
+            if isinstance(reply_post_json, dict):
                 obj_json = reply_post_json
+                if has_object_dict(reply_post_json):
+                    obj_json = reply_post_json['object']
                 if obj_json.get('attributedTo'):
                     if isinstance(obj_json['attributedTo'], str):
                         reply_actor = obj_json['attributedTo']
                         in_reply_to = reply_actor
+                elif obj_json != reply_post_json:
+                    obj_json = reply_post_json
+                    if obj_json.get('attributedTo'):
+                        if isinstance(obj_json['attributedTo'], str):
+                            reply_actor = obj_json['attributedTo']
+                            in_reply_to = reply_actor
 
         if post_domain and not reply_actor:
             title_str += \
