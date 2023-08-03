@@ -3245,6 +3245,7 @@ def json_post_allows_comments(post_json_object: {}) -> bool:
         if isinstance(reply_control, str):
             if not reply_control.endswith('#Public'):
                 return False
+        print('DEBUG: non-public replies ' + str(reply_control))
 
     if 'commentsEnabled' in post_json_object:
         return post_json_object['commentsEnabled']
