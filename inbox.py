@@ -150,7 +150,7 @@ from content import valid_url_lengths
 from content import remove_script
 from threads import begin_thread
 from maps import get_map_links_from_post_content
-from maps import get_location_from_tags
+from maps import get_location_from_post
 from maps import add_tag_map_links
 from maps import geocoords_from_map_link
 
@@ -355,8 +355,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         post_content = post_json_object['object']['content']
         map_links += get_map_links_from_post_content(post_content)
     # get geolocation from tags
-    location_str = \
-        get_location_from_tags(post_json_object['object']['tag'])
+    location_str = get_location_from_post(post_json_object)
     if location_str:
         if '://' in location_str and '.' in location_str:
             zoom, latitude, longitude = geocoords_from_map_link(location_str)

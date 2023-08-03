@@ -16,9 +16,18 @@ from utils import load_json
 from utils import save_json
 from utils import locate_post
 from utils import remove_html
+from utils import has_object_dict
 
 
-def get_location_from_tags(tags: []) -> str:
+def _geocoords_to_osm_link(osm_domain: str, zoom: int,
+                           latitude: float, longitude: float) -> str:
+    """Returns an OSM link for the given geocoordinates
+    """
+    return 'https://www.' + osm_domain + '/#map=' + \
+        str(zoom) + '/' + str(latitude) + '/' + str(longitude)
+
+
+def _get_location_from_tags(tags: []) -> str:
     """Returns the location from the tags list
     """
     for tag_item in tags:
@@ -33,6 +42,39 @@ def get_location_from_tags(tags: []) -> str:
         location_str = tag_item['name'].replace('\n', ' ')
         return remove_html(location_str)
     return None
+
+
+def get_location_from_post(post_json_object: {}) -> str:
+    """Returns the location for the given post
+    """
+    locn = None
+
+    # location represented via a tag
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+    if post_obj.get('tag'):
+        if isinstance(post_obj['tag'], list):
+            locn = _get_location_from_tags(post_obj['tag'])
+
+    # location representation used by pixelfed
+    locn_exists = False
+    if post_obj.get('location'):
+        if isinstance(post_obj['location'], dict):
+            if post_obj['location'].get('longitude') and \
+               post_obj['location'].get('latitude'):
+                if isinstance(post_obj['location']['longitude'], str) and \
+                   isinstance(post_obj['location']['latitude'], str):
+                    if is_float(post_obj['location']['longitude']) and \
+                       is_float(post_obj['location']['latitude']):
+                        locn_exists = True
+    if locn_exists:
+        osm_domain = 'osm.org'
+        zoom = 17
+        locn = _geocoords_to_osm_link(osm_domain, zoom,
+                                      post_obj['location']['latitude'],
+                                      post_obj['location']['longitude'])
+    return locn
 
 
 def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
@@ -298,7 +340,7 @@ def html_open_street_map(url: str,
         return ''
     if not zoom:
         return ''
-
+    osm_url = _geocoords_to_osm_link(osm_domain, zoom, latitude, longitude)
     html_str = \
         '<iframe width="' + width + '" height="' + height + \
         '" frameborder="0" ' + \
@@ -312,8 +354,7 @@ def html_open_street_map(url: str,
         '%2C' + \
         str(latitude + bounding_box_degrees) + \
         '&amp;layer=mapnik" style="border: 1px solid black"></iframe>' + \
-        '<br/><small><a href="https://www.' + osm_domain + '/#map=' + \
-        str(zoom) + '/' + str(latitude) + '/' + str(longitude) + \
+        '<br/><small><a href="' + osm_url + \
         '">' + translate['View Larger Map'] + '</a></small>\n'
     return html_str
 

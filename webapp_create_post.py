@@ -38,7 +38,7 @@ from webapp_utils import edit_currency_field
 from webapp_post import individual_post_as_html
 from maps import get_map_preferences_url
 from maps import get_map_preferences_coords
-from maps import get_location_from_tags
+from maps import get_location_from_post
 
 
 def _html_new_post_drop_down(scope_icon: str, scope_description: str,
@@ -305,8 +305,7 @@ def html_new_post(edit_post_params: {},
 
         if edited_post_json['object'].get('tag'):
             # if this is an edited post then get the location
-            location_str = \
-                get_location_from_tags(edited_post_json['object']['tag'])
+            location_str = get_location_from_post(edited_post_json)
             if location_str:
                 default_location = location_str
             # if this is an edited post then get the start and end time

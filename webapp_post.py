@@ -108,7 +108,7 @@ from maps import html_open_street_map
 from maps import set_map_preferences_coords
 from maps import set_map_preferences_url
 from maps import geocoords_from_map_link
-from maps import get_location_from_tags
+from maps import get_location_from_post
 from session import get_json
 
 
@@ -2768,8 +2768,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                         'content', False, True)
             buy_links = get_buy_links(post_json_object, translate, buy_sites)
         # show embedded map if the location contains a map url
-        location_str = \
-            get_location_from_tags(post_json_object['object']['tag'])
+        location_str = get_location_from_post(post_json_object)
         if location_str:
             if '://' in location_str and '.' in location_str:
                 bounding_box_degrees = 0.001
